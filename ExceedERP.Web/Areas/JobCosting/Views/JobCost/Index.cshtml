@@ -210,16 +210,30 @@
                         .Name("MaterialCost#=JobCostId#")
                             .Columns(columns =>
                             {
-
-                                columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "Code", "Name").Width(75);
-                                columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75); columns.Bound(c => c.Reference);
+                                if(isFromPrinting==false)
+                                {
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "Code", "Name").Width(75);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75);
+                                }
+                                if (isFromPrinting == true)
+                                {
+                                    //columns.Bound(c => c.MaterialType).Width(75);
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["Category"], "Value", "Text").Width(75);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Item"], "Value", "Text").Width(75);
+                                }
                                 columns.Bound(c => c.Date);
-                                columns.Bound(c => c.Reference);
+                                if (isFromPrinting == false)
+                                {
+                                    columns.Bound(c => c.Reference);
+                                }
                                 columns.Bound(c => c.Quantity).ClientFooterTemplate("\\#=sum\\#");
                                 columns.Bound(c => c.UnitPrice);
-                                columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
-                                columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
-                                columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
+                                if (isFromPrinting == false)
+                                {
+                                    columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
+                                }
                                 columns.Bound(c => c.ItemDescription);
                             })
                         //.ToolBar(toolbar =>

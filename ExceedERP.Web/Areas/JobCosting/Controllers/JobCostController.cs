@@ -52,6 +52,16 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
                var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = s.Name }).ToList();
                  ViewData["Items"] = items;
+            ViewData["Category"] = db.PrintingMaterialCategories.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryId,
+                Text = s.CategoryName
+            }).ToList();
+            ViewData["Item"] = db.PrintingMaterialCategoryItems.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryItemId,
+                Text = s.ItemName
+            }).ToList();
             return View();
         }
 

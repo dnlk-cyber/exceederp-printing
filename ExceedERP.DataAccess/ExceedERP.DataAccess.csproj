@@ -753,6 +753,10 @@
     <Compile Include="Migrations\202510221111513_PrintingJSett.Designer.cs">
       <DependentUpon>202510221111513_PrintingJSett.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510261157467_DTLoadingStty.cs" />
+    <Compile Include="Migrations\202510261157467_DTLoadingStty.Designer.cs">
+      <DependentUpon>202510261157467_DTLoadingStty.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1269,6 +1273,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510221111513_PrintingJSett.resx">
       <DependentUpon>202510221111513_PrintingJSett.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510261157467_DTLoadingStty.resx">
+      <DependentUpon>202510261157467_DTLoadingStty.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
