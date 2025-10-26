@@ -27,33 +27,65 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
         {
             IList<JobMaterialCost> jobmaterialcosts = new List<JobMaterialCost>();
             var jobCost = db.JobCosts.Find(id);
-            if(jobCost != null)
+            var fetchSetting = db.PrintingJobSetting.FirstOrDefault();
+            if (jobCost != null)
             {
                 var job = db.Jobs.Find(jobCost.JobId);
-                if(job!=null)
+                var printingJob = db.PrintingJobOrders.Find(id);
+                var x = printingJob.CRVNo;
+                if(job!=null||printingJob!=null)
                 {
-                    var items = db.IssueItems.Where(q => q.ProductionJobNo == job.JobNo).ToList();
-                    foreach (var item in items)
+                    if(fetchSetting==null||(fetchSetting!=null&&fetchSetting.IsFromPrinting==false))
                     {
-                        JobMaterialCost jobMaterial = new JobMaterialCost();
+                        var items = db.IssueItems.Where(q => q.ProductionJobNo == job.JobNo).ToList();
+                        foreach (var item in items)
+                        {
+                            JobMaterialCost jobMaterial = new JobMaterialCost();
 
-                        jobMaterial.JobMaterialCostId = item.IssueItemID;
-                        jobMaterial.JobCostId = id;
-                        jobMaterial.ItemCode = item.ItemCode;
-                        jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
-                        jobMaterial.Date = DateTime.Now;
-                        jobMaterial.Reference = db.Issues.Find(item.IssueID)?.Reference;
-                        jobMaterial.Quantity = item.IssuedQuantity;
-                        jobMaterial.UnitPrice = item.UnitPrice;
-                        jobMaterial.Cost = item.Total;
-                        jobMaterial.SubTotal = item.UnitPrice * item.IssuedQuantity;
-                        jobMaterial.TaxAmount = item.Total - (item.UnitPrice * item.IssuedQuantity);
-                        // jobMaterial.ItemDescription = jobCost.Re;
-                        jobMaterial.DateCreated = item.DateCreated;
-                        jobMaterial.LastModified = item.LastModified;
-                        jobMaterial.CreatedBy = item.CreatedBy;
-                        jobMaterial.ModifiedBy = item.ModifiedBy;
-                        jobmaterialcosts.Add(jobMaterial);
+                            jobMaterial.JobMaterialCostId = item.IssueItemID;
+                            jobMaterial.JobCostId = id;
+                            jobMaterial.ItemCode = item.ItemCode;
+                            jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
+                            jobMaterial.Date = DateTime.Now;
+                            jobMaterial.Reference = db.Issues.Find(item.IssueID)?.Reference;
+                            jobMaterial.Quantity = item.IssuedQuantity;
+                            jobMaterial.UnitPrice = item.UnitPrice;
+                            jobMaterial.Cost = item.Total;
+                            jobMaterial.SubTotal = item.UnitPrice * item.IssuedQuantity;
+                            jobMaterial.TaxAmount = item.Total - (item.UnitPrice * item.IssuedQuantity);
+                            // jobMaterial.ItemDescription = jobCost.Re;
+                            jobMaterial.DateCreated = item.DateCreated;
+                            jobMaterial.LastModified = item.LastModified;
+                            jobMaterial.CreatedBy = item.CreatedBy;
+                            jobMaterial.ModifiedBy = item.ModifiedBy;
+                            jobmaterialcosts.Add(jobMaterial);
+                        }
+                    }
+                    if (fetchSetting != null && fetchSetting.IsFromPrinting == true)
+                    {
+                        var items = db.IssueItems.Where(q => q.ProductionJobNo == printingJob.CRVNo).ToList();
+                        foreach (var item in items)
+                        {
+                            JobMaterialCost jobMaterial = new JobMaterialCost();
+
+                            jobMaterial.JobMaterialCostId = item.IssueItemID;
+                            jobMaterial.JobCostId = id;
+                            jobMaterial.ItemCode = item.ItemCode;
+                            jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
+                            jobMaterial.Date = DateTime.Now;
+                            jobMaterial.Reference = db.Issues.Find(item.IssueID)?.Reference;
+                            jobMaterial.Quantity = item.IssuedQuantity;
+                            jobMaterial.UnitPrice = item.UnitPrice;
+                            jobMaterial.Cost = item.Total;
+                            jobMaterial.SubTotal = item.UnitPrice * item.IssuedQuantity;
+                            jobMaterial.TaxAmount = item.Total - (item.UnitPrice * item.IssuedQuantity);
+                            // jobMaterial.ItemDescription = jobCost.Re;
+                            jobMaterial.DateCreated = item.DateCreated;
+                            jobMaterial.LastModified = item.LastModified;
+                            jobMaterial.CreatedBy = item.CreatedBy;
+                            jobMaterial.ModifiedBy = item.ModifiedBy;
+                            jobmaterialcosts.Add(jobMaterial);
+                        }
                     }
                 }
                

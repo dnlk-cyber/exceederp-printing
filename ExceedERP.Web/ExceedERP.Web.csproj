@@ -1815,6 +1815,7 @@
     <Compile Include="Areas\JobCosting\Controllers\JobOrderSummaryCostCentersController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\JobOrderTimeRegistrationsController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\JobOrderTimeSheetsController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\Settings\PrintingJobSettingController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\Settings\IdleTimeCategoryController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\Settings\JcPensionController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\Settings\UnitController.cs" />
@@ -7410,6 +7411,7 @@
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureFollowupAssembly.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\PostPressFollowUp.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\PressFollowUp.cshtml" />
+    <Content Include="Areas\JobCosting\Views\PrintingJobSetting\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
