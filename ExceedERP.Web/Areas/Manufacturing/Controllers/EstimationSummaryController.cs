@@ -1,7 +1,5 @@
 ﻿﻿using System;
 using System.Collections.Generic;
-
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -10,6 +8,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.DataAccess.Context;
+using System.Data.Entity;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 {
