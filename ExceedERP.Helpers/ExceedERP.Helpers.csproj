@@ -192,6 +192,8 @@
     <Compile Include="Printing\EstimationHelper.cs" />
     <Compile Include="Printing\MaterialWeight.cs" />
     <Compile Include="Printing\PaperSizeHelper.cs" />
+    <Compile Include="Printing\PrintCloseJobHelper.cs" />
+    <Compile Include="Printing\PrintMapper.cs" />
     <Compile Include="Printing\PrintSignitureAndSheet.cs" />
     <Compile Include="Printing\SectionUp.cs" />
     <Compile Include="Printing\VoucherLaborCost.cs" />
