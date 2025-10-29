@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,5 +42,6 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         public DateTime? PrePressApprovedTime { get; set; }
         public DateTime? PressApprovedTime { get; set; }
         public DateTime? PostPressApprovedTime { get; set; }
+        public bool IsClosed { get; set; } 
     }
 }
