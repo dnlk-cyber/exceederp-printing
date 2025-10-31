@@ -2195,16 +2195,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
 
         }
-        private decimal GetTransfreedAmmount(int periodId, int empId)
-        {
-            //var transfrred = db.LeaveTransfer.Where(x => x.To == periodId && x.EmployeeId == empId).FirstOrDefault();
-            //if (transfrred != null)
-            //{
-
-            //    return transfrred.Amount;
-            //}
-            return 0;                               //
-        }
         [AuthorizeRoles(HrmConstants.HRLeaveUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavesEntitle_Update([DataSourceRequest]DataSourceRequest request, LeaveEntitle leaveEntitle)
@@ -2366,6 +2356,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 
             }
             return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
+        }
+        private decimal GetTransfreedAmmount(int periodId, int empId)
+        {
+            var transfrred = db.LeaveTransfer.Where(x => x.To == periodId && x.EmployeeId == empId).FirstOrDefault();
+            if (transfrred != null)
+            {
+
+                return transfrred.Amount;
+            }
+            return 0;                               //
         }
         private List<int> GetActiveEmployeeFromCurrentUserBranch(string user)
         {

@@ -457,7 +457,7 @@
                     type: 'POST',
                     cache: false,
                     success: function (result) {
-                        r = result;
+                        alert(result.Message);
                         $('#loading-image').hide();
                         $("#LeaveEntitlegrid").data("kendoGrid").dataSource.read();
 

@@ -7,12 +7,10 @@
 }
 @*<legend>Health Setting</legend>*@
 @(Html.Kendo().TabStrip()
-          .Name("SettingTabStrip")
-          .Animation(animation =>
-          animation.Open(effect =>
-          effect.Fade(FadeDirection.In)))
-          .Items(tabstrip =>
-          {
+      .Name("SettingTabStrip")
+      .Animation(animation => animation.Open(effect =>effect.Fade(FadeDirection.In)))
+     .Items(tabstrip =>
+     {
               tabstrip.Add()
                       .Text("Health Setting By Rank")
                       .Selected(true)
@@ -35,38 +33,37 @@
              selectable.Mode(GridSelectionMode.Single);
              selectable.Type(GridSelectionType.Row);
          })
-            
-             .Scrollable(h => h.Height(500))
-                 .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-              .Filterable()
-                 .Pageable(pageable => pageable
-                   .Input(true)
-                   .Numeric(false)
-                   .Refresh(true)
-                   .PageSizes(true)
-                   .ButtonCount(5))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-               .Events(events =>
-               {
-                   events.Error("error_handler(\"HealthSettinggrid\")");
-                   events.RequestStart("onRequestStart(\"HealthSettinggrid\")");
-                   events.RequestEnd("onRequestEnd(\"HealthSettinggrid\")");
-               })
+        .Scrollable(h => h.Height(500))
+            .Groupable()
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+        .Filterable()
+            .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+        .Events(events =>
+        {
+            events.Error("error_handler(\"HealthSettinggrid\")");
+            events.RequestStart("onRequestStart(\"HealthSettinggrid\")");
+            events.RequestEnd("onRequestEnd(\"HealthSettinggrid\")");
 
-          .Model(model => model.Id(p => p.HealthRankAndValueSettingId))
-          .Read(read => read.Action("HealthRankAndValueSetting_Read", "HealthRankAndValueSetting"))
-          .Create(create => create.Action("HealthRankAndValueSetting_Create", "HealthRankAndValueSetting"))
-          .Update(update => update.Action("HealthRankAndValueSetting_Update", "HealthRankAndValueSetting"))
-          .Destroy(destroy => destroy.Action("HealthRankAndValueSetting_Destroy", "HealthRankAndValueSetting"))
-          )
-)
-)
-                    </text>);
+        })
+        .Model(model => model.Id(p => p.HealthRankAndValueSettingId))
+        .Read(read => read.Action("HealthRankAndValueSetting_Read", "HealthRankAndValueSetting"))
+        .Create(create => create.Action("HealthRankAndValueSetting_Create", "HealthRankAndValueSetting"))
+        .Update(update => update.Action("HealthRankAndValueSetting_Update", "HealthRankAndValueSetting"))
+        .Destroy(destroy => destroy.Action("HealthRankAndValueSetting_Destroy", "HealthRankAndValueSetting"))
+        )
+))
+                    
+</text>);
 
 tabstrip.Add()
 .Text("Health Setting By Responsiblity Level")

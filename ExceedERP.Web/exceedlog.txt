@@ -272804,3 +272804,885 @@
 2025-10-22 08:32:46.0372|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:21788:cf255775 heartbeat successfully sent
 2025-10-22 08:33:16.0464|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:21788:cf255775 heartbeat successfully sent
 2025-10-22 08:33:46.0602|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:21788:cf255775 heartbeat successfully sent
+2025-10-22 12:11:46.9787|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2025-10-22 12:11:47.1575|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2025-10-22 12:11:47.1770|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2025-10-22 12:11:47.1770|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2025-10-22 12:11:47.1770|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-10-22 12:11:47.1912|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:b6494f56 has started in 3.8134 ms
+2025-10-22 12:11:47.2895|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 successfully announced in 94.3302 ms
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:ff8f5710 has started in 1.1542 ms
+2025-10-22 12:11:47.2895|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:bf39f661 has started in 0.7762 ms
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:163e1c06 has started in 0.7937 ms
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:fae3a168 has started in 0.7692 ms
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:e8a33bcb has started in 0.9768 ms
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 12:11:47.2895|INFO|Hangfire.Server.ServerWatchdog|1 servers were removed due to timeout
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cc5856b3 has started in 0.9703 ms
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5f558e15 has started in 1.4766 ms
+2025-10-22 12:11:47.2895|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:500a4fdd has started in 5.8421 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:70e9aa6f has started in 9.477 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:71e10418 has started in 10.082 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3b74dee4 has started in 10.9441 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:682bb33f has started in 11.4079 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9fd4748e has started in 12.5819 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9b2e5de1 has started in 12.8975 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:84f698f5 has started in 13.3729 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cda33522 has started in 13.8371 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d3a4592e has started in 14.1998 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:73597510 has started in 14.9279 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5863de10 has started in 15.6373 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c4bfb3f9 has started in 16.4552 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:20c7bb4e has started in 17.0562 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3bf1c8d6 has started in 17.613 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:45a73a3d has started in 17.7877 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f9ef1fae has started in 18.2099 ms
+2025-10-22 12:11:47.3069|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:18becd41 has started in 18.5784 ms
+2025-10-22 12:11:47.3211|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:c260a973 has started in 1.0337 ms
+2025-10-22 12:11:47.3211|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a567c121 has started in 1.397 ms
+2025-10-22 12:11:47.3211|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 all the dispatchers started
+2025-10-22 12:11:47.3211|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 12:11:47.4081|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 12:11:47.4081|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 12:11:47.4156|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 12:12:17.3136|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:12:47.3330|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:13:17.3378|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:13:47.3569|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:14:17.3709|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:14:47.3880|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:15:17.4067|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:15:47.4221|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:16:17.4325|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:16:47.3282|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:16:47.4444|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:17:17.4530|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:17:47.4749|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:18:17.4813|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:18:47.4906|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:19:17.5051|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:19:47.5251|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:20:17.5423|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:20:47.5552|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:21:17.5660|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:21:47.3460|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:21:47.5710|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:22:17.5893|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:22:47.6004|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:23:17.6069|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:23:47.6135|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:24:17.6214|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:24:47.6384|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:25:17.6443|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:25:47.6501|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:26:17.6578|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:26:47.3646|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:26:47.6689|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:27:17.6798|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:27:47.6934|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:28:17.7116|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:28:47.7261|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:29:17.7484|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:29:47.7533|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:30:17.7598|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:30:47.7650|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:31:17.7715|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:31:47.3844|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:31:47.7801|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:32:17.7999|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:32:47.8161|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:33:17.8419|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:33:47.8604|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:34:17.8754|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:34:47.8873|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:35:17.9038|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:35:47.9209|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:36:17.9422|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:36:47.4038|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:36:47.9552|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:37:17.9751|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:37:47.9862|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:38:17.9972|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:38:48.0130|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:39:18.0308|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:39:48.0432|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:40:18.0546|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:40:48.0725|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:41:18.0824|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:41:47.4278|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:41:47.4278|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 12:41:47.4604|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 12:41:47.4812|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 12:41:47.4812|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 12:41:47.4938|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 12:41:48.1058|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:42:18.1178|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:42:48.1410|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:43:18.1476|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:43:48.1572|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:44:18.1649|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:44:48.1807|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:45:18.1895|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:45:48.2011|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:46:18.2202|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:46:47.4874|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:46:48.2378|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:47:18.2571|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:47:48.2669|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:48:18.2887|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:48:48.3030|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:2d55aa51 heartbeat successfully sent
+2025-10-22 12:48:54.2980|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 caught stopping signal...
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a567c121 stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:84f698f5 stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:fae3a168 stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:163e1c06 stopped in 0 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3b74dee4 stopped in 3.4732 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:20c7bb4e stopped in 3.1509 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:682bb33f stopped in 5.1138 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:c260a973 stopped in 5.7868 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5f558e15 stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:18becd41 stopped in 0.317 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9b2e5de1 stopped in 6.084 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cc5856b3 stopped in 1.5125 ms
+2025-10-22 12:48:54.3045|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 caught stopped signal...
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5863de10 stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3bf1c8d6 stopped in 0 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c4bfb3f9 stopped in 3.1446 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:45a73a3d stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9fd4748e stopped in 0.3297 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cda33522 stopped in 0 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f9ef1fae stopped in 4.4989 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:73597510 stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d3a4592e stopped in 0 ms
+2025-10-22 12:48:54.3045|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:71e10418 stopped in 3.278 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:bf39f661 stopped in 0.3555 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:e8a33bcb stopped in 1.368 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:70e9aa6f stopped in 0 ms
+2025-10-22 12:48:54.2980|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:500a4fdd stopped in 0 ms
+2025-10-22 12:48:54.3251|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 All dispatchers stopped
+2025-10-22 12:48:54.3251|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:ff8f5710 stopped in 25.2316 ms
+2025-10-22 12:48:54.3251|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 successfully reported itself as stopped in 4.1315 ms
+2025-10-22 12:48:54.3251|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:2d55aa51 has been stopped in total 31.0666 ms
+2025-10-22 12:48:54.3251|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:b6494f56 stopped in 35.5898 ms
+2025-10-22 12:49:11.5850|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2025-10-22 12:49:11.8877|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2025-10-22 12:49:11.9187|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2025-10-22 12:49:11.9187|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2025-10-22 12:49:11.9187|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-10-22 12:49:11.9387|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:f0e103e9 has started in 5.0215 ms
+2025-10-22 12:49:11.9674|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:6659e28f successfully announced in 23.7689 ms
+2025-10-22 12:49:11.9674|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:16b18b75 has started in 1.7558 ms
+2025-10-22 12:49:11.9674|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:6659e28f is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-10-22 12:49:11.9791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:5ff7c4d3 has started in 4.7424 ms
+2025-10-22 12:49:11.9791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:d810bf55 has started in 2.0307 ms
+2025-10-22 12:49:11.9791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:d7b57a2a has started in 3.3491 ms
+2025-10-22 12:49:11.9791|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:3810a444 has started in 4.011 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:613e0b0f has started in 1.6218 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1e3ea85f has started in 4.1694 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d28d6eb1 has started in 6.5419 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c7602f1e has started in 7.6803 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b6c07272 has started in 9.8361 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cf0a4883 has started in 11.1719 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:773e38d9 has started in 12.0688 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cbfb75dd has started in 13.2645 ms
+2025-10-22 12:49:11.9921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9be4a859 has started in 13.7531 ms
+2025-10-22 12:49:12.0092|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:87e423b7 has started in 15.8562 ms
+2025-10-22 12:49:12.0092|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 12:49:12.0092|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:09ed6d0b has started in 20.3255 ms
+2025-10-22 12:49:12.0092|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b1030c7d has started in 23.7154 ms
+2025-10-22 12:49:12.0092|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:52054a88 has started in 28.9734 ms
+2025-10-22 12:49:12.0261|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8fd9deff has started in 32.6738 ms
+2025-10-22 12:49:12.0261|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:322d27f3 has started in 36.0193 ms
+2025-10-22 12:49:12.0261|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0ea2b6a5 has started in 37.6646 ms
+2025-10-22 12:49:12.0261|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:87cdfc90 has started in 39.3978 ms
+2025-10-22 12:49:12.0261|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8b2fd851 has started in 42.2013 ms
+2025-10-22 12:49:12.0261|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8776a459 has started in 44.4024 ms
+2025-10-22 12:49:12.0405|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e7ed01a2 has started in 47.1211 ms
+2025-10-22 12:49:12.0405|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:22d9e62d has started in 1.7465 ms
+2025-10-22 12:49:12.0405|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:08bc7e35 has started in 5.228 ms
+2025-10-22 12:49:12.0405|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:6659e28f all the dispatchers started
+2025-10-22 12:49:12.0695|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 12:49:12.0721|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 12:49:12.0721|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 12:49:41.9872|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:50:12.0030|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:50:42.0119|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:51:12.0286|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:51:42.0347|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:52:12.0544|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:52:42.0596|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:53:12.0746|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:53:42.0899|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:54:12.0259|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:54:12.1050|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:54:42.1124|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:55:12.1243|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:55:42.1314|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:56:12.1375|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:56:42.1608|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:57:12.1714|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:57:42.1901|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:58:12.1924|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:58:42.1992|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:59:12.0449|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 12:59:12.2163|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 12:59:42.2274|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:00:12.2374|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:00:42.2563|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:01:12.2733|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:01:42.2928|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:02:12.3122|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:02:42.3211|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:03:12.3433|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:03:42.3561|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:04:12.0686|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 13:04:12.3686|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:04:42.3991|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:05:12.4117|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:05:42.4291|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:06:12.4459|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:06:42.4633|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:07:12.4664|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:07:42.4816|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:08:12.4987|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:08:42.5172|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:09:12.1034|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 13:09:12.5243|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:09:42.5374|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:10:12.5661|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:10:42.5853|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:11:12.5949|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:11:42.6235|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:12:12.6388|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:12:42.6694|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:13:12.6805|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:13:42.6915|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:14:12.1237|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 13:14:12.7071|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:14:42.7151|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:15:12.7224|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:15:42.7380|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:16:12.7423|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:16:42.7611|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:17:12.7701|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:17:42.7823|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:18:12.8037|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:18:42.8166|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:19:12.0867|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 13:19:12.0867|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 13:19:12.1203|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 13:19:12.1203|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 13:19:12.1336|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 13:19:12.1336|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 13:19:12.8206|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:19:42.8370|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:20:12.8671|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:20:42.8756|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:21:12.8979|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:21:42.9042|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:22:12.9238|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:22:42.9498|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:23:12.9612|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:23:42.9787|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:24:12.1487|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 13:24:13.0112|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:24:43.0239|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:25:13.0396|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:25:43.0539|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:26:13.0696|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:26:43.0821|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 13:27:13.1002|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:11:45.9907|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:12:16.0046|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:12:46.0382|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:13:15.0448|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:13:16.0478|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:13:46.0548|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:14:16.0739|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:14:46.0893|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:15:16.0915|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:15:46.1074|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:16:16.1267|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:16:46.1417|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:17:16.1498|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:17:46.1657|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:18:15.0547|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:18:16.1771|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:18:46.1826|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:19:16.2016|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:19:46.2130|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:20:16.2329|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:20:46.2607|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:21:16.2747|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:21:46.2835|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:22:16.3052|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:22:46.3216|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:23:15.0689|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:23:16.3345|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:23:46.3530|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:24:16.3583|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:24:46.3640|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:25:16.3737|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:25:46.3873|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:26:16.4045|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:26:46.4191|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:27:16.4315|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:27:46.4418|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:28:15.0898|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:28:16.4551|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:28:46.4684|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:29:16.4810|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:29:46.5068|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:30:16.5213|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:30:46.5380|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:31:16.5531|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:31:46.5815|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:32:16.5930|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:32:46.6008|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f heartbeat successfully sent
+2025-10-22 14:39:01.7880|INFO|Hangfire.Server.ServerWatchdog|1 servers were removed due to timeout
+2025-10-22 14:39:01.8284|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 14:39:01.8448|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 14:39:01.8766|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 14:39:01.8917|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 14:39:01.9089|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:39:01.9198|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 14:39:03.4340|WARN|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:6659e28f was considered dead by other servers, restarting...
+2025-10-22 14:39:03.4340|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:6659e28f caught restart signal...
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:d810bf55 stopped in 0 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:773e38d9 stopped in 0 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c7602f1e stopped in 0 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:08bc7e35 stopped in 0.7767 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:22d9e62d stopped in 0.9397 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:87e423b7 stopped in 1.4089 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8776a459 stopped in 1.5736 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8b2fd851 stopped in 1.746 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:87cdfc90 stopped in 2.7254 ms
+2025-10-22 14:39:03.4543|WARN|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:6659e28f stopped non-gracefully due to ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cf0a4883 stopped in 0 ms
+2025-10-22 14:39:03.4643|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:52054a88 stopped in 8.1486 ms
+2025-10-22 14:39:03.4643|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e7ed01a2 stopped in 9.2937 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:09ed6d0b stopped in 0.5976 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:16b18b75 stopped in 2.4974 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:322d27f3 stopped in 0 ms
+2025-10-22 14:39:03.4643|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d28d6eb1 stopped in 7.8902 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1e3ea85f stopped in 0.4873 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9be4a859 stopped in 1.6112 ms
+2025-10-22 14:39:03.4643|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:3810a444 stopped in 9.6953 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cbfb75dd stopped in 2.7826 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8fd9deff stopped in 0 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:5ff7c4d3 stopped in 0 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b6c07272 stopped in 0 ms
+2025-10-22 14:39:03.4643|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:d7b57a2a stopped in 10.0197 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0ea2b6a5 stopped in 2.6583 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b1030c7d stopped in 0.4418 ms
+2025-10-22 14:39:03.4543|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:613e0b0f stopped in 1.4202 ms
+2025-10-22 14:39:03.4899|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:6659e28f successfully reported itself as stopped in 17.471 ms
+2025-10-22 14:39:03.4899|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:6659e28f has been stopped in total 33.7486 ms
+2025-10-22 14:39:03.5021|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:5f2a6bf9 successfully announced in 10.9311 ms
+2025-10-22 14:39:03.5021|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:3b9caa1f has started in 1.2444 ms
+2025-10-22 14:39:03.5021|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:5f2a6bf9 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:6cd6028c has started in 0.837 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:0c56d1d3 has started in 1.1544 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:395e95a4 has started in 0.9172 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:6e71199e has started in 0.7358 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:df4ff9e2 has started in 1.2895 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0e83696e has started in 2.0116 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:45287291 has started in 3.9066 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:650ac426 has started in 4.6891 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:61415e6a has started in 3.4921 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:eb097cb1 has started in 5.6475 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4dde9e70 has started in 7.8811 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3c662a57 has started in 9.2716 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ca7d538c has started in 9.754 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:dc6fb2f8 has started in 10.2128 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cdf30758 has started in 11.3238 ms
+2025-10-22 14:39:03.5088|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:bcb8338a has started in 12.9639 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0baa494c has started in 13.6506 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0f7be113 has started in 14.2636 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:815bc236 has started in 14.9277 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:314c882c has started in 15.7778 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4f773c2a has started in 17.4133 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:46f7f97f has started in 16.5724 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:28d4932c has started in 17.775 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f8073541 has started in 18.6472 ms
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:76ec4ece has started in 1.04 ms
+2025-10-22 14:39:03.5232|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:17532:5f2a6bf9 all the dispatchers started
+2025-10-22 14:39:03.5232|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:7d2c3aec has started in 0.8488 ms
+2025-10-22 14:39:33.5221|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:40:03.5449|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:40:33.5596|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:41:03.5707|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:41:33.5855|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:42:03.5967|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:42:33.6198|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:43:03.6306|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:43:33.6495|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:44:03.5302|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:44:03.6849|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:44:33.6977|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:45:03.7046|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:45:33.7228|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:46:03.7286|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:46:33.7370|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:47:03.7566|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:47:33.7722|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:48:03.7894|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:48:33.8043|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:49:03.5617|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:49:03.8195|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:49:33.8255|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:50:03.8428|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:50:33.8553|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:51:03.8756|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:51:33.8869|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:52:03.9055|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:52:33.9279|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:53:03.9395|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:53:33.9505|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:54:03.6013|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:54:03.9628|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:54:33.9723|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:55:03.9848|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:55:34.0068|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:56:04.0163|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:56:34.0207|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:57:04.0304|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:57:34.0521|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:58:04.0620|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:58:34.0699|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:59:03.6175|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 14:59:04.0870|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 14:59:34.0983|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:00:04.1084|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:00:34.1141|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:01:04.1347|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:01:34.1549|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:02:04.1612|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:02:34.1784|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:03:04.1852|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:03:34.1946|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:04:03.6349|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:04:04.2010|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:04:34.2118|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:05:04.2170|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:05:34.2273|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:06:04.2390|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:06:34.2455|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:07:04.2519|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:07:34.2628|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:08:04.2785|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:08:34.2996|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:09:03.5403|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 15:09:03.5542|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 15:09:03.5724|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 15:09:03.5724|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 15:09:03.5883|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 15:09:03.6525|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:09:04.3141|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:09:34.3282|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:10:04.3376|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:10:34.3540|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:11:04.3782|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:11:34.3924|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:12:04.4145|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:12:34.4263|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:13:04.4349|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:13:34.4382|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:14:03.6786|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:14:04.4463|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:14:34.4613|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:15:04.4680|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:15:34.4795|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:16:04.5001|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:16:34.5141|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:17:04.5337|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:17:34.5441|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:18:04.5602|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:18:34.5687|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:19:03.6913|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:19:04.5889|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:19:34.6069|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:20:04.6195|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:20:34.6374|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:21:04.6479|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:21:34.6675|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:22:04.6915|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:22:34.7075|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:23:04.7235|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:23:34.7430|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:24:03.6972|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:24:04.7587|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:24:34.7718|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:25:04.7768|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:25:34.7930|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:26:04.8104|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:26:34.8272|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:27:04.8334|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:27:34.8456|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:28:04.8625|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:28:34.8694|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:29:03.7171|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:29:04.8864|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:29:34.9056|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:30:04.9268|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:30:34.9353|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:31:04.9432|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:31:34.9529|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:32:04.9632|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:32:34.9753|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:33:04.9869|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:33:34.9960|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:34:03.7258|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:34:05.0094|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:34:35.0268|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:35:05.0416|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:35:35.0556|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:36:05.0649|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:36:35.0715|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:37:05.0796|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:37:35.0932|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:38:05.1077|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:38:35.1206|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:39:03.6093|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 15:39:03.6093|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 15:39:03.6186|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 15:39:03.6186|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 15:39:03.6186|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 15:39:03.7581|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:39:05.1271|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:39:35.1376|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:40:05.1479|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:40:35.1661|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:41:05.1831|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:41:35.1901|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:42:05.2104|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:42:35.2275|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:43:05.2359|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:43:35.2466|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:44:03.7937|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:44:05.2668|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:44:35.2741|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:45:05.2879|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:45:35.3035|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:46:05.3176|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:46:35.3267|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:47:05.3415|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:47:35.3575|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:48:05.3702|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:48:35.3783|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:49:03.8149|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:49:05.3900|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:49:35.3991|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:50:05.4137|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:50:35.4244|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:51:05.4285|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:51:35.4520|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:52:05.4750|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:52:35.4867|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:53:05.4901|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:53:35.5074|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:54:03.8253|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:54:05.5158|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:54:35.5234|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:55:05.5307|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:55:35.5430|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:56:05.5583|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:56:35.5657|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:57:05.5741|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:57:35.5806|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:58:05.6003|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:58:35.6065|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:59:03.8635|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 15:59:05.6213|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 15:59:35.6378|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:00:05.6547|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:00:35.6628|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:01:05.6798|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:01:35.6844|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:02:05.7036|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:02:35.7122|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:03:05.7226|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:03:35.7414|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:04:03.8733|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:04:05.7492|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:04:35.7701|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:05:05.7883|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:05:35.8062|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:06:05.8176|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:06:35.8258|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:07:05.8410|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:07:35.8526|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:08:05.8571|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:08:35.8784|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:09:03.6366|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 16:09:03.6366|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 16:09:03.6541|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 16:09:03.6541|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 16:09:03.6636|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 16:09:03.9028|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:09:05.8884|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:09:35.9075|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:10:05.9221|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:10:35.9439|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:11:05.9587|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:11:35.9703|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:12:05.9867|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:12:35.9973|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:13:06.0106|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:13:36.0206|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:14:03.9106|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:14:06.0322|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:14:36.0453|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:15:06.0592|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:15:36.0714|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:16:06.0837|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:16:36.0936|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:17:06.1123|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:17:36.1192|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:18:06.1348|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:18:36.1480|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:19:03.9181|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:19:06.1627|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:19:36.1739|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:20:06.1945|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:20:36.2080|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:26:48.1137|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:27:18.1574|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:27:48.1685|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:28:18.1731|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:28:48.1853|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:29:18.2029|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:29:45.8282|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:29:48.2195|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:30:18.2296|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:30:48.2485|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:31:18.2601|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:31:48.2687|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:32:18.2858|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:32:48.2912|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:33:18.2955|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:33:48.3025|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:34:18.3207|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:34:45.8382|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:34:48.3304|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:35:18.3415|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:35:48.3616|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:36:18.3667|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:36:48.3810|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:37:18.3885|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:37:48.4046|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:38:18.4297|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:38:48.4428|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:39:18.4571|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:39:45.8494|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:39:48.4704|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:40:18.4880|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:40:48.5017|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:41:18.5156|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:41:48.5270|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:42:18.5437|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:42:48.5549|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:43:18.5652|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:43:48.5759|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:44:18.5997|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:44:45.5712|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 16:44:45.5712|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 16:44:45.6174|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 16:44:45.6326|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 16:44:45.6326|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 16:44:45.8984|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:44:48.6109|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:45:18.6292|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:45:48.6408|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:46:18.6562|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:46:48.6720|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:47:18.6856|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:47:48.6906|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:48:18.7017|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:48:48.7091|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:49:18.7291|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:49:45.9373|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:49:48.7463|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:50:18.7529|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:50:48.7631|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:51:18.7839|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:51:48.7907|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:52:18.8030|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:52:48.8115|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:53:18.8358|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:53:48.8437|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:54:18.8663|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:54:45.9727|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:54:48.8741|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:55:18.8987|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:55:48.9058|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:56:18.9219|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:56:48.9456|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:57:18.9608|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:57:48.9751|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:58:18.9798|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:58:48.9979|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:59:19.0170|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 16:59:46.0028|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 16:59:49.0279|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:00:19.0486|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:00:49.0587|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:01:19.0759|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:01:49.0869|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:02:19.1008|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:02:49.1085|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:03:19.1180|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:03:49.1367|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:04:19.1498|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:04:46.0295|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 17:04:49.1605|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:05:19.1763|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:05:49.1841|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:06:19.2000|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:06:49.2099|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:07:19.2163|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:07:49.2313|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:08:19.2478|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:08:49.2508|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:09:19.2610|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:09:46.0481|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 17:09:49.2718|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:10:19.2922|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:10:49.3106|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:11:19.3221|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:11:49.3371|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:12:19.3560|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:12:49.3732|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:13:19.3871|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:13:49.4018|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:14:19.4192|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:14:45.6577|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-22 17:14:45.6676|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-22 17:14:45.6883|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-22 17:14:45.6883|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-22 17:14:45.6979|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-22 17:14:46.0660|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 17:14:49.4426|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:15:19.4558|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:15:49.4669|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:16:19.4892|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:16:49.5141|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:17:19.5410|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:17:49.5589|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:18:19.5823|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:18:49.6017|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:19:19.6166|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:19:46.0887|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-22 17:19:49.6345|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:20:19.6598|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:20:49.6660|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:21:19.6802|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:21:49.6987|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:22:19.7172|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:22:49.7321|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:23:19.7411|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-22 17:23:49.7570|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:17532:5f2a6bf9 heartbeat successfully sent
+2025-10-31 08:36:52.3206|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2025-10-31 08:36:52.7460|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2025-10-31 08:36:52.8287|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2025-10-31 08:36:52.8287|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2025-10-31 08:36:52.8287|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-10-31 08:36:52.8797|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:cf7ab1d9 has started in 13.1018 ms
+2025-10-31 08:36:53.2460|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:28600:b5a0f3db successfully announced in 360.9167 ms
+2025-10-31 08:36:53.2610|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:e00af92d has started in 4.2582 ms
+2025-10-31 08:36:53.2610|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:28600:b5a0f3db is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-10-31 08:36:53.2610|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:00975150 has started in 1.5312 ms
+2025-10-31 08:36:53.2610|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:c14289e5 has started in 1.4829 ms
+2025-10-31 08:36:53.2610|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:945c3254 has started in 2.0824 ms
+2025-10-31 08:36:53.2776|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-10-31 08:36:53.2776|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:9a0d9fce has started in 5.6354 ms
+2025-10-31 08:36:53.2776|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-31 08:36:53.2776|INFO|Hangfire.Server.ServerWatchdog|1 servers were removed due to timeout
+2025-10-31 08:36:53.2776|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:dc3e12a4 has started in 3.5073 ms
+2025-10-31 08:36:53.2776|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:904b97af has started in 6.7244 ms
+2025-10-31 08:36:53.2925|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:62b953fb has started in 9.9187 ms
+2025-10-31 08:36:53.2925|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9ff3a6ff has started in 15.8819 ms
+2025-10-31 08:36:53.2925|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3c332457 has started in 17.7985 ms
+2025-10-31 08:36:53.2925|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4148dfe7 has started in 19.9771 ms
+2025-10-31 08:36:53.3038|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c36828b7 has started in 22.4164 ms
+2025-10-31 08:36:53.3038|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5a5bdae4 has started in 24.693 ms
+2025-10-31 08:36:53.3038|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:58cf8f4c has started in 27.1763 ms
+2025-10-31 08:36:53.3038|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:006963d4 has started in 32.8865 ms
+2025-10-31 08:36:53.3038|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1389a27c has started in 34.4183 ms
+2025-10-31 08:36:53.3038|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e697381b has started in 37.1154 ms
+2025-10-31 08:36:53.3038|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4e2941c2 has started in 40.4754 ms
+2025-10-31 08:36:53.3243|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cfd8e6aa has started in 44.8509 ms
+2025-10-31 08:36:53.3243|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3ab2c048 has started in 47.8281 ms
+2025-10-31 08:36:53.3243|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b2c924fc has started in 51.4053 ms
+2025-10-31 08:36:53.3243|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d74229f7 has started in 55.3964 ms
+2025-10-31 08:36:53.3407|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8189456c has started in 59.6468 ms
+2025-10-31 08:36:53.3407|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:faab504e has started in 63.7468 ms
+2025-10-31 08:36:53.3407|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:273984d7 has started in 67.4788 ms
+2025-10-31 08:36:53.3407|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:059ffd17 has started in 1.9049 ms
+2025-10-31 08:36:53.3575|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:d89704dd has started in 4.1478 ms
+2025-10-31 08:36:53.3575|INFO|Hangfire.Server.BackgroundServerProcess|Server exceed-kb:28600:b5a0f3db all the dispatchers started
+2025-10-31 08:36:53.3575|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-10-31 08:36:53.4274|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-10-31 08:36:53.4274|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-10-31 08:36:53.4274|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-10-31 08:36:53.8458|DEBUG|Hangfire.Server.RecurringJobScheduler|1 recurring job(s) enqueued.
+2025-10-31 08:37:23.2844|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:37:53.2948|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:38:23.3048|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:38:53.3128|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:39:23.3327|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:39:53.3378|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:40:23.3452|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:40:53.3542|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:41:23.3578|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:41:53.3160|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-31 08:41:53.3646|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:42:23.3880|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:42:53.3920|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:43:23.4048|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:43:53.4169|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:44:23.4308|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:44:53.4440|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:45:23.4545|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:45:53.4640|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:46:23.4801|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:46:53.3288|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-31 08:46:53.5206|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:47:23.5289|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:47:53.5388|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:48:23.5496|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:48:53.5677|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:49:23.5810|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:49:53.5924|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:50:23.6048|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:50:53.6199|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:51:23.6369|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:51:53.3470|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-10-31 08:51:53.6504|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:52:23.6590|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:52:53.6794|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:53:23.7006|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:53:53.7157|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
+2025-10-31 08:54:23.7315|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:28600:b5a0f3db heartbeat successfully sent
