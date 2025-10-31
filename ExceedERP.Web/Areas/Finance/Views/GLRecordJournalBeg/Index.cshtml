@@ -38,7 +38,7 @@
 											  .HtmlAttributes(new { style = "width: 200px;" })
 											  .DataSource(dataSource =>
 											  {
-														dataSource.Read(read => read.Action("GetAllYearsOpenYearSinceBeginning", "GlobalDataProvider", new { area = "Common" }))
+														dataSource.Read(read => read.Action("GetAllYearsOpenYearSinceBeginning", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
 												.ServerFiltering(false);
 													}))
 
@@ -52,7 +52,7 @@
 											  .ValuePrimitive(true)
 											  .DataSource(dataSource =>
 											  {
-														dataSource.Read(read => read.Action("GetFirstPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+														dataSource.Read(read => read.Action("GetFirstPeriods", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery").Data("getFiscalYear"))
 												.ServerFiltering(true);
 													})
 											  .CascadeFrom("yearSelector"))		   
@@ -143,10 +143,10 @@
 
 										  })
 
-										.Read(read => read.Action("GLRecordJournalBegs_Read", "GLRecordJournalBeg"))
-										.Create(create => create.Action("GLRecordJournalBegs_Create", "GLRecordJournalBeg"))
-										.Update(update => update.Action("GLRecordJournalBegs_Update", "GLRecordJournalBeg"))
-										.Destroy(destroy => destroy.Action("GLRecordJournalBegs_Destroy", "GLRecordJournalBeg"))
+										.Read(read => read.Action("GLRecordJournalBegs_Read", "GLRecordJournalBeg").Data("sendForgery"))
+										.Create(create => create.Action("GLRecordJournalBegs_Create", "GLRecordJournalBeg").Data("sendForgery"))
+										.Update(update => update.Action("GLRecordJournalBegs_Update", "GLRecordJournalBeg").Data("sendForgery"))
+										.Destroy(destroy => destroy.Action("GLRecordJournalBegs_Destroy", "GLRecordJournalBeg").Data("sendForgery"))
 									)
 
 )
@@ -321,10 +321,10 @@
 																																						  .Error("error_handler(\"GLRecordJournalBegDistribution#=GLRecordJournalBegId#\")")
 																																						  .RequestStart("onRequestStart(\"GLRecordJournalBegDistribution#=GLRecordJournalBegId#\")")
 																																						  .RequestEnd("onRequestEndWithAddRow(\"GLRecordJournalBegDistribution#=GLRecordJournalBegId#\")"))
-																																					  .Read(read => read.Action("GLRecordJournalBegDistributions_Read", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }))
-																																					  .Create(create => create.Action("GLRecordJournalBegDistributions_Create", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }))
-																																					  .Update(update => update.Action("GLRecordJournalBegDistributions_Update", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }))
-																																					  .Destroy(destroy => destroy.Action("GLRecordJournalBegDistributions_Destroy", "GlRecordJournalBegLines"))
+																																					  .Read(read => read.Action("GLRecordJournalBegDistributions_Read", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }).Data("sendForgery"))
+																																					  .Create(create => create.Action("GLRecordJournalBegDistributions_Create", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }).Data("sendForgery"))
+																																					  .Update(update => update.Action("GLRecordJournalBegDistributions_Update", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }).Data("sendForgery"))
+																																					  .Destroy(destroy => destroy.Action("GLRecordJournalBegDistributions_Destroy", "GlRecordJournalBegLines").Data("sendForgery"))
 																																				  )
 
 																																				  .ToClientTemplate())

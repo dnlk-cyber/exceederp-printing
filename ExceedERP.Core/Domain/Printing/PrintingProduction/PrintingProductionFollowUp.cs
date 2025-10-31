@@ -27,7 +27,12 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         public decimal Quantity { get; set; } // Eg. 10000
         public int Pages { get; set; } // Eg. 200
         public string JobDescription { get; set; } // Eg. Grade 12 Physics Text Book
-        
+
+        //public double PrePressProgress { get; set; }
+        //public double PressProgress { get; set; }
+        //public double PostPressProgress { get; set; }
+
+
     }
     public class PrintingProductionFollowUpTask : Operations
     {

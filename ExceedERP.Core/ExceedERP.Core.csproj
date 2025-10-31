@@ -1230,6 +1230,7 @@
     <Compile Include="Domain\Manufacturing\JobCosting\Setting\FurnitureJCPension.cs" />
     <Compile Include="Domain\Manufacturing\JobCosting\Setting\FurnitureUnit.cs" />
     <Compile Include="Domain\Manufacturing\JobCosting\Setting\FurnitureYearlyOverHeadRate.cs" />
+    <Compile Include="Domain\Manufacturing\OperationResult.cs" />
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\FurnitureChangeOrder.cs" />
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\FurnitureCommon.cs" />
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\FurnitureDelivery.cs" />
@@ -1285,6 +1286,7 @@
     <Compile Include="Domain\Planning\Project\ProjectObjective.cs" />
     <Compile Include="Domain\Planning\Project\ProjectPlan.cs" />
     <Compile Include="Domain\Planning\RiskMitigationPlan.cs" />
+    <Compile Include="Domain\Printing\OperationResult.cs" />
     <Compile Include="Domain\Printing\PrintCostCenter.cs" />
     <Compile Include="Domain\Printing\PrintingBindingStyle.cs" />
     <Compile Include="Domain\Printing\PrintingCostEstimation.cs" />

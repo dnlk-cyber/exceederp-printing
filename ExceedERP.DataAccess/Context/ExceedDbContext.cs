@@ -1898,6 +1898,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.FinishedJobEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DeliveredJobEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DailyLaborRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.PrintingJobSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRSalaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRHourEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderSummaryCostCenterDetailEntityTypeConfiguration());
@@ -2704,6 +2705,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllables { get; set; }
         public DbSet<IdleTimeNonProductiveNonControllable> IdleTimeNonProductiveNonControllables { get; set; }
         public DbSet<JobCost> JobCosts { get; set; }
+        public DbSet<PrintingJobSetting> PrintingJobSetting { get; set; }
         public DbSet<JobChangeOfOrder> JobChangeOfOrders { get; set; }
         public DbSet<JobLaborCost> JobLaborCosts { get; set; }
         public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }

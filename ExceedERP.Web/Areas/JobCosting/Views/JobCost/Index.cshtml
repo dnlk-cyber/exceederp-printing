@@ -1,34 +1,52 @@
 ﻿<legend>Job Cost Setup</legend>
+
+@using ExceedERP.DataAccess.Context
+@{ var db = new ExceedDbContext();
+    bool isFromPrinting = true;
+    var fetchSetting = db.PrintingJobSetting.FirstOrDefault();
+    if(fetchSetting==null||(fetchSetting!=null&&fetchSetting.IsFromPrinting==false))
+    {
+        isFromPrinting = false;
+    }
+}
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobCost>()
                 .Name("grid")
                 .Columns(columns =>
                 {
-                columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrders"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No").Width(100);
-                columns.ForeignKey(c => c.JobCategoryId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(120).Title("Job Category");
-                columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "OrganizationCustomerID", "TradeName")
-                .Width(110)
-                .Title("Customer");
-                columns.Bound(c => c.JobReceivedDate).Width(100).Format("{0:yyyy-MM-dd}");
-                // columns.Bound(c => c.Date);
-                columns.Bound(c => c.ReciptNo).Width(100);
-                columns.Bound(c => c.Quantity).Width(100);
-                columns.Bound(c => c.SellingPrice).Width(100);
-                columns.Bound(c => c.OrderSize).Width(100);
-                // columns.Bound(c => c.Void).Width(100);
-                //columns.Bound(c => c.Description).Width(110);
-                columns.Bound(c => c.Status).Width(100);
+                if (isFromPrinting == false)
+                    {
+            columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrders"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No").Width(100);
+        }
+        if(isFromPrinting==true)
+        {
+            columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrderss"], "PrintingJobOrderId", "JobNo").EditorTemplateName("JobOrders").Title("Job No").Width(100);
+
+        }
+        columns.ForeignKey(c => c.JobCategoryId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(120).Title("Job Category");
+        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "OrganizationCustomerID", "TradeName")
+        .Width(110)
+        .Title("Customer");
+        columns.Bound(c => c.JobReceivedDate).Width(100).Format("{0:yyyy-MM-dd}");
+        // columns.Bound(c => c.Date);
+        columns.Bound(c => c.ReciptNo).Width(100);
+        columns.Bound(c => c.Quantity).Width(100);
+        columns.Bound(c => c.SellingPrice).Width(100);
+        columns.Bound(c => c.OrderSize).Width(100);
+        // columns.Bound(c => c.Void).Width(100);
+        //columns.Bound(c => c.Description).Width(110);
+        columns.Bound(c => c.Status).Width(100);
 
 
-                columns.Command(command =>
-                {
-                command.Edit();
-                command.Destroy();
-                }).Width(180);
-                })
+        columns.Command(command =>
+        {
+            command.Edit();
+            command.Destroy();
+        }).Width(180);
+    })
                 .ToolBar(toolbar =>
                 {
-                toolbar.Create();
-                })
+        toolbar.Create();
+    })
                 .Editable(editable => editable.Mode(GridEditMode.PopUp)
                 .TemplateName("JobCostTemplate")
                 .Window(w=>w.Width(600).Title("Job Cost Form")))
@@ -192,16 +210,30 @@
                         .Name("MaterialCost#=JobCostId#")
                             .Columns(columns =>
                             {
-
-                                columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "Code", "Name").Width(75);
-                                columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75); columns.Bound(c => c.Reference);
+                                if(isFromPrinting==false)
+                                {
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "Code", "Name").Width(75);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75);
+                                }
+                                if (isFromPrinting == true)
+                                {
+                                    //columns.Bound(c => c.MaterialType).Width(75);
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["Category"], "Value", "Text").Width(75);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Item"], "Value", "Text").Width(75);
+                                }
                                 columns.Bound(c => c.Date);
-                                columns.Bound(c => c.Reference);
+                                if (isFromPrinting == false)
+                                {
+                                    columns.Bound(c => c.Reference);
+                                }
                                 columns.Bound(c => c.Quantity).ClientFooterTemplate("\\#=sum\\#");
                                 columns.Bound(c => c.UnitPrice);
-                                columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
-                                columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
-                                columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
+                                if (isFromPrinting == false)
+                                {
+                                    columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
+                                }
                                 columns.Bound(c => c.ItemDescription);
                             })
                         //.ToolBar(toolbar =>
@@ -409,12 +441,11 @@ var quantDDL = $("#Quantity").data("kendoNumericTextBox");
 var sellingPriceDDL = $("#SellingPrice").data("kendoNumericTextBox");
 var jobReceiveDTP  = $("#JobReceivedDate").data("kendoDatePicker");
 quantDDL.value(data.Quantity);
-sellingPriceDDL.value(data.UnitPrice);
+sellingPriceDDL.value(data.SellingPrice);
 jobReceiveDTP.value(data.Date);
 quantDDL.trigger("change");
 sellingPriceDDL.trigger("change");
 jobReceiveDTP.trigger("change");
-
 
 }
 
