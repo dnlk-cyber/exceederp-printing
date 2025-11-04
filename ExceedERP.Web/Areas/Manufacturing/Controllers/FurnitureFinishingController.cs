@@ -11,6 +11,7 @@ using ExceedERP.Core.Domain.Manufacturing.Production;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
+using ExceedERP.Helpers.Furniture;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 {

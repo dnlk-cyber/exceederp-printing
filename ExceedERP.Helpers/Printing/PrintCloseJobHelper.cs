@@ -1,5 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Manufacturing.Production;
+using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -14,35 +16,34 @@ namespace ExceedERP.Helpers.Printing
     {
         
 
-        public static bool GenerateItems(FurnitureJobOrderProduction model, string user)
+        public static OperationResult GenerateItems(PrintingProductionFollowUp model, string user)
         {
             using (var db = new ExceedDbContext())
             {
                 var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.Name.ToLower().Contains("finishedgoods"));
                 if (itemCategory == null)
-                    return false;
-                var jobType = db.FurnitureStandardJobTypes.FirstOrDefault(x => x.FurnitureStandardJobTypeId == model.JobTypeId);
-                if (jobType == null)
-                    return false;
+                    return OperationResult.Fail("Item Category with name Finishedgoods not found! make sure to include it in inventory item");
+               
                 var item = new InventoryItem
                 {
                     ItemCategoryCode = db.ItemCategorys.FirstOrDefault(x => x.Name.ToLower().Contains("finishedgoods"))?.ItemCategoryCode ?? "",
                     SubCategoryCode = "",
-                    ItemCode = model.JobNo,
-                    Name = jobType?.JobTypeName ?? "",
-                    UoMName = model.Unit,
+                    ItemCode = model.PrintingJobOrderItemId.ToString(),
+                    Name = model.PrintJobType.ToString(),
+                    UoMName = "",
 
                 };
                 db.InventoryItems.Add(item);
                 db.SaveChanges();
-                if (!Generate_GoodReceive(model, item, user)) return false;
+                var result = Generate_GoodReceive(model, item, user);
+                if (!result.Success) return result;
 
-                return true;
+                return OperationResult.Ok("");
             }
             
         }
 
-        private static bool Generate_GoodReceive(FurnitureJobOrderProduction productionJob, InventoryItem item, string user)
+        private static OperationResult Generate_GoodReceive(PrintingProductionFollowUp productionJob, InventoryItem item, string user)
         {
             using (var db = new ExceedDbContext())
             {
@@ -57,39 +58,46 @@ namespace ExceedERP.Helpers.Printing
                     SupplierId = "",
                     SupplierName = "",
                     SupplierInvoiceNo = "",
+                    
                 };
                 db.GoodReceives.Add(goodReceive);
                 db.SaveChanges();
-                if (!Generate_GoodReceiveItem(productionJob, item, goodReceive.GoodReceiveId, user)) return false;
-                return true;
+                var result = Generate_GoodReceiveItem(productionJob, item, goodReceive.GoodReceiveId, user);
+                if (!result.Success) return result;
+                return OperationResult.Ok();
             }
             
         }
 
-        private static bool Generate_GoodReceiveItem(FurnitureJobOrderProduction productionJob, InventoryItem item, int id, string user)
+        private static OperationResult Generate_GoodReceiveItem(PrintingProductionFollowUp productionJob, InventoryItem item, int id, string user)
         {
             using(var db = new ExceedDbContext())
             {
-                var jobOrder = db.FurnitureJobOrderForms.FirstOrDefault(x => x.FurnitureJobOrderFormId == productionJob.FurnitureJobOrderFormId);
+                var jobOrderItem = db.PrintingJobOrderItems.FirstOrDefault(x => x.PrintingJobOrderItemId == productionJob.PrintingJobOrderItemId);
+                if (jobOrderItem == null)
+                    return OperationResult.Fail("Job order item not found!");
+                var jobOrder = db.PrintingJobOrders.FirstOrDefault(x => x.PrintingJobOrderId == jobOrderItem.PrintingJobOrderId);
                 if (jobOrder == null)
-                    return false;
-                var JobOrderItem = db.FurnitureJobOrderItems.FirstOrDefault(x => x.JobNo == productionJob.JobNo);
-                if (jobOrder == null)
-                    return false;
-                var glTaxRateId = db.FurnitureProformaInvoices
-                    .FirstOrDefault(x => x.FurnitureProformaInvoiceId == jobOrder.FurnitureProformaInvoiceId)
-                    ?.GLTaxRateID ?? 0;
+                    return OperationResult.Fail("Job Order not found!");
+                //var proformaInvoice = db.PrintingProformaInvoices
+                //    .FirstOrDefault(x => x.PrintingProformaInvoiceId == jobOrder.PrintingProformaInvoiceId);
+
+                var proformaInvoiceItem = db.PrintingProformaInvoiceItems
+                    .SingleOrDefault(x => x.PrintingProformaInvoiceId == jobOrder.PrintingProformaInvoiceId && x.PrintJobType == jobOrderItem.PrintJobType);
+
+                if (proformaInvoiceItem == null) return OperationResult.Fail("Proforma invoice not found!");
+
                 GoodReceiveItem goodReceive = new GoodReceiveItem
                 {
-                    ItemCategoryCode = "",
-                    ItemCode = "",
-                    UOM = JobOrderItem.UnitOfMeasurment,
-                    Quantity = JobOrderItem.Quantity,
-                    UnitPrice = JobOrderItem.UnitPriceBeforeVAT,
-                    GLTaxRateID = glTaxRateId,
-                    SubTotal = JobOrderItem.UnitPriceWithVAT,
-                    TaxAmount = JobOrderItem.VAT,
-                    Total = JobOrderItem.UnitPriceWithVAT * JobOrderItem.Quantity,
+                    ItemCategoryCode = item.ItemCategoryCode,
+                    ItemCode = item.ItemCode,
+                    UOM = item.UoMName,
+                    Quantity = jobOrderItem.Quantity,
+                    UnitPrice = jobOrderItem.UnitPrice,
+                    GLTaxRateID = (int)proformaInvoiceItem.GLTaxRateID,
+                    SubTotal = jobOrderItem.TotalPrice,
+                    TaxAmount = jobOrderItem.VAT,
+                    Total = jobOrderItem.TotalPrice,
                     Specification = "",
                     CreatedBy = user,
                     DateCreated = DateTime.Now,
@@ -97,7 +105,7 @@ namespace ExceedERP.Helpers.Printing
                 };
                 db.GoodReceiveItems.Add(goodReceive);
                 db.SaveChanges();
-                return true;
+                return OperationResult.Ok("");
             }
            
         }

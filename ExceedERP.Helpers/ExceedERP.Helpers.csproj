@@ -164,6 +164,7 @@
     <Compile Include="Fleet\FleetMaintenaceHelper.cs" />
     <Compile Include="Fleet\FleetRentHelper.cs" />
     <Compile Include="Fleet\FleetReportHelper.cs" />
+    <Compile Include="Furniture\FurnitureProductionHelper.cs" />
     <Compile Include="HealthAndInsurance\HealthAndInsuranceIsoDocumentHelper.cs" />
     <Compile Include="HR\HRHelper.cs" />
     <Compile Include="HR\HRMIsoDocumentHelper.cs" />
