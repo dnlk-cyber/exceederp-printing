@@ -1643,6 +1643,7 @@
     <Compile Include="Areas\HRM\Controllers\Severance\SeveranceWithProbabilitiesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Template\TemplateController.cs" />
     <Compile Include="Areas\HRM\Controllers\Template\TemplatesController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Template\TemplateTypeSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Termination\LeaveTerminationController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\DepartmentNeedAssessmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\EducationRequestStatusController.cs" />
@@ -7420,6 +7421,7 @@
     <Content Include="Areas\JobCosting\Views\PrintingJobSetting\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\LotTeamSelfCare\EditorTemplates\BankGuarantee.cshtml" />
     <Content Include="Areas\Procurement\Views\LotTeamSelfCare\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\TemplateTypeSettings\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
