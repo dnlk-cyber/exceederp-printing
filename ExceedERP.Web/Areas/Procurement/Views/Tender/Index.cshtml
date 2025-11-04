@@ -2171,6 +2171,13 @@
 </script>
 <script>
 
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+
 
     function sendToContract(id) {
         var recordStatus = "";
