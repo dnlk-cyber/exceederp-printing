@@ -10,7 +10,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender
     {
         public int TenderEvaluationResultID { get; set; }
         public int LotID { get; set; }
-        public virtual Lot.Lot Lot { get; set; }
+        public virtual Lots.Lot Lot { get; set; }
         public float Financial { get; set; }
         public float Technical { get; set; }
         public PassFailStatus Pass { get; set; }
@@ -70,7 +70,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender
         public string ModelNo { get; set; }
         public PassFailStatus Result { get; set; }
         public int LotID { get; set; }
-        public virtual Lot.Lot Lot { get; set; }
+        public virtual Lots.Lot Lot { get; set; }
         public string Remark { get; set; }
         public int LotItemID { get; set; }//link to lot item
         public string ItemSpecification { get; set; }
@@ -98,7 +98,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender
         public string ModelNo { get; set; }
         public float Result { get; set; }
         public int LotID { get; set; }
-        public Lot.Lot Lot { get; set; }
+        public Lots.Lot Lot { get; set; }
         public int LotItemID { get; set; }//link to lot item
         public string ItemSpecification { get; set; }
     }

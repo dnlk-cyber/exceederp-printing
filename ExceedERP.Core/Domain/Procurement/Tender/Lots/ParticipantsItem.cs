@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Procurement.PR;
 
-namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
+namespace ExceedERP.Core.Domain.Procurement.Tender.Lots
 {
     public class ParticipantsItem
     {
@@ -45,7 +45,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
         public decimal Total { get; set; }
         [Display(Name = "Rebate Amount")]
         public decimal DiscountAmount { get; set; }
-        public virtual Procurement.Tender.Lot.Lot Lot { get; set; }
+        public virtual Lot Lot { get; set; }
         public int LotID { get; set; }
         [DisplayName("Tax Type")]
         public int GLTaxRateID { get; set; }
