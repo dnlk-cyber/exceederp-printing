@@ -2307,6 +2307,9 @@
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedItemSelfServiceController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedSelfServiceController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedValidationSelfServiceController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\SelfCare\Tender\LotTeamDecisionSelfCareController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\SelfCare\Tender\LotTeamMemberSelfCareController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\SelfCare\Tender\LotTeamSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\Proforma\ProformaTeamDecisionSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\Proforma\ProformaTeamMemberSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\Proforma\ProformaTeamSelfCareController.cs" />
@@ -7415,6 +7418,8 @@
     <Content Include="Areas\Printing\Views\PrintingReport\PostPressFollowUp.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\PressFollowUp.cshtml" />
     <Content Include="Areas\JobCosting\Views\PrintingJobSetting\Index.cshtml" />
+    <Content Include="Areas\Procurement\Views\LotTeamSelfCare\EditorTemplates\BankGuarantee.cshtml" />
+    <Content Include="Areas\Procurement\Views\LotTeamSelfCare\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
