@@ -88,10 +88,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
 		public ActionResult StoreRequisitions_Read([DataSourceRequest] DataSourceRequest request)
 		{
-			var user = _userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
-			// var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
-			//int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
-			List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            List<int> employeeIds = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId);
+            //var user = _userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
+            // var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
+            //int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
 			// List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
 
 			//List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
@@ -104,18 +106,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 			{
 				storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
 																	|| userworkunit.Contains(x.CreatedAtOrgStructureId)
-																	|| x.CreatedBy == User.Identity.Name).ToList();
+                                                                    || employeeIds.Contains(x.EmployeeId)
+                                                                    || x.CreatedBy == User.Identity.Name).ToList();
 			}
 
 			else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
 			{
 				storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
 																	|| userworkunit.Contains(x.CreatedAtOrgStructureId)
-																	 || x.CreatedBy == User.Identity.Name).ToList();
+                                                                     || employeeIds.Contains(x.EmployeeId)
+                                                                     || x.CreatedBy == User.Identity.Name).ToList();
 			}
 			else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
 			{
-				storeRequisitions = storeRequisitions.Where(x => x.CreatedBy == User.Identity.Name).ToList();
+				storeRequisitions = storeRequisitions.Where(x => x.CreatedBy == User.Identity.Name || employeeIds.Contains(x.EmployeeId)).ToList();
 			}
 
 
