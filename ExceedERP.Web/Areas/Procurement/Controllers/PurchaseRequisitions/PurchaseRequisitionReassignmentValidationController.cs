@@ -893,7 +893,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
                     #region create lot
 
-                    var lot = new Lot
+                    var lot = new Core.Domain.Procurement.Tender.Lots.Lot
                     {
                         Tender = tender,
                         LotNumber = 1,

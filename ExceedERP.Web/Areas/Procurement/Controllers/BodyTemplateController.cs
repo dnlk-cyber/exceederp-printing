@@ -15,7 +15,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         public ActionResult Index(string id)
         {
             int lotId = int.Parse(id);
-            Lot lot = db.Lots.Find(lotId);
+            Core.Domain.Procurement.Tender.Lots.Lot lot = db.Lots.Find(lotId);
 
             var supplier = lot.BidAwardedSupplier;
             var participantItem = lot.ParticipantsItems;

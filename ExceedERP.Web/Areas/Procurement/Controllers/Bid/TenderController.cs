@@ -586,7 +586,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         public JsonResult GetCriteriaType(string id)
         {
             int lotId = int.Parse(id);
-            Lot lot = _db.Lots.Find(lotId);
+            Core.Domain.Procurement.Tender.Lots.Lot lot = _db.Lots.Find(lotId);
             string result = "None";
             if (lot != null)
             {

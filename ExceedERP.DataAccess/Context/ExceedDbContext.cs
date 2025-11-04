@@ -4106,6 +4106,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BankGuarantee> BankGuarantees { get; set; }
         public DbSet<Tender> Tenders { get; set; }
         public DbSet<Lot> Lots { get; set; }
+        public DbSet<LotTeam> LotTeams { get; set; }
+        public DbSet<LotTeamMember> LotTeamMembers { get; set; }
+        public DbSet<LotTeamDecision> LotTeamDecisions { get; set; }
         public DbSet<BidAwardedSupplier> BidAwardedSuppliers { get; set; }
         public DbSet<BidPParticipatingSuppliers> BidPParticipatingSupplierses { get; set; }
         public DbSet<BidParticipatingSupplierItem> BidParticipatingSupplierItems { get; set; }

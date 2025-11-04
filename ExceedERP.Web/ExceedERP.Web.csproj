@@ -2184,6 +2184,9 @@
     <Compile Include="Areas\Procurement\Controllers\Bid\LotPurchaseRequisitionController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Bid\LotRequiredDocumentController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Bid\LotsController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\Bid\LotTeamController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\Bid\LotTeamDecisionController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\Bid\LotTeamMemberController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Bid\TenderAwardController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Bid\TenderAwardItemController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Bid\TenderBidDocumentController.cs" />

@@ -140,7 +140,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                         break;
                     case GoodReceiveType.Tender:
                         int lotId = int.Parse(serviceReceive.ReceiveRef);
-                        Lot lot = _db.Lots.Find(lotId);
+                        Core.Domain.Procurement.Tender.Lots.Lot lot = _db.Lots.Find(lotId);
                         break;
                 }
             }
