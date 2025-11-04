@@ -21,6 +21,7 @@ using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.Helpers.Common;
 using Microsoft.AspNet.Identity;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {

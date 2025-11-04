@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.HRM.Templates;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using PagedList;
@@ -23,8 +22,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Template
             int pageSize = 2;
             int pageNumber = (page ?? 1);
 
-            var templates = db.Templates.OrderBy(t => t.TemplateId).ToPagedList(pageNumber, pageSize);
+            var templates = db.Templates.ToList()
+                .Select(x=>new Core.Domain.HRM.Templates.Template {
+                                    TemplateId= x.TemplateId,
+                                    TemplateType= x.TemplateType,
+                                    TempOne=x.TempOne,
+                                    Title= x.Title,
+                                    TemplateTypeSettingId=x.TemplateTypeSettingId,
+                                    Document= x.Document,
+                                    CreatedBy=    x.CreatedBy,
+                                    DateCreated = x.DateCreated,
+                                    OrgBranchName = x.OrgBranchName,
+                                    LastModified = x.LastModified,
+                                    ModifiedBy= x.ModifiedBy,
+                                    TemplateTypes = GetTeplateTypeName(x.TemplateTypeSettingId??0),
+                        }).OrderBy(t => t.TemplateId)
+                        .ToPagedList(pageNumber, pageSize);
             return View(templates);
+        }
+        private string GetTeplateTypeName(int id)
+        {
+            return db.TemplateTypeSettings.FirstOrDefault(x => x.TemplateTypeSettingId == id)?.TemplateType;
         }
 
         public ActionResult Details(int? id)
@@ -45,8 +63,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Template
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TemplateId,Title,TempOne,TemplateType,Document")] Core.Domain.HRM.Templates.Template template)
+        public ActionResult Create([Bind(Include = "TemplateId,Title,TempOne,TemplateType,TemplateTypeSettingId,Document")] Core.Domain.HRM.Templates.Template template)
         {
+            template.CreatedBy = User.Identity.Name;
+            template.DateCreated = DateTime.Now;
+            var exist = db.Templates.Any(x => x.TemplateType == template.TemplateType && x.TemplateTypeSettingId == template.TemplateTypeSettingId);
+            if (exist)
+            {
+                ModelState.AddModelError("exist", "this Template type is aready Registerd chage the Template type");
+                return RedirectToAction("Index");
+
+            }
             if (ModelState.IsValid)
             {
                 db.Templates.Add(template);
@@ -66,8 +93,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Template
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "TemplateId,Title,TempOne,TemplateType,Document")] Core.Domain.HRM.Templates.Template template)
+        public ActionResult Edit([Bind(Include = "TemplateId,Title,TempOne,TemplateType,TemplateTypeSettingId,Document")] Core.Domain.HRM.Templates.Template template)
         {
+            template.ModifiedBy = User.Identity.Name;
+            template.LastModified = DateTime.Now;
+            var exist = db.Templates.Any(x => x.TemplateType == template.TemplateType 
+                                            && x.TemplateTypeSettingId == template.TemplateTypeSettingId 
+                                            && x.TemplateId != template.TemplateId);
+            if (exist)
+            {
+                ModelState.AddModelError("exist", "this Template type is aready Registerd chage the Template type");
+                return RedirectToAction("Index");
+
+            }
             if (ModelState.IsValid)
             {
                 db.Entry(template).State = System.Data.Entity.EntityState.Modified;
@@ -95,6 +133,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Template
             return RedirectToAction("Index");
         }
 
+        public JsonResult GetTeplateType()
+        {
+            return Json(db.TemplateTypeSettings.Select(x => new { x.TemplateTypeSettingId, x.TemplateType }), JsonRequestBehavior.AllowGet);
+        }
+      
         protected override void Dispose(bool disposing)
         {
             if (disposing) db.Dispose();

@@ -1664,6 +1664,14 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.TemplateId);
         }
     }
+    public class TemplateTypeSettingEntityTypeConfiguration : EntityTypeConfiguration<TemplateTypeSetting>
+    {
+        public TemplateTypeSettingEntityTypeConfiguration()
+        {
+            this.ToTable("TemplateTypeSettings", "HRM");
+            this.HasKey<int>(o => o.TemplateTypeSettingId);
+        }
+    }
     public class ComplainEntityTypeConfiguration : EntityTypeConfiguration<Complain>
     {
         public ComplainEntityTypeConfiguration()

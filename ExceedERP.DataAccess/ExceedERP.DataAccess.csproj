@@ -761,6 +761,14 @@
     <Compile Include="Migrations\202510291835506_printandfurnituremig.Designer.cs">
       <DependentUpon>202510291835506_printandfurnituremig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511040736206_tendertemmember.cs" />
+    <Compile Include="Migrations\202511040736206_tendertemmember.Designer.cs">
+      <DependentUpon>202511040736206_tendertemmember.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511041008468_TemplateTypesettingAdded.cs" />
+    <Compile Include="Migrations\202511041008468_TemplateTypesettingAdded.Designer.cs">
+      <DependentUpon>202511041008468_TemplateTypesettingAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1283,6 +1291,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510291835506_printandfurnituremig.resx">
       <DependentUpon>202510291835506_printandfurnituremig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511040736206_tendertemmember.resx">
+      <DependentUpon>202511040736206_tendertemmember.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511041008468_TemplateTypesettingAdded.resx">
+      <DependentUpon>202511041008468_TemplateTypesettingAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,86 @@
+﻿@using ExceedERP.Core.Domain.HRM.Templates
+@using ExceedERP.Core.Localization
+@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Template Types Settings </legend>
+@(Html.Kendo().Grid<TemplateTypeSetting>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+
+              columns.Bound(c => c.TemplateTypeSettingId).Title("S.N").Width(100);
+              columns.Bound(c => c.TemplateType).Width(250);
+              columns.Bound(c => c.CreatedBy).Width(150);
+              columns.Bound(c => c.DateCreated).Width(150);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+              })/*.Width(200)*/;
+
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+
+          })
+          .Scrollable(h => h.Height(500))
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+
+          })
+          .Filterable()
+          .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+           .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"grid\")");
+                      events.RequestStart("onRequestStart(\"grid\")");
+                      events.RequestEnd("onRequestEnd(\"grid\")");
+
+                  })
+
+                  .Model(model => {
+                      model.Id(p => p.TemplateTypeSettingId);
+                      model.Field(p => p.TemplateTypeSettingId).Editable(false);
+                      model.Field(p => p.DateCreated).Editable(false);
+                      model.Field(p => p.CreatedBy).Editable(false);
+                  })
+                  .Read(read => read.Action("TemplateTypeSettings_Read", "TemplateTypeSettings").Data("sendForgery"))
+                  .Create(create => create.Action("TemplateTypeSettings_Create", "TemplateTypeSettings").Data("sendForgery"))
+                  .Update(update => update.Action("TemplateTypeSettings_Update", "TemplateTypeSettings").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("TemplateTypeSettings_Destroy", "TemplateTypeSettings").Data("sendForgery"))
+              )
+)
+<script>
+    
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+   
+
+    
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

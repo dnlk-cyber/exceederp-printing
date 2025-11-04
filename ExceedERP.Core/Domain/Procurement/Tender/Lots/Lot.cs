@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 
-namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
+namespace ExceedERP.Core.Domain.Procurement.Tender.Lots
 {
     public class Lot : TrackUserOperation
     {

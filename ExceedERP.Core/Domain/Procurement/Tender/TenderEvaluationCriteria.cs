@@ -11,7 +11,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender
     {
         public int TenderEvaluationCriteriaID { get; set; }
         public int LotID { get; set; }
-        public virtual Lot.Lot Lot { get; set; }
+        public virtual Lots.Lot Lot { get; set; }
         [Required]
         public float Weight { get; set; }
         public string Description { get; set; }
