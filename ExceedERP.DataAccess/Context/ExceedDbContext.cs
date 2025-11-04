@@ -26,7 +26,7 @@ using ExceedERP.Core.Domain.Procurement.ForeignPurchase;
 
 using ExceedERP.Core.Domain.Procurement.Supplier;
 
-using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 using ExceedERP.Core.Domain.Finance.AR.SalesOrder;
 using ExceedERP.Core.Domain.Finance.Budget;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
@@ -131,6 +131,7 @@ using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.Core.Domain.InfoDesk.ChangeManagement;
 using ExceedERP.Core.Domain.CRM.TenderManagement;
+using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -4107,6 +4108,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BankGuarantee> BankGuarantees { get; set; }
         public DbSet<Tender> Tenders { get; set; }
         public DbSet<Lot> Lots { get; set; }
+        public DbSet<LotTeam> LotTeams { get; set; }
+        public DbSet<LotTeamMember> LotTeamMembers { get; set; }
+        public DbSet<LotTeamDecision> LotTeamDecisions { get; set; }
         public DbSet<BidAwardedSupplier> BidAwardedSuppliers { get; set; }
         public DbSet<BidPParticipatingSuppliers> BidPParticipatingSupplierses { get; set; }
         public DbSet<BidParticipatingSupplierItem> BidParticipatingSupplierItems { get; set; }

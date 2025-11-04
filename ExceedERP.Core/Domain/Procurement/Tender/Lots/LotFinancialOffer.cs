@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 
-namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
+namespace ExceedERP.Core.Domain.Procurement.Tender.Lots
 {
-    public class LotEvaluationByDocument : TrackUserOperation
+    public class LotFinancialOffer : TrackUserOperation
     {
-        public int LotEvaluationByDocumentId { get; set; }
+        public int LotFinancialOfferID { get; set; }
         public int LotID { get; set; }
         public virtual Lot Lot { get; set; }
         [Display(Name = "Supplier ID")]//supplier database
@@ -14,10 +14,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
         public bool IsNewSupplier { get; set; }
         [Display(Name = "Supplier Name")]//manual supplier
         public string SupplierName { get; set; }
-        [Display(Name = "Document Type")]
-        public string Document { get; set; }
-        [Display(Name = "Not Available?")]
-        public bool IsAvailable { get; set; }
-        public string Remark { get; set; }
+        public decimal Price { get; set; }
+        public string Description { get; set; }
     }
 }

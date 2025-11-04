@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 
-namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
+namespace ExceedERP.Core.Domain.Procurement.Tender.Lots
 {
     public class BidPurchasingSuppliers : TrackUserOperation
     {

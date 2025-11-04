@@ -5,6 +5,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -27,7 +28,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         public ActionResult PassFailFinancial([DataSourceRequest]DataSourceRequest request ,string id)
         {
             int lotId = int.Parse(id);
-            Lot lot = _db.Lots.Find(lotId);
+            Core.Domain.Procurement.Tender.Lots.Lot lot = _db.Lots.Find(lotId);
             int items = lot.LotItems.Count; 
             int result = lot.TenderPassFailResults.GroupBy(x => x.ItmCode).Select(x => x.FirstOrDefault()).Count();
             if (items != result)

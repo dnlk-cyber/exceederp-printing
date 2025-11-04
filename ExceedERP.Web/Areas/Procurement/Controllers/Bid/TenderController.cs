@@ -19,6 +19,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 {
@@ -585,7 +586,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         public JsonResult GetCriteriaType(string id)
         {
             int lotId = int.Parse(id);
-            Lot lot = _db.Lots.Find(lotId);
+            Core.Domain.Procurement.Tender.Lots.Lot lot = _db.Lots.Find(lotId);
             string result = "None";
             if (lot != null)
             {
