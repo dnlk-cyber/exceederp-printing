@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Printing;
 using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Printing;
 using System;
 using System.Data.Entity;
 using System.Linq;
@@ -299,6 +300,32 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             return Json(response);
         }
+
+        public JsonResult CloseJob(int id)
+        {
+            var model = db.PrintingProductionFollowUps.Find(id);
+            if (model == null)
+            {
+                return Json(new { Success = false, Message = "Job not found." });
+            }
+           
+            var result = PrintCloseJobHelper.GenerateItems(model, User.Identity.Name);
+            if (!result.Success)
+            {
+                return Json(new { Success = false, Message = result.Message });
+            }
+
+            model.IsClosed = true;
+            model.Status = "Closed";
+            db.Entry(model).State = EntityState.Modified;
+            db.SaveChanges();
+            var jobOrderItem = db.PrintingJobOrderItems.FirstOrDefault(x => x.PrintingJobOrderItemId == model.PrintingJobOrderItemId);
+            jobOrderItem.IsClosed = true;
+            db.Entry(jobOrderItem).State = EntityState.Modified;
+            db.SaveChanges();
+            return Json(new { Success = true, Message = "Job closed successfully." });
+        }
+
         #endregion
 
     }

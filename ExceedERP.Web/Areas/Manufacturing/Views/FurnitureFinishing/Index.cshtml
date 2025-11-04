@@ -14,7 +14,7 @@
                   columns.Bound(c => c.DeliveryDate).Width(120);
                   columns.Command(command =>
                   {
-                      command.Custom("approve").Text("Close Job").IconClass("").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleJobClose");
+                      command.Custom("approve").Text(" ").IconClass("fa fa-paper-plane").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleJobClose");
 
                   }).Width(180);
               })

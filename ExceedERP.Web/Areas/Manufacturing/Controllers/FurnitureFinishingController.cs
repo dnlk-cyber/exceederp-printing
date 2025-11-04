@@ -127,8 +127,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 db.Entry(production).State = EntityState.Modified;
                 db.SaveChanges();
 
-                if(!GenerateItems(production))
-                    response = new { Success = false, Message = "Something is wrong!" };
+                var result = FurnitureProductionHelper.GenerateItem(production, User.Identity.Name);
+                if (!result.Success)
+                {
+                    return Json(new { Success = false, Message = result.Message });
+                }
+               
                 response = new { Success = true, Message = "Furniture production closed successfully!" };
 
             }
