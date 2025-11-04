@@ -98,8 +98,8 @@ namespace ExceedERP.Helpers.Common
                     Status = status,
                     Description = description
                 };
-                db.GlobalUserAccessLog.Add(log);
-                db.SaveChanges();
+                //db.GlobalUserAccessLog.Add(log);
+                //db.SaveChanges();
             }
         }
 

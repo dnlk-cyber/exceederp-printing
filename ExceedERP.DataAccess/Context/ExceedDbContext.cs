@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using ExceedERP.Core.Domain.APTS;
 using ExceedERP.Core.Domain.Budget;
@@ -745,7 +745,7 @@ namespace ExceedERP.DataAccess.Context
 
             #endregion
 
-            
+
             #region Performance
 
             modelBuilder.Configurations.Add(new EmployeePerformanceEntityTypeConfiguration());
@@ -754,7 +754,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PerformanceActionEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new EmployeeMeasurementDefinitionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeMeasurementEntityTypeConfiguration());
-           // modelBuilder.Configurations.Add(new EmployeePerformanceActionEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new EmployeePerformanceActionEntityTypeConfiguration());
             #endregion
             #region Recruitment
             modelBuilder.Configurations.Add(new ApplicantRegistrationEntityTypeConfiguration());
@@ -1668,13 +1668,13 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PrintingDailyFollowUpMachineMaintenanceEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new PrintingSummaryCommentEntityTypeCOnfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
-           // modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionFollowUpTaskEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionFollowUpEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingMachineDetailEntityTypeConfiguration());       
-        // modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
-        //modelBuilder.Configurations.Add(new PrintingJobOrderJobDesignEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingMachineDetailEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingJobOrderJobDesignEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionLaborCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionMaterialCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingJobOrderProductionEntityTypeConfiguration());
@@ -1748,7 +1748,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PrintingProductionFinishedGoodsStoreReceiveDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FinishedGoodsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryEntityTypeConfiguration());
-           // modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryItemsEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PFProformaItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusLineItemEntityTypeConfiguration());
             #endregion
@@ -2762,7 +2762,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<QuarterLength> QuarterLengths { get; set; }
         public System.Data.Entity.DbSet<Quarter> Quarters { get; set; }
         public System.Data.Entity.DbSet<DatePreferenceSetting> DatePreferenceSettings { get; set; }
-        #endregion       
+        #endregion
         #region Payroll
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2770,7 +2770,7 @@ namespace ExceedERP.DataAccess.Context
         ///
         /// <value> The over time. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-       
+
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.BonusSetting> BonusSettings { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.OverTime> OverTimes { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.OverTimePerDay> OverTimePerDays { get; set; }
@@ -3053,7 +3053,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<DisciplinaryCase> DisciplinaryCases { get; set; }
         public System.Data.Entity.DbSet<DisciplineMeasuerByMoney> DisciplineMeasuerByMoney { get; set; }
         #endregion
-                
+
 
         #region Self Care
         public System.Data.Entity.DbSet<TrainingApplicant> TrainingApplicants { get; set; }
@@ -3133,9 +3133,9 @@ namespace ExceedERP.DataAccess.Context
         #region APTS
         public System.Data.Entity.DbSet<DrugToTransferTemporaryLists> DrugToTransferTemporaryLists { get; set; }
         public System.Data.Entity.DbSet<DrugStoreTransfer> DrugStoreTransfers { get; set; }
-       // public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
+        // public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
         //public DbSet<LaboratoryTests> LaboratoryTests { get; set; }
-       // public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
+        // public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
         //public DbSet<LaboratoryTestPatientCard> LaboratoryTestPatientCards { get; set; }
         public DbSet<LaboratoryDrugRequest> LaboratoryDrugRequests { get; set; }
         public DbSet<LaboratoryDrugRequestItem> LaboratoryDrugRequestItems { get; set; }
@@ -4639,7 +4639,7 @@ namespace ExceedERP.DataAccess.Context
         #region globals
 
         public DbSet<Notification> Notifications { get; set; }
-        
+
         public DbSet<Core.Domain.Global.GlobalRuleValue> GlobalRuleValues { get; set; }
 
         public DbSet<Core.Domain.Common.DocumentApproval.ApprovalDelegation> ApprovalDelegations { get; set; }
@@ -4651,7 +4651,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Core.Domain.Common.DocumentApproval.AssignApprovalGroupAssignment> AssignApprovalGroupAssignments { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.EmployeeDetail.Freelancer> Freelancers { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Attendance.AttendanceNew> AttendanceNews { get; set; }
-        
+
         #endregion
 
 
@@ -4696,7 +4696,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<SupplierRemoveBlackListValidation> SupplierRemoveBlackListValidations { get; set; }
         public DbSet<GlChartOfAccountCategory> GlChartOfAccountCategories { get; set; }
 
-       
+
 
         public DbSet<Core.Domain.Finance.AP.ApSetupCommonSupplier> ApSetupCommonSuppliers { get; set; }
 

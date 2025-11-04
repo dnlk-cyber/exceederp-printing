@@ -1110,6 +1110,7 @@
     <Compile Include="Domain\Inventory\StoreReturn.cs" />
     <Compile Include="Domain\Inventory\TemporaryGoodReceive.cs" />
     <Compile Include="Domain\Global\GlobalRuleValue.cs" />
+    <Compile Include="Domain\JobCosting\ContratDLR.cs" />
     <Compile Include="Domain\JobCosting\CostCenter.cs" />
     <Compile Include="Domain\JobCosting\DailyLaborRate.cs" />
     <Compile Include="Domain\JobCosting\IdleTime.cs" />
@@ -1127,6 +1128,7 @@
     <Compile Include="Domain\JobCosting\Setting\JCPension.cs" />
     <Compile Include="Domain\JobCosting\Setting\Unit.cs" />
     <Compile Include="Domain\JobCosting\Setting\YearlyOverHeadRate.cs" />
+    <Compile Include="Domain\JobCosting\Tax.cs" />
     <Compile Include="Domain\Maintenance\AdministrativeJobApproval.cs" />
     <Compile Include="Domain\Maintenance\AdvanceMeasure.cs" />
     <Compile Include="Domain\Maintenance\Canibalization.cs" />
