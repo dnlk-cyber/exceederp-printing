@@ -39,9 +39,13 @@
                     <div class="k-card-header">
                         <h5 class="k-card-title">
                             @Html.DisplayFor(modelItem => item.TemplateType)
+                        </h5>    
+                        <h5 class="k-card-title">
+                           Tamplate Type:-@Html.DisplayFor(modelItem => item.TemplateTypes)
                         </h5>
-                    </div><div class="k-card-header">
-                        <h6 class="k-card-title">@Html.DisplayFor(modelItem => item.Title)</h6>
+                    </div>
+                    <div class="k-card-header">
+                        <h5 class="k-card-title">Title:- @Html.DisplayFor(modelItem => item.Title)</h5>
                     </div>
                     <div class="k-card-body">
                         <p>@Html.DisplayFor(modelItem => item.Document)</p>

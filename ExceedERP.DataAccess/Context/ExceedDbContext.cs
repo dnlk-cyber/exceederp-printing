@@ -613,6 +613,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new LeaveReturnEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RetirementSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TemplateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TemplateTypeSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ComplainResponseEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AppealEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CompanyEmailEntityTypeConfiguration());
@@ -3085,6 +3086,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<LeaveReturn> LeaveReturns { get; set; }
         public DbSet<RetirementSetting> RetirementSettings { get; set; }
         public System.Data.Entity.DbSet<Template> Templates { get; set; }
+        public System.Data.Entity.DbSet<TemplateTypeSetting> TemplateTypeSettings { get; set; }
         public System.Data.Entity.DbSet<ExperienceRequest> ExprianceRequests { get; set; }
 
         public System.Data.Entity.DbSet<OverTimeJobResult> OverTimeJobResults { get; set; }
