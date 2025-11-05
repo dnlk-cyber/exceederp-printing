@@ -136,8 +136,8 @@
                                                             columns.Command(command =>
                                                             {
                                                                 command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
-                                                                command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleTaskCheck");
-                                                                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleTaskApprove");
+                                                                command.Custom("checktask").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "checktask", title = "check" }).Click("handleTaskCheck");
+                                                                command.Custom("approvetask").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approvetask", title = "approve" }).Click("handleTaskApprove");
                                                                 command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
                                                             }).Width(180);
                                                         })
@@ -550,21 +550,21 @@
             var dataItem = grid.dataItem(this);
             if (dataItem.IsOnlineApproved) {
                 $(this).find(".k-grid-edit").hide();
-                $(this).find(".k-grid-check").hide();
-                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-checktask").hide();
+                $(this).find(".k-grid-approvetask").hide();
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
             }
             else if (dataItem.IsSendForApproval) {
                 $(this).find(".k-grid-edit").hide();
-                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-checktask").hide();
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-reject").show();
 
-                $(this).find(".k-grid-approve").show();
+                $(this).find(".k-grid-approvetask").show();
             }
             else {
-                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-approvetask").hide();
             }
         });
 

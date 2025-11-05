@@ -14,11 +14,15 @@
                   columns.Bound(c => c.DeliveryDate).Width(120);
                   columns.Command(command =>
                   {
-                      command.Custom("approve").Text(" ").IconClass("fa fa-paper-plane").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleJobClose");
+                      command.Custom("approve").Text(" ").IconClass("fa fa-paper-plane").HtmlAttributes(new { @class = "approve", title = "close" }).Click("handleJobClose");
 
                   }).Width(180);
               })
               .Filterable()
+              .Pageable(pageable => pageable
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
               .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
               .Scrollable(s => s.Height(400))
               .DataSource(dataSource => dataSource
@@ -104,6 +108,7 @@
                               {
                                   columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
 
+                                  columns.Bound(c => c.Remark).Width(100);
                                   columns.Bound(c => c.TransferDate).Width(100);
                                   columns.ForeignKey(c => c.TransfererId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
                                   columns.ForeignKey(c => c.ReceiverId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);

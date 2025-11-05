@@ -74,7 +74,6 @@
                                                     columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
                                                     columns.ForeignKey(c => c.ManifucturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
 
-
                                                     columns.Bound(c => c.DailyProductionPlan);
                                                     columns.Bound(c => c.DailyProductionActual);
 
@@ -238,6 +237,7 @@
                       {
                           columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
 
+                          columns.Bound(c => c.Remark).Width(120);
                           columns.Bound(c => c.TransferDate).Width(120);
                           columns.ForeignKey(c => c.TransfererId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
                           columns.ForeignKey(c => c.ReceiverId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);

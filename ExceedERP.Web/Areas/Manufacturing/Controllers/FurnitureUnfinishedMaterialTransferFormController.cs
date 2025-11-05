@@ -24,42 +24,28 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult FurnitureUnfinishedMaterialTransferForms_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<FurnitureUnfinishedMaterialTransferForm> furnitureunfinishedmaterialtransferforms = db.FurnitureUnfinishedMaterialTransferForms.Where(x => x.FurnitureJobOrderProductionId == id);
-            DataSourceResult result = furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request, furnitureUnfinishedMaterialTransferForm => new FurnitureUnfinishedMaterialTransferForm
-            {
-                FurnitureUnfinishedMaterialTransferFormId = furnitureUnfinishedMaterialTransferForm.FurnitureUnfinishedMaterialTransferFormId,
-                JobTypeId = furnitureUnfinishedMaterialTransferForm.JobTypeId,
-                Quantity = furnitureUnfinishedMaterialTransferForm.Quantity,
-                TransferDate = furnitureUnfinishedMaterialTransferForm.TransferDate,
-                TransfererId = furnitureUnfinishedMaterialTransferForm.TransfererId,
-                ReceiverId = furnitureUnfinishedMaterialTransferForm.ReceiverId,
-                QualityGrade = furnitureUnfinishedMaterialTransferForm.QualityGrade,
-                WorkProgressInPercentage = furnitureUnfinishedMaterialTransferForm.WorkProgressInPercentage,
-                FurnitureJobOrderProductionId = furnitureUnfinishedMaterialTransferForm.FurnitureJobOrderProductionId,
-                IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived,
-                IsSent = furnitureUnfinishedMaterialTransferForm.IsSent
-            });
+            //DataSourceResult result = furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request, furnitureUnfinishedMaterialTransferForm => new FurnitureUnfinishedMaterialTransferForm
+            //{
+            //    FurnitureUnfinishedMaterialTransferFormId = furnitureUnfinishedMaterialTransferForm.FurnitureUnfinishedMaterialTransferFormId,
+            //    JobTypeId = furnitureUnfinishedMaterialTransferForm.JobTypeId,
+            //    Quantity = furnitureUnfinishedMaterialTransferForm.Quantity,
+            //    TransferDate = furnitureUnfinishedMaterialTransferForm.TransferDate,
+            //    TransfererId = furnitureUnfinishedMaterialTransferForm.TransfererId,
+            //    ReceiverId = furnitureUnfinishedMaterialTransferForm.ReceiverId,
+            //    QualityGrade = furnitureUnfinishedMaterialTransferForm.QualityGrade,
+            //    WorkProgressInPercentage = furnitureUnfinishedMaterialTransferForm.WorkProgressInPercentage,
+            //    FurnitureJobOrderProductionId = furnitureUnfinishedMaterialTransferForm.FurnitureJobOrderProductionId,
+            //    IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived,
+            //    IsSent = furnitureUnfinishedMaterialTransferForm.IsSent
+            //});
 
-            return Json(result);
+            return Json(furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request));
         }
         public ActionResult FurnitureUnfinishedMaterialReceive_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<FurnitureUnfinishedMaterialTransferForm> furnitureunfinishedmaterialtransferforms = db.FurnitureUnfinishedMaterialTransferForms.Where(x => x.FurnitureJobOrderProductionId == id && x.IsSent);
-            DataSourceResult result = furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request, furnitureUnfinishedMaterialTransferForm => new FurnitureUnfinishedMaterialTransferForm
-            {
-                FurnitureUnfinishedMaterialTransferFormId = furnitureUnfinishedMaterialTransferForm.FurnitureUnfinishedMaterialTransferFormId,
-                JobTypeId = furnitureUnfinishedMaterialTransferForm.JobTypeId,
-                Quantity = furnitureUnfinishedMaterialTransferForm.Quantity,
-                TransferDate = furnitureUnfinishedMaterialTransferForm.TransferDate,
-                TransfererId = furnitureUnfinishedMaterialTransferForm.TransfererId,
-                ReceiverId = furnitureUnfinishedMaterialTransferForm.ReceiverId,
-                QualityGrade = furnitureUnfinishedMaterialTransferForm.QualityGrade,
-                WorkProgressInPercentage = furnitureUnfinishedMaterialTransferForm.WorkProgressInPercentage,
-                FurnitureJobOrderProductionId = furnitureUnfinishedMaterialTransferForm.FurnitureJobOrderProductionId,
-                IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived,
-                IsSent = furnitureUnfinishedMaterialTransferForm.IsSent
-            });
-
-            return Json(result);
+           
+            return Json(furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -97,7 +83,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     FurnitureJobOrderProductionId = id,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Today,
-                    
+                    Remark = furnitureUnfinishedMaterialTransferForm.Remark
                     
                 };
 
@@ -128,7 +114,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureUnfinishedMaterialTransferForm.DateCreated,
                     CreatedBy = furnitureUnfinishedMaterialTransferForm.CreatedBy,
                     LastModified = DateTime.Today,
-                    ModifiedBy = User.Identity.Name
+                    ModifiedBy = User.Identity.Name,
+                    Remark = furnitureUnfinishedMaterialTransferForm.Remark
                 };
 
                 db.FurnitureUnfinishedMaterialTransferForms.Attach(entity);
@@ -159,7 +146,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     LastModified = furnitureUnfinishedMaterialTransferForm.LastModified,
                     CreatedBy = furnitureUnfinishedMaterialTransferForm.CreatedBy,
                     DateCreated = furnitureUnfinishedMaterialTransferForm.DateCreated,
-                    IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived
+                    IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived,
+                    Remark = furnitureUnfinishedMaterialTransferForm.Remark
                 };
 
                 db.FurnitureUnfinishedMaterialTransferForms.Attach(entity);

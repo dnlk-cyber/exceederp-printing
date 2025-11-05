@@ -125,6 +125,7 @@
                                                   columns.Bound(c => c.Type).EditorTemplateName("Type").Width(100);
                                                   columns.ForeignKey(c => c.TaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120).EditorTemplateName("TaskCategoryTemplate").Width(100);
 
+                                                  columns.Bound(c => c.DailyProductionPlan).Width(120);
                                                   columns.Bound(c => c.TaskAssignedDate).Width(120);
                                                   columns.Bound(c => c.TaskEndDate).Width(100);
 

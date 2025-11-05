@@ -102,7 +102,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 var jobOrder = db.FurnitureJobOrderForms.FirstOrDefault(x => x.FurnitureJobOrderFormId == production.FurnitureJobOrderFormId);
                 var jobItems = db.FurnitureJobOrderItems.Where(x => x.FurnitureJobOrderFormId == jobOrder.FurnitureJobOrderFormId).ToList();
-
+                var result = FurnitureProductionHelper.GenerateItem(production, User.Identity.Name);
+                if (!result.Success)
+                {
+                    return Json(new { Success = false, Message = result.Message });
+                }
                 int i = 1;
                 foreach (var item in jobItems)
                 {
@@ -128,11 +132,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 db.Entry(production).State = EntityState.Modified;
                 db.SaveChanges();
 
-                var result = FurnitureProductionHelper.GenerateItem(production, User.Identity.Name);
-                if (!result.Success)
-                {
-                    return Json(new { Success = false, Message = result.Message });
-                }
+                
                
                 response = new { Success = true, Message = "Furniture production closed successfully!" };
 

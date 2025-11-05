@@ -47,28 +47,28 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var model = db.PrintingProductionFollowUpTasks.Find(id);
             if (model != null)
             {
-                var printingFollowup = db.PrintingProductionFollowUps.FirstOrDefault(x => x.PrintingProductionFollowUpId == model.PrintingProductionFollowUpId);
-                if (printingFollowup == null)
-                {
-                    response = new { Success = false, Message = "Something's Wrong!" };
-                }
-                var tasks = db.PrintingProductionFollowUpTasks
-                        .Where(x => x.PrintingProductionFollowUpId == printingFollowup.PrintingProductionFollowUpId)
-                        .AsNoTracking()
-                        .ToList();
-                if (model.PressCategory == PressCategory.PrePress)
-                {
+                //var printingFollowup = db.PrintingProductionFollowUps.FirstOrDefault(x => x.PrintingProductionFollowUpId == model.PrintingProductionFollowUpId);
+                //if (printingFollowup == null)
+                //{
+                //    response = new { Success = false, Message = "Something's Wrong!" };
+                //}
+                //var tasks = db.PrintingProductionFollowUpTasks
+                //        .Where(x => x.PrintingProductionFollowUpId == printingFollowup.PrintingProductionFollowUpId)
+                //        .AsNoTracking()
+                //        .ToList();
+                //if (model.PressCategory == PressCategory.PrePress)
+                //{
 
-                    //printingFollowup.PrePressProgress == 0 ? 0 : (100 * tasks.Count)
-                }
-                else if (model.PressCategory == PressCategory.Press)
-                {
-                    //printingFollowup.PressProgress
-                }
-                else
-                {
-                    //printingFollowup.PostPressProgress
-                }
+                //    //printingFollowup.PrePressProgress == 0 ? 0 : (100 * tasks.Count)
+                //}
+                //else if (model.PressCategory == PressCategory.Press)
+                //{
+                //    //printingFollowup.PressProgress
+                //}
+                //else
+                //{
+                //    //printingFollowup.PostPressProgress
+                //}
 
                 model.IsOnlineApproved = true;
                 model.OnlineApprovedBy = User.Identity.Name;
