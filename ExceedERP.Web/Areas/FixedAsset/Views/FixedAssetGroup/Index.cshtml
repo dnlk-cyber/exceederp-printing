@@ -9,9 +9,12 @@
       {
           columns.Bound(c => c.Name).Width(200);
           columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.DepreciationMethod).Width(150);
           columns.Bound(c => c.PoolingPercentage).Width(150);
-          columns.Bound(c => c.StraightLinePercentage).Width(150);
+          columns.Bound(c => c.StraightLinePercentage).Width(160);
+          columns.Bound(c => c.IfrsPercentage).Width(160);
           columns.Bound(c => c.SalvageValue).Width(100);
+          columns.Bound(c => c.SalvageValueType).Width(100);
         
           columns.Command(command =>
           {
@@ -52,8 +55,8 @@
               .RequestStart("onRequestStart(\"grid\")")
               .RequestEnd("onRequestEnd(\"grid\")"))
           .Model(model => model.Id(p => p.FixedAssetGroupID))
-          .Read(read => read.Action("FixedAssetGroups_Read", "FixedAssetGroup"))
-          .Create(create => create.Action("FixedAssetGroups_Create", "FixedAssetGroup"))
-          .Update(update => update.Action("FixedAssetGroups_Update", "FixedAssetGroup"))
-          .Destroy(destroy => destroy.Action("FixedAssetGroups_Destroy", "FixedAssetGroup"))
+          .Read(read => read.Action("FixedAssetGroups_Read", "FixedAssetGroup").Data("sendForgery"))
+          .Create(create => create.Action("FixedAssetGroups_Create", "FixedAssetGroup").Data("sendForgery"))
+          .Update(update => update.Action("FixedAssetGroups_Update", "FixedAssetGroup").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("FixedAssetGroups_Destroy", "FixedAssetGroup").Data("sendForgery"))
       ))

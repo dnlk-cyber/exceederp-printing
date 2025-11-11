@@ -773,6 +773,10 @@
     <Compile Include="Migrations\202511051350078_printfurniture-mig.Designer.cs">
       <DependentUpon>202511051350078_printfurniture-mig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511111327311_fixedassetgroupmodif.cs" />
+    <Compile Include="Migrations\202511111327311_fixedassetgroupmodif.Designer.cs">
+      <DependentUpon>202511111327311_fixedassetgroupmodif.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1304,6 +1308,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511051350078_printfurniture-mig.resx">
       <DependentUpon>202511051350078_printfurniture-mig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511111327311_fixedassetgroupmodif.resx">
+      <DependentUpon>202511111327311_fixedassetgroupmodif.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
