@@ -38,14 +38,15 @@
               columns.Bound(c => c.InvoiceNo).Width(110);
               columns.Bound(c => c.PurchaseRequestNo).Width(100);
               columns.Bound(c => c.PONo).Width(150);
-              columns.Bound(c => c.GRN);
-              columns.Bound(c => c.Remark);
+              columns.Bound(c => c.GRN).Width(100);
+              columns.Bound(c => c.Remark).Width(100);
+              columns.Bound(c => c.Status).Width(150);
               columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(190);
           })
           .ToolBar(toolbar =>
           {
-  //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-})
+              //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
           .Editable(editable => editable.Mode(GridEditMode.InLine))
           .Scrollable(h => h.Height(500))
 
