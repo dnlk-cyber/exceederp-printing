@@ -46,25 +46,27 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                        .Name("tab_#=PrintingJobOrderProductionId#")
-                                                        .Items(item1 =>
-                                                        {
-                                                            item1.Add().Text("Material").Content(
-                                                            @<text>
-                                                                <a href='@Url.Action("PrintJobCard", "PrintingReport")/?id=#=PrintingJobOrderProductionId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                                .Name("tab_#=PrintingJobOrderProductionId#")
+                                                                .Items(item1 =>
+                                                                {
+                                                                    item1.Add().Text("Material").Content(
+                                                                    @<text>
+                                                                        <a href='@Url.Action("PrintJobCard", "PrintingReport")/?id=#=PrintingJobOrderProductionId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                                                                @material()
-                                                            </text>);
-                                                        @*item1.Add().Text("Labor Cost").Content(
-                                                            @<text>
-                                                                @labor()
-                                                            </text>);*@
-                                                        @*item1.Add().Text("Store Requisition").Content(
-                                                            @<text>
-                                                                @StoreRequisition()
-                                                            </text>);*@
-                                                                item1.Add().Text("Documents").Content(
+                                                                        @material()
+                                                                    </text>);
+                                                                @*item1.Add().Text("Labor Cost").Content(
+                                                                    @<text>
+                                                                        @labor()
+                                                                    </text>);*@
+                                                                @*item1.Add().Text("Store Requisition").Content(
+                                                                    @<text>
+                                                                        @StoreRequisition()
+                                                                    </text>);*@
+                                                                            item1.Add().Text("Documents").Content(
                                                 @<text>
+                                                    <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=PrintingJobOrderProductionId#)" />
+
                                                     @BoqDocs()
                                                 </text>);
                                                                 }).ToClientTemplate())
@@ -150,8 +152,7 @@
                                 {
                                     columns.Bound(c => c.FileName).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderProductionJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
                                     columns.Bound(c => c.Description);
-                                    columns.Template(e => { }).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderProductionJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
-                    
+                                    columns.Template(e => { }).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderProductionJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");                    
                                 })
                                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
                                
@@ -918,7 +919,7 @@
     function UploadCompanyFile() {
 
             $.ajax({
-                url: '@Url.Action("UploadCompanyFile", "PrintingProductionDesgin")',
+                url: '@Url.Action("UploadCompanyFile", "PrintingProductionDesgin", new { Area = "Printing"})',
                 //contentType: "application/json; charset=utf-8",
                 data: function () {
                     var data = new FormData();

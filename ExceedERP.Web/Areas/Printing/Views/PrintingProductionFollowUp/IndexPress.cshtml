@@ -29,7 +29,7 @@
                                 {
                                     command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupCheck");
                                     command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupApprove");
-                                    command.Custom("reject").Text(" ").IconClass("fa fa-thumbs-o-down").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleReject");
+                                    command.Custom("reject").Text(" ").IconClass("fa fa-thumbs-o-down").HtmlAttributes(new { @class = "reject", title = "reject" }).Click("handleReject");
                                 }).Width(220);
                             })
 

@@ -46,6 +46,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 {
                     vm.PrintJobVms.Add(new PrintJobVm
                     {
+                        JobNo = item.PrintingJobOrderItemId.ToString(),
                         JobType = item.PrintJobType.ToString(),
                         Quantity = item.Quantity,
                         TotalCost = item.TotalPrice 

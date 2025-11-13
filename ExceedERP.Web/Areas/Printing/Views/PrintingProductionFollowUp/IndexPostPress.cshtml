@@ -30,8 +30,9 @@
 
                                         command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupCheck");
                                         command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupApprove");
-                                        command.Custom("reject").Text(" ").IconClass("fa fa-thumbs-o-down").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleReject");
-                                        command.Custom("close").Text(" ").IconClass("fa fa-paper-plane").HtmlAttributes(new { @class = "approve", title = "close" }).Click("handleClose");
+                                        command.Custom("reject").Text(" ").IconClass("fa fa-thumbs-o-down").HtmlAttributes(new { @class = "approve", title = "reject" }).Click("handleReject");
+                                        command.Custom("revert").Text("Revert").IconClass("fa fa-arrow").HtmlAttributes(new { @class = "revert", title = "revert" }).Click("handleRevert");
+                                        command.Custom("close").Text("Close").IconClass("fa fa-paper-plane").HtmlAttributes(new { @class = "approve", title = "approve and close" }).Click("handleClose");
                                     }).Width(220);
                                 })
 
@@ -498,6 +499,7 @@
                 $(this).find(".k-grid-approve").show();
                 $(this).find(".k-grid-reject").show();
                 $(this).find(".k-grid-close").hide();
+                $(this).find(".k-grid-revert").show();
             }
             // if approved
             else if (dataItem.IsPostPressApproved) {
@@ -505,13 +507,17 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-close").show();
+                $(this).find(".k-grid-revert").show();
+
             }
             // if rejected
             else if (dataItem.IsVoid) {
                 $(this).find(".k-grid-check").show();
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
-                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-close").hide();
+                $(this).find(".k-grid-revert").hide();
+
             }
             // otherwise
             else {
@@ -519,6 +525,8 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-check").show();
                 $(this).find(".k-grid-close").hide();
+                $(this).find(".k-grid-revert").hide();
+
             }
 
         });
@@ -656,6 +664,30 @@
                     if (result.Success) {
                         toastr.success(result.Message)
                         $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+    function handleRevert(e) {
+        if (confirm("Are you sure you want tot revert the process")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RevertProcess", "CheckAndApproval", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingProductionFollowUpId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read(); 
                     }
                     else {
                         toastr.error(result.Message)

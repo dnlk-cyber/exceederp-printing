@@ -21,12 +21,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         #region Followup Task
         public JsonResult CheckFollowupTask(int id)
         {
-            
+
             Object response = null;
             var model = db.PrintingProductionFollowUpTasks.FirstOrDefault(x => x.PrintingProductionFollowUpTaskId == id);
             if (model != null)
             {
-                
+
                 model.IsSendForApproval = true;
                 model.SendForApprovalBy = User.Identity.Name;
                 model.SendForApprovalTime = DateTime.Today;
@@ -74,8 +74,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.OnlineApprovedBy = User.Identity.Name;
                 model.OnlineApprovedTime = DateTime.Now;
                 db.Entry(model).State = EntityState.Modified;
-                db.SaveChanges();            
-                response = new { Success = true, Message = "Successfully Approved" };               
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Approved" };
             }
             else
             {
@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 model.IsOnlineApproved = false;
                 model.IsSendForApproval = false;
-               
+
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Rejected" };
@@ -289,6 +289,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.IsVoid = true;
                 model.IsPostPressChecked = false;
                 model.IsPostPressApproved = false;
+              
                 model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
@@ -301,6 +302,29 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(response);
         }
 
+        public JsonResult RevertProcess(int id)
+        {
+            Object response = null;
+            var model = db.PrintingProductionFollowUps.Find(id);
+            if (model != null)
+            {
+                model.IsVoid = true;
+                model.IsPostPressChecked = false;
+                model.IsPostPressApproved = false;
+                model.IsPressApproved = false;
+                model.IsPressChecked = false;
+                model.Status = "Process Reverted!";
+                model.PrintingOperationStatus = PrintingOperationStatus.Reverted;
+                db.Entry(model).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Reverted" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something's Wrong!, Not Found!" };
+            }
+            return Json(response);
+        }
         public JsonResult CloseJob(int id)
         {
             var model = db.PrintingProductionFollowUps.Find(id);
@@ -308,7 +332,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 return Json(new { Success = false, Message = "Job not found." });
             }
-           
+
             var result = PrintCloseJobHelper.GenerateItems(model, User.Identity.Name);
             if (!result.Success)
             {

@@ -16,6 +16,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
     }
     public class PrintJobVm
     {
+        public string JobNo { get; set; }
         public string JobType { get; set; }
         public decimal Quantity { get; set; }
         public decimal TotalCost { get; set; }
