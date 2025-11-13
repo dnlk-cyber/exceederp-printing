@@ -1320,6 +1320,7 @@
     <Compile Include="Domain\Printing\PrintingProduction\PrintingProductionFollowUp.cs" />
     <Compile Include="Domain\Printing\PrintingProductProcess.cs" />
     <Compile Include="Domain\Printing\PrintingProformaInvoice.cs" />
+    <Compile Include="Domain\Printing\PrintingQualityInspection.cs" />
     <Compile Include="Domain\Printing\PrintItemCategory.cs" />
     <Compile Include="Domain\Printing\PrintLabourRate.cs" />
     <Compile Include="Domain\Printing\PrintMachinePaperList.cs" />

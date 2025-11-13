@@ -16,9 +16,8 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         PressCompleted = 4,
         PostPressInProgress = 5,
         PostPressCompleted = 6,
-        Finished = 7,
-        Shipped = 8,
-        Reverted = 9
+        Reverted = 7, 
+        Closed = 8
     }
     public class PrintingCommon : Operations
     { 

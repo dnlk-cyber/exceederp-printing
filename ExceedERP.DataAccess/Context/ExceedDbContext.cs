@@ -1659,6 +1659,7 @@ namespace ExceedERP.DataAccess.Context
 
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingQualityInspectionEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingTaskIssueEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
@@ -2479,6 +2480,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingQualityInspection> PrintingQualityInspections { get; set; }
         public DbSet<PrintingTaskIssue> PrintingTaskIssues { get; set; }
         public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
         public DbSet<PrintingDailyFollowUpLogBook> PrintingDailyFollowUpLogBooks { get; set; }

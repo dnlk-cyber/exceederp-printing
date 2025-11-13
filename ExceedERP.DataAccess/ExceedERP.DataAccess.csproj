@@ -777,6 +777,10 @@
     <Compile Include="Migrations\202511111327311_fixedassetgroupmodif.Designer.cs">
       <DependentUpon>202511111327311_fixedassetgroupmodif.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511131052447_printqualityinspection.cs" />
+    <Compile Include="Migrations\202511131052447_printqualityinspection.Designer.cs">
+      <DependentUpon>202511131052447_printqualityinspection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1311,6 +1315,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511111327311_fixedassetgroupmodif.resx">
       <DependentUpon>202511111327311_fixedassetgroupmodif.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511131052447_printqualityinspection.resx">
+      <DependentUpon>202511131052447_printqualityinspection.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,6 +7,14 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingQualityInspectionEntityTypeConfiguration : EntityTypeConfiguration<PrintingQualityInspection>
+    {
+        public PrintingQualityInspectionEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingQualityInspection", "Printing");
+            this.HasKey<int>(p => p.PrintingQualityInspectionId);
+        }
+    }
     public class PrintingDailyFollowUpMachineMaintenanceEntityTypeConfiguration : EntityTypeConfiguration<PrintingDailyFollowUpMachineMaintenance>
     {
 
