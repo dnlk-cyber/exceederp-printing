@@ -4063,6 +4063,7 @@
     <Compile Include="Printing\DataSource\PrintJobCardOds.cs" />
     <Compile Include="Printing\DataSource\PrintJobFollowUpOds.cs" />
     <Compile Include="Printing\DataSource\PrintParameterOds.cs" />
+    <Compile Include="Printing\DataSource\PrintProgressReportOds.cs" />
     <Compile Include="Printing\DataSource\PrintTotalProductionCostReportOds.cs" />
     <Compile Include="Printing\Design\JobOrderDesign.cs">
       <SubType>Component</SubType>
@@ -4112,6 +4113,12 @@
     <Compile Include="Printing\Design\PrintProductionFollowUp.Designer.cs">
       <DependentUpon>PrintProductionFollowUp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\Design\PrintProductionProgrss.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintProductionProgrss.Designer.cs">
+      <DependentUpon>PrintProductionProgrss.cs</DependentUpon>
+    </Compile>
     <Compile Include="Printing\Design\PrintSummaryDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4126,6 +4133,7 @@
     <Compile Include="Printing\ViewModel\PrintingJobOrderViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingProformaViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintJobFollowUpViewModel.cs" />
+    <Compile Include="Printing\ViewModel\PrintProdProgressViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintSummaryHeadVM.cs" />
     <Compile Include="Printing\ViewModel\PrintTotalProductionCostViewModel.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
@@ -6231,6 +6239,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintProductionFollowUp.resx">
       <DependentUpon>PrintProductionFollowUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintProductionProgrss.resx">
+      <DependentUpon>PrintProductionProgrss.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintSummaryDesign.resx">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>

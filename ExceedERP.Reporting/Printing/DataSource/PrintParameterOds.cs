@@ -34,7 +34,15 @@ namespace ExceedERP.Reporting.Printing.DataSource
                        })
                        .ToList();
         }
-
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<ParameterVM> GetJobNo()
+        {
+            return db.PrintingProductionFollowUps.Select(s => new ParameterVM
+            {
+                Text = s.PrintingJobOrderItemId.ToString() + "-" + s.PrintJobType.ToString(),
+                Value = s.PrintingJobOrderItemId.ToString()
+            }).ToList();
+        }
     }
 
 }

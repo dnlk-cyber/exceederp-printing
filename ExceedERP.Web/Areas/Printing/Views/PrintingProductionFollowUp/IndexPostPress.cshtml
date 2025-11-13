@@ -141,7 +141,7 @@
                                                                 .TemplateName("QualityInspection"))
                                                                 .Filterable()
                                                                 .Pageable()
-                                                                //.Events(e => e.DataBound("detailDataBound"))
+                                                                .Events(e => e.DataBound("detailDataBoundQ"))
                                                                 .Scrollable(s => s.Height(400))
                                                                 
                                                                 .DataSource(dataSource => dataSource
@@ -587,10 +587,14 @@
         codeid = masterDataItem.PrintingProductionFollowUpId;
         isApproved = masterDataItem.IsPostPressApproved;
         isChecked = masterDataItem.IsPostPressChecked;
+        isClosed = masterDataItem.IsClosed;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#followup" + codeid).hide();
+            if (isClosed) {
+                $(".k-grid-add", "#quality" + codeid).hide();
+            }
         }
-
+        
 
     }
 
@@ -617,6 +621,19 @@
             else {
                 $(this).find(".k-grid-approvetask").hide();
             }
+        });
+
+    }
+    function detailDataBoundQ(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+           
+            if (isClosed) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            
         });
 
     }

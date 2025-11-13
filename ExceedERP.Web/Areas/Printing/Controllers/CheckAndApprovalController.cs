@@ -40,7 +40,13 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             return Json(response);
         }
-
+        private void UpdateStatus(int id, PrintingOperationStatus printingOperationStatus)
+        {
+            var entity = db.PrintingProductionFollowUps.FirstOrDefault(x => x.PrintingProductionFollowUpId == id);
+            entity.PrintingOperationStatus = printingOperationStatus;
+            db.Entry(entity).State = EntityState.Modified;
+            db.SaveChanges();
+        }
         public JsonResult ApproveFollowupTask(int id)
         {
             Object response = null;

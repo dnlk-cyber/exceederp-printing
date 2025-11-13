@@ -7424,6 +7424,7 @@
     <Content Include="Areas\Procurement\Views\LotTeamSelfCare\Index.cshtml" />
     <Content Include="Areas\HRM\Views\TemplateTypeSettings\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\QualityInspection.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\PrintProgressReport.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

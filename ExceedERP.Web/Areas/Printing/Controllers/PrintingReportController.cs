@@ -61,5 +61,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             return View();
         }
+        public ActionResult PrintProgressReport()
+        {
+            return View();
+        }
     }
 }
