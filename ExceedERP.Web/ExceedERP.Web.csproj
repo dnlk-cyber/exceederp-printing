@@ -2110,6 +2110,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionAllottedRawMaterialController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionDailyFollowUpDetailController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductionDesginController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionFollowUpController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionFollowUpTaskController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductProcessController.cs" />
