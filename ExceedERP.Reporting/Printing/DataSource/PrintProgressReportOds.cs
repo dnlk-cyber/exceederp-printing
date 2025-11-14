@@ -23,6 +23,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 if (followUp != null)
                 {
                     var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == followUp.CustomerId);
+                    var jobOrder = db.PrintingJobOrderProductions.FirstOrDefault(x => x.PrintingJobOrderItemId == followUp.PrintingJobOrderItemId);
                     var entity = new PrintProdProgressViewModel
                     {
                         JobNo = followUp.PrintingJobOrderItemId.ToString(),
@@ -31,7 +32,9 @@ namespace ExceedERP.Reporting.Printing.DataSource
                         JobDesc = followUp.JobDescription,
                         JobType = followUp.PrintJobType.ToString(),
                         Page = followUp.Pages,
-                        Quantity = followUp.Quantity
+                        Quantity = followUp.Quantity,
+                        StartDate = jobOrder.DateOrdered,
+                        DeliveryDate = jobOrder?.DeliveryDate ?? DateTime.Today
                     };
                     return entity;
                 }

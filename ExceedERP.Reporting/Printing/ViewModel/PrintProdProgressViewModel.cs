@@ -16,5 +16,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public int Page { get; set; }
         public string JobDesc { get; set; }
         public string CurrentStatus { get; set; }
+        public DateTime DeliveryDate { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }
