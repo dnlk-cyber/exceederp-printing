@@ -13,6 +13,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public List<PrintJobVm> PrintJobVms { get; set; }
         public decimal TotalQuantity => PrintJobVms?.Sum(s => s.Quantity) ?? 0;
         public decimal TotalCost => PrintJobVms?.Sum(s => s.TotalCost) ?? 0;
+        
     }
     public class PrintJobVm
     {
@@ -20,5 +21,6 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public string JobType { get; set; }
         public decimal Quantity { get; set; }
         public decimal TotalCost { get; set; }
+        
     }
 }

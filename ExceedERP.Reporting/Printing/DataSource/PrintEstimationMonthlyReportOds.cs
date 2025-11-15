@@ -35,7 +35,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 var vm = new PrintEstimationMonthlyReportViewModel
                 {
                     CustomerName = customer?.TradeName ?? "",
-                    PrintJobVms = new List<PrintJobVm>()
+                    PrintJobVms = new List<PrintJobVm>(),
                 };
 
                 var items = db.PrintingJobOrderItems
@@ -49,7 +49,8 @@ namespace ExceedERP.Reporting.Printing.DataSource
                         JobNo = item.PrintingJobOrderItemId.ToString(),
                         JobType = item.PrintJobType.ToString(),
                         Quantity = item.Quantity,
-                        TotalCost = item.TotalPrice 
+                        TotalCost = item.TotalPrice,
+                       
                     });
                 }
 
@@ -58,5 +59,6 @@ namespace ExceedERP.Reporting.Printing.DataSource
 
             return list.ToList();
         }
+
     }
 }
