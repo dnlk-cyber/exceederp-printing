@@ -784,6 +784,7 @@
     <Compile Include="Domain\Global\GlobalDeleteLog.cs" />
     <Compile Include="Domain\Global\GlobalUserAccessRecord.cs" />
     <Compile Include="Domain\Global\GobalEnums.cs" />
+    <Compile Include="Domain\GobalEnums.cs" />
     <Compile Include="Domain\Health\Diagnosis.cs" />
     <Compile Include="Domain\Health\HealthApprovalSetting.cs" />
     <Compile Include="Domain\Health\HealthBenefitSetting.cs" />
