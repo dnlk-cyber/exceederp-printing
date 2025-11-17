@@ -346,6 +346,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
 
             model.IsClosed = true;
+            model.ClosedBy = User.Identity.Name;
+            model.DateClosed = DateTime.Today;
             model.Status = "Closed";
             db.Entry(model).State = EntityState.Modified;
             db.SaveChanges();

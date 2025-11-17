@@ -77,6 +77,10 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     //PostPressCreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
                     PostPressApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PostPressApprovedBy),
                     PostPressCheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PostPressCheckedBy),
+
+                    PostPressClosedBy = productionFollowUp.ClosedBy,
+                    PostPressDateClosed = productionFollowUp.DateClosed,
+                    PostPressClosedBySigniture = SignatureHelper.GetUserSignature(productionFollowUp.ClosedBy)
                 };
             }
             return new PrintJobFollowUpViewModel();

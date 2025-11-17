@@ -44,5 +44,9 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public Image PostPressCreatedBySignature { get; set; }
         public Image PostPressApprovedBySignature { get; set; }
         public Image PostPressCheckedBySignature { get; set; } 
+
+        public string PostPressClosedBy { get; set; }
+        public DateTime? PostPressDateClosed { get; set; }
+        public Image PostPressClosedBySigniture { get; set; }
     }
 }

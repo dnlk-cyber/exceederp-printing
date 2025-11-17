@@ -1,4 +1,5 @@
 ﻿@using ExceedERP.Core.Domain.Printing
+@using System.Web
 <label>Printing Estimation Summary</label>
 
 @(Html.Kendo().Grid<PrintingEstimationSummary>()
@@ -7,12 +8,20 @@
         {
             columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(110).Title("Customer");
             columns.Bound(c => c.Status).Width(120);
-            
+
             columns.Command(command =>
             {
-                command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationTeamLead))
+                {
+                    command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                }
+                if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationDepartmentHead)) 
+                {
+                    command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                    command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                }
+
+
                 command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
             }).Width(200);
         })
@@ -125,7 +134,11 @@
                                                   columns.Command(command =>
                                                   {
                                                       command.Edit().Text("Add Profit Margin");
-                                                      command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveDetailMargin");
+                                                      if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationDepartmentHead))
+                                                      {
+                                                          command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveDetailMargin");
+                                                      }
+
                                                   }).Width(350);
 
                                               })
