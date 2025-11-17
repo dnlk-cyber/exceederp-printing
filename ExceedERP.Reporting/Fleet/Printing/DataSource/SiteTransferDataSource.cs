@@ -16,6 +16,7 @@ using System.IO;
 using System.Web;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using static ExceedERP.Core.Domain.Global.GlobalEnum;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Reporting.Fleet.Printing.DataSource
 {

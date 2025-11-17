@@ -56,9 +56,9 @@ namespace ExceedERP.Core.Domain.Global
             Ethiopian,
             Unknown
         }
-        public enum BatteryStatus
-        {
-            New, Old
-        }
+        //public enum BatteryStatus
+        //{
+        //    New, Old
+        //}
     }
 }
