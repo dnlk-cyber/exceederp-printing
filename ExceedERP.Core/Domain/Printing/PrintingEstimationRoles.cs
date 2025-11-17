@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +16,10 @@ namespace ExceedERP.Core.Domain.Printing
         public const string PrintingProductionTeamLead = "PrintingProduction_TeamLead";
         public const string PrintingProductionOfficer = "PrintingProduction_Officer";
         public const string PrintingAdmin = "Printing_Admin";
+
+        public const string PrePress = "PrintingPrePress";
+        public const string Press = "PrintingPress";
+        public const string PostPress = "PrintingPostPress";
+        public const string PrintQualityAssurance = "Print_QualityAssurance";
     }
 }

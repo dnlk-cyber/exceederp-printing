@@ -1303,7 +1303,6 @@
     <Compile Include="Domain\Printing\PrintingEstimation\OverallCost.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingCriteriaCatagory.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingEnum.cs" />
-    <Compile Include="Domain\Printing\PrintingEstimation\PrintingEstimationRoles.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingStep.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\CommonEnum.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\Validation.cs" />
