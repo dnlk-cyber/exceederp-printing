@@ -42,6 +42,8 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         public DateTime? PrePressApprovedTime { get; set; }
         public DateTime? PressApprovedTime { get; set; }
         public DateTime? PostPressApprovedTime { get; set; }
-        public bool IsClosed { get; set; } 
+        public bool IsClosed { get; set; }
+        public string ClosedBy { get; set; }
+        public DateTime? DateClosed { get; set; } 
     }
 }
