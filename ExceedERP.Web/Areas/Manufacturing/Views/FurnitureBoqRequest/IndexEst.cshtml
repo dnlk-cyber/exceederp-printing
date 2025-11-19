@@ -1,4 +1,6 @@
-﻿
+﻿@using System.Web
+@using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
+
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,67 +9,75 @@
 <label>Furniture Boq Request</label>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureBoqRequest>()
-                .Name("grid")
-                .Columns(columns =>
-                {
-                    columns.Bound(c => c.JobType).Width(100);
-                    columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(100);
-                    columns.Bound(c => c.RequestDate).Width(100);
-                    columns.Bound(c => c.Remark).Width(100);
-                    columns.Bound(c => c.Status).Width(100);
-                    columns.Command(command =>
+                    .Name("grid")
+                    .Columns(columns =>
                     {
-                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "send" }).Click("checkEstimation");
-                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                        command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
-                        command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
-                        command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
-                    }).Width(250);
-                })
-                .ToolBar(toolbar =>
-                {
-                    toolbar.Create();
-                })
-                .Events(e => e.DataBound("dataBound"))
-                .Events(e => e.DetailExpand("detailExpand"))
-                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                .Pageable()
-                .Filterable()
-                .Scrollable(h => h.Height(600))
-                .DataSource(dataSource => dataSource
-                    .Ajax()
-                    .Sort(s => s.Add(x => x.FurnitureBoqRequestId).Descending())
-                    .Events(events =>
-                    {
-                        events.Error("error_handler(\"grid\")");
-                        events.RequestStart("onRequestStart(\"grid\")");
-                        events.RequestEnd("onRequestEnd(\"grid\")");
+                        columns.Bound(c => c.JobType).Width(100);
+                        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(100);
+                        columns.Bound(c => c.RequestDate).Width(100);
+                        columns.Bound(c => c.Remark).Width(100);
+                        columns.Bound(c => c.Status).Width(100);
+                        columns.Command(command =>
+                        {
+                            if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionTeamLead))
+                            {
+                                command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "send" }).Click("checkEstimation");
+
+                            }
+                            if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionHead))
+                            {
+                                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                                command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                            }
+
+                            command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                            command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
+                        }).Width(250);
                     })
-    .Model(model =>
-    {
-        model.Id(p => p.FurnitureBoqRequestId);
-        model.Field(p => p.Status).Editable(false);
-    }).Read(read => read.Action("FurnitureBoqRequest_ReadEst", "FurnitureBoqRequest"))
-                    .Create(create => create.Action("FurnitureBoqRequest_Create", "FurnitureBoqRequest"))
-                    .Update(update => update.Action("FurnitureBoqRequest_Update", "FurnitureBoqRequest"))
-                    .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqRequest"))
-                ).ClientDetailTemplateId("template"))
+                    .ToolBar(toolbar =>
+                    {
+                        toolbar.Create();
+                    })
+                    .Events(e => e.DataBound("dataBound"))
+                    .Events(e => e.DetailExpand("detailExpand"))
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Pageable()
+                    .Filterable()
+                    .Scrollable(h => h.Height(600))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(s => s.Add(x => x.FurnitureBoqRequestId).Descending())
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"grid\")");
+                            events.RequestStart("onRequestStart(\"grid\")");
+                            events.RequestEnd("onRequestEnd(\"grid\")");
+                        })
+        .Model(model =>
+        {
+            model.Id(p => p.FurnitureBoqRequestId);
+            model.Field(p => p.Status).Editable(false);
+        }).Read(read => read.Action("FurnitureBoqRequest_ReadEst", "FurnitureBoqRequest"))
+                        .Create(create => create.Action("FurnitureBoqRequest_Create", "FurnitureBoqRequest"))
+                        .Update(update => update.Action("FurnitureBoqRequest_Update", "FurnitureBoqRequest"))
+                        .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqRequest"))
+                    ).ClientDetailTemplateId("template"))
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                        .Name("tabstrip_#=FurnitureBoqRequestId#")
-                                        .Items(items =>
-                                        {
-                                            items.Add().Text("Documents").Content(
-                                            @<text>
-                                                <span class="btn-upload cal">
-                                                    <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBoqRequestId#)" />
-                                                </span>
-                                                @BoqDocs()
-                                            </text>);
-                                                    items.Add().Text("Comments").Content(@<text>@Comment()</text>);
+                                                .Name("tabstrip_#=FurnitureBoqRequestId#")
+                                                .Items(items =>
+                                                {
+                                                    items.Add().Text("Documents").Content(
+                                                    @<text>
+                                                        <span class="btn-upload cal">
+                                                            <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBoqRequestId#)" />
+                                                        </span>
+                                                        @BoqDocs()
+                                                    </text>);
+                                                            items.Add().Text("Comments").Content(@<text>@Comment()</text>);
 
-                                                        }).ToClientTemplate())
+                                                                }).ToClientTemplate())
 </script>
 
 
@@ -75,72 +85,72 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureBoqDocument>()
-                                .Name("CompanyDocument#=FurnitureBoqRequestId#")
-                                .Columns(columns =>
-                                {
-                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
-                                    columns.Bound(c => c.Description);
-                                    columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
-                                    columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
-                                    columns.Command(command =>
-                                    {
-                                        command.Destroy().Text("Delete");
-                                    });
-                                })
-                                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
-                                .Events(e => e.DataBound("detailDataBound"))
-                                .Scrollable(h => h.Height("auto"))
-                                .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Sort(sort => sort.Add(c => c.FurnitureBoqDocumentId).Descending())
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"CompanyDocument#=FurnitureBoqRequestId#\")");
-                                    events.RequestStart("onRequestStart(\"CompanyDocument#=FurnitureBoqRequestId#\")");
-                                    events.RequestEnd("onRequestEnd(\"CompanyDocument#=FurnitureBoqRequestId#\")");
-                                })
-                                .Model(model => model.Id(p => p.FurnitureBoqDocumentId))
-                                .Read(read => read.Action("FurnitureBoqRequest_Read", "FurnitureBoqDocument", new { id = "#=FurnitureBoqRequestId#" }))
-                                .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqDocument", new { area = "Manufacturing" }))
-                                ).ToClientTemplate())
+                                        .Name("CompanyDocument#=FurnitureBoqRequestId#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
+                                            columns.Bound(c => c.Description);
+                                            columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
+                                            columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
+                                            columns.Command(command =>
+                                            {
+                                                command.Destroy().Text("Delete");
+                                            });
+                                        })
+                                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+                                        .Events(e => e.DataBound("detailDataBound"))
+                                        .Scrollable(h => h.Height("auto"))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Sort(sort => sort.Add(c => c.FurnitureBoqDocumentId).Descending())
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"CompanyDocument#=FurnitureBoqRequestId#\")");
+                                            events.RequestStart("onRequestStart(\"CompanyDocument#=FurnitureBoqRequestId#\")");
+                                            events.RequestEnd("onRequestEnd(\"CompanyDocument#=FurnitureBoqRequestId#\")");
+                                        })
+                                        .Model(model => model.Id(p => p.FurnitureBoqDocumentId))
+                                        .Read(read => read.Action("FurnitureBoqRequest_Read", "FurnitureBoqDocument", new { id = "#=FurnitureBoqRequestId#" }))
+                                        .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqDocument", new { area = "Manufacturing" }))
+                                        ).ToClientTemplate())
 }
 @helper Comment()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureBoqDocumentComment>()
-                            .Name("comment#=FurnitureBoqRequestId#")
-                            .Columns(columns =>
-                            {
-                                columns.Bound(c => c.Comment).Width(100);
+                                    .Name("comment#=FurnitureBoqRequestId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(c => c.Comment).Width(100);
 
-                                columns.Command(command =>
-                                {
-                                    command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
-                                    command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
-                                }).Width(250);
-                            })
-                            .ToolBar(toolbar =>
-                            {
-                                toolbar.Create();
-                            })
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                                            command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
+                                        }).Width(250);
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create();
+                                    })
 
-                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CommentEditorTemplate"))
-                            .Pageable()
-                            .Filterable()
-                            .Scrollable(h => h.Height(600))
-                            .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"comment#=FurnitureBoqRequestId#\")");
-                                    events.RequestStart("onRequestStart(\"comment#=FurnitureBoqRequestId#\")");
-                                    events.RequestEnd("onRequestEnd(\"comment#=FurnitureBoqRequestId#\")");
-                                })
-                                .Model(model => model.Id(p => p.FurnitureBoqDocumentCommentId))
-                                .Read(read => read.Action("Read", "FurnitureBoqDocumentComment", new { id = "#=FurnitureBoqRequestId#" }))
-                                .Create(create => create.Action("Create", "FurnitureBoqDocumentComment", new { id = "#=FurnitureBoqRequestId#" }))
-                                .Update(update => update.Action("Update", "FurnitureBoqDocumentComment"))
-                                .Destroy(destroy => destroy.Action("Delete", "FurnitureBoqDocumentComment"))
-                            ).ToClientTemplate())
+                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CommentEditorTemplate"))
+                                    .Pageable()
+                                    .Filterable()
+                                    .Scrollable(h => h.Height(600))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"comment#=FurnitureBoqRequestId#\")");
+                                            events.RequestStart("onRequestStart(\"comment#=FurnitureBoqRequestId#\")");
+                                            events.RequestEnd("onRequestEnd(\"comment#=FurnitureBoqRequestId#\")");
+                                        })
+                                        .Model(model => model.Id(p => p.FurnitureBoqDocumentCommentId))
+                                        .Read(read => read.Action("Read", "FurnitureBoqDocumentComment", new { id = "#=FurnitureBoqRequestId#" }))
+                                        .Create(create => create.Action("Create", "FurnitureBoqDocumentComment", new { id = "#=FurnitureBoqRequestId#" }))
+                                        .Update(update => update.Action("Update", "FurnitureBoqDocumentComment"))
+                                        .Destroy(destroy => destroy.Action("Delete", "FurnitureBoqDocumentComment"))
+                                    ).ToClientTemplate())
 
 
 
@@ -244,7 +254,7 @@ function dataBound()
             $(this).find(".k-grid-approve").show();
             $(this).find(".k-grid-reject").show();
         }
-        
+
         if (dataItem.IsEstSent)
         {
             $(this).find(".k-grid-edit").hide();
@@ -265,7 +275,7 @@ function dataBound()
                 $(this).find(".k-grid-reject").hide();
             }
         }
-        
+
     });
 }
 var masterRow;
@@ -352,23 +362,23 @@ function UploadCompanyFile()
 
 
 @(Html.Kendo().Window().Name("UploadCompanyFileWindow")
-                    .Title("Upload Answer")
-                    .Visible(false)
-                    .Modal(true)
-                    .Content(@<text>
-                        <input type="hidden" id="FurnitureBoqRequestId" name="FurnitureBoqRequestId" />
+                        .Title("Upload Answer")
+                        .Visible(false)
+                        .Modal(true)
+                        .Content(@<text>
+                            <input type="hidden" id="FurnitureBoqRequestId" name="FurnitureBoqRequestId" />
 
-                        @*@Html.TextBox("CompanyFile", "", new { type = "file", @class = "form-control" })*@
-                        <input type="file" name="CompanyFile" id="CompanyFile[]" class="form-control" multiple />
-                        <br />
-                        <textarea id="Description" class="form-control"></textarea>
-                        <br />
-                        <div class="pull-right">
-                            @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadCompanyFile"))
-                        </div>
-                    </text>)
-                                                                     .Draggable(true)
-                                                                     .Width(400))
+                            @*@Html.TextBox("CompanyFile", "", new { type = "file", @class = "form-control" })*@
+                            <input type="file" name="CompanyFile" id="CompanyFile[]" class="form-control" multiple />
+                            <br />
+                            <textarea id="Description" class="form-control"></textarea>
+                            <br />
+                            <div class="pull-right">
+                                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadCompanyFile"))
+                            </div>
+                        </text>)
+                                                                                 .Draggable(true)
+                                                                                 .Width(400))
 
 
 <style>

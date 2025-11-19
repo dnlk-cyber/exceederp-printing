@@ -1,139 +1,154 @@
-﻿
+﻿@using System.Web
+@using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
+
 
 <label>Estimation Summary</label>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.EstimationSummary>()
-              .Name("grid")
-              .Columns(columns =>
-              {
-                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
-                  columns.Bound(c => c.Status).Width(100);
-                  columns.Bound(c => c.Remark).Width(100);
-                  columns.Command(command =>
+                  .Name("grid")
+                  .Columns(columns =>
                   {
-                      command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
-                      command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimationSummary");
-                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimationSummary");
-                      command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimationSummary");
-                  }).Width(150);
-              })
-              .Editable(editable => editable.Mode(GridEditMode.InLine))
-              .Events(ev => ev.DetailExpand("detailExpand")
-                    .DataBound("dataBound")
-                    )
-              .Filterable()
-              .Scrollable(s => s.Height(400))
-              .Scrollable()
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                  .Events(ev => ev.Error("error_handler(\"grid\")")
-                    .RequestStart("onRequestStart(\"grid\")")
-                    .RequestEnd("onRequestEnd(\"grid\")"))
-                  .Model(model => {
-                      model.Id(p => p.EstimationSummaryId);
-                      model.Field(p => p.CustomerId).Editable(false);
-                      model.Field(p => p.Status).Editable(false);
+                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
+                      columns.Bound(c => c.Status).Width(100);
+                      columns.Bound(c => c.Remark).Width(100);
+                      columns.Command(command =>
+                      {
+                          if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationTeamLead))
+                          {
+                              command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimationSummary");
+
+                          }
+                          if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead))
+                          {
+                              command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimationSummary");
+                              command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimationSummary");
+                          }
+
+                          command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                      }).Width(150);
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Events(ev => ev.DetailExpand("detailExpand")
+                        .DataBound("dataBound")
+                        )
+                  .Filterable()
+                  .Scrollable(s => s.Height(400))
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Events(ev => ev.Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+                      .Model(model =>
+                      {
+                          model.Id(p => p.EstimationSummaryId);
+                          model.Field(p => p.CustomerId).Editable(false);
+                          model.Field(p => p.Status).Editable(false);
 
                       })
-                  .Read(read => read.Action("EstimationSummaries_Read", "EstimationSummary"))
-                  .Update(read => read.Action("EstimationSummaries_Update", "EstimationSummary"))
-                  .Sort(sort => sort.Add(e => e.EstimationSummaryId).Descending())
-              ).ClientDetailTemplateId("cost_estimation")
+                      .Read(read => read.Action("EstimationSummaries_Read", "EstimationSummary"))
+                      .Update(read => read.Action("EstimationSummaries_Update", "EstimationSummary"))
+                      .Sort(sort => sort.Add(e => e.EstimationSummaryId).Descending())
+                  ).ClientDetailTemplateId("cost_estimation")
 
 )
 
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                    .Name("tab_grid_#=EstimationSummaryId#")
-                                                                    .Items(itemn =>
-                                                                    {
-                                                                        itemn.Add().Text("Detail").Content(@<text>
-                                                                            #if(IsSendForApproval){#
-                                                                            <a href='@Url.Action("EstimationSummary", "FurniturePrint")/?id=#=EstimationSummaryId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                                            .Name("tab_grid_#=EstimationSummaryId#")
+                                                                            .Items(itemn =>
+                                                                            {
+                                                                                itemn.Add().Text("Detail").Content(@<text>
+                                                                                    #if(IsSendForApproval){#
+                                                                                    <a href='@Url.Action("EstimationSummary", "FurniturePrint")/?id=#=EstimationSummaryId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                                                                            #}#
-                                                                            @Detail()</text>);
-                                                                                itemn.Add().Text("Cost Summary")
-                    .Content(
-                        @<text>
-                            #if(!IsSendForApproval){#
-                            <span class="cal">
-                                <a onclick='return calculateOverallCost("#=EstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
-                            </span>
-                            #}#
+                                                                                    #}#
+                                                                                    @Detail()</text>);
+                                                                                        itemn.Add().Text("Cost Summary")
+                .Content(
+                    @<text>
+                        #if(!IsSendForApproval){#
+                        <span class="cal">
+                            <a onclick='return calculateOverallCost("#=EstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
+                        </span>
+                        #}#
 
-                            @CostSummary()
-                        </text>);
-                                                                }).ToClientTemplate()
+                        @CostSummary()
+                    </text>);
+                                                                        }).ToClientTemplate()
     )
 </script>
 
-    @helper Detail()
-    {
+@helper Detail()
+{
 
 
-        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.EstimationDetail>()
-                                  .Name("grid_#=EstimationSummaryId#")
-                                  .Columns(columns =>
-                                  {
-                                      columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130).Title("Job Type");
-                                      columns.Bound(c => c.Quantity).Width(120);
-                                      columns.Bound(c => c.MaterialCost).Width(120);
-                                      columns.Bound(c => c.LabourCost).Width(120);
-                                      columns.Bound(c => c.OverHeadCost).Width(120);
-                                      columns.Bound(c => c.ManufacturingCost).Width(120);
-                                      columns.Bound(c => c.AdministrativeCost).Width(120);
-                                      columns.Bound(c => c.GrandTotalCost).Width(120);
-                                  })
-                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                  .Filterable()
-                                  .Scrollable()
-                                  .DataSource(dataSource => dataSource
-                                      .Ajax()
-                                      .Model(model => model.Id(p => p.EstimationDetailId))
-                                      .Read(read => read.Action("EstimationDetails_Read", "EstimationDetail", new { id = "#=EstimationSummaryId#" }))
-                                  ).ToClientTemplate()
-        )
-
-    }
-
-    @helper CostSummary()
-    {
-                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.EstimationCostSummary>()
-                  .Name("grid2_#=EstimationSummaryId#")
-                  .Columns(columns =>
-                  {
-                      columns.Bound(c => c.CommulativeCost).Width(120);
-                      columns.Bound(c => c.ProfitMargin).Width(120);
-                      columns.Bound(c => c.FinalPriceIncludingProfit).Width(120);
-                      columns.Command(command =>
-                      {
-                          command.Edit().Text("Add Profit Margin");
-                          command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
-                          command.Destroy();
-                      }).Width(350);
-
-                  })
-                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                  .Events(ev => ev.DataBound("onChildDataBound"))
-                  .Filterable()
-                  .Scrollable()
-                  .DataSource(dataSource => dataSource
-                      .Ajax()
-                      .Model(model =>
-                      {
-                          model.Id(p => p.EstimationCostSummaryId);
-                          model.Field(p => p.CommulativeCost).Editable(false);
-                          model.Field(p => p.FinalPriceIncludingProfit).Editable(false);
-                      })
-                      .Read(read => read.Action("EstimationCostSummaries_Read", "EstimationCostSummary", new { id = "#=EstimationSummaryId#" }))
-                      .Update(read => read.Action("EstimationCostSummaries_Update", "EstimationCostSummary"))
-                      .Destroy(read => read.Action("EstimationCostSummaries_Update", "EstimationCostSummary"))
-              ).ToClientTemplate()
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.EstimationDetail>()
+                                      .Name("grid_#=EstimationSummaryId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130).Title("Job Type");
+                                          columns.Bound(c => c.Quantity).Width(120);
+                                          columns.Bound(c => c.MaterialCost).Width(120);
+                                          columns.Bound(c => c.LabourCost).Width(120);
+                                          columns.Bound(c => c.OverHeadCost).Width(120);
+                                          columns.Bound(c => c.ManufacturingCost).Width(120);
+                                          columns.Bound(c => c.AdministrativeCost).Width(120);
+                                          columns.Bound(c => c.GrandTotalCost).Width(120);
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Filterable()
+                                      .Scrollable()
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Model(model => model.Id(p => p.EstimationDetailId))
+                                          .Read(read => read.Action("EstimationDetails_Read", "EstimationDetail", new { id = "#=EstimationSummaryId#" }))
+                                      ).ToClientTemplate()
     )
 
-    }
+}
+
+@helper CostSummary()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.EstimationCostSummary>()
+              .Name("grid2_#=EstimationSummaryId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.CommulativeCost).Width(120);
+                  columns.Bound(c => c.ProfitMargin).Width(120);
+                  columns.Bound(c => c.FinalPriceIncludingProfit).Width(120);
+                  columns.Command(command =>
+                  {
+                      command.Edit().Text("Add Profit Margin");
+                      if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead))
+                      {
+                          command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
+                      }
+
+                      command.Destroy();
+                  }).Width(350);
+
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Events(ev => ev.DataBound("onChildDataBound"))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model =>
+                  {
+                      model.Id(p => p.EstimationCostSummaryId);
+                      model.Field(p => p.CommulativeCost).Editable(false);
+                      model.Field(p => p.FinalPriceIncludingProfit).Editable(false);
+                  })
+                  .Read(read => read.Action("EstimationCostSummaries_Read", "EstimationCostSummary", new { id = "#=EstimationSummaryId#" }))
+                  .Update(read => read.Action("EstimationCostSummaries_Update", "EstimationCostSummary"))
+                  .Destroy(read => read.Action("EstimationCostSummaries_Update", "EstimationCostSummary"))
+          ).ToClientTemplate()
+    )
+
+}
 
 
 <script type="text/javascript">
@@ -142,7 +157,7 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-           
+
             if (dataItem.IsOnlineApproved) {
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
@@ -162,7 +177,7 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-approve").hide();
             }
-           
+
         });
     }
     var masterRow;
@@ -179,7 +194,7 @@
         masterId = masterDataItem.EstimationSummaryId;
         isApproved = masterDataItem.IsOnlineApproved;
         isChecked = masterDataItem.IsSendForApproval;
-       
+
     }
     function onChildDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
