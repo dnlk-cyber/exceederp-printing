@@ -38,29 +38,37 @@
 )
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                .Name("tab_#=FurnitureJobOrderProductionId#")
-                                .Items(item1 =>
-                                {
-                                    item1.Add().Text("Metal").Content(
-                                        @<text>
-                                            # if (1) { #
-                                            <a href='@Url.Action("FurnitureFollowupMetal", "FurniturePrint")/?id=#=FurnitureJobOrderProductionId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-                                            # } #
-                                            @Metal()
-                                        </text>);
-                                            item1.Add().Text("Wood").Content(
-                        @<text>
-                            # if (1) { #
-                            <a href='@Url.Action("FurnitureFollowupWood", "FurniturePrint")/?id=#=FurnitureJobOrderProductionId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-                            # } #
-                            @Wood()
-                        </text>);
-                                item1.Add().Text("Unfinshed material transfer form").Content(
-            @<text>
-                @UnfinishedMaterialTransfer()
-            </text>);
+                                                .Name("tab_#=FurnitureJobOrderProductionId#")
+                                                .Items(item1 =>
+                                                {
+                                                    if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureMetal))
+                                                    {
+                                                        item1.Add().Text("Metal").Content(
 
-                            }).ToClientTemplate())
+                                                    @<text>
+                                                        # if (1) { #
+                                                        <a href='@Url.Action("FurnitureFollowupMetal", "FurniturePrint")/?id=#=FurnitureJobOrderProductionId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                        # } #
+                                                        @Metal()
+                                                    </text>);
+                                                            }
+
+                                                            if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureWood))
+                                                            {
+                                                                item1.Add().Text("Wood").Content(
+                                                    @<text>
+                                                        # if (1) { #
+                                                        <a href='@Url.Action("FurnitureFollowupWood", "FurniturePrint")/?id=#=FurnitureJobOrderProductionId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                        # } #
+                                                        @Wood()
+                                                    </text>);
+                                               }
+                                               item1.Add().Text("Unfinshed material transfer form").Content(
+@<text>
+    @UnfinishedMaterialTransfer()
+</text>);
+
+                    }).ToClientTemplate())
 </script>
 
 @helper Metal()

@@ -544,12 +544,14 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
                      #region Furniture
 				new ApplicationRole("FurnitureEstimation_Officer", "", "Manufacturing"),
                 new ApplicationRole("FurnitureEstimation_TeamLead", "", "Manufacturing"),
-                new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),              
-            
+                new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),
                 new ApplicationRole("FurnitureProduction_Head", "", "Manufacturing"),
                 new ApplicationRole("FurnitureProduction_TeamLead", "", "Manufacturing"),
                 new ApplicationRole("FurnitureProduction_Officer", "", "Manufacturing"),
                 new ApplicationRole("Furniture_Admin", "", "Manufacturing"),
+                new ApplicationRole("Furniture_Metal", "", "Manufacturing"),
+                new ApplicationRole("Furniture_Wood", "", "Manufacturing"),
+                new ApplicationRole("Furniture_Assembly", "", "Manufacturing"),
 				#endregion
 				#region Production FollowUp
 					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin, "Production FollowUp Administrator", "Manufucturing"),
