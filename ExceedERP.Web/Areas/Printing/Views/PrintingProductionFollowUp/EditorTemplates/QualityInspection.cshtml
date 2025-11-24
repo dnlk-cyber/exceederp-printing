@@ -1,0 +1,35 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingQualityInspection
+
+
+
+
+<div class="row">   
+
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Activity</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.PrintQualityGrade)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .OptionLabel("Select Grade")
+                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintGradeQuality)))
+                            .HtmlAttributes(new { style = "width:100%" })
+                            
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @(Html.TextAreaFor(model => model.Description, new { @class = "k-textarea", style = "width:100%", rows = 5 }))
+            </div>
+        </div>
+    </div>
+</div>

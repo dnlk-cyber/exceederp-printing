@@ -64,7 +64,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                    
                     DateCreated = DateTime.Today,
                     CreatedBy = User.Identity.Name,
-                    
+                    DailyProductionPlan = furnitureJobAssignment.DailyProductionPlan
                     
                 };
                 var totalDays = (entity.TaskEndDate - entity.TaskAssignedDate).Days;

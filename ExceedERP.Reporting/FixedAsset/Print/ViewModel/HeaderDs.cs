@@ -75,7 +75,7 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
         [DisplayName("Battery Ampere")]
         public string BatteryAmpere { get; set; }
         [DisplayName("Battery Status")]
-        public BatteryStatus BatteryStatus { get; set; }
+        public Core.Domain.BatteryStatus BatteryStatus { get; set; }
         [DisplayName("Battery QTY")]
         public int BatteryQuantity { get; set; }
         public string Deliverer { get; set; }

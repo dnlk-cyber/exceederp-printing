@@ -224,5 +224,6 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(t => t.JobOrderSummaryCostCenterDetailId);
             }
         }
+
     }
 }

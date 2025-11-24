@@ -25,10 +25,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
         [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
-        public ActionResult PurchaseRequisitionReassignmentItems_Read([DataSourceRequest]DataSourceRequest request , int id)
+        public ActionResult PurchaseRequisitionReassignmentItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseRequisitionReassignmentItem> purchaseRequisitionReassignmentItems = _db.PurchaseRequisitionReassignmentItems.Where(pri => pri.PurchaseRequisitionAssignmentId == id);
-            DataSourceResult result = purchaseRequisitionReassignmentItems.ToDataSourceResult(request, purchaseRequisitionReassignmentItem => new {
+            DataSourceResult result = purchaseRequisitionReassignmentItems.ToDataSourceResult(request, purchaseRequisitionReassignmentItem => new
+            {
                 PurchaseRequisitionReassignmentItemId = purchaseRequisitionReassignmentItem.PurchaseRequisitionReassignmentItemId,
                 PurchaseRequisitionAssignmentId = purchaseRequisitionReassignmentItem.PurchaseRequisitionAssignmentId,
                 CatCode = purchaseRequisitionReassignmentItem.CatCode,
@@ -52,32 +53,32 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
         [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PurchaseRequisitionReassignmentItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionReassignmentItem reassignmentItem , int id )
+        public ActionResult PurchaseRequisitionReassignmentItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionReassignmentItem reassignmentItem, int id)
         {
             #region data validation
 
             var assignment = _db.PurchaseRequisitionAssignments.Find(id);
-            if(assignment!=null)
+            if (assignment != null)
             {
                 decimal pramount = 0;
                 decimal assignedamount = 0;
-                var pr=_db.PurchaseRequisitions.Find(assignment.PurchaseRequisitionID);
+                var pr = _db.PurchaseRequisitions.Find(assignment.PurchaseRequisitionID);
 
                 List<int> assignmentIds = _db.PurchaseRequisitionAssignments
-                    .Where(x=>x.PurchaseRequisitionID==pr.PurchaseRequisitionID)
-                    .Select(x=>x.PurchaseRequisitionAssignmentId).ToList();
+                    .Where(x => x.PurchaseRequisitionID == pr.PurchaseRequisitionID)
+                    .Select(x => x.PurchaseRequisitionAssignmentId).ToList();
 
-                var assignmentItems=_db.PurchaseRequisitionReassignmentItems.Where(x=> assignmentIds.Contains(x.PurchaseRequisitionAssignmentId)).ToList();
-                var prItem=_db.PurchaseRequisitionItems
-                    .Where(x=>x.PurchaseRequisitionID== assignment.PurchaseRequisitionID)
-                    .Where(x=>x.CatCode== reassignmentItem.CatCode)
-                    .Where(x=>x.ItmCode== reassignmentItem.ItmCode)
-                    .Where(x=>x.ItemName== reassignmentItem.ItemName)
-                    .Where(x=>x.Name== reassignmentItem.Name)
-                    .Where(x=>x.ItemSpecification == reassignmentItem.ItemSpecification).FirstOrDefault();
+                var assignmentItems = _db.PurchaseRequisitionReassignmentItems.Where(x => assignmentIds.Contains(x.PurchaseRequisitionAssignmentId)).ToList();
+                var prItem = _db.PurchaseRequisitionItems
+                    .Where(x => x.PurchaseRequisitionID == assignment.PurchaseRequisitionID)
+                    .Where(x => x.CatCode == reassignmentItem.CatCode)
+                    .Where(x => x.ItmCode == reassignmentItem.ItmCode)
+                    .Where(x => x.ItemName == reassignmentItem.ItemName)
+                    .Where(x => x.Name == reassignmentItem.Name)
+                    .Where(x => x.ItemSpecification == reassignmentItem.ItemSpecification).FirstOrDefault();
 
-                if(prItem!=null)
-                    pramount=prItem.Quantity;
+                if (prItem != null)
+                    pramount = prItem.Quantity;
 
                 var prevAssignmentItem = assignmentItems
                   .Where(x => x.CatCode == reassignmentItem.CatCode)
@@ -87,16 +88,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                   .Where(x => x.ItemSpecification == reassignmentItem.ItemSpecification).ToList();
 
                 if (prevAssignmentItem.Any())
-                    assignedamount = prevAssignmentItem.Sum(x=>x.Quantity);
+                    assignedamount = prevAssignmentItem.Sum(x => x.Quantity);
 
-                assignedamount=assignedamount+ reassignmentItem.Quantity;
+                assignedamount = assignedamount + reassignmentItem.Quantity;
 
-                if(assignedamount>pramount)
+                if (assignedamount > pramount)
                     ModelState.AddModelError("above", "Total assigned for this item will be above the PR Quantity.");
             }
             else
             {
-                ModelState.AddModelError("notfound","Assignment not found.");
+                ModelState.AddModelError("notfound", "Assignment not found.");
             }
             #endregion 
 
@@ -148,25 +149,27 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
                 List<int> assignmentIds = _db.PurchaseRequisitionAssignments
                     .Where(x => x.PurchaseRequisitionID == pr.PurchaseRequisitionID)
+                    .Where(x => x.IsVoid == false)
                     .Select(x => x.PurchaseRequisitionAssignmentId).ToList();
 
-                var assignmentItems = _db.PurchaseRequisitionReassignmentItems.Where(x => assignmentIds.Contains(x.PurchaseRequisitionAssignmentId)).ToList();
                 var prItem = _db.PurchaseRequisitionItems
                     .Where(x => x.PurchaseRequisitionID == assignment.PurchaseRequisitionID)
                     .Where(x => x.CatCode == reassignmentItem.CatCode)
                     .Where(x => x.ItmCode == reassignmentItem.ItmCode)
                     .Where(x => x.ItemName == reassignmentItem.ItemName)
-                .Where(x => x.Name == reassignmentItem.Name)
+                    .Where(x => x.Name == reassignmentItem.Name)
                     .Where(x => x.ItemSpecification == reassignmentItem.ItemSpecification).FirstOrDefault();
 
                 if (prItem != null)
                     pramount = prItem.Quantity;
 
-                var prevAssignmentItem = assignmentItems
+                var prevAssignmentItem = _db.PurchaseRequisitionReassignmentItems
+                  .Where(x => x.PurchaseRequisitionReassignmentItemId != reassignmentItem.PurchaseRequisitionReassignmentItemId)
+                  .Where(x => assignmentIds.Contains(x.PurchaseRequisitionAssignmentId))
                   .Where(x => x.CatCode == reassignmentItem.CatCode)
                   .Where(x => x.ItmCode == reassignmentItem.ItmCode)
                   .Where(x => x.ItemName == reassignmentItem.ItemName)
-                .Where(x => x.Name == reassignmentItem.Name)
+                  .Where(x => x.Name == reassignmentItem.Name)
                   .Where(x => x.ItemSpecification == reassignmentItem.ItemSpecification).ToList();
 
                 if (prevAssignmentItem.Any())
@@ -181,7 +184,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             {
                 ModelState.AddModelError("notfound", "Assignment not found.");
             }
-            #endregion 
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new PurchaseRequisitionReassignmentItem

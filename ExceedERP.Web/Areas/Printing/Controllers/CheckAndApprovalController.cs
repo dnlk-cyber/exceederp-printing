@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Printing;
 using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Printing;
 using System;
 using System.Data.Entity;
 using System.Linq;
@@ -20,12 +21,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         #region Followup Task
         public JsonResult CheckFollowupTask(int id)
         {
-            
+
             Object response = null;
             var model = db.PrintingProductionFollowUpTasks.FirstOrDefault(x => x.PrintingProductionFollowUpTaskId == id);
             if (model != null)
             {
-                
+
                 model.IsSendForApproval = true;
                 model.SendForApprovalBy = User.Identity.Name;
                 model.SendForApprovalTime = DateTime.Today;
@@ -39,42 +40,48 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             return Json(response);
         }
-
+        private void UpdateStatus(int id, PrintingOperationStatus printingOperationStatus)
+        {
+            var entity = db.PrintingProductionFollowUps.FirstOrDefault(x => x.PrintingProductionFollowUpId == id);
+            entity.PrintingOperationStatus = printingOperationStatus;
+            db.Entry(entity).State = EntityState.Modified;
+            db.SaveChanges();
+        }
         public JsonResult ApproveFollowupTask(int id)
         {
             Object response = null;
             var model = db.PrintingProductionFollowUpTasks.Find(id);
             if (model != null)
             {
-                var printingFollowup = db.PrintingProductionFollowUps.FirstOrDefault(x => x.PrintingProductionFollowUpId == model.PrintingProductionFollowUpId);
-                if (printingFollowup == null)
-                {
-                    response = new { Success = false, Message = "Something's Wrong!" };
-                }
-                var tasks = db.PrintingProductionFollowUpTasks
-                        .Where(x => x.PrintingProductionFollowUpId == printingFollowup.PrintingProductionFollowUpId)
-                        .AsNoTracking()
-                        .ToList();
-                if (model.PressCategory == PressCategory.PrePress)
-                {
+                //var printingFollowup = db.PrintingProductionFollowUps.FirstOrDefault(x => x.PrintingProductionFollowUpId == model.PrintingProductionFollowUpId);
+                //if (printingFollowup == null)
+                //{
+                //    response = new { Success = false, Message = "Something's Wrong!" };
+                //}
+                //var tasks = db.PrintingProductionFollowUpTasks
+                //        .Where(x => x.PrintingProductionFollowUpId == printingFollowup.PrintingProductionFollowUpId)
+                //        .AsNoTracking()
+                //        .ToList();
+                //if (model.PressCategory == PressCategory.PrePress)
+                //{
 
-                    //printingFollowup.PrePressProgress == 0 ? 0 : (100 * tasks.Count)
-                }
-                else if (model.PressCategory == PressCategory.Press)
-                {
-                    //printingFollowup.PressProgress
-                }
-                else
-                {
-                    //printingFollowup.PostPressProgress
-                }
+                //    //printingFollowup.PrePressProgress == 0 ? 0 : (100 * tasks.Count)
+                //}
+                //else if (model.PressCategory == PressCategory.Press)
+                //{
+                //    //printingFollowup.PressProgress
+                //}
+                //else
+                //{
+                //    //printingFollowup.PostPressProgress
+                //}
 
                 model.IsOnlineApproved = true;
                 model.OnlineApprovedBy = User.Identity.Name;
                 model.OnlineApprovedTime = DateTime.Now;
                 db.Entry(model).State = EntityState.Modified;
-                db.SaveChanges();            
-                response = new { Success = true, Message = "Successfully Approved" };               
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Approved" };
             }
             else
             {
@@ -90,7 +97,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 model.IsOnlineApproved = false;
                 model.IsSendForApproval = false;
-               
+
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Rejected" };
@@ -288,6 +295,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.IsVoid = true;
                 model.IsPostPressChecked = false;
                 model.IsPostPressApproved = false;
+              
                 model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
@@ -299,6 +307,57 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             return Json(response);
         }
+
+        public JsonResult RevertProcess(int id)
+        {
+            Object response = null;
+            var model = db.PrintingProductionFollowUps.Find(id);
+            if (model != null)
+            {
+                model.IsVoid = true;
+                model.IsPostPressChecked = false;
+                model.IsPostPressApproved = false;
+                model.IsPressApproved = false;
+                model.IsPressChecked = false;
+                model.Status = "Process Reverted!";
+                model.PrintingOperationStatus = PrintingOperationStatus.Reverted;
+                db.Entry(model).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Reverted" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something's Wrong!, Not Found!" };
+            }
+            return Json(response);
+        }
+        public JsonResult CloseJob(int id)
+        {
+            var model = db.PrintingProductionFollowUps.Find(id);
+            if (model == null)
+            {
+                return Json(new { Success = false, Message = "Job not found." });
+            }
+
+            var result = PrintCloseJobHelper.GenerateItems(model, User.Identity.Name);
+            if (!result.Success)
+            {
+                return Json(new { Success = false, Message = result.Message });
+            }
+
+            model.IsClosed = true;
+            model.ClosedBy = User.Identity.Name;
+            model.DateClosed = DateTime.Today;
+            model.Status = "Closed";
+            db.Entry(model).State = EntityState.Modified;
+            db.SaveChanges();
+            var jobOrderItem = db.PrintingJobOrderItems.FirstOrDefault(x => x.PrintingJobOrderItemId == model.PrintingJobOrderItemId);
+            jobOrderItem.IsClosed = true;
+            db.Entry(jobOrderItem).State = EntityState.Modified;
+            db.SaveChanges();
+            return Json(new { Success = true, Message = "Job closed successfully." });
+        }
+
         #endregion
 
     }

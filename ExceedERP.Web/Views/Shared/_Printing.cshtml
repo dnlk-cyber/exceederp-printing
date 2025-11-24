@@ -20,7 +20,7 @@
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-print"></i>
             <span class="menu-text">
-                Printing New
+                Printing
             </span>
             <b class="arrow fa fa-angle-down"></b>
         </a>
@@ -39,6 +39,7 @@
                     </a>
                     <b class="arrow"></b>
                     <ul class="submenu">
+                        
                         <li id="printingEst01" class="actionlinlk">@Html.ActionLink("Printing Cost Estimation", "Index", "PrintingCostEstimation", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         <li id="printingEst02" class="actionlinlk">@Html.ActionLink("Printing Cost Estimation Summary", "Index", "PrintingCostEstimationSummary", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         <li id="printingEst03" class="actionlinlk">@Html.ActionLink("Printing Proforma Invoice", "Index", "PrintingProformaInvoice", new { area = "Printing" }, null)<b class="arrow"></b></li>
@@ -49,7 +50,8 @@
             }
             @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionHead)
          || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionTeamLead)
-         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionOfficer))
+         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionOfficer)
+         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintQualityAssurance))
             {
                 <li class="">
                     <a href="#" class="dropdown-toggle">
@@ -60,9 +62,19 @@
                     <b class="arrow"></b>
                     <ul class="submenu">
                         <li id="printingProduction01" class="actionlinlk">@Html.ActionLink("Printing JobCard", "Index", "PrintingJobOrderProduction", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="printingProduction02" class="actionlinlk">@Html.ActionLink("Pre-Press Follow-Up", "Index", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="printingProduction03" class="actionlinlk">@Html.ActionLink("Press Follow-Up", "IndexPress", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="printingProduction04" class="actionlinlk">@Html.ActionLink("Post-Press Follow-Up", "IndexPostPress", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrePress))
+                        {
+                            <li id="printingProduction02" class="actionlinlk">@Html.ActionLink("Pre-Press Follow-Up", "Index", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.Press))
+                        {
+                            <li id="printingProduction03" class="actionlinlk">@Html.ActionLink("Press Follow-Up", "IndexPress", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
+
+                        }
+                        @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PostPress))
+                        {
+                            <li id="printingProduction04" class="actionlinlk">@Html.ActionLink("Post-Press Follow-Up", "IndexPostPress", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        }
                     </ul>
                 </li>
             }
@@ -110,6 +122,7 @@
                 <ul class="submenu">
                     <li id="mega-Manufacturing-921" class="actionlinlk">@Html.ActionLink("Monthly Report", "PrintEstimationMonthlyReport", "PrintingReport", new { area = "Printing" }, null)<b class="arrow"></b></li>
                     <li id="mega-Manufacturing-931" class="actionlinlk">@Html.ActionLink("weekly Report", "PrintEstimationMonthlyReport", "PrintingReport", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                    <li id="mega-Manufacturing-931" class="actionlinlk">@Html.ActionLink("Progress Report", "PrintProgressReport", "PrintingReport", new { area = "Printing" }, null)<b class="arrow"></b></li>
 
                 </ul>
             </li>

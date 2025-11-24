@@ -2110,6 +2110,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionAllottedRawMaterialController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionDailyFollowUpDetailController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductionDesginController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionFollowUpController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductionFollowUpTaskController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductProcessController.cs" />
@@ -2120,6 +2121,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintItemCategoryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintLaborRateController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintMachinePaperListController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintQualityInspectionController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintWorkOrderTypeController.cs" />
     <Compile Include="Areas\Printing\Controllers\ProductionFollowUp\MachinesController.cs" />
     <Compile Include="Areas\Printing\Controllers\ProductionFollowUp\MegaDataProviderController.cs" />
@@ -7422,6 +7424,8 @@
     <Content Include="Areas\Procurement\Views\LotTeamSelfCare\EditorTemplates\BankGuarantee.cshtml" />
     <Content Include="Areas\Procurement\Views\LotTeamSelfCare\Index.cshtml" />
     <Content Include="Areas\HRM\Views\TemplateTypeSettings\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\QualityInspection.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\PrintProgressReport.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

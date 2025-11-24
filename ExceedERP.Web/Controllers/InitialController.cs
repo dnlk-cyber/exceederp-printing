@@ -506,13 +506,18 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
 				#region Printing
 				#region Printing Estimation
                 ,
-               new ApplicationRole("PrintingEstimation_Officer", "", "Printing"),
+             new ApplicationRole("PrintingEstimation_Officer", "", "Printing"),
                 new ApplicationRole("PrintingEstimation_TeamLead", "", "Printing"),
                 new ApplicationRole("PrintingEstimation_DepartmentHead", "", "Printing"),
                 new ApplicationRole("PrintingProduction_Head", "", "Printing"),
                 new ApplicationRole("PrintingProduction_TeamLead", "", "Printing"),
                 new ApplicationRole("PrintingProduction_Officer", "", "Printing"),
                 new ApplicationRole("Printing_Admin", "", "Printing"),
+
+                new ApplicationRole("PrintingPrePress", "", "Printing"),
+                new ApplicationRole("PrintingPress", "", "Printing"),
+                new ApplicationRole("PrintingPostPress", "", "Printing"),
+                new ApplicationRole("Print_QualityAssurance", "", "Printing"),
 					#endregion
 				#region Production FollowUp
 					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionAdmin, "Production FollowUp Administrator", "Printing"),
@@ -539,12 +544,14 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
                      #region Furniture
 				new ApplicationRole("FurnitureEstimation_Officer", "", "Manufacturing"),
                 new ApplicationRole("FurnitureEstimation_TeamLead", "", "Manufacturing"),
-                new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),              
-            
+                new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),
                 new ApplicationRole("FurnitureProduction_Head", "", "Manufacturing"),
                 new ApplicationRole("FurnitureProduction_TeamLead", "", "Manufacturing"),
                 new ApplicationRole("FurnitureProduction_Officer", "", "Manufacturing"),
                 new ApplicationRole("Furniture_Admin", "", "Manufacturing"),
+                new ApplicationRole("Furniture_Metal", "", "Manufacturing"),
+                new ApplicationRole("Furniture_Wood", "", "Manufacturing"),
+                new ApplicationRole("Furniture_Assembly", "", "Manufacturing"),
 				#endregion
 				#region Production FollowUp
 					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin, "Production FollowUp Administrator", "Manufucturing"),

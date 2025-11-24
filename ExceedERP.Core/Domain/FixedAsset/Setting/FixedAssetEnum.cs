@@ -58,6 +58,12 @@
     //    NotMaintainable
     //}
 
+    public enum PPEAmountType
+    {
+        Amount,
+        Percentage
+    }
+
     public enum DepreciationMethod
     {
         StraightLine,

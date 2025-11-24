@@ -32,6 +32,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.Production
         public string ReceivedBy { get; set; }
         public DateTime? ReceivedDate { get; set; }
         public int FurnitureJobOrderProductionId { get; set; }
+        public string Remark { get; set; }
     }
     public enum QualityGrade
     {

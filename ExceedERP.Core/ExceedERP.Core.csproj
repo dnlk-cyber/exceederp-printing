@@ -784,6 +784,7 @@
     <Compile Include="Domain\Global\GlobalDeleteLog.cs" />
     <Compile Include="Domain\Global\GlobalUserAccessRecord.cs" />
     <Compile Include="Domain\Global\GobalEnums.cs" />
+    <Compile Include="Domain\GobalEnums.cs" />
     <Compile Include="Domain\Health\Diagnosis.cs" />
     <Compile Include="Domain\Health\HealthApprovalSetting.cs" />
     <Compile Include="Domain\Health\HealthBenefitSetting.cs" />
@@ -1110,6 +1111,7 @@
     <Compile Include="Domain\Inventory\StoreReturn.cs" />
     <Compile Include="Domain\Inventory\TemporaryGoodReceive.cs" />
     <Compile Include="Domain\Global\GlobalRuleValue.cs" />
+    <Compile Include="Domain\JobCosting\ContratDLR.cs" />
     <Compile Include="Domain\JobCosting\CostCenter.cs" />
     <Compile Include="Domain\JobCosting\DailyLaborRate.cs" />
     <Compile Include="Domain\JobCosting\IdleTime.cs" />
@@ -1127,6 +1129,7 @@
     <Compile Include="Domain\JobCosting\Setting\JCPension.cs" />
     <Compile Include="Domain\JobCosting\Setting\Unit.cs" />
     <Compile Include="Domain\JobCosting\Setting\YearlyOverHeadRate.cs" />
+    <Compile Include="Domain\JobCosting\Tax.cs" />
     <Compile Include="Domain\Maintenance\AdministrativeJobApproval.cs" />
     <Compile Include="Domain\Maintenance\AdvanceMeasure.cs" />
     <Compile Include="Domain\Maintenance\Canibalization.cs" />
@@ -1300,7 +1303,6 @@
     <Compile Include="Domain\Printing\PrintingEstimation\OverallCost.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingCriteriaCatagory.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingEnum.cs" />
-    <Compile Include="Domain\Printing\PrintingEstimation\PrintingEstimationRoles.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingStep.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\CommonEnum.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\Validation.cs" />
@@ -1318,6 +1320,7 @@
     <Compile Include="Domain\Printing\PrintingProduction\PrintingProductionFollowUp.cs" />
     <Compile Include="Domain\Printing\PrintingProductProcess.cs" />
     <Compile Include="Domain\Printing\PrintingProformaInvoice.cs" />
+    <Compile Include="Domain\Printing\PrintingQualityInspection.cs" />
     <Compile Include="Domain\Printing\PrintItemCategory.cs" />
     <Compile Include="Domain\Printing\PrintLabourRate.cs" />
     <Compile Include="Domain\Printing\PrintMachinePaperList.cs" />
