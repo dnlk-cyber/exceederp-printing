@@ -16,6 +16,8 @@ using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Web.Areas.Maintenance.Models;
 using System.Data.Entity;
 using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
+using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Web.Controllers
 {
@@ -778,38 +780,52 @@ namespace ExceedERP.Web.Controllers
         #endregion
 
         #region hrm
+        private IQueryable<Person_Employee> GetFilteredEmployees(string branch, string businessUnitId)
+        {
+            var query = _db.Person_Employee.Where(x => x.IsActive);
+
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
+
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+                placements = placements.Where(p => p.BranchId == branchId);
+
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int unitId))
+                placements = placements.Where(p => p.BusinessUnitId == unitId);
+
+            var empIds = placements.Select(p => p.EmployeeId);
+            query = query.Where(e => empIds.Contains(e.EmployeeId));
+
+            return query;
+        }
+
         public JsonResult GetEmployeeCount(string branch, string businessUnitId)
         {
-            var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
-            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
-            {
-                var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
-            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int UnitId))
-            {
-                var empIds = _db.Placements.Where(x => x.BusinessUnitId == UnitId).Select(x => x.EmployeeId).ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
-            List<int> employeeIds = HrHelper.GetEmployeeInProbaition(person_Employees);
-            var contrat = person_Employees.Where(x => !employeeIds.Contains(x.EmployeeId)
-                                                     && x.Status == EmployeeStatus.CONTRACT).ToList();
+            var person_Employees = GetFilteredEmployees(branch, businessUnitId).ToList();
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(person_Employees);
+
+            var contract = person_Employees
+                .Where(x => !probationIds.Contains(x.EmployeeId) && x.Status == EmployeeStatus.CONTRACT)
+                .ToList();
+
             var permanent = person_Employees
-                        .Where(x => !employeeIds.Contains(x.EmployeeId)
-                        && x.Status == EmployeeStatus.PERMANENT)
-                        .ToList();
+                .Where(x => !probationIds.Contains(x.EmployeeId) && x.Status == EmployeeStatus.PERMANENT)
+                .ToList();
+
             var probation = person_Employees
-                            .Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
+                .Where(x => probationIds.Contains(x.EmployeeId))
+                .ToList();
+
             var others = person_Employees
-                                .Where(x => !employeeIds.Contains(x.EmployeeId)
-                                            && x.Status != EmployeeStatus.CONTRACT
-                                            && x.Status != EmployeeStatus.PERMANENT)
-                                           .ToList();
+                .Where(x => !probationIds.Contains(x.EmployeeId)
+                    && x.Status != EmployeeStatus.CONTRACT
+                    && x.Status != EmployeeStatus.PERMANENT)
+                .ToList();
+
             var formattedData = new
             {
                 Data = new int[]
                 {
-                    contrat.Count(),
+                    contract.Count(),
                     permanent.Count(),
                     probation.Count(),
                     others.Count()
@@ -822,84 +838,123 @@ namespace ExceedERP.Web.Controllers
                     "Others"
                 }
             };
+
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetContratEmployee(string branch, string businessUnitId)
         {
-            var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+            // Base query: only active employees
+            IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
 
+            // Branch filter
             if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
-            {
-                var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
-            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
-            {
-                var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
-            var MaleContratemployees = person_Employees
-                .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.CONTRACT).ToList();
-            var femaleContEmployees = person_Employees
-                .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.CONTRACT).ToList();
-            var others = person_Employees
-               .Where(x => x.IsActive && x.Gender != Gender.FEMALE
-                                           && x.Gender != Gender.MALE
-                                           && x.Status == EmployeeStatus.CONTRACT).ToList();
+                placements = placements.Where(p => p.BranchId == branchId);
 
+            // Business Unit filter
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+                placements = placements.Where(p => p.BusinessUnitId == buUnitId);
+
+            // Get employee IDs from filtered placements
+            var empIds = placements.Select(p => p.EmployeeId).Distinct();
+            employees = employees.Where(e => empIds.Contains(e.EmployeeId));
+
+            // Convert once to list
+            var personList = employees.ToList();
+
+            // Exclude probation employees
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(personList);
+
+            // Filter only contract employees (not probation)
+            var contractEmployees = personList
+                .Where(e => !probationIds.Contains(e.EmployeeId)
+                            && e.Status == EmployeeStatus.CONTRACT)
+                .ToList();
+
+            // Gender-based counts
+            var maleContract = contractEmployees.Count(x => x.Gender == Gender.MALE);
+            var femaleContract = contractEmployees.Count(x => x.Gender == Gender.FEMALE);
+            var otherContract = contractEmployees.Count(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE);
+            var total = maleContract + femaleContract + otherContract;
             var formattedData = new
             {
                 Data = new int[]
                 {
-
-                    MaleContratemployees.Count(), femaleContEmployees.Count(),others.Count(),
-
-                    MaleContratemployees.Count()+femaleContEmployees.Count()+others.Count()
-
+                    maleContract,
+                    femaleContract,
+                    otherContract,
+                    total
                 },
-                Labels = new string[] { "Male", "Female", "Others", "Total" }
+                Labels = new string[]
+                {
+                    "Male",
+                    "Female",
+                    "Others",
+                    "Total"
+                }
             };
+
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
+
         public JsonResult GetPermanentEmployee(string branch, string businessUnitId)
         {
-            var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+            // Base query: active employees
+            IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
 
+            // Filter by branch
             if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
-            {
-                var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
-            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
-            {
-                var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
-            var MalePermaemployees = person_Employees
-                .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PERMANENT).ToList();
-            var femaleEmployees = person_Employees
-                .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.PERMANENT).ToList();
-            var others = person_Employees
-               .Where(x => x.IsActive
-                                   && x.Gender != Gender.FEMALE
-                                   && x.Gender != Gender.MALE
-                                       && x.Status == EmployeeStatus.PERMANENT).ToList();
+                placements = placements.Where(p => p.BranchId == branchId);
 
+            // Filter by business unit
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+                placements = placements.Where(p => p.BusinessUnitId == buUnitId);
+
+            // Get filtered employees by placement
+            var empIds = placements.Select(p => p.EmployeeId).Distinct();
+            employees = employees.Where(e => empIds.Contains(e.EmployeeId));
+
+            // Convert to list once
+            var personList = employees.ToList();
+
+            // Exclude probation employees
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(personList);
+            var permanentEmployees = personList
+                .Where(e => !probationIds.Contains(e.EmployeeId)
+                            && e.Status == EmployeeStatus.PERMANENT)
+                .ToList();
+
+            // Gender-wise split
+            var malePermanent = permanentEmployees.Where(x => x.Gender == Gender.MALE).Count();
+            var femalePermanent = permanentEmployees.Where(x => x.Gender == Gender.FEMALE).Count();
+            var otherPermanent = permanentEmployees
+                .Where(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE)
+                .Count();
+
+            var total = malePermanent + femalePermanent + otherPermanent;
 
             var formattedData = new
             {
                 Data = new int[]
                 {
-
-                    MalePermaemployees.Count(), femaleEmployees.Count(),others.Count(),
-
-                    MalePermaemployees.Count()+femaleEmployees.Count()+others.Count()
-
+                    malePermanent,
+                    femalePermanent,
+                    otherPermanent,
+                    total
                 },
-                Labels = new string[] { "Male", "Female", "Others", "Total" }
+                Labels = new string[]
+                {
+                    "Male",
+                    "Female",
+                    "Others",
+                    "Total"
+                }
             };
+
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
+
         public JsonResult GetProbationEmployee(string branch, string businessUnitId)
         {
             var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
@@ -940,51 +995,61 @@ namespace ExceedERP.Web.Controllers
         }
         public JsonResult GetOtherEmployee(string branch, string businessUnitId)
         {
-            var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+            // Base query: active employees only
+            IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
 
+            // Branch filter
             if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
-            {
-                var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
+                placements = placements.Where(p => p.BranchId == branchId);
+
+            // Business unit filter
             if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
-            {
-                var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).ToList();
-                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
-            }
-            var MaleOtheremployees = person_Employees
-                .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status != EmployeeStatus.CONTRACT
-                                                                  && x.Status != EmployeeStatus.PERMANENT
-                                                                  && x.Status != EmployeeStatus.PROBATION).ToList();
+                placements = placements.Where(p => p.BusinessUnitId == buUnitId);
 
-            var femaleOtherEmployees = person_Employees
-                .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status != EmployeeStatus.CONTRACT
-                                                                    && x.Status != EmployeeStatus.PERMANENT
-                                                                    && x.Status != EmployeeStatus.PROBATION).ToList();
+            // Filter employees by placements
+            var empIds = placements.Select(p => p.EmployeeId).Distinct();
+            employees = employees.Where(e => empIds.Contains(e.EmployeeId));
 
+            // Materialize the list once
+            var personList = employees.ToList();
 
-            var otherEmployees = person_Employees
-                .Where(x => x.IsActive && x.Gender != Gender.MALE
-                                        && x.Gender != Gender.FEMALE
-                                        && x.Status != EmployeeStatus.CONTRACT
-                                        && x.Status != EmployeeStatus.PERMANENT
-                                        && x.Status != EmployeeStatus.PROBATION).ToList();
+            // Exclude probation employees using helper
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(personList);
 
+            // Select employees that are not in probation and not permanent or contract
+            var otherEmployees = personList
+                .Where(e => !probationIds.Contains(e.EmployeeId)
+                            && e.Status != EmployeeStatus.CONTRACT
+                            && e.Status != EmployeeStatus.PERMANENT)
+                .ToList();
 
+            // Count by gender
+            var maleOther = otherEmployees.Count(x => x.Gender == Gender.MALE);
+            var femaleOther = otherEmployees.Count(x => x.Gender == Gender.FEMALE);
+            var otherGender = otherEmployees.Count(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE);
 
+            var total = maleOther + femaleOther + otherGender;
 
+            // Format for dashboard chart
             var formattedData = new
             {
                 Data = new int[]
                 {
-
-                    MaleOtheremployees.Count(), femaleOtherEmployees.Count(),otherEmployees.Count(),
-
-                    MaleOtheremployees.Count()+femaleOtherEmployees.Count()+otherEmployees.Count()
-
+                    maleOther,
+                    femaleOther,
+                    otherGender,
+                    total
                 },
-                Labels = new string[] { "Male ", "Female", "Others", "Total" }
+                Labels = new string[]
+                {
+                    "Male",
+                    "Female",
+                    "Others",
+                    "Total"
+                }
             };
+
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
         [AcceptVerbs(HttpVerbs.Get)]
@@ -1022,14 +1087,261 @@ namespace ExceedERP.Web.Controllers
                 }
             }
 
-            //var totalEmployeeCount = _db.Person_Employee
-            //    .Where(x => employeeTypeIdLists.Contains(x.EmployeeTypeId) && x.IsActive)
-            //    .Count();
-            //formattedData.Data.Add(new List<int> { totalEmployeeCount });
-            //formattedData.Labels.Add("Total");
 
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
+        //public JsonResult GetEmployeeCount(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int UnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == UnitId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    List<int> employeeIds = HrHelper.GetEmployeeInProbaition(person_Employees);
+        //    var contrat = person_Employees.Where(x => !employeeIds.Contains(x.EmployeeId)
+        //                                             && x.Status == EmployeeStatus.CONTRACT).ToList();
+        //    var permanent = person_Employees
+        //                .Where(x => !employeeIds.Contains(x.EmployeeId)
+        //                && x.Status == EmployeeStatus.PERMANENT)
+        //                .ToList();
+        //    var probation = person_Employees
+        //                    .Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
+        //    var others = person_Employees
+        //                        .Where(x => !employeeIds.Contains(x.EmployeeId)
+        //                                    && x.Status != EmployeeStatus.CONTRACT
+        //                                    && x.Status != EmployeeStatus.PERMANENT)
+        //                                   .ToList();
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+        //            contrat.Count(),
+        //            permanent.Count(),
+        //            probation.Count(),
+        //            others.Count()
+        //        },
+        //        Labels = new string[]
+        //        {
+        //            "Contract",
+        //            "Permanent",
+        //            "Probation",
+        //            "Others"
+        //        }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetContratEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MaleContratemployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.CONTRACT).ToList();
+        //    var femaleContEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.CONTRACT).ToList();
+        //    var others = person_Employees
+        //       .Where(x => x.IsActive && x.Gender != Gender.FEMALE
+        //                                   && x.Gender != Gender.MALE
+        //                                   && x.Status == EmployeeStatus.CONTRACT).ToList();
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MaleContratemployees.Count(), femaleContEmployees.Count(),others.Count(),
+
+        //            MaleContratemployees.Count()+femaleContEmployees.Count()+others.Count()
+
+        //        },
+        //        Labels = new string[] { "Male", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetPermanentEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MalePermaemployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PERMANENT).ToList();
+        //    var femaleEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.PERMANENT).ToList();
+        //    var others = person_Employees
+        //       .Where(x => x.IsActive
+        //                           && x.Gender != Gender.FEMALE
+        //                           && x.Gender != Gender.MALE
+        //                               && x.Status == EmployeeStatus.PERMANENT).ToList();
+
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MalePermaemployees.Count(), femaleEmployees.Count(),others.Count(),
+
+        //            MalePermaemployees.Count()+femaleEmployees.Count()+others.Count()
+
+        //        },
+        //        Labels = new string[] { "Male", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetProbationEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MaleProbationemployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PROBATION).ToList();
+        //    var femaleProbationEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE
+        //        && x.Status == EmployeeStatus.PROBATION).ToList();
+        //    var others = person_Employees.Where(x => x.IsActive
+        //                        && x.Gender != Gender.MALE
+        //                        && x.Gender != Gender.FEMALE
+        //                        && x.Status == EmployeeStatus.PROBATION).ToList();
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MaleProbationemployees.Count(), femaleProbationEmployees.Count(),others.Count(),
+
+        //            MaleProbationemployees.Count()+femaleProbationEmployees.Count()+others.Count()
+
+        //        },
+        //        Labels = new string[] { "Male ", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetOtherEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MaleOtheremployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status != EmployeeStatus.CONTRACT
+        //                                                          && x.Status != EmployeeStatus.PERMANENT
+        //                                                          && x.Status != EmployeeStatus.PROBATION).ToList();
+
+        //    var femaleOtherEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status != EmployeeStatus.CONTRACT
+        //                                                            && x.Status != EmployeeStatus.PERMANENT
+        //                                                            && x.Status != EmployeeStatus.PROBATION).ToList();
+
+
+        //    var otherEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender != Gender.MALE
+        //                                && x.Gender != Gender.FEMALE
+        //                                && x.Status != EmployeeStatus.CONTRACT
+        //                                && x.Status != EmployeeStatus.PERMANENT
+        //                                && x.Status != EmployeeStatus.PROBATION).ToList();
+
+
+
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MaleOtheremployees.Count(), femaleOtherEmployees.Count(),otherEmployees.Count(),
+
+        //            MaleOtheremployees.Count()+femaleOtherEmployees.Count()+otherEmployees.Count()
+
+        //        },
+        //        Labels = new string[] { "Male ", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //[AcceptVerbs(HttpVerbs.Get)]
+        //public ActionResult GetEmployeeType(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+
+        //    var formattedData = new
+        //    {
+        //        Data = new List<List<int>>(),
+        //        Labels = new List<string>()
+        //    };
+        //    var employeeTypeIdLists = person_Employees.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct();
+        //    var employeeTypeIds = person_Employees.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct().ToArray();
+        //    foreach (var employeeTypeId in employeeTypeIds)
+        //    {
+        //        var employeeType = _db.EmployeeTypes.Find(employeeTypeId);
+        //        if (employeeType != null)
+        //        {
+        //            var employeeCount = _db.Person_Employee
+        //                .Where(x => x.EmployeeTypeId == employeeTypeId && x.IsActive)
+        //                .Count();
+        //            formattedData.Data.Add(new List<int> { employeeCount });
+        //            formattedData.Labels.Add(employeeType.Name);
+        //        }
+        //    }
+
+        //    //var totalEmployeeCount = _db.Person_Employee
+        //    //    .Where(x => employeeTypeIdLists.Contains(x.EmployeeTypeId) && x.IsActive)
+        //    //    .Count();
+        //    //formattedData.Data.Add(new List<int> { totalEmployeeCount });
+        //    //formattedData.Labels.Add("Total");
+
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult GetEmployeeByAssignmentType(string branch, string businessUnitId)
         {
@@ -1095,6 +1407,7 @@ namespace ExceedERP.Web.Controllers
             return Json(formattedData, JsonRequestBehavior.AllowGet);
 
         }
+
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult GetEmployeeByResponsibilityLevel(string branch, string businessUnitId)
         {

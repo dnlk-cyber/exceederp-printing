@@ -158,6 +158,10 @@
     {
         sortable.SortMode(GridSortMode.SingleColumn);
     })
+    .Events(ev=> {
+        //ev.DetailExpand("onDetailExpand");
+        ev.DetailInit("onDetailInit");
+    })
     .Filterable()
         .Pageable(pageable => pageable
         .Input(true)
@@ -208,7 +212,6 @@
                     .Columns(columns =>
                     {
                         columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");//.Filterable(ftb => ftb.Multi(true).Search(true));
-
                         columns.Bound(c => c.Amount).Width(100);
                         columns.Bound(c => c.Balance).Width(100);
                         //columns.Bound(c => c.Amount).ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'n2') \\#")
@@ -226,10 +229,7 @@
                             {
                                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "btnStyle" });
                                 command.Destroy().Text(Resources.ActionButton_Cancel);
-
                             }
-
-
                         }).Width(200);
 
 
@@ -349,7 +349,63 @@
     }
 </style>
 
+<script>
+    function onDetailExpand(e) {
 
+        var masterGrid = $("#LeaveEntitlegrid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(e.masterRow);
+        var employeeId = masterDataItem.EmployeeId;
+
+        var selector = "#LeaveEntitleOld_" + employeeId;
+
+        // Initialize nested grid if missing
+        var grid = $(selector).data("kendoGrid");
+        if (!grid) {
+            $(selector).kendoGrid();
+            grid = $(selector).data("kendoGrid");
+        }
+
+        // Always reload data
+        if (grid) {
+            grid.dataSource.read();
+        }
+
+        // Initialize tabstrip & panelbar safely
+        var detailRow = e.detailRow;
+
+        detailRow.find(".k-tabstrip:not(.k-widget)").kendoTabStrip();
+        detailRow.find(".k-panelbar:not(.k-widget)").kendoPanelBar();
+    }
+
+    var detailGrids = {};
+
+    function onDetailInit(e) {
+        var id = e.data.EmployeeId;
+        var container = e.detailCell.find("#LeaveEntitleOld_" + id);
+        // avoid duplicate init
+        if (detailGrids[id]) return;
+        var grid = container.kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/LeaveEntitle/LeavesEntitle_OnePerson_Read",
+                        data: { id: id }
+                    }
+                },
+                schema: { data: "Data", total: "Total" },
+                serverPaging: true,
+                pageSize: 20
+            },
+            pageable: true,
+            sortable: true,
+            scrollable: false
+        }).data("kendoGrid");
+        detailGrids[id] = grid;
+    }
+
+
+
+</script>
 
 <script>
     
@@ -470,96 +526,5 @@
 
         }
     </script>
-@*<script>
-    function showLoader(show) {
-        if (show) {
-            $('#loading-image').show();
-        } else {
-            $('#loading-image').hide();
-        }
-    }
 
-    function getDropDownValue(dropdownId) {
-        return $("#" + dropdownId).data("kendoDropDownList").value();
-    }
-
-    function performAjaxAction(actionUrl, data, onSuccess, onError) {
-        $.ajax({
-            url: actionUrl,
-            data: data,
-            type: 'POST',
-            cache: false,
-            success: function (result) {
-                if (onSuccess) onSuccess(result);
-                showLoader(false);
-            },
-            error: function () {
-                if (onError) onError();
-                showLoader(false);
-            }
-        });
-    }
-
-    function Expire(e) {
-        showLoader(true);
-        try {
-            if (!confirm("Are you sure you want to expire this period's leave entitlements?")) {
-                showLoader(false);
-                return;
-            }
-
-            const period = getDropDownValue("GlFiscalYear");
-            const employeeId = getDropDownValue("LeaveEmployeeId");
-            if (!period ) {
-                alert("Dropdown values missing.");
-                showLoader(false);
-            }
-
-            if (!period) {
-                alert("Please select a valid period first!");
-                showLoader(false);
-                return;
-            }
-
-            performAjaxAction(
-                '@Url.Action("ExpireEntitle", "LeaveEntitle")',
-                { period: period, employeeId: employeeId },
-                function (result) {
-                    alert(result.Message);
-                    showLoader(false);
-                    $("#LeaveEntitlegrid").data("kendoGrid").dataSource.read();
-                },
-                function () {
-                    alert("Something went wrong. Please try again.");
-                }
-            );
-
-        } catch (e) {
-            alert("Unexpected error: " + e.message);
-            showLoader(false);
-        }
-    }
-
-    function ReverseExpire(e) {
-        showLoader(true);
-        try {
-            const period = getDropDownValue("GlFiscalYear");
-            const employeeId = getDropDownValue("EmployeeId");
-
-            performAjaxAction(
-                '@Url.Action("ReverseExpireEntitle", "LeaveEntitle")',
-                { period: period, employeeId: employeeId },
-                function (result)
-                {
-                    alert(result.Message);
-                    showLoader(false);
-                    $("#LeaveEntitlegrid").data("kendoGrid").dataSource.read();
-                }
-            );
-        } catch (e) {
-            showLoader(false);
-            alert("Unexpected error: " + e.message);
-        }
-    }
-</script>*@
 

@@ -412,7 +412,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.empSumaryObjectDataSource.Name = "empSumaryObjectDataSource";
             this.empSumaryObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("branchId", typeof(string), "= Parameters.branchId.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("orgStructureId", typeof(string), "= Parameters.orgStructureId.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("orgStructureIds", typeof(object[]), "= Parameters.orgStructureId.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.status.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("source", typeof(string), "= Parameters.source.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("empStatus", typeof(string), "= Parameters.empStatus.Value")});
@@ -601,6 +601,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             reportParameter4.AvailableValues.DataSource = this.WorkUnitObjectDataSource;
             reportParameter4.AvailableValues.DisplayMember = "= Fields.Name";
             reportParameter4.AvailableValues.ValueMember = "= Fields.OrgStructureId";
+            reportParameter4.MultiValue = true;
             reportParameter4.Name = "orgStructureId";
             reportParameter4.Text = "Work Unit";
             reportParameter4.Visible = true;
@@ -610,6 +611,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             reportParameter5.AvailableValues.ValueMember = "= Fields.Item";
             reportParameter5.Name = "status";
             reportParameter5.Text = "Status";
+            reportParameter5.Value = "Active";
             reportParameter5.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);

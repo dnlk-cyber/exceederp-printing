@@ -1333,6 +1333,8 @@
     <Compile Include="Areas\HRM\Controllers\HRMDataProviderController.cs" />
     <Compile Include="Areas\HRM\Controllers\HRMJobsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\GenerateLeaveEntitlementController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeaveConfigurationsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeaveEntitlementSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveEntitleStartingDateController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveModel.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveNewAwajStartYearsController.cs" />
@@ -7426,6 +7428,9 @@
     <Content Include="Areas\HRM\Views\TemplateTypeSettings\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\QualityInspection.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\PrintProgressReport.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveConfigurations\EditorTemplates\FiscalYear.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveConfigurations\EditorTemplates\Setting.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveConfigurations\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

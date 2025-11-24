@@ -592,6 +592,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementAfterSystemtEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveEntitlementSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveEntitleStartingDateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanDetailEntityTypeConfiguration());
@@ -2905,6 +2906,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Leave Management
+        public System.Data.Entity.DbSet<LeaveEntitlementSetting> LeaveEntitlementSettings { get; set; }
         public System.Data.Entity.DbSet<LeaveEntitleStartingDate> LeaveEntitleStartingDates { get; set; }
         public System.Data.Entity.DbSet<LeaveNewAwajStartYear> LeaveNewAwajStartYears { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlan> MonthlyLeavePlans { get; set; }

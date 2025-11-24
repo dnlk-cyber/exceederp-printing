@@ -2226,6 +2226,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTerminationObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTrainingObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTypeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationCriteriaODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationPeriodsObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationStatusODS.cs" />

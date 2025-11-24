@@ -401,9 +401,12 @@
             <ul class="submenu">
                 @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
                 {
-                    <li id="hrm05000100" class="actionlinlk">
-                        @Html.ActionLink(Resources.General_Leave_Setting, "Index", "SickLeaveSetting", new { area = "HRM" }, null)<b class="arrow"></b>
+                    <li id="hrmGeneralLeaveSetting05000100" class="actionlinlk">
+                        @Html.ActionLink(Resources.General_Leave_Setting, "Index", "LeaveConfigurations", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
+                    @*<li id="hrm05000100" class="actionlinlk">
+                @Html.ActionLink(Resources.General_Leave_Setting, "Index", "SickLeaveSetting", new { area = "HRM" }, null)<b class="arrow"></b>
+            </li>*@
                 }
                 @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
                 {
@@ -413,7 +416,7 @@
                 }
                 @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_User") || HttpContext.Current.User.IsInRole("HR_Admin"))
                 {
-                   
+
                     <li id="hrm05200100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveTaken, "Index", "Leave", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
@@ -538,14 +541,17 @@
                         @Html.ActionLink("Training & Need Assessment", "Index", "NeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     @*<li id="hrm06100100" class="actionlinlk">
-                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_DepartmentTrainingPlan, "Index", "NeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
-                        </li>*@
+                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_DepartmentTrainingPlan, "Index", "NeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
+            </li>*@
                     <li id="hrm06200100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.Training_Assessement_Transfer, "Index", "TrainingAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
+                    <li id="hrm06200100" class="actionlinlk">
+                        @Html.ActionLink(Resources.NavigatorTraining_TrainingPlan + " " + Resources.NavigatorReport_Summary, "Index", "TrainingPlanSummary", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
                     @*<li id="hrm06300100" class="actionlinlk">
-                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingPlan, "Index", "TrainingPlan", new { area = "HRM" }, null)<b class="arrow"></b>
-                        </li>*@
+                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingPlan, "Index", "TrainingPlan", new { area = "HRM" }, null)<b class="arrow"></b>
+            </li>*@
 
                     <li id="hrm06400100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_CourseTracking, "Index", "CourseTracking", new { area = "HRM" }, null)<b class="arrow"></b>

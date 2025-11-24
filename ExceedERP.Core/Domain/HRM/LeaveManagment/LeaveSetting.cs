@@ -9,7 +9,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
     /// <remarks>   Kibrom Abera, Feb 7,2025. </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+   
     public class LeaveTypeSetting : TrackUserOperation
     {
         public int LeaveTypeSettingId { get; set; }
@@ -25,9 +25,32 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public bool BlockBackdatedLeave { get; set; }
         [Display(Name = "Max Days Back")]
         public int? MaxDaysBack { get; set; }  // null = no restriction
+
+        // New field (applies only to Annual Leave)
+        //  New field: controls whether leave should be prorated or not
+        [Display(Name = "Allow Full Annual Leave (Ignore Service Months)")]
+        public bool AllowFullAnnualLeave { get; set; } = false;
         public string Remark { get; set; }
 
 
     }
+
+    public class LeaveEntitlementSetting : TrackUserOperation
+    {
+        [Key]
+        public int LeaveEntitlementSettingId { get; set; }
+
+        [Display(Name = "Fiscal_Year", ResourceType = typeof(Localization.Resources))]
+        public int GlFiscalYearId { get; set; }
+
+        [Display(Name = "Is Generated")]
+        public bool IsGenerated { get; set; }
+
+        [Display(Name = "Is Regenerating Allowed")]
+        public bool IsRegeneratingAllowed { get; set; } = false;
+
+        public string Remark { get; set; }
+    }
+
 
 }

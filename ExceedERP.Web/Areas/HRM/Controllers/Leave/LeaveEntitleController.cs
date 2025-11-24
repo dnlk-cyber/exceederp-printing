@@ -2043,63 +2043,66 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         public ActionResult LeavesEntitle_OnePerson_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            var leavesEntitleQuery = db.LeavesEntitle
-        .Where(x => x.EmployeeId == id && x.IsExpired==false)
-        .OrderByDescending(x => x.GlFiscalYearId)
-        .Select(x => new
-        {
-            x.LeaveEntitleId,
-            x.EmployeeId,
-            x.Balance,
-            x.GlFiscalYearId,
-            x.Amount,
-            x.Remark,
-            x.DateCreated,
-            x.LastModified,
-            x.CreatedBy,
-            x.ModifiedBy,
-            x.TotlalAmount,
-            x.OrgBranchName,
-            x.ExpiredBy,
-            x.ExpiredDate,
-            x.ReversedBy,
-            x.Void,
-            x.ReversedDate,
-            HireDate = x.Employee.HiredDateAmharic,
-            BranchId = x.Employee.BranchId,
-            EmployeeCode = x.Employee.EmployeeCode
-        });
-
-            var result = leavesEntitleQuery.ToDataSourceResult(request);
-
-            return Json(result, JsonRequestBehavior.AllowGet);
-            //var leavesentitle = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired)/*.Select(x => new { x.LeaveEntitleId, x.EmployeeId, x.Amount, x.Balance, x.GlFiscalYearId, x.Remark })*/.OrderByDescending(x=>x.GlFiscalYearId).ToList();
-            //DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
+            //    var leavesEntitleQuery = db.LeavesEntitle
+            //.Where(x => x.EmployeeId == id && x.IsExpired==false)
+            //.OrderByDescending(x => x.GlFiscalYearId)
+            //.Select(x => new
             //{
-            //    LeaveEntitleId = leaveEntitle.LeaveEntitleId,
-            //    EmployeeId = leaveEntitle.EmployeeId,
-            //    Balance = leaveEntitle.Balance,
-            //    GlFiscalYearId = leaveEntitle.GlFiscalYearId,
-            //    Amount = leaveEntitle.Amount,
-            //    Remark = leaveEntitle.Remark,
-            //    BranchId = GetBranch(leaveEntitle.EmployeeId),
-            //    DateCreated = leaveEntitle.DateCreated,
-            //    LastModified = leaveEntitle.LastModified,
-            //    CreatedBy = leaveEntitle.CreatedBy,
-            //    ModifiedBy = leaveEntitle.ModifiedBy,
-            //    EmployeeCode = GetEmployeeCode(leaveEntitle.EmployeeId),
-            //    TotlalAmount = leaveEntitle.TotlalAmount,
-            //    OrgBranchName = leaveEntitle.OrgBranchName,
-            //    ExpiredBy = leaveEntitle.ExpiredBy,
-            //    ExpiredDate = leaveEntitle.ExpiredDate,
-            //    ReversedBy = leaveEntitle.ReversedBy,
-            //    Void = leaveEntitle.Void,
-            //    ReversedDate = leaveEntitle.ReversedDate,
-            //    SumOfBalances = GetTotalBalance(leaveEntitle.EmployeeId),
-            //    HireDate = leaveEntitle.Employee.HiredDate.ToShortDateString()
+            //    x.LeaveEntitleId,
+            //    x.EmployeeId,
+            //    x.Balance,
+            //    x.GlFiscalYearId,
+            //    x.Amount,
+            //    x.Remark,
+            //    x.DateCreated,
+            //    x.LastModified,
+            //    x.CreatedBy,
+            //    x.ModifiedBy,
+            //    x.TotlalAmount,
+            //    x.OrgBranchName,
+            //    x.ExpiredBy,
+            //    x.ExpiredDate,
+            //    x.ReversedBy,
+            //    x.Void,
+            //    x.ReversedDate,
+            //    HireDate = x.Employee.HiredDateAmharic,
+            //    BranchId = x.Employee.BranchId,
+            //    EmployeeCode = x.Employee.EmployeeCode
             //});
 
-            //return Json(result);
+            //    var result = leavesEntitleQuery.ToDataSourceResult(request);
+
+            //    return Json(result, JsonRequestBehavior.AllowGet);
+            var leavesentitle = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired).OrderByDescending(x => x.GlFiscalYearId).ToList();
+            DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new LeaveEntitle
+            {
+                LeaveEntitleId = leaveEntitle.LeaveEntitleId,
+                EmployeeId = leaveEntitle.EmployeeId,
+                Balance = leaveEntitle.Balance,
+                GlFiscalYearId = leaveEntitle.GlFiscalYearId,
+                Amount = leaveEntitle.Amount,
+                IsAdded = leaveEntitle.IsAdded,
+                IsExpired = leaveEntitle.IsExpired,
+                Remark = leaveEntitle.Remark,
+                BranchId = leaveEntitle.BranchId,
+                DateCreated = leaveEntitle.DateCreated,
+                LastModified = leaveEntitle.LastModified,
+                CreatedBy = leaveEntitle.CreatedBy,
+                ModifiedBy = leaveEntitle.ModifiedBy,
+                TotlalAmount = leaveEntitle.TotlalAmount,
+                EmployeeCode = leaveEntitle.Employee.EmployeeCode,
+                OrgBranchName = leaveEntitle.OrgBranchName,
+                ExpiredBy = leaveEntitle.ExpiredBy,
+                ExpiredDate = leaveEntitle.ExpiredDate,
+                ReversedBy = leaveEntitle.ReversedBy,
+                Void = leaveEntitle.Void,
+                ReversedDate = leaveEntitle.ReversedDate,
+                SumOfBalances = GetTotalBalance(leaveEntitle.EmployeeId),
+                HireDate = leaveEntitle.Employee.HiredDate.ToString("dd.MM.yyyy")
+
+            });
+
+            return Json(result);
         }
         [AuthorizeRoles(HrmConstants.HRLeaveUser)]
         [AcceptVerbs(HttpVerbs.Post)]

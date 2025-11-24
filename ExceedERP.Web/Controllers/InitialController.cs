@@ -357,6 +357,8 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
 	new ApplicationRole("HR_Recruitment_Requester", "Request Recruitment", "HR"),
 	new ApplicationRole("HR_Training_Requester", "Request Training", "HR"),
 	new ApplicationRole("Announcement", "Announcement", "HR"),
+	new ApplicationRole("Leave_Entitlement_Admin", "Leave Entitlement Admin", "HRM"),
+	new ApplicationRole("Leave_Entitlement_Edit", "Leave Entitlement Edit", "HRM"),
 	new ApplicationRole("PlacementDeActivateByBranch","De-Activate Employees Based on Branch","HRM"),
 
 

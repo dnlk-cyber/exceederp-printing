@@ -6,6 +6,7 @@
         public string SummaryName { get; set; }
         public int NumberOfMaleEmployee { get; set; }
         public int NumberOfFemaleEmployee { get; set; }
+        public int NumberOfOtherEmployee { get; set; }
         public double TotalEmployee { get; set; }
         public int index { get; set; }
         

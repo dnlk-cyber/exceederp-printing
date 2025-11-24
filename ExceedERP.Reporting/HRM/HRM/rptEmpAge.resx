@@ -121,7 +121,7 @@
     <value>No</value>
   </data>
   <data name="textBox45.Value" xml:space="preserve">
-    <value>= Fields.Criteria</value>
+    <value>Age range</value>
   </data>
   <data name="NoOfMaleEmployee.Value" xml:space="preserve">
     <value>No Of Male Employee</value>
@@ -224,5 +224,8 @@
   </data>
   <data name="reportParameter6.Text" xml:space="preserve">
     <value>Columns</value>
+  </data>
+  <data name="reportParameter7.Text" xml:space="preserve">
+    <value>Employeement Type</value>
   </data>
 </root>

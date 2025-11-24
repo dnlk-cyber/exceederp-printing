@@ -346,16 +346,16 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.LeaveEntitleStartingDateId);
         }
     }
-    //public class LeaveEntitleEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitle>
-    //{
+    public class LeaveEntitlementSettingEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitlementSetting>
+    {
 
-    //    public LeaveEntitleEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("LeaveEntitle", "HRM");
-    //        this.HasKey<int>(o => o.LeaveEntitleId);
+        public LeaveEntitlementSettingEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveEntitlementSettings", "HRM");
+            this.HasKey<int>(o => o.LeaveEntitlementSettingId);
 
-    //    }
-    //}
+        }
+    }
     public class LeaveEntitleEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitle>
     {
         public LeaveEntitleEntityTypeConfiguration()
