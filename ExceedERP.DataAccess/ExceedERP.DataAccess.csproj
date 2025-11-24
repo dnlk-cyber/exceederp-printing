@@ -785,6 +785,10 @@
     <Compile Include="Migrations\202511180528586_prinitingcommongaddcloseby.Designer.cs">
       <DependentUpon>202511180528586_prinitingcommongaddcloseby.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511241412504_LeaveandOtherModelChanges.cs" />
+    <Compile Include="Migrations\202511241412504_LeaveandOtherModelChanges.Designer.cs">
+      <DependentUpon>202511241412504_LeaveandOtherModelChanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1325,6 +1329,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511180528586_prinitingcommongaddcloseby.resx">
       <DependentUpon>202511180528586_prinitingcommongaddcloseby.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511241412504_LeaveandOtherModelChanges.resx">
+      <DependentUpon>202511241412504_LeaveandOtherModelChanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
