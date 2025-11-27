@@ -1108,5 +1108,12 @@ namespace ExceedERP.Helpers.HR
             return employeeIds;
         }
 
+        public static bool GetDatePreference()
+        {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                return db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            }
+        }
     }
 }

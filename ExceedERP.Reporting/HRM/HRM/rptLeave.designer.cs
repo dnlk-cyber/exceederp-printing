@@ -69,8 +69,8 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox5 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
             this.LeaveSummary = new Telerik.Reporting.TextBox();
-            this.Organization = new Telerik.Reporting.ObjectDataSource();
             this.shape3 = new Telerik.Reporting.Shape();
+            this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox7
@@ -385,7 +385,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // pageFooterSection1
             // 
-            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1D);
+            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.40003934502601624D);
             this.pageFooterSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox1,
             this.Page});
@@ -394,7 +394,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // textBox1
             // 
-            this.textBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.42515754699707D), Telerik.Reporting.Drawing.Unit.Inch(0.74795597791671753D));
+            this.textBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.42515754699707D), Telerik.Reporting.Drawing.Unit.Inch(0.10003948211669922D));
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5748031139373779D), Telerik.Reporting.Drawing.Unit.Inch(0.19995993375778198D));
             this.textBox1.Style.Font.Bold = true;
@@ -403,7 +403,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // Page
             // 
-            this.Page.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.9753541946411133D), Telerik.Reporting.Drawing.Unit.Inch(0.74795597791671753D));
+            this.Page.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.9753541946411133D), Telerik.Reporting.Drawing.Unit.Inch(0.10003948211669922D));
             this.Page.Name = "Page";
             this.Page.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.44972458481788635D), Telerik.Reporting.Drawing.Unit.Inch(0.19995993375778198D));
             this.Page.Style.Font.Bold = true;
@@ -525,12 +525,6 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.LeaveSummary.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.LeaveSummary.Value = "Leave Summary";
             // 
-            // Organization
-            // 
-            this.Organization.DataMember = "GetOrganization";
-            this.Organization.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
-            this.Organization.Name = "Organization";
-            // 
             // shape3
             // 
             this.shape3.Angle = 0D;
@@ -544,6 +538,12 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.shape3.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Point(0.5D);
             this.shape3.Style.BorderWidth.Top = Telerik.Reporting.Drawing.Unit.Point(1.5D);
             this.shape3.Style.Color = System.Drawing.Color.Transparent;
+            // 
+            // Organization
+            // 
+            this.Organization.DataMember = "GetOrganization";
+            this.Organization.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
+            this.Organization.Name = "Organization";
             // 
             // rptLeave
             // 

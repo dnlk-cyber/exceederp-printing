@@ -6,12 +6,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 {
-    /// <summary>   A termination. </summary>
+    /// 
+    /// <summary>    termination. </summary>
     ///
-    /// <remarks>   Mekanehiwot, 10/31/2016. </remarks>
+    /// <remarks>  First  Mekanehiwot, 10/31/2016. </remarks>
+    /// <remarks>  last   Kibrom, 10/31/2022 to Feb, 2026. </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public class Termination:DepartmentOperations 
+    public class Termination : DepartmentOperations
     {
         [Key]
         public int TerminationId { get; set; }
@@ -45,6 +46,9 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public bool IsForOther { get; set; }
         [Display(Name = "Is Forcibly Terminated ")]
         public bool IsForciblyTerminated { get; set; }
+        //to save status
+        [Display(Name = "IsApplied")]
+        public bool IsApplied { get; set; }
         /// <summary>
         /// IsDirect Field is added to check if the termination is direct or with request 
         /// if it is from request all the button are hidden
@@ -60,6 +64,8 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public bool IsApproved { get; set; }
         [NotMapped]
         public bool IsActive { get; set; }
+        [NotMapped]
+        public bool IsAgreeRetunSalary { get; set; }
 
     }
 }

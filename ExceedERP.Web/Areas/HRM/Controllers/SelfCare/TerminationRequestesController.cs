@@ -8,11 +8,8 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.Common.Controllers;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -21,48 +18,42 @@ using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
-    [AuthorizeRoles(HrmConstants.HRSelfServiceManager, HrmConstants.HRTerminationUser,
-        HrmConstants.HRDepartmentHead, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRSelfServiceManager, HrmConstants.HRTerminationUser, HrmConstants.HRDepartmentHead, HrmConstants.HRAdmin)]
     public class TerminationRequestesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index()
         {
-            SetValues();
-            ViewData["Department"] = db.MainCompanyStructures.ToList();
+            PopulateViewData();
             return View();
         }
-
-        private void SetValues()
+        private void PopulateViewData()
         {
-            var terminationTypes = db.Lookups.Where(l => l.LookupType == LookUpTypes.TERMINATIONTYPE);
-            ViewData["TerminationTypes"] = terminationTypes;
-            HRMInputs inputs = new HRMInputs();
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = db.Person_Employee.ToList();// list;
 
-            var employeName = db.Person_Employee.ToList();
-            ViewData["EmployeeName"] = employeName;
+            // Employees for dropdown (used by ApproverId column)
+            var employees = db.Person_Employee
+                              .Where(e => e.IsActive)
+                              .Select(e => new
+                              {
+                                  PersonId = e.EmployeeId,
+                                  EmployeeId = e.EmployeeId,
+                                  FullNameAmharic = e.FirstName + " " + e.MiddleName + " " + e.LastName,
+                                  FullNameaEnglish = e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish
+                              }).AsQueryable();
+            // Assign to ViewData for Kendo Grid ForeignKey binding
+            ViewData["EmployeeList"] = employees; // For EmployeeId column
+            ViewData["EmployeeName"] = employees;    // For ApproverId column
+            ViewData["Department"] = db.MainCompanyStructures.AsQueryable();
+            ViewData["TerminationTypes"] = db.Lookups.Where(l => l.LookupType == LookUpTypes.TERMINATIONTYPE).AsQueryable();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
         }
-
+        
 
         public ActionResult Terminations_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Core.Domain.HRM.EmployeeDetail.Termination> terminations = db.Terminations;
-
-            List<Core.Domain.HRM.EmployeeDetail.Termination> medicals = new List<Core.Domain.HRM.EmployeeDetail.Termination>();
-            foreach (var m in terminations)
-            {
-                db = new ExceedDbContext();
-                var status = db.RequestesStatus.Where(x => x.Status == RequestStatus.WAITING_FOR_APPROVAL && x.RequestId == m.TerminationId && x.ReferenceType == "Termination").FirstOrDefault();
-                if (status != null)
-                {
-                    medicals.Add(m);
-                }
-
-            }
-
-            terminations = medicals.AsQueryable().OrderBy(x => x.ApplicationDate);
+            IQueryable<Core.Domain.HRM.EmployeeDetail.Termination> terminations = db.Terminations.Where(x=>x.IsSendForApproval).OrderByDescending(x => x.ApplicationDate);
+            
             DataSourceResult result = terminations.ToDataSourceResult(request, termination => new
             {
                 TerminationId = termination.TerminationId,
@@ -117,7 +108,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Terminations_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.EmployeeDetail.Termination termination)
         {
-
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
                 var entity = new Core.Domain.HRM.EmployeeDetail.Termination

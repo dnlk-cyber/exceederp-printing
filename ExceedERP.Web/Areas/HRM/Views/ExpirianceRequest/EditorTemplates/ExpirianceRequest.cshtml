@@ -4,128 +4,148 @@
 @using Kendo.Mvc.UI
 @model ExceedERP.Core.Domain.HRM.SelfCare.ExperienceRequest
 @using ExceedERP.Core.Localization
-
+@{
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
 <div class="form">
-<div class="row fullrow">
-    <div class="col-md-4 ro1">
-        <div class="form-group">
-            <div class="col-md-8">
+    <div class="row fullrow">
+        <div class="col-md-4 ro1">
+            <div class="form-group">
+                <div class="col-md-8">
 
-                @Html.LabelFor(model => model.IsForOther, htmlAttributes: new { @class = "control-label col-md-8" })
+                    @Html.LabelFor(model => model.IsForOther, htmlAttributes: new { @class = "control-label col-md-8" })
 
-                @(Html.CheckBoxFor(m => m.IsForOther, htmlAttributes: new { @onchange = "SetEmployee(this)" })
+                    @(Html.CheckBoxFor(m => m.IsForOther, htmlAttributes: new { @onchange = "SetEmployee(this)" })
 
-                      )
-                @Html.ValidationMessageFor(model => model.IsForOther, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-           
-            @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
-            
-            <div class="col-md-6">
-
-                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                      //  .Name("EmployeeId")
-                      .DataValueField("PersonId")
-                      .DataTextField("FullName")
-                      .OptionLabel(Resources.Select)
-                      .Filter("contains")
-                      .MinLength(2)
-                      .CascadeFrom("IsForOther")
-                      .HtmlAttributes(new { style = "width:200px" })
-                      .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
-                      //.DataSource(source =>
-                      //{
-                      //    source.Custom()
-                      //        .ServerFiltering(true)
-                      //        .ServerPaging(true)
-                      //        .Type("aspnetmvc-ajax")
-                      //        .Transport(transport => transport.Read(r => r.Action("GetEmployeesAskForOther", "HRMDataProvider")))
-                      //        .Schema(schema =>
-                      //        {
-                      //            schema.Data("Data")
-                      //                .Total("Total");
-                      //        });
-                      //})
-                      .DataSource(source =>
-                      {
-                          source.Read(read =>
-                          {
-                              read.Action("GetEmployeesAskForOther", "HRMDataProvider");
-                              //.Data("IsforOthers");
-                          })
-                              .ServerFiltering(false);
-                      })
-                      .Enable(false)
-
-                      .ValuePrimitive(true)
-
-
-                      .Height(400)
-                      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
-                                      "<span>Photo</span>" +
-                                      "<span>Full Name</span>" +
-                                      "</div>")
-                      .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
-                                "<div class='Employee-name'>#:FullName#</div>")
-                      )
-
-
-
+                    )
+                    @Html.ValidationMessageFor(model => model.IsForOther, "", new { @class = "text-danger" })
+                </div>
             </div>
 
-        </div>
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                                  //  .Name("EmployeeId")
+                                  .DataValueField("PersonId")
+                                  .DataTextField("FullName")
+                                  .OptionLabel(Resources.Select)
+                                  .Filter("contains")
+                                  .MinLength(2)
+                                  .CascadeFrom("IsForOther")
+                                  .HtmlAttributes(new { style = "width:200px" })
+                                  .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                                  //.DataSource(source =>
+                                  //{
+                                  //    source.Custom()
+                                  //        .ServerFiltering(true)
+                                  //        .ServerPaging(true)
+                                  //        .Type("aspnetmvc-ajax")
+                                  //        .Transport(transport => transport.Read(r => r.Action("GetEmployeesAskForOther", "HRMDataProvider").Data("sendForgery")))
+                                  //        .Schema(schema =>
+                                  //        {
+                                  //            schema.Data("Data")
+                                  //                .Total("Total");
+                                  //        });
+                                  //})
+                                  .DataSource(source =>
+                                  {
+                                      source.Read(read =>
+                                      {
+                                          read.Action("GetEmployeesAskForOther", "HRMDataProvider");
+                                          //.Data("IsforOthers");
+                                      })
+                                          .ServerFiltering(false);
+                                  })
+                                  .Enable(false)
+
+                                  .ValuePrimitive(true)
 
 
-        <div class="form-group">
+                                  .Height(400)
+                                  .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                  "<span>Photo</span>" +
+                                                  "<span>Full Name</span>" +
+                                                  "</div>")
+                                  .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                            "<div class='Employee-name'>#:FullName#</div>")
+                    )
 
-            @Html.LabelFor(model => model.RequestType, htmlAttributes: new { @class = "control-label col-md-8" })
 
-            <div class="col-md-6">
 
-                @(Html.Kendo().DropDownListFor(model => model.RequestType)
-                      .ValuePrimitive(true)
-                      .HtmlAttributes(new { style = "width:200px" })
-                      .DataTextField("Text")
-                      .DataValueField("Value")
+                </div>
 
-                      .BindTo(EnumExtension.EnumToSelectList(typeof(SelfServiceRequestType)))
-                      )
-                @Html.ValidationMessageFor(model => model.RequestType, "", new { @class = "text-danger" })
+            </div>
+
+
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.RequestType, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+
+                    @(Html.Kendo().DropDownListFor(model => model.RequestType)
+                                  .ValuePrimitive(true)
+                                  .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("Text")
+                                  .Filter("contains")
+                                  .DataValueField("Value")
+
+                                  .BindTo(EnumExtension.EnumToSelectList(typeof(SelfServiceRequestType)))
+                    )
+                    @Html.ValidationMessageFor(model => model.RequestType, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4 ro1">
-        <div class="row"></div><br/><br/>
-        <div class="form-group">
+        <div class="col-md-4 ro1">
+            <div class="row"></div><br /><br />
+            @if (useEthiopian)
+            {
+                <div class="form-group">
 
-            @Html.LabelFor(model => model.ApplicationDateAm, htmlAttributes: new {@class = "control-label col-md-8"})
+                    @Html.LabelFor(model => model.ApplicationDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
 
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.ApplicationDateAm, htmlAttributes: new {disabled = "disabled", @class = "et-popup-picker"}) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)"/>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.ApplicationDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
 
-                @Html.ValidationMessageFor(model => model.ApplicationDateAm, "", new {@class = "text-danger"})
+                        @Html.ValidationMessageFor(model => model.ApplicationDateAm, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+
+                    @Html.LabelFor(model => model.ApplicationDate, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                    <div class="col-md-10">
+                        @Html.Kendo().DatePickerFor(model => model.ApplicationDate)
+                        @Html.ValidationMessageFor(model => model.ApplicationDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+               
+            }
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.Remark)
+                                                                  .HtmlAttributes(new { style = "width:190px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
             </div>
+
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Remark, htmlAttributes: new {@class = "control-label col-md-8"})
-
-            <div class="col-md-6">
-                @(Html.Kendo().TextBoxFor(model=>model.Remark)
-                      .HtmlAttributes(new { style = "width:190px" })
-                      )
-                @Html.ValidationMessageFor(model => model.Remark, "", new {@class = "text-danger"})
-            </div>
-        </div>
-
-    </div>
     </div>
 </div>
 
-<style >
+<style>
     .Employee-photo {
         display: inline-block;
         width: 32px;

@@ -4,6 +4,7 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <Legend>@Resources.NavigatorTermination_TerminationRequest</Legend>
 @(Html.Kendo().Grid<Termination>()
@@ -11,19 +12,28 @@
       .Columns(columns =>
       {
 
-          columns.Bound(c => c.EmployeeCode).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(160).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(150);
-          columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(150);
-          columns.Bound(c => c.Reason).Width(150);
+          columns.Bound(c => c.EmployeeCode).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(120);
+              columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(120);
+          }
+          else
+          {
+              columns.Bound(c => c.ApplicationDate).Width(120);
+              columns.Bound(c => c.TerminationDate).Width(120);
+          }
+
+          columns.Bound(c => c.Reason).Width(300);
 
           // columns.Bound(c => c.Remark).Width (120);
           columns.Command(command =>
           {
               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
               command.Destroy().Text(Resources.ActionButton_Cancel);
-          }).Width(190);
+          }).Width(200);
       })
       .ToolBar(toolbar =>
       {
@@ -36,10 +46,13 @@
           selectable.Mode(GridSelectionMode.Single);
           selectable.Type(GridSelectionType.Row);
       })
-           .Events(events => {
-               events.DataBound("onDataBound");
-               events.DetailExpand("onDetailExpandUser");
-           })
+      .Events(events =>
+      {
+          events.DataBound("onDataBound");
+          events.DetailExpand("onDetailExpandUser");
+
+
+      })
       .Scrollable(h => h.Height(500))
                .Groupable()
                       .Sortable(sortable =>
@@ -47,12 +60,11 @@
                           sortable.SortMode(GridSortMode.SingleColumn);
                       })
           .Filterable()
-             .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
+          .Pageable(pageable => pageable.Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
            .Sort(sort => sort.Add("ApplicationDate").Descending())
@@ -68,10 +80,10 @@
               model.Field(p => p.EmployeeCode).Editable(false);
               //model.Field(p => p.EmployeeId).Editable(false);
           })
-                  .Read(read => read.Action("Terminations_Read", "TerminationRequest"))
-                  .Create(create => create.Action("Terminations_Create", "TerminationRequest"))
-                  .Update(update => update.Action("Terminations_Update", "TerminationRequest"))
-                  .Destroy(destroy => destroy.Action("Terminations_Destroy", "TerminationRequest"))
+                  .Read(read => read.Action("Terminations_Read", "TerminationRequest").Data("sendForgery"))
+                  .Create(create => create.Action("Terminations_Create", "TerminationRequest").Data("sendForgery"))
+                  .Update(update => update.Action("Terminations_Update", "TerminationRequest").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("Terminations_Destroy", "TerminationRequest").Data("sendForgery"))
 
                   ).ClientDetailTemplateId("template")
 )
@@ -83,7 +95,11 @@
           {
           items.Add().Text(Resources.HR_RequestStatus).Content(
             @<text>
-                @* <legend>Status</legend>*@
+               # if (!IsSendForApproval){#
+                        <a onclick='return sendForApproval("#=TerminationId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
+                       
+                
+                  #}#
 
                 @(Html.Kendo().Grid<RequestesStatus>()
                                   .Name("RequestesStatusgrid_#=TerminationId#")
@@ -103,7 +119,7 @@
                           })
                           .ToolBar(toolbar =>
                           {
-                              toolbar.Custom().Action("SendForApproval", "TerminationRequest").Text(Resources.HR_Send_For_Approval);
+                              //toolbar.Custom().Action("SendForApproval", "TerminationRequest").Text(Resources.HR_Send_For_Approval);
                           })
                           .Editable(editable => editable.Mode(GridEditMode.InLine))
                           .Scrollable(h => h.Height(300))
@@ -123,10 +139,10 @@
                                   model.Field(p => p.ApproverDepartment).Editable(false);
                               })
 
-                                      .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TerminationId#", referenceType = "Termination" }))
-                                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TerminationId#", referenceType2 = "Termination" }))
-                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                      .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TerminationId#", referenceType = "Termination" }).Data("sendForgery"))
+                                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TerminationId#", referenceType2 = "Termination" }).Data("sendForgery"))
+                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
                           ).ToClientTemplate()
                 )
 
@@ -191,26 +207,7 @@
     }
 </script>
 <script>
-    function GetDate() {
-
-        var x = AssignDate();
-        var y = x;
-        $("#ApplicationDateAm").trigger("change");
-        $("#TerminationDateAm").trigger("change");
-        for (var o in y) {
-            $.ajax({
-                contentType: "application/json; charset=utf-8",
-                url: '@Url.Action("SetDate", "TerminationRequest")',
-                data: { name: y[o].id, value: y[o].date },
-                type: 'GET',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                }
-
-            });
-        }
-    }
+  
 
 </script>
 <script>
@@ -224,18 +221,18 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
-            if (dataItem.IsApproved === true || dataItem.IsDepartmentSendForApproval) {
+            if (dataItem.IsApproved === true || dataItem.IsSendForApproval) {
 
                 row.css("background-color", "darkgrey");
                 row.find(".k-grid-edit").remove();
                 row.find(".k-grid-delete").remove();
             }
-            else {
+            //else {
 
-                row.css("background-color", "lightgreen");
-                row.find(".k-grid-delete").remove();
+            //    row.css("background-color", "lightgreen");
+            //    row.find(".k-grid-delete").remove();
 
-            }
+            //}
 
 
         }
@@ -364,4 +361,25 @@
             }
         }
     }
+</script>
+<script>
+
+
+    function sendForApproval(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "TerminationRequest", new { area = "HRM" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+    
 </script>

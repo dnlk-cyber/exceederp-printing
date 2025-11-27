@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.Common.Controllers;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Hubs;
-
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
     [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRProfileAdmin, HrmConstants.HRDepartmentHead)]
@@ -33,12 +26,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         private void PopulateViewData()
         {
-            HRMInputs inputs = new HRMInputs();
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
-            var employeName = db.Person_Employee.ToList();
-            ViewData["EmployeeName"] = employeName;
-            ViewData["Department"] = db.MainCompanyStructures.ToList();
+
+            // Employees for dropdown (used by ApproverId column)
+            var employees = db.Person_Employee
+                              .Where(e => e.IsActive)
+                              .Select(e => new
+                              {
+                                  PersonId = e.EmployeeId,
+                                  EmployeeId = e.EmployeeId,
+                                  FullNameAmharic = e.FirstName + " " + e.MiddleName + " " + e.LastName,
+                                  FullNameWithOutCode = e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish
+                              }).AsQueryable();
+            // Assign to ViewData for Kendo Grid ForeignKey binding
+            ViewData["EmployeeList"] = employees; // For EmployeeId column
+            ViewData["EmployeeName"] = employees;    // For ApproverId column
+            ViewData["Department"] = db.MainCompanyStructures.AsQueryable();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
         }
 
         public ActionResult SendForApproval()
@@ -100,19 +104,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         {
            // List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             IQueryable<ExperienceRequest> expriancerequests = db.ExprianceRequests;//.Where(x => mybraches.Contains(x.OrgBranchName));
-            //List<ExperienceRequest> Requstes = new List<ExperienceRequest>();
-            //foreach (var m in expriancerequests)
-            //{
-            //    db = new ExceedDbContext();
-            //    var status = db.RequestesStatus.Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.RequestId == m.ExperienceRequestId && x.ReferenceType == "Experience").FirstOrDefault();
-            //    if (status != null)
-            //    {
-            //        Requstes.Add(m);
-            //    }
-
-            //}
-
-            //expriancerequests = Requstes.AsQueryable().OrderBy(x => x.ApplicationDate);
+           
             DataSourceResult result = expriancerequests.ToDataSourceResult(request, exprianceRequest => new
             {
                 ExperienceRequestId = exprianceRequest.ExperienceRequestId,

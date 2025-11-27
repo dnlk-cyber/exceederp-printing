@@ -3,7 +3,9 @@
 @using Kendo.Mvc.UI
 @model ExceedERP.Core.Domain.HRM.EmployeeDetail.Termination
 @using ExceedERP.Core.Localization
-
+@{
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
 <div class="form">
 <div class="row fullrow">
     <div class="col-md-4 ro1">
@@ -66,7 +68,7 @@
                       .ValuePrimitive(true)
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetTermination", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetTermination", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       })
                       )
@@ -77,41 +79,74 @@
             @Html.LabelFor(model => model.Reason, htmlAttributes: new {@class = "control-label col-md-8"})
             <div class="col-md-6">
 
-                @(Html.Kendo().TextBoxFor(model => model.Reason)
-                      .HtmlAttributes(new { style = "width:200px" })
-                      )
-                @Html.ValidationMessageFor(model => model.Reason, "", new {@class = "text-danger"})
+                @Html.TextAreaFor(model => model.Reason, new { @class = "form-control", rows = "3", style = "width:200px;" })
+                @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+
             </div>
         </div>
     </div>
     <div class="col-md-6 ro1">
-        <div class="row"></div><br/><br/>
-        <div class="form-group">
-            @Html.LabelFor(model => model.ApplicationDateAm, htmlAttributes: new {@class = "control-label col-md-8"})
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.ApplicationDateAm, htmlAttributes: new {disabled = "disabled", @class = "et-popup-picker", @style = "10px" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)"/>
+        <div class="row"></div><br /><br />
+        @if (useEthiopian)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.ApplicationDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.ApplicationDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker", @style = "10px" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
 
-                @Html.ValidationMessageFor(model => model.ApplicationDateAm, "", new {@class = "text-danger"})
+                    @Html.ValidationMessageFor(model => model.ApplicationDateAm, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.TerminationDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.TerminationDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+                    @Html.ValidationMessageFor(model => model.TerminationDateAm, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.ApplicationDate, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-10">
+
+                    @Html.Kendo().DatePickerFor(model => model.ApplicationDate)
+                    @Html.ValidationMessageFor(model => model.ApplicationDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.TerminationDate, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-10">
+
+                    @Html.Kendo().DatePickerFor(model => model.TerminationDate)
+                    @Html.ValidationMessageFor(model => model.TerminationDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+        }
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsAgreeRetunSalary, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @Html.Kendo().CheckBoxFor(model => model.IsAgreeRetunSalary)@*.HtmlAttributes(new { @onClick = "onAutoGenerateCheckBox(this.checked)" })*@
+                @Html.ValidationMessageFor(model => model.IsAgreeRetunSalary, "", new { @class = "text-danger" })
+
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.TerminationDateAm, htmlAttributes: new {@class = "control-label col-md-8"})
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
 
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.TerminationDateAm, htmlAttributes: new {disabled = "disabled", @class = "et-popup-picker"}) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)"/>
-
-                @Html.ValidationMessageFor(model => model.TerminationDateAm, "", new {@class = "text-danger"})
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Remark, htmlAttributes: new {@class = "control-label col-md-8"})
-            
             <div class="col-md-6">
 
                 @(Html.Kendo().TextBoxFor(model => model.Remark)
-                      .HtmlAttributes(new { style = "width:200px" })
-                      )
-                @Html.ValidationMessageFor(model => model.Remark, "", new {@class = "text-danger"})
+                                              .HtmlAttributes(new { style = "width:200px" })
+                )
+                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
             </div>
         </div>
     </div>

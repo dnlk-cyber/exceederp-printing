@@ -7431,6 +7431,7 @@
     <Content Include="Areas\HRM\Views\LeaveConfigurations\EditorTemplates\FiscalYear.cshtml" />
     <Content Include="Areas\HRM\Views\LeaveConfigurations\EditorTemplates\Setting.cshtml" />
     <Content Include="Areas\HRM\Views\LeaveConfigurations\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\TerminationRequestes\EditorTemplates\TerminationRequest.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

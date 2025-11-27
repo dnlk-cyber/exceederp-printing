@@ -5,7 +5,9 @@ using System.Data.Entity;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
+using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
@@ -18,105 +20,104 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetLeaveSummary(string leaveType, string period, string branchId, string orgStructureId, string status, DateTime? from, DateTime? to)
+        public List<EmployeeSummary> GetLeaveSummary(string leaveType,string period,string branchId,string orgStructureId,
+                                                     string status,DateTime? from, DateTime? to)
         {
-            List<EmployeeSummary> list = new List<EmployeeSummary>();
-            EmployeeSummary employee = new EmployeeSummary();
+            
+            IQueryable<Placement> placements = db.Placements;
 
-            var placements = db.Placements.ToList();
+            if (int.TryParse(branchId, out int branch))
+                placements = placements.Where(x => x.BranchId == branch);
 
-            if (branchId != null)
-            {
-                int.TryParse(branchId, out int braId);
-                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
-            }
-            if (orgStructureId != null)
-            {
-                int.TryParse(orgStructureId, out int orgId);
-                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
-            }
+            if (int.TryParse(orgStructureId, out int org))
+                placements = placements.Where(x => x.OrgStructureId == org);
 
             if (status == "Active")
             {
-                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements);
+                placements = placements.Where(x => x.isCurrent);
             }
-            if (status == "InActive")
+            else if (status == "InActive")
             {
-                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements);
+                var inactiveEmployeeIds = db.Person_Employee
+                                            .Where(x => !x.IsActive)
+                                            .Select(x => x.EmployeeId)
+                                            .ToList();
+
+                placements = placements.Where(x => inactiveEmployeeIds.Contains(x.EmployeeId));
             }
+           
+            IQueryable<LeaveRequest> leaves = db.LeaveRequest.Where(x=>x.IsOnlineApproved);
 
-            #region set Leave
+            leaves = ApplyDateRangeFilter(leaves, from, to);
 
-            LeaveType? leave = null;
-            switch (leaveType)
+            if (int.TryParse(period, out int fiscalYear))
+                leaves = leaves.Where(x => x.GlFiscalYearId == fiscalYear);
+
+            if ( !string.IsNullOrEmpty(leaveType))
+                leaves = leaves.Where(x => x.Type.ToString() == leaveType);
+           
+            var distinctLeaveEmployeeIds = leaves
+                .Select(x => x.EmployeeId)
+                .Distinct()
+                .ToList();
+
+            if (!distinctLeaveEmployeeIds.Any())
+                return new List<EmployeeSummary>();
+
+           
+            var placementList = placements.ToList();
+
+           
+            var maleIds = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placementList)
+                                        .Select(x => x.EmployeeId)
+                                        .ToList();
+
+            var femaleIds = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placementList)
+                                          .Select(x => x.EmployeeId)
+                                          .ToList();
+
+           
+            var summary = new EmployeeSummary
             {
-                case "ANNUAL":
-                    leave = LeaveType.ANNUAL;
-                    break;
-                case "OTHER":
-                    leave = LeaveType.OTHER;
-                    break;
-                case "MARRIAGE":
-                    leave = LeaveType.MARRIAGE;
-                    break;
-                case "MATERNITY":
-                    leave = LeaveType.MATERNITY;
-                    break;
-                case "PATERNITY":
-                    leave = LeaveType.PATERNITY;
-                    break;
-                case "SICK_LEAVE":
-                    leave = LeaveType.SICK_LEAVE;
-                    break;
-            }
+                NumberOfMaleEmployee = distinctLeaveEmployeeIds.Count(id => maleIds.Contains(id)),
+                NumberOfFemaleEmployee = distinctLeaveEmployeeIds.Count(id => femaleIds.Contains(id))
+            };
 
-            #endregion
+            summary.TotalEmployee = summary.NumberOfMaleEmployee + summary.NumberOfFemaleEmployee;
 
-            var leaveLists = GetLeaveInRange(from, to);
-
-            if (period != null)
-            {
-                int.TryParse(period, out int glfisicalYearId);
-                leaveLists = leaveLists.Where(x => x.GlFiscalYearId == glfisicalYearId).ToList();
-            }
-            if (leaveType != null)
-            {
-                leaveLists = leaveLists.Where(x => x.LeaveType == leave).ToList();
-            }
-
-            var malesId = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId).ToList();
-            var femalesId = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId).ToList();
-
-            if (leaveLists.Any())
-            {
-                employee.NumberOfMaleEmployee = leaveLists.Where(x => malesId.Contains(x.EmployeeId)).Count();
-                employee.NumberOfFemaleEmployee = leaveLists.Where(x => femalesId.Contains(x.EmployeeId)).Count();
-                employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-
-                list.Add(employee);
-            }
-
-            return list;
+            return new List<EmployeeSummary> { summary };
         }
 
-        public List<Leave> GetLeaveInRange(DateTime? from, DateTime? to)
+
+
+        /// <summary>
+        /// EF 4.8-compatible From/To filtering
+        /// </summary>
+        public IQueryable<LeaveRequest> ApplyDateRangeFilter(
+            IQueryable<LeaveRequest> query,
+            DateTime? from,
+            DateTime? to)
         {
-            var leaveLists = db.Leaves.DistinctByField(x => x.EmployeeId).ToList();
-
             if (from != null && to == null)
+                return query.Where(x => x.From >= from);
+
+            if (from == null && to != null)
+                return query.Where(x => x.To <= to);
+
+            if (from != null && to != null)
             {
-                leaveLists = leaveLists.Where(x => x.From >= from).ToList();
-            }
-            else if (from == null && to != null)
-            {
-                leaveLists = leaveLists.Where(x => x.To <= to).ToList();
-            }
-            else if (from != null && to != null)
-            {
-                leaveLists = leaveLists.Where(x => (x.From.Date >= from && x.From.Date <= to) || (x.To.Date >= from && x.To.Date <= to) || (x.From.Date <= from && x.To.Date >= to)).ToList();
+                DateTime f = from.Value;
+                DateTime t = to.Value;
+
+                return query.Where(x =>
+                    (x.From >= f && x.From <= t) ||
+                    (x.To >= f && x.To <= t) ||
+                    (x.From <= f && x.To >= t)
+                );
             }
 
-            return leaveLists;
+            return query;
         }
+
     }
 }
