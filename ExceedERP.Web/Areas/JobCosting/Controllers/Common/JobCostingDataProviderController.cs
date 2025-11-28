@@ -1,4 +1,6 @@
-﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
+using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,13 +38,27 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers.Common
         }
         public JsonResult GetJobOrders()
         {
-            var jobs = db.Jobs.ToList();
-
-            return Json(jobs.Select(p => new
+            var jobSourceSetting = db.PrintingJobSetting.FirstOrDefault();
+            var PrintJobs = new PrintingJobOrder();
+            var Jobs = new Job();
+            if (jobSourceSetting!=null&&jobSourceSetting.IsFromPrinting==true)
             {
-                JobId = p.JobId,
-                JobNo = p.JobNo,
-            }), JsonRequestBehavior.AllowGet);
+                var jobs = db.PrintingJobOrders.Where(x=>x.IsOnlineApproved==true).ToList();
+                return Json(jobs.Select(p => new
+                {
+                    JobId = p.PrintingJobOrderId,
+                    JobNo = p.CRVNo,
+                }), JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                var jobs = db.Jobs.ToList();
+                return Json(jobs.Select(p => new
+                {
+                    JobId = p.JobId,
+                    JobNo = p.JobNo,
+                }), JsonRequestBehavior.AllowGet);
+            } 
         }
     }
 }
