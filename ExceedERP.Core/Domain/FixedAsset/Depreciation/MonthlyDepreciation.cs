@@ -9,7 +9,8 @@ namespace ExceedERP.Core.Domain.FixedAsset.Depreciation
         public int MonthlyDepreciationId { get; set; }
         [Display(Name = "Fiscal Year")]
         public int GlFiscalYearId { get; set; }
-        [Display(Name = "Period")]public int GLPeriodId { get; set; }
+        [Display(Name = "Period")]
+        public int GLPeriodId { get; set; }
         [Display(Name = "Branch/Project")]
         public int BranchId { get; set; }
         public virtual ICollection<MonthlyDepreciationDistribution> MonthlyDepreciationDistributions { get; set; }

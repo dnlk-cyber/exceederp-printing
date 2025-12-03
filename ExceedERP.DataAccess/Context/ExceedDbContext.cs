@@ -3735,11 +3735,17 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<MonthlyDepreciationItem> MonthlyDepreciationItems { get; set; }
         public DbSet<MonthlyDepreciationDistribution> MonthlyDepreciationDistributions { get; set; }
         public DbSet<MonthlyDepreciationValidation> MonthlyDepreciationValidations { get; set; }
-
+        //for tax
         public DbSet<AnnualDepreciation> AnnualDepreciations { get; set; }
         public DbSet<AnnualDepreciationItem> AnnualDepreciationItems { get; set; }
         public DbSet<AnnualDepreciationDistribution> AnnualDepreciationDistributions { get; set; }
         public DbSet<AnnualDepreciationValidation> AnnualDepreciationValidations { get; set; }
+
+        //for ifrs
+        public DbSet<IfrsDepreciation> IfrsDepreciations { get; set; }
+        public DbSet<IfrsDepreciationItem> IfrsDepreciationItems { get; set; }
+        public DbSet<IfrsDepreciationDistribution> IfrsDepreciationDistributions { get; set; }
+        public DbSet<IfrsDepreciationValidation> IfrsDepreciationValidations { get; set; }
 
         public DbSet<CategoryDepreciationValue> CategoryDepreciationValues { get; set; }
         #endregion

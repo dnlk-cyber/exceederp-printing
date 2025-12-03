@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Web.Helpers;
@@ -20,6 +21,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
     public class InactiveAssetRegistrationController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult Index()
@@ -30,51 +32,102 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
         public void PopulateData()
         {
-           
-            var branches = _db.Branch;
-            ViewData["Branches"] = branches;
-            var fixedAssetCategories = _db.FixedAssetCategories;
-            ViewData["fixedAssetCategories"] = fixedAssetCategories.ToList();
+            //var businessUnits = _db.BusinessUnits;
+            ViewData["BusinessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    BusinessUnitId = i.Id
+                }).AsQueryable();
+            // var branches = _db.Branch;
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    BranchId = i.Id
+                }).AsQueryable();
+            // var fixedAssetCategories = _db.FixedAssetCategories;
+            ViewData["fixedAssetCategories"] = CacheData.GetPPECategoryCaches().Select(
+                i => new
+                {
+                    CategoryName = i.Name,
+                    FixedAssetCategoryID = i.Id
+                }).AsQueryable();
 
-            var fixedAssetSubCategories = _db.FixedAssetSubCategories;
-            ViewData["fixedAssetSubCategories"] = fixedAssetSubCategories.ToList();
-            var fixedAssetSubCategoryNames = _db.FixedAssetSubCategoryNames;
-            ViewData["fixedAssetSubCategoryNames"] = fixedAssetSubCategoryNames.Select(s=>new {
-                FixedAssetSubCategoryNameId = s.FixedAssetSubCategoryNameId,
+            //var fixedAssetSubCategories = _db.FixedAssetSubCategories;
+            ViewData["fixedAssetSubCategories"] = CacheData.GetPPESubCategoryCaches().Select(
+                i => new
+                {
+                    SubCategoryName = i.Name,
+                    FixedAssetSubCategoryID = i.Id
+                }).AsQueryable();
+            //var fixedAssetSubCategoryNames = _db.FixedAssetSubCategoryNames;
+            ViewData["fixedAssetSubCategoryNames"] = CacheData.GetPPESubCategoryNameCaches().Select(s => new {
+                FixedAssetSubCategoryNameId = s.Id,
                 Name = s.Name
             }).ToList();
 
-            var fiscalYears = _db.GLFiscalYears;
-            ViewData["fiscalYears"] = fiscalYears.ToList();
-
-            var tax = _db.GLTaxRates;
-            ViewData["tax"] = tax;
-
-           
-            ViewData["conditions"] = _db.FixedAssetConditions;
-
-            var stores = _db.InventoryStores;
-            ViewData["Stores"] = stores;
-
-            var employee = _db.Person_Employee;
-            var selectedEmployee = employee.Select(
+            //var fiscalYears = _db.GLFiscalYears;
+            ViewData["fiscalYears"] = CacheData.GetTaxCaches().Select(
                 i => new
                 {
-                    Name = i.EmployeeCode + "-" +i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                    Code = i.EmployeeId
+                    Name = i.Name,
+                    GlFiscalYearId = i.Id
                 }).AsQueryable();
-            ViewData["personEmployees"] = selectedEmployee;
 
-            var costCenter = _db.BranchCostCenter;
-
-            var selectedcostCenter = costCenter.Select(
+            // var tax = _db.GLTaxRates;
+            ViewData["tax"] = CacheData.GetTaxCaches().Select(
                 i => new
                 {
-                    Name = i.MainCompanyStructure.Name,
-                    Code = i.OrgStructureId
+                    TaxName = i.Name,
+                    GLTaxRateID = i.Id
                 }).AsQueryable();
 
-            ViewData["costCenters"] = selectedcostCenter;
+
+            ViewData["conditions"] = CacheData.GetPPEAssetConditionsCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    FixedAssetConditionId = i.Id
+                }).AsQueryable();
+
+            //var stores = _db.InventoryStores;
+            ViewData["Stores"] = CacheData.GetStoreCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    StoreCode = i.Id
+                }).AsQueryable();
+
+            //var employee = _db.Person_Employee;
+            //var selectedEmployee = employee.Select(
+            //    i => new
+            //    {
+            //        Name = i.EmployeeCode + "-" +i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+            //        Code = i.EmployeeId
+            //    }).AsQueryable();
+            ViewData["personEmployees"] = CacheData.GetEmployeeCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    Code = i.Id
+                }).AsQueryable();
+
+            //var costCenter = _db.BranchCostCenter;
+
+            //var selectedcostCenter = costCenter.Select(
+            //    i => new
+            //    {
+            //        Name = i.MainCompanyStructure.Name,
+            //        Code = i.OrgStructureId
+            //    }).AsQueryable();
+
+            ViewData["costCenters"] = CacheData.GetWorkUnitCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    Code = i.Id
+                }).AsQueryable();
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
@@ -96,63 +149,67 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 registrations = registrations.Where(x => x.Tag == searchkey || x.Name == searchkey || x.SerialNo == searchkey);
             
             }
-            DataSourceResult result = registrations.ToDataSourceResult(request, registration => new {
-                AssetRegistrationId = registration.AssetRegistrationId,
-                StoreCode = registration.StoreCode,
-                BranchId = registration.BranchId,
-                OrgStructureId = registration.OrgStructureId,
-                EmployeeId = registration.EmployeeId,
-                Name = registration.Name,
-                FixedAssetConditionId = registration.FixedAssetConditionId,
-                FixedAssetCategoryID = registration.FixedAssetCategoryID,
-                FixedAssetSubCategoryID = registration.FixedAssetSubCategoryID,
-                FixedAssetNameID = registration.FixedAssetNameID,
-                Unit = registration.Unit,
-                Size = registration.Size,
-                Tag = registration.Tag,
-                SIV = registration.SIV,
-                SIVDate = registration.SIVDate,
-                PurchaseDate = registration.PurchaseDate,
-                PurchasePrice = registration.PurchasePrice,
-                GRN = registration.GRN,
-                GRNDate = registration.GRNDate,
-                OriginalValue = registration.OriginalValue,
-                BookValue = registration.BookValue,
-                IsGroup = registration.IsGroup,
-                GroupCode = registration.GroupCode,
-                Quanity = registration.Quanity,
-                Status = registration.Status,
-                IsMachinery = registration.IsMachinery,
-                Supplier = registration.Supplier,
-                Manufacturer = registration.Manufacturer,
-                SerialNo = registration.SerialNo,
-                PlateNo = registration.PlateNo,
-                PlateType = registration.PlateType,
-                ChassisNo = registration.ChassisNo,
-                MotorNo = registration.MotorNo,
-                EngineNo = registration.EngineNo,
-                ModelNo = registration.ModelNo,
-                LoadCapacity = registration.LoadCapacity,
-                FuelType = registration.FuelType,
-                ManufacturDate = registration.ManufacturDate,
-                NetWeight = registration.NetWeight,
-                TotalWeight = registration.TotalWeight,
-                Battery = registration.Battery,
-                Tyre = registration.Tyre,
-                IsBuilding = registration.IsBuilding,
-                Location = registration.Location,
-                Contractor = registration.Contractor,
-                ConstructionStartDate = registration.ConstructionStartDate,
-                ConstructionEndDate = registration.ConstructionEndDate,
+            DataSourceResult result = registrations.ToDataSourceResult(request, assetRegistration => new {
+                AssetRegistrationId = assetRegistration.AssetRegistrationId,
+                StoreCode = assetRegistration.StoreCode,
+                BranchId = assetRegistration.BranchId,
+                OrgStructureId = assetRegistration.OrgStructureId,
+                EmployeeId = assetRegistration.EmployeeId,
+                Name = assetRegistration.Name,
+                FixedAssetConditionId = assetRegistration.FixedAssetConditionId,
+                FixedAssetCategoryID = assetRegistration.FixedAssetCategoryID,
+                FixedAssetSubCategoryID = assetRegistration.FixedAssetSubCategoryID,
+                FixedAssetNameID = assetRegistration.FixedAssetNameID,
+                Unit = assetRegistration.Unit,
+                Size = assetRegistration.Size,
+                Tag = assetRegistration.Tag,
+                SIV = assetRegistration.SIV,
+                SIVDate = assetRegistration.SIVDate,
+                PurchaseDate = assetRegistration.PurchaseDate,
+                PurchasePrice = assetRegistration.PurchasePrice,
+                GRN = assetRegistration.GRN,
+                GRNDate = assetRegistration.GRNDate,
+                AcqusitionDate = assetRegistration.AcqusitionDate,
+                OriginalValue = assetRegistration.OriginalValue,
+                BookValue = assetRegistration.BookValue,
+                IFRSBookValue = assetRegistration.IFRSBookValue,
+                IsGroup = assetRegistration.IsGroup,
+                GroupCode = assetRegistration.GroupCode,
+                Quanity = assetRegistration.Quanity,
+                Status = assetRegistration.Status,
+                IsMachinery = assetRegistration.IsMachinery,
+                Supplier = assetRegistration.Supplier,
+                Manufacturer = assetRegistration.Manufacturer,
+                SerialNo = assetRegistration.SerialNo,
+                PlateNo = assetRegistration.PlateNo,
+                PlateType = assetRegistration.PlateType,
+                ChassisNo = assetRegistration.ChassisNo,
+                MotorNo = assetRegistration.MotorNo,
+                EngineNo = assetRegistration.EngineNo,
+                ModelNo = assetRegistration.ModelNo,
+                LoadCapacity = assetRegistration.LoadCapacity,
+                FuelType = assetRegistration.FuelType,
+                ManufacturDate = assetRegistration.ManufacturDate,
+                NetWeight = assetRegistration.NetWeight,
+                TotalWeight = assetRegistration.TotalWeight,
+                Battery = assetRegistration.Battery,
+                Tyre = assetRegistration.Tyre,
+                IsBuilding = assetRegistration.IsBuilding,
+                Location = assetRegistration.Location,
+                Contractor = assetRegistration.Contractor,
+                ConstructionStartDate = assetRegistration.ConstructionStartDate,
+                ConstructionEndDate = assetRegistration.ConstructionEndDate,
+                UsefulLifeYears = assetRegistration.UsefulLifeYears,
+                SalvageValue = assetRegistration.SalvageValue,
 
-                Condition = registration.Condition,
-                Remark = registration.Remark,
+                Condition = assetRegistration.Condition,
+                Remark = assetRegistration.Remark,
 
-                OrgBranchName = registration.OrgBranchName,
-                DateCreated = registration.DateCreated,
-                LastModified = registration.LastModified,
-                CreatedBy = registration.CreatedBy,
-                ModifiedBy = registration.ModifiedBy
+                OrgBranchName = assetRegistration.OrgBranchName,
+                DateCreated = assetRegistration.DateCreated,
+                LastModified = assetRegistration.LastModified,
+                CreatedBy = assetRegistration.CreatedBy,
+                ModifiedBy = assetRegistration.ModifiedBy
             });
 
             return Json(result);
@@ -190,6 +247,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
         {
             ModelState.Clear();// problem with created date validation
             #region validation
+
+            if (assetRegistration.AcqusitionDate == null)
+                ModelState.AddModelError("date", "Please fill asset Acquisition Date");
+
             if (assetRegistration.FixedAssetCategoryID == 0)
                 ModelState.AddModelError("cat", "Category is required");
 
@@ -305,8 +366,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     PurchasePrice = assetRegistration.PurchasePrice,
                     GRN = assetRegistration.GRN,
                     GRNDate = assetRegistration.GRNDate,
+                    AcqusitionDate = assetRegistration.AcqusitionDate,
                     OriginalValue = assetRegistration.OriginalValue,
                     BookValue = assetRegistration.BookValue,
+                    IFRSBookValue = assetRegistration.IFRSBookValue,
                     IsGroup = assetRegistration.IsGroup,
                     GroupCode = assetRegistration.GroupCode,
                     Quanity = assetRegistration.Quanity,
@@ -334,6 +397,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     Contractor = assetRegistration.Contractor,
                     ConstructionStartDate = assetRegistration.ConstructionStartDate,
                     ConstructionEndDate = assetRegistration.ConstructionEndDate,
+                    UsefulLifeYears = assetRegistration.UsefulLifeYears,
+                    SalvageValue = assetRegistration.SalvageValue,
 
                     Remark = assetRegistration.Remark,
 
@@ -378,6 +443,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             ModelState.Clear();
 
             #region validation
+
+            if (assetRegistration.AcqusitionDate == null)
+                ModelState.AddModelError("date", "Please fill asset Acquisition Date");
 
             if (assetRegistration.FixedAssetCategoryID == 0)
                 ModelState.AddModelError("cat", "Category is required");
@@ -495,8 +563,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     PurchasePrice = assetRegistration.PurchasePrice,
                     GRN = assetRegistration.GRN,
                     GRNDate = assetRegistration.GRNDate,
+                    AcqusitionDate = assetRegistration.AcqusitionDate,
                     OriginalValue = assetRegistration.OriginalValue,
                     BookValue = assetRegistration.BookValue,
+                    IFRSBookValue = assetRegistration.IFRSBookValue,
                     Status = assetRegistration.Status,
                     IsGroup = assetRegistration.IsGroup,
                     GroupCode = assetRegistration.GroupCode,
@@ -524,6 +594,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     Contractor = assetRegistration.Contractor,
                     ConstructionStartDate = assetRegistration.ConstructionStartDate,
                     ConstructionEndDate = assetRegistration.ConstructionEndDate,
+                    UsefulLifeYears = assetRegistration.UsefulLifeYears,
+                    SalvageValue = assetRegistration.SalvageValue,
 
                     Remark = assetRegistration.Remark,
 
@@ -590,6 +662,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     PurchasePrice = assetRegistration.PurchasePrice,
                     GRN = assetRegistration.GRN,
                     GRNDate = assetRegistration.GRNDate,
+                    AcqusitionDate = assetRegistration.AcqusitionDate,
                     OriginalValue = assetRegistration.OriginalValue,
                     BookValue = assetRegistration.BookValue,
                     Status = assetRegistration.Status,
@@ -679,7 +752,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             DataSourceResult result = revaluations.ToDataSourceResult(request, revaluation => new
             {
                 FixedAssetRevaluationID = revaluation.FixedAssetRevaluationID,
-                AddedValue = revaluation.AddedValue,
+                RevaluationType = revaluation.RevaluationType,
+                BookValue = revaluation.BookValue,
+                UsefulLifeYears = revaluation.UsefulLifeYears,
                 Description = revaluation.Description,
 
                 OrgBranchName = revaluation.OrgBranchName,

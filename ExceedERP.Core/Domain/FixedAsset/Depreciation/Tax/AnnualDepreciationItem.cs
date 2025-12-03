@@ -15,7 +15,13 @@ namespace ExceedERP.Core.Domain.FixedAsset.Depreciation
         public virtual AssetRegistration AssetRegistration { get; set; }
         [DisplayName("Amount")]
         public decimal DepreciationAmount { get; set; }
+        [DisplayName("Accumulated Dep. Amount")]
+        public decimal AccumulatedDepreciationAmount { get; set; }
         [Display(Name = "Book Value")]
         public decimal BookValue { get; set; }
+        public int BranchId { get; set; }//for distribution
+        public int BusinessUnitId { get; set; }//for distribution
+        [Display(Name = "Asset Group")]
+        public int FixedAssetGroupID { get; set; }
     }
 }

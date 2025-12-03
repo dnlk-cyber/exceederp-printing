@@ -936,6 +936,17 @@
     <Compile Include="Areas\Finance\Models\PurchaseViewModel.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\AssetRegistration\InactiveAssetRegistrationController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\AssetRegistration\UserCardItemsHistoryController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\AppreciatationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\DepreciationCostController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\Ifrs\IfrsDepreciationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\Ifrs\IfrsDepreciationDistributionController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\Ifrs\IfrsDepreciationValidationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\MonthlyDepreciationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\MonthlyDepreciationDistributionController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\MonthlyDepreciationValidationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\Tax\AnnualDepreciationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\Tax\AnnualDepreciationDistributionController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\Tax\AnnualDepreciationValidationController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\FixedAssetHomeController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\Issues\FixedAssetIssueItemManualController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\Issues\FixedAssetIssueManualController.cs" />
@@ -959,24 +970,12 @@
     <Compile Include="Areas\FixedAsset\Controllers\Transfers\MachineTransferSend\MachineryAndVehicleTransferValidationController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\Transfers\MachineTransferSend\MissedPartController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\Transfers\MachineTransferReceive\AccessoryReceiveController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\AppreciatationController.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Areas\FixedAsset\Controllers\AssetRegistration\AssetDisposalController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\AssetRegistration\AssetDisposalValidationController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\AssetRegistration\AssetRegistrationController.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Areas\FixedAsset\Controllers\Transfers\MachineTransferReceive\DamagedPartReceiveController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\AnnualDepreciationController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\AnnualDepreciationDistributionController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\AnnualDepreciationValidationController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\MonthlyDepreciationValidationController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\MonthlyDepreciationDistributionController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\MonthlyDepreciationController.cs" />
-    <Compile Include="Areas\FixedAsset\Controllers\Depreciations\DepreciationCostController.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Areas\FixedAsset\Controllers\Settings\DepreciationRuleController.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -7432,6 +7431,7 @@
     <Content Include="Areas\HRM\Views\LeaveConfigurations\EditorTemplates\Setting.cshtml" />
     <Content Include="Areas\HRM\Views\LeaveConfigurations\Index.cshtml" />
     <Content Include="Areas\HRM\Views\TerminationRequestes\EditorTemplates\TerminationRequest.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\IfrsDepreciation\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

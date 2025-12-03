@@ -64,10 +64,17 @@
         Percentage
     }
 
+    //public enum DepreciationMethod
+    //{
+    //    StraightLine,
+    //    Pooling,
+
+    //}
+
     public enum DepreciationMethod
     {
-        StraightLine,
-        Pooling,
+        Diminishing,
+        StraightLine
 
     }
 

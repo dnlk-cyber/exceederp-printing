@@ -17,6 +17,7 @@
           columns.ForeignKey(p => p.FixedAssetConditionId, (IEnumerable)ViewData["conditions"], "FixedAssetConditionId", "Name").Title("Condition").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.GRN).Width(90);
           columns.Bound(c => c.GRNDate).Width(90);
+          columns.Bound(c => c.AcqusitionDate).Width(90);
           columns.Bound(c => c.Tag).Width(90);
           columns.Bound(c => c.Unit).Width(70);
           columns.Bound(c => c.Size).Width(90);
@@ -39,6 +40,9 @@
           columns.Bound(c => c.Quanity).Width(95);
           columns.Bound(p => p.PurchasePrice).Width(90);
           columns.Bound(p => p.BookValue).Width(90);
+          columns.Bound(p => p.IFRSBookValue).Width(90);
+          columns.Bound(p => p.UsefulLifeYears).Width(80);
+          columns.Bound(p => p.SalvageValue).Width(90);
           columns.ForeignKey(p => p.StoreCode, (IEnumerable) ViewData["Stores"], "StoreCode", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable) ViewData["personEmployees"], "Code", "Name").Title("Employee").Filterable(f => f.Multi(true).Search(true)).Width(190);
@@ -79,7 +83,7 @@
                                              .HtmlAttributes(new { style = "width: 150px;" })
                                              .DataSource(dataSource =>
                                              {
-                                                 dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                                 dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("sendForgery"))
                                                      .ServerFiltering(false);
                                              }))
 
@@ -93,7 +97,7 @@
                                              .HtmlAttributes(new { style = "width: 150px;" })
                                              .DataSource(dataSource =>
                                              {
-                                                 dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
+                                                 dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("sendForgery").Data("filterSubCategories"))
                                                      .ServerFiltering(true);
                                              })
                                              .CascadeFrom("CategoryCodeSelector")
@@ -166,10 +170,10 @@
                   model.Field(p => p.LastModified).Editable(false);
                   model.Field(p => p.DateCreated).Editable(false);
               })
-          .Read(read => read.Action("Registrations_Read", "InactiveAssetRegistration").Data("passSearchData"))
-          .Create(create => create.Action("Registrations_Create", "InactiveAssetRegistration"))
-          .Update(update => update.Action("Registrations_Update", "InactiveAssetRegistration"))
-          .Destroy(destroy => destroy.Action("Registrations_Destroy", "InactiveAssetRegistration"))
+          .Read(read => read.Action("Registrations_Read", "InactiveAssetRegistration").Data("sendForgery").Data("passSearchData"))
+          .Create(create => create.Action("Registrations_Create", "InactiveAssetRegistration").Data("sendForgery"))
+          .Update(update => update.Action("Registrations_Update", "InactiveAssetRegistration").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Registrations_Destroy", "InactiveAssetRegistration").Data("sendForgery"))
       ))
 
 @* Tabstrip start *@
@@ -313,7 +317,7 @@
                                       model.Field(p => p.LastModified).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);
                                   })
-                              .Read(read => read.Action("Depreciations_Read", "AssetRegistration", new { id = "#=AssetRegistrationId#" }))
+                              .Read(read => read.Action("Depreciations_Read", "AssetRegistration", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
                     
                           )
                           .Pageable()
@@ -325,22 +329,24 @@
                 items.Add().Text("Revaluation").Content(@<text>
 
                     @(Html.Kendo().Grid<FixedAssetRevaluation>()
-                        .Name("revaluation_#=AssetRegistrationId#") 
+                        .Name("revaluation_#=AssetRegistrationId#")
                         .Columns(columns =>
                         {
                             columns.Bound(c => c.RevaluationDate).Width(150);
-                            columns.Bound(c => c.AddedValue).Width(150);
+                            columns.Bound(c => c.RevaluationType).Width(150);
+                            columns.Bound(c => c.BookValue).Width(150);
+                            columns.Bound(c => c.UsefulLifeYears).Width(150);
                             columns.Bound(c => c.Description).Width(200);
-                            
+
                             columns.Command(command =>
                             {
-                                command.Edit();
-                                command.Destroy();
-                            }).Width(480);
+                                //command.Edit();
+                                //command.Destroy();
+                            }).Width(580);
                         })
                         .ToolBar(toolbar =>
                         {
-                            toolbar.Create();
+                           // toolbar.Create();
                         })
                                .HtmlAttributes(new { style = "height: 550px;" })
                                           .Pageable(pageable => pageable
@@ -353,7 +359,7 @@
                                                 .Scrollable()
                                                 .Sortable()
                                                 .Filterable()
-                                                
+
                         .DataSource(dataSource => dataSource
                             .Ajax()
                                     .Events(ev => ev .Error("error_handler_one")
@@ -369,10 +375,10 @@
                                 model.Field(p => p.LastModified).Editable(false);
                                 model.Field(p => p.DateCreated).Editable(false);
                             })
-                                    .Read(read => read.Action("Revaluations_Read", "Revaluation", new { id = "#=AssetRegistrationId#" }))
-                            .Create(create => create.Action("Revaluations_Create", "Revaluation", new { id = "#=AssetRegistrationId#" }))
-                            .Update(update => update.Action("Revaluations_Update", "Revaluation"))
-                            .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation"))
+                                    .Read(read => read.Action("Revaluations_Read", "Revaluation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("Revaluations_Create", "Revaluation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("Revaluations_Update", "Revaluation").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation").Data("sendForgery"))
                         )
                         .Pageable()
                         .Sortable()
@@ -387,14 +393,14 @@
           .Name("appreciation_#=AssetRegistrationId#")
           .Columns(columns =>
           {
-              columns.Bound(c => c.AppreciationDate).Width(150);   
-              columns.Bound(c => c.Amount).Width(120);         
+              columns.Bound(c => c.AppreciationDate).Width(150);
+              columns.Bound(c => c.Amount).Width(120);
               columns.Bound(c => c.Description).Width(200);
-              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              columns.Command(command => { /*command.Edit(); command.Destroy();*/ }).Width(180);
           })
           .ToolBar(toolbar =>
           {
-              toolbar.Create();
+             // toolbar.Create();
           })
           .Editable(editable => editable.Mode(GridEditMode.InLine))
           .HtmlAttributes(new { style = "height: 550px;" })
@@ -408,16 +414,16 @@
           .Scrollable()
           .Sortable()
           .Filterable()
-                   
+
           .DataSource(dataSource => dataSource
               .Ajax()
               .Events(ev => ev .Error("error_handler_one")
                   .Sync("sync_handler"))
               .Model(model => model.Id(p => p.AppreciationID))
-              .Read(read => read.Action("Appreciations_Read", "Appreciatation" , new { id = "#=AssetRegistrationId#" }))
-              .Create(create => create.Action("Appreciations_Create", "Appreciatation", new { id = "#=AssetRegistrationId#" }))
-              .Update(update => update.Action("Appreciations_Update", "Appreciatation", new { id = "#=AssetRegistrationId#" }))
-              .Destroy(destroy => destroy.Action("Appreciations_Destroy", "Appreciatation"))
+              .Read(read => read.Action("Appreciations_Read", "Appreciatation" , new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+              .Create(create => create.Action("Appreciations_Create", "Appreciatation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+              .Update(update => update.Action("Appreciations_Update", "Appreciatation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("Appreciations_Destroy", "Appreciatation").Data("sendForgery"))
           ).ToClientTemplate())
 
 </text>);
@@ -462,10 +468,10 @@
                                 model.Field(p => p.LastModified).Editable(false);
                                 model.Field(p => p.DateCreated).Editable(false);
                             })
-                                    .Read(read => read.Action("Disposals_Read", "Disposal", new { id = "#=AssetRegistrationId#" }))
-                            .Create(create => create.Action("Disposals_Create", "Disposal", new { id = "#=AssetRegistrationId#" }))
-                            .Update(update => update.Action("Disposals_Update", "Disposal"))
-                            .Destroy(destroy => destroy.Action("Disposals_Destroy", "Disposal"))
+                                    .Read(read => read.Action("Disposals_Read", "Disposal", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("Disposals_Create", "Disposal", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("Disposals_Update", "Disposal").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("Disposals_Destroy", "Disposal").Data("sendForgery"))
                         )
                         .Pageable()
                         .Sortable()
@@ -477,7 +483,7 @@
                 items.Add().Text("Sales").Content(@<text>
 
                     @(Html.Kendo().Grid<Sales>()
-                          .Name("sales_#=AssetRegistrationId#") 
+                          .Name("sales_#=AssetRegistrationId#")
                           .Columns(columns =>
                           {
                               columns.Bound(c => c.Amount).Width(150);
@@ -485,11 +491,11 @@
                               columns.Bound(c => c.TaxAmount).Width(150);
                               columns.Bound(c => c.TotalAmount).Width(150);
                               columns.Bound(c => c.Description).Width(150);
-                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                              columns.Command(command => { /*command.Edit(); command.Destroy();*/ }).Width(180);
                           })
                           .ToolBar(toolbar =>
                           {
-                              toolbar.Create();
+                              //toolbar.Create();
                           })
                           .HtmlAttributes(new { style = "height: 400px;" })
                           .Pageable(pageable => pageable
@@ -502,7 +508,7 @@
                           .Scrollable()
                           .Sortable()
                           .Filterable()
-                                                
+
                           .DataSource(dataSource => dataSource
                               .Ajax()
                               .Events(ev => ev .Error("error_handler_one")
@@ -520,10 +526,10 @@
                                       model.Field(p => p.LastModified).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);
                                   })
-                              .Read(read => read.Action("Sales_Read", "Sales", new { id = "#=AssetRegistrationId#" }))
-                              .Create(create => create.Action("Sales_Create", "Sales", new { id = "#=AssetRegistrationId#" }))
-                              .Update(update => update.Action("Sales_Update", "Sales"))
-                              .Destroy(destroy => destroy.Action("Sales_Destroy", "Sales"))
+                              .Read(read => read.Action("Sales_Read", "Sales", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Create(create => create.Action("Sales_Create", "Sales", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Update(update => update.Action("Sales_Update", "Sales").Data("sendForgery"))
+                              .Destroy(destroy => destroy.Action("Sales_Destroy", "Sales").Data("sendForgery"))
                           )
                           .Pageable()
                           .Sortable()
@@ -547,14 +553,14 @@
                               columns.Bound(c => c.TransactionNo).Width(80);
                               columns.Command(command =>
                               {
-                                  command.Edit();
+                                 // command.Edit();
                                   //command.Destroy();
                               }).Width(680);
 
                           })
                           .ToolBar(toolbar =>
                           {
-                              toolbar.Create();
+                             // toolbar.Create();
                           })
 
                           .HtmlAttributes(new { style = "height: 550px;" })
@@ -587,9 +593,9 @@
                                       model.Field(p => p.LastModified).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);
                                   })
-                              .Read(read => read.Action("LocationTrackings_Read", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
-                              .Create(create => create.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
-                              .Update(update => update.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
+                              .Read(read => read.Action("LocationTrackings_Read", "LocationTracking", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Create(create => create.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Update(update => update.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
 
                           )
                           .Pageable()

@@ -793,6 +793,10 @@
     <Compile Include="Migrations\202511270728250_TerminationRequestUpdate.Designer.cs">
       <DependentUpon>202511270728250_TerminationRequestUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512030811494_fixedassetdepre.cs" />
+    <Compile Include="Migrations\202512030811494_fixedassetdepre.Designer.cs">
+      <DependentUpon>202512030811494_fixedassetdepre.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1339,6 +1343,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511270728250_TerminationRequestUpdate.resx">
       <DependentUpon>202511270728250_TerminationRequestUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512030811494_fixedassetdepre.resx">
+      <DependentUpon>202512030811494_fixedassetdepre.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
