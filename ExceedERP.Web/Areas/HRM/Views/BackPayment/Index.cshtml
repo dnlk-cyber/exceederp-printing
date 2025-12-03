@@ -1,129 +1,341 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.Payroll;
+@using ExceedERP.Core.Domain.HRM.Payroll.BackPays
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <legend>@Resources.NavigatorPayrollProcess_BackPayment</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.BackPayment>()
-          .Name("BackPaymentgrid")
-      .Columns(columns =>
-      {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(180);
-          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriod").Width(105);
-          columns.Bound(c => c.BasicSalary).Width( 120);
-          columns.Bound(c => c.Allowances).Width(120);
-          columns.Bound(c => c.IncomeTax).Width( 120);
-          columns.Bound(c => c.Pension).Width( 120);
-          columns.Bound(c => c.Net).Width( 120);
-          columns.Bound(c => c.IsClosed).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsClosed #' " + " # if (IsClosed) { #" + "checked='checked'" + "# } #" + " />").Width(100);
-        //  columns.Bound(c => c.Remark);
-          //columns.Command(command =>
-          //{
-          //    // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-          //     command.Destroy().Text(Resources.ActionButton_Cancel);//
-          //}).Width(180);
-      })
-     .ToolBar(toolbar =>
-        {
-            toolbar.Template(@<text>
-                <div class="toolbar">
-                    @(Html.Kendo().ComboBox()
-                                                                     .Placeholder(Resources.HR_LeaveManagment_LeaveTransfer_From)
-                                             .Name("From")
-
-                                                            .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetPeriod", "BackPayment", new { area = "HRM" }))
+@(Html.Kendo().Grid<BackPay>()
+              .Name("BackPaymentgrid")
+          .Columns(columns =>
+          {
+              //columns.Bound(c=>c.BackPayId).Title("Id").Width(80);
+              columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriod").Title("Period").Width(105).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.ForeignKey(c => c.ToGLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriod").Title("Period").Width(105).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.ForeignKey(c => c.ProcessedGLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriod").Title("Period").Width(105).Filterable(ftb => ftb.Multi(true).Search(true));
+              if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+              {
+                  columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businesUnits"], "BusinessUnitId", "Name").Title("Business Unit").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+              }
+              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branch").Title("Branch").Width(250).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.IsClosed).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsClosed #' " + " # if (IsClosed) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+             // columns.Bound(c => c.Date).Width(100);
+              //columns.Bound(c => c.Remark);
+              columns.Command(command =>
+              {
+                  // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy();//
+              }).Width(180);
+          })
+         .Events(e=>e.DataBound("OnDataBoundBackPay"))
+         .Selectable()
+         .ToolBar(toolbar =>
+         {
+         toolbar.Template(@<text>
+<div class="toolbar">
+    @(Html.Kendo().ComboBox()
+                    .Placeholder("From")
+                     .Filter("contains")
+                        .Name("GLPeriodId")
+                             .DataSource(dataSource =>
+                            {
+                                        dataSource.Read(read => read.Action("GetPeriod", "BackPayment", new { area = "HRM" }).Data("sendForgery"))
                                                     .ServerFiltering(false);
-                          })
+                                    })
 
-                                                          .DataTextField("Name")
-                                                                                  .DataValueField("GLPeriodId")
-                                                   .AutoBind(false)
-                                    .Events(e => e.Change("Enable"))
-                            .HtmlAttributes(new { style = "width: 300px;" })
+                                    .DataTextField("Name")
+                               .DataValueField("GLPeriodId")
+                            .AutoBind(false)
+                         .Events(e => e.Change("Enable"))
+                    .HtmlAttributes(new { style = "width: 150px;" })
 
-                          )
-                    @(Html.Kendo().ComboBox()
-                                                                            .Placeholder(Resources.HR_LeaveManagment_LeaveTransfer_To)
-                                             .Name("To")
+    )
+    @(Html.Kendo().ComboBox()
+                .Placeholder("To")
+                 .Filter("contains")
+                    .Name("ToGLPeriodId")
+                         .DataSource(dataSource =>
+                        {
+                                    dataSource.Read(read => read.Action("GetPeriod", "BackPayment", new { area = "HRM" }).Data("sendForgery"))
+                                                .ServerFiltering(false);
+                                })
 
-                                                            .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetPeriod", "BackPayment", new { area = "HRM" }))
-                                                    .ServerFiltering(false);
-                          })
+                                .DataTextField("Name")
+                           .DataValueField("GLPeriodId")
+                        .AutoBind(false)
+                     .Events(e => e.Change("Enable"))
+                .HtmlAttributes(new { style = "width: 150px;" })
 
-                                                          .DataTextField("Name")
-                                                                                  .DataValueField("GLPeriodId")
-                                                   .AutoBind(false)
-                                    .Events(e => e.Change("Enable"))
-                            .HtmlAttributes(new { style = "width: 300px;" })
+)
 
-                    )
-                   
-                    @(Html.Kendo().Button()
+        @(Html.Kendo().ComboBox()
+                .Placeholder("Process Period")
+                 .Filter("contains")
+                    .Name("ProcessGLPeriodId")
+                         .DataSource(dataSource =>
+                        {
+                                    dataSource.Read(read => read.Action("GetPeriod", "BackPayment", new { area = "HRM" }).Data("sendForgery"))
+                                                .ServerFiltering(false);
+                                })
+
+                                .DataTextField("Name")
+                           .DataValueField("GLPeriodId")
+                        .AutoBind(false)
+                     .Events(e => e.Change("Enable"))
+                .HtmlAttributes(new { style = "width: 150px;" })
+
+)
+    @(Html.Kendo().ComboBoxFor(m => m)
+
+                        .Name("BranchId")
+                        //.OptionLabel("--Select Branch--")
+                        .Filter("contains")
+                        .Placeholder(Resources.Common_Period_BranchId)
+                        //.BindTo((IEnumerable)ViewData["branches"])
+                        .DataTextField("Name")
+                        .DataValueField("BranchId")
+                        .HtmlAttributes(new { style = "width:250px" })
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetBranch", "PayrollProcess", new { area = "HRM" }).Data("sendForgery"))
+                                                        .ServerFiltering(false);
+                        })
+                .ValuePrimitive(true)
+                .Events(x => x.Change("Enable"))
+
+    )
+    @if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+                {
+        @(Html.Kendo().ComboBoxFor(m => m)
+
+            .Name("BusinessUnitId")
+            //.OptionLabel("--Select Branch--")
+            .Filter("contains")
+            .Placeholder("Business unit")
+            // .BindTo((IEnumerable)ViewData["businesUnits"])
+            .DataTextField("Name")
+            .DataValueField("BusinessUnitId")
+            .HtmlAttributes(new { style = "width:180px" })
+            .DataSource(dataSource =>
+            {
+                            dataSource.Read(read => read.Action("GetBusinessUnits", "PayrollProcess", new { area = "HRM" }).Data("sendForgery"))
+                                                        .ServerFiltering(false);
+                        })
+    .ValuePrimitive(true)
+    .Events(x => x.Change("Enable"))
+
+        )
+                }
+
+
+    @(Html.Kendo().Button()
                       .Name("btnSave")
                       .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                              .Events(e => e.Click("Transfer"))
-      .Content(Resources.Payroll_Process_Process))
-                    @(Html.Kendo().Button()
-                      .Name("btnReverse")
-                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                              .Events(e => e.Click("Reverse"))
-                          .Content(Resources.Payroll_Process_Reverse))
-                    @(Html.Kendo().Button()
+                              .Events(e => e.Click("Process"))
+      .Content("Process Backpay"))
+
+    @(Html.Kendo().Button()
                       .Name("btnClose")
                       .HtmlAttributes(new { type = "button", @class = "k-primary" })
                               .Events(e => e.Click("Close"))
-          .Content(Resources.Payroll_Process_Close))
-                    <br />
-                    <br />
-                </div>
-                
+          .Content("Close"))
+    <br />
+    <br />
+</div>
+
             </text>);
-        })
-         .Editable(editable => editable.Mode(GridEditMode.InLine))
-                  .Scrollable(h => h.Height(500))
-                     .Groupable()
-                              .Sortable(sortable =>
-                              {
-                                  sortable.SortMode(GridSortMode.SingleColumn);
-                              })
-                  .Filterable()
-                     .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                                          .Events(events =>
-                                                            {
-                                                                events.Error("error_handler(\"BackPayment\")");
-                                                                events.RequestStart("onRequestStart(\"BackPayment\")");
-                                                                events.RequestEnd("onRequestEnd(\"BackPayment\")");
-                                                            })
-                                               
-          .Model(model => model.Id(p => p.BackPaymentId))
-          .Read(read => read.Action("BackPayments_Read", "BackPayment"))
-          .Create(create => create.Action("BackPayments_Create", "BackPayment"))
-          .Update(update => update.Action("BackPayments_Update", "BackPayment"))
-          .Destroy(destroy => destroy.Action("BackPayments_Destroy", "BackPayment"))
-      )
+                })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                             .Scrollable(h => h.Height(600))
+
+                                         .Sortable(sortable =>
+                                         {
+                                             sortable.SortMode(GridSortMode.SingleColumn);
+                                         })
+                             .Filterable()
+                                .Pageable(pageable => pageable
+                                                           .Input(true)
+                                                           .Numeric(false)
+                                                           .Refresh(true)
+                                                           .PageSizes(true)
+                                                           .ButtonCount(5))
+                         .DataSource(dataSource => dataSource
+
+                             .Ajax()
+                              .Sort(sort => sort.Add("BackPayId").Descending())
+                            .Events(events =>
+                                {
+                                    events.Error("error_handler(\"BackPaymentgrid\")");
+                                    events.RequestStart("onRequestStart(\"BackPaymentgrid\")");
+                                    events.RequestEnd("onRequestEnd(\"BackPaymentgrid\")");
+                                })
+
+                      .Model(model =>
+                          {
+                              model.Id(p => p.BackPayId);
+                              model.Field(p => p.BackPayId).Editable(false);
+                          })
+                     .Read(read => read.Action("BackPays_Read", "BackPayment").Data("sendForgery"))
+                     .Create(create => create.Action("BackPays_Create", "BackPayment").Data("sendForgery"))
+                     .Update(update => update.Action("BackPays_Update", "BackPayment").Data("sendForgery"))
+                     .Destroy(destroy => destroy.Action("BackPays_Destroy", "BackPayment").Data("sendForgery"))
+                 ).ClientDetailTemplateId("templates"))
+
+
+<script id="templates" type="text/Kendo-tmpl">
+@(Html.Kendo().TabStrip().Name("tabStrip_#=BackPayId#").SelectedIndex(0).Items(items =>
+{
+items.Add().Text("Employees").Content(
+@<text>
+
+    @(Html.Kendo().Grid<BackPaymentLine>()
+                    .Name("BackPaymentLine#=BackPayId#")
+                    .Columns(columns =>
+                    {
+                        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").Width(260).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.Bound(c => c.BasicSalary).Width(120);
+                        columns.Bound(c => c.Pension).Width(120);
+                        columns.Bound(c => c.IncomeTax).Width(120);
+                        columns.Bound(c => c.Net).Width(120);
+                        columns.Command(command =>
+                        {
+                            //command.Edit();
+                            //command.Destroy();
+                        }).Width(480);
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        //toolbar.Create();
+
+                    })
+
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Scrollable(h => h.Height(500))
+                    .Scrollable()
+                    .Selectable()
+                    .Filterable()
+                    .ClientDetailTemplateId("detailtemplates")
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(ev => ev
+                            .Error("error_handler(\"BackPaymentLine#=BackPayId#\")")
+                            .RequestStart("onRequestStart(\"BackPaymentLine#=BackPayId#\")")
+                            .RequestEnd("onRequestEnd(\"BackPaymentLine#=BackPayId#\")"))
+                        .Model(model =>
+                        {
+                            model.Id(p => p.BackPaymentLineId);
+                            model.Field(p => p.BackPaymentLineId).Editable(false);
+
+
+                            model.Field(p => p.CreatedBy).Editable(false);
+                            model.Field(p => p.DateCreated).Editable(false);
+                            model.Field(p => p.ModifiedBy).Editable(false);
+                            model.Field(p => p.LastModified).Editable(false);
+
+                        })
+                        .Read(read => read.Action("BackPaymentLines_Read", "BackPaymentLine", new { id = "#=BackPayId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("BackPaymentLines_Create", "BackPaymentLine", new { id = "#=BackPayId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("BackPaymentLines_Update", "BackPaymentLine", new { id = "#=BackPayId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("BackPaymentLines_Destroy", "BackPaymentLine").Data("sendForgery"))
+                    ).ToClientTemplate())
+
+</text>
+                    );
+
+
+
+}).ToClientTemplate()
+
 )
+
+</script>
+
+<script id="detailtemplates" type="text/Kendo-tmpl">
+@(Html.Kendo().TabStrip().Name("tabStrip_#=BackPaymentLineId#").SelectedIndex(0).Items(items =>
+{
+items.Add().Text("Details").Content(
+@<text>
+
+    @(Html.Kendo().Grid<BackPaymentDetail>()
+                    .Name("BackPaymentDetail#=BackPaymentLineId#")
+                    .Columns(columns =>{
+                        columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriod").Title("Period").Width(130);
+                        columns.Bound(c => c.Description).Width(170);
+                        columns.Bound(c => c.Type).Width(90);
+                        columns.Bound(c => c.Amount).Width(90);
+                        columns.Command(command =>
+                        {
+                            //command.Edit();
+                            //command.Destroy();
+                        }).Width(480);
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        //toolbar.Create();
+
+                    })
+
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .Selectable()
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(ev => ev
+                            .Error("error_handler(\"BackPaymentDetail#=BackPaymentLineId#\")")
+                            .RequestStart("onRequestStart(\"BackPaymentDetail#=BackPaymentLineId#\")")
+                            .RequestEnd("onRequestEnd(\"BackPaymentDetail#=BackPaymentLineId#\")"))
+                        .Model(model =>
+                        {
+                            model.Id(p => p.BackPaymentDetailId);
+                            model.Field(p => p.BackPaymentDetailId).Editable(false);
+
+
+                            model.Field(p => p.CreatedBy).Editable(false);
+                            model.Field(p => p.DateCreated).Editable(false);
+                            model.Field(p => p.ModifiedBy).Editable(false);
+                            model.Field(p => p.LastModified).Editable(false);
+
+                        })
+                        .Read(read => read.Action("BackPaymentDetails_Read", "BackPaymentDetail", new { id = "#=BackPaymentLineId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("BackPaymentDetails_Create", "BackPaymentDetail", new { id = "#=BackPaymentLineId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("BackPaymentDetails_Update", "BackPaymentDetail", new { id = "#=BackPaymentLineId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("BackPaymentDetails_Destroy", "BackPaymentDetail").Data("sendForgery"))
+                    ).ToClientTemplate())
+
+</text>
+                    );
+
+
+
+}).ToClientTemplate()
+
+)
+
+</script>
+
+
 <script>
-    function Transfer() {
-        var from = $("#From").data("kendoComboBox");
-        var type = $("#To").data("kendoComboBox");
+    function Process() {
+        var businessUnitid = 0;
+        var periods = $("#GLPeriodId").data("kendoComboBox");
+        var toPeriods = $("#ToGLPeriodId").data("kendoComboBox");
+        var processPeriods = $("#ProcessGLPeriodId").data("kendoComboBox");
+        var branchs = $("#BranchId").data("kendoComboBox");
+        var businessUnit = $("#BusinessUnitId").data("kendoComboBox");
         try {
             $("#btnSave").removeClass("k-state-disabled");
-            var period = from.value();
-            var bType = type.value();
-            if (period === "" || bType === "") {
-                alert("Please select Periods!!");
+            var period = periods.value();
+            var toPeriod = toPeriods.value();
+            var processPeriod = processPeriods.value();
+            var branchid = branchs.value();
+
+            if (businessUnit)
+                businessUnitid = businessUnit.value();
+
+            if (!period || !toPeriod || !branchid) {
+                alert("Please select all parameters!!");
 
             } else {
                 if (!$("#btnSave").hasClass("k-state-disabled")) {
@@ -133,17 +345,29 @@
                 }
                 //$("#run").on("click", function (eve) {
                 $.ajax({
-                    url: '@Url.Action("PrepareBackPayment", "BackPayment")',
+                    url: '@Url.Action("ProcessBackPay", "BackPayment")',
                     //contentType: "application/json; charset=utf-8",
-                    data: { period1: period, period2: bType },
+                    data: { period: period, toperiod: toPeriod, processperiod: processPeriod, branchid: branchid, businessUnitid: businessUnitid },
                     type: 'POST',
                     cache: false,
-                    success: function(result) {
-                        r = result;
+                    success: function (result) {
+                        alert(result.Message);
+                      //  r = result;
                         $("#BackPaymentgrid").data("kendoGrid").dataSource.read();
                         $("#BackPaymentgrid").data("kendoGrid").refresh();
                         $("#btnSave").removeClass("k-state-disabled");
 
+                    },
+                    beforeSend: function () {
+                        // Show image container
+                        $("#loading-image").show();
+                    },
+                    complete: function (data) {
+                        // Hide image container
+                        $("#loading-image").hide();
+                    },
+                    error: function (result) {
+                        alert(result);
                     }
 
 
@@ -152,161 +376,155 @@
 
 
         } catch (e) {
-            alert("Please select Period!!");
+            alert("Please select all parameters!");
             $("#btnSave").removeClass("k-state-disabled");
         }
         //});
     }
-
-    function Reverse() {
-        var from = $("#From").data("kendoComboBox");
-        var type = $("#To").data("kendoComboBox");
+    function Close(e) {
         try {
-            $("#btnReverse").removeClass("k-state-disabled");
-            var period = from.value();
-             var bType = type.value();
-            if (period === "" || bType === "") {
-                alert("Please select Periods!!");
+            if (confirm('Are you sure you want to colse this backpay?')) {
+                var grid = $("#BackPaymentgrid").data("kendoGrid");
+                var dataItem = grid.dataItem(grid.select());
+                var id = dataItem.BackPayId;
 
-            } else {
-                if (!$("#btnReverse").hasClass("k-state-disabled")) {
-                    $("#btnReverse").addClass("k-state-disabled");
+               // alert(id);
 
-                    //  progress();
+                var save = $("#btnClose").data("kendoButton");
+                if ($('#btnClose').length > 0) {
+                    save.enable(false);
                 }
-                //$("#run").on("click", function (eve) {
-                $.ajax({
-                    url: '@Url.Action("Reverse", "BackPayment")',
-                    //contentType: "application/json; charset=utf-8",
-                    data: { period1: period, period2: bType },
-                    type: 'POST',
-                    cache: false,
-                    success: function(result) {
-                        r = result;
-                        $("#BackPaymentgrid").data("kendoGrid").dataSource.read();
-                        $("#BackPaymentgrid").data("kendoGrid").refresh();
-                        $("#btnReverse").removeClass("k-state-disabled");
 
-                    }
-
-
-                });
-            }
-
-
-        } catch (e) {
-            alert("Please select Period!!");
-            $("#btnReverse").removeClass("k-state-disabled");
-        }
-        //});
-    }
-
-    function Close() {
-        var from = $("#From").data("kendoComboBox");
-        var type = $("#To").data("kendoComboBox");
-        try {
-            $("#btnClose").removeClass("k-state-disabled");
-            var period = from.value();
-             var bType = type.value();
-            if (period === "" || bType === "") {
-                alert("Please select Periods!!");
-
-            } else {
-                if (!$("#btnSave").hasClass("k-state-disabled")) {
-                    $("#btnSave").addClass("k-state-disabled");
-
-                    //  progress();
-                }
-                //$("#run").on("click", function (eve) {
                 $.ajax({
                     url: '@Url.Action("Close", "BackPayment")',
-                    //contentType: "application/json; charset=utf-8",
-                    data: { period: period, bType: bType },
+                   // contentType: "application/json; charset=utf-8",
+                    data: { id: id},
                     type: 'POST',
                     cache: false,
-                    success: function(result) {
-                        r = result;
+                    success: function (result) {
+                       // r = result;
+                        alert(result.Message);
+
                         $("#BackPaymentgrid").data("kendoGrid").dataSource.read();
                         $("#BackPaymentgrid").data("kendoGrid").refresh();
-                        $("#btnClose").removeClass("k-state-disabled");
-
+                        if ($('#btnClose').length > 0) {
+                            save.enable(true);
+                        }
+                        passProgress.value(100);
+                    },
+                    beforeSend: function () {
+                        // Show image container
+                        $("#loading-image").show();
+                    },
+                    complete: function (data) {
+                        // Hide image container
+                        $("#loading-image").hide();
+                    },
+                    error: function (result) {
+                        alert(result);
                     }
 
-
                 });
+            } else {
+                // Do nothing!
             }
 
-
         } catch (e) {
-            alert("Please select Period!!");
-            $("#btnClose").removeClass("k-state-disabled");
+            alert("Please select the row!!");
         }
-        //});
+
     }
 
 
+    function OnDataBoundBackPay(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#BackPaymentgrid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsClosed) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (!dataItem.IsClosed) {
+                row.css("background-color", "lightgreen");
+            }
+
+
+        }
+
+    }
 </script>
 <script>
     function Enable(e) {
 
         var save = $("#btnSave").data("kendoButton");
-        var reverse = $("#btnReverse").data("kendoButton");
+        //var reverse = $("#btnReverse").data("kendoButton");
         var close = $("#btnClose").data("kendoButton");
 
 
         save.enable(false);
-        reverse.enable(false);
+       // reverse.enable(false);
         close.enable(false);
 
 
 
-        var periods = $("#From").data("kendoComboBox");
+        var periods = $("#GLPeriodId").data("kendoComboBox");
+        var toPeriods = $("#ToGLPeriodId").data("kendoComboBox");
+        var branches = $("#BranchId").data("kendoComboBox");
+        var businessUnits = $("#BusinessUnitId").data("kendoComboBox");
 
+        var from = periods.value();
+        var to = toPeriods.value();
+        var branchid = branches.value();
 
-
-        var id = periods.value();
+        var businessUnitid = 0;
+        if (businessUnits)
+            businessUnitid = businessUnits.value();
 
 
         $.ajax({
             url: '@Url.Action("CheckStatus", "BackPayment")',
             contentType: "application/json; charset=utf-8",
-            data: { 'id': id},
+            data: { 'fromPeriod': from, 'toPeriod': to, 'branchid': branchid, 'businessUnitid': businessUnitid },
             type: 'GET',
             cache: false,
             success: function (result) {
                 r = result;
                 if (r == "c") {
                     save.enable(false);
-
-                    reverse.enable(false);
+                   // reverse.enable(false);
                     close.enable(false);
-
-
-
-
                 }
                 else if (r == "r") {
                     save.enable(true);
-                    reverse.enable(false);
+                    //reverse.enable(false);
                     close.enable(false);
-
-
-
 
                 }
                 else if (r == "n") {
                     save.enable(false);
-                    reverse.enable(true);
+                   // reverse.enable(true);
                     close.enable(true);
-
                 }
                 else {
                     save.enable(false);
-                    reverse.enable(true);
-
+                    //reverse.enable(true);
                     close.enable(true);
-
-
                 }
             }
 

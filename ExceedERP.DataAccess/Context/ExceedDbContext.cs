@@ -132,6 +132,7 @@ using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.Core.Domain.InfoDesk.ChangeManagement;
 using ExceedERP.Core.Domain.CRM.TenderManagement;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.HRM.Payroll.BackPays;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -743,6 +744,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ContributionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BonusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BackPaymentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BackPaymentLineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BackPaymentDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BackPaymentDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollPeriodEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeTypeEntityTypeConfiguration());
 
@@ -2827,8 +2831,11 @@ namespace ExceedERP.DataAccess.Context
 
         public System.Data.Entity.DbSet<Addition> Additions { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Bonus> Bonuses { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.BackPayment> BackPayments { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Advance> Advances { get; set; }
+        public DbSet<BackPay> BackPays { get; set; }
+        public DbSet<BackPaymentLine> BackPaymentLines { get; set; }
+        public DbSet<BackPaymentDetail> BackPaymentDetails { get; set; }
+        public DbSet<BackPaymentDistribution> BackPaymentDistributions { get; set; }
+        public DbSet<Advance> Advances { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.PayrollProcessLongTermDeductions> PayrollProcessLongTermDeductions { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.EmpPayrollServiceChargeViewModel> EmpPayrollServiceChargeViewModel { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.PeriodStatus> PeriodStatuses { get; set; }

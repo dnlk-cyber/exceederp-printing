@@ -1372,9 +1372,9 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\AssociationController.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Areas\HRM\Controllers\Payroll\BackPaymentController.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Areas\HRM\Controllers\Payroll\BackPay\BackPaymentController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Payroll\BackPay\BackPaymentDetailController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Payroll\BackPay\BackPaymentLineController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\BonusController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\BonusSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\ContributionController.cs">

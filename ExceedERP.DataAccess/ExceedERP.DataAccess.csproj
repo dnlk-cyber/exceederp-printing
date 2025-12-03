@@ -797,6 +797,10 @@
     <Compile Include="Migrations\202512030811494_fixedassetdepre.Designer.cs">
       <DependentUpon>202512030811494_fixedassetdepre.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512030832576_payrollbackpay.cs" />
+    <Compile Include="Migrations\202512030832576_payrollbackpay.Designer.cs">
+      <DependentUpon>202512030832576_payrollbackpay.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1346,6 +1350,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512030811494_fixedassetdepre.resx">
       <DependentUpon>202512030811494_fixedassetdepre.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512030832576_payrollbackpay.resx">
+      <DependentUpon>202512030832576_payrollbackpay.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
