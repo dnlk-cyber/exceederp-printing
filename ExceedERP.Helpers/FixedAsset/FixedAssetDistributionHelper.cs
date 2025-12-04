@@ -18,14 +18,14 @@ using ExceedERP.Helpers.Inventory;
 
 namespace ExceedERP.Helpers.FixedAsset
 {
-    public  class FixedAssetDistributionHelper
+    public class FixedAssetDistributionHelper : IDisposable
     {
         private AccountHelper _accountHelper;
         private readonly ExceedDbContext _db = new ExceedDbContext();
         private DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
 
         // fixed asset
-        public  void UpdateFixedAssetReceiveDistribution(FixedAssetReceive record)
+        public void UpdateFixedAssetReceiveDistribution(FixedAssetReceive record)
         {
             ExceedDbContext db = new ExceedDbContext();
             var distributions = db.FixedAssetReceiveDistributions.Where(x => x.FixedAssetReceiveId == record.FixedAssetReceiveId);
@@ -409,7 +409,7 @@ namespace ExceedERP.Helpers.FixedAsset
                                 var depreciationRule = _db.DepretiationRules.FirstOrDefault(x => x.FixedAssetGroupID == fixedAssetCategory.FixedAssetGroupID);
                                 if (depreciationRule != null)
                                     acc = depreciationRule.AccountCode;
-                            
+
                                 int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
                                 int branchId = InventoryHelper.GetStoreBranch(record.StoreCode);
                                 string locationAccountSeG = HrHelper.GetBranchLocationAccount(branchId);
@@ -578,9 +578,9 @@ namespace ExceedERP.Helpers.FixedAsset
             }
 
         }
-        
+
         //old
-        public  void PurchaseFixedAssetReceiveDistribution_prev(FixedAssetReceive record)
+        public void PurchaseFixedAssetReceiveDistribution_prev(FixedAssetReceive record)
         {
             ExceedDbContext db = new ExceedDbContext();
             var supplier = db.ProcurementSuppliers.FirstOrDefault(x => x.Name == record.SupplierName);
@@ -679,7 +679,7 @@ namespace ExceedERP.Helpers.FixedAsset
 
                     #endregion
                 }
-                else 
+                else
                 {
                     #region Credit common supplier
 
@@ -706,12 +706,12 @@ namespace ExceedERP.Helpers.FixedAsset
             }
 
         }
-        public  void DonationFixedAssetReceiveDistribution_prev(FixedAssetReceive record)
+        public void DonationFixedAssetReceiveDistribution_prev(FixedAssetReceive record)
         {
             ExceedDbContext db = new ExceedDbContext();
             var revenueAccount = db.RevenueAccounts.FirstOrDefault(x => x.ApplyToInventory);
 
-            if (record.FixedAssetReceiveItem!=null)
+            if (record.FixedAssetReceiveItem != null)
             {
                 #region debit stock
 
@@ -724,7 +724,7 @@ namespace ExceedERP.Helpers.FixedAsset
                         if (fixedAssetCategory != null)
                         {
                             string acc = "";
-                            var depreciationRule = db.DepretiationRules.FirstOrDefault(x=>x.FixedAssetGroupID==fixedAssetCategory.FixedAssetGroupID);
+                            var depreciationRule = db.DepretiationRules.FirstOrDefault(x => x.FixedAssetGroupID == fixedAssetCategory.FixedAssetGroupID);
                             if (depreciationRule != null)
                                 acc = depreciationRule.AccountCode;
 
@@ -811,12 +811,12 @@ namespace ExceedERP.Helpers.FixedAsset
         }
 
         //depreciation distribution helper
-        public  void UpdateMonthlyDepreciationDistribution(int id)
+        public void UpdateMonthlyDepreciationDistribution(int id)
         {
-          ExceedDbContext db = new ExceedDbContext();
+            ExceedDbContext db = new ExceedDbContext();
 
-         List<MonthlyDepreciationDistribution> distributions = new List<MonthlyDepreciationDistribution>();
-         _accountHelper = new AccountHelper();
+            List<MonthlyDepreciationDistribution> distributions = new List<MonthlyDepreciationDistribution>();
+            _accountHelper = new AccountHelper();
 
             var monthlyDepreciation = db.MonthlyDepreciations.Find(id);
             if (monthlyDepreciation != null)
@@ -830,11 +830,11 @@ namespace ExceedERP.Helpers.FixedAsset
                 foreach (var item in lines)
                 {
                     var depreciationRule = db.DepretiationRules.FirstOrDefault(x => x.FixedAssetGroupID == item.AssetRegistration.FixedAssetCategory.FixedAssetGroupID);
-                    
+
                     #region debit depreciation
 
-                   
-                    if (item.DepreciationAmount > 0 && depreciationRule!=null)
+
+                    if (item.DepreciationAmount > 0 && depreciationRule != null)
                     {
                         string accountCode = depreciationRule.AccountCode;
                         var invoiceDistribution = distributions.FirstOrDefault(x => x.AccountCode == accountCode);
@@ -886,7 +886,7 @@ namespace ExceedERP.Helpers.FixedAsset
                             {
                                 AccountCode = accountCode,
                                 AccountDesc = _accountHelper.GetAccountDesc(accountCode),
-                                Debit =0,
+                                Debit = 0,
                                 Credit = item.DepreciationAmount,
                                 MonthlyDepreciationId = item.MonthlyDepreciationId
                             };
@@ -1008,6 +1008,107 @@ namespace ExceedERP.Helpers.FixedAsset
                 }
             }
 
+        }
+
+        public void UpdateIfrsDepreciationDistribution(int id)
+        {
+            List<IfrsDepreciationDistribution> distributions = new List<IfrsDepreciationDistribution>();
+
+            var annualDepreciation = _db.IfrsDepreciations.Find(id);
+            if (annualDepreciation != null)
+            {
+                #region clear existing distribution
+                var record = _db.IfrsDepreciationDistributions.Where(x => x.IfrsDepreciationId == id).ToList();
+                _db.IfrsDepreciationDistributions.RemoveRange(record);
+                _db.SaveChanges();
+                #endregion
+                var lines = _db.IfrsDepreciationItems.Where(x => x.IfrsDepreciationId == id).AsNoTracking().ToList();
+                foreach (var item in lines)
+                {
+                    var depreciationRule = _db.DepretiationRules.FirstOrDefault(x => x.FixedAssetGroupID == item.AssetRegistration.FixedAssetCategory.FixedAssetGroupID);
+
+                    #region debit depreciation
+
+
+                    if (item.DepreciationAmount > 0 && depreciationRule != null)
+                    {
+                        string accountCode = depreciationRule.DepreciationCode;
+                        var invoiceDistribution = distributions.FirstOrDefault(x => x.AccountCode == accountCode);
+                        if (invoiceDistribution != null)
+                        {
+                            invoiceDistribution.AccountCode = accountCode;
+                            invoiceDistribution.AccountDesc = _accountHelper.GetAccountDesc(accountCode);
+                            invoiceDistribution.Debit += item.DepreciationAmount;
+                            invoiceDistribution.Credit = 0;
+                            invoiceDistribution.IfrsDepreciationId = item.IfrsDepreciationId;
+                        }
+                        else
+                        {
+                            var defaultDistribution = new IfrsDepreciationDistribution
+                            {
+                                AccountCode = accountCode,
+                                AccountDesc = _accountHelper.GetAccountDesc(accountCode),
+                                Debit = item.DepreciationAmount,
+                                Credit = 0,
+                                IfrsDepreciationId = item.IfrsDepreciationId
+                            };
+
+                            distributions.Add(defaultDistribution);
+                        }
+
+
+                    }
+
+
+                    #endregion
+                    #region credit accumulated depreciation
+
+
+                    if (item.DepreciationAmount > 0 && depreciationRule != null)
+                    {
+                        string accountCode = depreciationRule.AccumulatedAccount;
+                        var invoiceDistribution = distributions.FirstOrDefault(x => x.AccountCode == accountCode);
+                        if (invoiceDistribution != null)
+                        {
+                            invoiceDistribution.AccountCode = accountCode;
+                            invoiceDistribution.AccountDesc = _accountHelper.GetAccountDesc(accountCode);
+                            invoiceDistribution.Debit = 0;
+                            invoiceDistribution.Credit += item.DepreciationAmount;
+                            invoiceDistribution.IfrsDepreciationId = item.IfrsDepreciationId;
+                        }
+                        else
+                        {
+                            var defaultDistribution = new IfrsDepreciationDistribution
+                            {
+                                AccountCode = accountCode,
+                                AccountDesc = _accountHelper.GetAccountDesc(accountCode),
+                                Debit = 0,
+                                Credit = item.DepreciationAmount,
+                                IfrsDepreciationId = item.IfrsDepreciationId
+                            };
+
+                            distributions.Add(defaultDistribution);
+                        }
+
+
+                    }
+
+
+                    #endregion
+                }
+
+                //persist
+                foreach (var distribution in distributions)
+                {
+                    _db.IfrsDepreciationDistributions.Add(distribution);
+                    _db.SaveChanges();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            _db.Dispose();
         }
     }
 }

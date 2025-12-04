@@ -15,9 +15,10 @@
           //columns.ForeignKey(p => p.FixedAssetNameID, (IEnumerable)ViewData["fixedAssetSubCategoryNames"], "FixedAssetSubCategoryNameId", "Name").Title("Asset Name").EditorTemplateName("FixedAssetSubCategorySelector").Width(130);
           columns.Bound(c => c.Name).Title("Name").Width(150);
           columns.ForeignKey(p => p.FixedAssetConditionId, (IEnumerable)ViewData["conditions"], "FixedAssetConditionId", "Name").Title("Condition").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.Bound(c => c.GRN).Width(90);
+          columns.Bound(c => c.GRN).Width(70);
           columns.Bound(c => c.GRNDate).Width(90);
-          columns.Bound(c => c.Tag).Width(90);
+          columns.Bound(c => c.AcqusitionDate).Width(90);
+          columns.Bound(c => c.Tag).Width(110);
           columns.Bound(c => c.Unit).Width(70);
           columns.Bound(c => c.Size).Width(90);
           columns.Bound(c => c.ModelNo).Width(90);
@@ -40,6 +41,9 @@
           columns.Bound(p => p.PurchasePrice).Width(90);
           columns.Bound(p => p.OriginalValue).Width(90);
           columns.Bound(p => p.BookValue).Width(90);
+          columns.Bound(p => p.IFRSBookValue).Width(90);
+          columns.Bound(p => p.UsefulLifeYears).Width(80);
+          columns.Bound(p => p.SalvageValue).Width(90);
           columns.ForeignKey(p => p.StoreCode, (IEnumerable) ViewData["Stores"], "StoreCode", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           if (GlobalHelper.IsMultipleBusinessUnit())
           {
@@ -70,7 +74,7 @@
                                <div class="toolbar row">
                                    <div class="col-md-3">
                                        <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
-                                       <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+
                                    </div>
 
                                    <div class="">
@@ -85,7 +89,7 @@
                                              .HtmlAttributes(new { style = "width: 150px;" })
                                              .DataSource(dataSource =>
                                              {
-                                                 dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                                 dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("sendForgery"))
                                                      .ServerFiltering(false);
                                              }))
 
@@ -99,7 +103,7 @@
                                              .HtmlAttributes(new { style = "width: 150px;" })
                                              .DataSource(dataSource =>
                                              {
-                                                 dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
+                                                 dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("sendForgery").Data("filterSubCategories"))
                                                      .ServerFiltering(true);
                                              })
                                              .CascadeFrom("CategoryCodeSelector")
@@ -111,15 +115,17 @@
                                        @(Html.Kendo().TextBox()
                                              .Name("txtSearch")
                                              .HtmlAttributes(new { placeholder = "name,tag,serial" }))
-                                       
+
                                        @(Html.Kendo().Button()
                                              .Name("btnSearch")
                                              .HtmlAttributes(new { type = "search", @class = "k-primary" })
                                              .Events(e => e.Click("searchAsset"))
                                              .Content("Search"))
 
+                                       <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+
                                    </div>
-                                 
+
                                </div>
 
                             </text>);
@@ -153,7 +159,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      
+
       .ClientDetailTemplateId("template")
       .DataSource(dataSource => dataSource
           .Ajax()
@@ -172,12 +178,11 @@
                   model.Field(p => p.LastModified).Editable(false);
                   model.Field(p => p.DateCreated).Editable(false);
               })
-          .Read(read => read.Action("Registrations_Read", "AssetRegistration").Data("passSearchData"))
-          .Create(create => create.Action("Registrations_Create", "AssetRegistration"))
-          .Update(update => update.Action("Registrations_Update", "AssetRegistration"))
-          .Destroy(destroy => destroy.Action("Registrations_Destroy", "AssetRegistration"))
+          .Read(read => read.Action("Registrations_Read", "AssetRegistration").Data("sendForgery").Data("passSearchData"))
+          .Create(create => create.Action("Registrations_Create", "AssetRegistration").Data("sendForgery"))
+          .Update(update => update.Action("Registrations_Update", "AssetRegistration").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Registrations_Destroy", "AssetRegistration").Data("sendForgery"))
       ))
-
 @* Tabstrip start *@
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
@@ -187,7 +192,7 @@
             .Items(items =>
             {
 //Asset Detail
-                items.Add().Text("Asset Detail").Content(@<text>     
+                items.Add().Text("Asset Detail").Content(@<text>
                     <table class="table table-borderless"  cellpadding="0">
                         <tbody>
                             <tr>
@@ -276,22 +281,30 @@
 
                             </tr>
                         </tbody>
-                    </table>    
+                    </table>
                 </text>
                 );
 
 //Depreciation
-               items.Add().Text("Depreciation").Content(@<text>
+               items.Add().Text("Accessory").Content(@<text>
 
-                    @(Html.Kendo().Grid<DepreciationViewModel>()
-                          .Name("annualDepreciation_#=AssetRegistrationId#") 
+                    @(Html.Kendo().Grid<AssetAccessory>()
+                          .Name("AssetAccessory#=AssetRegistrationId#")
                           .Columns(columns =>
                           {
-                              columns.ForeignKey(p => p.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["fiscalYears"], "GlFiscalYearId", "Name").Width(170).Title("Year");
-                              columns.Bound(c => c.DepreciationAmount).Width(150);
-                              columns.Bound(c => c.BookValue).Width(120);
-                            
+                              columns.Bound(c => c.Description).Width(150);
+                              columns.Bound(c => c.SerialNo).Width(50);
+                              columns.Bound(c => c.Quantity).Width(50);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(880);
                           })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create();
+                            })
                           .HtmlAttributes(new { style = "height: 550px;" })
                           .Pageable(pageable => pageable
                               .Input(true)
@@ -303,7 +316,7 @@
                           .Scrollable()
                           .Sortable()
                           .Filterable()
-                            
+
                           .DataSource(dataSource => dataSource
                               .Ajax()
                               .Events(ev => ev .Error("error_handler_one")
@@ -312,37 +325,88 @@
                               .Model(
                                   model =>
                                   {
-                                      model.Id(p => p.GlFiscalYearId);
-                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Id(p => p.AssetAccessoryId);
                                       model.Field(p => p.CreatedBy).Editable(false);
                                       model.Field(p => p.ModifiedBy).Editable(false);
                                       model.Field(p => p.LastModified).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);
                                   })
-                              .Read(read => read.Action("Depreciations_Read", "AssetRegistration", new { id = "#=AssetRegistrationId#" }))
-                    
+                               .Read(read => read.Action("AssetAccessorys_Read", "AssetAccessory", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                               .Create(create => create.Action("AssetAccessorys_Create", "AssetAccessory", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                               .Update(update => update.Action("DisposalItems_Update", "AssetAccessory").Data("sendForgery"))
+                               .Destroy(destroy => destroy.Action("DisposalItems_Destroy", "AssetAccessory").Data("sendForgery"))
+
                           )
                           .Pageable()
                           .Sortable()
                           .ToClientTemplate())
                 </text>
                 );
+
+                items.Add().Text("Depreciation").Content(@<text>
+
+     @(Html.Kendo().Grid<DepreciationViewModel>()
+           .Name("annualDepreciation_#=AssetRegistrationId#")
+           .Columns(columns =>
+           {
+               columns.ForeignKey(p => p.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["fiscalYears"], "GlFiscalYearId", "Name").Width(170).Title("Year");
+               columns.Bound(c => c.DepreciationAmount).Width(150);
+               columns.Bound(c => c.BookValue).Width(120);
+
+           })
+           .HtmlAttributes(new { style = "height: 550px;" })
+           .Pageable(pageable => pageable
+               .Input(true)
+               .Numeric(false)
+               .Refresh(true)
+               .PageSizes(true)
+               .ButtonCount(5))
+
+           .Scrollable()
+           .Sortable()
+           .Filterable()
+
+           .DataSource(dataSource => dataSource
+               .Ajax()
+               .Events(ev => ev .Error("error_handler_one")
+                   .Sync("sync_handler"))
+               .PageSize(5)
+               .Model(
+                   model =>
+                   {
+                       model.Id(p => p.GlFiscalYearId);
+                       model.Field(p => p.OrgBranchName).Editable(false);
+                       model.Field(p => p.CreatedBy).Editable(false);
+                       model.Field(p => p.ModifiedBy).Editable(false);
+                       model.Field(p => p.LastModified).Editable(false);
+                       model.Field(p => p.DateCreated).Editable(false);
+                   })
+               .Read(read => read.Action("Depreciations_Read", "AssetRegistration", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+
+           )
+           .Pageable()
+           .Sortable()
+           .ToClientTemplate())
+ </text>
+ );
 //Revaluation
                 items.Add().Text("Revaluation").Content(@<text>
 
                     @(Html.Kendo().Grid<FixedAssetRevaluation>()
-                        .Name("revaluation_#=AssetRegistrationId#") 
+                        .Name("revaluation_#=AssetRegistrationId#")
                         .Columns(columns =>
                         {
                             columns.Bound(c => c.RevaluationDate).Width(150);
-                            columns.Bound(c => c.AddedValue).Width(150);
+                            columns.Bound(c => c.RevaluationType).Width(150);
+                            columns.Bound(c => c.BookValue).Width(150);
+                            columns.Bound(c => c.UsefulLifeYears).Width(150);
                             columns.Bound(c => c.Description).Width(200);
-                            
+
                             columns.Command(command =>
                             {
                                 command.Edit();
                                 command.Destroy();
-                            }).Width(480);
+                            }).Width(780);
                         })
                         .ToolBar(toolbar =>
                         {
@@ -359,7 +423,7 @@
                                                 .Scrollable()
                                                 .Sortable()
                                                 .Filterable()
-                                                
+
                         .DataSource(dataSource => dataSource
                             .Ajax()
                                     .Events(ev => ev .Error("error_handler_one")
@@ -375,10 +439,10 @@
                                 model.Field(p => p.LastModified).Editable(false);
                                 model.Field(p => p.DateCreated).Editable(false);
                             })
-                                    .Read(read => read.Action("Revaluations_Read", "Revaluation", new { id = "#=AssetRegistrationId#" }))
-                            .Create(create => create.Action("Revaluations_Create", "Revaluation", new { id = "#=AssetRegistrationId#" }))
-                            .Update(update => update.Action("Revaluations_Update", "Revaluation"))
-                            .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation"))
+                            .Read(read => read.Action("Revaluations_Read", "Revaluation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("Revaluations_Create", "Revaluation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("Revaluations_Update", "Revaluation").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation").Data("sendForgery"))
                         )
                         .Pageable()
                         .Sortable()
@@ -393,10 +457,10 @@
           .Name("appreciation_#=AssetRegistrationId#")
           .Columns(columns =>
           {
-              columns.Bound(c => c.AppreciationDate).Width(150);   
-              columns.Bound(c => c.Amount).Width(120);         
+              columns.Bound(c => c.AppreciationDate).Width(150);
+              columns.Bound(c => c.Amount).Width(120);
               columns.Bound(c => c.Description).Width(200);
-              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(780);
           })
           .ToolBar(toolbar =>
           {
@@ -414,16 +478,16 @@
           .Scrollable()
           .Sortable()
           .Filterable()
-                   
+
           .DataSource(dataSource => dataSource
               .Ajax()
               .Events(ev => ev .Error("error_handler_one")
                   .Sync("sync_handler"))
               .Model(model => model.Id(p => p.AppreciationID))
-              .Read(read => read.Action("Appreciations_Read", "Appreciatation" , new { id = "#=AssetRegistrationId#" }))
-              .Create(create => create.Action("Appreciations_Create", "Appreciatation", new { id = "#=AssetRegistrationId#" }))
-              .Update(update => update.Action("Appreciations_Update", "Appreciatation", new { id = "#=AssetRegistrationId#" }))
-              .Destroy(destroy => destroy.Action("Appreciations_Destroy", "Appreciatation"))
+              .Read(read => read.Action("Appreciations_Read", "Appreciatation" , new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+              .Create(create => create.Action("Appreciations_Create", "Appreciatation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+              .Update(update => update.Action("Appreciations_Update", "Appreciatation", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("Appreciations_Destroy", "Appreciatation").Data("sendForgery"))
           ).ToClientTemplate())
 
 </text>);
@@ -452,7 +516,7 @@
                                                 .Scrollable()
                                                 .Sortable()
                                                 .Filterable()
-                                                
+
                         .DataSource(dataSource => dataSource
                             .Ajax()
                                     .Events(ev => ev .Error("error_handler_one")
@@ -468,10 +532,10 @@
                                 model.Field(p => p.LastModified).Editable(false);
                                 model.Field(p => p.DateCreated).Editable(false);
                             })
-                                    .Read(read => read.Action("Disposals_Read", "Disposal", new { id = "#=AssetRegistrationId#" }))
-                            .Create(create => create.Action("Disposals_Create", "Disposal", new { id = "#=AssetRegistrationId#" }))
-                            .Update(update => update.Action("Disposals_Update", "Disposal"))
-                            .Destroy(destroy => destroy.Action("Disposals_Destroy", "Disposal"))
+                                    .Read(read => read.Action("Disposals_Read", "Disposal", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("Disposals_Create", "Disposal", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("Disposals_Update", "Disposal").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("Disposals_Destroy", "Disposal").Data("sendForgery"))
                         )
                         .Pageable()
                         .Sortable()
@@ -483,7 +547,7 @@
                 items.Add().Text("Sales").Content(@<text>
 
                     @(Html.Kendo().Grid<Sales>()
-                          .Name("sales_#=AssetRegistrationId#") 
+                          .Name("sales_#=AssetRegistrationId#")
                           .Columns(columns =>
                           {
                               columns.Bound(c => c.Amount).Width(150);
@@ -508,7 +572,7 @@
                           .Scrollable()
                           .Sortable()
                           .Filterable()
-                                                
+
                           .DataSource(dataSource => dataSource
                               .Ajax()
                               .Events(ev => ev .Error("error_handler_one")
@@ -526,10 +590,10 @@
                                       model.Field(p => p.LastModified).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);
                                   })
-                              .Read(read => read.Action("Sales_Read", "Sales", new { id = "#=AssetRegistrationId#" }))
-                              .Create(create => create.Action("Sales_Create", "Sales", new { id = "#=AssetRegistrationId#" }))
-                              .Update(update => update.Action("Sales_Update", "Sales"))
-                              .Destroy(destroy => destroy.Action("Sales_Destroy", "Sales"))
+                              .Read(read => read.Action("Sales_Read", "Sales", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Create(create => create.Action("Sales_Create", "Sales", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Update(update => update.Action("Sales_Update", "Sales").Data("sendForgery"))
+                              .Destroy(destroy => destroy.Action("Sales_Destroy", "Sales").Data("sendForgery"))
                           )
                           .Pageable()
                           .Sortable()
@@ -593,9 +657,9 @@
                                       model.Field(p => p.LastModified).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);
                                   })
-                              .Read(read => read.Action("LocationTrackings_Read", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
-                              .Create(create => create.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
-                              .Update(update => update.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
+                              .Read(read => read.Action("LocationTrackings_Read", "LocationTracking", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Create(create => create.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
+                              .Update(update => update.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }).Data("sendForgery"))
 
                           )
                           .Pageable()
@@ -667,10 +731,10 @@
         padding: 0;
     }
 
-    .registration-details ul li {
-        margin: 0;
-        line-height: 1.7em;
-    }
+        .registration-details ul li {
+            margin: 0;
+            line-height: 1.7em;
+        }
 
     .registration-details label {
         display: inline-block;
@@ -683,16 +747,15 @@
 
     .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
         border: none;
-
     }
 
     .table-borderless th {
         text-align: right;
     }
 
-    
 
-      div.k-edit-form-container {
+
+    div.k-edit-form-container {
         width: 800px;
         height: auto;
     }
@@ -705,7 +768,7 @@
 
 
 <script type="text/javascript">
-    
+
     function filterSubCategories() {
 
         return {
@@ -716,7 +779,8 @@
     function filterSubCategoriesForRegistration() {
 
         return {
-            categoryCode: $("#FixedAssetCategoryID").data("kendoDropDownList").value()
+            categoryCode: $("#FixedAssetCategoryID").data("kendoDropDownList").value(),
+            text: $("#FixedAssetSubCategoryID").data("kendoDropDownList").filterInput.val()
         };
     }
 
@@ -727,7 +791,8 @@
     function filterStoreByBranch() {
 
         return {
-            BranchId: $("#BranchId").data("kendoDropDownList").value()
+            BranchId: $("#BranchId").data("kendoDropDownList").value(),
+            text: $("#StoreCode").data("kendoDropDownList").filterInput.val()
         };
     }
 
@@ -762,20 +827,20 @@
         return false;
     }
 
-    
+
     function setLangc(accCode) {
         aCode = accCode;
         $("#CostCenter").val(aCode).trigger("change");
     }
-   
-  
+
+
 
     $(document).ready(function () {
         $("#IsMachinery").click(function () {
             alert("setCompleteStatus called");
         });
     });
-    
+
     function filterSubCategoryNames() {
 
         return {

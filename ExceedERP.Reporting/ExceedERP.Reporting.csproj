@@ -1302,6 +1302,7 @@
     <Compile Include="FixedAsset\ViewModel\DepreciationExpenseVm.cs" />
     <Compile Include="FixedAsset\ViewModel\AnnualDepreciationVm.cs" />
     <Compile Include="FixedAsset\ViewModel\DepreciationViewModel.cs" />
+    <Compile Include="FixedAsset\ViewModel\DepreciationVm.cs" />
     <Compile Include="FixedAsset\ViewModel\DisposalViewModel.cs" />
     <Compile Include="FixedAsset\ViewModel\FixedAssetItemReport.cs" />
     <Compile Include="FixedAsset\ViewModel\FixedAssetItemVm.cs" />

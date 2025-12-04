@@ -5,25 +5,26 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>Annual Depreciation</legend>
+<legend>Depreciation for Tax</legend>
 
 @(Html.Kendo().Grid<AnnualDepreciation>()
           .Name("grid")
           .Columns(columns =>
           {
-              columns.Bound(c => c.AnnualDepreciationId).Title("#").Width(50).ClientTemplate("#=appendZeros(AnnualDepreciationId)#");
-              columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(200);
-              columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").Width(150);
-              columns.ForeignKey(p => p.FixedAssetGroupID, (IEnumerable)ViewData["Groups"], "FixedAssetGroupID", "Name").Width(150);
-
+              //columns.Bound(c => c.AnnualDepreciationId).Title("#").Width(50).ClientTemplate("#=appendZeros(AnnualDepreciationId)#");
+              columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+              if (GlobalHelper.IsDepreciationMonthly())
+              {
+                  columns.ForeignKey(p => p.GlPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+              }
               columns.Bound(c => c.Status).Width(130);
 
           })
           .ToolBar(toolbar =>
           {
-              toolbar.Template(@<text>
+          toolbar.Template(@<text>
 
-                @(Html.Kendo().DropDownList()
+                @*@(Html.Kendo().DropDownList()
                               .OptionLabel("Select Branch")
                               .Name("branchSelector")
                               .AutoBind(false)
@@ -32,9 +33,9 @@
                               .HtmlAttributes(new { style = "width: 200px;" })
                               .DataSource(dataSource =>
                               {
-                                    dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
+                                    dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                         .ServerFiltering(false);
-                              }))
+                              }))*@
 
                 @(Html.Kendo().DropDownList()
                               .OptionLabel("Select Year")
@@ -45,23 +46,24 @@
                               .HtmlAttributes(new { style = "width: 200px;" })
                               .DataSource(dataSource =>
                               {
-                                    dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                    dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                         .ServerFiltering(false);
                               }))
-
-                @(Html.Kendo().DropDownList()
-                        .OptionLabel("Select Asset Group")
-                        .Name("groupSelector")
-                        .AutoBind(false)
-                        .DataValueField("FixedAssetGroupID")
-                        .DataTextField("Name")
-                        .HtmlAttributes(new { style = "width: 200px;" })
-                        .DataSource(dataSource =>
-                        {
-                        dataSource.Read(read => read.Action("GetGroup", "FixedAssetDataProvider", new { area = "FixedAsset" }))
-                            .ServerFiltering(false);
-                    }))
-
+                            @if(GlobalHelper.IsDepreciationMonthly())
+                            {
+                             @(Html.Kendo().DropDownList()
+                               .Name("periodSelector")
+                               .AutoBind(false)
+                               .DataValueField("GLPeriodId")
+                               .DataTextField("Name")
+                               .HtmlAttributes(new { style = "width: 200px;" })
+                               .DataSource(dataSource =>
+                               {
+                                   dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery").Data("getFiscalYear"))
+                                       .ServerFiltering(true);
+                               })
+                               .CascadeFrom("yearSelector"))
+                            }
 
 
                 @Html.Kendo().Button().Name("AnnualDepreciation").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Run Depreciation").Events(ev => ev.Click("RunDepreciation"))
@@ -93,7 +95,7 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-                
+
                 .Scrollable(h => h.Height(500))
                 .Events(ev => ev.DetailExpand("detailExpand"))
                 .Events(x => x.DataBound("onDataBoundMaster"))
@@ -106,7 +108,7 @@
 
                     })
 
-                    .Read(read => read.Action("AnnualDepreciations_Read", "AnnualDepreciation"))
+                    .Read(read => read.Action("AnnualDepreciations_Read", "AnnualDepreciation").Data("sendForgery"))
                 ).ClientDetailTemplateId("itemstemplate"))
 
 <script id="itemstemplate" type="text/Kendo-tmpl">
@@ -167,19 +169,19 @@
                       .Name("AsstetItems_#=AnnualDepreciationId#")
                       .Columns(columns =>
                       {
-                                  columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["Assets"], "AssetRegistrationId", "Tag").Width(150);
-                                  columns.Bound(c => c.DepreciationAmount).Width(130);
-                      //columns.Bound(c => c.BookValue).Width(130);
-                      columns.Command(command =>
-                                  {
-                          //command.Edit();
-                          //command.Destroy();
-                      }).Width(180);
-                              })
+                          columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["Assets"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                          columns.Bound(c => c.DepreciationAmount).Width(130);
+                          //columns.Bound(c => c.BookValue).Width(130);
+                          //columns.Command(command =>
+                          //            {
+                          //    //command.Edit();
+                          //    //command.Destroy();
+                          //}).Width(180);
+                      })
                       .ToolBar(toolbar =>
                       {
 
-                              })
+                      })
 
                       .Events(x => x.DataBound("onDataBoundLines"))
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -194,9 +196,9 @@
                       .Filterable()
                       .Selectable(selectable =>
                       {
-                                  selectable.Mode(GridSelectionMode.Single);
-                                  selectable.Type(GridSelectionType.Row);
-                              })
+                          selectable.Mode(GridSelectionMode.Single);
+                          selectable.Type(GridSelectionType.Row);
+                      })
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Events(ev => ev
@@ -205,21 +207,21 @@
                               .RequestEnd("onRequestEnd(\"AsstetItems_#=AnnualDepreciationId#\")"))
                           .Model(model =>
                           {
-                                      model.Id(p => p.AnnualDepreciationId);
-                                      model.Field(p => p.AssetRegistrationId).Editable(false);
-                                      model.Field(p => p.BookValue).Editable(false);
-                                      model.Field(p => p.DepreciationAmount).Editable(false);
+                              model.Id(p => p.AnnualDepreciationId);
+                              model.Field(p => p.AssetRegistrationId).Editable(false);
+                              model.Field(p => p.BookValue).Editable(false);
+                              model.Field(p => p.DepreciationAmount).Editable(false);
 
-                                      model.Field(p => p.CreatedBy).Editable(false);
-                                      model.Field(p => p.DateCreated).Editable(false);
-                                      model.Field(p => p.ModifiedBy).Editable(false);
-                                      model.Field(p => p.LastModified).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
 
-                                  })
-                          .Read(read => read.Action("AnnualDepreciationItems_Read", "AnnualDepreciation", new { id = "#=AnnualDepreciationId#" }))
-                      //.Create(create => create.Action("IssueItems_Create", "IssueItem", new { id = "#=AnnualDepreciationId#" }))
-                      //.Update(update => update.Action("IssueItems_Update", "IssueItem", new { id = "#=AnnualDepreciationId#" }))
-                      //.Destroy(destroy => destroy.Action("IssueItems_Destroy", "IssueItem"))
+                          })
+                          .Read(read => read.Action("AnnualDepreciationItems_Read", "AnnualDepreciation", new { id = "#=AnnualDepreciationId#" }).Data("sendForgery"))
+                      //.Create(create => create.Action("IssueItems_Create", "IssueItem", new { id = "#=AnnualDepreciationId#" }).Data("sendForgery"))
+                      //.Update(update => update.Action("IssueItems_Update", "IssueItem", new { id = "#=AnnualDepreciationId#" }).Data("sendForgery"))
+                      //.Destroy(destroy => destroy.Action("IssueItems_Destroy", "IssueItem").Data("sendForgery"))
                       ).ToClientTemplate())
 
     </text>
@@ -231,20 +233,20 @@
                           .Name("AnnualDepreciationDistribution_#=AnnualDepreciationId#")
                           .Columns(columns =>
                           {
-                                      columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
-                                      columns.Bound(c => c.AccountDesc).Width(400);
-                                      columns.Bound(c => c.Debit).Width(150).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                      columns.Bound(c => c.Credit).Width(150).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                      columns.Command(command =>
-                                      {
-                                          command.Edit();
-                                          command.Destroy();
-                                      }).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
-                                  })
+                              columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+                              columns.Bound(c => c.AccountDesc).Width(250);
+                              columns.Bound(c => c.Debit).Width(140).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                              columns.Bound(c => c.Credit).Width(140).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(180).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+                          })
                           .ToolBar(toolbar =>
                           {
-                                      toolbar.Create();
-                                  })
+                              toolbar.Create();
+                          })
                           .Editable(editable => editable.Mode(GridEditMode.InLine))
                           .Scrollable()
                           .Events(x => x.DataBound("onDataBoundDistribution"))
@@ -252,9 +254,9 @@
                               .Ajax()
                               .Aggregates(aggregates =>
                               {
-                                          aggregates.Add(p => p.Debit).Sum();
-                                          aggregates.Add(p => p.Credit).Sum();
-                                      })
+                                  aggregates.Add(p => p.Debit).Sum();
+                                  aggregates.Add(p => p.Credit).Sum();
+                              })
                               .Events(ev => ev
                                   .Error("error_handler(\"AnnualDepreciationDistribution_#=AnnualDepreciationId#\")")
                                   .RequestStart("onRequestStart(\"AnnualDepreciationDistribution_#=AnnualDepreciationId#\")")
@@ -262,17 +264,17 @@
 
                               .Model(model =>
                               {
-                                          model.Id(p => p.AnnualDepreciationDistributionId);
-                                          model.Field(p => p.CreatedBy).Editable(false);
-                                          model.Field(p => p.DateCreated).Editable(false);
-                                          model.Field(p => p.ModifiedBy).Editable(false);
-                                          model.Field(p => p.LastModified).Editable(false);
-                                      }
+                                  model.Id(p => p.AnnualDepreciationDistributionId);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                  model.Field(p => p.LastModified).Editable(false);
+                              }
                               )
-                              .Read(read => read.Action("AnnualDepreciationDistributions_Read", "AnnualDepreciationDistribution", new { id = "#=AnnualDepreciationId#" }))
-                              .Create(create => create.Action("AnnualDepreciationDistributions_Create", "AnnualDepreciationDistribution", new { id = "#=AnnualDepreciationId#" }))
-                              .Update(update => update.Action("AnnualDepreciationDistributions_Update", "AnnualDepreciationDistribution"))
-                              .Destroy(destroy => destroy.Action("AnnualDepreciationDistributions_Destroy", "AnnualDepreciationDistribution"))
+                              .Read(read => read.Action("AnnualDepreciationDistributions_Read", "AnnualDepreciationDistribution", new { id = "#=AnnualDepreciationId#" }).Data("sendForgery"))
+                              .Create(create => create.Action("AnnualDepreciationDistributions_Create", "AnnualDepreciationDistribution", new { id = "#=AnnualDepreciationId#" }).Data("sendForgery"))
+                              .Update(update => update.Action("AnnualDepreciationDistributions_Update", "AnnualDepreciationDistribution").Data("sendForgery"))
+                              .Destroy(destroy => destroy.Action("AnnualDepreciationDistributions_Destroy", "AnnualDepreciationDistribution").Data("sendForgery"))
                           ).ToClientTemplate())
 
 
@@ -300,7 +302,7 @@
                                                               })
                                                       .ToolBar(toolbar =>
                                                       {
-                                                                  toolbar.Create();
+                                                                 // toolbar.Create();
                                                               })
                                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                       .Scrollable()
@@ -321,10 +323,10 @@
                                                                       model.Field(p => p.LastModified).Editable(false);
                                                                   }
                                                           )
-                                                          .Read(read => read.Action("AnnualDepreciationValidations_Read", "AnnualDepreciationValidation", new { id = "#=AnnualDepreciationId#" }))
-                                                          .Create(create => create.Action("AnnualDepreciationValidations_Create", "AnnualDepreciationValidation", new { id = "#=AnnualDepreciationId#" }))
-                                                          .Update(update => update.Action("AnnualDepreciationValidations_Update", "AnnualDepreciationValidation"))
-                                                          .Destroy(destroy => destroy.Action("AnnualDepreciationValidations_Destroy", "AnnualDepreciationValidation"))
+                                                          .Read(read => read.Action("AnnualDepreciationValidations_Read", "AnnualDepreciationValidation", new { id = "#=AnnualDepreciationId#" }).Data("sendForgery"))
+                                                          .Create(create => create.Action("AnnualDepreciationValidations_Create", "AnnualDepreciationValidation", new { id = "#=AnnualDepreciationId#" }).Data("sendForgery"))
+                                                          .Update(update => update.Action("AnnualDepreciationValidations_Update", "AnnualDepreciationValidation").Data("sendForgery"))
+                                                          .Destroy(destroy => destroy.Action("AnnualDepreciationValidations_Destroy", "AnnualDepreciationValidation").Data("sendForgery"))
                                                       ).ToClientTemplate())
 
 
@@ -385,41 +387,57 @@
 
 
     var selectedYear;
-    var selectedBranch;
-    var selectedGroup;
+    var selectedPeriod;
+    //var selectedBranch;
+    //var selectedGroup;
 
     function RunDepreciation(e) {
 
         var year = $("#yearSelector").data("kendoDropDownList").value();
-        var branch = $("#branchSelector").data("kendoDropDownList").value();
-        var group = $("#groupSelector").data("kendoDropDownList").value();
+       
+        //var branch = $("#branchSelector").data("kendoDropDownList").value();
+        // var group = $("#groupSelector").data("kendoDropDownList").value();
         selectedYear = year;
-        selectedBranch = branch;
-        selectedGroup = group;
-        $('#loading-image').show();
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("RunDepreciation", "AnnualDepreciation")',
-            contentType: "application/json; charset=utf-8",
-            data: { fiscalyearid: year, branchid: selectedBranch, groupid: selectedGroup},
-            dataType: "json",
-            success: function (result) {
-                // toastr.warnning(result.Message);
-                alert(result.Message);
-                $('#loading-image').hide();
-                location.reload(true);
-            }, //end succ
-            error: function (result) {
-                alert(result);
+        @if(GlobalHelper.IsDepreciationMonthly()) 
+        {
+            <text>
+            var period = $("#periodSelector").data("kendoDropDownList").value();
+            selectedPeriod = period;
+             </text>
             }
+        //selectedBranch = branch;
 
-        });
+        if (selectedYear) {
+            //selectedGroup = group;
+            $('#loading-image').show();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("RunDepreciation", "AnnualDepreciation")',
+                contentType: "application/json; charset=utf-8",
+                data: { fiscalyearid: selectedYear, periodId: selectedPeriod },
+                dataType: "json",
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    $('#loading-image').hide();
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+
+            });
+        }
+        else {
+            alert("Please select a fiscal year to run depreciation.");
+            $('#loading-image').hide();
+        }
     }
 
 
     function reverseClicked(e) {
         var year = $("#yearSelector").data("kendoDropDownList").value();
-        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        //var branch = $("#branchSelector").data("kendoDropDownList").value();
         var period = $("#periodSelector").data("kendoDropDownList").value();
         selectedYear = year;
         selectedPeriod = period;
@@ -506,5 +524,9 @@
                 alert('Unkown Error');
             }
         });
+    }
+
+    function getFiscalYear() {
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
     }
 </script>

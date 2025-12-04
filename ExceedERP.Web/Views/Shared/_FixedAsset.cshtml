@@ -125,14 +125,11 @@
                         @if (HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_User")
                              || HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_Approver"))
                         {
-                            <li id="fxd001sasas" class="actionlinlk">
-                                @Html.ActionLink("Monthly Depreciation", "Index", "MonthlyDepreciation", new { area = "FixedAsset" }, null)<b class="arrow"></b>
-                            </li>
                             <li id="fxd001asas" class="actionlinlk">
-                                @Html.ActionLink("Annual Depreciation", "Index", "AnnualDepreciation", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                                @Html.ActionLink("Depreciation for Tax", "Index", "AnnualDepreciation", new { area = "FixedAsset" }, null)<b class="arrow"></b>
                             </li>
-                            <li id="fxd00cddd" class="actionlinlk">
-                                @Html.ActionLink("Depreciation Cost", "Index", "DepreciationCost", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                            <li id="fxd001asasifrs" class="actionlinlk">
+                                @Html.ActionLink("IFRS Depreciation", "Index", "IfrsDepreciation", new { area = "FixedAsset" }, null)<b class="arrow"></b>
                             </li>
                         }
                     </ul>

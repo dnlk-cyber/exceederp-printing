@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.FixedAsset.Transfers;
 
 namespace ExceedERP.Core.Domain.FixedAsset.Registrations
 {
@@ -79,6 +80,10 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
         [Display(Name = "GRN Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
         public DateTime? GRNDate { get; set; }
 
+
+        [Display(Name = "Acqui. Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
+        public DateTime? AcqusitionDate { get; set; }
+
         [Display(Name = "Original Value")]
         public decimal OriginalValue { get; set; }
         [Required]
@@ -90,12 +95,13 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
 
         [Display(Name = "Book Value")]
         public decimal BookValue { get; set; }
+        [Display(Name = "IFRS Book Value")]
+        public decimal IFRSBookValue { get; set; }
 
         public RegistrationStatus Status { get; set; }
 
-
         //only for machinery
-        [Display(Name = "Machinery (Tick if yes)")]
+        [Display(Name = "Machinery")]
         public bool IsMachinery { get; set; }
         public string Supplier { get; set; }
         public string Manufacturer { get; set; }
@@ -132,7 +138,7 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
 
 
         //only for building
-        [Display(Name = "Building (Tick if yes)")]
+        [Display(Name = "Building")]
         public bool IsBuilding { get; set; }
 
         [Display(Name = "Location of Building")]
@@ -156,11 +162,18 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
         public string GroupCode { get; set; }
 
         public int Quanity { get; set; }
+        [Display(Name = "Useful Life Years")]
+        public decimal UsefulLifeYears { get; set; }
+        [Display(Name = "Salvage Value")]
+        public decimal SalvageValue { get; set; }
+        [Display(Name = "Salvage Value Type")]
+        public PPEAmountType SalvageValueType { get; set; }
         //[Required]
         public string Unit { get; set; }
         public string Remark { get; set; }
         public bool Disable { get; set; }
 
+        public virtual ICollection<AssetAccessory> AssetAccessories { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
         public virtual ICollection<Appreciation> Appreciations { get; set; }
         public virtual ICollection<AnnualDepreciation> Depreciations { get; set; }
@@ -168,5 +181,18 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
         public virtual ICollection<AssetDisposal> AssetDisposals { get; set; }
         public virtual ICollection<Sales> Sales { get; set; }
         public virtual ICollection<LocationTracking> LocationTrackings { get; set; }
+    }
+
+    public class AssetAccessory : TrackUserSettingOperation
+    {
+        public int AssetAccessoryId { get; set; }
+        public int AssetRegistrationId { get; set; }
+        public virtual AssetRegistration Asset { get; set; }
+        [DisplayName("Description")]
+        public string Description { get; set; }
+        [DisplayName("QTY")]
+        public int Quantity { get; set; }
+        [Display(Name = "Serial No.")]
+        public string SerialNo { get; set; }
     }
 }

@@ -77,14 +77,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Appreciations_Update([DataSourceRequest]DataSourceRequest request, Appreciation appreciation)
         {
-            var registration = db.AssetRegistrations.Find(appreciation.RegistrationId);
+            //var registration = db.AssetRegistrations.Find(appreciation.RegistrationId);
 
             if (ModelState.IsValid)
             {
-                if (registration != null && registration.BookValue < appreciation.Amount)
-                {
-                    ModelState.AddModelError("over", "Appreciation of " + appreciation.Amount + " is more than the current book value (" + registration.BookValue + ") of the item.");
-                }
+                //if (registration != null && registration.BookValue < appreciation.Amount)
+                //{
+                //    ModelState.AddModelError("over", "Appreciation of " + appreciation.Amount + " is more than the current book value (" + registration.BookValue + ") of the item.");
+                //}
                 var entity = new Appreciation
                 {
                     AssetRegistrationId = appreciation.AssetRegistrationId,

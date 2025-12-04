@@ -22,6 +22,8 @@ namespace ExceedERP.Core.Domain.HRM.Payroll.BackPays
         public int BackPayId { get; set; }
         public int GLPeriodId { get; set; }
         public virtual GLPeriod GLPeriod { get; set; }
+        public int ToGLPeriodId { get; set; } 
+        public int ProcessedGLPeriodId { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime Date { get; set; }
@@ -42,10 +44,11 @@ namespace ExceedERP.Core.Domain.HRM.Payroll.BackPays
         public decimal Allowances { get; set; }
         public decimal IncomeTax { get; set; }
         public decimal Pension { get; set; }
+        public decimal PensionComp { get; set; }
         public decimal Net { get; set; }
         public int BackPayId { get; set; }
         public virtual BackPay BackPay { get; set; }
-        public virtual ICollection<BackPaymentDetail> BackPaymentDetails { get; set; }
+        public virtual ICollection<BackPaymentDetail> BackPaymentDetails { get; set; }=new List<BackPaymentDetail>();
     }
 
 

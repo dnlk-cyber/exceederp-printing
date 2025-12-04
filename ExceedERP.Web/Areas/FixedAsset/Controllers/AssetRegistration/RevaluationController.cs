@@ -31,7 +31,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             DataSourceResult result = revaluations.ToDataSourceResult(request, revaluation => new {
                 FixedAssetRevaluationID = revaluation.FixedAssetRevaluationID,
                 AssetRegistrationId = revaluation.AssetRegistrationId,
-                AddedValue = revaluation.AddedValue,
+                RevaluationType = revaluation.RevaluationType,
+                BookValue = revaluation.BookValue,
+                UsefulLifeYears = revaluation.UsefulLifeYears,
                 RevaluationDate = revaluation.RevaluationDate,
                 Description = revaluation.Description,
                 
@@ -53,18 +55,21 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             if (ModelState.IsValid)
             {
-                var entity = new FixedAssetRevaluation();
+                var entity = new FixedAssetRevaluation
+                {
+                    AssetRegistrationId = id,
+                    RevaluationDate = revaluation.RevaluationDate,
+                    RevaluationType = revaluation.RevaluationType,
+                    BookValue = revaluation.BookValue,
+                    UsefulLifeYears = revaluation.UsefulLifeYears,
+                    Description = revaluation.Description,
 
-                entity.AssetRegistrationId = id;
-                entity.RevaluationDate = revaluation.RevaluationDate;
-                entity.AddedValue = revaluation.AddedValue;
-                entity.Description = revaluation.Description;
-                
-                entity.OrgBranchName = revaluation.OrgBranchName;
-                entity.DateCreated = revaluation.DateCreated;
-                entity.LastModified = revaluation.LastModified;
-                entity.CreatedBy = revaluation.CreatedBy;
-                entity.ModifiedBy = revaluation.ModifiedBy;
+                    OrgBranchName = revaluation.OrgBranchName,
+                    DateCreated = revaluation.DateCreated,
+                    LastModified = revaluation.LastModified,
+                    CreatedBy = revaluation.CreatedBy,
+                    ModifiedBy = revaluation.ModifiedBy
+                };
 
                 db.FixedAssetRevaluations.Add(entity);
                 db.SaveChanges();
@@ -89,7 +94,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     AssetRegistrationId = revaluation.AssetRegistrationId,
                     FixedAssetRevaluationID = revaluation.FixedAssetRevaluationID,
                     RevaluationDate = revaluation.RevaluationDate,
-                    AddedValue = revaluation.AddedValue,
+                    RevaluationType = revaluation.RevaluationType,
+                    BookValue = revaluation.BookValue,
+                    UsefulLifeYears = revaluation.UsefulLifeYears,
                     Description = revaluation.Description,
                     OrgBranchName = revaluation.OrgBranchName,
                     DateCreated = revaluation.DateCreated,
@@ -121,7 +128,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     AssetRegistrationId = revaluation.AssetRegistrationId,
                     FixedAssetRevaluationID = revaluation.FixedAssetRevaluationID,
                     RevaluationDate = revaluation.RevaluationDate,
-                    AddedValue = revaluation.AddedValue,
+                    RevaluationType = revaluation.RevaluationType,
+                    BookValue = revaluation.BookValue,
+                    UsefulLifeYears = revaluation.UsefulLifeYears,
                     Description = revaluation.Description,
                     OrgBranchName = revaluation.OrgBranchName,
                     DateCreated = revaluation.DateCreated,

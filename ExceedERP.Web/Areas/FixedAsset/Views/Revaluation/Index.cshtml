@@ -24,9 +24,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.RevaluationID))
-          .Read(read => read.Action("Revaluations_Read", "Revaluation"))
-          .Create(create => create.Action("Revaluations_Create", "Revaluation"))
-          .Update(update => update.Action("Revaluations_Update", "Revaluation"))
-          .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation"))
+          .Read(read => read.Action("Revaluations_Read", "Revaluation").Data("sendForgery"))
+          .Create(create => create.Action("Revaluations_Create", "Revaluation").Data("sendForgery"))
+          .Update(update => update.Action("Revaluations_Update", "Revaluation").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation").Data("sendForgery"))
       )
 )

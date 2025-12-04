@@ -11,7 +11,7 @@ using System.Data.Entity;
 namespace ExceedERP.Reporting.FixedAsset.DataSource
 {
 	[DataObject]
-	public class FixedAssetAnnualDepreciationOds : List<FixedAssetHeader>
+	public class FixedAssetAnnualDepreciationOds : IDisposable
 	{
 		ExceedDbContext _db = new ExceedDbContext();
 
@@ -78,47 +78,42 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
 
 
 		[DataObjectMethod(DataObjectMethodType.Select)]
-		public List<AnnualDepreciationVm> GetAnnualDepreciations(string year, string branch, string businessUnitId)
-		{
-			List<AnnualDepreciationVm> depreciations = new List<AnnualDepreciationVm>();
-			var annualDepreciations = _db.AnnualDepreciationItems
-				.Include(a=>a.AnnualDepreciation)
-				.AsQueryable();
+        public List<DepreciationVm> GetAnnualDepreciations(string year, string branch, string businessUnitId)
+        {
+            if (string.IsNullOrWhiteSpace(year))
+                return new List<DepreciationVm>();
 
-			if (!String.IsNullOrEmpty(year))
-			{
-				int yearid = int.Parse(year);
-				annualDepreciations = annualDepreciations.Where(x => x.AnnualDepreciation.GlFiscalYearId == yearid);
-				if (!String.IsNullOrEmpty(branch))
-				{
-					int branchid = int.Parse(branch);
-					annualDepreciations = annualDepreciations.Where(x => x.AnnualDepreciation.BranchId == branchid);
-				}
-				if (!String.IsNullOrEmpty(businessUnitId))
-				{
-					int bizUnitId = int.Parse(businessUnitId);
-					annualDepreciations = annualDepreciations.Where(x => x.AnnualDepreciation.BusinessUnitId == bizUnitId);
-				}
-				var recordList = annualDepreciations.ToList();
-				foreach (var depreciation in recordList)
-				{
-					var item = new AnnualDepreciationVm
-					{
-						Tag = depreciation.AssetRegistration.Tag,
-						Description = depreciation.AssetRegistration.Name,
-						OriginalValue = depreciation.AssetRegistration.Quanity*depreciation.AssetRegistration.OriginalValue,
-						DepreciationAmount = depreciation.DepreciationAmount,
-						AccumulatedDepreciationAmount = 0,//depreciation.AccumulatedDepreciationAmount,
-						BookValue = depreciation.BookValue
-					};
+            int yearId = int.Parse(year);
+            int? branchId = !string.IsNullOrWhiteSpace(branch) ? int.Parse(branch) : (int?)null;
+            int? bizUnitId = !string.IsNullOrWhiteSpace(businessUnitId) ? int.Parse(businessUnitId) : (int?)null;
 
-				   
+            var query = _db.AnnualDepreciationItems
+                .Where(x => x.AnnualDepreciation.GlFiscalYearId == yearId);
 
-					depreciations.Add(item);
-				}
-			}
-			return depreciations;
-		}
+            if (branchId.HasValue)
+                query = query.Where(x => x.BranchId == branchId.Value);
 
-	}
+            if (bizUnitId.HasValue)
+                query = query.Where(x => x.BusinessUnitId == bizUnitId.Value);
+
+            var result = query
+                .Select(x => new DepreciationVm
+                {
+                    Tag = x.AssetRegistration.Tag,
+                    Description = x.AssetRegistration.Name,
+                    OriginalValue = x.AssetRegistration.Quanity * x.AssetRegistration.OriginalValue,
+                    DepreciationAmount = x.DepreciationAmount,
+                    AccumulatedDepreciationAmount = x.AccumulatedDepreciationAmount,
+                    BookValue = x.BookValue
+                })
+                .ToList();
+
+            return result;
+        }
+
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+    }
 }
