@@ -30,51 +30,40 @@ namespace ExceedERP.Reporting.Planning.DataSource
                 var glfiscalyears = db.GLFiscalYears.Find(glFiscalYearId);
                 if (glfiscalyears != null)
                 {
-                    var actuals = db.Actuals.FirstOrDefault(s => s.GlFiscalYearId == glfiscalyears.GlFiscalYearId);
+                    var actuals = db.Actuals.FirstOrDefault(s => s.GlFiscalYearId == glFiscalYearId);
                     
                     if (actuals != null )
                     {
-                        var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
-                        if (Organization != null)
-                        {
-                            var logo =
-                           db.Attachments.FirstOrDefault(a => a.Reference == Organization.MainCompanyId.ToString() &&
-                                                              a.ReferenceType == AttachmentType.LOGO);
-                            if (logo != null)
-                            {
-                                model.LogoFileName = ByteArrayToImage(logo.BinaryFile);
-                            }
-
-                            model.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-
-
-                            model.Name = Organization.TradeName;
-                            model.AmharicName = Organization.AmharicName;
-                            model.Abbreviation = Organization.Abbreviation;
-                        }
+                       
                         model.FiscalYear = glfiscalyears.Name;
                         model.Description = actuals.Description;
                         model.ObjectiveItems = new List<ActualObjectiveItem>();
-                        var bscActuals = db.BSCActuals.Where(s => s.ActualId == actuals.ActualId).ToList();
-                        if (workUnitId != null)
+                        var bscActualsQuery = db.BSCActuals.Where(s => s.ActualId == actuals.ActualId);
+
+                        if (!string.IsNullOrEmpty(workUnitId) && int.TryParse(workUnitId, out int orgStructureId))
                         {
-                            int.TryParse(workUnitId, out int orgStructureId);
-                            var placement = db.Placements.Where(x => x.isCurrent && x.IsHead && x.OrgStructureId == orgStructureId).FirstOrDefault();
+                            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == orgStructureId);
+
                             if (placement != null)
                             {
-                                var orgstructureIds = db.MainCompanyStructures.Where(x => x.Parent == orgStructureId).Select(x => x.OrgStructureId);
-                                if (orgstructureIds.Count() > 0)
-                                {
-                                    bscActuals = db.BSCActuals.Where(x => x.ActualId == actuals.ActualId && orgstructureIds.Contains(x.OrgStructureId) || x.OrgStructureId == orgStructureId).Distinct().ToList();
+                                var orgstructureIds = db.MainCompanyStructures
+                                                        .Where(x => x.Parent == orgStructureId)
+                                                        .Select(x => x.OrgStructureId)
+                                                        .ToList();
 
+                                if (orgstructureIds.Any())
+                                {
+                                    bscActualsQuery = bscActualsQuery.Where(x => orgstructureIds.Contains(x.OrgStructureId) || x.OrgStructureId == orgStructureId);
                                 }
                                 else
                                 {
-                                    bscActuals = bscActuals.Where(x => x.OrgStructureId == orgStructureId).ToList();
+                                    bscActualsQuery = bscActualsQuery.Where(x => x.OrgStructureId == orgStructureId);
                                 }
-
                             }
                         }
+
+                        var bscActuals = bscActualsQuery.Distinct().ToList();
+
                         foreach (var bscActual in bscActuals)
                         {
                             ActualObjectiveItem objectiveItem = new ActualObjectiveItem();
@@ -104,15 +93,15 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                 }
                                 indicatorItem.ActualItems = new List<ActualItem>();
 
-                                var plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId ==indicator.BSCActualId&&x.ParentId ==indicator.IndicatorId).ToList();
+                                var plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId ==indicator.BSCActualId&&x.ParentId == indicator.IndicatorId).ToList();
                                 if (indicator.HasSubIndicator)
                                 {
-                                     plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == indicator.BSCActualId && x.ParentId == indicator.IndicatorId).ToList();
+                                     plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == indicator.BSCActualId && x.ParentId ==  indicator.IndicatorId).ToList();
 
                                 }
                                 else
                                 {
-                                    plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == indicator.BSCActualId && x.IndicatorId == indicator.IndicatorId).ToList();
+                                    plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == indicator.BSCActualId && x.IndicatorId ==  indicator.IndicatorId).ToList();
 
                                 }
                                 foreach (var actual in plansOfCurrentIndicator)
@@ -126,7 +115,6 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                         actualItem.SubIndicators = subIndicators.Name;
                                         actualItem.Unit = actual.Unit;
                                         actualItem.KPIType = actual.KPIType.ToString();
-
                                     }
                                     else
                                     {
@@ -140,7 +128,7 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                     foreach (var period in periods)
                                     {
                                         decimal[] Month = new decimal[12];
-                                        var weeklyActuals = db.WeeklyActuals.Where(x => x.MonthlyActualId == period.MonthlyActualId).ToList();
+                                        var weeklyActuals = db.WeeklyActuals.Where(x => x.MonthlyActualId == period.MonthlyActualId&&x.MonthlyDetail.GLPeriodId==period.GLPeriodId).ToList();
                                         var periodIndex = db.GLPeriods.Find(period.GLPeriodId);
                                         if (periodIndex != null)
                                         {
@@ -248,9 +236,8 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                         }
 
                                     }
+
                                     indicatorItem.ActualItems.Add(actualItem);
-
-
                                 }
                                 objectiveItem.IndicatorItems.Add(indicatorItem);
 
@@ -271,17 +258,17 @@ namespace ExceedERP.Reporting.Planning.DataSource
         }
       
        
-        public static Image ByteArrayToImage(byte[] byteArrayIn)
-        {
-            if (byteArrayIn != null)
-            {
-                MemoryStream ms = new MemoryStream(byteArrayIn);
-                Image returnImage = Image.FromStream(ms);
-                return returnImage;
-            }
-            return null;
+        //public static Image ByteArrayToImage(byte[] byteArrayIn)
+        //{
+        //    if (byteArrayIn != null)
+        //    {
+        //        MemoryStream ms = new MemoryStream(byteArrayIn);
+        //        Image returnImage = Image.FromStream(ms);
+        //        return returnImage;
+        //    }
+        //    return null;
 
-        }
+        //}
 
     }
 }

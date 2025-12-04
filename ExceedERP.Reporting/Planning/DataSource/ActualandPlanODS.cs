@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Planning.ViewModel;
 using System;
@@ -45,7 +45,7 @@ namespace ExceedERP.Reporting.Planning.DataSource
                         model.AmharicName = Organization.AmharicName;
                         model.Abbreviation = Organization.Abbreviation;
                     }
-                    var plans = db.Actuals.FirstOrDefault(s => s.GlFiscalYearId == glfiscalyear.GlFiscalYearId);
+                    var plans = db.Actuals.FirstOrDefault(s => s.GlFiscalYearId == glFiscalYearId);
                     
                     if(plans != null)
                     {
@@ -53,7 +53,7 @@ namespace ExceedERP.Reporting.Planning.DataSource
                         model.FiscalYear = glfiscalyear.Name;
                         model.ObjectiveItems = new List<BothObjectiveItem>();
                         var bscPlans = db.BSCActuals.Where(s => s.ActualId == plans.ActualId).ToList();
-                        if (workUnitId != null)
+                        if (!string.IsNullOrEmpty(workUnitId))
                         {
                             int.TryParse(workUnitId, out int orgStructureId);
                             var placement = db.Placements.Where(x => x.isCurrent && x.IsHead && x.OrgStructureId == orgStructureId).FirstOrDefault();
@@ -62,7 +62,7 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                 var orgstructureIds = db.MainCompanyStructures.Where(x => x.Parent == orgStructureId).Select(x => x.OrgStructureId);
                                 if (orgstructureIds.Count() > 0)
                                 {
-                                    bscPlans = db.BSCActuals.Where(x => x.ActualId == plans.ActualId && orgstructureIds.Contains(x.OrgStructureId) || x.OrgStructureId == orgStructureId).Distinct().ToList();
+                                    bscPlans = bscPlans.Where(x=>orgstructureIds.Contains(x.OrgStructureId) || x.OrgStructureId == orgStructureId).Distinct().ToList();
 
                                 }
                                 else
@@ -101,10 +101,10 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                 }
                                 indicatorItem.ActualPlanItems = new List<ActualPlanItems>();
 
-                                var plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == indicator.BSCActualId&&x.ParentId ==indicator.IndicatorId).ToList();
+                                var plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == bscPlan.BSCActualId&&x.ParentId ==indicator.IndicatorId).ToList();
                                 if (indicator.HasSubIndicator)
                                 {
-                                    plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == indicator.BSCActualId && x.ParentId == indicator.IndicatorId).ToList();
+                                    plansOfCurrentIndicator = db.ActualDetails.Where(x => x.BSCActualId == bscPlan.BSCActualId && x.ParentId == indicator.IndicatorId&&x.ParentId !=0).ToList();
                                 }
                                 else
                                 {
@@ -144,7 +144,7 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                             toDateActual += period.ActualValue;
                                             toDatePlan += period.PlanValue;
                                         }
-                                        var periodIndex = db.GLPeriods.Find(period.GLPeriodId);
+                                        var periodIndex = db.GLPeriods.FirstOrDefault(x=>x.GlFiscalYearId==glFiscalYearId&&x.GLPeriodId==period.GLPeriodId);
                                         if (periodIndex != null)
                                         {
                                             switch (periodIndex.Index)

@@ -428,10 +428,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             }
 
-            if (experienceRequest.ApplicationDate > DateTime.Now)
+            if (experienceRequest.ApplicationDate.Date > DateTime.Now.Date)
             {
 
                 ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
+                return Json(new[] { experienceRequest }.ToDataSourceResult(request, ModelState));
+
             }
             if (ModelState.IsValid)
             {
