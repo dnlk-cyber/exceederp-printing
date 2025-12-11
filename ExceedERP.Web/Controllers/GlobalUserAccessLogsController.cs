@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using System.Linq;
-using ExceedERP.Core.Domain.Inventory;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain;
+using System;
 
 namespace ExceedERP.Web.Controllers
 {
-   
+
     public class GlobalUserAccessLogsController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -147,14 +144,35 @@ namespace ExceedERP.Web.Controllers
 
             return Json(result);
         }
-        public ActionResult GlobalUserOperationLogs_Read([DataSourceRequest]DataSourceRequest request,string module)
+        public ActionResult GlobalUserOperationLogs_Read([DataSourceRequest]DataSourceRequest request, DateTime? fromDate,DateTime? toDate,string module = null)
         {
-            IQueryable<GlobalOperationLog> operationLogs = _db.GlobalOperationLogs.OrderByDescending(x => x.TimeAccessed);
+            IQueryable<GlobalOperationLog> logs =  _db.GlobalOperationLogs.AsNoTracking();
 
             if (!string.IsNullOrEmpty(module))
-                operationLogs = operationLogs.Where(x=>x.Module.ToString()==module);
-                
-            DataSourceResult result = operationLogs.ToDataSourceResult(request, accessLog => new
+            {
+                logs = logs.Where(x => x.Module.ToString() == module);
+            }
+
+            // Apply date range filtering
+            if (fromDate.HasValue)
+            {
+                logs = logs.Where(x => x.TimeAccessed >= fromDate.Value);
+            }
+
+            if (toDate.HasValue)
+            {
+                logs = logs.Where(x => x.TimeAccessed <= toDate.Value);
+            }
+
+            // Optional default: if no filters provided, show last 15 days
+            if (!fromDate.HasValue && !toDate.HasValue && !request.Filters?.Any() == true)
+            {
+                var defaultFrom = DateTime.UtcNow.AddDays(-15);
+                logs = logs.Where(x => x.TimeAccessed >= defaultFrom);
+            }
+
+
+            DataSourceResult result = logs.ToDataSourceResult(request, accessLog => new
             {
                 GlobalOperationLogId = accessLog.GlobalOperationLogId,
                 IpAddress = accessLog.IpAddress,

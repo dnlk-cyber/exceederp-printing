@@ -5,7 +5,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>Operation Log </legend>
+<legend>Operation Log ( by default displays last 15 days data)</legend>
+
+<div class="filters">
+    From: @(Html.Kendo().DatePicker().Name("fromDate").Value(DateTime.Now.AddDays(-15)))
+    To: @(Html.Kendo().DatePicker().Name("toDate").Value(DateTime.Now))
+    <button type="button" class="k-primary" onclick="reloadGrid()">Filter</button>
+</div>
 
 
 
@@ -13,12 +19,12 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.IpAddress);
-          columns.Bound(c => c.UserName);
-          columns.Bound(c => c.TimeAccessed).Format("{0:dd MMMM yyyy hh:mm tt}");
-          columns.Bound(c => c.Type);
-          columns.Bound(c => c.Status);
-          columns.Bound(c => c.Description);
+          columns.Bound(c => c.IpAddress).Width(70);
+          columns.Bound(c => c.UserName).Width(60);
+          columns.Bound(c => c.TimeAccessed).Format("{0:dd MMMM yyyy hh:mm tt}").Width(120);
+          columns.Bound(c => c.Type).Width(80);
+          columns.Bound(c => c.Status).Width(50);
+          columns.Bound(c => c.Description).Width(300);
 
       })
        .HtmlAttributes(new { style = "height: 550px;" })
@@ -32,19 +38,29 @@
                                 .Scrollable()
                                 .Sortable()
                                 .Filterable()
-                                .Groupable()
+                              
       .DataSource(dataSource => dataSource
           .Ajax()
          .Sort(sort => sort.Add("GlobalOperationLogId").Descending())
                 .Events(events => events
                   .Error("error_handler")
                   .Sync("sync_handler"))
-                          .Read(read => read.Action("GlobalUserOperationLogs_Read", "GlobalUserAccessLogs", new { module = "Finance" }))
+                          .Read(read => read.Action("GlobalUserOperationLogs_Read", "GlobalUserAccessLogs", new { module = "Finance" }).Data("extraFilters"))
       )
 )
 
+<script>
+    function extraFilters() {
+        return {
+            fromDate: $("#fromDate").data("kendoDatePicker").value(),
+            toDate: $("#toDate").data("kendoDatePicker").value()
+        };
+    }
 
-
+    function reloadGrid() {
+        $("#grid").data("kendoGrid").dataSource.read();
+    }
+</script>
 
 
 
