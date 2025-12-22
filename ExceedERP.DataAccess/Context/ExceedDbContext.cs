@@ -191,13 +191,13 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<GoodReceiveItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.SubTotal).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.SubTotal).HasPrecision(18, 6);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
 
@@ -207,11 +207,11 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<IssueItem>().Property(e => e.IssuedQuantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<IssueItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<IssueItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
             modelBuilder.Entity<IssueItem>().Property(e => e.AdditionalCost).HasPrecision(18, 4);
 
-            modelBuilder.Entity<IssueItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<IssueItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
 
@@ -437,75 +437,79 @@ namespace ExceedERP.DataAccess.Context
             #region procurement
             modelBuilder.Entity<ParticipantsItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.SubTotal).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.SubTotal).HasPrecision(18, 6);
 
             modelBuilder.Entity<ParticipantsItem>().Property(e => e.DiscountAmount).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.Quanity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
 
             modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.Discount).HasPrecision(18, 4);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.FinalUPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.FinalUPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<ContractManagementItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ContractManagementItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ContractManagementItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
             modelBuilder.Entity<ContractManagementItem>().Property(e => e.Addition).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ContractManagementItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ContractManagementItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ContractManagementItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<ContractManagementItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.UPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.UPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<WinningSupplierItem>().Property(e => e.Quanity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 4);
-            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
+            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.Quantity).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.SubTotal).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.SubTotal).HasPrecision(18, 6);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.Total).HasPrecision(18, 6);
 
             modelBuilder.Entity<PurchaseRequisitionItem>().Property(e => e.RequestedQuantity).HasPrecision(18, 4);
             modelBuilder.Entity<PurchaseRequisitionItem>().Property(e => e.Quantity).HasPrecision(18, 4);
+
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
             #endregion
 
 

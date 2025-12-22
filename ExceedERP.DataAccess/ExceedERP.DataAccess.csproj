@@ -801,6 +801,10 @@
     <Compile Include="Migrations\202512030832576_payrollbackpay.Designer.cs">
       <DependentUpon>202512030832576_payrollbackpay.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512220842126_pricesixdigit.cs" />
+    <Compile Include="Migrations\202512220842126_pricesixdigit.Designer.cs">
+      <DependentUpon>202512220842126_pricesixdigit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1353,6 +1357,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512030832576_payrollbackpay.resx">
       <DependentUpon>202512030832576_payrollbackpay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512220842126_pricesixdigit.resx">
+      <DependentUpon>202512220842126_pricesixdigit.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
