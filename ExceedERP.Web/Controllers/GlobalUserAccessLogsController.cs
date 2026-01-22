@@ -161,7 +161,8 @@ namespace ExceedERP.Web.Controllers
 
             if (toDate.HasValue)
             {
-                logs = logs.Where(x => x.TimeAccessed <= toDate.Value);
+                DateTime newToDate = toDate.Value.AddDays(1);
+                logs = logs.Where(x => x.TimeAccessed <= newToDate);
             }
 
             // Optional default: if no filters provided, show last 15 days
