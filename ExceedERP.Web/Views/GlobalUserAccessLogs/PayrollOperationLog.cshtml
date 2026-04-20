@@ -5,7 +5,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>Operation Log </legend>
+<legend>Operation Log ( by default displays last 15 days data)</legend>
+
+<div class="filters">
+    From: @(Html.Kendo().DatePicker().Name("fromDate").Value(DateTime.Now.AddDays(-15)))
+    To: @(Html.Kendo().DatePicker().Name("toDate").Value(DateTime.Now))
+    <button type="button" class="k-primary" onclick="reloadGrid()">Filter</button>
+</div>
 
 
 
@@ -32,18 +38,30 @@
                                 .Scrollable()
                                 .Sortable()
                                 .Filterable()
-                                .Groupable()
+                               
       .DataSource(dataSource => dataSource
           .Ajax()
          .Sort(sort => sort.Add("GlobalOperationLogId").Descending())
                 .Events(events => events
                   .Error("error_handler")
                   .Sync("sync_handler"))
-                          .Read(read => read.Action("GlobalUserOperationLogs_Read", "GlobalUserAccessLogs", new { module = "Payroll" }))
+                          .Read(read => read.Action("GlobalUserOperationLogs_Read", "GlobalUserAccessLogs", new { module = "Payroll" }).Data("extraFilters"))
       )
 )
 
 
+<script>
+    function extraFilters() {
+        return {
+            fromDate: $("#fromDate").data("kendoDatePicker").value(),
+            toDate: $("#toDate").data("kendoDatePicker").value()
+        };
+    }
+
+    function reloadGrid() {
+        $("#grid").data("kendoGrid").dataSource.read();
+    }
+</script>
 
 
 

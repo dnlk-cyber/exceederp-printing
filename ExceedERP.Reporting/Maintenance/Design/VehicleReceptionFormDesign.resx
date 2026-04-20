@@ -117,10 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox33.Value" xml:space="preserve">
-    <value>I authorize the repairs detailed to be under taken and further agree that I will pay for the cost of repairs at your current retail charge rate. I also agree to paay parking fee of birr 115.00 (One Hundred Fifteen) per day plus the interest on the outstanding balance, if I fall to pay and collect vehicle within 10 days after receipt of repair invoice.</value>
-  </data>
-  <data name="textBox34.Value" xml:space="preserve">
-    <value>ከላይ የተጠቀሱትን ስራዎች እንዲሰሩ የታቀዱ ሲሆን ለተሰሩትም ስራዎች በርክክብ ጊዜ ባለው የእቃና የጉልበት ዋጋ ተመን መሰረት ለመክፈል ተስማምቻለሁ።የሂሳብ መጠየቂያ በደረሰኝ በ ኣስር ቀናት ዉስጥ ሒሳቡን ከፍየ መኪናዉን ባልረከብ የመኪና ማቆምያ ኪራይ ብር 115.00 እና ዋናዉን ገንዘብ መክፈል ከነበረበት ቀን ጀምሮ የሚታሰን ከነወለዱ ለመክፈል ተስማማቻለሁ።</value>
-  </data>
 </root>

@@ -5,6 +5,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;     
 using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
@@ -51,6 +54,32 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult JobPrintNew(string id)
         {
+            ViewBag.FormTitle = "Job Order Print";
+            ViewBag.FormNumber = "1";
+            ViewBag.Id = id;
+            return View();
+        }
+        public ActionResult ExternalMaintenanceSatisfaction(string id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.SatisfactionNote, out string title, out string number);
+            ViewBag.Id = id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult JobPrintNewExternal(string id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.VehiclesExternalMaintenanceOrderForm, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            ViewBag.Id = id;
+            return View();
+        }
+        public ActionResult OutSourcedMaintenanceRequest(string id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.OutSourcedMaintenanceRequest, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }

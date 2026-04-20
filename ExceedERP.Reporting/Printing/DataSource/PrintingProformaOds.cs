@@ -1,6 +1,7 @@
 ﻿
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == proformaHead.CustomerId);
                 return new PrintingProformaViewModel
                 {
-                    CustomerName = customer.TradeName,
+                    CustomerName = customer?.TradeName ?? string.Empty,
                     DeliveryPeriod = proformaHead.DeliveryPeriod,
                     ProformaNumber = proformaHead.PrintingProformaInvoiceId,
                     Remark = proformaHead.Remark,
@@ -39,9 +40,13 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     ModeOfPayment = proformaHead.ModeOfPayment,
                     PaymentType = proformaHead.PaymentType.ToString(),
                     TransportCost = proformaHead.TransporCost,
-                    VAT = glTax.TaxName,
-                    TotalTransportCost = proformaHead.TransportCostTotal
-                    
+                    VAT = glTax?.TaxName ?? string.Empty,
+                    TotalTransportCost = proformaHead.TransportCostTotal,
+                    VATAmount =proformaHead.TransporCost * glTax?.CalculatedRate ?? 0,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(proformaHead.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(proformaHead.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(proformaHead.SendForApprovalBy)
+
                 };
 
             }
@@ -61,12 +66,20 @@ namespace ExceedERP.Reporting.Printing.DataSource
             foreach (var item in proformaItems)
             {
                 var estimation = db.PrintingCostEstimations.Find(item.PrintingCostEstimationId);
-                var text = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId && x.EstimationMaterialType == EstimationMaterialType.TextPaper);
-                var cover = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId && x.EstimationMaterialType == EstimationMaterialType.CoverPaper);
-                var materialItemText = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == text.PrintingMaterialCategoryItemId);
-                var materialItemCover = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == cover.PrintingMaterialCategoryItemId);
-                var paperSize = db.PrintingPaperSizes.Find(item.TextPaperSizeId);
-                var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
+                var text = db.PrintingEstimationMaterialCosts
+                    .FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId &&
+                    x.EstimationMaterialType == EstimationMaterialType.TextPaper);
+                var cover = db.PrintingEstimationMaterialCosts
+                    .FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId &&
+                    x.EstimationMaterialType == EstimationMaterialType.CoverPaper);
+                var materialItemText = db.PrintingMaterialCategoryItems
+                    .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == text.PrintingMaterialCategoryItemId);
+                var materialItemCover = db.PrintingMaterialCategoryItems
+                    .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == cover.PrintingMaterialCategoryItemId);
+                var paperSize = db.PrintingPaperSizes
+                    .Find(item.TextPaperSizeId);
+                var glTaxRate = db.GLTaxRates
+                    .FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
 
                 list.Add(new PrintingProformaItemsViewModel
                 {
@@ -78,18 +91,34 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     SellingPrice = item.GrandTotalIncludingVAT,
                     TotalPrice = item.TotalPrice,
                     UnitPrice = item.UnitPrice,
-                    VAT = glTaxRate?.TaxName ?? "",
-                    BindingType = item.BindingStyle.ToString(),
-                    PaperSize = paperSize?.PrintPaperSize.ToString() ?? "",
-                    CoverPaperType = materialItemCover?.ItemName ?? "",
-                    TextPaperType = materialItemText?.ItemName ?? "",
+                    VAT = glTaxRate?.TaxName ?? string.Empty,
+                    BindingType = item?.BindingStyle.ToString() ?? string.Empty,
+                    PaperSize = paperSize?.PrintPaperSize.ToString() ?? string.Empty,
+                    CoverPaperType = materialItemCover?.ItemName ?? string.Empty,
+                    TextPaperType = materialItemText?.ItemName ?? string.Empty,
                     ColorText = estimation?.TextNoOfColors ?? 0,
                     ColorCover = estimation?.CoverNoOfColor ?? 0
                 });
             }
             return list;
         }
-
-
+        
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public PrintTotalViewModel GetTotal(int id)
+        {
+            var proformaHead = db.PrintingProformaInvoices.Find(id);
+            if (proformaHead != null)
+            {
+                var total = db.PrintingProformaInvoiceItems
+                    .Where(x => x.PrintingProformaInvoiceId == proformaHead.PrintingProformaInvoiceId)
+                    .Sum(s => s.GrandTotalIncludingVAT) + proformaHead.TransportCostTotal;
+                
+                return new PrintTotalViewModel
+                {
+                    Total = total
+                };
+            }
+            return new PrintTotalViewModel();
+        }
     }
 }

@@ -5,11 +5,26 @@
 }
 <link href="~/Content/dashboard.css" rel="stylesheet" />
 
-
+@(Html.Kendo().DropDownList()
+     .Name("BranchCode")
+     .ValuePrimitive(true)
+     .AutoBind(false)
+     .HtmlAttributes(new { style = "width:450px" })
+     .OptionLabel("Select Branch or project...") // Acts as the "null" value
+     .DataTextField("Text")
+     .DataValueField("Value")
+     .Filter("contains")
+     .Events(e =>
+     {
+         e.Change("onSelectBranch");
+     })
+     .DataSource(dataSource =>
+     {
+         dataSource.Read(read => read.Action("GetBranchForDashBoard", "MaintenanceDataProvider", new { area = "Maintenance" }))
+                   .ServerFiltering(false);
+     })
+)
 <div class="row">
-
-
-
     <div class="col-sm-7 col-lg-4">
 
         <div class="demo-section k-content wide">
@@ -158,644 +173,737 @@
         'rgba(210, 105, 30, 1)'
     ];
 
-    
+    let myChart1;
+    let myChart2;
+    let myChart3;
+    let myChart4;
+    let myChart5;
+    let myChart6;
+    let myChart7;
+    let myChart8;
+    let myChart9;
+
+
     countFleetByOwnership();
     ownEquipmentByCategory();
     rentalEquipmentByCategory();
     machinary();
-    
-    function countFleetByOwnership() {
+    dumpTruck();
+    fleetOID();
+    dryLoad();
+    lightVehicle();
+    wagonDrill();
 
-         $.ajax({
+    function onSelectBranch(e) {
+
+        countFleetByOwnership();
+        ownEquipmentByCategory();
+        rentalEquipmentByCategory();
+        machinary();
+        dumpTruck();
+        fleetOID();
+        dryLoad();
+        lightVehicle();
+        wagonDrill();
+
+    }
+    function countFleetByOwnership() {
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
             type: "GET",
             url: '@Url.Action("GetFleetOwnershipCount", "Dashboard", new {area = ""})',
-        success: function (result) {
-            //render
-            var ctx = document.getElementById("countFleetByOwnership").getContext('2d');
-            ctx.height = 600;
-            var myChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: result.Labels,
-                    datasets: [{
-                        label: 'Fleet Own vs Rental',
-                        data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.green,
-                            window.chartColors.blue,
-                            window.chartColors.red,
-                            window.chartColors.fuchsia
-                        ],
+            data: { branch: branch },
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("countFleetByOwnership").getContext('2d');
+                ctx.height = 600;
 
-                        borderWidth: 3
-                    }]
-                },
-
-
-                options: {
-
-                    title: {
-                        display: true,
-                        text: ['Fleet Own vs Rental']
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'black'],
-                        precision: 2
-                    },
-                    legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
-                    }
-
-
+                if (myChart1) {
+                    myChart1.destroy();
                 }
-            });
+                myChart1 = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Fleet Own vs Rental',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.blue,
+                                window.chartColors.red,
+                                window.chartColors.fuchsia
+                            ],
 
-        }, //end succ
-        error: function (result) {
-            alert(result);
-        }
+                            borderWidth: 3
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: ['Fleet Own vs Rental']
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        }
+
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
         });
     }
 
 
     function ownEquipmentByCategory() {
-    $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetOwnEquipmentByCategoryData", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("ownEquipmentByCategory").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: result.Labels,
-                    datasets: [{
-                        data: result.Data,
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Internal Fleet by Category"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Equipment Type'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Number of Equipments'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
-                }
-            });
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetOwnEquipmentByCategoryData", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("ownEquipmentByCategory").getContext('2d');
+                ctx.height = 600;
 
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
-}
+
+                if (myChart2) {
+                    myChart2.destroy();
+                }
+                myChart2 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Internal Fleet by Category"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Equipment Type'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Equipments'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
+
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
 
 
     function rentalEquipmentByCategory() {
-    $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetRentalEquipmentByCategoryData", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("rentalEquipmentByCategory").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: result.Labels,
-                    datasets: [{
-                        data: result.Data,
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Rental Fleet by Category"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Equipment Type'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Number of Equipments'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
-                }
-            });
-
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
-}
-
-function machinary() {
-    $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetMachineryAggregateHours", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("machinary").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Operational', 'Idle', 'Down'],
-                    datasets: [{
-                        data: [result.OperationalHour, result.IdleHour, result.DownHour ],
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Machinary OID in Hour"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'OID'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Hour'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
-                }
-            });
-
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
-    }
-    lightVehicle();
-    function lightVehicle() {
-
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
         $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetLightVehicleAggregateHours", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("lightVehicle").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Operational', 'Idle', 'Down'],
-                    datasets: [{
-                        data: [result.OperationalHour, result.IdleHour, result.DownHour ],
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Light Vehicle OID in Hour"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'OID'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Hour'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
-                }
-            });
+            type: "GET",
+            url: '@Url.Action("GetRentalEquipmentByCategoryData", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("rentalEquipmentByCategory").getContext('2d');
+                ctx.height = 600;
 
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
+
+                if (myChart3) {
+                    myChart3.destroy();
+                }
+                myChart3 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Rental Fleet by Category"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Equipment Type'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Equipments'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
+
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function machinary() {
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetMachineryAggregateHours", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("machinary").getContext('2d');
+                ctx.height = 600;
+
+
+                if (myChart4) {
+                    myChart4.destroy();
+                }
+                myChart4 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Operational', 'Idle', 'Down'],
+                        datasets: [{
+                            data: [result.OperationalHour, result.IdleHour, result.DownHour],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Machinary OID in Hour"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'OID'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Hour'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
+
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function lightVehicle() {
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetLightVehicleAggregateHours", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("lightVehicle").getContext('2d');
+                ctx.height = 600;
+
+
+                if (myChart5) {
+                    myChart5.destroy();
+                }
+                myChart5 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Operational', 'Idle', 'Down'],
+                        datasets: [{
+                            data: [result.OperationalHour, result.IdleHour, result.DownHour],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Light Vehicle OID in Hour"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'OID'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Hour'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
+
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
 
     }
-    dryLoad();
+
     function dryLoad() {
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetDryLoadAggregateHours", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("dryLoad").getContext('2d');
+                ctx.height = 600;
 
-         $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetDryLoadAggregateHours", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("dryLoad").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Operational', 'Idle', 'Down'],
-                    datasets: [{
-                        data: [result.OperationalHour, result.IdleHour, result.DownHour ],
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Dry Load OID in Hour"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'OID'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Hour'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
+
+                if (myChart6) {
+                    myChart6.destroy();
                 }
-            });
+                myChart6 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Operational', 'Idle', 'Down'],
+                        datasets: [{
+                            data: [result.OperationalHour, result.IdleHour, result.DownHour],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Dry Load OID in Hour"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'OID'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Hour'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
 
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
 
     }
 
-    wagonDrill();
     function wagonDrill() {
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWagonDrillAggregateHours", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("wagonDrill").getContext('2d');
+                ctx.height = 600;
 
 
-         $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetWagonDrillAggregateHours", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("wagonDrill").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Operational', 'Idle', 'Down'],
-                    datasets: [{
-                        data: [result.OperationalHour, result.IdleHour, result.DownHour ],
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Wagon Drill OID in Hour"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'OID'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Hour'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
+                if (myChart7) {
+                    myChart7.destroy();
                 }
-            });
+                myChart7 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Operational', 'Idle', 'Down'],
+                        datasets: [{
+                            data: [result.OperationalHour, result.IdleHour, result.DownHour],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Wagon Drill OID in Hour"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'OID'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Hour'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
 
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
     }
-    dumpTruck();
+
     function dumpTruck() {
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetDumpTruckAggregateHours", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("dumpTruck").getContext('2d');
+                ctx.height = 600;
 
 
-         $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetDumpTruckAggregateHours", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("dumpTruck").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Operational', 'Idle', 'Down'],
-                    datasets: [{
-                        data: [result.OperationalHour, result.IdleHour, result.DownHour ],
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Dump Truck OID in Hour"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'OID'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Hour'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
+                if (myChart8) {
+                    myChart8.destroy();
                 }
-            });
+                myChart8 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Operational', 'Idle', 'Down'],
+                        datasets: [{
+                            data: [result.OperationalHour, result.IdleHour, result.DownHour],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Dump Truck OID in Hour"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'OID'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Hour'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
 
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
     }
-    fleetOID();
-    function fleetOID() {
-         $.ajax({
-        type: "GET",
-        url: '@Url.Action("GetTotalFleetOID", "Dashboard", new { area = "" })',
-        success: function (result) {
-            // Render chart
-            var ctx = document.getElementById("fleetOID").getContext('2d');
-            ctx.height = 600;
-            
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Operational', 'Idle', 'Down'],
-                    datasets: [{
-                        data: [result.OperationalHour, result.IdleHour, result.DownHour ],
-                        backgroundColor: vibrantColors,
-                        borderColor: vibrantBorderColors,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: "Fleets OID in Hour"
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    pieceLabel: {
-                        render: 'value',
-                        fontColor: ['green', 'white', 'red', "yellow"],
-                        precision: 2
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'OID'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start x-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Hour'
-                            },
-                            ticks: {
-                                beginAtZero: true // Start y-axis from 0
-                            },
-                            barPercentage: 0.4
-                        }]
-                    }
-                }
-            });
 
-        }, //end success
-        error: function (result) {
-            alert(result);
-        }
-    });
+    function fleetOID() {
+        var branch = "";
+        if ($("#BranchCode").data("kendoDropDownList") != null)
+            branch = $("#BranchCode").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTotalFleetOID", "Dashboard", new { area = "" })',
+            data: { branch: branch },
+            success: function (result) {
+                // Render chart
+                var ctx = document.getElementById("fleetOID").getContext('2d');
+                ctx.height = 600;
+
+
+                if (myChart9) {
+                    myChart9.destroy();
+                }
+                myChart9 = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Operational', 'Idle', 'Down'],
+                        datasets: [{
+                            data: [result.OperationalHour, result.IdleHour, result.DownHour],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Fleets OID in Hour"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'OID'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start x-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Hour'
+                                },
+                                ticks: {
+                                    beginAtZero: true // Start y-axis from 0
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
+
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
+        });
 
     }
 </script>
+

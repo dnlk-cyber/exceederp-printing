@@ -13,6 +13,7 @@ namespace ExceedERP.Reporting.HRM.HRM
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(rptEmpAge));
+            Telerik.Reporting.DataColumn dataColumn1 = new Telerik.Reporting.DataColumn();
             Telerik.Reporting.TableGroup tableGroup1 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup2 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup3 = new Telerik.Reporting.TableGroup();
@@ -20,19 +21,20 @@ namespace ExceedERP.Reporting.HRM.HRM
             Telerik.Reporting.TableGroup tableGroup5 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup6 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup7 = new Telerik.Reporting.TableGroup();
-            Telerik.Reporting.DataColumn dataColumn1 = new Telerik.Reporting.DataColumn();
             Telerik.Reporting.ReportParameter reportParameter1 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter2 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter3 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter4 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter6 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter7 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             this.textBox18 = new Telerik.Reporting.TextBox();
             this.textBox45 = new Telerik.Reporting.TextBox();
             this.NoOfMaleEmployee = new Telerik.Reporting.TextBox();
             this.NoOfFemaleEmployee = new Telerik.Reporting.TextBox();
             this.TotalEmployee = new Telerik.Reporting.TextBox();
+            this.csvColumnHiding = new Telerik.Reporting.CsvDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.panel1 = new Telerik.Reporting.Panel();
             this.panel2 = new Telerik.Reporting.Panel();
@@ -68,13 +70,13 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox15 = new Telerik.Reporting.TextBox();
             this.textBox14 = new Telerik.Reporting.TextBox();
             this.Localization = new Telerik.Reporting.ObjectDataSource();
-            this.csvColumnHiding = new Telerik.Reporting.CsvDataSource();
             this.empSumaryObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.ageObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.BranchObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.WorkUnitObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.SexODS = new Telerik.Reporting.ObjectDataSource();
             this.StatusODS = new Telerik.Reporting.ObjectDataSource();
+            this.EmployeementTypeobjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -137,6 +139,18 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.TotalEmployee.Style.Font.Name = "Nyala";
             this.TotalEmployee.StyleName = "Civic.TableHeader";
             resources.ApplyResources(this.TotalEmployee, "TotalEmployee");
+            // 
+            // csvColumnHiding
+            // 
+            dataColumn1.Name = "Column1";
+            this.csvColumnHiding.Columns.Add(dataColumn1);
+            this.csvColumnHiding.FieldSeparators = new char[] {
+        ','};
+            this.csvColumnHiding.Name = "csvColumnHiding";
+            this.csvColumnHiding.RecordSeparators = new char[] {
+        '\r',
+        '\n'};
+            this.csvColumnHiding.Source = "NoOfMaleEmployee\r\nNoOfFemaleEmployee\r\nTotalEmployee";
             // 
             // pageHeaderSection1
             // 
@@ -223,13 +237,13 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // tblEmployeeSumm
             // 
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.34374994039535522D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.175338625907898D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5175635814666748D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6733764410018921D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3625485897064209D)));
-            this.tblEmployeeSumm.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24690476059913635D)));
-            this.tblEmployeeSumm.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20611180365085602D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.34374991059303284D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1753385066986084D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5175634622573853D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6733763217926025D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3625484704971314D)));
+            this.tblEmployeeSumm.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24690477550029755D)));
+            this.tblEmployeeSumm.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20611181855201721D)));
             this.tblEmployeeSumm.Body.SetCellContent(0, 1, this.textBox2);
             this.tblEmployeeSumm.Body.SetCellContent(0, 3, this.textBox4);
             this.tblEmployeeSumm.Body.SetCellContent(0, 4, this.textBox6);
@@ -390,7 +404,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // pageFooterSection1
             // 
-            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1D);
+            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.34791693091392517D);
             this.pageFooterSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox16,
             this.Page});
@@ -399,7 +413,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // textBox16
             // 
-            this.textBox16.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.1749224662780762D), Telerik.Reporting.Drawing.Unit.Inch(0.80000048875808716D));
+            this.textBox16.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.1749224662780762D), Telerik.Reporting.Drawing.Unit.Inch(0.14791679382324219D));
             this.textBox16.Name = "textBox16";
             this.textBox16.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5748031139373779D), Telerik.Reporting.Drawing.Unit.Inch(0.19995993375778198D));
             this.textBox16.Style.Font.Bold = true;
@@ -408,7 +422,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // Page
             // 
-            this.Page.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.6748838424682617D), Telerik.Reporting.Drawing.Unit.Inch(0.80000048875808716D));
+            this.Page.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.6748838424682617D), Telerik.Reporting.Drawing.Unit.Inch(0.14791679382324219D));
             this.Page.Name = "Page";
             this.Page.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49995961785316467D), Telerik.Reporting.Drawing.Unit.Inch(0.19995993375778198D));
             this.Page.Style.Font.Bold = true;
@@ -530,18 +544,6 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             this.Localization.Name = "Localization";
             // 
-            // csvColumnHiding
-            // 
-            dataColumn1.Name = "Column1";
-            this.csvColumnHiding.Columns.Add(dataColumn1);
-            this.csvColumnHiding.FieldSeparators = new char[] {
-        ','};
-            this.csvColumnHiding.Name = "csvColumnHiding";
-            this.csvColumnHiding.RecordSeparators = new char[] {
-        '\r',
-        '\n'};
-            this.csvColumnHiding.Source = "NoOfMaleEmployee\r\nNoOfFemaleEmployee\r\nTotalEmployee";
-            // 
             // empSumaryObjectDataSource
             // 
             this.empSumaryObjectDataSource.DataMember = "GetEmployeeSummary";
@@ -552,6 +554,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             new Telerik.Reporting.ObjectDataSourceParameter("orgStructureId", typeof(string), "= Parameters.orgStructureId.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("sex", typeof(string), "= Parameters.sex.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.status.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("employementType", typeof(string), "= Parameters.EmployeementType.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("age", typeof(string), "= Parameters.age.Value")});
             // 
             // ageObjectDataSource
@@ -584,6 +587,12 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.StatusODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.EmployeeStatusODS);
             this.StatusODS.Name = "StatusODS";
             // 
+            // EmployeementTypeobjectDataSource
+            // 
+            this.EmployeementTypeobjectDataSource.DataMember = "GetEmployeeTypess";
+            this.EmployeementTypeobjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.EmployeeTypeObjectDataSource);
+            this.EmployeementTypeobjectDataSource.Name = "EmployeementTypeobjectDataSource";
+            // 
             // Organization
             // 
             this.Organization.DataMember = "GetOrganization";
@@ -607,6 +616,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             reportParameter1.AvailableValues.ValueMember = "= Fields.Item";
             reportParameter1.Name = "age";
             resources.ApplyResources(reportParameter1, "reportParameter1");
+            reportParameter1.Value = "Active";
             reportParameter1.Visible = true;
             reportParameter2.AllowNull = true;
             reportParameter2.AvailableValues.DataSource = this.BranchObjectDataSource;
@@ -646,12 +656,20 @@ namespace ExceedERP.Reporting.HRM.HRM
             resources.ApplyResources(reportParameter6, "reportParameter6");
             reportParameter6.Value = "= AllValues(Fields.Column1,true)";
             reportParameter6.Visible = true;
+            reportParameter7.AllowNull = true;
+            reportParameter7.AvailableValues.DataSource = this.EmployeementTypeobjectDataSource;
+            reportParameter7.AvailableValues.DisplayMember = "= Fields.Item";
+            reportParameter7.AvailableValues.ValueMember = "= Fields.Item";
+            reportParameter7.Name = "EmployeementType";
+            resources.ApplyResources(reportParameter7, "reportParameter7");
+            reportParameter7.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
             this.ReportParameters.Add(reportParameter4);
             this.ReportParameters.Add(reportParameter5);
             this.ReportParameters.Add(reportParameter6);
+            this.ReportParameters.Add(reportParameter7);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -713,5 +731,6 @@ namespace ExceedERP.Reporting.HRM.HRM
         private Telerik.Reporting.TextBox textBox20;
         private Telerik.Reporting.TextBox textBox18;
         private Telerik.Reporting.CsvDataSource csvColumnHiding;
+        private Telerik.Reporting.ObjectDataSource EmployeementTypeobjectDataSource;
     }
 }

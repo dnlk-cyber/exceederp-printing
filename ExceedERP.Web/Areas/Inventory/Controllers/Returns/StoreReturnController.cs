@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -22,6 +23,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
         private ExceedDbContext db = new ExceedDbContext();
         private readonly DistributionHelper _distributionHelper = new DistributionHelper();
         private InventoryTransferHelper transferHelper;
+        private readonly CacheData CacheData = new CacheData();
 
         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
         public ActionResult Index()
@@ -32,41 +34,72 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
 
         private void PopulateViewData()
         {
-            var categories = db.ItemCategorys;
-            var items = db.InventoryItems;
-            var stores = db.InventoryStores;
-            var branches = db.Branch;
-            var costCenter = db.BranchCostCenter;
-            var selectedcostCenter = costCenter.Select(
-              i => new
-              {
-                  Name = i.MainCompanyStructure.Name,
-                  Code = i.OrgStructureId
-              }).AsQueryable();
+            //var categories = db.ItemCategorys;
+            //var items = db.InventoryItems;
+            //var stores = db.InventoryStores;
+            //var branches = db.Branch;
+            //var costCenter = db.BranchCostCenter;
+            //var selectedcostCenter = costCenter.Select(
+            //  i => new
+            //  {
+            //      Name = i.MainCompanyStructure.Name,
+            //      Code = i.OrgStructureId
+            //  }).AsQueryable();
 
-            var inventoryPeriods = db.InventoryPeriods;
-            var selectedinventoryPeriods = inventoryPeriods.Select(
-             i => new
-             {
-                 Name = i.Name,
-                 GLPeriodId = i.InventoryPeriodId
-             }).AsQueryable();
-            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
-
-
-            ViewData["costCenters"] = selectedcostCenter;
-            ViewData["stores"] = stores;
-            ViewData["Branches"] = branches;
-            var selecteditems = items.Select(
+            //var inventoryPeriods = db.InventoryPeriods;
+            //var selectedinventoryPeriods = inventoryPeriods.Select(
+            // i => new
+            // {
+            //     Name = i.Name,
+            //     GLPeriodId = i.InventoryPeriodId
+            // }).AsQueryable();
+            ViewData["inventoryPeriods"] = CacheData.GetInventoryPeriodCaches().Select(
                 i => new
                 {
-                    Name = i.ItemCode + "_" + i.Name,
-                    ItemCode = i.ItemCode
-                }).ToList();
-            ViewData["Items"] = selecteditems;
-            ViewData["Category"] = categories;
+                    Name = i.Name,
+                    GLPeriodId = i.Id
+                }).AsQueryable();
 
-            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+
+            ViewData["costCenters"] = CacheData.GetWorkUnitCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    Code = i.Id
+                }).AsQueryable();
+            ViewData["stores"] = CacheData.GetStoreCaches().Select(
+                i => new
+                {
+                    Name = i.Name,
+                    StoreCode = i.Id
+                }).AsQueryable();
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BranchId = i.Id
+               }).AsQueryable();
+            //var selecteditems = items.Select(
+            //    i => new
+            //    {
+            //        Name = i.ItemCode + "_" + i.Name,
+            //        ItemCode = i.ItemCode
+            //    }).ToList();
+            ViewData["Items"] = CacheData.GetInventoryItemCaches().Select(
+              i => new
+              {
+                  Name = i.Id + "_" + i.Name,
+                  ItemCode = i.Id
+              }).ToList();
+            ViewData["Category"] = CacheData.GetInventoryCategoryCaches().Select(
+                i => new
+                {
+                    Name = i.Id + "_" + i.Name,
+                    ItemCategoryCode = i.Id
+                }).ToList();
+
+            //ViewData["defaultCategory"] = categories.FirstOrDefault();
         }
 
         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
@@ -76,7 +109,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
             //IQueryable<StoreReturn> storereturns = db.StoreReturns.Where(x => mybraches.Contains(x.OrgBranchName));
 
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<StoreReturn> storereturns = db.StoreReturns.Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<StoreReturn> storereturns = db.StoreReturns.Where(x => userStores.Contains(x.StoreCode)).Where(x => x.IsDepartmentOnlineApproved);
 
             DataSourceResult result = storereturns.ToDataSourceResult(request, storeReturn => new
             {
@@ -90,6 +123,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 Status = storeReturn.Status,
                 IsForOther = storeReturn.IsForOther,
                 OrgStructureId = storeReturn.OrgStructureId,
+                CreatedAtOrgStructureId = storeReturn.CreatedAtOrgStructureId,
                 ForBranchId = storeReturn.ForBranchId,
                 ConfirmationLetter = storeReturn.ConfirmationLetter,
                 Remark = storeReturn.Remark,
@@ -106,6 +140,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 IsSendForApproval = storeReturn.IsSendForApproval,
                 SendForApprovalBy = storeReturn.SendForApprovalBy,
                 SendForApprovalTime = storeReturn.SendForApprovalTime,
+
+                IsDepartmentOnlineApproved = storeReturn.IsDepartmentOnlineApproved,
+                DepartmentOnlineApprovedBy = storeReturn.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = storeReturn.DepartmentOnlineApprovedTime,
+                IsDepartmentSendForApproval = storeReturn.IsDepartmentSendForApproval,
+                DepartmentSendForApprovalBy = storeReturn.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = storeReturn.DepartmentSendForApprovalTime,
+
+                ForwardedFrom = storeReturn.ForwardedFrom,
+                ForwardedTo = storeReturn.ForwardedTo,
+                IsFinalApproval = storeReturn.IsFinalApproval,
+                CurrentApprovalStep = storeReturn.CurrentApprovalStep,
+
                 DateCreated = storeReturn.DateCreated,
                 CreatedBy = storeReturn.CreatedBy,
             });
@@ -144,12 +191,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
             {
                 ModelState.AddModelError("future", "You are recording in future period,please correct the date.");
             }
+            storeReturn.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
             if (ModelState.IsValid)
             {
                 var entity = new StoreReturn
                 {
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeReturn.StoreCode),
-                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                    BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(storeReturn.StoreCode),
                     Reference = storeReturn.Reference,
                     StoreCode = storeReturn.StoreCode,
                     GLPeriodId = storeReturn.GLPeriodId,
@@ -158,6 +206,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     Status = Enum.GetName(typeof(OperationStatuses), 5),
                     IsForOther = storeReturn.IsForOther,
                     OrgStructureId = storeReturn.OrgStructureId,
+                    CreatedAtOrgStructureId = storeReturn.CreatedAtOrgStructureId,
                     ForBranchId = storeReturn.ForBranchId,
                     ConfirmationLetter = storeReturn.ConfirmationLetter,
                     Remark = storeReturn.Remark,
@@ -170,6 +219,18 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     IsOnlineTransferred = storeReturn.IsOnlineTransferred,
                     IsOnlineTransferredBy = storeReturn.IsOnlineTransferredBy,
                     OnlineTransferredTime = storeReturn.OnlineTransferredTime,
+
+                    ForwardedFrom = User.Identity.Name,
+                    ForwardedTo = User.Identity.Name,
+                    IsFinalApproval = storeReturn.IsFinalApproval,
+                    CurrentApprovalStep = storeReturn.CurrentApprovalStep,
+
+                    IsDepartmentOnlineApproved = true,//to make it display
+                    DepartmentOnlineApprovedBy = storeReturn.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = storeReturn.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = storeReturn.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = storeReturn.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = storeReturn.DepartmentSendForApprovalTime,
 
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
@@ -226,7 +287,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 {
                     StoreReturnID = storeReturn.StoreReturnID,
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeReturn.StoreCode),
-                    BusinessUnitId = storeReturn.BusinessUnitId,
+                    BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(storeReturn.StoreCode),
                     Reference = storeReturn.Reference,
                     StoreCode = storeReturn.StoreCode,
                     GLPeriodId = storeReturn.GLPeriodId,
@@ -235,6 +296,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     Status = storeReturn.Status,
                     IsForOther = storeReturn.IsForOther,
                     OrgStructureId = storeReturn.OrgStructureId,
+                    CreatedAtOrgStructureId = storeReturn.CreatedAtOrgStructureId,
                     ForBranchId = storeReturn.ForBranchId,
                     ConfirmationLetter = storeReturn.ConfirmationLetter,
                     Remark = storeReturn.Remark,
@@ -247,6 +309,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     IsOnlineTransferred = storeReturn.IsOnlineTransferred,
                     IsOnlineTransferredBy = storeReturn.IsOnlineTransferredBy,
                     OnlineTransferredTime = storeReturn.OnlineTransferredTime,
+
+                    ForwardedFrom = storeReturn.ForwardedFrom,
+                    ForwardedTo = storeReturn.ForwardedTo,
+                    IsFinalApproval = storeReturn.IsFinalApproval,
+                    CurrentApprovalStep = storeReturn.CurrentApprovalStep,
+
+                    IsDepartmentOnlineApproved = storeReturn.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = storeReturn.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = storeReturn.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = storeReturn.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = storeReturn.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = storeReturn.DepartmentSendForApprovalTime,
+
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
                 };
@@ -281,6 +356,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     Status = storeReturn.Status,
                     IsForOther = storeReturn.IsForOther,
                     OrgStructureId = storeReturn.OrgStructureId,
+                    CreatedAtOrgStructureId = storeReturn.CreatedAtOrgStructureId,
                     ForBranchId = storeReturn.ForBranchId,
                     ConfirmationLetter = storeReturn.ConfirmationLetter,
                     Remark = storeReturn.Remark,

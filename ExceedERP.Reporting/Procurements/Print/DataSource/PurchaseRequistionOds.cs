@@ -361,9 +361,9 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                     headerDs.BudgetAuthorizationDate = (DateTime)record.BudgetApprovedTime;
 
                 headerDs.BudgetAuthorizationSignature = SignatureHelper.GetUserSignature(record.BudgetApprovedBy);
-                
-                headerDs.PRDate = record.DateCreated.GetValueOrDefault().ToShortDateString();
-                headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(record.StoreRequisitionID);
+
+                //headerDs.PRDate = record.RequestDate.ToShortDateString(); //record.DateCreated.GetValueOrDefault().ToShortDateString();
+                headerDs.StoreRequistionNo =record.ItemType!= PurchaseItemType.Service? InventoryPrintHelper.GetId(record.StoreRequisitionID):"";
                 headerDs.RequestingDepartment = InventoryPrintHelper.WorkUnitName(record.OrgStructureId);
 
                

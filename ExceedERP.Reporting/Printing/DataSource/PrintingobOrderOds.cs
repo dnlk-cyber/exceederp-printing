@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,10 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     DateCreated = jobOrder.DateCreated,
                     CRVNo = jobOrder.CRVNo,
                     JobDeliveryDate = jobOrder.DeliveryDate,
-                    JobOrderStartDate = jobOrder.JobStartDate
+                    JobOrderStartDate = jobOrder.JobStartDate,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(jobOrder.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(jobOrder.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(jobOrder.SendForApprovalBy)
                 };
 
             }

@@ -13,14 +13,25 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.IpAddress);
-          columns.Bound(c => c.UserName);
-          columns.Bound(c => c.TimeAccessed).Format("{0:dd MMMM yyyy hh:mm tt}");
-          columns.Bound(c => c.Type);
-          columns.Bound(c => c.Status);
-          columns.Bound(c => c.Description);
+          columns.Bound(c => c.IpAddress).Width(70);
+          columns.Bound(c => c.UserName).Width(60);
+          columns.Bound(c => c.TimeAccessed).Format("{0:dd MMMM yyyy hh:mm tt}").Width(120);
+          columns.Bound(c => c.Type).Width(80);
+          columns.Bound(c => c.Status).Width(50);
+          columns.Bound(c => c.Description).Width(300);
 
       })
+       .ToolBar(toolbar =>
+       {
+
+           toolbar.Excel();
+           // toolbar.Pdf();
+       })
+      .Excel(excel => excel
+          .FileName("Delete Log.xlsx")
+          .Filterable(true)
+          .AllPages(true)
+      )
        .HtmlAttributes(new { style = "height: 550px;" })
                           .Pageable(pageable => pageable
                                             .Input(true)
@@ -33,6 +44,7 @@
                                 .Sortable()
                                 .Filterable()
                                 .Groupable()
+
       .DataSource(dataSource => dataSource
           .Ajax()
            .Sort(sort => sort.Add("GlobalDeleteLogId").Descending())

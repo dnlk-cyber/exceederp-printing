@@ -103,12 +103,12 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                     var proformaTeams = db.ProformaTeamMembers.Where(x => x.ProformaTeamId == team.ProformaTeamId).ToList();
                     foreach (var m in proformaTeams)
                     {
-
+                        string user = UserHelper.GetEmployeeUserName(m.EmployeeId);
                         var member = new ProformaTeamVm
                         {
                             FullName = EmployeeHelper.GetEmployeeEnglishName(m.EmployeeId),
                             Title = m.Title,
-                            Signature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(m.EmployeeId))
+                            Signature = m.SignedBy == user ? SignatureHelper.GetUserSignature(user) : null
 
                         };
                         members.Add(member);

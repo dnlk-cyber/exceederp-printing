@@ -1,83 +1,111 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
+using PagedList;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Template
 {
+
     public class TemplatesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-
         // GET: HRM/Templates
-        public ActionResult Index()
+        public ActionResult Index(int? page)
         {
-            return View(db.Templates.ToList());
+            int pageSize = 2;
+            int pageNumber = (page ?? 1);
+
+            var templates = db.Templates.ToList()
+                .Select(x=>new Core.Domain.HRM.Templates.Template {
+                                    TemplateId= x.TemplateId,
+                                    TemplateType= x.TemplateType,
+                                    TempOne=x.TempOne,
+                                    Title= x.Title,
+                                    TemplateTypeSettingId=x.TemplateTypeSettingId,
+                                    Document= x.Document,
+                                    CreatedBy=    x.CreatedBy,
+                                    DateCreated = x.DateCreated,
+                                    OrgBranchName = x.OrgBranchName,
+                                    LastModified = x.LastModified,
+                                    ModifiedBy= x.ModifiedBy,
+                                    TemplateTypes = GetTeplateTypeName(x.TemplateTypeSettingId??0),
+                        }).OrderBy(t => t.TemplateId)
+                        .ToPagedList(pageNumber, pageSize);
+            return View(templates);
+        }
+        private string GetTeplateTypeName(int id)
+        {
+            return db.TemplateTypeSettings.FirstOrDefault(x => x.TemplateTypeSettingId == id)?.TemplateType;
         }
 
-        // GET: HRM/Templates/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
-
-            if (template == null)
-            {
-                return HttpNotFound();
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var template = db.Templates.Find(id);
+            if (template == null) return HttpNotFound();
+            //ViewBag.RecordTypeList = new SelectList(Enum.GetValues(typeof(RecordKeyType)));
             return View(template);
         }
 
-        // GET: HRM/Templates/Create
         public ActionResult Create()
         {
-            return View();
+            var model = new Core.Domain.HRM.Templates.Template(); // ✅ initializes the model
+            return View(model);
         }
 
-        // POST: HRM/Templates/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TemplateId,TempOne,TemplateType,Document")] Core.Domain.HRM.Templates.Template template)
+        public ActionResult Create([Bind(Include = "TemplateId,Title,TempOne,TemplateType,TemplateTypeSettingId,Document")] Core.Domain.HRM.Templates.Template template)
         {
+            template.CreatedBy = User.Identity.Name;
+            template.DateCreated = DateTime.Now;
+            var exist = db.Templates.Any(x => x.TemplateType == template.TemplateType && x.TemplateTypeSettingId == template.TemplateTypeSettingId);
+            if (exist)
+            {
+                ModelState.AddModelError("exist", "this Template type is aready Registerd chage the Template type");
+                return RedirectToAction("Index");
+
+            }
             if (ModelState.IsValid)
             {
                 db.Templates.Add(template);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
             return View(template);
         }
 
-        // GET: HRM/Templates/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
-            if (template == null)
-            {
-                return HttpNotFound();
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var template = db.Templates.Find(id);
+            if (template == null) return HttpNotFound();
             return View(template);
         }
 
-        // POST: HRM/Templates/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "TemplateId,TempOne,TemplateType,Document")] Core.Domain.HRM.Templates.Template template)
+        public ActionResult Edit([Bind(Include = "TemplateId,Title,TempOne,TemplateType,TemplateTypeSettingId,Document")] Core.Domain.HRM.Templates.Template template)
         {
+            template.ModifiedBy = User.Identity.Name;
+            template.LastModified = DateTime.Now;
+            var exist = db.Templates.Any(x => x.TemplateType == template.TemplateType 
+                                            && x.TemplateTypeSettingId == template.TemplateTypeSettingId 
+                                            && x.TemplateId != template.TemplateId);
+            if (exist)
+            {
+                ModelState.AddModelError("exist", "this Template type is aready Registerd chage the Template type");
+                return RedirectToAction("Index");
+
+            }
             if (ModelState.IsValid)
             {
                 db.Entry(template).State = System.Data.Entity.EntityState.Modified;
@@ -87,39 +115,147 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Template
             return View(template);
         }
 
-        // GET: HRM/Templates/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
-            if (template == null)
-            {
-                return HttpNotFound();
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            var template = db.Templates.Find(id);
+            if (template == null) return HttpNotFound();
             return View(template);
         }
 
-        // POST: HRM/Templates/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
+            var template = db.Templates.Find(id);
             db.Templates.Remove(template);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
+        public JsonResult GetTeplateType()
+        {
+            return Json(db.TemplateTypeSettings.Select(x => new { x.TemplateTypeSettingId, x.TemplateType }), JsonRequestBehavior.AllowGet);
+        }
+      
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            if (disposing) db.Dispose();
             base.Dispose(disposing);
         }
+        #region Template  Commented
+
+        //// GET: HRM/Templates
+        //public ActionResult Index()
+        //{
+        //    return View(db.Templates.ToList());
+        //}
+
+        //// GET: HRM/Templates/Details/5
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+        //    Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
+
+        //    if (template == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(template);
+        //}
+
+        //// GET: HRM/Templates/Create
+        //public ActionResult Create()
+        //{
+        //    return View();
+        //}
+
+        //// POST: HRM/Templates/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create([Bind(Include = "TemplateId,TempOne,TemplateType,Document")] Core.Domain.HRM.Templates.Template template)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Templates.Add(template);
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    return View(template);
+        //}
+
+        //// GET: HRM/Templates/Edit/5
+        //public ActionResult Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
+        //    if (template == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(template);
+        //}
+
+        //// POST: HRM/Templates/Edit/5
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit([Bind(Include = "TemplateId,TempOne,TemplateType,Document")] Core.Domain.HRM.Templates.Template template)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(template).State = System.Data.Entity.EntityState.Modified;
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(template);
+        //}
+
+        //// GET: HRM/Templates/Delete/5
+        //public ActionResult Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
+        //    if (template == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(template);
+        //}
+
+        //// POST: HRM/Templates/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult DeleteConfirmed(int id)
+        //{
+        //    Core.Domain.HRM.Templates.Template template = db.Templates.Find(id);
+        //    db.Templates.Remove(template);
+        //    db.SaveChanges();
+        //    return RedirectToAction("Index");
+        //}
+
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
+        #endregion 
     }
 }

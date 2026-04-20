@@ -23,7 +23,7 @@
                                   .Filter(FilterType.Contains)
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetAllCategory", "MaintenanceDataProvider", new { Area = "Maintenance" }));
+                                      dataSource.Read(read => read.Action("GetAllCategory", "MaintenanceDataProvider", new { Area = "Maintenance" }).Data("sendForgery"));
                                   })
                                   .MinLength(2)
                                   .ValuePrimitive(true)
@@ -44,7 +44,7 @@
                                   .DataValueField("ItemCategoryCode")
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetSubcategoriesBasedOnCategory", "MaintenanceDataProvider", new { Area = "Maintenance" }).Data("filterCategories"))
+                                      dataSource.Read(read => read.Action("GetSubcategoriesBasedOnCategory", "MaintenanceDataProvider", new { Area = "Maintenance" }).Data("sendForgery").Data("filterCategories"))
                                       .ServerFiltering(true);
                                   })
                                   .CascadeFrom("CategoryCode")
@@ -76,11 +76,9 @@
 
     </div>
     <div class="row">
-        <div class="col-sm-1">
+        <div class="col-sm-1"></div>
 
-        </div>
-
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.Code)
@@ -90,7 +88,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-3">
+
+        <div class="col-sm-2 ms-3">
+            <!-- Add ms-3 for margin -->
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.Name)
@@ -100,7 +100,19 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-3">
+
+        <div class="col-sm-2 ms-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Weight)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Weight))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2 ms-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.StandaredTime)
@@ -110,10 +122,7 @@
                 </div>
             </div>
         </div>
-
-
     </div>
-
     <div class="row">
         <div class="col-sm-1">
 

@@ -2,562 +2,564 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>EXCEED ERP SYSTEM</title>
-	<link href="~/Content/ace/css/ace.min.css" rel="stylesheet" />
-
-	<link rel="stylesheet" href="~/Scripts/etp/css/jquery.calendars.picker.css" />
-
-	@*@Styles.Render("~/Content/css")
-		@Scripts.Render("~/bundles/modernizr")*@
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<meta charset="utf-8" />
-
-	<meta name="description" content="overview &amp; stats" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-
-	<!-- bootstrap & fontawesome -->
-	<link rel="stylesheet" href="~/Content/ace/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/Content/ace/font-awesome/4.2.0/css/font-awesome.min.css" />
-	<link href="~/Content/ExceedKendos.css" rel="stylesheet" />
-	<link href="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.css" rel="stylesheet" />
-	<!-- page specific plugin styles -->
-	<!-- text fonts -->
-	<link rel="stylesheet" href="~/Content/ace/fonts/fonts.googleapis.com.css" />
-
-	<!-- ace styles -->
-	<link rel="stylesheet" href="~/Content/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
-
-	<!--[if lte IE 9]>
-		<link rel="stylesheet" href="~/Content/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
-	<![endif]-->
-	<!--[if lte IE 9]>
-		<link rel="stylesheet" href="~/Content/ace/css/ace-ie.min.css" />
-	<![endif]-->
-	<!-- inline styles related to this page -->
-	<!-- ace settings handler -->
-	<script src="~/Content/ace/js/ace-extra.min.js"></script>
-
-	<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
-	<!--[if lte IE 8]>
-		<script src="~/Content/ace/js/html5shiv.min.js"></script>
-		<script src="~/Content/ace/js/respond.min.js"></script>
-	<![endif]-->
-
-	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.common-bootstrap.min.css")" rel="stylesheet" type="text/css" />
-	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
-	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
-	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.bootstrap.min.css")" rel="stylesheet" type="text/css" />
-	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.bootstrap.min.css")" rel="stylesheet" type="text/css" />
-	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/jquery.min.js")"></script>
-	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/jszip.min.js")"></script>
-	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.all.min.js")"></script>
-	@*<script src="~/Scripts/kendo/2016.1.112/Culture/kendo.culture.en-GB.min.js"></script>*@
-	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/KendoErrorAndSyncs.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/KendoGridApproval.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/KendoGridApprovalNew.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/AccountSelector.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/AccountSelectorWindow.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/inventoryItemCascadeFilter.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/cascadeFilters.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/fixedAssetCascadeFilter.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/KendoReport.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/GridValidation.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/exceed.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/itemVirtualizations.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/Virtualization/ValueMappers.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/Virtualization/subaccountMapper.js")"></script>
-	<script src="@Url.Content("~/Scripts/exceed/perioddatepickervalidation.js")"></script>
-	<script src="~/Scripts/Exceed/ValueMapper/_valueMapper.js"></script>
-
-	<script src="~/Scripts/etp/jquery.plugin.js"></script>
-	<script src="~/Scripts/etp/jquery.calendars.js"></script>
-	<script src="~/Scripts/etp/jquery.calendars.plus.js"></script>
-	<script src="~/Scripts/etp/jquery.calendars.picker.js"></script>
-	<script src="~/Scripts/etp/jquery.calendars.ethiopian.js"></script>
-	<script src="~/Scripts/etp/jquery.calendars.ethiopian-am.js"></script>
-
-	<script src="~/Scripts/Exceed/DateSelectorWindow.js"></script>
-
-	<link href="~/Content/toast/toastr.css" rel="stylesheet" />
-	<script src="~/Content/toast/toastr.js"></script>
-	<script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
-
-	<script src="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
-
-	@*<script src="~/signalr/hubs"></script>*@
-
-	@*<script type="text/javascript">
-			$(document).ready(function () {
-				//set current to the "en-GB" culture script
-				kendo.culture("en-GB");
-			});
-
-		</script>*@
-
-	<link rel="stylesheet" href="~/Content/orgChart/css/jquery.orgchart.css">
-	<link rel="stylesheet" href="~/Content/orgChart/css/style.css">
-
-	<link href="~/Content/ExceedStyle.css" rel="stylesheet" />
-	<link href="~/Content/exceedKendoChart.css" rel="stylesheet" />
-	<link href="~/Content/custom/cms-custom-styles.css" rel="stylesheet" />
-
-
-	<style>
-
-
-		li.actionlinlk a:hover {
-			color: red;
-			text-decoration: underline;
-		}
-
-		li.actionlinlk:active {
-			background: red !important;
-		}
-
-		li.actionlinlk:hover {
-			background: #438eb9;
-		}
-
-		.paragraphRight {
-			align-content: flex-end;
-		}
-
-		ul.login a {
-			color: #ffffff;
-		}
-
-		ul#notification.dropdown-menu-right.dropdown-navbar.navbar-pink.dropdown-menu.dropdown-caret.dropdown-close {
-			width: 500px !important;
-		}
-
-		.dialog_css {
-			border: 0px none !important;
-			-moz-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
-			-webkit-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
-			box-shadow: 3px 6px 8px rgb(136, 136, 136);
-		}
-
-		legend {
-			font-size: 14px;
-		}
-
-		table {
-			font-size: 11px;
-		}
-
-		/* Hide the Grid header and pager during export */
-		.k-pdf-export .k-grid-toolbar,
-		.k-pdf-export .k-pager-wrap,
-		.k-pdf-export .k-button-icontext,
-		.k-pdf-export .k-grid-edit,
-		.k-pdf-export .k-grouping-header,
-		.k-pdf-export .k-grid-delete,
-		.k-pdf-export .k-plus,
-		.k-pdf-export .k-filter {
-			display: none;
-		}
-
-		.k-pdf-export {
-			font-family: "Nyala", "DejaVu Sans";
-		}
-
-		.k-widget {
-			font-family: "Nyala", "DejaVu Sans"
-		}
-
-		.k-grid tbody tr {
-			height: 18px;
-		}
-
-		.k-header h1 {
-			margin: 0;
-			padding: 30px 15px;
-			font-size: 32px;
-			font-weight: lighter;
-		}
-
-		/* Sticky footer styles
-		-------------------------------------------------- */
-		html {
-			position: relative;
-			min-height: 100%;
-		}
-
-		body {
-			/* Margin bottom by footer height */
-			margin-bottom: 60px;
-		}
-
-		.footer {
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-			/* Set the fixed height of the footer here */
-			height: 60px;
-			background-color: #f5f5f5;
-		}
-
-		.container-fluid .text-muted {
-			margin: 20px 0;
-		}
-
-		.placeholders {
-			margin: 30px auto;
-		}
-
-		.placeholder img {
-			display: inline-block;
-		}
-
-		p .k-button {
-			margin: 0 15px 0 0;
-		}
-
-		.btn-toggle {
-			position: absolute;
-			top: 0;
-			left: 0;
-			box-shadow: none;
-			height: 48px;
-		}
-
-			.btn-toggle .k-icon {
-				opacity: 1;
-			}
-
-			.btn-toggle,
-			.k-primary.btn-toggle:hover,
-			.btn-toggle:focus:active:not(.k-state-disabled):not([disabled]),
-			.btn-toggle:focus:not(.k-state-disabled):not([disabled]) {
-				box-shadow: none;
-				border-radius: 0;
-			}
-
-				.btn-toggle .k-i-hbars,
-				.k-primary.btn-toggle:hover .k-i-hbars,
-				.btn-toggle:focus:active:not(.k-state-disabled):not([disabled]) .k-i-hbars,
-				.btn-toggle:focus:not(.k-state-disabled):not([disabled]) .k-i-hbars {
-					background-position: -80px -32px;
-				}
-
-		@@media (max-width: 768px) {
-			.k-item {
-				display: block;
-				clear: both;
-				float: none;
-				width: 100%;
-			}
-
-			.k-header h1 {
-				margin: 0;
-				padding: 16px 15px 14px 60px;
-				font-size: 18px;
-				font-weight: lighter;
-			}
-		}
-		.trv-parameters-area-preview-button {
-			position: absolute !important;
-			top: 10px;
-		}
-
-		.trv-parameters-area-footer {
-			position: relative !important;
-		}
-
-		.trv-parameters-area-content {
-			position: relative !important;
-		}
-	</style>
-
-
-
-
-	<style>
-
-
-		/*change grid table row*/
-		/*.k-grid tr {
-			   background-color: #dda0dd; /* specify the background-color
-			}
-		*/
-		#reportViewer1 {
-			position: relative;
-			width: 100%;
-			height: 900px;
-			font-family: Nyala, Verdana, Arial;
-		}
-
-		/*a.dropdown-toggle {
-			background-color: #4d394b !important;
-			color: white !important;
-		}*/
-
-		.no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li.active > a {
-			background-color: #438eb9 !important;
-			color: white !important;
-		}
-
-		.no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li > a:hover {
-			background-color: lime !important;
-		}
-
-		/* pop up
-		*/
-
-		div.k-edit-form-container {
-			width: 700px;
-		}
-
-		.k-grid-content {
-			width: auto;
-		}
-	</style>
-
-
-
-	<style>
-		div.k-edit-form-container {
-			width: 800px;
-			height: auto;
-		}
-
-		div.k-content {
-			overflow: hidden;
-			height: auto;
-		}
-
-		span.k-icon.k-i-close {
-			background-color: darkgray;
-		}
-
-		.k-grid .k-grid-header .k-header .k-link {
-			height: auto;
-		}
-
-		.k-grid .k-grid-header .k-header {
-			white-space: normal;
-		}
-
-		.k-checkbox:checked + .k-checkbox-label:before + #checkDanger {
-			background-color: red;
-			color: white;
-		}
-
-		.k-checkbox #checkDanger {
-			background-color: red;
-			color: white;
-		}
-	</style>
-
-
-	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXCEED ERP SYSTEM</title>
+    <link href="~/Content/ace/css/ace.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/Scripts/etp/css/jquery.calendars.picker.css" />
+
+    @*@Styles.Render("~/Content/css")
+        @Scripts.Render("~/bundles/modernizr")*@
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+
+    <meta name="description" content="overview &amp; stats" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="~/Content/ace/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/ace/font-awesome/4.2.0/css/font-awesome.min.css" />
+    <link href="~/Content/ExceedKendos.css" rel="stylesheet" />
+    <link href="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.css" rel="stylesheet" />
+    <!-- page specific plugin styles -->
+    <!-- text fonts -->
+    <link rel="stylesheet" href="~/Content/ace/fonts/fonts.googleapis.com.css" />
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="~/Content/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="~/Content/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
+    <![endif]-->
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="~/Content/ace/css/ace-ie.min.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- ace settings handler -->
+    <script src="~/Content/ace/js/ace-extra.min.js"></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+    <!--[if lte IE 8]>
+        <script src="~/Content/ace/js/html5shiv.min.js"></script>
+        <script src="~/Content/ace/js/respond.min.js"></script>
+    <![endif]-->
+
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.common-bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.all.min.js")"></script>
+    @*<script src="~/Scripts/kendo/2016.1.112/Culture/kendo.culture.en-GB.min.js"></script>*@
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/KendoErrorAndSyncs.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/KendoGridApproval.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/KendoGridApprovalNew.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/AccountSelector.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/AccountSelectorWindow.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/inventoryItemCascadeFilter.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/cascadeFilters.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/fixedAssetCascadeFilter.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/KendoReport.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/GridValidation.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/exceed.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/itemVirtualizations.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/Virtualization/ValueMappers.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/Virtualization/subaccountMapper.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/perioddatepickervalidation.js")"></script>
+    <script src="~/Scripts/Exceed/ValueMapper/_valueMapper.js"></script>
+
+    <script src="~/Scripts/etp/jquery.plugin.js"></script>
+    <script src="~/Scripts/etp/jquery.calendars.js"></script>
+    <script src="~/Scripts/etp/jquery.calendars.plus.js"></script>
+    <script src="~/Scripts/etp/jquery.calendars.picker.js"></script>
+    <script src="~/Scripts/etp/jquery.calendars.ethiopian.js"></script>
+    <script src="~/Scripts/etp/jquery.calendars.ethiopian-am.js"></script>
+
+    <script src="~/Scripts/Exceed/DateSelectorWindow.js"></script>
+
+    <link href="~/Content/toast/toastr.css" rel="stylesheet" />
+    <script src="~/Content/toast/toastr.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+
+    <script src="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
+
+    @*<script src="~/signalr/hubs"></script>*@
+
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                //set current to the "en-GB" culture script
+                kendo.culture("en-GB");
+            });
+
+        </script>*@
+
+    <link rel="stylesheet" href="~/Content/orgChart/css/jquery.orgchart.css">
+    <link rel="stylesheet" href="~/Content/orgChart/css/style.css">
+
+    <link href="~/Content/ExceedStyle.css" rel="stylesheet" />
+    <link href="~/Content/exceedKendoChart.css" rel="stylesheet" />
+    <link href="~/Content/custom/cms-custom-styles.css" rel="stylesheet" />
+
+
+    <style>
+
+
+        li.actionlinlk a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+
+        li.actionlinlk:active {
+            background: red !important;
+        }
+
+        li.actionlinlk:hover {
+            background: #438eb9;
+        }
+
+        .paragraphRight {
+            align-content: flex-end;
+        }
+
+        ul.login a {
+            color: #ffffff;
+        }
+
+        ul#notification.dropdown-menu-right.dropdown-navbar.navbar-pink.dropdown-menu.dropdown-caret.dropdown-close {
+            width: 500px !important;
+        }
+
+        .dialog_css {
+            border: 0px none !important;
+            -moz-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
+            -webkit-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
+            box-shadow: 3px 6px 8px rgb(136, 136, 136);
+        }
+
+        legend {
+            font-size: 14px;
+        }
+
+        table {
+            font-size: 11px;
+        }
+
+        /* Hide the Grid header and pager during export */
+        .k-pdf-export .k-grid-toolbar,
+        .k-pdf-export .k-pager-wrap,
+        .k-pdf-export .k-button-icontext,
+        .k-pdf-export .k-grid-edit,
+        .k-pdf-export .k-grouping-header,
+        .k-pdf-export .k-grid-delete,
+        .k-pdf-export .k-plus,
+        .k-pdf-export .k-filter {
+            display: none;
+        }
+
+        .k-pdf-export {
+            font-family: "Nyala", "DejaVu Sans";
+        }
+
+        .k-widget {
+            font-family: "Nyala", "DejaVu Sans"
+        }
+
+        .k-grid tbody tr {
+            height: 18px;
+        }
+
+        .k-header h1 {
+            margin: 0;
+            padding: 30px 15px;
+            font-size: 32px;
+            font-weight: lighter;
+        }
+
+        /* Sticky footer styles
+        -------------------------------------------------- */
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+
+        body {
+            /* Margin bottom by footer height */
+            margin-bottom: 60px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            /* Set the fixed height of the footer here */
+            height: 60px;
+            background-color: #f5f5f5;
+        }
+
+        .container-fluid .text-muted {
+            margin: 20px 0;
+        }
+
+        .placeholders {
+            margin: 30px auto;
+        }
+
+        .placeholder img {
+            display: inline-block;
+        }
+
+        p .k-button {
+            margin: 0 15px 0 0;
+        }
+
+        .btn-toggle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: none;
+            height: 48px;
+        }
+
+            .btn-toggle .k-icon {
+                opacity: 1;
+            }
+
+            .btn-toggle,
+            .k-primary.btn-toggle:hover,
+            .btn-toggle:focus:active:not(.k-state-disabled):not([disabled]),
+            .btn-toggle:focus:not(.k-state-disabled):not([disabled]) {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+                .btn-toggle .k-i-hbars,
+                .k-primary.btn-toggle:hover .k-i-hbars,
+                .btn-toggle:focus:active:not(.k-state-disabled):not([disabled]) .k-i-hbars,
+                .btn-toggle:focus:not(.k-state-disabled):not([disabled]) .k-i-hbars {
+                    background-position: -80px -32px;
+                }
+
+        @@media (max-width: 768px) {
+            .k-item {
+                display: block;
+                clear: both;
+                float: none;
+                width: 100%;
+            }
+
+            .k-header h1 {
+                margin: 0;
+                padding: 16px 15px 14px 60px;
+                font-size: 18px;
+                font-weight: lighter;
+            }
+        }
+        .trv-parameters-area-preview-button {
+            position: absolute !important;
+            top: 10px;
+        }
+
+        .trv-parameters-area-footer {
+            position: relative !important;
+        }
+
+        .trv-parameters-area-content {
+            position: relative !important;
+        }
+    </style>
+
+
+
+
+    <style>
+
+
+        /*change grid table row*/
+        /*.k-grid tr {
+               background-color: #dda0dd; /* specify the background-color
+            }
+        */
+        #reportViewer1 {
+            position: relative;
+            width: 100%;
+            height: 900px;
+            font-family: Nyala, Verdana, Arial;
+        }
+
+        /*a.dropdown-toggle {
+            background-color: #4d394b !important;
+            color: white !important;
+        }*/
+
+        .no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li.active > a {
+            background-color: #438eb9 !important;
+            color: white !important;
+        }
+
+        .no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li > a:hover {
+            background-color: lime !important;
+        }
+
+        /* pop up
+        */
+
+        div.k-edit-form-container {
+            width: 700px;
+        }
+
+        .k-grid-content {
+            width: auto;
+        }
+    </style>
+
+
+
+    <style>
+        div.k-edit-form-container {
+            width: 800px;
+            height: auto;
+        }
+
+        div.k-content {
+            overflow: hidden;
+            height: auto;
+        }
+
+        span.k-icon.k-i-close {
+            background-color: darkgray;
+        }
+
+        .k-grid .k-grid-header .k-header .k-link {
+            height: auto;
+        }
+
+        .k-grid .k-grid-header .k-header {
+            white-space: normal;
+        }
+
+        .k-checkbox:checked + .k-checkbox-label:before + #checkDanger {
+            background-color: red;
+            color: white;
+        }
+
+        .k-checkbox #checkDanger {
+            background-color: red;
+            color: white;
+        }
+    </style>
+
+
+    <script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
 </head>
 
 <body class="no-skin">
 
-    <!-- error notification container -->
-    <div id="error_notif"></div>
-
-    @*@Html.Partial("_AccountsWindow")*@
-
-    @Html.Partial("_DateWindow")
-
-    <div id="navbar" class="navbar navbar-default">
-        <script type="text/javascript">
-            try {
-                ace.settings.check('navbar', 'fixed')
-            } catch (e) {
-            }
-        </script>
-
-        <div class="navbar-container" id="navbar-container">
-            <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
-                <span class="sr-only">Toggle sidebar</span>
-
-                <span class="icon-bar"></span>
-
-                <span class="icon-bar"></span>
-
-                <span class="icon-bar"></span>
-            </button>
-
-            <div class="navbar-header pull-left">
-                <a href="~/home/index" class="navbar-brand">
-                    <small>
-                        <i class="fa fa-compass"></i>
-                        EXCEED ERP System
-                    </small>
-                </a>
-            </div>
-
-            <div class="navbar-buttons navbar-header pull-right" role="navigation">
-                <ul class="nav ace-nav">
-
-                    <li class="blue">
-                        <a href="#">
-                            <i class="ace-icon fa fa-question icon-animated-bell"></i>
-                            <span class="badge badge-important">Help</span>
-                        </a>
-                    </li>
-
-                    <li class="grey">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <i class="ace-icon fa fa-tasks"></i>
-                            <span class="badge badge-grey">4</span>
-                        </a>
-
-                    </li>
-
-                    <li class="purple">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <i class="ace-icon fa fa-bell icon-animated-bell"></i>
-                            <span id="myNotification" class="badge badge-important"></span>
-                        </a>
-
-                        <ul id="notification" class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close"></ul>
-                    </li>
-
-                    <li class="green">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <i class="ace-icon fa fa-envelope icon-animated-vertical"></i>
-                            <span class="badge badge-success">5</span>
-                        </a>
-
-                        @*<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
-                                <li class="dropdown-header">
-                                    <i class="ace-icon fa fa-envelope-o"></i>
-                                    5 Messages
-                                </li>
-
-                                <li class="dropdown-content">
-                                    <ul class="dropdown-menu dropdown-navbar">
-                                        <li>
-                                            <a href="#" class="clearfix">
-                                                <img src="~/Content/ace/avatars/avatar.png" class="msg-photo" alt="Alex's Avatar" />
-                                                <span class="msg-body">
-                                                    <span class="msg-title">
-                                                        <span class="blue">Alex:</span>
-                                                        Ciao sociis natoque penatibus et auctor ...
-                                                    </span>
-
-                                                    <span class="msg-time">
-                                                        <i class="ace-icon fa fa-clock-o"></i>
-                                                        <span>a moment ago</span>
-                                                    </span>
-                                                </span>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="#" class="clearfix">
-                                                <img src="~/Content/ace/avatars/avatar3.png" class="msg-photo" alt="Susan's Avatar" />
-                                                <span class="msg-body">
-                                                    <span class="msg-title">
-                                                        <span class="blue">Susan:</span>
-                                                        Vestibulum id ligula porta felis euismod ...
-                                                    </span>
-
-                                                    <span class="msg-time">
-                                                        <i class="ace-icon fa fa-clock-o"></i>
-                                                        <span>20 minutes ago</span>
-                                                    </span>
-                                                </span>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="#" class="clearfix">
-                                                <img src="~/Content/ace/avatars/avatar4.png" class="msg-photo" alt="Bob's Avatar" />
-                                                <span class="msg-body">
-                                                    <span class="msg-title">
-                                                        <span class="blue">Bob:</span>
-                                                        Nullam quis risus eget urna mollis ornare ...
-                                                    </span>
-
-                                                    <span class="msg-time">
-                                                        <i class="ace-icon fa fa-clock-o"></i>
-                                                        <span>3:15 pm</span>
-                                                    </span>
-                                                </span>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="#" class="clearfix">
-                                                <img src="~/Content/ace/avatars/avatar2.png" class="msg-photo" alt="Kate's Avatar" />
-                                                <span class="msg-body">
-                                                    <span class="msg-title">
-                                                        <span class="blue">Kate:</span>
-                                                        Ciao sociis natoque eget urna mollis ornare ...
-                                                    </span>
-
-                                                    <span class="msg-time">
-                                                        <i class="ace-icon fa fa-clock-o"></i>
-                                                        <span>1:33 pm</span>
-                                                    </span>
-                                                </span>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="#" class="clearfix">
-                                                <img src="~/Content/ace/avatars/avatar5.png" class="msg-photo" alt="Fred's Avatar" />
-                                                <span class="msg-body">
-                                                    <span class="msg-title">
-                                                        <span class="blue">Fred:</span>
-                                                        Vestibulum id penatibus et auctor  ...
-                                                    </span>
-
-                                                    <span class="msg-time">
-                                                        <i class="ace-icon fa fa-clock-o"></i>
-                                                        <span>10:09 am</span>
-                                                    </span>
-                                                </span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="dropdown-footer">
-                                    <a href="inbox.html">
-                                        See all messages
-                                        <i class="ace-icon fa fa-arrow-right"></i>
-                                    </a>
-                                </li>
-                            </ul>*@
-                    </li>
-                    <li class="light-blue">
-                        @Html.Partial("_LoginPartial")
-                    </li>
-
-                </ul>
-            </div>
-        </div><!-- /.navbar-container -->
-    </div>
-
-    <div class="main-container" id="main-container">
-        <script type="text/javascript">
-            try {
-                ace.settings.check('main-container', 'fixed')
-            } catch (e) {
-            }
-        </script>
-
-        <div id="sidebar" class="sidebar                  responsive">
-            <script type="text/javascript">
-                try {
-                    ace.settings.check('sidebar', 'fixed')
-                } catch (e) {
-                }
-            </script>
 
 
+@*@Html.Partial("_AccountsWindow")*@
 
-            <ul class="nav nav-list">
-                @*<li id="link300" class="actionlinlk">
+@Html.Partial("_DateWindow")
+
+<div id="navbar" class="navbar navbar-default">
+<script type="text/javascript">
+	try {
+		ace.settings.check('navbar', 'fixed')
+	} catch (e) {
+	}
+</script>
+
+<div class="navbar-container" id="navbar-container">
+<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+	<span class="sr-only">Toggle sidebar</span>
+
+	<span class="icon-bar"></span>
+
+	<span class="icon-bar"></span>
+
+	<span class="icon-bar"></span>
+</button>
+
+<div class="navbar-header pull-left">
+	<a href="~/home/index" class="navbar-brand">
+		<small>
+			<i class="fa fa-compass"></i>
+			EXCEED ERP System
+		</small>
+	</a>
+</div>
+
+<div class="navbar-buttons navbar-header pull-right" role="navigation">
+	<ul class="nav ace-nav">
+
+		<li class="blue">
+			<a href="#">
+				<i class="ace-icon fa fa-question icon-animated-bell"></i>
+				<span class="badge badge-important">Help</span>
+			</a>
+		</li>
+
+		<li class="grey">
+			<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+				<i class="ace-icon fa fa-tasks"></i>
+				<span class="badge badge-grey">4</span>
+			</a>
+
+		</li>
+
+		<li class="purple">
+			<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+				<i class="ace-icon fa fa-bell icon-animated-bell"></i>
+				<span id="myNotification" class="badge badge-important"></span>
+			</a>
+
+			<ul id="notification" class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+			   
+
+			</ul>
+		</li>
+
+		<li class="green">
+			<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+				<i class="ace-icon fa fa-envelope icon-animated-vertical"></i>
+				<span class="badge badge-success">5</span>
+			</a>
+
+			@*<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+								<li class="dropdown-header">
+									<i class="ace-icon fa fa-envelope-o"></i>
+									5 Messages
+								</li>
+
+								<li class="dropdown-content">
+									<ul class="dropdown-menu dropdown-navbar">
+										<li>
+											<a href="#" class="clearfix">
+												<img src="~/Content/ace/avatars/avatar.png" class="msg-photo" alt="Alex's Avatar" />
+												<span class="msg-body">
+													<span class="msg-title">
+														<span class="blue">Alex:</span>
+														Ciao sociis natoque penatibus et auctor ...
+													</span>
+
+													<span class="msg-time">
+														<i class="ace-icon fa fa-clock-o"></i>
+														<span>a moment ago</span>
+													</span>
+												</span>
+											</a>
+										</li>
+
+										<li>
+											<a href="#" class="clearfix">
+												<img src="~/Content/ace/avatars/avatar3.png" class="msg-photo" alt="Susan's Avatar" />
+												<span class="msg-body">
+													<span class="msg-title">
+														<span class="blue">Susan:</span>
+														Vestibulum id ligula porta felis euismod ...
+													</span>
+
+													<span class="msg-time">
+														<i class="ace-icon fa fa-clock-o"></i>
+														<span>20 minutes ago</span>
+													</span>
+												</span>
+											</a>
+										</li>
+
+										<li>
+											<a href="#" class="clearfix">
+												<img src="~/Content/ace/avatars/avatar4.png" class="msg-photo" alt="Bob's Avatar" />
+												<span class="msg-body">
+													<span class="msg-title">
+														<span class="blue">Bob:</span>
+														Nullam quis risus eget urna mollis ornare ...
+													</span>
+
+													<span class="msg-time">
+														<i class="ace-icon fa fa-clock-o"></i>
+														<span>3:15 pm</span>
+													</span>
+												</span>
+											</a>
+										</li>
+
+										<li>
+											<a href="#" class="clearfix">
+												<img src="~/Content/ace/avatars/avatar2.png" class="msg-photo" alt="Kate's Avatar" />
+												<span class="msg-body">
+													<span class="msg-title">
+														<span class="blue">Kate:</span>
+														Ciao sociis natoque eget urna mollis ornare ...
+													</span>
+
+													<span class="msg-time">
+														<i class="ace-icon fa fa-clock-o"></i>
+														<span>1:33 pm</span>
+													</span>
+												</span>
+											</a>
+										</li>
+
+										<li>
+											<a href="#" class="clearfix">
+												<img src="~/Content/ace/avatars/avatar5.png" class="msg-photo" alt="Fred's Avatar" />
+												<span class="msg-body">
+													<span class="msg-title">
+														<span class="blue">Fred:</span>
+														Vestibulum id penatibus et auctor  ...
+													</span>
+
+													<span class="msg-time">
+														<i class="ace-icon fa fa-clock-o"></i>
+														<span>10:09 am</span>
+													</span>
+												</span>
+											</a>
+										</li>
+									</ul>
+								</li>
+
+								<li class="dropdown-footer">
+									<a href="inbox.html">
+										See all messages
+										<i class="ace-icon fa fa-arrow-right"></i>
+									</a>
+								</li>
+							</ul>*@
+		</li>
+		<li class="light-blue">
+			@Html.Partial("_LoginPartial")
+		</li>
+
+	</ul>
+</div>
+</div><!-- /.navbar-container -->
+</div>
+
+<div class="main-container" id="main-container">
+<script type="text/javascript">
+	try {
+		ace.settings.check('main-container', 'fixed')
+	} catch (e) {
+	}
+</script>
+
+<div id="sidebar" class="sidebar                  responsive">
+<script type="text/javascript">
+	try {
+		ace.settings.check('sidebar', 'fixed')
+	} catch (e) {
+	}
+</script>
+
+
+
+<ul class="nav nav-list">
+    @*<li id="link300" class="actionlinlk">
             <a href="~/UserProfile/MyBranches">
                 <i class="menu-icon fa fa-key"></i>
                 <span class="menu-text"> User Profile </span>
@@ -567,579 +569,594 @@
         </li>*@
 
 
-                @Html.Partial("_Dashboard")
+    @Html.Partial("_Dashboard")
 
 
 
 
-                @if (HttpContext.Current.User.IsInRole("HR_Admin") ||
-                     HttpContext.Current.User.IsInRole("Health_User") ||
-                     HttpContext.Current.User.IsInRole("Health_Admin") ||
-                     HttpContext.Current.User.IsInRole("Health_Approver") ||
-                     HttpContext.Current.User.IsInRole("HR_Attendance_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Benefit_Admin") ||
-                     HttpContext.Current.User.IsInRole("HR_Benefit_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Company_Admin") ||
-                     HttpContext.Current.User.IsInRole("HR_Company_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Discipline_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Employee_SelfService") ||
-                     HttpContext.Current.User.IsInRole("HR_Leave_Admin") ||
-                     HttpContext.Current.User.IsInRole("HR_Leave_Approver") ||
-                     HttpContext.Current.User.IsInRole("HR_Leave_Report") ||
-                     HttpContext.Current.User.IsInRole("HR_Leave_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Letters_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
-                     HttpContext.Current.User.IsInRole("HR_Performance_Admin") ||
-                     HttpContext.Current.User.IsInRole("HR_Performance_Report") ||
-                     HttpContext.Current.User.IsInRole("HR_Performance_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Placement_Admin") ||
-                     HttpContext.Current.User.IsInRole("HR_Placement_User") ||
-                     HttpContext.Current.User.IsInRole("HR_PrintableDocuments_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Profile_Admin") ||
-                     HttpContext.Current.User.IsInRole("HR_Profile_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") ||
-                     HttpContext.Current.User.IsInRole("HR_Recruitment_Approver") ||
-                     HttpContext.Current.User.IsInRole("HR_Recruitment_Report") ||
-                     HttpContext.Current.User.IsInRole("HR_Recruitment_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Report") ||
-                     HttpContext.Current.User.IsInRole("HR_Termination_User") ||
-                     HttpContext.Current.User.IsInRole("HR_Training_Approver") ||
-                     HttpContext.Current.User.IsInRole("HR_Training_User") ||
-                     HttpContext.Current.User.IsInRole("Archive_Report") ||
-                     HttpContext.Current.User.IsInRole("Archive_Admin") ||
-                     HttpContext.Current.User.IsInRole("Archive_User"))
-                {
+    @if (HttpContext.Current.User.IsInRole("HR_Admin") ||
+         HttpContext.Current.User.IsInRole("Health_User") ||
+         HttpContext.Current.User.IsInRole("Health_Admin") ||
+         HttpContext.Current.User.IsInRole("Health_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Attendance_User") ||
+         HttpContext.Current.User.IsInRole("HR_Benefit_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Benefit_User") ||
+         HttpContext.Current.User.IsInRole("HR_Company_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Company_User") ||
+         HttpContext.Current.User.IsInRole("HR_Discipline_User") ||
+         HttpContext.Current.User.IsInRole("HR_Employee_SelfService") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_User") ||
+         HttpContext.Current.User.IsInRole("HR_Letters_User") ||
+         HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
+         HttpContext.Current.User.IsInRole("HR_Performance_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Performance_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Performance_User") ||
+         HttpContext.Current.User.IsInRole("HR_Placement_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Placement_User") ||
+         HttpContext.Current.User.IsInRole("HR_PrintableDocuments_User") ||
+         HttpContext.Current.User.IsInRole("HR_Profile_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Profile_User") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_User") ||
+         HttpContext.Current.User.IsInRole("HR_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Termination_User") ||
+         HttpContext.Current.User.IsInRole("HR_Training_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Training_User") ||
+         HttpContext.Current.User.IsInRole("Archive_Report") ||
+         HttpContext.Current.User.IsInRole("Archive_Admin") ||
+         HttpContext.Current.User.IsInRole("Archive_User"))
+    {
 
-                    @Html.Partial("_HRM")
-                }
-
-
-                @if (HttpContext.Current.User.IsInRole("APTS_Despensary") ||
-                     HttpContext.Current.User.IsInRole("APTS_Admin") ||
-                     HttpContext.Current.User.IsInRole("APTS_DrugStore") ||
-                     HttpContext.Current.User.IsInRole("APTS_Accountant") ||
-                     HttpContext.Current.User.IsInRole("APTS_User"))
-                {
-                    @Html.Partial("_APTS")
-                }
+        @Html.Partial("_HRM")
+    }
 
 
+    @if (HttpContext.Current.User.IsInRole("APTS_Despensary") ||
+         HttpContext.Current.User.IsInRole("APTS_Admin") ||
+         HttpContext.Current.User.IsInRole("APTS_DrugStore") ||
+         HttpContext.Current.User.IsInRole("APTS_Accountant") ||
+         HttpContext.Current.User.IsInRole("APTS_User"))
+    {
+       @* @Html.Partial("_APTS")*@
+    }
+  @Html.Partial("_Insurance")
+    @Html.Partial("_Health")
 
 
-                @Html.Partial("_Health")
-                @Html.Partial("_Insurance")
 
-                @if (HttpContext.Current.User.IsInRole("Archive_Admin") ||
-                     HttpContext.Current.User.IsInRole("Archive_Report") ||
-                     HttpContext.Current.User.IsInRole("Archive_User"))
-                {
-                    @Html.Partial("_Archive")
-                }
+    @if (HttpContext.Current.User.IsInRole("Health_User") ||
+         HttpContext.Current.User.IsInRole("Health_Admin") ||
+         HttpContext.Current.User.IsInRole("Health_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
+         HttpContext.Current.User.IsInRole("Insurance_Admin") ||
+         HttpContext.Current.User.IsInRole("Insurance_User")
+        )
+    {
+      @*  @Html.Partial("_HealtInsurance")*@
+    }
 
-                @if (HttpContext.Current.User.IsInRole("Payroll_Input") ||
-                     HttpContext.Current.User.IsInRole("Payroll_Admin") ||
-                     HttpContext.Current.User.IsInRole("Payroll_Process") ||
-                     HttpContext.Current.User.IsInRole("Payroll_Approver") ||
-                     HttpContext.Current.User.IsInRole("Payroll_Report") ||
-                     HttpContext.Current.User.IsInRole("Payroll_View"))
-                {
-                    @Html.Partial("_Payroll")
-                }
-                @if (HttpContext.Current.User.IsInRole("Project_Admin") ||
-                     HttpContext.Current.User.IsInRole("Construction_Project_Estimation") ||
-                     HttpContext.Current.User.IsInRole("Construction_Costing") ||
-                     HttpContext.Current.User.IsInRole("Construction_Billing") ||
-                     HttpContext.Current.User.IsInRole("Construction_Contract_Management") ||
-                     HttpContext.Current.User.IsInRole("Construction_Scheduling") ||
-                     HttpContext.Current.User.IsInRole("Construction_Document") ||
-                     HttpContext.Current.User.IsInRole("Project_Report"))
-                {
+    @if (HttpContext.Current.User.IsInRole("Archive_Admin") ||
+         HttpContext.Current.User.IsInRole("Archive_Report") ||
+         HttpContext.Current.User.IsInRole("Archive_User"))
+    {
+        @*@Html.Partial("_Archive")*@
+    }
 
-                }
+    @if (HttpContext.Current.User.IsInRole("Payroll_Input") ||
+         HttpContext.Current.User.IsInRole("Payroll_Admin") ||
+         HttpContext.Current.User.IsInRole("Payroll_Process") ||
+         HttpContext.Current.User.IsInRole("Payroll_Approver") ||
+         HttpContext.Current.User.IsInRole("Payroll_Report") ||
+         HttpContext.Current.User.IsInRole("Payroll_View"))
+    {
+        @Html.Partial("_Payroll")
+    }
+    @if (HttpContext.Current.User.IsInRole("Project_Admin") ||
+         HttpContext.Current.User.IsInRole("Construction_Project_Estimation") ||
+         HttpContext.Current.User.IsInRole("Construction_Costing") ||
+         HttpContext.Current.User.IsInRole("Construction_Billing") ||
+         HttpContext.Current.User.IsInRole("Construction_Contract_Management") ||
+         HttpContext.Current.User.IsInRole("Construction_Scheduling") ||
+         HttpContext.Current.User.IsInRole("Construction_Document") ||
+         HttpContext.Current.User.IsInRole("Project_Report"))
+    {
 
-                @if (HttpContext.Current.User.IsInRole("Construction_Admin"))
-                {
-                    @Html.Partial("_Construction")
-                }
+    }
 
-                @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin") ||
-                     HttpContext.Current.User.IsInRole("Account_Payable_Approver") ||
-                     HttpContext.Current.User.IsInRole("Account_Payable_Invoice") ||
-                     HttpContext.Current.User.IsInRole("Account_Payable_Payment") ||
-                     HttpContext.Current.User.IsInRole("Account_Payable_Report") ||
-                     HttpContext.Current.User.IsInRole("Account_Payable_View") ||
-                     HttpContext.Current.User.IsInRole("Account_Receivable_Admin") ||
-                     HttpContext.Current.User.IsInRole("Account_Receivable_Collection") ||
-                     HttpContext.Current.User.IsInRole("Account_Receivable_Invoice") ||
-                     HttpContext.Current.User.IsInRole("Account_Receivable_Report") ||
-                     HttpContext.Current.User.IsInRole("Account_Receivable_view") ||
-                     HttpContext.Current.User.IsInRole("Account_Receivable_Approver") ||
-                     HttpContext.Current.User.IsInRole("Bank_Reconciliation_Admin") ||
-                     HttpContext.Current.User.IsInRole("Bank_Reconciliation_report") ||
-                     HttpContext.Current.User.IsInRole("Bank_Reconciliation_User") ||
-                     HttpContext.Current.User.IsInRole("Bank_Reconciliation_View") ||
-                     HttpContext.Current.User.IsInRole("General_Ledger_Admin") ||
-                     HttpContext.Current.User.IsInRole("GeneralLedgerApprover") ||
-                     HttpContext.Current.User.IsInRole("General_Ledger_Report") ||
-                     HttpContext.Current.User.IsInRole("General_Ledger_User") ||
-                     HttpContext.Current.User.IsInRole("GeneralLedgerView") ||
-                     HttpContext.Current.User.IsInRole("General_SubLedger_Transfer") ||
-                     HttpContext.Current.User.IsInRole("Finance_Admin") ||
-                     HttpContext.Current.User.IsInRole("Finance_Report") ||
-                     HttpContext.Current.User.IsInRole("Finance_Checker"))
+    @if (HttpContext.Current.User.IsInRole("Construction_Admin"))
+    {
+        @Html.Partial("_Construction")
+    }
 
-                {
-                    @Html.Partial("_Finance")
-                }
+    @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Approver") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Invoice") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Payment") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Report") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_View") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Admin") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Collection") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Invoice") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Report") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_view") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Approver") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_Admin") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_report") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_User") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_View") ||
+         HttpContext.Current.User.IsInRole("General_Ledger_Admin") ||
+         HttpContext.Current.User.IsInRole("GeneralLedgerApprover") ||
+         HttpContext.Current.User.IsInRole("General_Ledger_Report") ||
+         HttpContext.Current.User.IsInRole("General_Ledger_User") ||
+         HttpContext.Current.User.IsInRole("GeneralLedgerView") ||
+         HttpContext.Current.User.IsInRole("General_SubLedger_Transfer") ||
+         HttpContext.Current.User.IsInRole("Finance_Admin") ||
+         HttpContext.Current.User.IsInRole("Finance_Report") ||
+         HttpContext.Current.User.IsInRole("Finance_Checker"))
+
+    {
+        @Html.Partial("_Finance")
+    }
 
 
-                @if (HttpContext.Current.User.IsInRole("Budget") ||
-                     HttpContext.Current.User.IsInRole("Budget_Admin") ||
-                     HttpContext.Current.User.IsInRole("Budget_Report")
-                    )
-                {
-                    @*@Html.Partial("_Budget")*@
-                }
+    @if (HttpContext.Current.User.IsInRole("Budget") ||
+         HttpContext.Current.User.IsInRole("Budget_Admin") ||
+         HttpContext.Current.User.IsInRole("Budget_Report")
+        )
+    {
+        @*@Html.Partial("_Budget")*@
+    }
 
-                @*@if (HttpContext.Current.User.IsInRole("Purchase") ||
+    @*@if (HttpContext.Current.User.IsInRole("Purchase") ||
         HttpContext.Current.User.IsInRole("Purchase_Report") ||
         HttpContext.Current.User.IsInRole("Purchase_Admin")
         )*@
 
-                @Html.Partial("_Procurement")
-
-                @Html.Partial("_Inventory")
-
-                @Html.Partial("_FixedAsset")
-                @Html.Partial("_Budget")
-                @Html.Partial("_CRM")
-                @Html.Partial("_Fleet")
-                @Html.Partial("_Maintenance")
-                @Html.Partial("_SelfService")
-                @*@Html.Partial("_PrintingEstimation")*@
-                @*@Html.Partial("_ProductionFollowUp")
-        @Html.Partial("_JobCosting")
-
-        @Html.Partial("_CMS")
-        @Html.Partial("_InformationDesk")*@
-                @Html.Partial("_Printing")
-                @Html.Partial("_Manufacturing")
-                @Html.Partial("_JobCosting")
-
-
-
-
-
-                @*@Html.Partial("_Project")*@
-
-                @if (HttpContext.Current.User.IsInRole("Admin") ||
-                     HttpContext.Current.User.IsInRole("Admin_Regional") ||
-                     HttpContext.Current.User.IsInRole("Admin_Module"))
-                {
-                    @Html.Partial("_Settings")
-                }
-
-            </ul>
-
-            <!-- /.nav-list -->
-
-            <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
-                <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
-            </div>
-
-            <script type="text/javascript">
-                try { ace.settings.check('sidebar', 'collapsed') } catch (e) { }
-            </script>
-        </div>
-
-
-
-        <div class="main-content">
-            <div class="main-content-inner">
-
-
-                <div class="page-content">
-                    <div class="ace-settings-container" id="ace-settings-container">
-                        <div class="btn btn-app btn-xs btn-warning ace-settings-btn" id="ace-settings-btn">
-                            <i class="ace-icon fa fa-cog bigger-130"></i>
-                        </div>
-
-                        <div class="ace-settings-box clearfix" id="ace-settings-box">
-
-                            <div class="pull-left width-100">
-                                @{
-                                    var culture = System.Threading.Thread.CurrentThread.CurrentUICulture.Name.ToLowerInvariant();
-                                }
-
-                                @helper selected(string c, string culture)
-                                {
-                                    if (c == culture)
-                                    {
-                                        @:checked="checked"
-                                    }
-                                }
-                                @using (Html.BeginForm("SetCulture", "Home", new { area = "" }))
-                                {
-                                    <fieldset>
-                                        <h5>Language</h5>
-                                        <div class="control-group">
-                                            <div class="controls">
-                                                <label for="am">
-                                                    <input name="culture" id="am" value="am" class="language" type="radio" @selected("am", culture) /> አማርኛ
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="control-group">
-                                            <div class="controls">
-                                                <label for="or">
-                                                    <input name="culture" id="ti" value="ti" class="language" type="radio" @selected("ti", culture) /> ትግርኛ
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <div class="control-group">
-                                            <div class="controls">
-                                                <label for="or">
-                                                    <input name="culture" id="or" value="or" class="language" type="radio" @selected("or", culture) /> Afaan Oromo
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="control-group">
-                                            <div class="controls">
-                                                <label for="en-us">
-                                                    <input name="culture" id="en-us" value="en-us" class="language" type="radio" @selected("en-us", culture) /> English
-                                                </label>
-                                            </div>
-                                        </div>
-
-
-                                    </fieldset>
-                                }
-                            </div><!-- /.pull-left -->
-
-                            <div class="pull-left width-50">
-
-                                <hr />
-                                <div class="ace-settings-item">
-
-                                    <a href="~/UserProfile">Switch Branch</a>
-                                </div>
-
-                                @*<div class="ace-settings-item">
-                                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-rtl"/>
-                                        <label class="lbl" for="ace-settings-rtl"> Right To Left (rtl)</label>
-                                    </div>
-
-                                    <div class="ace-settings-item">
-                                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-add-container"/>
-                                        <label class="lbl" for="ace-settings-add-container">
-                                            Inside
-                                            <b>.container</b>
-                                        </label>
-                                    </div>*@
-
-                            </div><!-- /.pull-left -->
-                            @*
-                                <div class="pull-left width-50">
-                                    <div class="ace-settings-item">
-                                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-hover"/>
-                                        <label class="lbl" for="ace-settings-hover"> Submenu on Hover</label>
-                                    </div>
-
-                                    <div class="ace-settings-item">
-                                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-compact"/>
-                                        <label class="lbl" for="ace-settings-compact"> Compact Sidebar</label>
-                                    </div>
-
-                                    <div class="ace-settings-item">
-                                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-highlight"/>
-                                        <label class="lbl" for="ace-settings-highlight"> Alt. Active Item</label>
-                                    </div>
-
-                                </div><!-- /.pull-left -->*@
-                        </div><!-- /.ace-settings-box -->
-                    </div><!-- /.ace-settings-container -->
-
-
-
-                    <div class="row">
-                        <div class="col-xs-12">
-
-                            <span id="loading-image"><i class=" fa fa-spinner fa-spin" style="color: orange;font-size: 30px"></i></span>
-
-                            <!-- PAGE CONTENT BEGINS -->
-                            @RenderBody()
-
-                            <!-- PAGE CONTENT ENDS -->
-                        </div><!-- /.col -->
-                    </div><!-- /.row -->
-                </div><!-- /.page-content -->
-            </div>
-        </div><!-- /.main-content -->
-
-        <div class="footer">
-            <div class="footer-inner">
-                <div class="footer-content">
-                    <span class="bigger-120">
-                        EXCEED ERP&nbsp;&nbsp;
-                        <span class="blue bolder"> &copy; <a href="http://www.exceeditsystems.com">EXCEED  IT Systems</a></span>
-                        2011-@DateTime.Today.Year
-                    </span>
-
-                    &nbsp; &nbsp;
-
-                </div>
-            </div>
-        </div>
-
-        <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
-            <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
-        </a>
-    </div><!-- /.main-container -->
-    <!-- basic scripts -->
-    <!--[if !IE]> -->
-    @*<script src="~/Content/ace/js/jquery.2.1.1.min.js"></script>*@
-
-    <!-- <![endif]-->
-    <!--[if IE]>
-    <script src="~/Content/ace/js/jquery.1.11.1.min.js"></script>
-    <![endif]-->
-    <!--[if !IE]> -->
-    <script type="text/javascript">
-        window.jQuery || document.write("<script src='~/Content/ace/js/jquery.min.js'>" + "<" + "/script>");
-    </script>
-
-    <!-- <![endif]-->
-    <!--[if IE]>
-    <script type="text/javascript">
-        window.jQuery || document.write("<script src='~/Content/ace/js/jquery1x.min.js'>"+"<"+"/script>");
-    </script>
-    <![endif]-->
-    @*<script type="text/javascript">
-            if ('ontouchstart' in document.documentElement) document.write("<script src='~/Content/ace/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
-        </script>*@
-
-    <script src="~/Content/ace/js/jquery.mobile.custom.min.js"></script>
-    <script src="~/Content/ace/js/bootstrap.min.js"></script>
-
-
-
-    <!-- page specific plugin scripts -->
-    <!--[if lte IE 8]>
-      <script src="~/Content/ace/js/excanvas.min.js"></script>
-    <![endif]-->
-    <script src="~/Content/ace/js/jquery-ui.custom.min.js"></script>
-    <script src="~/Content/ace/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="~/Content/ace/js/jquery.easypiechart.min.js"></script>
-    <script src="~/Content/ace/js/jquery.sparkline.min.js"></script>
-    <script src="~/Content/ace/js/jquery.flot.min.js"></script>
-    <script src="~/Content/ace/js/jquery.flot.pie.min.js"></script>
-    <script src="~/Content/ace/js/jquery.flot.resize.min.js"></script>
-
-    <!-- ace scripts -->
-    <script src="~/Content/ace/js/ace-elements.min.js"></script>
-    <script src="~/Content/ace/js/ace.min.js"></script>
-
-
-    <link href="~/Content/Jqury-ui/jquery-ui.css" rel="stylesheet" />
-    @*<script src="~/Content/Jqury-ui/jquery-1.10.2.js"></script>*@
-    <script src="~/Content/Jqury-ui/jquery-ui.js"></script>
-
-
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
-
-    <script type="text/javascript" src="~/Content/orgChart/js/es6-promise.auto.min.js"></script>
-    <script type="text/javascript" src="~/Content/orgChart/js/html2canvas.min.js"></script>
-    <script type="text/javascript" src="~/Content/orgChart/js/jspdf.debug.js"></script>
-    <script type="text/javascript" src="~/Content/orgChart/js/jquery.orgchart.js"></script>
-    <script type="text/javascript" src="~/Content/orgChart/js/scripts.js"></script>
-    @*<script src="~/Scripts/sounds.js"></script>*@
-
-
-    <script src="~/Scripts/js.cookie.js"></script>
-    <script src="~/Scripts/Custom.js"></script>
-
-
-
-
-
-
-
-    <script ype="text/javascript">
-
-        $('#loading-image').bind('ajaxStart', function () {
-            $(this).show();
-        }).bind('ajaxStop', function () {
-            $(this).hide();
-        });
-
-        $(document).ready(function () {
-
-
-            $('#loading-image').hide();
-
-            toastr.options = {
-                "closeButton": true,
-                "debug": true,
-                "newestOnTop": true,
-                "progressBar": false,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            }
-            //toastr.warning('This is an information notification provided by toastr.');
-
-        });
-
-
-        $(function () {
-            //localization
-            $("input.language:radio").click(function () {
-                $(this).parents("form").submit();
-            });
-
-        });
-
-
-        //signalr
-
-        $(document).ready(function () {
-
-            // playSound('ping');
-
-            //function setTotalNotification(totalNotif) {
-            //    //console.log(totalNotif);
-
-            //    document.getElementById("myNotification").textContent = totalNotif.Count;
-
-
-            //    $("#messages").html("<p> Total Notif:" + totalNotif + "</p>");
-
-            //    //dropdown UI
-            //    $("#notification").empty();
-            //    //count
-            //    var count = ' <li class="dropdown-header"><p><i class="ace-icon fa fa-exclamation-triangle"></i>' + totalNotif.Count +' &nbsp;&nbsp; Notifications &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../Notification/MarkReadAll" align="right">Mark All as Read </a></p></li>';
-            //    $('#notification').append(count);
-            //    //list notifications
-            //    for(var i = 0; i < totalNotif.List.length; i++) {
-            //        var list = '<li><a href="' + totalNotif.List[i].Url+'"><i class="fa fa-bell"></i>' + truncate(totalNotif.List[i].Message,100) + '</a></li>';
-            //        $('#notification').append(list);
-
-            //        if (i === 9)
-            //            break;
-            //    }
-            //    //see all notif
-            //    var seeall = '  <li class="dropdown-footer"><a href="../Notification/Notification">See all notifications<i class="ace-icon fa fa-arrow-right"></i></a></li>';
-            //    $('#notification').append(seeall);
-            //}
-
-            //var hub = $.connection.notificationHub;
-
-            ////Client Call
-            //hub.client.broadcaastNotif = function (totalNotif) {
-            //   setTotalNotification(totalNotif);
-            //};
-
-
-            // $.connection.hub.start().done(function () { });
-
-            //$.connection.hub.start()
-            //    .done(function () {
-            //        console.log("Hub Connected!" + Date.now());
-
-            //        //Server Call
-            //        hub.server.getNotification();
-
-            //    })
-            //    .fail(function () {
-            //        console.log("Could not Connect!");
-            //      });
-
-            //end of doc ready
-        });
-
-
-
-
-
-        window.addEventListener('focus', function () {
-            //
-        });
-
-        window.addEventListener('blur', function () {
-            //$
-        });
-
-        function truncate(text, length) {
-            var shortText = jQuery.trim(text).substring(0, length)
-                .split(" ").slice(0, -1).join(" ") + "...";
+    @Html.Partial("_Procurement")
+
+    @Html.Partial("_Inventory")
+
+    @Html.Partial("_FixedAsset")
+    @Html.Partial("_Budget")
+    @Html.Partial("_CRM")
+    @Html.Partial("_Fleet")
+    @Html.Partial("_Maintenance")
+    @Html.Partial("_Plan")
+    @*@Html.Partial("_ProductionFollowUp")*@
+    @Html.Partial("_JobCosting")
+    @Html.Partial("_Manufacturing")
+    @Html.Partial("_SelfService")
+    @Html.Partial("_CMS")
+    @Html.Partial("_InformationDesk")
+
+
+
+
+
+    @Html.Partial("_Printing")
+
+    @if (HttpContext.Current.User.IsInRole("Admin") ||
+         HttpContext.Current.User.IsInRole("Admin_Regional") ||
+         HttpContext.Current.User.IsInRole("Admin_Module"))
+    {
+        @Html.Partial("_Settings")
+    }
+
+</ul>
+	   
+		<!-- /.nav-list -->
+
+		<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+			<i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+		</div>
+
+		<script type="text/javascript">
+			try { ace.settings.check('sidebar', 'collapsed') } catch (e) { }
+		</script>
+		</div>
+
+
+
+		<div class="main-content">
+			<div class="main-content-inner">
+
+
+				<div class="page-content">
+					<div class="ace-settings-container" id="ace-settings-container">
+						<div class="btn btn-app btn-xs btn-warning ace-settings-btn" id="ace-settings-btn">
+							<i class="ace-icon fa fa-cog bigger-130"></i>
+						</div>
+
+						<div class="ace-settings-box clearfix" id="ace-settings-box">
+
+							<div class="pull-left width-100">
+								@{
+									var culture = System.Threading.Thread.CurrentThread.CurrentUICulture.Name.ToLowerInvariant();
+								}
+
+								 @helper selected(string c, string culture)
+								{
+									if (c == culture)
+									{
+									 @:checked="checked"
+									}
+								}
+								@using (Html.BeginForm("SetCulture", "Home", new { area = "" }))
+								{
+									<fieldset>
+										<h5>Language</h5>
+										<div class="control-group">
+											<div class="controls">
+												<label for="am">
+													<input name="culture" id="am" value="am" class="language" type="radio" @selected("am", culture) /> አማርኛ
+												</label>
+											</div>
+										</div>
+										<div class="control-group">
+											<div class="controls">
+												<label for="or">
+													<input name="culture" id="ti" value="ti" class="language" type="radio" @selected("ti", culture) /> ትግርኛ
+												</label>
+											</div>
+										</div>
+
+										<div class="control-group">
+											<div class="controls">
+												<label for="or">
+													<input name="culture" id="or" value="or" class="language" type="radio" @selected("or", culture) /> Afaan Oromo
+												</label>
+											</div>
+										</div>
+										<div class="control-group">
+											<div class="controls">
+												<label for="en-us">
+													<input name="culture" id="en-us" value="en-us" class="language" type="radio" @selected("en-us", culture) /> English
+												</label>
+											</div>
+										</div>
+
+
+									</fieldset>
+								}
+							</div><!-- /.pull-left -->
+						
+							<div class="pull-left width-50">
+							
+								<hr/>
+								<div class="ace-settings-item">
+									
+									<a href="~/UserProfile">Switch Branch</a>
+								</div>
+
+								@*<div class="ace-settings-item">
+									<input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-rtl"/>
+									<label class="lbl" for="ace-settings-rtl"> Right To Left (rtl)</label>
+								</div>
+
+								<div class="ace-settings-item">
+									<input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-add-container"/>
+									<label class="lbl" for="ace-settings-add-container">
+										Inside
+										<b>.container</b>
+									</label>
+								</div>*@
+
+							</div><!-- /.pull-left -->
+							@*
+							<div class="pull-left width-50">
+								<div class="ace-settings-item">
+									<input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-hover"/>
+									<label class="lbl" for="ace-settings-hover"> Submenu on Hover</label>
+								</div>
+
+								<div class="ace-settings-item">
+									<input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-compact"/>
+									<label class="lbl" for="ace-settings-compact"> Compact Sidebar</label>
+								</div>
+
+								<div class="ace-settings-item">
+									<input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-highlight"/>
+									<label class="lbl" for="ace-settings-highlight"> Alt. Active Item</label>
+								</div>
+
+							</div><!-- /.pull-left -->*@
+						</div><!-- /.ace-settings-box -->
+					</div><!-- /.ace-settings-container -->
+
+
+				   
+					<div class="row">
+						<div class="col-xs-12">
+						   
+							<span id="loading-image"><i class=" fa fa-spinner fa-spin" style="color: orange;font-size: 30px"></i></span>
+							
+							<!-- PAGE CONTENT BEGINS -->
+							@RenderBody()
+
+							<!-- PAGE CONTENT ENDS -->
+						</div><!-- /.col -->
+					</div><!-- /.row -->
+				</div><!-- /.page-content -->
+			</div>
+		</div><!-- /.main-content -->
+
+		<div class="footer">
+			<div class="footer-inner">
+				<div class="footer-content">
+					<span class="bigger-120">
+						EXCEED ERP&nbsp;&nbsp;
+						<span class="blue bolder"> &copy; <a href="http://www.exceeditsystems.com">EXCEED  IT Systems</a></span>
+						2011-@DateTime.Today.Year
+					</span>
+
+					&nbsp; &nbsp;
+
+				</div>
+			</div>
+		</div>
+
+		<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+			<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+		</a>
+	</div><!-- /.main-container -->
+	<!-- basic scripts -->
+	<!--[if !IE]> -->
+	@*<script src="~/Content/ace/js/jquery.2.1.1.min.js"></script>*@
+
+	<!-- <![endif]-->
+	<!--[if IE]>
+	<script src="~/Content/ace/js/jquery.1.11.1.min.js"></script>
+	<![endif]-->
+	<!--[if !IE]> -->
+	<script type="text/javascript">
+		window.jQuery || document.write("<script src='~/Content/ace/js/jquery.min.js'>" + "<" + "/script>");
+	</script>
+
+	<!-- <![endif]-->
+	<!--[if IE]>
+	<script type="text/javascript">
+		window.jQuery || document.write("<script src='~/Content/ace/js/jquery1x.min.js'>"+"<"+"/script>");
+	</script>
+	<![endif]-->
+	@*<script type="text/javascript">
+			if ('ontouchstart' in document.documentElement) document.write("<script src='~/Content/ace/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+		</script>*@
+
+	<script src="~/Content/ace/js/jquery.mobile.custom.min.js"></script>
+	<script src="~/Content/ace/js/bootstrap.min.js"></script>
+
+
+
+	<!-- page specific plugin scripts -->
+	<!--[if lte IE 8]>
+	  <script src="~/Content/ace/js/excanvas.min.js"></script>
+	<![endif]-->
+	<script src="~/Content/ace/js/jquery-ui.custom.min.js"></script>
+	<script src="~/Content/ace/js/jquery.ui.touch-punch.min.js"></script>
+	<script src="~/Content/ace/js/jquery.easypiechart.min.js"></script>
+	<script src="~/Content/ace/js/jquery.sparkline.min.js"></script>
+	<script src="~/Content/ace/js/jquery.flot.min.js"></script>
+	<script src="~/Content/ace/js/jquery.flot.pie.min.js"></script>
+	<script src="~/Content/ace/js/jquery.flot.resize.min.js"></script>
+
+	<!-- ace scripts -->
+	<script src="~/Content/ace/js/ace-elements.min.js"></script>
+	<script src="~/Content/ace/js/ace.min.js"></script>
+
+
+	<link href="~/Content/Jqury-ui/jquery-ui.css" rel="stylesheet" />
+	@*<script src="~/Content/Jqury-ui/jquery-1.10.2.js"></script>*@
+	<script src="~/Content/Jqury-ui/jquery-ui.js"></script>
+
+
+	<script src="~/Scripts/jquery.validate.min.js"></script>
+	<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+	
+		<script type="text/javascript" src="~/Content/orgChart/js/es6-promise.auto.min.js"></script>
+		<script type="text/javascript" src="~/Content/orgChart/js/html2canvas.min.js"></script>
+		<script type="text/javascript" src="~/Content/orgChart/js/jspdf.debug.js"></script>
+	 <script type="text/javascript" src="~/Content/orgChart/js/jquery.orgchart.js"></script>
+	 <script type="text/javascript" src="~/Content/orgChart/js/scripts.js"></script>
+	@*<script src="~/Scripts/sounds.js"></script>*@
+  
+
+	<script src="~/Scripts/js.cookie.js"></script>
+	<script src="~/Scripts/Custom.js"></script>
+
+
+
+
+	   
+
+
+		<script ype="text/javascript">
+			
+	$('#loading-image').bind('ajaxStart', function () {
+		$(this).show();
+	}).bind('ajaxStop', function () {
+		$(this).hide();
+	});
+
+	$(document).ready(function () {
+
+				
+		$('#loading-image').hide();
+
+		toastr.options = {
+			"closeButton": true,
+			"debug": true,
+			"newestOnTop": true,
+			"progressBar": false,
+			"positionClass": "toast-top-right",
+			"preventDuplicates": false,
+			"onclick": null,
+			"showDuration": "300",
+			"hideDuration": "1000",
+			"timeOut": "5000",
+			"extendedTimeOut": "1000",
+			"showEasing": "swing",
+			"hideEasing": "linear",
+			"showMethod": "fadeIn",
+			"hideMethod": "fadeOut"
+		}
+		//toastr.warning('This is an information notification provided by toastr.');
+	   
+	});
+
+
+	$(function () {
+		//localization
+		$("input.language:radio").click(function () {
+			$(this).parents("form").submit(); 
+		});
+		   
+	});
+
+
+	//signalr
+
+	  $(document).ready(function () {
+
+		 //prevent #
+            $('input').on('keypress', function (event) {
+               var regex = new RegExp("^[#]+$");
+               var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+               if (regex.test(key)) {
+                   event.preventDefault();
+                   return false;
+               }
+           });
+
+		//function setTotalNotification(totalNotif) {
+		//    //console.log(totalNotif);
+
+		//    document.getElementById("myNotification").textContent = totalNotif.Count;
+			
+		 
+		//    $("#messages").html("<p> Total Notif:" + totalNotif + "</p>");
+
+		//    //dropdown UI
+		//    $("#notification").empty();
+		//    //count
+		//    var count = ' <li class="dropdown-header"><p><i class="ace-icon fa fa-exclamation-triangle"></i>' + totalNotif.Count +' &nbsp;&nbsp; Notifications &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../Notification/MarkReadAll" align="right">Mark All as Read </a></p></li>'; 
+		//    $('#notification').append(count);
+		//    //list notifications
+		//    for(var i = 0; i < totalNotif.List.length; i++) { 
+		//        var list = '<li><a href="' + totalNotif.List[i].Url+'"><i class="fa fa-bell"></i>' + truncate(totalNotif.List[i].Message,100) + '</a></li>';
+		//        $('#notification').append(list);
+				
+		//        if (i === 9)
+		//            break;
+		//    }
+		//    //see all notif
+		//    var seeall = '  <li class="dropdown-footer"><a href="../Notification/Notification">See all notifications<i class="ace-icon fa fa-arrow-right"></i></a></li>';
+		//    $('#notification').append(seeall);
+		//}
+
+		//var hub = $.connection.notificationHub;
+
+		////Client Call
+		//hub.client.broadcaastNotif = function (totalNotif) {
+		//   setTotalNotification(totalNotif);
+		//};
+
+			
+	   // $.connection.hub.start().done(function () { });
+
+		//$.connection.hub.start()
+		//    .done(function () {
+		//        console.log("Hub Connected!" + Date.now());
+
+		//        //Server Call
+		//        hub.server.getNotification();
+
+		//    })
+		//    .fail(function () {
+		//        console.log("Could not Connect!");
+		//      });
+
+		  //end of doc ready
+	});
+
+
+
+
+
+	window.addEventListener('focus', function() {
+	   //
+	});
+
+	window.addEventListener('blur', function () {
+		//$
+	});
+
+		function truncate(text,length) {
+			var shortText = jQuery.trim(text).substring(0, length)
+				.split(" ").slice(0, -1).join(" ") + "...";
 
             return shortText;
-        }
+            }
 
-        $(document).ready(function () {
-            // Initialize the Kendo Notification
-            $("#error_notif").kendoNotification({
-                position: {
-                    pinned: true,
-                    top: 30,
-                    right: 30
-                },
-                autoHideAfter: 3000,
-                stacking: "down",
-                templates: [{
-                    type: "error",
-                    template: "<div class='notification-error'>#= message #</div>"
-                }]
+            $(document).ready(function () {
+                // Initialize the Kendo Notification
+                $("#error_notif").kendoNotification({
+                    position: {
+                        pinned: true,
+                        top: 30,
+                        right: 30
+                    },
+                    autoHideAfter: 3000,
+                    stacking: "down",
+                    templates: [{
+                        type: "error",
+                        template: "<div class='notification-error'>#= message #</div>"
+                    }]
+                });
             });
-        });
 
-        // Global onSelect function
-        function globalOnSelect(e, allowedExtensions, maxFileSize) {
-            var file = e.files[0];
-            var fileExtension = file.extension.toLowerCase();
-            var notification = $("#error_notif").data("kendoNotification");
+            // Global onSelect function
+            function globalOnSelect(e, allowedExtensions, maxFileSize) {
+                var file = e.files[0];
+                var fileExtension = file.extension.toLowerCase();
+                var notification = $("#error_notif").data("kendoNotification");
 
-            // Check file type
-            if (!allowedExtensions.includes(fileExtension)) {
-                e.preventDefault(); // Cancel the upload
-                notification.show({ message: "Invalid file type. Only " + allowedExtensions.join(", ") + " files are allowed." }, "error");
-                return;
+                // Check file type
+                if (!allowedExtensions.includes(fileExtension)) {
+                    e.preventDefault(); // Cancel the upload
+                    notification.show({ message: "Invalid file type. Only " + allowedExtensions.join(", ") + " files are allowed." }, "error");
+                    return;
+                }
+
+                // Check file size
+                if (file.size > maxFileSize) {
+                    e.preventDefault(); // Cancel the upload
+                    notification.show({ message: "File size exceeds the " + (maxFileSize / (1024 * 1024)) + " MB limit." }, "error");
+                }
             }
 
-            // Check file size
-            if (file.size > maxFileSize) {
-                e.preventDefault(); // Cancel the upload
-                notification.show({ message: "File size exceeds the " + (maxFileSize / (1024 * 1024)) + " MB limit." }, "error");
+            function onUploadError(e) {
+                var notification = $("#error_notif").data("kendoNotification");
+
+                // Display server error message
+                if (e.XMLHttpRequest) {
+                    var errorMessage = e.XMLHttpRequest.responseJSON ? e.XMLHttpRequest.responseJSON.message : "An error occurred during upload.";
+                    notification.show({ message: errorMessage }, "error");
+                }
             }
-        }
-
-        function onUploadError(e) {
-            var notification = $("#error_notif").data("kendoNotification");
-
-            // Display server error message
-            if (e.XMLHttpRequest) {
-                var errorMessage = e.XMLHttpRequest.responseJSON ? e.XMLHttpRequest.responseJSON.message : "An error occurred during upload.";
-                notification.show({ message: errorMessage }, "error");
-            }
-        }
 
 
 
-        function sendForgery() {
-            return kendo.antiForgeryTokens();
-        }
-
-    </script>
+	 function sendForgery() {
+     return kendo.antiForgeryTokens();
+}
+		
+	 
+</script>
 
 
 

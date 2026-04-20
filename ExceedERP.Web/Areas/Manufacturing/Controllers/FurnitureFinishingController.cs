@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -9,6 +9,9 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Manufacturing.Production;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
+using ExceedERP.Helpers.Furniture;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 {
@@ -44,7 +47,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult FurnitureJobOrderProductionsFinishing_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<FurnitureJobOrderProduction> furniturejoborderproductions = db.FurnitureJobOrderProductions.Where(x => x.IsSendForFinishing);
-            DataSourceResult result = furniturejoborderproductions.ToDataSourceResult(request, furnitureJobOrderProduction => new {
+            DataSourceResult result = furniturejoborderproductions.ToDataSourceResult(request, furnitureJobOrderProduction => new
+            {
                 FurnitureJobOrderProductionId = furnitureJobOrderProduction.FurnitureJobOrderProductionId,
                 CustomerId = furnitureJobOrderProduction.CustomerId,
                 JobTypeId = furnitureJobOrderProduction.JobTypeId,
@@ -98,16 +102,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 var jobOrder = db.FurnitureJobOrderForms.FirstOrDefault(x => x.FurnitureJobOrderFormId == production.FurnitureJobOrderFormId);
                 var jobItems = db.FurnitureJobOrderItems.Where(x => x.FurnitureJobOrderFormId == jobOrder.FurnitureJobOrderFormId).ToList();
-                
+                var result = FurnitureProductionHelper.GenerateItem(production, User.Identity.Name);
+                if (!result.Success)
+                {
+                    return Json(new { Success = false, Message = result.Message });
+                }
                 int i = 1;
                 foreach (var item in jobItems)
-                {                          
+                {
                     if (item.IsClosed)
                     {
                         i++;
                     }
                 }
-                if(i == jobItems.Count())
+                if (i == jobItems.Count())
                 {
                     jobOrder.JobClosed = true;
                     db.Entry(jobOrder).State = EntityState.Modified;
@@ -115,7 +123,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 var jobItem = db.FurnitureJobOrderItems.FirstOrDefault(x => x.FurnitureJobOrderFormId == jobOrder.FurnitureJobOrderFormId && x.JobNo == production.JobNo);
                 jobItem.IsClosed = true;
                 db.Entry(jobItem).State = EntityState.Modified;
-               
+
                 production.IsClosed = true;
                 production.ClosedBy = User.Identity.Name;
                 production.DateClosed = DateTime.Today;
@@ -123,6 +131,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 db.FurnitureJobOrderProductions.Attach(production);
                 db.Entry(production).State = EntityState.Modified;
                 db.SaveChanges();
+
+                
+               
                 response = new { Success = true, Message = "Furniture production closed successfully!" };
 
             }
@@ -133,6 +144,83 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return Json(response);
         }
         #endregion
+
+        private bool GenerateItems(FurnitureJobOrderProduction model)
+        {
+            var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.Name.ToLower().Contains("finishedgoods"));
+            if (itemCategory == null)
+                return false;
+            var jobType = db.FurnitureStandardJobTypes.FirstOrDefault(x => x.FurnitureStandardJobTypeId == model.JobTypeId);
+            if (jobType == null)
+                return false;
+            var item = new InventoryItem
+            {
+                ItemCategoryCode = db.ItemCategorys.FirstOrDefault(x => x.Name.ToLower().Contains("finishedgoods"))?.ItemCategoryCode ?? "",
+                SubCategoryCode = "",
+                ItemCode = model.JobNo,
+                Name = jobType?.JobTypeName ?? "",
+                UoMName = model.Unit,
+
+            };
+            db.InventoryItems.Add(item);
+            db.SaveChanges();
+            if (!Generate_GoodReceive(model, item)) return false;
+
+            return true;
+        }
+
+        private bool Generate_GoodReceive(FurnitureJobOrderProduction productionJob, InventoryItem item)
+        {
+
+            GoodReceive goodReceive = new GoodReceive()
+            {
+                StoreCode = db.InventoryStores.FirstOrDefault(x => x.Name.Contains("furniture"))?.StoreCode ?? "",
+                ReceiveDate = DateTime.Today,
+                GLPeriodId = db.GLPeriods.FirstOrDefault(x => x.DateFrom < DateTime.Today && x.DateTo > DateTime.Today)?.GLPeriodId ?? 0,
+                ReceiveTypeId = db.ReceiveTypes.FirstOrDefault(x => x.Type != GoodReceiveType.Other)?.ReceiveTypeId ?? 0,
+                ReceiveRef = "",
+                Reference = "",
+                SupplierId = "",
+                SupplierName = "",
+                SupplierInvoiceNo = "",
+            };
+            db.GoodReceives.Add(goodReceive);
+            db.SaveChanges();
+            if (!Generate_GoodReceiveItem(productionJob, item, goodReceive.GoodReceiveId)) return false;
+            return true;
+        }
+
+        private bool Generate_GoodReceiveItem(FurnitureJobOrderProduction productionJob, InventoryItem item, int id)
+        {
+            var jobOrder = db.FurnitureJobOrderForms.FirstOrDefault(x => x.FurnitureJobOrderFormId == productionJob.FurnitureJobOrderFormId);
+            if (jobOrder == null)
+                return false;
+            var JobOrderItem = db.FurnitureJobOrderItems.FirstOrDefault(x => x.JobNo == productionJob.JobNo);
+            if (jobOrder == null)
+                return false;
+            var glTaxRateId = db.FurnitureProformaInvoices
+                .FirstOrDefault(x => x.FurnitureProformaInvoiceId == jobOrder.FurnitureProformaInvoiceId)
+                ?.GLTaxRateID ?? 0;
+            GoodReceiveItem goodReceive = new GoodReceiveItem
+            {
+                ItemCategoryCode = "",
+                ItemCode = "",
+                UOM = JobOrderItem.UnitOfMeasurment,
+                Quantity = JobOrderItem.Quantity,
+                UnitPrice = JobOrderItem.UnitPriceBeforeVAT,
+                GLTaxRateID = glTaxRateId,
+                SubTotal = JobOrderItem.UnitPriceWithVAT,
+                TaxAmount = JobOrderItem.VAT,
+                Total = JobOrderItem.UnitPriceWithVAT * JobOrderItem.Quantity,
+                Specification = "",
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Now,
+                GoodReceiveId = id
+            };
+            db.GoodReceiveItems.Add(goodReceive);
+            db.SaveChanges();
+            return true;
+        }
 
         protected override void Dispose(bool disposing)
         {

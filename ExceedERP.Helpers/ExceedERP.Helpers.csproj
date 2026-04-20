@@ -49,9 +49,6 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -167,6 +164,7 @@
     <Compile Include="Fleet\FleetMaintenaceHelper.cs" />
     <Compile Include="Fleet\FleetRentHelper.cs" />
     <Compile Include="Fleet\FleetReportHelper.cs" />
+    <Compile Include="Furniture\FurnitureProductionHelper.cs" />
     <Compile Include="HealthAndInsurance\HealthAndInsuranceIsoDocumentHelper.cs" />
     <Compile Include="HR\HRHelper.cs" />
     <Compile Include="HR\HRMIsoDocumentHelper.cs" />
@@ -195,6 +193,8 @@
     <Compile Include="Printing\EstimationHelper.cs" />
     <Compile Include="Printing\MaterialWeight.cs" />
     <Compile Include="Printing\PaperSizeHelper.cs" />
+    <Compile Include="Printing\PrintCloseJobHelper.cs" />
+    <Compile Include="Printing\PrintMapper.cs" />
     <Compile Include="Printing\PrintSignitureAndSheet.cs" />
     <Compile Include="Printing\SectionUp.cs" />
     <Compile Include="Printing\VoucherLaborCost.cs" />
@@ -239,9 +239,6 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

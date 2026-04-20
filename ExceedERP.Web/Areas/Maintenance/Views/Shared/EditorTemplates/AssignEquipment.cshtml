@@ -5,7 +5,7 @@
       .DataValueField("PlateNumber").OptionLabel("Select")
              .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("AssignDDBind", "EquipmentRegistration").Data("filterEquipment"))
+                              dataSource.Read(read => read.Action("AssignDDBind", "EquipmentRegistration").Data("sendForgery").Data("filterEquipment"))
                                         .ServerFiltering(true);
                           }).CascadeFrom("CategoryRef").Filter(FilterType.Contains).AutoBind(true))
           

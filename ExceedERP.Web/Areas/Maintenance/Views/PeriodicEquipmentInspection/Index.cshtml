@@ -43,7 +43,7 @@
         .DataSource(dataSource => dataSource
         .Ajax()
         .PageSize(20)
-        .ServerOperation(false)
+       
                     .Model(model =>
                     {
                         model.Id(p => p.PeriodicEquipmentInspectionId);
@@ -52,10 +52,10 @@
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Read(read => read.Action("Inspections_Read", "PeriodicEquipmentInspection"))
-                    .Create(create => create.Action("Inspection_Create", "PeriodicEquipmentInspection"))
-                    .Update(update => update.Action("Inspection_Update", "PeriodicEquipmentInspection"))
-                    .Destroy(update => update.Action("Inspection_Destroy", "PeriodicEquipmentInspection"))
+                    .Read(read => read.Action("Inspections_Read", "PeriodicEquipmentInspection").Data("sendForgery"))
+                    .Create(create => create.Action("Inspection_Create", "PeriodicEquipmentInspection").Data("sendForgery"))
+                    .Update(update => update.Action("Inspection_Update", "PeriodicEquipmentInspection").Data("sendForgery"))
+                    .Destroy(update => update.Action("Inspection_Destroy", "PeriodicEquipmentInspection").Data("sendForgery"))
         )
 )
 

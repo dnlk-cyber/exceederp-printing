@@ -7,7 +7,7 @@
             .Filter("contains")
             .DataSource(dataSource =>
             {
-                dataSource.Read(read => read.Action("GetMechanics", "MaintenanceDataProvider")
+                dataSource.Read(read => read.Action("GetMechanics", "MaintenanceDataProvider").Data("sendForgery")
                 .Data("filterMechanics"))
                 .ServerFiltering(true);
             })

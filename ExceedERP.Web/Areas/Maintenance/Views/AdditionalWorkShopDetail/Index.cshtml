@@ -28,10 +28,10 @@
                         .RequestStart("onRequestStart(\"addional_#=ServiceCenterJobId#\")")
                         .RequestEnd("onRequestEnd(\"addional_#=ServiceCenterJobId#\")"))
 
-                        .Create(update => update.Action("Create", "AdditionalWorkShopDetail", new { Id = "#=ServiceCenterJobId#" }))
-                        .Read(read => read.Action("Read", "AdditionalWorkShopDetail", new { Id = "#=ServiceCenterJobId#" }))
-                        .Update(update => update.Action("Update", "AdditionalWorkShopDetail"))
-                        .Destroy(delete => delete.Action("Delete", "AdditionalWorkShopDetail"))
+                        .Create(update => update.Action("Create", "AdditionalWorkShopDetail", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
+                        .Read(read => read.Action("Read", "AdditionalWorkShopDetail", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("Update", "AdditionalWorkShopDetail").Data("sendForgery"))
+                        .Destroy(delete => delete.Action("Delete", "AdditionalWorkShopDetail").Data("sendForgery"))
 
 
                     )

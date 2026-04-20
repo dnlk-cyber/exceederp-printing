@@ -24,24 +24,22 @@
                 columns.Bound(e => e.Num).Title("#").Width(80);
                 columns.Bound(e => e.IsPM).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsPM? checked='checked': checked='' #/>");
                 columns.Bound(e => e.Source).Width(90);
-
                 columns.Bound(e => e.LicensePlate).Width(120);
                 columns.Bound(e => e.EquipmentName).Width(120);
                 columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(130);
                 columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customer"], "OrganizationCustomerID", "TradeName").Width(200);
-
                 columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(200);
                 if (GlobalHelper.IsMultipleBusinessUnit())
                 {
                     columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
                 }
+                columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
                 columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
                 columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
-                
                 columns.Bound(e => e.DateCreated).Title("Date Created").Format("{0:yyyy-MM-dd}").Width(100);
                 columns.Bound(e => e.OnlineApprovedTime).Title("Date Approved").Format("{0:yyyy-MM-dd}").Width(100);
+                columns.Bound(e => e.EstmatedCostAmount).Width(100);
                 columns.Bound(e => e.Status).Width(100);
-
                 columns.Bound(e => e.LicensePlate).Visible(false);
                 columns.Command(command =>
                 {
@@ -85,7 +83,7 @@
         })
         .DataSource(dataSource => dataSource
                 .Ajax()
-                .ServerOperation(false)
+                //.ServerOperation(false)
                 .Sort(x => x.Add(s => s.Num).Descending())
                 //.Group(g=>g.Add(c=>c.Source))
                 .PageSize(20)
@@ -97,15 +95,16 @@
                     model.Field(p => p.BranchId).Editable(false);
                     model.Field(p => p.BusinessUnitId).Editable(false);
                     model.Field(p => p.OrgStructureId).Editable(false);
+                    model.Field(p => p.EstmatedCostAmount).Editable(false);
                 })
                 .Events(ev => ev
                     .Error("error_handler(\"grid\")")
                     .RequestStart("onRequestStart(\"grid\")")
                     .RequestEnd("onRequestEnd(\"grid\")"))
-                .Create(update => update.Action("JobRequest_Create", "JobRequest"))
-                .Read(read => read.Action("JobRequest_Read", "JobRequest"))
-                .Update(update => update.Action("JobRequest_Update", "JobRequest"))
-                .Destroy(d => d.Action("JobRequest_Destroy", "JobRequest"))
+                .Create(update => update.Action("JobRequest_Create", "JobRequestSelfCare").Data("sendForgery"))
+                .Read(read => read.Action("JobRequest_Read", "JobRequestSelfCare").Data("sendForgery"))
+                .Update(update => update.Action("JobRequest_Update", "JobRequestSelfCare").Data("sendForgery"))
+                .Destroy(d => d.Action("JobRequest_Destroy", "JobRequestSelfCare").Data("sendForgery"))
             )
     //.Events(events => events.DataBound("dataBound"))
 )
@@ -168,10 +167,10 @@
                                                                                    .Error("error_handler(\"JobCauses_#=JobRequestId#\")")
                                                                                    .RequestStart("onRequestStart(\"JobCauses_#=JobRequestId#\")")
                                                                                    .RequestEnd("onRequestEnd(\"JobCauses_#=JobRequestId#\")"))
-                                                                              .Create(create => create.Action("JobCauses_Create", "JobCauses", new { Id = "#=JobRequestId#" }))
-                                                                              .Read(read => read.Action("JobCauses_Read", "JobCauses", new { Id = "#=JobRequestId#" }))
-                                                                              .Update(update => update.Action("JobCauses_Update", "JobCauses"))
-                                                                              .Destroy(d => d.Action("JobCauses_Destroy", "JobCauses"))
+                                                                              .Create(create => create.Action("JobCauses_Create", "JobCauses", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                              .Read(read => read.Action("JobCauses_Read", "JobCauses", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                              .Update(update => update.Action("JobCauses_Update", "JobCauses").Data("sendForgery"))
+                                                                              .Destroy(d => d.Action("JobCauses_Destroy", "JobCauses").Data("sendForgery"))
                                                                           )
                                                                           .ToClientTemplate())
                                         </text>
@@ -203,9 +202,9 @@
                                                                                     .Error("error_handler(\"JobServicegrid_#=JobRequestId#\")")
                                                                                     .RequestStart("onRequestStart(\"JobServicegrid_#=JobRequestId#\")")
                                                                                     .RequestEnd("onRequestEnd(\"JobServicegrid_#=JobRequestId#\")"))
-                                                                            .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobRequestId#" }))
-                                                                              .Read(read => read.Action("RequestService", "JobOrderDetail", new { jobOrderID = "#=JobRequestId#" }))
-                                                              .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+                                                                            .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                              .Read(read => read.Action("RequestService", "JobOrderDetail", new { jobOrderID = "#=JobRequestId#" }).Data("sendForgery"))
+                                                              .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail").Data("sendForgery"))
                                                                               )
                                                 .ToClientTemplate())
                                         </text>
@@ -244,9 +243,9 @@
                                                                                 .Error("error_handler(\"JobOrderAdmingrid_#=JobRequestId#\")")
                                                                                 .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=JobRequestId#\")")
                                                                                 .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=JobRequestId#\")"))
-                                                                                                .Create(create => create.Action("Admin_Approve", "JobRequest", new { Id = "#=JobRequestId#" }))
-                                                                                                .Read(read => read.Action("Admin_Read", "JobRequest", new { Id = "#=JobRequestId#" }))
-                                                                                                .Update(update => update.Action("Admin_Approve", "JobRequest", new { Id = "#=JobRequestId#" }))
+                                                                                                .Create(create => create.Action("Admin_Approve", "JobRequest", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                                                .Read(read => read.Action("Admin_Read", "JobRequest", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                                                .Update(update => update.Action("Admin_Approve", "JobRequest", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
                                                                                             )
                                                                                         .ToClientTemplate())
                                                 </text>
@@ -310,6 +309,15 @@
         grid.tbody.find("tr[role='row']").each(function () {
             var masterDataItem = grid.dataItem(this);
 
+            if (masterDataItem.IsOnlineApproved == true) {
+                $(this).addClass("k-state-Approved");
+            }
+            if (masterDataItem.IsSendForApproval == true && masterDataItem.IsOnlineApproved == false) {
+                $(this).addClass("k-state-waiting-approval");
+            }
+            if (masterDataItem.IsOnlineApproved == false && masterDataItem.IsSendForApproval == false) {
+                $(this).addClass("k-state-Rejected");
+            }
             isapproved = masterDataItem.IsOnlineApproved;
             isSendForApproval = masterDataItem.IsSendForApproval;
 
@@ -623,6 +631,20 @@
 <style type="text/css">
     div.k-edit-form-container {
         width: 600px;
+    }
+    .k-grid table tr.k-state-Approved {
+        background: #dbd9e1;
+        color: #040000;
+    }
+
+    .k-grid table tr.k-state-Rejected {
+        background: #00d0ff;
+        color: #040000;
+    }
+
+    .k-grid table tr.k-state-waiting-approval {
+        background: forestgreen;
+        color: #040000;
     }
     /*fa-remove {
         color: red;

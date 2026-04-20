@@ -20,7 +20,7 @@
                                 @(Html.Kendo().DropDownListFor(model => model.EmployeeId).Name("EmployeeId")
                         .DataTextField("Name")
                                                 .DataValueField("Value").OptionLabel(" Select ").Events(x => x.Change("GetJobTitle")).Filter(FilterType.Contains).HtmlAttributes(new { style = "width:100%" })
-                                                        .DataSource(d => d.Read(r => r.Action("MechanicDDBind", "FleetDataProvider"))))
+                                                        .DataSource(d => d.Read(r => r.Action("MechanicDDBind", "FleetDataProvider").Data("sendForgery"))))
                             </div>*@
                 </div>
             </div>
@@ -41,7 +41,7 @@
                         @*@(Html.Kendo().DropDownListFor(model => model.Postion).Name("Postion")
                             .DataTextField("Name").Filter(FilterType.Contains)
                                     .DataValueField("Name").OptionLabel("Select Postion").HtmlAttributes(new { style = "width:100%" })
-                                            .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition")).ServerFiltering(false)))*@
+                                            .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition").Data("sendForgery")).ServerFiltering(false)))*@
                     </div>
                     <div>
                         @Html.Kendo().TextBoxFor(model => model.Postion)
@@ -64,7 +64,7 @@
                         @*@(Html.Kendo().DropDownListFor(model => model.EmployeeId).Name("SupervisorName")
                     .DataTextField("Name")
                                             .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains).HtmlAttributes(new { style = "width:100%" })
-                                                    .DataSource(d => d.Read(r => r.Action("MechanicDDBind", "FleetDataProvider"))))*@
+                                                    .DataSource(d => d.Read(r => r.Action("MechanicDDBind", "FleetDataProvider").Data("sendForgery"))))*@
 
                     </div>
                     <div>
@@ -112,7 +112,7 @@
                         .DataValueField("WorkUnitSectionId")
                         .OptionLabel(" Select  ")
                         .Filter(FilterType.Contains)
-                        .DataSource(d => d.Read(r => r.Action("SectionDDBind", "WorkUnitSection")).ServerFiltering(false)).ValuePrimitive(true))
+                        .DataSource(d => d.Read(r => r.Action("SectionDDBind", "WorkUnitSection").Data("sendForgery")).ServerFiltering(false)).ValuePrimitive(true))
 
                 </div>
             </div>

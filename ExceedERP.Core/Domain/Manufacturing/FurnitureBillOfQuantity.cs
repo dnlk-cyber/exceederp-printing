@@ -35,7 +35,8 @@ namespace ExceedERP.Core.Domain.Manufacturing
         [Display(Name ="Type of Job")]
         public int? JobTypeId { get; set; }
         [Display(Name ="Customer")]
-        public int CustomerId { get; set; }       
+        public int CustomerId { get; set; }
+        [DisplayFormat(DataFormatString = "{0:n4}", ApplyFormatInEditMode = true)]
         public decimal Quantity { get; set; }      
         public string Size { get; set; }
     }

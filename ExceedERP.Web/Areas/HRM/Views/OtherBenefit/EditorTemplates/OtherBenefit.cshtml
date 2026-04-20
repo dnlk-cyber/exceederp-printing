@@ -28,7 +28,7 @@
                       .Events(ev=>ev.Change("onCheckBookChange"))
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetAllowance", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetAllowance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       })
                       .ValuePrimitive(true)
@@ -52,7 +52,7 @@
                     .Filter("contains")
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetBenefit", "HRMDataProvider", new { area = "HRM" }))
+                                  dataSource.Read(read => read.Action("GetBenefit", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                       .ServerFiltering(false);
                               }))
                         @Html.ValidationMessageFor(model => model.BenefitName, "", new { @class = "text-danger" })
@@ -76,7 +76,7 @@
                                     .Filter("contains")
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetUOM", "HRMDataProvider", new { area = "HRM" }))
+                                  dataSource.Read(read => read.Action("GetUOM", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                       .ServerFiltering(false);
                               }))
                         @Html.ValidationMessageFor(model => model.UnitofMeasurement, "", new { @class = "text-danger" })
@@ -94,7 +94,7 @@
         <div class="col-md-1">
 
         </div>
-       
+
 
 
 
@@ -129,6 +129,20 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.EnumDropDownListFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-8" })
+                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
     </div>
     <br />
 

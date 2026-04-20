@@ -1,307 +1,149 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeeSummaryObjectDataSource : List<EmployeeSummary>
+    public class EmployeeSummaryObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetEmployeeSummary(string branchId, string orgStructureId, string sex, string status, string age = "")
+        public List<EmployeeSummary> GetEmployeeSummary(string branchId, string orgStructureId, string sex, string status,string employementType, string age = "")
         {
 
-            List<EmployeeSummary> list = new List<EmployeeSummary>();
-            EmployeeSummary employee = new EmployeeSummary();
-          
-            var placements = db.Placements.ToList();
+            var list = new List<EmployeeSummary>();
 
-            if(branchId != null)
+            // Start with a queryable collection instead of loading everything into memory
+            var employeesQuery = db.Person_Employee.AsQueryable();
+            var placements = db.Placements.AsQueryable();
+            if (placements.Any())
             {
-                int.TryParse(branchId, out int braId);
-                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
-            }
-            if (orgStructureId != null)
-            {
-                int.TryParse(orgStructureId, out int orgId);
-                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
-            }            
+                var empIds = placements.Select(x => x.EmployeeId).Distinct();
+                employeesQuery = employeesQuery.Where(x => empIds.Contains(x.EmployeeId));
 
-            if(status == "Active")
-            {
-                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements);
             }
-            if (status == "InActive")
+            // Apply branch filtering
+            if (!string.IsNullOrEmpty(branchId) && int.TryParse(branchId, out int braId))
             {
-                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements);
+                placements = placements.Where(x => x.BranchId == braId);
+                var branchEmpIds = placements.Select(x => x.EmployeeId).Distinct();
+                employeesQuery = employeesQuery.Where(x => branchEmpIds.Contains(x.EmployeeId));
+
             }
 
-            if (sex != null)
+            // Apply organizational structure filtering
+            if (!string.IsNullOrEmpty(orgStructureId) && int.TryParse(orgStructureId, out int orgId))
             {
-                if (sex == "MALE")
-                {
-                    placements = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements);
-                }
-                if (sex == "FEMALE")
-                {
-                    placements = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements);
-                }
+
+        
+                placements = placements.Where(x =>x.OrgStructureId == orgId);
+                var placementEmpIds = placements
+                                        .Where(x => x.OrgStructureId == orgId)
+                                        .Select(x => x.EmployeeId).Distinct();
+
+                employeesQuery = employeesQuery.Where(x => placementEmpIds.Contains(x.EmployeeId));
             }
 
-            #region Age
+            // Apply status filtering
+            if (status == "Active") {
+                var empIds = placements.Where(x => x.isCurrent)
+                                       .Select(x => x.EmployeeId).Distinct();
+                employeesQuery = employeesQuery.Where(x => x.IsActive && empIds.Contains(x.EmployeeId));
 
-            var empIds = placements.Select(x => x.EmployeeId).Distinct().ToList();
-            var employees = db.Person_Employee.Where(x => empIds.Contains(x.EmployeeId));
-
-            if (age != null)
+            }
+            else if (status == "InActive")
             {
-                db = new ExceedDbContext();
+                var empIds = placements.Where(x => !x.isCurrent)
+                                       .Select(x => x.EmployeeId).Distinct();
+                employeesQuery = employeesQuery.Where(x => !x.IsActive && empIds.Contains(x.EmployeeId));
+            }
 
-                if (age == "18-29")
-                {
-                   
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 1;                      
+            if (!string.IsNullOrEmpty(employementType)) {
+                var empIds = placements.Where(x => x.EmployementType.ToString() == employementType)
+                                       .Select(x => x.EmployeeId).Distinct();
+                employeesQuery = employeesQuery.Where(x => empIds.Contains(x.EmployeeId));
+            }
 
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 18 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 20 &&
-                                               x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 18 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 20 && x.Gender == Gender.MALE);
+            // Apply gender filtering
+            if (!string.IsNullOrEmpty(sex))
+            {
+                if (sex == "MALE") employeesQuery = employeesQuery.Where(x => x.Gender == Gender.MALE);
+                if (sex == "FEMALE") employeesQuery = employeesQuery.Where(x => x.Gender == Gender.FEMALE);
+            }
 
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-
-                        list.Add(employee);
-
-                        return list;
-                  
-                }
-                if (age == "30-40")
-                {
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 2;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 30 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 40 &&
-                                               x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 30 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 40 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        return list;
-                    
-                }
-                if (age == "41-50")
-                {
-                    
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 3;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 41 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 50 &&
-                                               x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 41 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 50 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        return list.OrderBy(x => x.SummaryName).ToList();
-                   
-                }
-                if (age == "51-60")
-                {
-
-                        employee = new EmployeeSummary();
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 4;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 51 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 60 &&
-                                               x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 51 &&
-                                            (DateTime.Now.Year - x.DateOfBirth.Year) <= 60 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        // return list;
-                   
-                }
-                if (age == "More than 60")
-                {
-
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 5;
-                        employee.NumberOfFemaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) > 60 && x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) > 60 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        return list.OrderByDescending(x => x.index).ToList();
-                   
-                }
+            // Apply age filtering
+            if (!string.IsNullOrEmpty(age))
+            {
+                var employeeSummary = GetEmployeeSummaryByAge(employeesQuery, age);
+                list.Add(employeeSummary);
             }
             else
             {
-                db = new ExceedDbContext();
-
-                age = "Less than 18";
-
-                if (age == "Less than 18")
+                string[] ageRanges = { "< 18", "18-29", "30-40", "41-50", "51-60", "> 60" };
+                for (int i = 0; i < ageRanges.Length; i++)
                 {
-                    
-                        employee = new EmployeeSummary();
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 0;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) < 18 && x.Gender == Gender.FEMALE);
-
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) < 18 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        //  return list;
-                   
+                    var employeeSummary = GetEmployeeSummaryByAge(employeesQuery, ageRanges[i]);
+                    employeeSummary.index = i;
+                    list.Add(employeeSummary);
                 }
-
-                age = "18-29";
-
-                if (age == "18-29")
-                {
-
-                   
-                        employee = new EmployeeSummary();
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 1;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 18 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 29 &&
-                                               x.Gender == Gender.FEMALE);
-
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 18 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 29 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        //  return list;
-                   
-                }
-                age = "30-40";
-                if (age == "30-40")
-                {
-                    
-                        employee = new EmployeeSummary();
-                        employee.index = 2;
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 30 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 40 &&
-                                               x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 30 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 40 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        // return list;
-                   
-                }
-                age = "41-50";
-                if (age == "41-50")
-                {
-                    
-                        employee = new EmployeeSummary();
-                        employee.index = 3;
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 41 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 50 &&
-                                               x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 41 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 50 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        // return list;
-                  
-                }
-                age = "51-60";
-                if (age == "51-60")
-                {
-                    
-                        employee = new EmployeeSummary();
-                        employee.index = 4;
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.NumberOfFemaleEmployee =
-                            employees.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 51 &&
-                                               (DateTime.Now.Year - x.DateOfBirth.Year) <= 60 &&
-                                               x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 51 &&
-                                            (DateTime.Now.Year - x.DateOfBirth.Year) <= 60 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-                        // return list;
-                   
-                }
-                age = "More than 60";
-                if (age == "More than 60")
-                {
-                    employee = new EmployeeSummary();
-
-                        employee.Criteria = CustomExpression.CustomExpression.GetStringOverride("Age");
-                        employee.SummaryName = age;
-                        employee.index = 5;
-                        employee.NumberOfFemaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) > 60 && x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee =
-                            employees
-                                .Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) > 60 && x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        list.Add(employee);
-
-                   
-                }
-                return list.OrderByDescending(x => x.index).ToList();
-
             }
 
-            #endregion
+            return list.OrderBy(x => x.index).ToList();
+        }
 
+        private EmployeeSummary GetEmployeeSummaryByAge(IQueryable<Person_Employee> employeesQuery, string ageRange)
+        {
+            var employee = new EmployeeSummary
+            {
+                Criteria = CustomExpression.CustomExpression.GetStringOverride("Age"),
+                SummaryName = ageRange
+            };
+            switch (ageRange)
+            {
+                case "< 18":
+                    employee.NumberOfFemaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) < 18 && x.Gender == Gender.FEMALE);
+                    employee.NumberOfMaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) < 18 && x.Gender == Gender.MALE);
+                    break;
 
+                case "18-29":
+                    employee.NumberOfFemaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 18 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 29 && x.Gender == Gender.FEMALE);
+                    employee.NumberOfMaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 18 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 29 && x.Gender == Gender.MALE);
+                    break;
 
-            return list.OrderByDescending(x => x.index).ToList();
+                case "30-40":
+                    employee.NumberOfFemaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 30 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 40 && x.Gender == Gender.FEMALE);
+                    employee.NumberOfMaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 30 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 40 && x.Gender == Gender.MALE);
+                    break;
+
+                case "41-50":
+                    employee.NumberOfFemaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 41 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 50 && x.Gender == Gender.FEMALE);
+                    employee.NumberOfMaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 41 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 50 && x.Gender == Gender.MALE);
+                    break;
+
+                case "51-60":
+                    employee.NumberOfFemaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 51 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 60 && x.Gender == Gender.FEMALE);
+                    employee.NumberOfMaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= 51 && (DateTime.Now.Year - x.DateOfBirth.Year) <= 60 && x.Gender == Gender.MALE);
+                    break;
+
+                case "> 60":
+                    employee.NumberOfFemaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) > 60 && x.Gender == Gender.FEMALE);
+                    employee.NumberOfMaleEmployee = employeesQuery.Count(x => (DateTime.Now.Year - x.DateOfBirth.Year) > 60 && x.Gender == Gender.MALE);
+                    break;
+            }
+
+            employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
+            return employee;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

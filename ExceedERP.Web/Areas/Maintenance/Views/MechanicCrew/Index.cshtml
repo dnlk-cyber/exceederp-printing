@@ -10,19 +10,20 @@
         .Columns(columns =>
         {
             columns.ForeignKey(e => e.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("MechanicSelector").Width(150);
-            //columns.ForeignKey(e => e.MechanicTypeClassId, (IEnumerable)ViewData["MechanicType"], "Value", "Text").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("MechanicType").Width(150);
+            columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("MaintenanceCenterSelector").Width(150);
+            columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenters"], "Value", "Text").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("ServiceCenterSelector").Width(150);
             columns.Bound(e => e.MechanicType).EditorTemplateName("MechanicTypeMapping").Width(120);
             columns.Bound(e => e.HourlyWage).Width(120);
-
-            columns.Command(command => { command.Edit(); /*command.Destroy();*/ }).Width(250);
-
-
+            columns.Bound(e => e.Status).Title("Status").Width(120);
+            columns.Command(command => { command.Edit(); /*command.Destroy();*/
+                command.Custom("ToggleCrew").Text("Toggle").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Toggle" }).Click("ToggleMechanics");
+            }).Width(250);
         })
          //.ToolBar(commands => commands.Create())
          .ToolBar(toolbar =>
          {
 
-            toolbar.Template(@<text>
+         toolbar.Template(@<text>
                     <div class="toolbar row">
                         <div class="col-md-3">
                             <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
@@ -59,7 +60,7 @@
                                           .Scrollable(h => h.Height(500))
               .DataSource(dataSource => dataSource
                   .Ajax()
-                  .ServerOperation(false)
+                 
                          .Model(model =>
                          {
                              model.Id(p => p.MechanicCrewID);
@@ -70,10 +71,10 @@
                           .Error("error_handler(\"grid\")")
                           .RequestStart("onRequestStart(\"grid\")")
                           .RequestEnd("onRequestEnd(\"grid\")"))
-                          .Create(update => update.Action("MechanicCrew_Create", "MechanicCrew"))
-                          .Read(read => read.Action("MechanicCrew_Read", "MechanicCrew"))
-                          .Update(update => update.Action("MechanicCrew_Update", "MechanicCrew"))
-                          .Destroy(update => update.Action("MechanicCrew_Destroy", "MechanicCrew"))
+                          .Create(update => update.Action("MechanicCrew_Create", "MechanicCrew").Data("sendForgery"))
+                          .Read(read => read.Action("MechanicCrew_Read", "MechanicCrew").Data("sendForgery"))
+                          .Update(update => update.Action("MechanicCrew_Update", "MechanicCrew").Data("sendForgery"))
+                          .Destroy(update => update.Action("MechanicCrew_Destroy", "MechanicCrew").Data("sendForgery"))
             )
 )
 
@@ -125,10 +126,39 @@
             }
         });
     }
-
+     function ToggleMechanics(e) {
+        if (confirm("Are you sure you want to change status?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TogleCrew", "MechanicCrew", new { Area = "Maintenance" })',
+                data: { id: dataItem.MechanicCrewID},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
     function filterEmployees() {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+
+        
+    }
+    function FilterServices() {
+        return {
+            MaintenanceCenter: $("#MaintenanceCenterId").val()
         }
     }
 </script>

@@ -1,0 +1,14 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("Select Store...")
+                      .DataTextField("Name")
+                      .DataValueField("StoreCode")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetStore", "DataProvider").Data("sendForgery"))
+                                .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

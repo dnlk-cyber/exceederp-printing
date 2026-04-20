@@ -2,10 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -13,10 +10,11 @@ using System;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -27,10 +25,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         // GET: HRM/SickLeaveSetting
         public ActionResult Index()
         {
+            GenerateLeaveStartDateSetting();
+            PopulateViewData();
             return View();
         }
-        
-      
+        private void PopulateViewData()
+        {
+            ViewData["FisicalYear"] = db.GLFiscalYears.ToList();
+            var LeaveSetting = Enum.GetValues(typeof(LeaveSetting))
+                .Cast<LeaveSetting>()
+                .Select(v => v.ToString())
+                .ToList();
+            var LeaveSettings = LeaveSetting.Select(s => new { Text = s.ToString(), Value = s.ToString() });
+            ViewData["LeaveSetting"] = LeaveSettings;
+            ViewData["FiscalYeaer"] = db.GLFiscalYears.ToList();
+        }
+        public void GenerateLeaveStartDateSetting()
+        {
+            var leaveStartDate = db.LeaveEntitleStartingDates.FirstOrDefault();
+
+            if (leaveStartDate == null)
+            {
+                var entity = new LeaveEntitleStartingDate
+                {
+                    Start = LeaveEntitleStarting.Fiscal_Year_End_Date,
+                    Remark = "Default Setting"
+                };
+
+                db.LeaveEntitleStartingDates.Add(entity);
+                db.SaveChanges();
+            }
+        }
         public JsonResult GetPeriod()
         {
             var periodList = db.GLFiscalYears;

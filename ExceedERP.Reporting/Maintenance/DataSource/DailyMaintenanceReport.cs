@@ -13,14 +13,14 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<DailyMaintenanceReportVM> GetDailyReport(DateTime? from, DateTime? to)
+        public List<DailyMaintenanceReportVM> GetDailyReport(DateTime? from, DateTime? to, string mcenter)
         {
             List<DailyMaintenanceReportVM> list = new List<DailyMaintenanceReportVM>();
             var request = db.JobRequest.ToList();
             var serviceCenter = db.ServiceCenterJob.ToList();
             var jobOrder = db.JobOrder.ToList();
 
-
+            
             if (from.HasValue)
             {
                 jobOrder = jobOrder.Where(x => x.DateIssued.Value.Date >= from.Value.Date).ToList();
@@ -29,6 +29,11 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
             {
                 jobOrder = jobOrder.Where(x => x.DateIssued.Value.Date <= to.Value.Date).ToList();
             }
+            if(Guid.TryParse(mcenter, out Guid id))
+            {
+                jobOrder = jobOrder.Where(x => x.MaintenanceCenterId == id).ToList();
+            }
+           
             foreach (var item in jobOrder)
             {
                 var jobRequest = db.JobRequest.FirstOrDefault(x => x.Num == item.Referance);
@@ -40,7 +45,12 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
                         var equipmentCategory = db.EquipmentIdentity.FirstOrDefault(x => x.EquipmentIdentityID == fleet.EquipmentIdentityID);
                         var equipmentType = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == fleet.EquipmentTypeID);
 
-                        var jobCause = db.JobCauses.FirstOrDefault(x => x.OrderId == jobRequest.JobRequestId);
+                        var jobCause = db.JobCauses.Where(x => x.OrderId == jobRequest.JobRequestId).ToList();
+                        string xyz =null;
+                          foreach(var cause in jobCause)
+                        {
+                            xyz = xyz + " " + cause.Description;
+                        }
 
                         var dailyReport = new DailyMaintenanceReportVM
                         {
@@ -49,11 +59,11 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
                             DateIn = item.DateIssued,
                             DateOut = item.DateCompleted,
                             Location = item.MaintenanceCenter,
-
                             OperatorName = item.OperatorName,
                             PhoneNumber = "",
+                            Num = item.Num,
                             PlateNo = item.LicensePlate,
-                            Problems = jobCause?.Description,
+                            Problems = xyz,
                             Remark = item.Remark
                         };
                         list.Add(dailyReport);
@@ -79,5 +89,6 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
         public string OperatorName { get; set; }
         public string PhoneNumber { get; set; }
         public string Remark { get; set; }
+        public int Num { get; set; }
     }
 }

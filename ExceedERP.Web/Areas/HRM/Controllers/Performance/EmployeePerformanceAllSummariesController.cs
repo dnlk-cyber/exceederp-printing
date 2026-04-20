@@ -223,6 +223,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
                 IsApproved = employeePerformance.IsApproved,
                 IsHRApproved = employeePerformance.IsHRApproved,
+                IsHRRejected = employeePerformance.IsHRRejected,
                 IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
                 IsCurrent = employeePerformance.IsCurrent,
                 Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
@@ -615,6 +616,69 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return employeeIdLists;
         }
+
+        [HttpPost]
+        public JsonResult HRRejectionWithReason_Create(int yearId, int periodId, int employeeId, string reason)
+        {
+            if (string.IsNullOrWhiteSpace(reason))
+            {
+                return Json(new { success = false, message = "Rejection reason is required." });
+            }
+
+            var employeePerformances = db.EmployeePerformances.Where(x =>
+                x.GlFiscalYearId == yearId &&
+                x.GlPeriodId == periodId &&
+                x.EmployeeId == employeeId &&
+               ( !x.IsSectorApplied|| !x.IsCorporateApplied) &&
+                x.IsApproved &&
+                x.IsImmediateSuppurvisorApproved &&
+                x.IsSecondLevelApproved).ToList();
+
+            if (!employeePerformances.Any())
+            {
+                return Json(new { success = false, message = "No matching performance records found for rejection." });
+            }
+
+            foreach (var performance in employeePerformances)
+            {
+                performance.IsSecondLevelApproved = false;
+                performance.IsAveraged = false;
+                performance.IsImmediateSuppurvisorApproved = false;
+                performance.IsHRRejected = true;
+                performance.IsHRRejected = true;
+                performance.IsHRRejected = true;
+                performance.IsHRApproved = false;
+                performance.ReasonForHRRejection = reason;
+                performance.FinalApprovalDate = DateTime.Now;
+                performance.FinalApprover = User.Identity.Name;
+                db.Entry(performance).State = EntityState.Modified;
+            }
+
+            db.SaveChanges();
+
+            return Json(new { success = true, message = "Performance evaluation successfully rejected." });
+        }
+
+        [HttpPost]
+        public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
+        {
+            var fileContents = Convert.FromBase64String(base64);
+            #region export log
+            UserHelper.ExportLog(Request.UserHostAddress, "Excel-Export", "Success", User.Identity.Name, "Exported employee Performance Summary");
+            #endregion
+            return File(fileContents, contentType, fileName);
+        }
+
+        [HttpPost]
+        public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
+        {
+            var fileContents = Convert.FromBase64String(base64);
+            #region export log
+            UserHelper.ExportLog(Request.UserHostAddress, "PDF-Export", "Success", User.Identity.Name, "Exported employee Performance Summary");
+            #endregion
+            return File(fileContents, contentType, fileName);
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

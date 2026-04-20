@@ -21,6 +21,7 @@ using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.Helpers.Common;
 using Microsoft.AspNet.Identity;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
@@ -192,6 +193,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
             var store = db.InventoryStores.Where(x => userStores.Contains(x.StoreCode.ToString())).Where(x => x.Enable).AsQueryable();
+
+            return Json(store.Select(p => new
+            {
+                StoreCode = p.StoreCode,
+                Name = p.StoreCode + "-" + p.Name
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult GetStoreByUserBranchForSelfCare()
+        {
+            var mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var store = db.InventoryStores.Where(x => mybraches.Contains(x.BranchId)).Where(x => x.Enable).AsQueryable();
 
             return Json(store.Select(p => new
             {

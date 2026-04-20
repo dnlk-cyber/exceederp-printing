@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Health
 {
-    public class HealthRankAndValue:Operations
+    public class HealthRankAndValue: DepartmentNewOperations
     {
         public int HealthRankAndValueId { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_PersonEmployee", ResourceType = typeof(Localization.Resources))]
@@ -55,6 +55,15 @@ namespace ExceedERP.Core.Domain.Health
     public class HealthRankAndValueValidation : VoucherValidation
     {
         public int HealthRankAndValueValidationId { get; set; }
+        public int HealthRankAndValueId { get; set; }
+        public virtual HealthRankAndValue  RankAndValue { get; set; }
+
+    }
+
+    public class HealthRankAndValueFinalValidation : VoucherValidation
+    {
+        [Key]
+        public int HealthRankAndValueFinalValidationId { get; set; }
         public int HealthRankAndValueId { get; set; }
         public virtual HealthRankAndValue  RankAndValue { get; set; }
 

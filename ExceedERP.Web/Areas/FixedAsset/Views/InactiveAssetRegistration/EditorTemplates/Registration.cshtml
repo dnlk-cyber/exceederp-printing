@@ -31,7 +31,7 @@
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                            dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("sendForgery"))
                             .ServerFiltering(false);
                         })
                     )
@@ -51,7 +51,7 @@
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategoriesForRegistration"))
+                            dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("sendForgery").Data("filterSubCategoriesForRegistration"))
                             .ServerFiltering(true);
                         })
                         .CascadeFrom("FixedAssetCategoryID")
@@ -73,7 +73,7 @@
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetSubCategoryName", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategoryNames"))
+                            dataSource.Read(read => read.Action("GetSubCategoryName", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("sendForgery").Data("filterSubCategoryNames"))
                             .ServerFiltering(true);
                         })
                         .CascadeFrom("FixedAssetSubCategoryID")
@@ -92,9 +92,9 @@
                 </div>
             </div>
             <div class="row"></div>
-            
-            
-            
+
+
+
             <div class="form-group">
                 @Html.LabelFor(model => model.Unit, htmlAttributes: new { @class = "control-label col-md-6" })
                 <div class="col-md-6">
@@ -106,7 +106,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetUoM", "GlobalDataProvider", new { area = "Common" }))
+                              dataSource.Read(read => read.Action("GetUoM", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                               .ServerFiltering(false);
                           })
                           )
@@ -201,7 +201,7 @@
                                 // .Value("New")
                                 .DataSource(dataSource =>
                                 {
-                                                                        dataSource.Read(read => read.Action("GetFixedAssetConditions", "FixedAssetDataProvider"))
+                                                                        dataSource.Read(read => read.Action("GetFixedAssetConditions", "FixedAssetDataProvider").Data("sendForgery"))
                                                                         .ServerFiltering(false);
                                                                     }))
                     @Html.ValidationMessageFor(model => model.FixedAssetConditionId, "", new { @class = "text-danger" })
@@ -231,7 +231,7 @@
 
                                             <div class="col-md-3 ro1">
 
-                                                
+
 
                                                 <div class="form-group">
                                                     @Html.LabelFor(model => model.GRN, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -250,7 +250,16 @@
                                                     </div>
                                                 </div>
                                                 <div class="row"></div>
-                                                
+
+                                                 <div class="form-group">
+                                                     @Html.LabelFor(model => model.AcqusitionDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                                                     <div class="col-md-6">
+                                                         @Html.Kendo().DatePickerFor(model => model.AcqusitionDate)
+                                                         @Html.ValidationMessageFor(model => model.AcqusitionDate, "", new { @class = "text-danger" })
+                                                     </div>
+                                                 </div>
+                                                 <div class="row"></div>
+
                                                 <div class="form-group">
                                                     @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                                                     <div class="col-md-6">
@@ -262,7 +271,7 @@
                                                           .Filter("contains")
                                                           .DataSource(dataSource =>
                                                           {
-                                                              dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}))
+                                                              dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}).Data("sendForgery"))
                                                               .ServerFiltering(false);
                                                           })
                                                       )
@@ -281,7 +290,7 @@
                                                             .Filter("contains")
                                                             .DataSource(dataSource =>
                                                             {
-                                                                dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }))
+                                                                dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                                                 .ServerFiltering(false);
                                                             })
                                                         )
@@ -289,7 +298,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="row"></div>
-                                                
+
                                                 <div class="form-group">
                                                     @Html.LabelFor(model => model.StoreCode, htmlAttributes: new { @class = "control-label col-md-8" })
                                                     <div class="col-md-6">
@@ -299,9 +308,9 @@
                                                             .DataValueField("StoreCode")
                                                             .CascadeFrom("BranchId")
                                                             .Filter("contains")
-                                                            .DataSource(dataSource => 
+                                                            .DataSource(dataSource =>
                                                             {
-                                                                dataSource.Read(read => read.Action("GetAllStoresByBranch", "DataProvider", new { area = "Inventory" }).Data("filterStoreByBranch"))
+                                                                dataSource.Read(read => read.Action("GetAllStoresByBranch", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterStoreByBranch"))
                                                                 .ServerFiltering(true);
                                                             })
                                                             )
@@ -321,7 +330,7 @@
                                                             .Filter("contains")
                                                             .DataSource(dataSource =>
                                                             {
-                                                                dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("filterEmployees"))
+                                                                dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterEmployees"))
                                                                 .ServerFiltering(true);
                                                             })
                                                             )
@@ -359,6 +368,24 @@
                                     </div>
                                     <div class="row"></div>
 
+                                     <div class="form-group">
+                                         @Html.LabelFor(model => model.UsefulLifeYears, htmlAttributes: new { @class = "control-label col-md-8" })
+                                         <div class="col-md-6">
+                                             @Html.Kendo().TextBoxFor(model => model.UsefulLifeYears)
+                                             @Html.ValidationMessageFor(model => model.UsefulLifeYears, "", new { @class = "text-danger" })
+                                         </div>
+                                     </div>
+                                    <div class="row"></div>
+
+                                     <div class="form-group">
+                                         @Html.LabelFor(model => model.SalvageValue, htmlAttributes: new { @class = "control-label col-md-8" })
+                                         <div class="col-md-6">
+                                             @Html.Kendo().TextBoxFor(model => model.SalvageValue)
+                                             @Html.ValidationMessageFor(model => model.SalvageValue, "", new { @class = "text-danger" })
+                                         </div>
+                                     </div>
+                                    <div class="row"></div>
+
                                     <div class="form-group">
                                         <br />
                                         <br />
@@ -380,6 +407,15 @@
                                         </div>
                                     </div>
                                     <div class="row"></div>
+
+                                     <div class="form-group">
+                                         @Html.LabelFor(model => model.IFRSBookValue, htmlAttributes: new { @class = "control-label col-md-8" })
+                                         <div class="col-md-6">
+                                             @Html.Kendo().TextBoxFor(model => model.IFRSBookValue)
+                                             @Html.ValidationMessageFor(model => model.IFRSBookValue, "", new { @class = "text-danger" })
+                                         </div>
+                                     </div>
+                                     <div class="row"></div>
 
                                     <div class="form-group">
                                         <br />
@@ -553,7 +589,7 @@
                                 </div>
                             </div>
                             <div class="row"></div>
-                            
+
                             <div class="form-group">
                                 @Html.LabelFor(model => model.Color, htmlAttributes: new { @class = "control-label col-md-8" })
                                 <div class="col-md-6">

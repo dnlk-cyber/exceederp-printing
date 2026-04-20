@@ -18,10 +18,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
     {
         private IMaintenanceCenterService _MaintenanceCenterService;
         ExceedDbContext db = new ExceedDbContext();
+
         public MaintenanceCenterController()
         {
             _MaintenanceCenterService = new MaintenanceCenterService();
         }
+
         public ActionResult Index()
         {
             ViewData["BusinessUnit"] = db.BusinessUnits.Select(s => new
@@ -36,11 +38,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             });
             return View();
         }
-
+        [AcceptVerbs(HttpVerbs.Post)]
         public JsonResult MaintenanceCenter_Read([DataSourceRequest] DataSourceRequest request)
         {
-            _MaintenanceCenterService = new MaintenanceCenterService();
-            var oper = _MaintenanceCenterService.GetAll();
+            var oper = db.MaintenanceCenter.ToList();
             var Opers = oper.Select(o => new MaintenanceCenter
             {
                 MaintenanceCenterID = o.MaintenanceCenterID,
@@ -50,27 +51,25 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 BusinessUnitId = o.BusinessUnitId,
                 BranchId = o.BranchId,
                 IsExternal = o.IsExternal
-
             });
 
-            return this.Json(Opers.ToDataSourceResult(request, ModelState));
+            return this.Json(Opers.ToDataSourceResult(request, ModelState), JsonRequestBehavior.AllowGet);
         }
-
 
         [AcceptVerbs(HttpVerbs.Post)]
         public JsonResult MaintenanceCenter_Create([DataSourceRequest] DataSourceRequest request, MaintenanceCenter MaintenanceCenter)
         {
             ModelState.Remove("MaintenanceCenterID");
-            List<MaintenanceCenter> MaintenanceCenters = _MaintenanceCenterService.GetAll().Where(f => f.Name == MaintenanceCenter.Name).ToList();
-            if (MaintenanceCenters.Any())
+            var existing = _MaintenanceCenterService.GetAll().Where(f => f.Name == MaintenanceCenter.Name).ToList();
+
+            if (existing.Any())
             {
                 ModelState.Clear();
-                ModelState.AddModelError("ExistingName", " Maintenance Center with Name Already Exists ");
+                ModelState.AddModelError("ExistingName", "Maintenance Center with this Name already exists.");
             }
             else
             {
                 MaintenanceCenter.MaintenanceCenterID = Guid.NewGuid();
-
                 if (MaintenanceCenter != null)
                 {
                     MaintenanceCenter.CreatedBy = User.Identity.Name;
@@ -78,13 +77,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     _MaintenanceCenterService.Insert(MaintenanceCenter);
                 }
             }
+
             return this.Json(new[] { MaintenanceCenter }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public JsonResult MaintenanceCenter_Update([DataSourceRequest] DataSourceRequest request, MaintenanceCenter MaintenanceCenter)
         {
-
             if (MaintenanceCenter != null)
             {
                 MaintenanceCenter.ModifiedBy = User.Identity.Name;
@@ -92,86 +91,64 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 _MaintenanceCenterService.Update(MaintenanceCenter);
             }
 
-
             return this.Json(new[] { MaintenanceCenter }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public JsonResult MaintenanceCenter_Destroy([DataSourceRequest] DataSourceRequest request, MaintenanceCenter MaintenanceCenter)
         {
-            var MaintenanceCenters = _MaintenanceCenterService.GetById(MaintenanceCenter.MaintenanceCenterID);
-            if (MaintenanceCenters != null)
+            var existing = _MaintenanceCenterService.GetById(MaintenanceCenter.MaintenanceCenterID);
+            if (existing != null)
             {
-                _MaintenanceCenterService.Delete(MaintenanceCenters);
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Maintenance Center number " + MaintenanceCenter.MaintenanceCenterID);
-
+                _MaintenanceCenterService.Delete(existing);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Maintenance Center " + MaintenanceCenter.MaintenanceCenterID);
             }
 
             return this.Json(new[] { MaintenanceCenter }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+
         public ActionResult MaintenanceCenterDDBind()
         {
-
-            var fleets = _MaintenanceCenterService.GetAll().Select(s => new MaintenanceCenter
+            var data = _MaintenanceCenterService.GetAll().Select(s => new MaintenanceCenter
             {
                 Name = s.Name,
                 MaintenanceCenterID = s.MaintenanceCenterID
             });
 
-            return Json(fleets, JsonRequestBehavior.AllowGet);
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+
         public ActionResult CenterTypeDDBind()
         {
+            var types = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "INTERNAL", Value = "INTERNAL" },
+                new SelectListItem { Text = "EXTERNAL", Value = "EXTERNAL" }
+            };
 
-            SelectListItem type = new SelectListItem();
-            List<SelectListItem> typelist = new List<SelectListItem>();
-
-            type.Text = "INTERNAL";
-            type.Value = "INTERNAL";
-            typelist.Add(type);
-            type = new SelectListItem();
-            type.Text = "EXTERNAL";
-            type.Value = "EXTERNAL";
-            typelist.Add(type);
-
-
-            return Json(typelist, JsonRequestBehavior.AllowGet);
+            return Json(types, JsonRequestBehavior.AllowGet);
         }
 
-
-        [AllowAnonymous]
-        //public ActionResult MaintenanceCenterByTypeDDBind(string Type)
         public ActionResult GetAllMaintenanceCenters()
         {
-
-
-            var fleets = _MaintenanceCenterService.GetAll().Select(s => new SelectListItem
+            var data = _MaintenanceCenterService.GetAll().Select(s => new SelectListItem
             {
                 Text = s.Name,
                 Value = s.Name
             });
 
-            return Json(fleets, JsonRequestBehavior.AllowGet);
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
 
-        [AllowAnonymous]
-       
         public ActionResult GetAllMaintenanceCentersById()
         {
-
-
-            var fleets = _MaintenanceCenterService.GetAll().Select(s => new 
+            var data = _MaintenanceCenterService.GetAll().Select(s => new
             {
                 Name = s.Name,
                 Id = s.MaintenanceCenterID
-              
             });
 
-            return Json(fleets, JsonRequestBehavior.AllowGet);
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
-
-
     }
 }

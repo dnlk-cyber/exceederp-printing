@@ -16,8 +16,6 @@
             </div>
             <div class="row"></div>
 
-           
-
             <div class="form-group">
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
@@ -30,7 +28,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}))
+                              dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )*@
@@ -49,7 +47,7 @@
                                          .Filter("contains")
                                          .DataSource(dataSource =>
                                          {
-                                             dataSource.Read(read => read.Action("GetAllBranches", "MaintenanceDataProvider"))
+                                             dataSource.Read(read => read.Action("GetAllBranches", "MaintenanceDataProvider").Data("sendForgery"))
                                                  .ServerFiltering(false);
                                          })
                     )
@@ -70,7 +68,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreByBranch", "MaintenanceDataProvider").Data("filterStoresByBranch"))
+                              dataSource.Read(read => read.Action("GetStoreByBranch", "MaintenanceDataProvider").Data("sendForgery").Data("filterStoresByBranch"))
                                   .ServerFiltering(true);
                           })
                           .CascadeFrom("BranchId")
@@ -101,7 +99,7 @@
                           })
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "MaintenanceDataProvider").Data("filterPeriodsByStore"))
+                              dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "MaintenanceDataProvider").Data("sendForgery").Data("filterPeriodsByStore"))
                                   .ServerFiltering(true);
                           })
                           )
@@ -141,7 +139,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }))
+                              dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -177,7 +175,7 @@
                                   .Filter("contains")
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider"))
+                                      dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider").Data("sendForgery"))
                                               .ServerFiltering(false);
                                   }))
                     @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
@@ -207,7 +205,7 @@
                                 .Filter("contains")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetAllBranches", "MaintenanceDataProvider"))
+                                    dataSource.Read(read => read.Action("GetAllBranches", "MaintenanceDataProvider").Data("sendForgery"))
                                         .ServerFiltering(false);
                                 })
                           )
@@ -236,7 +234,7 @@
                           .Filter(FilterType.Contains)
                           .OptionLabel("Select Job Order ")
                           .HtmlAttributes(new { style = "width:100%" })
-                          .DataSource(d => d.Read(r => r.Action("JobOrderDDBind", "FleetDataProvider", new { area = "FleetManagement" }))
+                          .DataSource(d => d.Read(r => r.Action("JobOrderDDBind", "FleetDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                               .ServerFiltering(false)))
                     @Html.ValidationMessageFor(model => model.JobOrderNo, "", new { @class = "text-danger" })
                 </div>

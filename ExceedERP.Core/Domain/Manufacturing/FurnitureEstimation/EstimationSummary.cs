@@ -16,8 +16,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public bool IsClosed { get; set; }
         public bool IsCalculated { get; set; }
         public bool IsMarginApproved { get; set; } //to hide and show the Approve button
-        //Fk
-        public int FurnitureEstimationId { get; set; }
+        
 
     }
 
@@ -41,9 +40,11 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal AdministrativeCost { get; set; }
         [Display(Name = "Total Cost")]
         public decimal GrandTotalCost { get; set; }
+        public decimal ProfitMargin { get; set; }
         //Fk
-        public int EstimationSummaryId { get; set; }
-        
+        public int EstimationSummaryId { get; set; }        
+        public int FurnitureEstimationId { get; set; }
+
     }
 
     public class EstimationCostSummary

@@ -178,6 +178,7 @@ namespace ExceedERP.Core.Domain.Common
         Employee_Termination_Summary_By_Business_Unit,
         Training_Action_Plan,
         Training_Need_Report,
+        Employee_Master_Report
     }
     public enum ProcurementModuleReportType
     {
@@ -231,7 +232,7 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_RecruitmentSetting_INTERVIEW", ResourceType = typeof(Resources))]
         INTERVIEW,
     }
-    public enum RetireSetting
+    public enum RetireTypeSetting
     {
         Heads,
         Performers
@@ -966,7 +967,9 @@ namespace ExceedERP.Core.Domain.Common
         LEAVE_FOR_LEADRES_NEW,
         LEAVE_FOR_PERFORMERS_NEW,
         Old_Initial_Leave_End_Year,
-        MAXIMUM_Leave_For_Leaders
+        MAXIMUM_Leave_For_Leaders,
+        APPLY_WORKING_DAYS_FOR_MATERNITY,
+        LEAVE_ENTITLEMENT_INCREEMENT_YEAR
 
     }
     public enum RecruitmentSetting

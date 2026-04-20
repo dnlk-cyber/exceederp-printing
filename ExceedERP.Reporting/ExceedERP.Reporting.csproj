@@ -1302,6 +1302,7 @@
     <Compile Include="FixedAsset\ViewModel\DepreciationExpenseVm.cs" />
     <Compile Include="FixedAsset\ViewModel\AnnualDepreciationVm.cs" />
     <Compile Include="FixedAsset\ViewModel\DepreciationViewModel.cs" />
+    <Compile Include="FixedAsset\ViewModel\DepreciationVm.cs" />
     <Compile Include="FixedAsset\ViewModel\DisposalViewModel.cs" />
     <Compile Include="FixedAsset\ViewModel\FixedAssetItemReport.cs" />
     <Compile Include="FixedAsset\ViewModel\FixedAssetItemVm.cs" />
@@ -1978,8 +1979,15 @@
     </Compile>
     <Compile Include="Furniture\DataSource\FurnitureBoqSummaryOds.cs" />
     <Compile Include="Furniture\DataSource\FurnitureEstimationPrintOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureEstimationSummaryOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureJobOrderOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureMonthlyReportOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureParameterOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureProductionFollowupOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureProductionJobCardOds.cs" />
     <Compile Include="Furniture\DataSource\FurnitureProformaPrintOds.cs" />
     <Compile Include="Furniture\DataSource\FurnitureSummaryReportOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureWeeklyReportds.cs" />
     <Compile Include="Furniture\Design\EstimationPrint.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1992,11 +2000,59 @@
     <Compile Include="Furniture\Design\FurnitureBoqPrint.Designer.cs">
       <DependentUpon>FurnitureBoqPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Furniture\Design\FurnitureEstimationSummaryDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureEstimationSummaryDesign.Designer.cs">
+      <DependentUpon>FurnitureEstimationSummaryDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureFollowupAssembly.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureFollowupAssembly.Designer.cs">
+      <DependentUpon>FurnitureFollowupAssembly.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureFollowupWood.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureFollowupWood.Designer.cs">
+      <DependentUpon>FurnitureFollowupWood.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureJobFollowup.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureJobFollowup.Designer.cs">
+      <DependentUpon>FurnitureJobFollowup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureJobOrderDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureJobOrderDesign.Designer.cs">
+      <DependentUpon>FurnitureJobOrderDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureMonthlyReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureMonthlyReport.Designer.cs">
+      <DependentUpon>FurnitureMonthlyReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureProductionJobCard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureProductionJobCard.Designer.cs">
+      <DependentUpon>FurnitureProductionJobCard.cs</DependentUpon>
+    </Compile>
     <Compile Include="Furniture\Design\FurnitureSummaryReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Furniture\Design\FurnitureSummaryReport.Designer.cs">
       <DependentUpon>FurnitureSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureWeeklyReportDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureWeeklyReportDesign.Designer.cs">
+      <DependentUpon>FurnitureWeeklyReportDesign.cs</DependentUpon>
     </Compile>
     <Compile Include="Furniture\Design\ProformaPrint.cs">
       <SubType>Component</SubType>
@@ -2004,9 +2060,17 @@
     <Compile Include="Furniture\Design\ProformaPrint.Designer.cs">
       <DependentUpon>ProformaPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Furniture\ViewModel\FParameterVM.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureCommonViewModel.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureEstimationSummaryViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureEstimationViewModel.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureFollowupViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureJobSummaryVm.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureMonthlyReportViewModel.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureobOrderHeaderViewModel.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureProductionJobCardViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureProformaPrintViewModel.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureWeeklyReportViewModel.cs" />
     <Compile Include="Health\DataSource\AccidentObjectDataSource.cs" />
     <Compile Include="Health\DataSource\MedicalRequestODS.cs" />
     <Compile Include="Health\Design\MedicalRequestReport.cs">
@@ -2163,6 +2227,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTerminationObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTrainingObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTypeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationCriteriaODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationPeriodsObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationStatusODS.cs" />
@@ -2196,6 +2261,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailSelfCareObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePayableObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePeriodsObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePlanObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveSummaryObjectDataSource.cs" />
@@ -2222,6 +2288,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferalSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferralSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RestitutionListObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\SeverancePayableObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationReasonObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingAndEducationOneByOneODS.cs" />
@@ -2295,6 +2362,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeTraining.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeTypeReportParameterViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployementTypeVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EnumViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EvaluationTypes.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExperienceVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantDetail.cs" />
@@ -2324,6 +2392,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\LeaveBalanceViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveFromOther.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveOneByOne.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeavePayableVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeavePlan.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeavePlanList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveRequestLetterVM.cs" />
@@ -2353,6 +2422,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\ReferalSheetVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ReferralSheet.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\RestitutionList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\SeverancePayablesVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\Structure.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TerminationAcceptanceLetterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingAndEducationOneByeOneVM.cs" />
@@ -2400,6 +2470,12 @@
     </Compile>
     <Compile Include="HRM\HRM\LeaveOnebyOneSelfCare.designer.cs">
       <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\LeavePayableReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\LeavePayableReport.designer.cs">
+      <DependentUpon>LeavePayableReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.cs">
       <SubType>Component</SubType>
@@ -2537,6 +2613,14 @@
     <Compile Include="HRM\HRM\Letters\rptVacancyInternal.designer.cs">
       <DependentUpon>rptVacancyInternal.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\Letters\TemplateLetters.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\TemplateLetters.Designer.cs">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\TemplateLettersObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\TemplateTypeODS.cs" />
     <Compile Include="HRM\HRM\Letters\TerminationAcceptanceLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2966,6 +3050,12 @@
     </Compile>
     <Compile Include="HRM\HRM\rtpInternalVcancySelfCare.designer.cs">
       <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\SeverancePayableReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\SeverancePayableReport.designer.cs">
+      <DependentUpon>SeverancePayableReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\TrainingAndEducationOneByOne.cs">
       <SubType>Component</SubType>
@@ -3557,11 +3647,24 @@
     </Compile>
     <Compile Include="JobCosting\ViewModel\JobCostingVM.cs" />
     <Compile Include="JobCosting\ViewModel\JobOrderCardVm.cs" />
+    <Compile Include="Maintenance\DataSource\CategoryOds.cs" />
+    <Compile Include="Maintenance\DataSource\DailyJobRegistrationReportODS.cs" />
     <Compile Include="Maintenance\DataSource\DailyMaintenanceReport.cs" />
+    <Compile Include="Maintenance\DataSource\ExteranalMaintenancePaymentRequestPrint.cs" />
+    <Compile Include="Maintenance\DataSource\ExtermalMaintenanceCenterODS.cs" />
+    <Compile Include="Maintenance\DataSource\GetEquipmentTypeOds.cs" />
+    <Compile Include="Maintenance\DataSource\GetPeriodODS.cs" />
+    <Compile Include="Maintenance\DataSource\GlFiscalYearOds.cs" />
+    <Compile Include="Maintenance\DataSource\GuarageMaintenanceCostBreakDownODS.cs" />
     <Compile Include="Maintenance\DataSource\InternalMaintenanceReportImproved.cs" />
     <Compile Include="Maintenance\DataSource\JobOrderOds.cs" />
+    <Compile Include="Maintenance\DataSource\JobOrderPrintChildOds.cs" />
     <Compile Include="Maintenance\DataSource\JobOrderPrintOds.cs" />
+    <Compile Include="Maintenance\DataSource\JobServicesSelector.cs" />
     <Compile Include="Maintenance\DataSource\MachinaryAndVehicleMaintenancereportOds.cs" />
+    <Compile Include="Maintenance\DataSource\MachineAndVehicleMaintenanceAndRepair.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceCenterODS.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceCostODS.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceDurationOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceDurationOdsNew.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceInternalReportOds.cs" />
@@ -3569,15 +3672,77 @@
     <Compile Include="Maintenance\DataSource\MaintenanceParametersOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceReportOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceSummaryOds.cs" />
+    <Compile Include="Maintenance\DataSource\MechanicPerformanceEnum.cs" />
+    <Compile Include="Maintenance\DataSource\MechanicPerformanceODS.cs" />
+    <Compile Include="Maintenance\DataSource\MVDailyMaintenanceReportODS.cs" />
+    <Compile Include="Maintenance\DataSource\MVPmExecutionReportHeaderODS.cs" />
+    <Compile Include="Maintenance\DataSource\MVPmExecutionReportODS.cs" />
     <Compile Include="Maintenance\DataSource\OrderTypeOds.cs" />
+    <Compile Include="Maintenance\DataSource\OutSourcedMaintenanceReportODS.cs" />
+    <Compile Include="Maintenance\DataSource\OutSourceMaintenanceReportODS.cs" />
+    <Compile Include="Maintenance\DataSource\OwnRentalEnumm.cs" />
+    <Compile Include="Maintenance\DataSource\PlanVsActualReport.cs" />
+    <Compile Include="Maintenance\DataSource\PlateNumberSelectorODS.cs" />
+    <Compile Include="Maintenance\DataSource\SatisfactionNoteODS.cs" />
+    <Compile Include="Maintenance\DataSource\ServiceCenterSelectorForMechanicPerformanceODS.cs" />
+    <Compile Include="Maintenance\DataSource\ServiceCenterSelectorODS.cs" />
+    <Compile Include="Maintenance\DataSource\ServiceJobOrderPrintChildOds.cs" />
+    <Compile Include="Maintenance\DataSource\ServiceJobOrderPrintOds.cs" />
+    <Compile Include="Maintenance\DataSource\StandardTimeVsActualTime.cs" />
+    <Compile Include="Maintenance\DataSource\TechnicianByMCenter.cs" />
     <Compile Include="Maintenance\DataSource\WeeklyCmPmPerformanceReportOds.cs" />
     <Compile Include="Maintenance\DataSource\WeeklyCMPMPerformanceSummaryReport.cs" />
+    <Compile Include="Maintenance\DataSource\WeeklyPlanVsActualReportODS.cs" />
+    <Compile Include="Maintenance\DataSource\WeeklyPMCMPerformanceReportSummaryODS.cs" />
+    <Compile Include="Maintenance\DataSource\WeeklyPMCMPlanVsActualReportSummaryODS.cs" />
     <Compile Include="Maintenance\DataSource\WorkOrderWorkSheetOds.cs" />
+    <Compile Include="Maintenance\Design\DailyJobRegistration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyJobRegistration.Designer.cs">
+      <DependentUpon>DailyJobRegistration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Maintenance\Design\DailyMaintenanceReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Maintenance\Design\DailyMaintenanceReport.Designer.cs">
       <DependentUpon>DailyMaintenanceReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyMaintenanceReports.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyMaintenanceReports.Designer.cs">
+      <DependentUpon>DailyMaintenanceReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyMaintenanceReportss.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyMaintenanceReportss.Designer.cs">
+      <DependentUpon>DailyMaintenanceReportss.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyMaintenanceReportt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyMaintenanceReportt.Designer.cs">
+      <DependentUpon>DailyMaintenanceReportt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\ExternalMaintenancePaymentPrint.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\ExternalMaintenancePaymentPrint.Designer.cs">
+      <DependentUpon>ExternalMaintenancePaymentPrint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\ExternalMaintenanceSatisfaction.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\ExternalMaintenanceSatisfaction.Designer.cs">
+      <DependentUpon>ExternalMaintenanceSatisfaction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\GarageMaintenanceCostBreakDownReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\GarageMaintenanceCostBreakDownReport.Designer.cs">
+      <DependentUpon>GarageMaintenanceCostBreakDownReport.cs</DependentUpon>
     </Compile>
     <Compile Include="Maintenance\Design\InternalMaintenanceCostDesign.cs">
       <SubType>Component</SubType>
@@ -3603,11 +3768,35 @@
     <Compile Include="Maintenance\Design\JobOrderPrintDesign.Designer.cs">
       <DependentUpon>JobOrderPrintDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Maintenance\Design\JobOrderPrintDesignExternal.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobOrderPrintDesignExternal.Designer.cs">
+      <DependentUpon>JobOrderPrintDesignExternal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Maintenance\Design\JobRequestDesign.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Maintenance\Design\JobRequestDesign.Designer.cs">
       <DependentUpon>JobRequestDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MachineAndVehicleMaintenanceAndRepair.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MachineAndVehicleMaintenanceAndRepair.Designer.cs">
+      <DependentUpon>MachineAndVehicleMaintenanceAndRepair.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MachineAndVehicleMaintenanceAndRepairReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MachineAndVehicleMaintenanceAndRepairReport.Designer.cs">
+      <DependentUpon>MachineAndVehicleMaintenanceAndRepairReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceCostSheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceCostSheetReport.Designer.cs">
+      <DependentUpon>MaintenanceCostSheetReport.cs</DependentUpon>
     </Compile>
     <Compile Include="Maintenance\Design\MaintenanceDurationDesign.cs">
       <SubType>Component</SubType>
@@ -3627,6 +3816,12 @@
     <Compile Include="Maintenance\Design\MaintenancePlanReportDesign.Designer.cs">
       <DependentUpon>MaintenancePlanReportDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Maintenance\Design\MaintenancePlanVsActual.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenancePlanVsActual.Designer.cs">
+      <DependentUpon>MaintenancePlanVsActual.cs</DependentUpon>
+    </Compile>
     <Compile Include="Maintenance\Design\MaintenanceReportDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3645,11 +3840,53 @@
     <Compile Include="Maintenance\Design\MaintenanceSummaryDesign.Designer.cs">
       <DependentUpon>MaintenanceSummaryDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Maintenance\Design\MechanicPerformance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MechanicPerformance.Designer.cs">
+      <DependentUpon>MechanicPerformance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MVPmExecutionReport .cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MVPmExecutionReport .Designer.cs">
+      <DependentUpon>MVPmExecutionReport .cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\OutSourcedMaintenanceReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\OutSourcedMaintenanceReport.Designer.cs">
+      <DependentUpon>OutSourcedMaintenanceReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\OutSourcedMaintenanceRequest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\OutSourcedMaintenanceRequest.Designer.cs">
+      <DependentUpon>OutSourcedMaintenanceRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\StandardVsActualTimeReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\StandardVsActualTimeReport.Designer.cs">
+      <DependentUpon>StandardVsActualTimeReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Maintenance\Design\WeeklyCmPmPerformanceDesign.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Maintenance\Design\WeeklyCmPmPerformanceDesign.Designer.cs">
       <DependentUpon>WeeklyCmPmPerformanceDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\WeeklyPMAndCMPerformanceReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\WeeklyPMAndCMPerformanceReport.Designer.cs">
+      <DependentUpon>WeeklyPMAndCMPerformanceReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\WeeklyPMCMPerfomanceReportSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\WeeklyPMCMPerfomanceReportSummary.Designer.cs">
+      <DependentUpon>WeeklyPMCMPerfomanceReportSummary.cs</DependentUpon>
     </Compile>
     <Compile Include="Maintenance\Design\WorkOrderWorkSheetDesign.cs">
       <SubType>Component</SubType>
@@ -3820,15 +4057,39 @@
     <Compile Include="Planning\ViewModel\ProjectSummaryBySectorsVM.cs" />
     <Compile Include="Planning\ViewModel\RiskFollowUpVM.cs" />
     <Compile Include="Planning\ViewModel\RiskMitgationPlanVM.cs" />
+    <Compile Include="Printing\DataSource\PrintEstimationMonthlyReportOds.cs" />
     <Compile Include="Printing\DataSource\PrintingEstimationOds.cs" />
     <Compile Include="Printing\DataSource\PrintingEstimationSummaryPrintOds.cs" />
     <Compile Include="Printing\DataSource\PrintingobOrderOds.cs" />
     <Compile Include="Printing\DataSource\PrintingProformaOds.cs" />
+    <Compile Include="Printing\DataSource\PrintJobCardOds.cs" />
+    <Compile Include="Printing\DataSource\PrintJobFollowUpOds.cs" />
+    <Compile Include="Printing\DataSource\PrintParameterOds.cs" />
+    <Compile Include="Printing\DataSource\PrintProgressReportOds.cs" />
+    <Compile Include="Printing\DataSource\PrintTotalProductionCostReportOds.cs" />
     <Compile Include="Printing\Design\JobOrderDesign.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Printing\Design\JobOrderDesign.Designer.cs">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Printing\Design\PostPressFollowup.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PostPressFollowup.Designer.cs">
+      <DependentUpon>PostPressFollowup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Printing\Design\PressFollowup.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PressFollowup.Designer.cs">
+      <DependentUpon>PressFollowup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Printing\Design\PrintEstimationMonthlyReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintEstimationMonthlyReport.Designer.cs">
+      <DependentUpon>PrintEstimationMonthlyReport.cs</DependentUpon>
     </Compile>
     <Compile Include="Printing\Design\PrintingEstimationDesign.cs">
       <SubType>Component</SubType>
@@ -3842,17 +4103,41 @@
     <Compile Include="Printing\Design\PrintingProformaPrint.Designer.cs">
       <DependentUpon>PrintingProformaPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\Design\PrintJobCard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintJobCard.Designer.cs">
+      <DependentUpon>PrintJobCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Printing\Design\PrintProductionFollowUp.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintProductionFollowUp.Designer.cs">
+      <DependentUpon>PrintProductionFollowUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Printing\Design\PrintProductionProgrss.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintProductionProgrss.Designer.cs">
+      <DependentUpon>PrintProductionProgrss.cs</DependentUpon>
+    </Compile>
     <Compile Include="Printing\Design\PrintSummaryDesign.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Printing\Design\PrintSummaryDesign.Designer.cs">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\ViewModel\JobCardViewModel.cs" />
+    <Compile Include="Printing\ViewModel\ParameterVM.cs" />
+    <Compile Include="Printing\ViewModel\PrintEstimationMonthlyReportViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingCommonViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingEstimationViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingJobOrderViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingProformaViewModel.cs" />
+    <Compile Include="Printing\ViewModel\PrintJobFollowUpViewModel.cs" />
+    <Compile Include="Printing\ViewModel\PrintProdProgressViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintSummaryHeadVM.cs" />
+    <Compile Include="Printing\ViewModel\PrintTotalProductionCostViewModel.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -5171,8 +5456,32 @@
     <EmbeddedResource Include="Furniture\Design\FurnitureBoqPrint.resx">
       <DependentUpon>FurnitureBoqPrint.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureEstimationSummaryDesign.resx">
+      <DependentUpon>FurnitureEstimationSummaryDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureFollowupAssembly.resx">
+      <DependentUpon>FurnitureFollowupAssembly.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureFollowupWood.resx">
+      <DependentUpon>FurnitureFollowupWood.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureJobFollowup.resx">
+      <DependentUpon>FurnitureJobFollowup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureJobOrderDesign.resx">
+      <DependentUpon>FurnitureJobOrderDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureMonthlyReport.resx">
+      <DependentUpon>FurnitureMonthlyReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureProductionJobCard.resx">
+      <DependentUpon>FurnitureProductionJobCard.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Furniture\Design\FurnitureSummaryReport.resx">
       <DependentUpon>FurnitureSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureWeeklyReportDesign.resx">
+      <DependentUpon>FurnitureWeeklyReportDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Furniture\Design\ProformaPrint.resx">
       <DependentUpon>ProformaPrint.cs</DependentUpon>
@@ -5243,6 +5552,9 @@
     <EmbeddedResource Include="HRM\HRM\LeaveOnebyOneSelfCare.resx">
       <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\LeavePayableReport.resx">
+      <DependentUpon>LeavePayableReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\AmharicExperienceLetter.resx">
       <DependentUpon>AmharicExperienceLetter.cs</DependentUpon>
     </EmbeddedResource>
@@ -5305,6 +5617,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\rptVacancyInternal.resx">
       <DependentUpon>rptVacancyInternal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\TemplateLetters.am.resx">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\TemplateLetters.om.resx">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\TemplateLetters.resx">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\TerminationAcceptanceLetter.resx">
       <DependentUpon>TerminationAcceptanceLetter.cs</DependentUpon>
@@ -5518,6 +5839,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rtpInternalVcancySelfCare.resx">
       <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\SeverancePayableReport.resx">
+      <DependentUpon>SeverancePayableReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingAndEducationOneByOne.resx">
       <DependentUpon>TrainingAndEducationOneByOne.cs</DependentUpon>
@@ -5738,8 +6062,29 @@
     <EmbeddedResource Include="JobCosting\Design\JobCostingReportdes.resx">
       <DependentUpon>JobCostingReportdes.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\DailyJobRegistration.resx">
+      <DependentUpon>DailyJobRegistration.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\DailyMaintenanceReport.resx">
       <DependentUpon>DailyMaintenanceReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\DailyMaintenanceReports.resx">
+      <DependentUpon>DailyMaintenanceReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\DailyMaintenanceReportss.resx">
+      <DependentUpon>DailyMaintenanceReportss.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\DailyMaintenanceReportt.resx">
+      <DependentUpon>DailyMaintenanceReportt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\ExternalMaintenancePaymentPrint.resx">
+      <DependentUpon>ExternalMaintenancePaymentPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\ExternalMaintenanceSatisfaction.resx">
+      <DependentUpon>ExternalMaintenanceSatisfaction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\GarageMaintenanceCostBreakDownReport.resx">
+      <DependentUpon>GarageMaintenanceCostBreakDownReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\InternalMaintenanceCostDesign.resx">
       <DependentUpon>InternalMaintenanceCostDesign.cs</DependentUpon>
@@ -5753,8 +6098,20 @@
     <EmbeddedResource Include="Maintenance\Design\JobOrderPrintDesign.resx">
       <DependentUpon>JobOrderPrintDesign.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\JobOrderPrintDesignExternal.resx">
+      <DependentUpon>JobOrderPrintDesignExternal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\JobRequestDesign.resx">
       <DependentUpon>JobRequestDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MachineAndVehicleMaintenanceAndRepair.resx">
+      <DependentUpon>MachineAndVehicleMaintenanceAndRepair.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MachineAndVehicleMaintenanceAndRepairReport.resx">
+      <DependentUpon>MachineAndVehicleMaintenanceAndRepairReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenanceCostSheetReport.resx">
+      <DependentUpon>MaintenanceCostSheetReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\MaintenanceDurationDesign.resx">
       <DependentUpon>MaintenanceDurationDesign.cs</DependentUpon>
@@ -5765,6 +6122,9 @@
     <EmbeddedResource Include="Maintenance\Design\MaintenancePlanReportDesign.resx">
       <DependentUpon>MaintenancePlanReportDesign.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenancePlanVsActual.resx">
+      <DependentUpon>MaintenancePlanVsActual.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\MaintenanceReportDesign.resx">
       <DependentUpon>MaintenanceReportDesign.cs</DependentUpon>
     </EmbeddedResource>
@@ -5774,8 +6134,29 @@
     <EmbeddedResource Include="Maintenance\Design\MaintenanceSummaryDesign.resx">
       <DependentUpon>MaintenanceSummaryDesign.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MechanicPerformance.resx">
+      <DependentUpon>MechanicPerformance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MVPmExecutionReport .resx">
+      <DependentUpon>MVPmExecutionReport .cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\OutSourcedMaintenanceReport.resx">
+      <DependentUpon>OutSourcedMaintenanceReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\OutSourcedMaintenanceRequest.resx">
+      <DependentUpon>OutSourcedMaintenanceRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\StandardVsActualTimeReport.resx">
+      <DependentUpon>StandardVsActualTimeReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\WeeklyCmPmPerformanceDesign.resx">
       <DependentUpon>WeeklyCmPmPerformanceDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\WeeklyPMAndCMPerformanceReport.resx">
+      <DependentUpon>WeeklyPMAndCMPerformanceReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\WeeklyPMCMPerfomanceReportSummary.resx">
+      <DependentUpon>WeeklyPMCMPerfomanceReportSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\WorkOrderWorkSheetDesign.resx">
       <DependentUpon>WorkOrderWorkSheetDesign.cs</DependentUpon>
@@ -5840,11 +6221,29 @@
     <EmbeddedResource Include="Printing\Design\JobOrderDesign.resx">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PostPressFollowup.resx">
+      <DependentUpon>PostPressFollowup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PressFollowup.resx">
+      <DependentUpon>PressFollowup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintEstimationMonthlyReport.resx">
+      <DependentUpon>PrintEstimationMonthlyReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintingEstimationDesign.resx">
       <DependentUpon>PrintingEstimationDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintingProformaPrint.resx">
       <DependentUpon>PrintingProformaPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintJobCard.resx">
+      <DependentUpon>PrintJobCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintProductionFollowUp.resx">
+      <DependentUpon>PrintProductionFollowUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintProductionProgrss.resx">
+      <DependentUpon>PrintProductionProgrss.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintSummaryDesign.resx">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>

@@ -3,27 +3,34 @@
 @using ExceedERP.Core.Localization 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
+
 <legend>@Resources.NavigatorHealthAndInsurance_EmployeeInsurance</legend>
 @(Html.Kendo().Grid<Insurance>()
       .Name("Insurancegrid")
       .Columns(columns =>
       {
+          columns.Bound(c => c.InsuranceId).Title("#").Width(80);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Width(200)/*.EditorTemplateName("EmployeeLists")*/.Filterable(ftb => ftb.Multi(true).Search(true)).Width(170);
-          columns.Bound(c => c.BirthDate).Width(120);
-          columns.ForeignKey(c => c.InsuranceCategoryId, (IEnumerable)ViewData["InsuranceCatagory"], "InsuranceCategoryId", "Name").Width(160);
-          //EditorTemplateName("Group").Width(200);
-          // columns.Bound(c => c.From);
-          // columns.Bound(c => c.To);
-          //columns.ForeignKey(c => c.ClassOfBusiness, (IEnumerable)ViewData["classList"], "LookupId", "Description").EditorTemplateName("BusinessClass").Width(200);
-          // columns.Bound(c => c.InsuranceCorporation);
-          columns.Bound(c => c.FromAmharic).Width(120);
-          columns.Bound(c => c.ToAmharic).Width(120);
-          columns.Bound(c => c.Number).Width(120);
-          columns.Bound(c => c.Salary).Width(120);
+          columns.Bound(c => c.BirthDate).Width(160);
+          columns.ForeignKey(c => c.InsuranceCategoryId, (IEnumerable)ViewData["InsuranceCatagory"], "InsuranceCategoryId", "Name").Width(150);
+
+
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.FromAmharic).Width(100);
+              columns.Bound(c => c.ToAmharic).Width(100);
+          }
+          else
+          {
+              columns.Bound(c => c.From).Width(100);
+              columns.Bound(c => c.To).Width(100);
+          }
+          columns.Bound(c => c.Number).Width(100);
+          columns.Bound(c => c.Salary).Width(100);
           columns.Bound(c => c.SumofInsured).Width(120);
-          columns.Bound(c => c.Premium);
-          // columns.Bound(c => c.Remark);
+          columns.Bound(c => c.Premium).Width(100);
           columns.Command(command =>
           {
 
@@ -68,6 +75,7 @@
                                     .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(x=>x.Add(sort=>sort.InsuranceId).Descending())
           .Events(events =>
           {
 
@@ -80,15 +88,15 @@
           .Model(model =>
           {
               model.Id(p => p.InsuranceId);
-              model.Field(p => p.Number).Editable(false);
-              model.Field(p => p.Salary).Editable(false);
-              model.Field(p => p.Premium).Editable(false);
-              model.Field(p => p.SumofInsured).Editable(false);
+              // model.Field(p => p.Number).Editable(false);
+              // model.Field(p => p.Salary).Editable(false);
+              // model.Field(p => p.Premium).Editable(false);
+              //model.Field(p => p.SumofInsured).Editable(false);
           })
-          .Read(read => read.Action("Insurance_Read", "Insurance"))
-          .Create(create => create.Action("Insurance_Create", "Insurance"))
-          .Update(update => update.Action("Insurance_Update", "Insurance"))
-          .Destroy(destroy => destroy.Action("Insurance_Destroy", "Insurance"))
+          .Read(read => read.Action("Insurance_Read", "Insurance").Data("sendForgery"))
+          .Create(create => create.Action("Insurance_Create", "Insurance").Data("sendForgery"))
+          .Update(update => update.Action("Insurance_Update", "Insurance").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Insurance_Destroy", "Insurance").Data("sendForgery"))
       )
 )
 <script>
@@ -139,7 +147,7 @@
                 var si = filds[2];
                 //var pi = filds[2];
                 $("#Number").val(num).trigger("change");
-                $("#Salary").val(sal).trigger("change");
+                //$("#Salary").val(sal).trigger("change");
                 //$("#Number").trigger("change");
                 //$("#Salary").trigger("change");
 
@@ -147,6 +155,34 @@
                 //$("#Salary").val(sal);
                 //$("#Premium").val(pi);
                 //$("#SumofInsured").val(si);
+            }
+
+        });
+    }
+    function onEmployeeChange() {
+        var employeeId = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employeeId.value();
+        //var Classes = $("#LookupId").data("kendoDropDownList");
+        //var classe = Classes.value();
+        $.ajax({
+            url: '@Url.Action("GetEmployeeSalary", "Insurance")',
+
+            data: { empId: empId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                var filds = result.split(/-/);
+                var sal = filds[0];
+                var sumInsured = filds[1];
+                var Premium = filds[2];
+                $("#Salary").val(sal).trigger("change");
+                $("#Salary").trigger("change");
+
+                $("#SumofInsured").val(sumInsured);
+                $("#SumofInsured").trigger("change");
+
+                $("#Premium").val(Premium);
+                $("#Premium").trigger("change");
             }
 
         });

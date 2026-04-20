@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using System.Runtime.Caching;
 using System.Text;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Common;
 
 
 namespace ExceedERP.Helpers.Finance
@@ -17,7 +18,7 @@ namespace ExceedERP.Helpers.Finance
 
         public string GetAccountDesc(string accountAcode)
         {
-            var sequence = MemoryCache.Default[CacheHelper.GlSegmentSetups] as List<GlSegmentSetupCache>;
+            var sequence = MemoryCache.Default[CacheKeys.GlSegmentSetups] as List<GlSegmentSetupCache>;
             if (sequence == null)
             {
                 sequence = _db.GlSegmentSetups
@@ -30,10 +31,10 @@ namespace ExceedERP.Helpers.Finance
                                  Name = x.Name,
                              })
                              .ToList();
-                MemoryCache.Default.Add(CacheHelper.GlSegmentSetups, sequence, ObjectCache.InfiniteAbsoluteExpiration);
+                MemoryCache.Default.Add(CacheKeys.GlSegmentSetups, sequence, ObjectCache.InfiniteAbsoluteExpiration);
             }
 
-            var otherSegments = MemoryCache.Default[CacheHelper.GlChartOfAccountSegments] as List<GlChartOfAccountSegmentCache>;
+            var otherSegments = MemoryCache.Default[CacheKeys.GlChartOfAccountSegments] as List<GlChartOfAccountSegmentCache>;
             if (otherSegments == null)
             {
                 otherSegments = _db.GlChartOfAccountSegments
@@ -44,10 +45,10 @@ namespace ExceedERP.Helpers.Finance
                                       GLSegmentSetupId = x.GLSegmentSetupId
                                   })
                                   .ToList();
-                MemoryCache.Default.Add(CacheHelper.GlChartOfAccountSegments, otherSegments, ObjectCache.InfiniteAbsoluteExpiration);
+                MemoryCache.Default.Add(CacheKeys.GlChartOfAccountSegments, otherSegments, ObjectCache.InfiniteAbsoluteExpiration);
             }
 
-            var accountSegments = MemoryCache.Default[CacheHelper.GLChartOfAccountAccounts] as List<GLChartOfAccountAccountCache>;
+            var accountSegments = MemoryCache.Default[CacheKeys.GLChartOfAccountAccounts] as List<GLChartOfAccountAccountCache>;
             if (accountSegments == null)
             {
                 accountSegments = _db.GLChartOfAccountAccounts
@@ -57,7 +58,7 @@ namespace ExceedERP.Helpers.Finance
                                         Description = x.Description
                                     })
                                     .ToList();
-                MemoryCache.Default.Add(CacheHelper.GLChartOfAccountAccounts, accountSegments, ObjectCache.InfiniteAbsoluteExpiration);
+                MemoryCache.Default.Add(CacheKeys.GLChartOfAccountAccounts, accountSegments, ObjectCache.InfiniteAbsoluteExpiration);
             }
 
             var descBuilder = new StringBuilder();

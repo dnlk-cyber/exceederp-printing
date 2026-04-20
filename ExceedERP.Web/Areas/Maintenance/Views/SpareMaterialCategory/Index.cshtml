@@ -33,7 +33,7 @@
         .DataSource(dataSource => dataSource
         .Ajax()
         .PageSize(20)
-        .ServerOperation(false)
+       
                     .Model(model =>
                     {
                         model.Id(p => p.SpareMaterialCategoryId);
@@ -42,10 +42,10 @@
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Read(read => read.Action("Category_Read", "SpareMaterialCategory"))
-                    .Create(create => create.Action("Category_Create", "SpareMaterialCategory"))
-                    .Update(update => update.Action("Category_Update", "SpareMaterialCategory"))
-                    .Destroy(update => update.Action("Category_Destroy", "SpareMaterialCategory"))
+                    .Read(read => read.Action("Category_Read", "SpareMaterialCategory").Data("sendForgery"))
+                    .Create(create => create.Action("Category_Create", "SpareMaterialCategory").Data("sendForgery"))
+                    .Update(update => update.Action("Category_Update", "SpareMaterialCategory").Data("sendForgery"))
+                    .Destroy(update => update.Action("Category_Destroy", "SpareMaterialCategory").Data("sendForgery"))
         )
 )
 

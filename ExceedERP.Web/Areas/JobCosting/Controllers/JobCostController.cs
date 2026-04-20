@@ -30,39 +30,42 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
             var customers = db.OrganizationCustomers.Select(s => new {s.OrganizationCustomerID,s.TradeName}).ToList();
             var JobOrders = db.Jobs.ToList();
+
             var JobCategory= db.JobCategories.ToList();
             //var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode, NAme = s.Name }).ToList();
             //ViewData["ItemCategorys"] = itemCategorys;
             //var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = s.Name }).ToList();
             //ViewData["Items"] = items;
 
-            ViewData["Customers"] = customers.Select(s => new{s.OrganizationCustomerID,TradeName = ValidateInput(s.TradeName)}).ToList();
+            ViewData["Customers"] = customers.Select(s => new{s.OrganizationCustomerID,TradeName = s.TradeName}).ToList();
 
             
-            ViewData["JobOrders"] = JobOrders.Select(j => new{j.JobId,JobNo = ValidateInput(j.JobNo)}).ToList();
+            ViewData["JobOrders"] = JobOrders.Select(j => new{j.JobId,JobNo = j.JobNo}).ToList();
+            ViewData["JobOrderss"] = db.PrintingJobOrders.Select(j => new{j.PrintingJobOrderId,JobNo = j.CRVNo}).ToList();
 
             ViewData["JobCategories"] = JobCategory
-                              .Select(c => new {c.JobCategoryId,JobName = ValidateInput(c.JobName)}).ToList();
+                              .Select(c => new {c.JobCategoryId,JobName = c.JobName}).ToList();
 
-              var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode,Name = ValidateInput(s.Name)}).ToList();
+              var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode,Name = s.Name}).ToList();
 
                ViewData["ItemCategorys"] = itemCategorys;
 
-               var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = ValidateInput(s.Name) }).ToList();
+               var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = s.Name }).ToList();
                  ViewData["Items"] = items;
+            ViewData["Category"] = db.PrintingMaterialCategories.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryId,
+                Text = s.CategoryName
+            }).ToList();
+            ViewData["Item"] = db.PrintingMaterialCategoryItems.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryItemId,
+                Text = s.ItemName
+            }).ToList();
             return View();
         }
 
-        private string ValidateInput(string input)
-        {
-            return string.IsNullOrWhiteSpace(input)
-                ? string.Empty
-                : input.Replace("\n", "")
-                       .Replace("\r", "")
-                       .Replace("#", "")
-                       .Replace("+", " ")
-                       .Trim();
-        }
+        
     
     public JsonResult GetAllCostCenters()
         {
@@ -101,14 +104,23 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
         {
             if (ModelState.IsValid)
             {
-
+                var printingJobOrder = db.PrintingJobOrders.Find(jobCost.JobId);
                 var jobOrder = db.Jobs.Find(jobCost.JobId);
-                if(jobOrder!=null)
+                var fetchSetting = db.PrintingJobSetting.FirstOrDefault();
+                if(jobOrder!=null&&(fetchSetting==null||(fetchSetting!=null&&fetchSetting.IsFromPrinting==false)))
                 {
                     jobCost.JobCategoryId = jobOrder.JobTypeId;
                     jobCost.CustomerId = jobOrder.CustomerId;
                 }
-               
+                else
+                {
+                    if (printingJobOrder != null && (fetchSetting != null && fetchSetting.IsFromPrinting == true))
+                    {
+                        var fetchItem = db.PrintingJobOrderItems.FirstOrDefault(x => x.PrintingJobOrderId == jobCost.JobId);
+                        jobCost.JobCategoryId = fetchItem.JobTypeId;
+                        jobCost.CustomerId = printingJobOrder.CustomerId;
+                    }
+                }
                 var entity = (JobCost)this.GetObject(jobCost);
                 db.JobCosts.Add(entity);
                 db.SaveChanges();
@@ -125,11 +137,18 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
         {
             if (ModelState.IsValid)
             {
+                var printingJobOrder = db.PrintingJobOrders.Find(jobCost.JobId);
                 var jobOrder = db.Jobs.Find(jobCost.JobId);
-                if (jobOrder != null)
+                if (jobOrder != null && 1 > 2)
                 {
                     jobCost.JobCategoryId = jobOrder.JobTypeId;
                     jobCost.CustomerId = jobOrder.CustomerId;
+                }
+                else
+                {
+                    var fetchItem = db.PrintingJobOrderItems.FirstOrDefault(x => x.PrintingJobOrderId == jobCost.JobId);
+                    jobCost.JobCategoryId = fetchItem.JobTypeId;
+                    jobCost.CustomerId = printingJobOrder.CustomerId;
                 }
                 var entity = (JobCost)this.GetObject(jobCost);
 

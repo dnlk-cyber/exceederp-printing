@@ -49,6 +49,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Value = s.GLPeriodId,
                 Text = s.Name
             }).ToList();
+            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
+            {
+                Value = s.MaintenanceCenterID,
+                Text = s.Name
+            }).ToList();
             return View();
         }
 

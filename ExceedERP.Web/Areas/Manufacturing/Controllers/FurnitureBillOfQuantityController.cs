@@ -116,7 +116,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         CustomerId = furnitureBillOfQuantity.CustomerId,
                         Quantity = furnitureBillOfQuantity.Quantity,
                         Size = furnitureBillOfQuantity.Size,
-                        Status = furnitureBillOfQuantity.Status,
+                        Status = "Pending",
                         Remark = furnitureBillOfQuantity.Remark,
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name,
@@ -328,7 +328,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 billOfQuantity.IsSendForApproval = true;
                 billOfQuantity.SendForApprovalBy = User.Identity.Name;
                 billOfQuantity.SendForApprovalTime = DateTime.Today;
-
+                billOfQuantity.Status = "Checked";
                 db.FurnitureBillOfQuantities.Attach(billOfQuantity);
                 db.Entry(billOfQuantity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -358,18 +358,40 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     billOfQuantity.JobTypeId = jobtypeId;
                 }
 
+                //--Generate Estimation--//
+                GenerateEstimation(billOfQuantity);
 
                 billOfQuantity.IsOnlineApproved = true;
                 billOfQuantity.OnlineApprovedBy = User.Identity.Name;
                 billOfQuantity.OnlineApprovedTime = DateTime.Today;
-
+                billOfQuantity.Status = "Approved";
 
                 db.FurnitureBillOfQuantities.Attach(billOfQuantity);
                 db.Entry(billOfQuantity).State = EntityState.Modified;
+
                 db.SaveChanges();
-                //--Generate Estimation--//
-                GenerateEstimation(billOfQuantity);
+                
                 response = new { Success = true, Message = "Successfully Approved and Created Estimation!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+        public JsonResult RejectBOQ(int id)
+        {
+            object response = null;
+            var billOfQuantity = db.FurnitureBillOfQuantities.Find(id);
+            if (billOfQuantity != null)
+            {               
+                billOfQuantity.IsOnlineApproved = false;
+                billOfQuantity.IsSendForApproval = false;
+                billOfQuantity.Status = "Rejected";
+                db.FurnitureBillOfQuantities.Attach(billOfQuantity);
+                db.Entry(billOfQuantity).State = EntityState.Modified;
+                db.SaveChanges();                
+                response = new { Success = true, Message = "Successfully Rejected" };
             }
             else
             {
@@ -380,49 +402,148 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
         private void GenerateEstimation(FurnitureBillOfQuantity billOfQuantity)
         {
-            var boqMaterial = db.FurnitureBOQMaterials.Where(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
-            var boqLabor = db.FurnitureBOQLabors.Where(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
-            if (boqMaterial.Any() && boqLabor.Any())
+            var boqMaterials = db.FurnitureBOQMaterials.Where(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
+            var boqLabors = db.FurnitureBOQLabors.Where(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
+
+            var estimationExist = db.FurnitureEstimationForms.FirstOrDefault(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId);
+            
+            if (boqMaterials.Any() && boqLabors.Any())
             {
-                var estimation = new FurnitureEstimationForm
+                if (estimationExist != null)
                 {
-                    JobTypeId = (int)billOfQuantity.JobTypeId,
-                    CustomerId = billOfQuantity.CustomerId,
-                    Quantity = billOfQuantity.Quantity,
-                    FurnitureBillOfQuantityId = billOfQuantity.FurnitureBillOfQuantityId,
-
-                };
-                db.FurnitureEstimationForms.Add(estimation);
-                db.SaveChanges();
-
-                foreach (var item in boqMaterial)
-                {
-                    var materialItem = db.ManufacturingMaterialCategoryItems.FirstOrDefault(x => x.ManufacturingMaterialCategoryItemId == item.ManufacturingMaterialCategoryItemId);
-                    var material = new FurnitureMaterialCost
-                    {
-                        TaskType = item.WorkshopType,
-                        ManufacturingMaterialCategoryId = item.ManufacturingMaterialCategoryId,
-                        ManufacturingMaterialCategoryItemId = item.ManufacturingMaterialCategoryItemId,
-                        UnitOfMeasurment = item.UnitOfMeasurement,
-                        Quantity = item.Quantity,
-                        UnitPrice = materialItem.UnitPrice,
-
-                        FurnitureEstimationId = estimation.FurnitureEstimationId
-                    };
-
-                    // Total Price Calculation
-                    material.TotalPrice = material.UnitPrice * material.Quantity;
-
-                    db.FurnitureMaterialCosts.Add(material);
-                    db.SaveChanges();
+                    DeleteEstimationDetail(estimationExist.FurnitureEstimationId);
+                    UpdateEstimationForm(billOfQuantity, boqMaterials, boqLabors);
+                    
                 }
-
-                var groupedBoqLabor = boqLabor.GroupBy(x => x.WorkShopType).ToList();
-
-                foreach (var items in groupedBoqLabor)
+                else
                 {
-                    var taskCategory = db.ManifucturingTaskCategories.FirstOrDefault(x => x.Type == items.Key);
+                    var estimation = new FurnitureEstimationForm
+                    {
+                        JobTypeId = (int)billOfQuantity.JobTypeId,
+                        CustomerId = billOfQuantity.CustomerId,
+                        Quantity = billOfQuantity.Quantity,
+                        FurnitureBillOfQuantityId = billOfQuantity.FurnitureBillOfQuantityId,
+                        CreatedBy = User.Identity.Name,
+                        DateCreated = DateTime.Now,
+                        Status = "Pending"
+                    };
+                    db.FurnitureEstimationForms.Add(estimation);
+                    db.SaveChanges();
+                    foreach (var item in boqMaterials)
+                    {
+                        var materialItem = db.ManufacturingMaterialCategoryItems.FirstOrDefault(x => x.ManufacturingMaterialCategoryItemId == item.ManufacturingMaterialCategoryItemId);
+                        var material = new FurnitureMaterialCost
+                        {
+                            TaskType = item.WorkshopType,
+                            ManufacturingMaterialCategoryId = item.ManufacturingMaterialCategoryId,
+                            ManufacturingMaterialCategoryItemId = item.ManufacturingMaterialCategoryItemId,
+                            UnitOfMeasurment = item.UnitOfMeasurement,
+                            Quantity = item.Quantity,
+                            UnitPrice = materialItem?.UnitPrice ?? 0,
 
+                            FurnitureEstimationId = estimation.FurnitureEstimationId
+                        };
+
+                        // Total Price Calculation
+                        material.TotalPrice = material.UnitPrice * material.Quantity;
+
+                        db.FurnitureMaterialCosts.Add(material);
+                        db.SaveChanges();
+                    }
+
+                    var groupedBoqLabor = boqLabors.GroupBy(x => x.WorkShopType).ToList();
+
+                    foreach (var items in groupedBoqLabor)
+                    {
+                        var taskCategory = db.ManifucturingTaskCategories.FirstOrDefault(x => x.Type == items.Key);
+                       if(taskCategory != null)
+                        {
+                            var labor = new DirectLaborCost
+                            {
+                                CostPerMinute = taskCategory.HourRate,
+                                TaskType = items.Key,
+                                WorkingTime = items.Sum(x => (decimal?)x.EstimatedMinute) ?? 0,
+                                FurnitureEstimationId = estimation.FurnitureEstimationId
+                            };
+                            labor.TotalCost = labor.WorkingTime * labor.CostPerMinute;
+                            db.DirectLaborCosts.Add(labor);
+                            db.SaveChanges();
+                        }
+                        
+                    }
+                }
+                
+                
+            }
+        }
+        private void DeleteEstimationDetail(int estimationId)
+        {
+            var laborCosts = db.DirectLaborCosts.Where(x => x.FurnitureEstimationId == estimationId).ToList();
+            if (laborCosts.Any())
+            {
+                db.DirectLaborCosts.RemoveRange(laborCosts);
+                
+            }
+            var materialCosts = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimationId).ToList();
+            if (materialCosts.Any())
+            {
+                db.FurnitureMaterialCosts.RemoveRange(materialCosts);
+                
+            }
+            var overAllCost = db.FurnitureOverallCosts.Where(x => x.FurnitureEstimationId == estimationId).ToList();
+            if (overAllCost.Any())
+            {
+                db.FurnitureOverallCosts.RemoveRange(overAllCost);
+                
+            }
+            db.SaveChanges();
+        }
+        private void UpdateEstimationForm(FurnitureBillOfQuantity billOfQuantity, List<FurnitureBOQMaterial> boqMaterials, List<FurnitureBOQLabor> boqLabors)
+        {
+            var estimation = db.FurnitureEstimationForms.FirstOrDefault(e => e.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId);
+            if(estimation != null)
+            {
+                estimation.JobTypeId = (int)billOfQuantity.JobTypeId;
+                estimation.CustomerId = billOfQuantity.CustomerId;
+                estimation.Quantity = billOfQuantity.Quantity;
+                estimation.CreatedBy = User.Identity.Name;
+                estimation.DateCreated = DateTime.Now;
+                estimation.Status = "Pending";
+                estimation.IsOnlineApproved = false;
+                estimation.IsSendForApproval = false;
+                db.Entry(estimation).State = EntityState.Modified;
+            }
+           
+           
+            foreach (var item in boqMaterials)
+            {
+                var materialItem = db.ManufacturingMaterialCategoryItems.FirstOrDefault(x => x.ManufacturingMaterialCategoryItemId == item.ManufacturingMaterialCategoryItemId);
+                var material = new FurnitureMaterialCost
+                {
+                    TaskType = item.WorkshopType,
+                    ManufacturingMaterialCategoryId = item.ManufacturingMaterialCategoryId,
+                    ManufacturingMaterialCategoryItemId = item.ManufacturingMaterialCategoryItemId,
+                    UnitOfMeasurment = item.UnitOfMeasurement,
+                    Quantity = item.Quantity,
+                    UnitPrice = materialItem?.UnitPrice ?? 0,
+
+                    FurnitureEstimationId = estimation.FurnitureEstimationId
+                };
+
+                // Total Price Calculation
+                material.TotalPrice = material.UnitPrice * material.Quantity;
+
+                db.FurnitureMaterialCosts.Add(material);
+              
+            }
+
+            var groupedBoqLabor = boqLabors.GroupBy(x => x.WorkShopType).ToList();
+
+            foreach (var items in groupedBoqLabor)
+            {
+                var taskCategory = db.ManifucturingTaskCategories.FirstOrDefault(x => x.Type == items.Key);
+                if(taskCategory != null)
+                {
                     var labor = new DirectLaborCost
                     {
                         CostPerMinute = taskCategory.HourRate,
@@ -432,9 +553,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     };
                     labor.TotalCost = labor.WorkingTime * labor.CostPerMinute;
                     db.DirectLaborCosts.Add(labor);
-                    db.SaveChanges();
+                    
                 }
+                
             }
+            db.SaveChanges();
         }
         private int GenerateStandardJobType(FurnitureBillOfQuantity furnitureBillOfQuantity)
         {

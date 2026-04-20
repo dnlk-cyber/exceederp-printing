@@ -102,6 +102,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 db.Entry(overAllCost).State = EntityState.Modified;
                 db.SaveChanges();
                 ExcludeOtherMargin(overAllCost.EstimationSummaryId);
+                AddMarginToSummaryDetail(overAllCost.EstimationSummaryId, overAllCost.ProfitMargin);
                 response = new { Success = true, Message = "Margin approved successfully!" };
 
             }
@@ -118,6 +119,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 .Where(x => x.EstimationSummaryId == id && !x.IsApprovedMargin)
                 .ToList();
             db.EstimationCostSummaries.RemoveRange(overAllCosts);
+            db.SaveChanges();
+        }
+        private void AddMarginToSummaryDetail(int id, decimal margin)
+        {
+            var details = db.EstimationDetails.Where(x => x.EstimationSummaryId == id).ToList();
+            details.ForEach(x => x.ProfitMargin = margin);
+            
             db.SaveChanges();
         }
         protected override void Dispose(bool disposing)

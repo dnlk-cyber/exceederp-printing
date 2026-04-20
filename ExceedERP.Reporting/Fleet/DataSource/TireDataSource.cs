@@ -149,18 +149,18 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             foreach (var Issue in Issues)
                             {
                                 FleetViewModel = new TireViewModel();
-                                FleetViewModel.PlateNumber = sov.UnitNum;
-                                FleetViewModel.Brand = Issue.Make;
-                                FleetViewModel.SerialNo = Issue.SerialNo;
-                                FleetViewModel.TireType = Issue.Type;
-                                FleetViewModel.OperatorName = Issues.FirstOrDefault().CreatedBy;
+                                FleetViewModel.PlateNumber = sov.UnitNum??"NA";
+                                FleetViewModel.Brand = Issue.Make ?? "NA";
+                                FleetViewModel.SerialNo = Issue.SerialNo ?? "NA";
+                                FleetViewModel.TireType = Issue.Type ?? "NA";
+                                FleetViewModel.OperatorName = Issues.FirstOrDefault().CreatedBy ?? "NA";
                                 FleetViewModel.UnitPrice = decimal.Parse(Issues.Sum(x => x.UnitPrice).ToString());
                                 FleetViewModel.Quantity = Issues.Count;
-                                FleetViewModel.Location = sov.Location;
+                                FleetViewModel.Location = sov.Location ?? "NA";
                                 FleetViewModel.TotalPrice = decimal.Parse((Issues.Sum(x => x.UnitPrice) * Issues.Count).ToString());
 
-                                FleetViewModel.AmharicName = AmharicName;
-                                FleetViewModel.Name = Name;
+                                FleetViewModel.AmharicName = AmharicName ?? "NA";
+                                FleetViewModel.Name = Name ?? "NA";
                                 FleetViewModel.LogoFileName = LogoFileName;
                                 FleetViewModel.Address = Address;
                                 TireList.Add(FleetViewModel);
@@ -191,14 +191,14 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             foreach (var Issue in Issues)
                             {
                                 FleetViewModel = new TireViewModel();
-                                FleetViewModel.PlateNumber = sov.UnitNum;
-                                FleetViewModel.Brand = Issue.Make;
-                                FleetViewModel.SerialNo = Issue.SerialNo;
-                                FleetViewModel.TireType = Issue.Type;
+                                FleetViewModel.PlateNumber = sov.UnitNum ?? "NA";
+                                FleetViewModel.Brand = Issue.Make ?? "NA";
+                                FleetViewModel.SerialNo = Issue.SerialNo ?? "NA";
+                                FleetViewModel.TireType = Issue.Type ?? "NA";
                                 FleetViewModel.OperatorName = Issues.FirstOrDefault().CreatedBy;
                                 FleetViewModel.UnitPrice = decimal.Parse(Issues.Sum(x => x.UnitPrice).ToString());
                                 FleetViewModel.Quantity = Issues.Count;
-                                FleetViewModel.Location = sov.Location;
+                                FleetViewModel.Location = sov.Location ?? "NA";
                                 FleetViewModel.TotalPrice = decimal.Parse((Issues.Sum(x => x.UnitPrice) * Issues.Count).ToString());
 
                                 FleetViewModel.AmharicName = AmharicName;

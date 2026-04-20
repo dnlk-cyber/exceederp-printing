@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +16,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public const string FurnitureProductionTeamLead = "FurnitureProduction_TeamLead";
         public const string FurnitureProductionOfficer = "FurnitureProduction_Officer";
         public const string FurnitureAdmin = "Furniture_Admin";
+
+        public const string FurnitureMetal = "Furniture_Metal";
+        public const string FurnitureWood = "Furniture_Wood";
+        public const string FurnitureAssembly = "Furniture_Assembly";
     }
 }

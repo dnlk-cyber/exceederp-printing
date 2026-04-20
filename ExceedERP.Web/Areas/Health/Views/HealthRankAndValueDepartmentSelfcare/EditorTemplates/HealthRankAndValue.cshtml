@@ -1,0 +1,310 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Health.HealthRankAndValue 
+
+<form>
+    <div class="row my-class">
+
+
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.IsOtherBenifit@*, htmlAttributes: new { @class = "control-label col-md-8" }*@)
+            <div class="form-group">
+
+                @Html.Kendo().CheckBoxFor(model => model.IsOtherBenifit).HtmlAttributes(new { onchange = "EnableDisableBenefitType(this);" })
+                @Html.ValidationMessageFor(model => model.IsOtherBenifit, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            @Html.LabelFor(model => model.BenefitType)
+
+            <div class="form-group">
+
+                @(Html.Kendo().DropDownListFor(m => m.BenefitType).Enable(false)
+                                        .OptionLabel(Resources.Select)
+                                        .DataTextField("Display")
+                                        .DataValueField("Value")
+                                        .Events(x=>x.Change("onBenefitTypeChange"))
+                                        .Filter("contains")
+                                        .HtmlAttributes(new { style = "width:160px" })
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetBenefitTypeEnumWithOutNA", "HealthDataProvider", new { area = "Health" }).Data("sendForgery"))
+                                            .ServerFiltering(false);
+                                        })
+                                        .ValuePrimitive(true)
+                )
+                @Html.ValidationMessageFor(model => model.IsPartnerOrGov, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @( Html.Kendo().DropDownListFor(m => m.EmployeeId)
+                            .OptionLabel(Resources.Select)
+                            .DataTextField("FullNameaEnglish")
+                            .DataValueField("EmployeeId")
+                            .HtmlAttributes(new { style = "width:200px" })
+                            .Filter("contains")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetEmployeesAskForOther", "HealthDataProvider", new { area = "Health" }).Data("sendForgery"))
+                                            .ServerFiltering(false);
+
+
+                            })           
+                            .ValuePrimitive(true)
+                    )
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row my-class">
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.BusinessUnitId)
+                                            .ValuePrimitive(true)
+                                            // .AutoBind(false)
+                                            .OptionLabel("Select Business Unit...")
+                                            .DataTextField("Name")
+                                            .DataValueField("Code")
+                                            .HtmlAttributes(new { style = "width:160px" })
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
+                                                                    .ServerFiltering(false);
+
+                                            })
+                    )
+                    @Html.ValidationMessageFor(model => model.BusinessUnitId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.DateAmh, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @Html.TextBoxFor(model => model.DateAmh, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker", @style = "width:130px" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+                    @Html.ValidationMessageFor(model => model.DateAmh, "", new { @class = "text-danger"})
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RecoredDateAmh, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @Html.TextBoxFor(model => model.RecoredDateAmh, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker",@style = "width:130px" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+                    @Html.ValidationMessageFor(model => model.RecoredDateAmh, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <br />
+
+    <div class="row my-class">
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.GlFiscalYearId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(m => m.GlFiscalYearId)
+                                      .OptionLabel(Resources.Select)
+                                      .DataTextField("Name")
+                                      .DataValueField("GlFiscalYearId")
+                                      .HtmlAttributes(new { style = "width:160px" })
+                                       .DataSource(dataSource =>
+                                       {
+                                           dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                                                 .ServerFiltering(false);
+
+                                       })
+                                       .ValuePrimitive(true)
+                )
+                @Html.ValidationMessageFor(model => model.GlFiscalYearId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.GLPeriodId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(m => m.GLPeriodId)
+                        .OptionLabel(Resources.Select)
+                        .Filter("contains")
+                        .DataTextField("Name")
+                        .DataValueField("GLPeriodId")
+                        .CascadeFrom("GlFiscalYearId")
+                        .HtmlAttributes(new { style = "width:160px" })
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterperiods"))
+                                .ServerFiltering(true);
+                        })
+
+                            .ValuePrimitive(true)
+                )
+                @Html.ValidationMessageFor(model => model.GLPeriodId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.TotalPaid, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().NumericTextBoxFor(model => model.TotalPaid).HtmlAttributes(new { style = "width:160px" }).Min(0))
+                @Html.ValidationMessageFor(model => model.TotalPaid, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+
+
+    </div>
+    <br />
+    <div class="row my-class">
+
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(m => m.BranchId)
+                    .OptionLabel(Resources.Select)
+                    .DataTextField("Name")
+                    .DataValueField("BranchId")
+                    .Filter("contains")
+                    //.Events(x=>x.Change("onBranchChange"))
+                    .HtmlAttributes(new { style = "width:160px" })
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetAllBranch", "HealthDataProvider", new { area = "Health" }).Data("sendForgery"))
+                            .ServerFiltering(false);
+                    })
+                    .ValuePrimitive(true)
+                )
+                @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.PaymentCoverage, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(m => m.PaymentCoverage)
+                        .OptionLabel(Resources.Select)
+                        .DataTextField("PaymentCoverage")
+                        .Filter("contains")
+                        .DataValueField("Payment")
+                        .HtmlAttributes(new { style = "width:160px" })
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetPaymentCoverage", "HealthDataProvider", new { area = "Health" }).Data("sendForgery"))
+                                                    .ServerFiltering(false);
+
+
+                        })
+                       .ValuePrimitive(true))
+                @Html.ValidationMessageFor(model => model.GlFiscalYearId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            @Html.LabelFor(model => model.IsPartnerOrGov)
+
+            <div class="form-group">
+
+                @Html.Kendo().CheckBoxFor(model => model.IsPartnerOrGov).HtmlAttributes(new { style = "width:160px" })
+                @Html.ValidationMessageFor(model => model.IsPartnerOrGov, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row my-class">
+
+        @*<div class="col-md-3 clasToBeShow" style="display:none">
+            @Html.LabelFor(model => model.Organization, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="form-group">
+                @(Html.EnumDropDownListFor(m => m.Organization, new { @style = "width:200px" }))
+                @Html.ValidationMessageFor(model => model.Organization, "", new { @class = "text-danger" })
+            </div>
+        </div>*@  
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.PaymentType, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="form-group">
+                @(Html.EnumDropDownListFor(m => m.PaymentType, new { @style = "width:200px" }))
+                @Html.ValidationMessageFor(model => model.PaymentType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        
+
+    </div>
+
+
+</form>
+<style >
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+    .my-class {
+        margin-left: 5px;
+    }
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+</style>

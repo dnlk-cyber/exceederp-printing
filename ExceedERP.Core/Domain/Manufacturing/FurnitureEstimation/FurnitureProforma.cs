@@ -30,6 +30,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public TypeOfPayment PaymentType { get; set; }
         public bool HaveEstimation { get; set; }
         public bool IsExistingCustomer { get; set; }
+        public decimal TransporCost { get; set; }
+        public int GLTaxRateID { get; set; } // VAT
+        public decimal TransportCostTotal { get; set; }
 
     }
     public class FurnitureProformaInvoiceItem : TrackUserSettingOperation
@@ -47,7 +50,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal Quantity { get; set; }
         [Display(Name = "Unit Price Before VAT")]
         public decimal UnitPriceBeforeVAT { get; set; }
-        public decimal TransportCost { get; set; }
+        //public decimal TransportCost { get; set; }
         [Display(Name = "VAT")]
         public decimal VAT { get; set; }
         public int GLTaxRateID { get; set; }
@@ -67,6 +70,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
     {
         Cash,
         Credit,
-        Advance
+        Advance,
+        Negotiation 
     }
 }

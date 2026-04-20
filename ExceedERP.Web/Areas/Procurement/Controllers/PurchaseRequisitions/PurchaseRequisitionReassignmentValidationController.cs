@@ -15,6 +15,7 @@ using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 {
@@ -892,7 +893,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
                     #region create lot
 
-                    var lot = new Lot
+                    var lot = new Core.Domain.Procurement.Tender.Lots.Lot
                     {
                         Tender = tender,
                         LotNumber = 1,

@@ -1,0 +1,9 @@
+﻿@model ExceedERP.Core.Domain.Maintenance.JobOrderDetail
+
+
+<div>
+    @(Html.Kendo().DropDownListFor(model => model).Name("ServiceName")
+          .DataTextField("ServiceName")
+          .DataValueField("ServiceName").OptionLabel(" Select Service")
+          .DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("sendForgery"))))
+</div>

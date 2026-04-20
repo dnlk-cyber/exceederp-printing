@@ -50,6 +50,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult FurnitureDailyProductionFollowUps_Update([DataSourceRequest]DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<FurnitureDailyProductionFollowUp> furnituredailyproductionfollowups)
         {
             var entities = new List<FurnitureDailyProductionFollowUp>();
+            var nullCheck = furnituredailyproductionfollowups.Where(x => x.DateExcuted == null);
+            if (nullCheck.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Date Required!");
+            }
             if (furnituredailyproductionfollowups != null && ModelState.IsValid)
             {
                 foreach(var furnitureDailyProductionFollowUp in furnituredailyproductionfollowups)
@@ -73,14 +78,37 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
                     entities.Add(entity);
                     db.FurnitureDailyProductionFollowUps.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;                        
+                    db.Entry(entity).State = EntityState.Modified;
+                    CheckJobDone(furnitureDailyProductionFollowUp);
                 }
                 db.SaveChanges();
             }
 
             return Json(entities.ToDataSourceResult(request, ModelState));
         } 
-
+        private void CheckJobDone(FurnitureDailyProductionFollowUp model)
+        {
+            if(model.DailyProductionPlan != model.DailyProductionActual)
+            {
+                GenerateNewTask(model);
+            }
+        }
+        private void GenerateNewTask(FurnitureDailyProductionFollowUp model)
+        {
+            var entity = new FurnitureDailyProductionFollowUp
+            {
+                DailyProductionActual = 0,
+                DailyProductionPlan = model.DailyProductionPlan - model.DailyProductionActual,
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Today,
+                EmployeeId = model.EmployeeId,
+                ManifucturingTaskCategoryId = model.ManifucturingTaskCategoryId,
+                WorkShop = model.WorkShop,
+                FurnitureJobOrderProductionId = model.FurnitureJobOrderProductionId
+            };
+            db.FurnitureDailyProductionFollowUps.Add(entity);
+            db.SaveChanges();
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

@@ -10,7 +10,6 @@ using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.Common.Controllers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -25,12 +24,10 @@ using Kendo.Mvc;
 using Microsoft.Ajax.Utilities;
 using WebGrease.Css.Extensions;
 using Lookup = ExceedERP.Core.Domain.Common.HRM.Lookup;
-using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Web.Hubs;
 using ExceedERP.Helpers.HR;
-using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.ArchiveManagement;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
@@ -387,7 +384,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             CreatedBy = User.Identity.Name,
                             ModifiedBy = assos.ModifiedBy
                         };
-
                         db.EmployeeAssociation.Add(association);
                         db.SaveChanges();
                     }

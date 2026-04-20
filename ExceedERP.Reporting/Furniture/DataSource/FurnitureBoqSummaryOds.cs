@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,16 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     CustomerName = customer?.TradeName ?? "",
                     JobType = jobType?.JobTypeName ?? "",
                     JobCode = boq.JobNo,
-                    Quantity = boq.Quantity
+                    Quantity = boq.Quantity,
+                    ApprovedBy = boq.OnlineApprovedBy,
+                    ApprovedDate = boq.OnlineApprovedTime,
+                    CheckedBy = boq.SendForApprovalBy,
+                    CheckedDate = boq.SendForApprovalTime,
+                    CreatedBy = boq.CreatedBy,
+                    DateCreated = boq.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(boq.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(boq.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(boq.SendForApprovalBy)
                 };
 
             }

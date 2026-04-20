@@ -1054,5 +1054,66 @@ namespace ExceedERP.Helpers.HR
         {
             return XAPI.EthiopicDateTime.GetEthiopicDate(gcDate.Day, gcDate.Month, gcDate.Year);
         }
+        public static List<int> GetEmployeeInProbaition(List<Person_Employee> employees)
+        {
+            var db = new ExceedDbContext();
+
+            var today = DateTime.Now.Date;
+            var employeeProbationSetting = db.EmployeeProbationSettings.FirstOrDefault();
+            //var probationSetting = db.ProbationsSettings.FirstOrDefault();
+            int probationDays = /*probationSetting?.ProbationDays ??*/ 60;
+            List<DateTime> holidays = db.Holidays.Select(h => h.Date).ToList();
+
+            var employeeIds = new List<int>();
+
+            foreach (var employee in employees)
+            {
+                var hireDate = employee.HiredDate.Date;
+                var daysElapsed = (today - hireDate).Days;
+
+                // If more than the configured probation days have passed, skip
+                if (daysElapsed > probationDays)
+                    continue;
+
+                int countedDays = 0;
+                var currentDate = hireDate;
+
+                while (countedDays < probationDays && currentDate < today)
+                {
+                    currentDate = currentDate.AddDays(1);
+
+                    bool isWeekend = currentDate.DayOfWeek == DayOfWeek.Saturday
+                        || currentDate.DayOfWeek == DayOfWeek.Sunday;
+                    bool isHoliday = holidays.Contains(currentDate);
+
+                    if (employeeProbationSetting != null)
+                    {
+                        if (!employeeProbationSetting.IncludeWeekend && isWeekend)
+                            continue;
+
+                        if (!employeeProbationSetting.IncludeHoliday && isHoliday)
+                            continue;
+                    }
+
+                    countedDays++;
+                }
+
+                // If still within probation period, include the employee
+                if (countedDays < probationDays)
+                {
+                    employeeIds.Add(employee.EmployeeId);
+                }
+            }
+
+            return employeeIds;
+        }
+
+        public static bool GetDatePreference()
+        {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                return db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            }
+        }
     }
 }

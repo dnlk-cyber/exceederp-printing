@@ -37,7 +37,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 success = "Successfully Created Labor Cost",
                 error = "Failed! something went wrong!",
-                Exist = "Labor cost exists"
+                Exist = "Labor cost exists",
+                MissingMaterial = "Material cost missing"
 
             };
             var laborCost = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == estimationId);
@@ -46,6 +47,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 return Json(msg.Exist, JsonRequestBehavior.AllowGet);
             }
             var costEstimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.Where(x => x.PrintingCostEstimationId == costEstimation.PrintingCostEstimationId).ToList();
+            if (!materialCost.Any())
+            {
+                return Json(msg.MissingMaterial, JsonRequestBehavior.AllowGet);
+            }
             var printingProcesses = db.PrintingProcesses.ToList();
 
             if (costEstimation.PrintJobType == PrintJobType.Book || costEstimation.PrintJobType == PrintJobType.Magazine || costEstimation.PrintJobType == PrintJobType.Newsletter)

@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.Furniture.DataSource
         private readonly ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<FurnitureJobSummaryVm> Summary(DateTime? from, DateTime? to)
+        public List<FurnitureJobSummaryVm> SummaryHeader(DateTime? from, DateTime? to)
         {
             List<FurnitureJobSummaryVm> list = new List<FurnitureJobSummaryVm>();
             if (from.HasValue && to.HasValue)

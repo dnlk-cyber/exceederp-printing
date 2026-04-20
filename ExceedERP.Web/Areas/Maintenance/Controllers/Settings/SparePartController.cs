@@ -120,7 +120,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         public ActionResult SparePartDDBind()
         {
             var spareParts = new List<FleetBindingHelper.HelperObject>();
@@ -136,7 +136,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return Json(spareParts, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult BatteryDDBind()
         {
             var spareParts = new List<FleetBindingHelper.HelperObject>();
@@ -152,7 +152,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return Json(spareParts, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult Oil_LubricantDDBind()
         {
             var spareParts = new List<FleetBindingHelper.HelperObject>();
@@ -168,7 +168,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return Json(spareParts, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult TyreDDBind()
         {
             var spareParts = new List<FleetBindingHelper.HelperObject>();
@@ -184,7 +184,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return Json(spareParts, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult OtherDDBind()
         {
             var spareParts = new List<FleetBindingHelper.HelperObject>();

@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.FleetManagement.FleetTireManagement;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -45,6 +46,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
         public ActionResult StoreReturnValidations_Create([DataSourceRequest]DataSourceRequest request, StoreReturnValidation storeReturnValidation, int id)
         {
             var record = db.StoreReturns.Find(id);
+            var items = db.StoreReturnItemss.Where(x => x.StoreReturnID == id).AsNoTracking().ToList();
             var storeItemAssignment = db.StoreItemAssignments.Where(st => st.StoreCode == record.StoreCode);
            
             if (record != null && record.IsOnlineApproved)
@@ -227,6 +229,54 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     UserHelper.OperationLog(Request.UserHostAddress, "store return approval", "Success", User.Identity.Name, $"approved store return {entity.StoreReturnID} ", Modules.Inventory);
                     #endregion
                 }
+
+                #region transfer tyre and battery
+                if (storeReturnValidation.Status == ApprovalStatuses.Approve)
+                {
+                    foreach (var i in items)
+                    {
+                        var exisitInsetting = db.FleetBatteryAndTires.Where(x => x.ItemCode == i.ItemCode).FirstOrDefault();
+                        if (exisitInsetting != null)
+                        {
+                            int qty = (int)i.Quantity;
+                            for (int j = 0; j < qty; j++)
+                            {
+                                var entity = new TireReturn
+                                {
+                                    TireReturnID = Guid.NewGuid(),
+                                    TireId = Guid.NewGuid(),
+                                    FleetId = Guid.NewGuid(),
+                                   
+                                    PlateNumber = "NA",
+                                    StoreCode = record.StoreCode,
+                                    OperatorName = "NA",
+                                    TireSize = "NA",
+                                    TireType = "NA",
+                                    TireTube = "NA",
+                                    ReturnType = exisitInsetting.FleetBatteryOrTireType,
+                                    InstalledDate = null,
+                                    Brand = "NA",
+                                    SerialNo = "NA",
+                                    KMReading = 0,
+                                    UnitPrice = i.UnitPrice,
+                                    DescriptionReason = "NA",
+                                    ReturnId = record.StoreReturnID,
+                                    ReturnItemId = i.StoreReturnItemsID,
+
+
+                                    Status = "Editing",
+                                    DateCreated = DateTime.Now,
+                                    CreatedBy = User.Identity.Name
+                                };
+
+                                db.TireReturn.Add(entity);
+                                db.SaveChanges();
+                            }
+
+                        }
+                    }
+                }
+                #endregion
 
             }
             return Json(new[] { storeReturnValidation }.ToDataSourceResult(request, ModelState));

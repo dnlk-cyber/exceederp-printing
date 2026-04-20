@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.Procurement.Models;
 
@@ -14,7 +15,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         public ActionResult Index(string id)
         {
             int lotId = int.Parse(id);
-            Lot lot = db.Lots.Find(lotId);
+            Core.Domain.Procurement.Tender.Lots.Lot lot = db.Lots.Find(lotId);
 
             var supplier = lot.BidAwardedSupplier;
             var participantItem = lot.ParticipantsItems;

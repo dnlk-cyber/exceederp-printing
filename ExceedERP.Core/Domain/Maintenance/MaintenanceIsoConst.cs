@@ -22,6 +22,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public const string MaintenancePlanVsActual = "Maintenance Plan vs Actual Report";
         public const string MVInspectionAndHandingOverCheckList = "Mv Inspection & Handing Over Checklist";
         public const string OurSourcedMaintenancePaymentRequest = "External Maintenance Center Report";
+        public const string SatisfactionNote = "External Maintenance Satisaction Note";
         public const string DailyMaintenanceReport = "MV Daily Maintenance Report";
         public const string MechanicPerformance = "Mechanic Performance Report";
         public const string WeeklyMaintenanceReport = "Weekly Maintenance Report";

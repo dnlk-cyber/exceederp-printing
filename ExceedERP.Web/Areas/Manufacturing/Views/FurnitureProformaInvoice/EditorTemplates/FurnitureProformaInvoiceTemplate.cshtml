@@ -62,12 +62,42 @@
             </div>
         </div>
     </div>
-    @*<div class="col-sm-2">
+    <div class="col-sm-2">
         <div class="form-group">
-            <label>Advance Payment(%)</label>
+            <label>Transport Cost</label>
             <div>
-                @(Html.Kendo().TextBoxFor(model => model.AdvancePaymentInPercent).HtmlAttributes(new { style = "width:100%" }))
+                @(Html.Kendo().NumericTextBoxFor(model => model.TransporCost).HtmlAttributes(new { style = "width:100%" }).Min(0))
             </div>
         </div>
-    </div>*@
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Tax Rate</label>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(m => m.GLTaxRateID)
+                                    .ValuePrimitive(true)
+                                    .AutoBind(true)
+                                    .Enable(true)
+                                    .OptionLabel("Select Tax rate...")
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter("contains")
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetTaxRate", "ManufacturingDataProvider", new { area = "Manufacturing" }))
+                                            .ServerFiltering(true);
+                                    }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
 </div>

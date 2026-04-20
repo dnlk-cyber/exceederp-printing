@@ -1,0 +1,1531 @@
+@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "LabDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+
+<!--part one-->
+<div class="row">
+    <!-- Chart 1: Total Projects -->
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">External Samples</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="ExternalSamples" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Chart 2: Project Category (SD and CAS) -->
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Internal Samples</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="InternalSamples" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart 3: Project Category by Business Unit -->
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Received Samples</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="ReceivedSamples" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!--part 2-->
+<div class="row">
+    <!-- Chart 1: Total Projects -->
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Parameters</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="parameters" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Samples By Category</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="samplesCategory" width="500" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 3: Project Category by Business Unit -->
+   
+</div>
+<div class="row">
+    <!-- Chart 4: Another Project Status or Chart -->
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Progress</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="Progress" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Near Deadline Experiments</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="NearDeadlineExperiments" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Plan Revenue vs Execution Revenue</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="PlanRevenuevsExecutionRevenue" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+
+<!--part 3-->
+<div class="row">
+   
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Revenue (Internal Vs External)</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="RevenueIntExt" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h5 class="box-title">Revenue By Category </h5>
+                </div>
+                <div class="box-body">
+                    <canvas id="Revenue" width="300" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+</div>
+@*<div class="row">
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Terminated And Suspended Projects</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="TerminatedProjectsId" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">.Planned and Unplanned Projects In Number </h5>
+            </div>
+            <div class="box-body">
+                <canvas id="PlanedandunplanedId" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h5 class="box-title">Upper vs Lower Bussiness Unit Excution</h5>
+            </div>
+            <div class="box-body">
+                <canvas id="LowerandupperExcuBuId" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>*@
+</div>
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script src="~/Scripts/chart.umd.js"></script>
+
+<script>
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)',
+        fuchsia: 'rgb(255, 0, 255)'
+    };
+    ExternalSamples();
+    InternalSamples();
+    AcceptedSamples();
+    Progress();
+    NearDeadlineExperiments();
+    GetPlanRevenuevsActualRevenue();
+    RevenueIntExt();
+    Parameters();
+    SamplesInCategory();
+    Revenue();
+    //budgetUtilization();
+    //TerminatedAndSuspendedProjects();
+    //loadPlannedUnplannedProjects();
+    //BUExecutionRevenue();
+    //AbsentEmployee();
+    //VacantByBranch();
+    //EmployeeTermination();
+    //EmployeeAccident();
+    //Vacancy();
+    //Payroll();
+
+ function ExternalSamples() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ExternalSamples", "Dashboard", new {area = "" })',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("ExternalSamples").getContext('2d');
+            ctx.height = 500;
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'External Samples',
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: ['Samples']
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['white', 'white', 'white', 'white', 'white'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+    function InternalSamples() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("InternalSamples", "Dashboard", new {area = "" })',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("InternalSamples").getContext('2d');
+                ctx.height = 500;
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Internal Samples',
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 0.2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: ['Samples']
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['white', 'white', 'white', 'white', 'white'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth:15
+                            }
+                        }
+
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function AcceptedSamples() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("AcceptedSamples", "Dashboard", new {area = "" })',
+        success: function (result) {
+
+            var ctx = document.getElementById("ReceivedSamples").getContext('2d');
+            ctx.height = 600;
+            var colors = ['#00bcd4', '#ff9800', '#4caf50']; // SD, CAS, and Total colors
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,  // SD, CAS, Total
+                    datasets: [{
+                        label: 'Received Samples',
+                        data: result.Data,  // Data for SD, CAS, and Total
+                        backgroundColor: colors,  // Assign the different colors to the categories
+                        //borderColor: '#000000',  // Optional: border color for the bars
+                        borderWidth: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: "Received Samples"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'Teal', 'Teal', 'Teal'],
+                        precision: 2
+                    },
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: ''
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0  // Ensure X-axis starts at 0
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Sample No'
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0  // Ensure Y-axis starts at 0
+                            }
+                        }]
+                    },
+                    maintainAspectRatio: false,
+                }
+            });
+        },
+        error: function (result) {
+            alert(result);
+        }
+    });
+    }
+
+
+    function Parameters() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("Parameters", "Dashboard", new { area = "" })',
+        success: function (result) {
+            var ctx = document.getElementById("parameters").getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels, // Project names
+                    datasets: [{
+                        label: '',
+                        data: result.Data, // Progress percentages
+                        backgroundColor: result.Data.map(progress =>
+                            progress < 50 ? '#f8d7da' : '#28a745' // Red if <50%, Green if >=50%
+                        ),
+                        borderColor: '#333',
+                        borderWidth: 0.2,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Horizontal bars
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: "Projects Near Completion",
+                            //font: {
+                            //    size: 20,
+                            //    weight: 'bold'
+                            //},
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Progress: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load project data.");
+        }
+    });
+}
+
+
+
+
+    function Progress() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("Progress", "Dashboard", new {area = "" })',
+        success: function (result) {
+
+            var ctx = document.getElementById("Progress").getContext('2d');
+            ctx.height = 600;
+            var colors = ['#00bcd4', '#ff9800', '#4caf50']; // SD, CAS, and Total colors
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,  // SD, CAS, Total
+                    datasets: [{
+                        label: 'Progress',
+                        data: result.Data,  // Data for SD, CAS, and Total
+                        backgroundColor: colors,  // Assign the different colors to the categories
+                        //borderColor: '#000000',  // Optional: border color for the bars
+                        borderWidth: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: "Progress"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'Teal', 'Teal', 'Teal'],
+                        precision: 2
+                    },
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: ''
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0  // Ensure X-axis starts at 0
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Progress'
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0  // Ensure Y-axis starts at 0
+                            }
+                        }]
+                    },
+                    maintainAspectRatio: false,
+                }
+            });
+        },
+        error: function (result) {
+            alert(result);
+        }
+    });
+    }
+
+
+function NearDeadlineExperiments() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("NearDeadlineExperiments", "Dashboard", new { area = "" })',
+        success: function (result) {
+            var ctx = document.getElementById("NearDeadlineExperiments").getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Days Remaining',
+                        data: result.Data,
+                        backgroundColor: result.Data.map(days =>
+                            days <= 3 ? '#dc3545' : '#ffc107' // Red if <= 3 days, Yellow otherwise
+                        ),
+                        borderColor: '#333',
+                        borderWidth: 0.5,
+                        barPercentage: 0.5 // makes bar thinner relative to space
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // horizontal bars
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Experiments Near Deadline",
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Days Remaining: ${context.raw}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false // hide legend if not needed
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            beginAtZero: true,
+                            min: 0,
+                            max: 7,
+                            ticks: {
+                                stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: 'Days Remaining'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            beginAtZero: true,
+                            min: 0,
+                            max: 7,
+                            title: {
+                                display: true,
+                                text: 'Technicians'
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load data for experiments near deadline.");
+        }
+    });
+}
+
+
+
+
+
+///////////////
+
+
+    function GetPlanRevenuevsActualRevenue ()
+         {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetPlanRevenuevsActualRevenues", "Dashboard", new { area = "" })',
+        success: function (result) {
+            var canvas = document.getElementById("PlanRevenuevsExecutionRevenue");
+            if (!canvas) {
+                console.error("Canvas element ProjectDelayId not found!");
+                return;
+            }
+            var ctx = canvas.getContext('2d');
+            ctx.height = 300;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: '',
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 0.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Plan Revenue vs Execution Revenue2"
+                        },
+                        legend: {
+                            display: false
+                        },
+                        //tooltip: {
+                        //    mode: 'index',
+                        //    intersect: false
+                        //}
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Plan Revenue vs Execution Revenue3'
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 20
+                            },
+                            grid: {
+                                display: false
+                            },
+                            barPercentage: 0.5,
+                            categoryPercentage: 0.6
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Plan Revenue vs Execution Revenue4'
+                            },
+                            ticks: {
+                                beginAtZero: true
+                            },
+                            grid: {
+                                display: true
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load delayed project data.");
+        }
+    });
+}
+
+    function RevenueIntExt() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("RevenueIntExt", "Dashboard", new { area = "" })',
+        success: function (result) {
+            var ctx = document.getElementById("RevenueIntExt").getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels, // Project names
+                    datasets: [{
+                        label: '',
+                        data: result.Data, // Progress percentages
+                        backgroundColor: result.Data.map(progress =>
+                            progress < 50 ? '#f8d7da' : '#28a745' // Red if <50%, Green if >=50%
+                        ),
+                        borderColor: '#333',
+                        borderWidth: 0.2,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Horizontal bars
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: "Projects Near Completion",
+                            //font: {
+                            //    size: 20,
+                            //    weight: 'bold'
+                            //},
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Progress: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load project data.");
+        }
+    });
+}
+
+function PlanRevenuevsActualRevenue() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetPlanRevenuevsActualRevenue", "Dashboard", new { area = "" })',
+        success: function (result) {
+            console.log(result); // Debu
+            const labels = result.Data.map(item => item.Category);
+            const plannedData = result.Data.map(item => item.Planned);
+            const executedData = result.Data.map(item => item.Executed);
+            const ctx = document.getElementById("PlanRevenuevsExecutionRevenue").getContext("2d");
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Planned",
+                            data: plannedData,
+                            backgroundColor: '#00ff21', // blue
+                            borderColor: '#00ff21',
+                            borderWidth: 0.2
+
+                        },
+                        {
+                            label: "Executed",
+                            data: executedData,
+                            backgroundColor: '#ff6a00', // red
+                            borderColor: '#ff6a00',
+                            borderWidth: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', // This makes it horizontal (Gantt-style)
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: 'Planned vs Executed Revenue per Project'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue (ETB)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Projects'
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching chart data", error);
+        }
+    });
+}
+    function Revenue() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("RevenueCategory", "Dashboard", new { area = "" })',
+        success: function (result) {
+            var ctx = document.getElementById("Revenue").getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels, // Project names
+                    datasets: [{
+                        label: '',
+                        data: result.Data, // Progress percentages
+                        backgroundColor: result.Data.map(progress =>
+                            progress < 50 ? '#f8d7da' : '#28a745' // Red if <50%, Green if >=50%
+                        ),
+                        borderColor: '#333',
+                        borderWidth: 0.2,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Horizontal bars
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: "Projects Near Completion",
+                            //font: {
+                            //    size: 20,
+                            //    weight: 'bold'
+                            //},
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Progress: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load project data.");
+        }
+    });
+}
+    function SamplesInCategory1() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("SamplesInCategory", "Dashboard", new { area= "" })',
+            success: function (result) {
+                console.log("Backend Data:", result); // Verify all categories exist
+
+                const ctx = document.getElementById("samplesCategory").getContext("2d");
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Data.map(item => item.Category),
+                        datasets: [
+                            {
+                                label: "External",
+                                data: result.Data.map(item => item.External),
+                                backgroundColor: '#00ff21'
+                            },
+                            {
+                                label: "Internal",
+                                data: result.Data.map(item => item.Internal),
+                                backgroundColor: '#ff6a00'
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: { display: true, text: 'Samples by Category' }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Number of Samples' }
+                            },
+                            y: {
+                                title: { display: true, text: 'Categories' }
+                            }
+                        }
+                    }
+                });
+            },
+            error: function (error) {
+                console.error("Error:", error);
+            }
+        });
+    }
+
+
+
+
+   function SamplesInCategory() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("SamplesInCategory", "Dashboard", new { area = "" })',
+        success: function (response) {
+            const data = response.Data;
+
+            const labels = data.map(item => item.Category);
+            const internalData = data.map(item => item.Internal);
+            const externalData = data.map(item => item.External);
+
+            const ctx = document.getElementById("samplesCategory").getContext("2d");
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "External",
+                            data: externalData,
+                            backgroundColor: 'rgba(165, 42, 42, 0.8)', // Brown
+                            borderColor: 'rgba(165, 42, 42, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: "Internal",
+                            data: internalData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)', // Blue
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Samples in Each Category (Internal vs External)'
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Samples'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Categories'
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching chart data", error);
+        }
+    });
+}
+
+
+@*function loadRevenueByTypeAndBUnit() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetloadRevenueByTypeAndBUnit", "Dashboard")',
+        success: function (result) {
+
+            var canvas = document.getElementById("RevenuebyBuStacked");
+            if (!canvas) {
+                console.error("Canvas element RevenuebyBuStacked not found!");
+                return;
+            }
+
+            var ctx = canvas.getContext('2d');
+
+            // Build dynamic datasets
+            var datasets = [];
+            var backgroundColors = [
+                '#8e44ad', '#3498db', '#1abc9c', '#f39c12', '#e74c3c',
+                '#2ecc71', '#9b59b6', '#e67e22', '#34495e', '#16a085'
+            ];
+
+            // Add Planned and Executed datasets
+            for (var i = 0; i < result.Datasets.length; i++) {
+                datasets.push({
+                    label: result.Datasets[i].label,
+                    data: result.Datasets[i].data,
+                    backgroundColor: backgroundColors[i % backgroundColors.length], // Repeat colors if many datasets
+                    borderColor: backgroundColors[i % backgroundColors.length],
+                    borderWidth: 1
+                });
+            }
+
+            // Create the chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels, // Business Unit names
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: 'Planned vs Executed Revenue by Project Type and Business Unit'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Business Units'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue Amount (ETB)'
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load chart.");
+        }
+    });
+}
+
+
+  function Top10PlannedRevenueProjects() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetTop10revenu", "Dashboard")',
+        success: function (result) {
+            var ctx = document.getElementById("top10Revenueproject").getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar', // <-- must be 'bar' not 'horizontalBar'
+                data: {
+                    labels: result.Labels,
+                    datasets: [
+                        {
+                            label: 'Top Revenue-Generating Project (Planned Revenue)',
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', // <-- this makes it horizontal
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: 'Title:-Top Revenue-Generating Projects (Planned Revenue)',
+                            //font: {
+                            //    size: 18
+                            //}
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue Amount'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Project Names'
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load chart.");
+        }
+    });
+}
+
+
+    function budgetUtilization() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetbudgetUtilization", "Dashboard", new { area = "" })',
+        success: function (result) {
+            console.log(result); // Debug
+            const labels = result.Data.map(item => item.Category);
+            const utilizationData = result.Data.map(item => item.UtilizationPercentage);
+
+            const ctx = document.getElementById("budgetUtilizationId").getContext("2d");
+            new Chart(ctx, {
+                type: 'doughnut', // Donut Chart
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Budget Utilization %',
+                        data: utilizationData,
+                        backgroundColor: [
+                            '#4caf50', // green
+                            '#2196f3', // blue
+                            '#ff9800', // orange
+                            '#f44336', // red
+                            '#9c27b0', // purple
+                            '#00bcd4', // cyan
+                            '#8bc34a', // light green
+                            '#ffc107'  // amber
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Budget Utilization per Project (%)'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.label + ': ' + context.formattedValue + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load chart.");        }
+    });
+    }
+    function TerminatedAndSuspendedProjects() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTerminatedAndSuspendedProjects", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("TerminatedProjectsId").getContext('2d');
+            ctx.height = 500;
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Project Status',
+                        data: result.Data,
+                        backgroundColor: ['#F4A300', '#00008B'],  // Sandy Brown for terminated, Dark Blue for suspended
+                        borderColor: ['#E89A00', '#00005F'],
+                        borderWidth: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: ['Project Status']
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['white', 'white', 'white', 'white', 'white'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+//////////////////////
+        function loadPlannedUnplannedProjects() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetPlannedUnplannedProjects", "Dashboard")',
+        success: function (result) {
+
+            // Donut Chart for Planned and Unplanned Projects
+            var ctx = document.getElementById("PlanedandunplanedId").getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Planned Projects', 'Unplanned Projects'],
+                    datasets: [{
+                        data: [result.PlannedProjects, result.UnplannedProjects],
+                        backgroundColor: ['#16a085', '#DC3545'], // Green for Planned, Red for Unplanned
+                        borderColor: ['#218838', '#C82333'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: 'Planned and Unplanned Projects'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (tooltipItem) {
+                                    var value = tooltipItem.raw;
+                                    return tooltipItem.label + ': ' + value + ' Projects';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load project data.");
+        }
+    });
+    }
+    //'#00ff21', '#ff6a00'
+function BUExecutionRevenue() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetUpperandLowerBUExcution", "Dashboard")',  // Ensure your controller action is correct
+        success: function (result) {
+            var ctx = document.getElementById("LowerandupperExcuBuId").getContext('2d');  // Canvas context
+
+            // Create the chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [
+                        {
+                            label: 'Upper BU Execution',
+                            data: result.UpperBUData,
+                            backgroundColor: 'rgba(0, 123, 255, 0.6)',
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            borderRadius: 5,
+                        },
+                        {
+                            label: 'Lower BU Execution',
+                            data: result.LowerBUData,
+                            backgroundColor: 'rgba(220, 53, 69, 0.6)',
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            borderRadius: 5,  // Rounded corners for bars
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',  // Horizontal bar chart
+                    responsive: true,  // Ensure responsiveness
+                    plugins: {
+                        title: {
+                            display: true,
+                            //text: 'Upper vs Lower BU Execution'  // Chart title
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false  // Tooltips on hover
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,  // Ensure the X-axis starts at zero
+                            title: {
+                                display: true,
+                                text: 'Execution Amount'  // Label for X-axis
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Business Units'  // Label for Y-axis
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Failed to load chart.");
+        }
+    });
+}*@
+function getRandomColor() {
+    return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`;
+}
+
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+</script>
+
+
+
+@*<div class="row" id="body-stayle">
+        <div class="col-sm-7 col-lg-4 chartcontainer" id="report-card">
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="TotalProjects" width="300" height="300" class="chartarea"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-7 col-lg-4 chartcontainer">
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="ProjectCategoryId" width="300" height="300"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-7 col-lg-4 chartcontainer">
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="ProjectCategoryBu" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- part two-->
+    <div class="row" id="body-stayle">
+
+        <div class="col-sm-7 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="ProjectDelay" width="300" height="300"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-7 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="ProjectTimelineid" width="300" height="300"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-7 col-lg-4 chartcontainer" id="report-card-small">
+
+            <div class="demo-section k-content wide">
+                <canvas id="RevenuForcastId" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <!---part 3 with 12 div-->
+    <div class="row" id="body-stayle">
+        <div class="col-sm-7 col-lg-12 chartcontainer" id="report-card-small">
+
+            <div class="demo-section k-content wide">
+                <canvas id="projectId" width="300" height="300"></canvas>
+            </div>
+        </div>
+
+        <div class="col-sm-7 col-12 chartcontainer">
+
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="RevenuebyBuStacked" width="300" height="300"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-7 col-lg-12 chartcontainer">
+
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="top10Revenueproject" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <!---part 4-->
+    <div class="row" id="body-stayle">
+        <div class="col-sm-7 col-lg-12 chartcontainer">
+
+            <div class="demo-section k-content wide" id="report-card-small">
+                <canvas id="budgetUtilizationId" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>*@
+<!--part 5-->

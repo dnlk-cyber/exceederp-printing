@@ -17,7 +17,7 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name ="Paper for text")]
         public int TextPaperSizeId { get; set; }
         [Display(Name ="Paper for cover")]
-        public int CoverPaperSizeId { get; set; }
+        public int? CoverPaperSizeId { get; set; }
         [Display(Name ="Customer")]
         public int CustomerId { get; set; } 
        
@@ -29,7 +29,7 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name ="Text No of Colors")]
         public int TextNoOfColors { get; set; }
         [Display(Name ="Cover No of Colors")]
-        public int CoverNoOfColor { get; set; }
+        public int? CoverNoOfColor { get; set; }
         public string JobDescription { get; set; }
         [Display(Name = "Machine For Text")]
         public int TextMachineTypeId { get; set; }
@@ -62,6 +62,7 @@ namespace ExceedERP.Core.Domain.Printing
         SaddleStitch,
         [Display(Name ="Side Stitch"), Description("Side Stitch")]
         SideStitch,
+        None
     }
     public enum PrintJobType  
     {

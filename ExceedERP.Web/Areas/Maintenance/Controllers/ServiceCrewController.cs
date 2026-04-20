@@ -78,6 +78,30 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(ServiceCrew.ToDataSourceResult(request));
         }
+        public ActionResult ServiceCrewByService_ReadJobOrder(int num, [DataSourceRequest] DataSourceRequest request)
+        {
+            var serviceCenter = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
+            var ServiceCrew = _ServiceCrewService.GetAll().Where(x => x.ServiceID == serviceCenter?.ServiceCenterJobId)
+                //.DistinctByField(x => x.MechanicCrewID)
+                .Select(i => new ServiceCrew
+
+                {
+                    ServiceCrewID = i.ServiceCrewID,
+                    HourlyWage = i.HourlyWage,
+                    TotalLabourHours = i.TotalLabourHours,
+                    TotalLabourCost = i.TotalLabourCost,
+                    MechanicCrewID = i.MechanicCrewID,
+                    ActivatedDate = i.ActivatedDate,
+                    ServiceID = i.ServiceID,
+                    ServiceName = i.MechanicCrews.FullName,
+                    DateCreated = i.DateCreated,
+                    MechanicType = i.MechanicType
+                }
+
+            );
+
+            return Json(ServiceCrew.ToDataSourceResult(request));
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceCrew_Create(string cserviceID, [DataSourceRequest] DataSourceRequest request, ServiceCrew serviceCrew)

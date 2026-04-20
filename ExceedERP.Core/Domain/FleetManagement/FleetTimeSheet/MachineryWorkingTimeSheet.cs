@@ -64,7 +64,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal FuelRate { get; set; }
         [Display(Name = "Rental Rate")]
         public decimal RentalRate { get; set; }
-        [Display(Name = "Ideal Rental Rate(%)")]
+        [Display(Name = "Idle Rental Rate(%)")]
         public decimal IdealRentalRate { get; set; }
         [Display(Name = " Grease(kg) Consumption")]
         public decimal GreaseConsumption { get; set; }

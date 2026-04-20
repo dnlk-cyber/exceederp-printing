@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -23,12 +24,16 @@ namespace ExceedERP.Reporting.Printing.DataSource
 
                 return new PrintSummaryHeadVM
                 {
+                    CreatedBy = printSumary.CreatedBy,
                     CustomerName = customer?.TradeName ?? "",
-                    Date = printSumary.DateCreated,
+                    DateCreated = printSumary.DateCreated,
                     ApprovedBy = printSumary.OnlineApprovedBy,
                     ApprovedDate = printSumary.OnlineApprovedTime,
                     CheckedBy = printSumary.SendForApprovalBy,
-                    CheckedDate = printSumary.SendForApprovalTime
+                    CheckedDate = printSumary.SendForApprovalTime,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(printSumary.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(printSumary.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(printSumary.SendForApprovalBy)
                 };
             }
             return new PrintSummaryHeadVM();

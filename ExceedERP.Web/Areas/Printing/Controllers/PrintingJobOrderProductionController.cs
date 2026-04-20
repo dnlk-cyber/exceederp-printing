@@ -231,10 +231,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Pages = production.TotalTextNoPages,
                     TextPaperSizeId = production.TextPaperSizeId,
                     Quantity = production.Quantity,
-                    OperationStatus = OperationStatus.NotStarted,
+                    PrintingOperationStatus = PrintingOperationStatus.Started,
                     CoverNoOfColor = production.CoverNoOfColor,
                     CoverPaperSizeId = production.CoverPaperSizeId,
                     TextNoOfColor = production.TextNoOfColors,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Today,
                     
                 };
                 db.PrintingProductionFollowUps.Add(jobFollowUp);

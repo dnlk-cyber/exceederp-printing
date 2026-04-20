@@ -1,0 +1,238 @@
+﻿@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "RemDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+<div class="content-header custom-header">
+    <h2 class="text-center font-weight-bold mb-4"></h2>
+</div>
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@ViewBag.Totalprospective</h3> <!-- Replace with your actual data -->
+                <p>Total Registered Prospective</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <a href="#" class="small-box-footer"> <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@ViewBag.TotalSites </h3> <!-- Replace with your actual data -->
+                <p>Total Sites</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <a href="#" class="small-box-footer"><i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@ViewBag.TotalHouseStock</h3> <!-- Replace with your actual data -->
+                <p>Total House in Stock</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-code-branch"></i>
+            </div>
+            <a href="#" class="small-box-footer"> <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-solid card-box">
+            <div class="box-header with-border">
+                <center><h4 class="box-title">Payment Status On Booking House</h4></center>
+            </div>
+            <div class="box-body" style="height: 400px;">
+                <canvas id="paymentStatus" style="height: 100% !important; width: 100% !important;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script src="~/Scripts/chart.umd.js"></script>
+
+<script>
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)',
+        fuchsia: 'rgb(255, 0, 255)'
+    };
+     bookingInfo();
+   
+function bookingInfo() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("BookingPayment", "RemDashboard", new { area = "" })',
+        success: function (result) {
+            var ctx = document.getElementById("paymentStatus").getContext('2d');
+            ctx.height = 500;
+
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels, // ["Total Applied", "Total Paid"]
+                    datasets: [{
+                        label: 'Booking vs Booking Payments',
+                        data: result.Data,     // [120, 85]
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        //text: 'Shareholder Applications vs Payments'
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                precision: 0
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of Booked Customers'
+                            }
+                        }]
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Error loading chart data.");
+        }
+    });
+}
+   
+
+
+
+
+function getRandomColor() {
+    return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`;
+}
+
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+</script>
+
+
+<style>
+    .small-box.bg-info {
+        border-radius: 7px !important;
+        background-color: #17a2b8 !important;
+        color: white !important;
+    }
+
+    .small-box.bg-success {
+        border-radius: 7px !important;
+        background-color: #28a745 !important;
+        color: white !important;
+    }
+
+    .small-box.bg-warning {
+        border-radius: 7px !important;
+        background-color: #ffc107 !important;
+        color: #212529 !important;
+    }
+
+    .custom-header {
+        height: 14px; /* or any height you want */
+        display: flex;
+        align-items: center;
+        padding-left: 20px;
+        //background-color: #f4f6f9; /* Optional: light gray background */
+        //border-bottom: 1px solid #dee2e6; /* Optional: bottom border */
+    }
+
+        .custom-header h2 {
+            margin: 0;
+            font-weight: 600;
+            color: #343a40;
+        }
+</style>
+

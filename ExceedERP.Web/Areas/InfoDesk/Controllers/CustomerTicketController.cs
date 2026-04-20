@@ -9,6 +9,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using ExceedERP.Web.Areas.InfoDesk.Models;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
@@ -31,26 +32,66 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         public ActionResult Index()
         {
-            var employees = db.Person_Employee.Select(x => new { x.EmployeeId, AssinedTo = x.EmployeeId, AssignedTo = x.EmployeeId, FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish, FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName }).ToList();
+            PopulateViewData();
+            return View();
+        }
+        private void PopulateViewData()
+        {
+            var assetCategories = db.FixedAssetCategories.Select(x => new
+            {
+                FixedAssetCategoryId = x.FixedAssetCategoryID,
+                CategoryName = x.CategoryName
+            });
+            var assetSubCategories = db.FixedAssetSubCategories.Select(x => new
+            {
+                x.FixedAssetSubCategoryID,
+                x.SubCategoryName
+            });
+            var fixedAsset = db.AssetRegistrations;
+
+
+            var selectedAsset = fixedAsset.Select(
+              i => new
+              {
+                  Name = i.Tag + "-" + i.Name,
+                  AssetRegistrationId = i.AssetRegistrationId
+              }).AsQueryable();
+            var employees = db.Person_Employee.Select(
+                                    x => new
+                                    {
+                                        x.EmployeeId,
+                                        AssinedTo = x.EmployeeId,
+                                        AssignedTo = x.EmployeeId,
+                                        FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish,
+                                        FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName
+                                    })
+                                        .AsQueryable();
+
             ViewData["Materials"] = db.MaterialItems.ToList();
-            ViewData["branchs"] = db.Branch.ToList();
-            ViewData["bUnit"] = db.BusinessUnits.ToList();
+            ViewData["bUnit"] = db.BusinessUnits.Select(x => new { BusinessUnitId = x.BusinessUnitId, x.Name }).ToList();
             ViewData["orgStructure"] = db.MainCompanyStructures.ToList();
+            ViewData["branchs"] = db.Branch.ToList();
             ViewData["AssignTo"] = employees;
             ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
             var sysusers =
-              udb.Users.Select(o => new
+              udb.Users.Select(o =>
+                      new
                       {
                           CustomerID = o.Id,
                           CustomerName = o.FirstName
                       });
+
             var users = sysusers.ToList();
             ViewData["SysUsers"] = users;
             ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
             ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
             ViewData["Employees"] = employees;
-            return View();
+            ViewData["SubCategory"] = assetSubCategories;
+            ViewData["Category"] = assetCategories;
+            ViewData["FixedAsset"] = selectedAsset;
+            ViewData["defaultCategory"] = assetCategories.FirstOrDefault();
         }
+
         public ActionResult TicketStatus()
         {
             var employees = db.Person_Employee
@@ -86,20 +127,18 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public ActionResult AwaitingTicket()
         {
             return View();
-        }      
-        private double GetAge(DateTime? CreatedDate, DateTime? ClosedDate)
+        }
+        public double GetAge(DateTime? CreatedDate, DateTime? ClosedDate, bool status)
         {
             double age = 0;
-            if (CreatedDate.HasValue&&ClosedDate.HasValue)
+            if (status && CreatedDate.HasValue && ClosedDate.HasValue)
             {
                 age = ClosedDate.Value.Subtract(CreatedDate.Value).Days;
             }
-            else
-            {
-                age = DateTime.Now.Subtract(CreatedDate.Value).Days;
-            }
+
             return age;
-        }   
+        }
+
         public ActionResult CustomerTickets_Read([DataSourceRequest]DataSourceRequest request)
         {
            
@@ -150,7 +189,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 ModifiedBy = customerTicket.ModifiedBy,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
-                AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate).ToString(),
+                AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate, customerTicket.IsClosed).ToString(),
 
 
             });
@@ -161,24 +200,24 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult CustomerTickets_Create([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
-            var ticketType = db.TicketType_HelpDesks.Find(customerTicket_HelpDesk.TicketType_HelpDeskId);
-            if (ticketType != null && ticketType.DueDays > 0)
-            {
-                customerTicket_HelpDesk.OverDue = ticketType.DueDays;
-                customerTicket_HelpDesk.DueDate = DateTime.Now.AddDays((double)ticketType.DueDays);
-                customerTicket_HelpDesk.ClosedDate = DateTime.Now.AddDays((double)ticketType.DueDays);
-                customerTicket_HelpDesk.TicketPriority = ticketType.TicketPriority;
-
-            }
-            var empPlace = db.Placements
-                                  .FirstOrDefault(x => x.isCurrent
-                                       && x.EmployeeId == customerTicket_HelpDesk.EmployeeId);
+            var userName = User.Identity.Name;
+            var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            customerTicket_HelpDesk.EmployeeId = employeeId;
+            var empPlace = db.Placements.FirstOrDefault(x => x.isCurrent
+                                        && x.EmployeeId == customerTicket_HelpDesk.EmployeeId);
             if (empPlace != null)
             {
                 customerTicket_HelpDesk.BranchId = empPlace.BranchId;
                 customerTicket_HelpDesk.BusinessUnitId = empPlace.BusinessUnitId;
                 customerTicket_HelpDesk.OrgStructureId = empPlace.OrgStructureId;
             }
+            customerTicket_HelpDesk.EmployeeId = employeeId;
+            customerTicket_HelpDesk.TicketStatus = 0;
+            customerTicket_HelpDesk.DateCreated = DateTime.Now;
+            customerTicket_HelpDesk.CreatedBy = User.Identity.Name;
+            customerTicket_HelpDesk.ClosedDate = null;
+            customerTicket_HelpDesk.IsAssigned = false;
             string ipAddress = Request.UserHostAddress;
 
             // Handle reverse proxy or load balancer headers
@@ -209,7 +248,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                    
                     var entityAssign = new AssignTicket_HelpDesk
                     {
-                        Age = GetAge(customerTicket_HelpDesk?.DateCreated, customerTicket_HelpDesk?.ClosedDate).ToString(),
+                        Age = GetAge(customerTicket_HelpDesk.DateCreated, customerTicket_HelpDesk.ClosedDate, customerTicket_HelpDesk.IsClosed).ToString(),
                         AssignedDate = DateTime.Now,
                         AssinedTo = groupMember.EmployeeId,
                         PhoneNumber = person?.PhoneNo,
@@ -320,8 +359,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new CustomerTicket_HelpDesk
             {
                 CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
-               RequesterIPAddress = customerTicket.RequesterIPAddress,
-            EmployeeId = customerTicket.EmployeeId,
+                RequesterIPAddress = customerTicket.RequesterIPAddress,
+                EmployeeId = customerTicket.EmployeeId,
                 BranchId = customerTicket.BranchId,
                 BusinessUnitId = customerTicket.BusinessUnitId,
                 OrgStructureId = customerTicket.OrgStructureId,
@@ -449,54 +488,55 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             return RedirectToAction("Index", "CustomerTicket");
         }
 
-        private CustomerTicket_HelpDesk GetMappedObject(CustomerTicket_HelpDesk customerTicket)
+        private CustomerTicket_HelpDesk GetMappedObject(CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
             var entity = new CustomerTicket_HelpDesk
             {
-                CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
-                EmployeeId = customerTicket.EmployeeId,
-                BranchId = customerTicket.BranchId,
-                BusinessUnitId = customerTicket.BusinessUnitId,
-                OrgStructureId = customerTicket.OrgStructureId,
-                RequesterIPAddress = customerTicket.RequesterIPAddress,
-                Description = customerTicket.Description,
-                TicketPriority = customerTicket.TicketPriority,
-                SupportGroup_HelpDeskId = customerTicket.SupportGroup_HelpDeskId,
-                DueDate = customerTicket.DueDate,
-                OverDue = customerTicket.OverDue,
-                ClosedDate = customerTicket.ClosedDate,
-                IsClosed = customerTicket.IsClosed,
-                IsConfirmedByTheRequester = customerTicket.IsConfirmedByTheRequester,
-                AssignedDate = customerTicket.AssignedDate,
-                AssignedTo = customerTicket.AssignedTo,
-                IsAssigned = customerTicket.IsAssigned,
-                IsSendForApproval = customerTicket.IsSendForApproval,
-                IsMultipleAssign = customerTicket.IsMultipleAssign,
-                IsSendForClosing = customerTicket.IsSendForClosing,
-                Quantity = customerTicket.Quantity,
-                MaterialItemsId = customerTicket.MaterialItemsId,
-                Rate = customerTicket.Rate,
-                Role = customerTicket.Role,
-                RootCuase = customerTicket.RootCuase,
-                SolutionGiven = customerTicket.SolutionGiven,
-                Handler = customerTicket.Handler,
-                FixedAssetCategoryId = customerTicket.FixedAssetCategoryId,
-                FixedAssetSubCategoryId = customerTicket.FixedAssetSubCategoryId,
-                AssetRegistrationId = customerTicket.AssetRegistrationId,
-                ItemName = customerTicket.ItemName,
-                TagNo = customerTicket.TagNo,
-                SendApprovalBy = customerTicket.SendApprovalBy,
-                SendApprovalTime = customerTicket.SendApprovalTime,
-                PendingReason = customerTicket.PendingReason,
-                OrgBranchName = customerTicket.OrgBranchName,
-                TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
-                TicketStatus = customerTicket.TicketStatus,
-                CreatedBy = customerTicket.CreatedBy,
-                DateCreated = customerTicket.DateCreated,
-                LastModified = customerTicket.LastModified,
-                ModifiedBy = customerTicket.ModifiedBy,
-                PriorityColor = customerTicket.PriorityColor,
-                Remark = customerTicket.Remark,
+                CustomerTicket_HelpDeskId = customerTicket_HelpDesk.CustomerTicket_HelpDeskId,
+                IsClosed = customerTicket_HelpDesk.IsClosed,
+                IsConfirmedByTheRequester = customerTicket_HelpDesk.IsConfirmedByTheRequester,
+                IsSendForClosing = customerTicket_HelpDesk.IsSendForClosing,
+                TicketStatus = customerTicket_HelpDesk.TicketStatus,
+                MaterialItemsId = customerTicket_HelpDesk.MaterialItemsId,
+                RequesterIPAddress = customerTicket_HelpDesk.RequesterIPAddress,
+                Quantity = customerTicket_HelpDesk.Quantity,
+                Role = customerTicket_HelpDesk.Role,
+                Rate = customerTicket_HelpDesk.Rate,
+                OverDue = customerTicket_HelpDesk.OverDue,
+                Handler = customerTicket_HelpDesk.Handler,
+                IsMultipleAssign = customerTicket_HelpDesk.IsMultipleAssign,
+                IsSendForApproval = customerTicket_HelpDesk.IsSendForApproval,
+                FixedAssetCategoryId = customerTicket_HelpDesk.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket_HelpDesk.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket_HelpDesk.AssetRegistrationId,
+                ItemName = customerTicket_HelpDesk.ItemName,
+                TagNo = customerTicket_HelpDesk.TagNo,
+                RootCuase = customerTicket_HelpDesk.RootCuase,
+                SendApprovalBy = customerTicket_HelpDesk.SendApprovalBy,
+                SendApprovalTime = customerTicket_HelpDesk.SendApprovalTime,
+                PendingReason = customerTicket_HelpDesk.PendingReason,
+                OrgBranchName = customerTicket_HelpDesk.OrgBranchName,
+                LastModified = customerTicket_HelpDesk.LastModified,
+                ModifiedBy = customerTicket_HelpDesk.ModifiedBy,
+                PriorityColor = customerTicket_HelpDesk.PriorityColor,
+                BranchId = customerTicket_HelpDesk.BranchId,
+                BusinessUnitId = customerTicket_HelpDesk.BusinessUnitId,
+                OrgStructureId = customerTicket_HelpDesk.OrgStructureId,
+                AssignedDate = customerTicket_HelpDesk.AssignedDate,
+                AssignedTo = customerTicket_HelpDesk.AssignedTo,
+                AgeOfTicket = customerTicket_HelpDesk.AgeOfTicket,
+                Description = customerTicket_HelpDesk.Description,
+                TicketPriority = customerTicket_HelpDesk.TicketPriority,
+                SupportGroup_HelpDeskId = customerTicket_HelpDesk.SupportGroup_HelpDeskId,
+                ClosedDate = null,
+                TicketType_HelpDeskId = customerTicket_HelpDesk.TicketType_HelpDeskId,
+                DueDate = customerTicket_HelpDesk.DueDate,
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Now,
+                Remark = customerTicket_HelpDesk.Remark,
+                SolutionGiven = customerTicket_HelpDesk.SolutionGiven,
+                EmployeeId = customerTicket_HelpDesk.EmployeeId,
+                IsAssigned = false
             };
             return entity;
         }

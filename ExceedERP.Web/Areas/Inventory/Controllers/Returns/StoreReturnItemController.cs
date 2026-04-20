@@ -34,6 +34,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 StoreReturnItemsID = storeReturnItems.StoreReturnItemsID,
                 ItemCategoryCode = storeReturnItems.ItemCategoryCode,
                 ItemCode = storeReturnItems.ItemCode,
+                NoPrice = storeReturnItems.NoPrice,
                 UnitPrice = storeReturnItems.UnitPrice,
                 Quantity = storeReturnItems.Quantity,
                 TotalPrice = storeReturnItems.Quantity * storeReturnItems.UnitPrice,
@@ -64,14 +65,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                  decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeReturnItems.ItemCode, record.StoreCode);
                 if (avgPrice == 0)
                 {
-                    if(storeReturnItems.UnitPrice == 0)
-                    ModelState.AddModelError("price", "Please enter price,since there is no price set in the system.");
+                    if (storeReturnItems.UnitPrice == 0 && !storeReturnItems.NoPrice)
+                    {
+                        ModelState.AddModelError("price", "Please enter price,since there is no price set in the system.");
+                    }
                 }
                 else
                 {
                     storeReturnItems.UnitPrice = avgPrice;
                 }
              }
+
+            if (storeReturnItems.NoPrice)
+                storeReturnItems.UnitPrice = 0;
 
             if (ModelState.IsValid)
             {
@@ -80,6 +86,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     StoreReturnID = id,
                     ItemCategoryCode = storeReturnItems.ItemCategoryCode,
                     ItemCode = storeReturnItems.ItemCode,
+                    NoPrice = storeReturnItems.NoPrice,
                     UnitPrice = storeReturnItems.UnitPrice,
                     Quantity = storeReturnItems.Quantity,
                     CreatedBy = User.Identity.Name,
@@ -106,7 +113,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreReturnItems_Update([DataSourceRequest]DataSourceRequest request, StoreReturnItems storeReturnItems)
         {
-            var record = db.StoreReturns.Find(storeReturnItems.StoreReturnID);
 
             var exist =db.StoreReturnItemss.Where(x => x.StoreReturnID == storeReturnItems.StoreReturnID)
                     .Where(x => x.StoreReturnItemsID != storeReturnItems.StoreReturnItemsID)
@@ -120,9 +126,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 ModelState.AddModelError("quantity", "Item qualtity should be positive number.");
 
 
-            if (storeReturnItems.UnitPrice == 0)
+            if (storeReturnItems.UnitPrice == 0 && !storeReturnItems.NoPrice)
                 ModelState.AddModelError("price", "Please enter price.");
-           
+
+            if (storeReturnItems.NoPrice)
+                storeReturnItems.UnitPrice = 0;
+
             if (ModelState.IsValid)
             {
                 var entity = new StoreReturnItems

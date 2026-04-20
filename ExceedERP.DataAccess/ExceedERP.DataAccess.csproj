@@ -657,6 +657,154 @@
     <Compile Include="Migrations\202506280846454_salestender.Designer.cs">
       <DependentUpon>202506280846454_salestender.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507071331369_InsuranceUpdates.cs" />
+    <Compile Include="Migrations\202507071331369_InsuranceUpdates.Designer.cs">
+      <DependentUpon>202507071331369_InsuranceUpdates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507071441288_InsuranceUpdates1.cs" />
+    <Compile Include="Migrations\202507071441288_InsuranceUpdates1.Designer.cs">
+      <DependentUpon>202507071441288_InsuranceUpdates1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507081202109_LeavePayableUpdates.cs" />
+    <Compile Include="Migrations\202507081202109_LeavePayableUpdates.Designer.cs">
+      <DependentUpon>202507081202109_LeavePayableUpdates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507081249549_LeavePayableUpdates1.cs" />
+    <Compile Include="Migrations\202507081249549_LeavePayableUpdates1.Designer.cs">
+      <DependentUpon>202507081249549_LeavePayableUpdates1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507161346406_OtherBenefit.cs" />
+    <Compile Include="Migrations\202507161346406_OtherBenefit.Designer.cs">
+      <DependentUpon>202507161346406_OtherBenefit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507161423013_OtherBenefit1.cs" />
+    <Compile Include="Migrations\202507161423013_OtherBenefit1.Designer.cs">
+      <DependentUpon>202507161423013_OtherBenefit1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507171607475_printingprod.cs" />
+    <Compile Include="Migrations\202507171607475_printingprod.Designer.cs">
+      <DependentUpon>202507171607475_printingprod.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507291115233_FleetAndMaintenanceUpdates.cs" />
+    <Compile Include="Migrations\202507291115233_FleetAndMaintenanceUpdates.Designer.cs">
+      <DependentUpon>202507291115233_FleetAndMaintenanceUpdates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508071411407_costestimationnullable.cs" />
+    <Compile Include="Migrations\202508071411407_costestimationnullable.Designer.cs">
+      <DependentUpon>202508071411407_costestimationnullable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508160735262_printingaddrejected.cs" />
+    <Compile Include="Migrations\202508160735262_printingaddrejected.Designer.cs">
+      <DependentUpon>202508160735262_printingaddrejected.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508171419513_proformateamsign.cs" />
+    <Compile Include="Migrations\202508171419513_proformateamsign.Designer.cs">
+      <DependentUpon>202508171419513_proformateamsign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508201123063_estimationsummary.cs" />
+    <Compile Include="Migrations\202508201123063_estimationsummary.Designer.cs">
+      <DependentUpon>202508201123063_estimationsummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508201850575_furnitureproforma1.cs" />
+    <Compile Include="Migrations\202508201850575_furnitureproforma1.Designer.cs">
+      <DependentUpon>202508201850575_furnitureproforma1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508251347253_printingsummary.cs" />
+    <Compile Include="Migrations\202508251347253_printingsummary.Designer.cs">
+      <DependentUpon>202508251347253_printingsummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508251424467_furnitureestsummary.cs" />
+    <Compile Include="Migrations\202508251424467_furnitureestsummary.Designer.cs">
+      <DependentUpon>202508251424467_furnitureestsummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508281252296_priningjobfollowup.cs" />
+    <Compile Include="Migrations\202508281252296_priningjobfollowup.Designer.cs">
+      <DependentUpon>202508281252296_priningjobfollowup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509021103353_storereturnselfcare.cs" />
+    <Compile Include="Migrations\202509021103353_storereturnselfcare.Designer.cs">
+      <DependentUpon>202509021103353_storereturnselfcare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509170928113_LeavePlanUpdates.cs" />
+    <Compile Include="Migrations\202509170928113_LeavePlanUpdates.Designer.cs">
+      <DependentUpon>202509170928113_LeavePlanUpdates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509171319476_LeavePlanUpdates1.cs" />
+    <Compile Include="Migrations\202509171319476_LeavePlanUpdates1.Designer.cs">
+      <DependentUpon>202509171319476_LeavePlanUpdates1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509291223357_HealthRankAndValue.cs" />
+    <Compile Include="Migrations\202509291223357_HealthRankAndValue.Designer.cs">
+      <DependentUpon>202509291223357_HealthRankAndValue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.cs" />
+    <Compile Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.Designer.cs">
+      <DependentUpon>202509291413563_HealthRankAndValueandHealthAprovalSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509300759488_TemplateAs.cs" />
+    <Compile Include="Migrations\202509300759488_TemplateAs.Designer.cs">
+      <DependentUpon>202509300759488_TemplateAs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510081440589_LeaveTypeAndRequestModifications.cs" />
+    <Compile Include="Migrations\202510081440589_LeaveTypeAndRequestModifications.Designer.cs">
+      <DependentUpon>202510081440589_LeaveTypeAndRequestModifications.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510221111513_PrintingJSett.cs" />
+    <Compile Include="Migrations\202510221111513_PrintingJSett.Designer.cs">
+      <DependentUpon>202510221111513_PrintingJSett.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510261157467_DTLoadingStty.cs" />
+    <Compile Include="Migrations\202510261157467_DTLoadingStty.Designer.cs">
+      <DependentUpon>202510261157467_DTLoadingStty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510291835506_printandfurnituremig.cs" />
+    <Compile Include="Migrations\202510291835506_printandfurnituremig.Designer.cs">
+      <DependentUpon>202510291835506_printandfurnituremig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511040736206_tendertemmember.cs" />
+    <Compile Include="Migrations\202511040736206_tendertemmember.Designer.cs">
+      <DependentUpon>202511040736206_tendertemmember.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511041008468_TemplateTypesettingAdded.cs" />
+    <Compile Include="Migrations\202511041008468_TemplateTypesettingAdded.Designer.cs">
+      <DependentUpon>202511041008468_TemplateTypesettingAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511051350078_printfurniture-mig.cs" />
+    <Compile Include="Migrations\202511051350078_printfurniture-mig.Designer.cs">
+      <DependentUpon>202511051350078_printfurniture-mig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511111327311_fixedassetgroupmodif.cs" />
+    <Compile Include="Migrations\202511111327311_fixedassetgroupmodif.Designer.cs">
+      <DependentUpon>202511111327311_fixedassetgroupmodif.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511131052447_printqualityinspection.cs" />
+    <Compile Include="Migrations\202511131052447_printqualityinspection.Designer.cs">
+      <DependentUpon>202511131052447_printqualityinspection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511180528586_prinitingcommongaddcloseby.cs" />
+    <Compile Include="Migrations\202511180528586_prinitingcommongaddcloseby.Designer.cs">
+      <DependentUpon>202511180528586_prinitingcommongaddcloseby.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511241412504_LeaveandOtherModelChanges.cs" />
+    <Compile Include="Migrations\202511241412504_LeaveandOtherModelChanges.Designer.cs">
+      <DependentUpon>202511241412504_LeaveandOtherModelChanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511270728250_TerminationRequestUpdate.cs" />
+    <Compile Include="Migrations\202511270728250_TerminationRequestUpdate.Designer.cs">
+      <DependentUpon>202511270728250_TerminationRequestUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512030811494_fixedassetdepre.cs" />
+    <Compile Include="Migrations\202512030811494_fixedassetdepre.Designer.cs">
+      <DependentUpon>202512030811494_fixedassetdepre.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512030832576_payrollbackpay.cs" />
+    <Compile Include="Migrations\202512030832576_payrollbackpay.Designer.cs">
+      <DependentUpon>202512030832576_payrollbackpay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512220842126_pricesixdigit.cs" />
+    <Compile Include="Migrations\202512220842126_pricesixdigit.Designer.cs">
+      <DependentUpon>202512220842126_pricesixdigit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1101,6 +1249,117 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202506280846454_salestender.resx">
       <DependentUpon>202506280846454_salestender.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507071331369_InsuranceUpdates.resx">
+      <DependentUpon>202507071331369_InsuranceUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507071441288_InsuranceUpdates1.resx">
+      <DependentUpon>202507071441288_InsuranceUpdates1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507081202109_LeavePayableUpdates.resx">
+      <DependentUpon>202507081202109_LeavePayableUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507081249549_LeavePayableUpdates1.resx">
+      <DependentUpon>202507081249549_LeavePayableUpdates1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507161346406_OtherBenefit.resx">
+      <DependentUpon>202507161346406_OtherBenefit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507161423013_OtherBenefit1.resx">
+      <DependentUpon>202507161423013_OtherBenefit1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507171607475_printingprod.resx">
+      <DependentUpon>202507171607475_printingprod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507291115233_FleetAndMaintenanceUpdates.resx">
+      <DependentUpon>202507291115233_FleetAndMaintenanceUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508071411407_costestimationnullable.resx">
+      <DependentUpon>202508071411407_costestimationnullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508160735262_printingaddrejected.resx">
+      <DependentUpon>202508160735262_printingaddrejected.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508171419513_proformateamsign.resx">
+      <DependentUpon>202508171419513_proformateamsign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508201123063_estimationsummary.resx">
+      <DependentUpon>202508201123063_estimationsummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508201850575_furnitureproforma1.resx">
+      <DependentUpon>202508201850575_furnitureproforma1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508251347253_printingsummary.resx">
+      <DependentUpon>202508251347253_printingsummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508251424467_furnitureestsummary.resx">
+      <DependentUpon>202508251424467_furnitureestsummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508281252296_priningjobfollowup.resx">
+      <DependentUpon>202508281252296_priningjobfollowup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509021103353_storereturnselfcare.resx">
+      <DependentUpon>202509021103353_storereturnselfcare.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509170928113_LeavePlanUpdates.resx">
+      <DependentUpon>202509170928113_LeavePlanUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509171319476_LeavePlanUpdates1.resx">
+      <DependentUpon>202509171319476_LeavePlanUpdates1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509291223357_HealthRankAndValue.resx">
+      <DependentUpon>202509291223357_HealthRankAndValue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.resx">
+      <DependentUpon>202509291413563_HealthRankAndValueandHealthAprovalSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509300759488_TemplateAs.resx">
+      <DependentUpon>202509300759488_TemplateAs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510081440589_LeaveTypeAndRequestModifications.resx">
+      <DependentUpon>202510081440589_LeaveTypeAndRequestModifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510221111513_PrintingJSett.resx">
+      <DependentUpon>202510221111513_PrintingJSett.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510261157467_DTLoadingStty.resx">
+      <DependentUpon>202510261157467_DTLoadingStty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510291835506_printandfurnituremig.resx">
+      <DependentUpon>202510291835506_printandfurnituremig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511040736206_tendertemmember.resx">
+      <DependentUpon>202511040736206_tendertemmember.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511041008468_TemplateTypesettingAdded.resx">
+      <DependentUpon>202511041008468_TemplateTypesettingAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511051350078_printfurniture-mig.resx">
+      <DependentUpon>202511051350078_printfurniture-mig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511111327311_fixedassetgroupmodif.resx">
+      <DependentUpon>202511111327311_fixedassetgroupmodif.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511131052447_printqualityinspection.resx">
+      <DependentUpon>202511131052447_printqualityinspection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511180528586_prinitingcommongaddcloseby.resx">
+      <DependentUpon>202511180528586_prinitingcommongaddcloseby.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511241412504_LeaveandOtherModelChanges.resx">
+      <DependentUpon>202511241412504_LeaveandOtherModelChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511270728250_TerminationRequestUpdate.resx">
+      <DependentUpon>202511270728250_TerminationRequestUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512030811494_fixedassetdepre.resx">
+      <DependentUpon>202512030811494_fixedassetdepre.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512030832576_payrollbackpay.resx">
+      <DependentUpon>202512030832576_payrollbackpay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512220842126_pricesixdigit.resx">
+      <DependentUpon>202512220842126_pricesixdigit.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

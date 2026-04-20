@@ -5,5 +5,5 @@
         OptionLabel("Select ").
         ValuePrimitive(true).
         HtmlAttributes(new { style = "width:100%" })
-        .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "MaintenanceDataProvider"))))
+        .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "MaintenanceDataProvider").Data("sendForgery"))))
               

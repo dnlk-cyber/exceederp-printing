@@ -1,0 +1,132 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Maintenance History Jacket</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.FleetEquipmentHistoryJacketViewModel>()
+                                .Name("grid")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.EquipmentCategoryName).Title("Equipment Category");
+                                    columns.Bound(c => c.EquipmentTypeName).Title("Equipment Type");
+                                    columns.Bound(c => c.EquipmentName).Title("Equipment Name");
+                                    columns.Bound(c => c.PlateNo).Title("Plate Number");
+                                    columns.Bound(c => c.PlateNumber).Title("Chasis Number");
+                                    columns.Bound(c => c.SerialNo).Title("Serial Number");
+                                })
+                                .Filterable()
+                                    .Scrollable(h => h.Height(500)).Scrollable()
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.FleetId);
+
+                                    })
+                                    .Read(read => read.Action("Equipment_Read", "MaintenanceHistoryJacket").Data("sendForgery"))
+
+                                ).ClientDetailTemplateId("tabs")
+)
+<script id="tabs" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                        .Name("tabstrip_grid_#=FleetId#")
+                                        .SelectedIndex(0)
+                                        .Items(itemn =>
+                                        {
+                                           // itemn.Add().Text("Job Requests").Content(@<text>@JobRequest()</text>);
+                                                    itemn.Add().Text("Job Orders").Content(@<text>@ServiceCenterJobs()</text>);
+                                                // itemn.Add().Text("Insurance History").Content(@<text>@Insurance()</text>);
+
+
+                                            }).ToClientTemplate())
+</script>
+@*@helper JobRequest()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobRequestVM>()
+                        .Name("ins_#=FleetId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.IsPM).Width(100);
+                            columns.Bound(c => c.Source).Width(100);
+                            columns.Bound(c => c.OperatorName).Width(100);
+                            columns.Bound(c => c.MaintenanceCenter).Width(100);
+                            columns.Bound(c => c.CustomerName).Width(100);
+                            columns.Bound(c => c.Requester).Width(100);
+                            columns.Bound(c => c.BranchName).Width(100);
+                            columns.Bound(c => c.DateCreated).Width(100);
+                            columns.Bound(c => c.DeliveredDate).Width(100);
+                        })
+                        .Filterable()
+                        .Scrollable()
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model => model.Id(p => p.JobRequestId))
+                            .Read(read => read.Action("JobRequest_Read", "MaintenanceHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                        ).ToClientTemplate();
+    )
+}*@
+@helper ServiceCenterJobs()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobOrderVM>()
+                                                  .Name("Joborder_#=FleetId#")
+                                                  .Columns(columns =>
+                                                  {
+                                                      columns.Bound(c => c.Num).Title("Num");
+                                                      columns.Bound(c => c.Description).Title("Job Requested");
+                                                      columns.Bound(c => c.MaintenanceCenter).Title("Garage/Center/Project");
+                                                      columns.Bound(c => c.RequisitionDate).Title("Requisition Date");
+                                                      columns.Bound(c => c.DateIn).Format("{0:yyyy-MM-dd}").Title("Date In");
+                                                      columns.Bound(c => c.DateClosed).Format("{0:yyyy-MM-dd}").Title("Date Out");
+
+                                                  })
+                                                          .Filterable()
+                                                          .Scrollable()
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .Model(model => model.Id(p => p.JobOrderId))
+                                                              .Read(read => read.Action("JobOrder_Read", "MaintenanceHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                          ).ClientDetailTemplateId("Service").ToClientTemplate()
+    )
+}
+<script id="Service" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                        .Name("tabstrip_#=JobOrderId#")
+                                                        .SelectedIndex(0)
+                                                        .Items(items =>
+                                                        {
+                                                            items.Add().Text("Services")
+                                            .Content(
+                                        @<text>
+                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobServiceVM>()
+                                                                               .Name("jobService_#=JobOrderId#")
+                                                                               .Columns(columns =>
+                                                                               {
+                                                                                   columns.Bound(c => c.SparePart).Title("Spare Part").Width(100);
+                                                                                   columns.Bound(c => c.UOM).Title("Unit Of Measurment").Width(150);
+                                                                                   columns.Bound(c => c.Qty).Title("Qty").Width(100);
+                                                                                   columns.Bound(c => c.ServiceGroup).Title("Service Group").Width(100);
+                                                                                   columns.Bound(c => c. WorkExcuted).Title("Work Executed").Width(100);
+                                                                                   columns.Bound(c => c.Forman).Title("Forman").Width(150);
+                                                                                   columns.Bound(c => c.AssignedTechnician).Title("Assigned Technician").Width(150);
+                                                                                   columns.Bound(c => c.LabourCost).Title("Labour Cost").Width(150);
+                                                                                   columns.Bound(c => c.UnitPrice).Title("Unit Price").Width(100);
+                                                                                   columns.Bound(c => c.TotalPrice).Title("Total Price").Width(100);
+                                                                               })
+                                                                               .Filterable()
+                                                                               .Scrollable()
+                                                                               .DataSource(dataSource => dataSource
+                                                                                   .Ajax()
+                                                                                   .Model(model => model.Id(p => p.ServiceCenterJobId))
+                                                                                   .Read(read => read.Action("ServiceCenterJob_Read", "MaintenanceHistoryJacket", new { JobOrderId = "#=JobOrderId#" }).Data("sendForgery"))
+
+                                                                               ).ToClientTemplate()
+                                            )
+                                        </text>);
+
+                                                        }).ToClientTemplate())
+
+</script>

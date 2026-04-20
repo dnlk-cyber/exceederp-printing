@@ -2,24 +2,16 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
-using ExceedERP.Web.Models;
 using Microsoft.Ajax.Utilities;
 using ExceedERP.Web.Hubs;
 
@@ -151,6 +143,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
             return 0;
         }
+        private bool GetHRLevelApprovals(int empId, int fiscalyearId, int periodId)
+        {
+            var records = db.EmployeePerformances
+                .Where(x => x.EmployeeId == empId 
+                && x.GlFiscalYearId == fiscalyearId
+                &&x.IsApproved
+                &&!x.IsAveraged
+                &&(x.IsAcceptedByEmployee 
+                || x.IsRejectedByEmployee)
+                && x.GlPeriodId == periodId);
+
+            // Return true only if there are matching records and all are approved
+            return records.Any() && records.All(x => x.IsImmediateSuppurvisorApproved);
+        }
 
         public ActionResult EmployeePerformanceSummaries_Read([DataSourceRequest] DataSourceRequest request)
         {
@@ -178,6 +184,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 IsCurrent = employeePerformance.IsCurrent,
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
+                Date = employeePerformance.Date,
                 DateCreated = employeePerformance.DateCreated,
                 CreatedBy = employeePerformance.CreatedBy,
                 ModifiedBy = employeePerformance.ModifiedBy,
@@ -185,12 +192,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 IsApproved = employeePerformance.IsApproved,
                 IsRejectedByEmployee = employeePerformance.IsRejectedByEmployee,
                 IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
-                IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
+                IsImmediateSuppurvisorApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
                 IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
                 IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
                 ReasonFor2ndRejection = employeePerformance.ReasonFor2ndRejection,
+                ImmediateSuppurvisorApprovalDate = employeePerformance.ImmediateSuppurvisorApprovalDate,
+                SecondLevelApprovalDate = employeePerformance.SecondLevelApprovalDate,
+                FinalApprovalDate = employeePerformance.FinalApprovalDate,
+                EvalutionType = employeePerformance.EvalutionType,
+                //IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
                 Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
+                //AreAllHRLevelApproved = ,
                 Remark = employeePerformance.EmployeeRemark
             });
 
@@ -199,9 +212,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public ActionResult EmployeePerformanceSummaries_OnePerson_Read([DataSourceRequest] DataSourceRequest request,int employeeId,int fiscalyearId, int quarterId)
         {
             //List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
-            //var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             //var subordinates = EmployeeHelper.GetSubordinates(id);
-            var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId == employeeId && x.GlFiscalYearId == fiscalyearId && x.GlPeriodId == quarterId & x.IsApproved && (x.IsAcceptedByEmployee || x.IsRejectedByEmployee) /*&& x.IsSecondLevelApproved*/).ToList();
+            var employeePerformances = db.EmployeePerformances
+                                                    .Where(x => x.EmployeeId == employeeId 
+                                                    && x.GlFiscalYearId == fiscalyearId 
+                                                    && x.GlPeriodId == quarterId 
+                                                    && x.IsApproved 
+                                                    && (x.IsAcceptedByEmployee || x.IsRejectedByEmployee)
+                                                  ).ToList();
 
             //var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId==employeeId
             //                                                            &&x.GlFiscalYearId==fiscalyearId
@@ -225,6 +244,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 IsHRLevelEvalution = employeePerformance.IsHRLevelEvalution,
                 // Result = employeePerformance.Result,
                 //Weight = employeePerformance.Weight,
+                EvalutionType = employeePerformance.EvalutionType,
+                Date = employeePerformance.Date,
+                DateCreated = employeePerformance.DateCreated,
+                ImmediateSuppurvisorApprovalDate = employeePerformance.ImmediateSuppurvisorApprovalDate,
+                SecondLevelApprovalDate = employeePerformance.SecondLevelApprovalDate,
+                FinalApprovalDate = employeePerformance.FinalApprovalDate,
                 Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),              
                 IsApproved = employeePerformance.IsApproved,
@@ -270,8 +295,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return 0;
         }
-        ////////////////
-
         public ActionResult PerformanceActions_Read([DataSourceRequest] DataSourceRequest request, string empMeasurId)
         {
             int.TryParse(empMeasurId, out int employeeMeasurementId);
@@ -299,21 +322,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 ModelState.AddModelError("", "Score can't exceed the weight");
             }
-
-            //var criteriaType = db.EvaluationCriteriaActionTypes.FirstOrDefault(x => x.IsActive);
-            //if (criteriaType != null && criteriaType.PerformanceCriteriaActionType == PerformanceCriteriaActionType.Open)
-            //{
-            //    //var revertOther = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeePerformanceScore.EmployeeMeasurementId && x.EmployeePerformanceScoreId != employeePerformanceScore.EmployeePerformanceScoreId).ToList();
-            //    //foreach (var rev in revertOther)
-            //    //{
-            //        //rev.IsChecked = false;
-            //        //rev.Score = 0;
-
-            //        db.Entry(rev).State = EntityState.Modified;
-            //        db.SaveChanges();
-            ////    }
-            //}
-
+            
             if (ModelState.IsValid)
             {
 
@@ -324,7 +333,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     EmployeeMeasurementId = employeePerformanceScore.EmployeeMeasurementId,
                     Weight = employeePerformanceScore.Weight,
                     Score = employeePerformanceScore.Score,
-                    //.IsChecked = employeePerformanceScore.IsChecked,
                     Remark = employeePerformanceScore.Remark,
                 };
 
@@ -343,12 +351,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
         }
         ///////////////
-
-       
         public JsonResult GetFiscalYear()
         {
 
-            var fiscalYear = db.GLFiscalYears.ToList();
+            var fiscalYear = db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
 
             return Json(fiscalYear.Select(p =>
             new
@@ -375,44 +381,467 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             }), JsonRequestBehavior.AllowGet);
         }
+        private void AveragingEvaluationCopyyy(IList<EmployeePerformance> employeePerformances)
+        {
+            if (employeePerformances == null || !employeePerformances.Any())
+                return; // Exit if the list is empty
+
+            // Step 1: Get all related measurements
+            var employeePerformanceIds = employeePerformances
+                                         .Select(x => x.EmployeePerformanceId).ToList();
+            var employeeMeasurements = db.EmployeeMeasurement
+                                        .Where(x => employeePerformanceIds.Contains(x.EmployeePerformanceId))
+                                        .ToList();
+
+            // Step 2: Get all related performance scores
+            var employeeMeasurementIds = employeeMeasurements.Select(x => x.EmpMeasurementId).ToList();
+            var employeePerformanceScores = db.EmployeePerformanceScores
+                                             .Where(x => employeeMeasurementIds.Contains(x.EmployeeMeasurementId))
+                                             .ToList();
+
+            // Step 3: Average Scores at EmployeePerformanceScores Level
+            var avgScores = employeePerformanceScores
+                .GroupBy(x => x.PerformanceActionId)
+                .Select(g => new
+                {
+                    PerformanceActionId = g.Key,
+                    AvgScore = g.Average(x => x.Score)
+                }).ToList();
+
+            // Step 4: Average Results at EmployeeMeasurement Level
+            var avgMeasurements = employeeMeasurements
+                .GroupBy(x => x.MeasurmentId)
+                .Select(g => new
+                {
+                    MeasurmentId = g.Key,
+                    AvgResult = g.Average(x => x.Result),
+                    AvgWeight = g.Average(x => x.Weight)
+                }).ToList();
+
+            // Step 5: Create a new EmployeePerformance record (Averaged Data)
+            var entity = new EmployeePerformance
+            {
+                EmployeeId = employeePerformances.First().EmployeeId,
+                GlFiscalYearId = employeePerformances.First().GlFiscalYearId,
+                GlPeriodId = employeePerformances.First().GlPeriodId,
+                EvaluationCriteriaTypeId = employeePerformances.First().EvaluationCriteriaTypeId,
+                BusinessUnitId = employeePerformances.First().BusinessUnitId,
+                OrgStructureId = employeePerformances.First().OrgStructureId,
+                BranchId = employeePerformances.First().BranchId,
+                JobTitleId = employeePerformances.First().JobTitleId,
+                IsCurrent = employeePerformances.First().IsCurrent,
+                CriteriaCategoryId = employeePerformances.First().CriteriaCategoryId,
+                DirectBossId = employeePerformances.First().DirectBossId,
+                ResponsibilityLevel = employeePerformances.First().ResponsibilityLevel,
+                Date = DateTime.Now,
+                DateCreated = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = User.Identity.Name,
+                ModifiedBy = User.Identity.Name,
+                Comment = "Averaged Evaluation",
+                Remark = "Averaged Evaluation",
+                EmployeeRemark = "Averaged Evaluation",
+                DeadLine = 0,
+                IsAcceptedByEmployee = true,
+                IsApproved = true,
+                IsSecondLevelApproved = false,
+                IsImmediateSuppurvisorApproved = true, // Set to true
+                ImmediateSuppurvisorApprovalDate = DateTime.Now,
+                ImmediateSuppurvisorApprover = User.Identity.Name,
+                IsSectorApplied = false,
+                IsCorporateApplied = false,
+                IsHRApproved = false,
+                IsHRLevelEvalution = false,
+                IsRejectedByEmployee = false,
+                IsSecondLevelRejected = false,
+                IsAveraged = true,
+                Grade = null,
+                ReasonFor2ndRejection = null,
+                Weight = avgMeasurements.Average(x => x.AvgWeight),
+                Result = avgMeasurements.Average(x => x.AvgResult)
+            };
+
+            db.EmployeePerformances.Add(entity);
+            db.SaveChanges(); // Save and get the ID
+            var measurements = db.Measurements.Where(x => x.MeasurementDefinitionId == entity.EvaluationCriteriaTypeId).ToList();
+
+            foreach (var meas in measurements)
+            {
+
+                var empMeasure = new EmployeeMeasurement();
+                empMeasure.MeasurmentId = meas.MeasurementId;
+                empMeasure.EmployeePerformanceId = entity.EmployeePerformanceId;
+                empMeasure.Weight = meas.MesPercentageofWeight;
+                empMeasure.Result = 0;
+                db.EmployeeMeasurement.Add(empMeasure);
+                db.SaveChanges();
+                var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId == meas.MeasurementId).ToList();
+
+                foreach (var per in performanceActions)
+                {
+                    var PerformanceScoresResults = employeePerformanceScores.Where(x => x.PerformanceActionId == per.ActionId).ToList();
+
+                    var performanceActionScore = new EmployeePerformanceScore
+                    {
+                        PerformanceActionId = per.ActionId,
+                        EmployeeMeasurementId = empMeasure.EmpMeasurementId,
+                        Weight = per.AcPercentageofWeight,
+                        Score = PerformanceScoresResults.Any()? PerformanceScoresResults.Average(x=>x.Score):0,
+                        Remark = "",
+                    };
+
+                    db.EmployeePerformanceScores.Add(performanceActionScore);
+                    db.SaveChanges();
+                }
+                
+
+            }
+
+            //// Step 6: Save the Averaged EmployeeMeasurement Records
+            //var masterId = employeeMeasurements.First().EmployeePerformanceId;
+            //var measurements = employeeMeasurements.Where(x => x.EmployeePerformanceId == masterId).ToList();
+            //foreach (var meas in measurements)
+            //{
+
+            //    var empMeasure = new EmployeeMeasurement
+            //    {
+            //        MeasurmentId = meas.MeasurmentId,
+            //        EmployeePerformanceId = entity.EmployeePerformanceId,
+            //        Weight = meas.Weight,
+            //        Result = meas.Result
+            //    };
+
+            //    db.EmployeeMeasurement.Add(empMeasure);
+            //    db.SaveChanges();
+            //    var PerformanceScores = employeePerformanceScores.Where(x => x.EmployeeMeasurementId == meas.EmpMeasurementId);
+            //    // Step 7: Save the Averaged EmployeePerformanceScores
+            //    //foreach (var avgScore in avgScores.Where(x => x.PerformanceActionId == meas.MeasurmentId))
+            //    foreach (var avgScore in PerformanceScores)
+            //    {
+            //        var PerformanceScoresResults = employeePerformanceScores.Where(x => x.Weight == avgScore.Weight).ToList();
+
+            //        var performanceActionScore = new EmployeePerformanceScore
+            //        {
+            //            PerformanceActionId = avgScore.PerformanceActionId,
+            //            EmployeeMeasurementId = empMeasure.EmpMeasurementId,
+            //            Weight = avgScore.Weight,
+            //            Score = PerformanceScoresResults.Any()? PerformanceScoresResults.Average(x=>x.Score):0,
+            //            Remark = "Averaged Score"
+            //        };
+
+            //        db.EmployeePerformanceScores.Add(performanceActionScore);
+            //    }
+            //}
+            foreach(var performance in employeePerformances)
+            {
+                performance.IsAveraged = true;
+                db.Entry(performance).State = EntityState.Modified ;
+            }
+            db.SaveChanges(); // Final save
+        }
+        private void AveragingEvaluationCopy(IList<EmployeePerformance> employeePerformances)
+        {
+            if (employeePerformances == null || !employeePerformances.Any())
+                return; // Exit if the list is empty
+
+            // Step 1: Get all related measurements
+            var employeePerformanceIds = employeePerformances
+                                         .Select(x => x.EmployeePerformanceId).ToList();
+            var employeeMeasurements = db.EmployeeMeasurement
+                                        .Where(x => employeePerformanceIds.Contains(x.EmployeePerformanceId))
+                                        .ToList();
+
+            // Step 2: Get all related performance scores
+            var employeeMeasurementIds = employeeMeasurements.Select(x => x.EmpMeasurementId).ToList();
+            var employeePerformanceScores = db.EmployeePerformanceScores
+                                             .Where(x => employeeMeasurementIds.Contains(x.EmployeeMeasurementId))
+                                             .ToList();
+
+            // Step 3: Average Scores at EmployeePerformanceScores Level
+            var avgScores = employeePerformanceScores
+                .GroupBy(x => x.PerformanceActionId)
+                .Select(g => new
+                {
+                    PerformanceActionId = g.Key,
+                    AvgScore = g.Average(x => x.Score)
+                }).ToList();
+
+            // Step 4: Average Results at EmployeeMeasurement Level
+            var avgMeasurements = employeeMeasurements
+                .GroupBy(x => x.MeasurmentId)
+                .Select(g => new
+                {
+                    MeasurmentId = g.Key,
+                    AvgResult = g.Average(x => x.Result),
+                    AvgWeight = g.Average(x => x.Weight)
+                }).ToList();
+
+            // Step 5: Create a new EmployeePerformance record (Averaged Data)
+            var entity = new EmployeePerformance
+            {
+                EmployeeId = employeePerformances.First().EmployeeId,
+                GlFiscalYearId = employeePerformances.First().GlFiscalYearId,
+                GlPeriodId = employeePerformances.First().GlPeriodId,
+                EvaluationCriteriaTypeId = employeePerformances.First().EvaluationCriteriaTypeId,
+                BusinessUnitId = employeePerformances.First().BusinessUnitId,
+                OrgStructureId = employeePerformances.First().OrgStructureId,
+                BranchId = employeePerformances.First().BranchId,
+                JobTitleId = employeePerformances.First().JobTitleId,
+                IsCurrent = employeePerformances.First().IsCurrent,
+                CriteriaCategoryId = employeePerformances.First().CriteriaCategoryId,
+                DirectBossId = employeePerformances.First().DirectBossId,
+                ResponsibilityLevel = employeePerformances.First().ResponsibilityLevel,
+                Date = DateTime.Now,
+                DateCreated = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = User.Identity.Name,
+                ModifiedBy = User.Identity.Name,
+                Comment = "Averaged Evaluation",
+                Remark = "Averaged Evaluation",
+                EmployeeRemark = "Averaged Evaluation",
+                DeadLine = 0,
+                IsAcceptedByEmployee = true,
+                IsApproved = true,
+                IsSecondLevelApproved = false,
+                IsImmediateSuppurvisorApproved = true, // Set to true
+                ImmediateSuppurvisorApprovalDate = DateTime.Now,
+                ImmediateSuppurvisorApprover = User.Identity.Name,
+                IsSectorApplied = false,
+                IsCorporateApplied = false,
+                IsHRApproved = false,
+                IsHRLevelEvalution = false,
+                IsRejectedByEmployee = false,
+                IsSecondLevelRejected = false,
+                IsAveraged = true,
+                Grade = null,
+                ReasonFor2ndRejection = null,
+                Weight = avgMeasurements.Average(x => x.AvgWeight),
+                Result = avgMeasurements.Average(x => x.AvgResult)
+            };
+
+            db.EmployeePerformances.Add(entity);
+            db.SaveChanges(); // Save and get the ID
+            // Step 6: Save the Averaged EmployeeMeasurement Records
+            foreach (var meas in avgMeasurements)
+            {
+                var empMeasure = new EmployeeMeasurement
+                {
+                    MeasurmentId = meas.MeasurmentId,
+                    EmployeePerformanceId = entity.EmployeePerformanceId,
+                    Weight = meas.AvgWeight,
+                    Result = meas.AvgResult
+                };
+
+                db.EmployeeMeasurement.Add(empMeasure);
+                db.SaveChanges();
+
+                // Step 7: Save the Averaged EmployeePerformanceScores
+                foreach (var avgScore in avgScores.Where(x => x.PerformanceActionId == meas.MeasurmentId))
+                {
+                    var performanceActionScore = new EmployeePerformanceScore
+                    {
+                        PerformanceActionId = avgScore.PerformanceActionId,
+                        EmployeeMeasurementId = empMeasure.EmpMeasurementId,
+                        Weight = meas.AvgWeight,
+                        Score = avgScore.AvgScore,
+                        Remark = "Averaged Score"
+                    };
+
+                    db.EmployeePerformanceScores.Add(performanceActionScore);
+                }
+            }
+            db.SaveChanges(); // Final save
+        }
+        private void AveragingEvaluation(IList<EmployeePerformance> employeePerformances)
+        {
+            if (employeePerformances == null || !employeePerformances.Any())
+                return; // Exit if the list is empty
+
+            // Step 1: Get all related measurements
+            var employeePerformanceIds = employeePerformances.Select(x => x.EmployeePerformanceId).ToList();
+            var employeeMeasurements = db.EmployeeMeasurement
+                                        .Where(x => employeePerformanceIds.Contains(x.EmployeePerformanceId))
+                                        .ToList();
+
+            // Step 2: Get all related performance scores
+            var employeeMeasurementIds = employeeMeasurements.Select(x => x.EmpMeasurementId).ToList();
+            var employeePerformanceScores = db.EmployeePerformanceScores
+                                             .Where(x => employeeMeasurementIds.Contains(x.EmployeeMeasurementId))
+                                             .ToList();
+
+            // Step 3: Average Scores at EmployeePerformanceScores Level
+            var avgScores = employeePerformanceScores
+                .GroupBy(x => 1)
+                .Select(g => new
+                {
+                    PerformanceActionId = g.First().PerformanceActionId,
+                    AvgScore = g.Average(x => x.Score),
+                    AvgWeight = g.Average(x => x.Weight)
+                }).FirstOrDefault();
+
+            // Step 4: Average Results at EmployeeMeasurement Level
+            var avgMeasurements = employeeMeasurements
+                .GroupBy(x => 1)
+                .Select(g => new
+                {
+                    MeasurmentId = g.First().MeasurmentId,
+                    AvgResult = g.Average(x => x.Result),
+                    AvgWeight = g.Average(x => x.Weight)
+                }).FirstOrDefault();
+
+            // Step 5: Create a new EmployeePerformance record (Averaged Data)
+            var entity = new EmployeePerformance
+            {
+                EmployeeId = employeePerformances.First().EmployeeId,
+                GlFiscalYearId = employeePerformances.First().GlFiscalYearId,
+                GlPeriodId = employeePerformances.First().GlPeriodId,
+                EvaluationCriteriaTypeId = employeePerformances.First().EvaluationCriteriaTypeId,
+                BusinessUnitId = employeePerformances.First().BusinessUnitId,
+                OrgStructureId = employeePerformances.First().OrgStructureId,
+                BranchId = employeePerformances.First().BranchId,
+                JobTitleId = employeePerformances.First().JobTitleId,
+                IsCurrent = employeePerformances.First().IsCurrent,
+                CriteriaCategoryId = employeePerformances.First().CriteriaCategoryId,
+                DirectBossId = employeePerformances.First().DirectBossId,
+                ResponsibilityLevel = employeePerformances.First().ResponsibilityLevel,
+                Date = DateTime.Now,
+                DateCreated = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = User.Identity.Name,
+                ModifiedBy = User.Identity.Name,
+                Comment = "Averaged Evaluation",
+                Remark = "Averaged Evaluation",
+                EmployeeRemark = "Averaged Evaluation",
+                DeadLine = 0,
+                IsAcceptedByEmployee = true,
+                IsApproved = true,
+                IsSecondLevelApproved = false,
+                IsImmediateSuppurvisorApproved = true,
+                ImmediateSuppurvisorApprovalDate = DateTime.Now,
+                ImmediateSuppurvisorApprover = User.Identity.Name,
+                IsSectorApplied = false,
+                IsCorporateApplied = false,
+                IsHRApproved = false,
+                IsHRLevelEvalution = false,
+                IsRejectedByEmployee = false,
+                IsSecondLevelRejected = false,
+                IsAveraged = true,
+                Grade = null,
+                ReasonFor2ndRejection = null,
+                Weight = avgMeasurements?.AvgWeight ?? 0, // Use null-coalescing operator to avoid null reference
+                Result = avgMeasurements?.AvgResult ?? 0
+            };
+
+            db.EmployeePerformances.Add(entity);
+            db.SaveChanges(); // Save and get the ID
+
+            // Step 6: Save the Averaged EmployeeMeasurement Record
+            var empMeasure = new EmployeeMeasurement
+            {
+                MeasurmentId = avgMeasurements?.MeasurmentId ?? 0, // Use default value if null
+                EmployeePerformanceId = entity.EmployeePerformanceId,
+                Weight = avgScores?.AvgWeight ?? 0,
+                Result = avgScores?.AvgScore ?? 0
+            };
+
+            db.EmployeeMeasurement.Add(empMeasure);
+            db.SaveChanges();
+
+            // Step 7: Save the Averaged EmployeePerformanceScores
+            var performanceActionScore = new EmployeePerformanceScore
+            {
+                PerformanceActionId = avgScores?.PerformanceActionId ?? 0, // Use default value if null
+                EmployeeMeasurementId = empMeasure.EmpMeasurementId,
+                Weight = avgScores?.AvgWeight ?? 0,
+                Score = avgScores?.AvgScore ?? 0,
+                Remark = "Averaged Score"
+            };
+
+            db.EmployeePerformanceScores.Add(performanceActionScore);
+            db.SaveChanges(); // Final save
+        }
         public string ApproveEvaluation(int year, int period, int employee,int empPerformanceId)
         {
             var status = "false";
-            var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == year && x.GlPeriodId == period && x.EmployeeId == employee&&x.IsApproved&& (x.IsAcceptedByEmployee||x.IsRejectedByEmployee)&& !x.IsImmediateSuppurvisorApproved).ToList();
-            if(db.EmployeePerformances.Where(x => x.GlFiscalYearId == year 
-                                        && x.GlPeriodId == period 
-                                        && x.EmployeeId == employee 
-                                        && x.IsApproved 
-                                        && !x.IsAcceptedByEmployee
-                                        && !x.IsRejectedByEmployee).Any())
+            var performance = db.EmployeePeerToPeerAndInternalCustomerPerformanceSettings.FirstOrDefault();
+            var employeePerformances = db.EmployeePerformances
+                                               .Where(x => x.GlFiscalYearId == year
+                                                   && x.GlPeriodId == period
+                                                   && x.EmployeeId == employee
+                                                   && x.IsApproved
+                                                   && (x.IsAcceptedByEmployee
+                                                       || x.IsRejectedByEmployee)
+                                                   && !x.IsImmediateSuppurvisorApproved)
+                                                   .ToList();
+            if (performance !=null 
+                && (performance.IsInternalCustomerHasMultipleEvaluator
+                || performance.IsPeerToPeerHasMultipleEvaluator))
+            {
+                var employeePeerToPeerPerformances = db.EmployeePerformances
+                                                          .Where(x => x.GlFiscalYearId == year
+                                                                && x.GlPeriodId == period
+                                                                && x.EmployeeId == employee
+                                                                && x.EvalutionType == "PeerToPeer"
+                                                                && x.IsApproved
+                                                                && !x.IsAveraged
+                                                                && (x.IsAcceptedByEmployee
+                                                                    || x.IsRejectedByEmployee)
+                                                                && !x.IsImmediateSuppurvisorApproved)
+                                                                .ToList();
+                if(employeePeerToPeerPerformances.Any()&& employeePeerToPeerPerformances.Count()>1)
+                    AveragingEvaluationCopyyy(employeePeerToPeerPerformances);
+                    //AveragingEvaluation(employeePeerToPeerPerformances);
+
+                var employeeInternalCustomerPerformances = db.EmployeePerformances
+                                                        .Where(x => x.GlFiscalYearId == year
+                                                                     && x.GlPeriodId == period
+                                                                     && x.EmployeeId == employee
+                                                                     && x.EvalutionType == "InternalCustomer"
+                                                                     && x.IsApproved
+                                                                     && !x.IsAveraged
+                                                                     && (x.IsAcceptedByEmployee
+                                                                         || x.IsRejectedByEmployee)
+                                                                     && !x.IsImmediateSuppurvisorApproved)
+                                                                     .ToList();
+
+                if(employeeInternalCustomerPerformances.Any()&& employeeInternalCustomerPerformances.Count()>1)
+                    AveragingEvaluationCopyyy(employeeInternalCustomerPerformances);
+                    //AveragingEvaluation(employeeInternalCustomerPerformances);
+
+                employeePerformances = employeePerformances.ToList();
+            }
+            
+            if (db.EmployeePerformances
+                        .Where(x => x.GlFiscalYearId == year 
+                                     && x.GlPeriodId == period 
+                                     && x.EmployeeId == employee 
+                                     && x.IsApproved 
+                                     && !x.IsAcceptedByEmployee
+                                     && !x.IsRejectedByEmployee)
+                                     .Any())
             {
                 return status;
             }
-            
-            foreach ( var employeePerformance in employeePerformances)
+            var employeePerformancess = db.EmployeePerformances
+                                                        .Where(x => x.GlFiscalYearId == year
+                                                                     && x.GlPeriodId == period
+                                                                     && x.EmployeeId == employee
+                                                                     && x.IsApproved
+                                                                     && !x.IsAveraged
+                                                                     && (x.IsAcceptedByEmployee
+                                                                         || x.IsRejectedByEmployee)
+                                                                     && !x.IsImmediateSuppurvisorApproved)
+                                                                     .ToList();
+            foreach ( var employeePerformance in employeePerformancess)
             {
+               
                 employeePerformance.IsImmediateSuppurvisorApproved = true;
-
+                employeePerformance.ImmediateSuppurvisorApprovalDate = DateTime.Now;
+                employeePerformance.ImmediateSuppurvisorApprover = User.Identity.Name;
                 db.Entry(employeePerformance).State = EntityState.Modified;
                 db.SaveChanges();
-
                 status= "true";
             }
-            var empPerformance = db.EmployeePerformances.Find(empPerformanceId);
-            if(empPerformance != null&& !empPerformance.IsImmediateSuppurvisorApproved 
-                && (empPerformance.IsAcceptedByEmployee || empPerformance.IsRejectedByEmployee))
-            {
-                empPerformance.IsImmediateSuppurvisorApproved = true;
-
-                db.Entry(empPerformance).State = EntityState.Modified;
-                db.SaveChanges();
-                status = "true";
-            }
-            else
-            {
-                 status = "false";
-            }
-
             if (employee != 0)
             {
                 //var bossId = EmployeeHelper.GetSupervisor(placement.EmployeeId);
@@ -427,82 +856,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 Notify.NotifyUser(notif);
             }
             return status;
-        }
-       
-        public int GenerateEmployeeForPerofmanceEvaluation(int empId, int fiscalYearId, int periodId, int evaluationCriteriaId)
-        {
-            var empPerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == empId && x.GlFiscalYearId == fiscalYearId && x.GlPeriodId == periodId && x.EvaluationCriteriaTypeId == evaluationCriteriaId);
-            if (empPerformance == null)
-            {
-                var entity = new EmployeePerformance
-                {
-                    EmployeeId = empId,
-                    GlFiscalYearId = fiscalYearId,
-                    GlPeriodId = periodId,
-                    EvaluationCriteriaTypeId = evaluationCriteriaId,
-                    Weight = 0,
-                    Result = 0
-                };
-
-                db.EmployeePerformances.Add(entity);
-                db.SaveChanges();
-
-                var measurments = db.Measurements.Where(x => x.MeasurementDefinitionId == entity.EvaluationCriteriaTypeId).ToList();
-
-                foreach (var meas in measurments)
-                {
-                    var checkExit = db.EmployeeMeasurement.FirstOrDefault(x => x.MeasurmentId == meas.MeasurementId && x.EmployeePerformanceId == entity.EmployeePerformanceId);
-
-                    if (checkExit == null)
-                    {
-                        var empMeasure = new EmployeeMeasurement();
-
-                        empMeasure.MeasurmentId = meas.MeasurementId;
-                        empMeasure.EmployeePerformanceId = entity.EmployeePerformanceId;
-                        empMeasure.Weight = meas.MesPercentageofWeight;
-                        empMeasure.Result = 0;
-
-                        db.EmployeeMeasurement.Add(empMeasure);
-                        db.SaveChanges();
-
-                        var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId == empMeasure.MeasurmentId).ToList();
-
-                        foreach (var per in performanceActions)
-                        {
-                            var performanceActionScore = new EmployeePerformanceScore
-                            {
-                                PerformanceActionId = per.ActionId,
-                                EmployeeMeasurementId = empMeasure.EmpMeasurementId,
-                                Weight = per.AcPercentageofWeight,
-                                Score = 0,
-                                Remark = "",
-                            };
-
-                            db.EmployeePerformanceScores.Add(performanceActionScore);
-                            db.SaveChanges();
-                        }
-                    }
-                }
-
-                return entity.EmployeePerformanceId;
-                //var returnvalue = new
-                //{
-                //    EmployeePerformanceId = entity.EmployeePerformanceId
-                //};
-
-                //return Json(returnvalue, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return empPerformance.EmployeePerformanceId;
-                //var returnvalue1 = new
-                //{
-                //    EmployeePerformanceId = empPerformance.EmployeePerformanceId
-                //};
-
-                //return Json(returnvalue1, JsonRequestBehavior.AllowGet);
-            }
-
         }
         public List<int> GetActiveEmployeeFromCurrentUserBranch(string user)
         {

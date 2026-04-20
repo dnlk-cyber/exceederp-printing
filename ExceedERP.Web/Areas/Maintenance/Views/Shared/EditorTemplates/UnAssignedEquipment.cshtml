@@ -3,4 +3,4 @@
 @(Html.Kendo().DropDownList().Name("Fleets")
       .DataTextField("PlateNumber")
           .DataValueField("FleetsID").Filter(FilterType.Contains)
-          .DataSource(d => d.Read(r => r.Action("UnAssignedFleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+          .DataSource(d => d.Read(r => r.Action("UnAssignedFleetsDDBind", "EquipmentRegistration").Data("sendForgery")).ServerFiltering(false)))

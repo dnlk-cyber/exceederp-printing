@@ -70,6 +70,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             })
             , JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetUoMFilter(string text)
+        {
+            var uom = db.UoMs.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                uom = uom.Where(x => x.UoMName.Contains(text));
+            }
+            return Json(uom.Select(i => new
+            {
+                UoMName = i.UoMName,
+                Value = i.UoMName
+            })
+            , JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetTaskCategory(WorkShop taskType)
         {
@@ -189,33 +203,63 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var estimation = db.FurnitureEstimationForms.Where(x => x.IsOnlineApproved).AsQueryable();
             if (!string.IsNullOrEmpty(text))
             {
-                estimation = estimation.Where(x => x.FurnitureEstimationId == int.Parse(text)).AsQueryable();
+                estimation = estimation.Where(x => x.FurnitureEstimationId.ToString().Contains(text));
             }
             var result = estimation.Select(s => new
             {
                 Value = s.FurnitureEstimationId,
                 Text = s.FurnitureEstimationId + "/" + db.FurnitureStandardJobTypes.FirstOrDefault(x => x.FurnitureStandardJobTypeId == s.JobTypeId).JobTypeName
-            }).ToList();
+            }).ToList().OrderByDescending(x => x.Value);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-       
-
+        
         public JsonResult GetEmployees(string text)
         {
             var employees = db.Person_Employee.AsQueryable();
             if (!string.IsNullOrWhiteSpace(text))
             {
-                employees = employees.Where(x => x.FirstName.Contains(text) || x.MiddleName.Contains(text) || x.LastName.Contains(text)).AsQueryable();
+                employees = employees.Where(x => x.FirstNameEnglish.Contains(text) || x.MiddleNameEnglish.Contains(text) || x.LastNameEnglish.Contains(text)).AsQueryable();
             }
             var result = employees.Select(s => new
             {
                 Value = s.EmployeeId,
-                Text = s.FirstName + "-" + s.MiddleName + "-" + s.LastName
+                Text = s.FirstNameEnglish + "-" + s.MiddleNameEnglish + "-" + s.LastNameEnglish
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-
+        public JsonResult GetTransferer(string text)
+        {
+            var transferer = db.Person_Employee.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                transferer = transferer.
+                    Where(x => x.FirstNameEnglish.Contains(text) || x.MiddleNameEnglish.Contains(text) || x.LastNameEnglish.Contains(text))
+                    .AsQueryable();
+            }
+            var result = transferer.Select(s => new
+            {
+                Value = s.EmployeeId,
+                Text = s.FirstNameEnglish + "-" + s.MiddleNameEnglish + "-" + s.LastNameEnglish,
+            });
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetReciever(string text)
+        {
+            var transferer = db.Person_Employee.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                transferer = transferer.
+                    Where(x => x.FirstNameEnglish.Contains(text) || x.MiddleNameEnglish.Contains(text) || x.LastNameEnglish.Contains(text))
+                    .AsQueryable();
+            }
+            var result = transferer.Select(s => new
+            {
+                Value = s.EmployeeId,
+                Text = s.FirstNameEnglish + "-" + s.MiddleNameEnglish + "-" + s.LastNameEnglish,
+            });
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetProformaInvoiceNo(string text)
         {
            
@@ -257,7 +301,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 Value = s.PrintingProformaInvoiceId,
                 Text = s.PrintingProformaInvoiceId + "-" + db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == s.CustomerId)?.TradeName
-            }).ToList();
+            }).ToList().OrderByDescending(d => d.Value);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

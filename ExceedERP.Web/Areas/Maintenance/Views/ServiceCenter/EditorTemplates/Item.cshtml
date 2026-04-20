@@ -7,7 +7,7 @@
         //    .BindTo((IEnumerable)ViewData["Items"])
         .DataSource(dataSource =>
         {
-            dataSource.Read(read => read.Action("GetItemsUnderCategory", "MaintenanceDataProvider").Data("filterCategories"))
+            dataSource.Read(read => read.Action("GetItemsUnderCategory", "MaintenanceDataProvider").Data("sendForgery").Data("filterCategories"))
             .ServerFiltering(true);
         })
         .CascadeFrom("ItemCategoryCode")

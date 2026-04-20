@@ -117,10 +117,10 @@
               model.Field(p => p.ModifiedBy).Editable(false);
               model.Field(p => p.LastModified).Editable(false);
           })
-          .Read(read => read.Action("SparePartStoreRequisitions_Read", "SparePartStoreRequisition"))
-          .Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition"))
-          .Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition"))
-          .Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition"))
+          .Read(read => read.Action("SparePartStoreRequisitions_Read", "SparePartStoreRequisition").Data("sendForgery"))
+          .Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition").Data("sendForgery"))
+          .Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition").Data("sendForgery"))
 
       ).Resizable(resize => resize.Columns(true))
       .ClientDetailTemplateId("storerequisitions"))
@@ -140,7 +140,7 @@
 
                 # if (IsOnlineApproved)
                 {#
-                <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint",new { area="Inventory"})/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
                 <br />
                 # } #
                 <div>
@@ -275,10 +275,10 @@
                               model.Field(p => p.LastModified).Editable(false);
 
                           })
-                          .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem"))
-                          .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem"))
+                          .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem").Data("sendForgery"))
                       ).ToClientTemplate())
             </text>
               );
@@ -317,10 +317,10 @@
                           {
                               model.Id(p => p.StoreRequisitionValidationID);
                           })
-                          .Read(read => read.Action("SparePartStoreRequisitionValidations_Read", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("SparePartStoreRequisitionValidations_Create", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("SparePartStoreRequisitionValidations_Update", "SparePartStoreRequisitionValidation"))
-                          .Destroy(destroy => destroy.Action("SparePartStoreRequisitionValidations_Destroy", "SparePartStoreRequisitionValidation"))
+                          .Read(read => read.Action("SparePartStoreRequisitionValidations_Read", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Create(create => create.Action("SparePartStoreRequisitionValidations_Create", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Update(update => update.Action("SparePartStoreRequisitionValidations_Update", "SparePartStoreRequisitionValidation").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("SparePartStoreRequisitionValidations_Destroy", "SparePartStoreRequisitionValidation").Data("sendForgery"))
 
                       ).ToClientTemplate())
 
@@ -354,10 +354,10 @@
                           model.Id(p => p.StoreRequisitionPropertyValidationID);
                           model.Field(p => p.Approver).Editable(false);
                       } )
-                      .Read(read => read.Action("StoreRequisitionPropertyValidations_Read", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-                      .Create(create => create.Action("StoreRequisitionPropertyValidations_Create", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-                      .Update(update => update.Action("StoreRequisitionPropertyValidations_Update", "StoreRequisitionPropertyValidation"))
-                      .Destroy(destroy => destroy.Action("StoreRequisitionPropertyValidations_Destroy", "StoreRequisitionPropertyValidation"))
+                      .Read(read => read.Action("StoreRequisitionPropertyValidations_Read", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                      .Create(create => create.Action("StoreRequisitionPropertyValidations_Create", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                      .Update(update => update.Action("StoreRequisitionPropertyValidations_Update", "StoreRequisitionPropertyValidation").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("StoreRequisitionPropertyValidations_Destroy", "StoreRequisitionPropertyValidation").Data("sendForgery"))
                   ).ToClientTemplate()
                 )
                                                                                   </text>);*@

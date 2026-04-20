@@ -14,12 +14,21 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<WeeklyCmPmPerformanceDto> GetCmPmReport(string fiscalYearId, string periodId)
+        public List<WeeklyCmPmPerformanceDto> GetCmPmReport(string fiscalYearId, string periodId, string maintenanceCenter, string equipmentCategoryId)
         {
             List<WeeklyCmPmPerformanceDto> list = new List<WeeklyCmPmPerformanceDto>();
             if (int.TryParse(fiscalYearId, out int glFiscalYearId))
             {
                 var maintenancePlans = db.MaintenancePlans.Where(x => x.GlFiscalYearId == glFiscalYearId).ToList();
+                if (Guid.TryParse(maintenanceCenter, out Guid maintenanceCenterId))
+                {
+                    maintenancePlans = maintenancePlans.Where(x => x.MaintenanceCenterId == maintenanceCenterId).ToList();
+                }
+                if (Guid.TryParse(equipmentCategoryId, out Guid categoryId))
+                {
+                    maintenancePlans = maintenancePlans.Where(x => x.EquipmentCategoryId == categoryId).ToList();
+
+                }
                 var planDetails = db.MaintenancePlanDetails.ToList();
                 if (int.TryParse(periodId, out int glPeriodId))
                 {

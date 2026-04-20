@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.PrintingJobSetting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IsFromPrinting).Title("Is From Printing").Width(100);
+          columns.Bound(c => c.Remark).Title("Remark").Width(190);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Title("Action").Width(100);
+
+      })
+      .ToolBar(toolbar => toolbar.Create())
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model=>
+          {
+              model.Id(m => m.PrintingJobSettingId);
+          })
+
+          .Create(read => read.Action("JobSetting_Create", "PrintingJobSetting"))
+          .Read(read => read.Action("JobSetting_Read", "PrintingJobSetting"))
+          .Destroy(read => read.Action("JobSetting_Destroy", "PrintingJobSetting"))
+          .Update(read => read.Action("JobSetting_Update", "PrintingJobSetting"))
+      )
+)

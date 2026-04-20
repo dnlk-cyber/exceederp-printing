@@ -1,0 +1,13 @@
+﻿
+
+    @(Html.Kendo().DropDownListFor(model => model)
+          .ValuePrimitive(true)
+          .DataTextField("Name")
+          .DataValueField("Code")
+          .CascadeFrom("JobOrderID")
+          .OptionLabel(" Select ")
+          .Filter(FilterType.Contains)
+                  .DataSource(d => d.Read(r => r.Action("GetSubCategories", "MaintenanceDataProvider",new { FleetId= "#=JobOrderID#" }).Data("sendForgery")
+                  //.Data("filterSubCategory")
+                  )
+                  .ServerFiltering(false)))

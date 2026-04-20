@@ -1,0 +1,36 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingProduction.PressDailyFollowUpWastage
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Amount</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Amount).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>UOM</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.UOM)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Select unit...")
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")
+                                        .Filter("contains")
+
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetUoM", "PrintDataProvider", new { area = "Printing" }).Data("filterUOM"))
+                                                .ServerFiltering(true);
+                                        }).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>

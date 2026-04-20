@@ -18,12 +18,14 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
     public class SickLeaveSalarySetting: TrackUserOperation
     {
         public int SickLeaveSalarySettingId { get; set; }
-        [Display(Name = "To Days")]
+        [Display(Name = "From Days")]
         public int FromDays { get; set; }
         [Display(Name = "To Days")]
         public int ToDays { get; set; }
         [Display(Name = "Payable Salary in %")]
         [Range(0, 100, ErrorMessage = "Payable Salary in % must be between 0 and 100.")]
         public decimal PayableSalaryInPercent { get; set; }
+        [Display(Name = "Is Terminated")]
+        public bool IsTerminated { get; set; }
     }
 }

@@ -219,7 +219,7 @@ namespace ExceedERP.Core.Domain.Finance
         public int AgingPeriodSetupId { get; set; }
         [Display(Name = "Aging Type")]
         public AgingType Type { get; set; }
-        
+
         [Display(Name = "Period 1 -Days")]
         public int Period1 { get; set; }
 
@@ -228,7 +228,7 @@ namespace ExceedERP.Core.Domain.Finance
 
         [Display(Name = "Period 3 -Days")]
         public int Period3 { get; set; }
-       
+
     }
 
     public enum JournalSources
@@ -262,12 +262,26 @@ namespace ExceedERP.Core.Domain.Finance
         Stock_Transfer_Receive,
         Stock_Return,
         Stock_SaleOrLend,
-        Deposit,
-        Credit_Settlement,
+        Crm_Sales_Invoice,
+        Crm_Shipment,
+        Crm_Deposit,
+        Crm_Credit_Settlement,
+        Crm_Advance_Payment,
         TDS,
-        AP_Payment_SubContract,
-        AR_Collection_Construction,
-        AP_Fund_Receive
+        Construction_SubContract_Payment,
+        Construction_SubContract_Payment_Certificate,
+        Construction_Payment_Certificate,
+        Construction_Collection,
+        AP_Fund_Receive,
+        Service_Receive,
+        AR_Direct_Collection,
+        PPE_Disposal,
+        PPE_Annual_Depreciation,
+        PPE_IFRS_Depreciation,
+        CPM_Collection,
+        REM_Invoice_Collection,
+        REM_Shareholder_Application,
+        REM_Shareholder_Collection
     }
 
     public class JournalSourceMap : TrackUserSettingOperation

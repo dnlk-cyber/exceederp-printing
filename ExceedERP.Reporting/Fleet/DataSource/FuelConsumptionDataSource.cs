@@ -178,7 +178,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
                         var FuelConsumptionViewModel = new FuelConsumptionSummary
                         {
-                            ProjectName = FuelConsumption.CreatedBy,
+                            ProjectName = FuelConsumption.CreatedBy??"NA",
                             FuelType = FuelConsumption.FuelType,
                             FuelItem = FuelConsumption.Description,
                             Amount = FuelConsupmtions.Where(x => x.FuelSourceDetail == OWNED ).Sum(x => x.FuelFilledAmount),                            

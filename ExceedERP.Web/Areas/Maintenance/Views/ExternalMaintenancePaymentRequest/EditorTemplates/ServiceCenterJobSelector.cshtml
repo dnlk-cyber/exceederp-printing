@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+              .OptionLabel("Select A Job")
+              .DataTextField("Text")
+              .DataValueField("Value")
+              .Filter("contains")
+              .DataSource(datasource =>
+              {
+                  datasource.Read(read => read.Action("SelectExteranalServiceCenterJobs", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("FilterMaintenanceCenter"))
+                  .ServerFiltering(false);
+              })
+)
+@Html.ValidationMessageFor(m => m)

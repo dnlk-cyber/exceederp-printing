@@ -15,12 +15,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var employees = db.Person_Employee.AsQueryable();
             if (!string.IsNullOrWhiteSpace(text))
             {
-                employees = employees.Where(x => x.FirstName.Contains(text) || x.MiddleName.Contains(text) || x.LastName.Contains(text)).AsQueryable();
+                employees = employees.Where(x => x.FirstNameEnglish.Contains(text) || x.MiddleNameEnglish.Contains(text) || x.LastNameEnglish.Contains(text)).AsQueryable();
             }
             var result = employees.Select(s => new
             {
                 Value = s.EmployeeId,
-                Text = s.FirstName + "-" + s.MiddleName + "-" + s.LastName
+                Text = s.FirstNameEnglish + "-" + s.MiddleNameEnglish + "-" + s.LastNameEnglish
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -36,21 +36,18 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         }
         public JsonResult GetPrintingEstimation(string text)
         {
-            var estimation = db.PrintingCostEstimations.Where(x => x.IsOnlineApproved)
-                .OrderByDescending(x => x.PrintingCostEstimationId)
-                .AsQueryable();
+            var estimation = db.PrintingCostEstimations.Where(x => x.IsOnlineApproved).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(text))
             {
-                estimation = estimation.Where(x => x.PrintingCostEstimationId == int.Parse(text) || text.Contains(x.PrintJobType.ToString()))
-                    .OrderByDescending(x => x.PrintingCostEstimationId)
-                    .AsQueryable();
+                estimation = estimation.Where(x => x.PrintingCostEstimationId.ToString().Contains(text) ||
+                x.PrintJobType.ToString().Contains(text)).AsQueryable();                          
             }
             var result = estimation.Select(s => new
             {
                 Value = s.PrintingCostEstimationId,
                 Text = s.PrintingCostEstimationId + "-" + s.PrintJobType.ToString()
-            }).ToList();
+            }).ToList().OrderByDescending(x => x.Value);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         public JsonResult InventoryItems(string text, string itemCode)

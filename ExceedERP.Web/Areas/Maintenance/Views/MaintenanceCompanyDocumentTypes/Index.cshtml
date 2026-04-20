@@ -25,10 +25,10 @@
           .DataSource(dataSource => dataSource
               .Ajax()
               .Model(model => model.Id(p => p.MaintenanceCompanyDocumentTypeId))
-              .Read(read => read.Action("MaintenanceCompanyDocumentTypes_Read", "MaintenanceCompanyDocumentTypes"))
-              .Create(create => create.Action("MaintenanceCompanyDocumentTypes_Create", "MaintenanceCompanyDocumentTypes"))
-              .Update(update => update.Action("MaintenanceCompanyDocumentTypes_Update", "MaintenanceCompanyDocumentTypes"))
-              .Destroy(destroy => destroy.Action("MaintenanceCompanyDocumentTypes_Destroy", "MaintenanceCompanyDocumentTypes"))
+              .Read(read => read.Action("MaintenanceCompanyDocumentTypes_Read", "MaintenanceCompanyDocumentTypes").Data("sendForgery"))
+              .Create(create => create.Action("MaintenanceCompanyDocumentTypes_Create", "MaintenanceCompanyDocumentTypes").Data("sendForgery"))
+              .Update(update => update.Action("MaintenanceCompanyDocumentTypes_Update", "MaintenanceCompanyDocumentTypes").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("MaintenanceCompanyDocumentTypes_Destroy", "MaintenanceCompanyDocumentTypes").Data("sendForgery"))
             ).ClientDetailTemplateId("template"))
 
 <script id="template" type="text/kendo-tmpl">
@@ -79,8 +79,8 @@
                          events.RequestEnd("onRequestEnd(\"CompanyDocument#=MaintenanceCompanyDocumentTypeId#\")");
                      })
                      .Model(model => model.Id(p => p.MaintenanceCompanyDocumentId))
-                     .Read(read => read.Action("MaintenanceCompanyDocuments_Read", "MaintenanceCompanyDocuments", new { id = "#=MaintenanceCompanyDocumentTypeId#", area = "Maintenance" }))
-                     .Destroy(destroy => destroy.Action("MaintenanceCompanyDocuments_Destroy", "MaintenanceCompanyDocuments", new { area = "Maintenance" }))
+                     .Read(read => read.Action("MaintenanceCompanyDocuments_Read", "MaintenanceCompanyDocuments", new { id = "#=MaintenanceCompanyDocumentTypeId#", area = "Maintenance" }).Data("sendForgery"))
+                     .Destroy(destroy => destroy.Action("MaintenanceCompanyDocuments_Destroy", "MaintenanceCompanyDocuments", new { area = "Maintenance" }).Data("sendForgery"))
                      ).ToClientTemplate())
     </text>
 );

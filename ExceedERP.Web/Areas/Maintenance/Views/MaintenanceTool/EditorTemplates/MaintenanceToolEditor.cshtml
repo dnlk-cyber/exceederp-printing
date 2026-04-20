@@ -15,7 +15,7 @@
                     @*@(Html.Kendo().DropDownListFor(model => model.ToolsName).Name("ToolsName")
                         .DataTextField("Name")
                                         .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                                .DataSource(d => d.Read(r => r.Action("ToolDDBind", "DataProvider"))))*@
+                                                .DataSource(d => d.Read(r => r.Action("ToolDDBind", "DataProvider").Data("sendForgery"))))*@
                 </div>
 
             </div>
@@ -42,7 +42,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.OwnedBy).HtmlAttributes(new { @class = "form-control" }).Name("OwnedBy")
                                 .DataTextField("FullName")
                                     .DataValueField("FullName").OptionLabel("Select")
-                                    .DataSource(d => d.Read(r => r.Action("MechanicCrewDDBind", "MechanicCrew"))).ValuePrimitive(true))
+                                    .DataSource(d => d.Read(r => r.Action("MechanicCrewDDBind", "MechanicCrew").Data("sendForgery"))).ValuePrimitive(true))
 
 
 

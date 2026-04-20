@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Procurements.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;

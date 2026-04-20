@@ -298,44 +298,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
 
             return Json(new[] { attachments }.ToDataSourceResult(request, ModelState));
         }
-        //public JsonResult UploadCompanyFile(int FleetBoloRegistrationId, HttpPostedFileBase[] CompanyFile, string Description)
-        //{
-        //    for (int i = 0; i < CompanyFile.Count(); i++)
-        //    {
-        //        HttpPostedFileBase compFile = CompanyFile[i];
-        //        if (compFile != null && compFile.ContentLength > 0)
-        //        {
-        //            string path = HttpContext.Server.MapPath("~/Content/Files/Archive/");
-        //            string shortPath = "/Content/Files/Archive/";
-        //            if (!Directory.Exists(path))
-        //            {
-        //                Directory.CreateDirectory(path);
-        //            }
-        //            string newFileName = Path.GetFileNameWithoutExtension(compFile.FileName);// compFile.FileName;
-        //            var fileExtension = System.IO.Path.GetExtension(compFile.FileName);
-        //            string name = "" + DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second;
-        //            newFileName = newFileName + name + fileExtension;
-        //            string filePath = path + newFileName;
-
-        //            compFile.SaveAs(filePath);
-
-        //            var entity = new BoloRegistrationDocument
-        //            {
-        //                FleetBoloRegistrationId = FleetBoloRegistrationId,
-        //                FilePath = filePath,
-        //                FileName = newFileName,
-        //                Description = Description,
-        //                ShortPath = shortPath,
-        //                FileExtension = fileExtension
-        //            };
-
-        //            db.BoloRegistrationDocuments.Add(entity);
-        //            db.SaveChanges();
-        //        }
-        //    }
-
-        //    return Json("Successfull");
-        //}
         public ActionResult DownloadBoloDocument(int CompanyDocumentId)
         {
             var record = db.BoloRegistrationDocuments.Find(CompanyDocumentId);

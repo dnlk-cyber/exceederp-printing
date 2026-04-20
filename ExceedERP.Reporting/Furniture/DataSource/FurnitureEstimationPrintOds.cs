@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,16 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     Date = estimation.DateCreated,
                     EstimationNo = estimation.FurnitureEstimationId,
                     JobType = jobType?.JobTypeName ?? "",
-                    Quantity = estimation.Quantity
+                    Quantity = estimation.Quantity,
+                    ApprovedBy = estimation.OnlineApprovedBy,
+                    ApprovedDate = estimation.OnlineApprovedTime,
+                    CheckedBy = estimation.SendForApprovalBy,
+                    CheckedDate = estimation.SendForApprovalTime,
+                    CreatedBy = estimation.CreatedBy,
+                    DateCreated = estimation.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(estimation.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(estimation.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(estimation.SendForApprovalBy)
                 };
             }
             return vm;

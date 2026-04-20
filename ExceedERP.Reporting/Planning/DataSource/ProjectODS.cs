@@ -1,5 +1,4 @@
-﻿
-using ExceedERP.Core.Domain.Construction;
+﻿using ExceedERP.Core.Domain.Construction;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;

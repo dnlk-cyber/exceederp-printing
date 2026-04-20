@@ -1,19 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using System;
-using ExceedERP.Core.Domain;
-using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.Global;
@@ -37,10 +29,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 BranchId = leavePayable.BranchId,
                 BusinessUnitId = leavePayable.BusinessUnitId,
                 OrgStructureId = leavePayable.OrgStructureId,
+                BasicSalary = leavePayable.BasicSalary,
                 Year1 = leavePayable.Year1,
                 Year2 = leavePayable.Year2,
-                Balance = leavePayable.Balance,
                 PayableDays = leavePayable.PayableDays,
+                Balance = leavePayable.Balance,
+                AgregateTaxableAmount = leavePayable.AgregateTaxableAmount,
+                AgregateIncomeTax = leavePayable.AgregateIncomeTax,
+                AnnualLeavePerMonth = leavePayable.AnnualLeavePerMonth,
+                BasicSalaryIncomeTax = leavePayable.BasicSalaryIncomeTax,
+                TaxDifference = leavePayable.TaxDifference,
+                NetPayment = leavePayable.NetPayment,
+                Remark = leavePayable.Remark,
+                OrgBranchName = leavePayable.OrgBranchName,
                 DateCreated = leavePayable.DateCreated,
                 CreatedBy = leavePayable.CreatedBy,
                 LastModified = leavePayable.LastModified,
@@ -126,8 +127,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 OrgStructureId = leavePayable.OrgStructureId,
                 Year1 = leavePayable.Year1,
                 Year2 = leavePayable.Year2,
-                Balance = leavePayable.Balance,
                 PayableDays = leavePayable.PayableDays,
+                Balance = leavePayable.Balance,
+                BasicSalary = leavePayable.BasicSalary,
+                AgregateTaxableAmount = leavePayable.AgregateTaxableAmount,
+                AgregateIncomeTax = leavePayable.AgregateIncomeTax,
+                AnnualLeavePerMonth = leavePayable.AnnualLeavePerMonth,
+                BasicSalaryIncomeTax = leavePayable.BasicSalaryIncomeTax,
+                TaxDifference = leavePayable.TaxDifference,
+                NetPayment = leavePayable.NetPayment,
+                Remark = leavePayable.Remark,
+                OrgBranchName = leavePayable.OrgBranchName,
                 DateCreated = leavePayable.DateCreated,
                 CreatedBy = leavePayable.CreatedBy,
                 LastModified = leavePayable.LastModified,

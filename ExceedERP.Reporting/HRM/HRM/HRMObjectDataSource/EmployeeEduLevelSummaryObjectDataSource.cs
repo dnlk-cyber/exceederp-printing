@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -18,74 +16,100 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<EmployeeSummary> GetEmployeeEduLevelSummary(string branchId, string orgStructureId, string status, string eduLevel = "")
         {
+            var list = new List<EmployeeSummary>();
 
-            List<EmployeeSummary> list = new List<EmployeeSummary>();
-            EmployeeSummary employee = new EmployeeSummary();
-
-            #region EduLevel
-            // List<Person_Employee> emplist = db.Person_Employee.ToList(); ;
-
-            //   emplist = HrHelper.AllPersonEmployeesOneBranch(branchId, orgStructureId, "");
-
-            var edulevels = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
-
-            var placements = db.Placements.ToList();
-
-            if (branchId != null)
+            // Fetch the educational levels
+            var edulevelsQuery = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL);
+            if (!string.IsNullOrEmpty(eduLevel) && int.TryParse(eduLevel, out int lookupId))
             {
-                int.TryParse(branchId, out int braId);
-                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+                edulevelsQuery = edulevelsQuery.Where(x => x.LookupId == lookupId);
             }
-            if (orgStructureId != null)
+            var edulevels = edulevelsQuery.DistinctByField(x=>x.LookupId).ToList();
+
+            // Fetch all necessary data in a single query
+            var employeesQuery = db.Person_Employee.AsQueryable();
+            var placementsQuery = db.Placements.AsQueryable();
+
+            if (int.TryParse(branchId, out int braId))
             {
-                int.TryParse(orgStructureId, out int orgId);
-                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
-                
+                var branchEmpIds = placementsQuery.Where(x => x.BranchId == braId).Select(x => x.EmployeeId);
+                employeesQuery = employeesQuery.Where(x => branchEmpIds.Contains(x.EmployeeId));
+            }
+
+            if (int.TryParse(orgStructureId, out int orgId))
+            {
+                var structureIds = db.MainCompanyStructures.Where(x => x.Parent == orgId).Select(x => x.OrgStructureId).ToList();
+                var placementEmpIds = placementsQuery.Where(x => structureIds.Contains(x.OrgStructureId)).Select(x => x.EmployeeId);
+                employeesQuery = employeesQuery.Where(x => placementEmpIds.Contains(x.EmployeeId));
             }
 
             if (status == "Active")
             {
-                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements);
+                employeesQuery = employeesQuery.Where(x => x.IsActive);
             }
-            if (status == "InActive")
+            else if (status == "InActive")
             {
-                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements);
-            }
-
-            if (eduLevel != null)
-            {
-                int.TryParse(eduLevel, out int lookupId);
-                edulevels = edulevels.Where(x => x.LookupId == lookupId).ToList();
+                employeesQuery = employeesQuery.Where(x => !x.IsActive);
             }
 
-            if (edulevels.Any())
+            var employees = employeesQuery.ToList();
+            if (!employees.Any() || !edulevels.Any())
             {
-                var malesId = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId).ToList(); //emplist.Where(x => x.Gender == Gender.MALE).Select(x => x.EmployeeId).ToList();
-                var femalesId = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId).ToList(); //emplist.Where(x => x.Gender == Gender.FEMALE).Select(x => x.EmployeeId).ToList();
+                return list; // Early exit if no data
+            }
 
-                foreach (var l in edulevels)
+            // Step 1: Get each employee's HIGHEST education level (join with LookUp table)
+            var employeesWithHighestEdu = db.Education
+                .Join(db.Lookups,
+                    edu => edu.EduLevel,
+                    lookup => lookup.LookupId,
+                    (edu, lookup) => new { edu.EmployeeId, edu.EduLevel, lookup.Index })
+                .GroupBy(x => x.EmployeeId)
+                .Select(g => new
                 {
-                    employee = new EmployeeSummary();
+                    EmployeeId = g.Key,
+                    HighestEduLevelId = g.OrderByDescending(x => x.Index).FirstOrDefault().EduLevel // Highest Index = highest education
+    })
+                .ToList();
 
-                    employee.Criteria = "Edu level";
-                    employee.SummaryName = l.Description;
+            // Step 2: Pre-filter male & female employee IDs (HashSet for O(1) lookups)
+            HashSet<int>maleEmpIds =  new HashSet<int>( employees
+                .Where(e => e.Gender == Gender.MALE)
+                .Select(e => e.EmployeeId));
 
-                    employee.NumberOfMaleEmployee = db.Education.Where(x => x.EduLevel == l.LookupId && malesId.Contains(x.EmployeeId)).Count();
-                    employee.NumberOfFemaleEmployee = db.Education.Where(x => x.EduLevel == l.LookupId && femalesId.Contains(x.EmployeeId)).Count();
-                    employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
+            HashSet<int> femaleEmpIds = new HashSet<int>( employees
+                .Where(e => e.Gender == Gender.FEMALE)
+                .Select(e => e.EmployeeId));
 
-                    if (employee.TotalEmployee > 0)
-                    {
-                        list.Add(employee);
-                    }
+            // Step 3: Process levels from HIGHEST to LOWEST (optional, but logical)
+            foreach (var level in edulevels.OrderByDescending(x => x.Index))
+            {
+                // Employees whose HIGHEST education is this level
+                var empIdsInThisLevel = employeesWithHighestEdu
+                    .Where(x => x.HighestEduLevelId == level.LookupId)
+                    .Select(x => x.EmployeeId)
+                    .ToList();
 
+                var summary = new EmployeeSummary
+                {
+                    Criteria = "Education Level",
+                    SummaryName = level.Description,
+                    NumberOfMaleEmployee = empIdsInThisLevel.Count(id => maleEmpIds.Contains(id)),
+                    NumberOfFemaleEmployee = empIdsInThisLevel.Count(id => femaleEmpIds.Contains(id)),
+                };
 
+                summary.TotalEmployee = summary.NumberOfMaleEmployee + summary.NumberOfFemaleEmployee;
+
+                if (summary.TotalEmployee > 0)
+                {
+                    list.Add(summary);
                 }
             }
 
-            #endregion
-
             return list;
+            
         }
     }
+
+    
 }

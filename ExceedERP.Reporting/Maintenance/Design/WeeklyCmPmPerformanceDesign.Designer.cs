@@ -23,6 +23,8 @@ namespace ExceedERP.Reporting.Maintenance.Design
             Telerik.Reporting.ReportParameter reportParameter2 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter3 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter4 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter6 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -40,6 +42,8 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.headerSubReport1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReport();
             this.year = new Telerik.Reporting.ObjectDataSource();
             this.periodOds = new Telerik.Reporting.ObjectDataSource();
+            this.maintenanceCenterOds = new Telerik.Reporting.ObjectDataSource();
+            this.equipCatOds = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox10 = new Telerik.Reporting.TextBox();
@@ -131,6 +135,18 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.periodOds.Name = "periodOds";
             this.periodOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("fiscalId", typeof(string), "= Parameters.Year.Value")});
+            // 
+            // maintenanceCenterOds
+            // 
+            this.maintenanceCenterOds.DataMember = "GetMaintenanceCenter";
+            this.maintenanceCenterOds.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetParameters);
+            this.maintenanceCenterOds.Name = "maintenanceCenterOds";
+            // 
+            // equipCatOds
+            // 
+            this.equipCatOds.DataMember = "GetEquipmentCategory";
+            this.equipCatOds.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetParameters);
+            this.equipCatOds.Name = "equipCatOds";
             // 
             // detailSection1
             // 
@@ -278,7 +294,9 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.objectDataSource1.Name = "objectDataSource1";
             this.objectDataSource1.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("fiscalYearId", typeof(string), "= Parameters.Year.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("periodId", typeof(string), "= Parameters.month.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("periodId", typeof(string), "= Parameters.month.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("maintenanceCenter", typeof(string), "= Parameters.mcenter.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("equipmentCategoryId", typeof(string), "= Parameters.Category.Value")});
             // 
             // textBox20
             // 
@@ -335,10 +353,24 @@ namespace ExceedERP.Reporting.Maintenance.Design
             reportParameter2.Visible = true;
             reportParameter3.Name = "FormTitle";
             reportParameter4.Name = "FormNumber";
+            reportParameter5.AllowNull = true;
+            reportParameter5.AvailableValues.DataSource = this.maintenanceCenterOds;
+            reportParameter5.AvailableValues.DisplayMember = "=Fields.Text";
+            reportParameter5.AvailableValues.ValueMember = "=Fields.Value";
+            reportParameter5.Name = "mcenter";
+            reportParameter5.Visible = true;
+            reportParameter6.AllowNull = true;
+            reportParameter6.AvailableValues.DataSource = this.equipCatOds;
+            reportParameter6.AvailableValues.DisplayMember = "=Fields.Text";
+            reportParameter6.AvailableValues.ValueMember = "= Fields.Value";
+            reportParameter6.Name = "Category";
+            reportParameter6.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
             this.ReportParameters.Add(reportParameter4);
+            this.ReportParameters.Add(reportParameter5);
+            this.ReportParameters.Add(reportParameter6);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -414,5 +446,7 @@ namespace ExceedERP.Reporting.Maintenance.Design
         private Telerik.Reporting.ObjectDataSource periodOds;
         private Telerik.Reporting.SubReport subReport1;
         private SharedDesigners.HeaderSubReport headerSubReport1;
+        private Telerik.Reporting.ObjectDataSource equipCatOds;
+        private Telerik.Reporting.ObjectDataSource maintenanceCenterOds;
     }
 }

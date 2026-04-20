@@ -125,7 +125,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
             return Content("");
         }
      
-        public JsonResult UploadIncomingHealthFiles(int masterId, HttpPostedFileBase file, string description)
+        public ActionResult UploadIncomingHealthFiles(int masterId, HttpPostedFileBase file, string description)
         {
             if (file != null && file.ContentLength > 0)
             {
@@ -157,9 +157,9 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 db.SaveChanges();
             }
 
-            return Json("Successfull");
+            return View("Success");
         }
-        public JsonResult Upload_MultipleHealthFile(int masterId,  HttpPostedFileBase[] letter, string description)
+        public ActionResult Upload_MultipleHealthFile(int masterId,  HttpPostedFileBase[] letter, string description)
         {
             for (int i = 0; i < letter.Count(); i++)
             {
@@ -193,9 +193,9 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                     db.HealthAttachments.Add(entity);
                     db.SaveChanges();
                 }
-            }           
+            }
 
-            return Json("Successfull");
+            return View("Success");
         }
         public ActionResult DownloadAttachment(int healthAttachmentId)
         {

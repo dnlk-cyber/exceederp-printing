@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using ExceedERP.Core.Domain.APTS;
 using ExceedERP.Core.Domain.Budget;
@@ -26,7 +26,7 @@ using ExceedERP.Core.Domain.Procurement.ForeignPurchase;
 
 using ExceedERP.Core.Domain.Procurement.Supplier;
 
-using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 using ExceedERP.Core.Domain.Finance.AR.SalesOrder;
 using ExceedERP.Core.Domain.Finance.Budget;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
@@ -131,6 +131,8 @@ using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.Core.Domain.InfoDesk.ChangeManagement;
 using ExceedERP.Core.Domain.CRM.TenderManagement;
+using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.HRM.Payroll.BackPays;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -189,13 +191,13 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<GoodReceiveItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.SubTotal).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.SubTotal).HasPrecision(18, 6);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<GoodReceiveItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
 
@@ -205,11 +207,11 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<IssueItem>().Property(e => e.IssuedQuantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<IssueItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<IssueItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
             modelBuilder.Entity<IssueItem>().Property(e => e.AdditionalCost).HasPrecision(18, 4);
 
-            modelBuilder.Entity<IssueItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<IssueItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
 
@@ -435,75 +437,79 @@ namespace ExceedERP.DataAccess.Context
             #region procurement
             modelBuilder.Entity<ParticipantsItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.SubTotal).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.SubTotal).HasPrecision(18, 6);
 
             modelBuilder.Entity<ParticipantsItem>().Property(e => e.DiscountAmount).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipantsItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipantsItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.Quanity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
 
             modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.Discount).HasPrecision(18, 4);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.FinalUPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.FinalUPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<BidAwardedSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<ContractManagementItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ContractManagementItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ContractManagementItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
 
             modelBuilder.Entity<ContractManagementItem>().Property(e => e.Addition).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ContractManagementItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ContractManagementItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ContractManagementItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<ContractManagementItem>().Property(e => e.Total).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.UPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.UPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplier>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.Quantity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<WinningSupplierItem>().Property(e => e.Quanity).HasPrecision(18, 4);
 
-            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 4);
-            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
+            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
+            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
 
-            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 4);
+            modelBuilder.Entity<WinningSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
 
 
             modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.Quantity).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.UnitPrice).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.SubTotal).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.TaxAmount).HasPrecision(18, 4);
-            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.Total).HasPrecision(18, 4);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.UnitPrice).HasPrecision(18, 6);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.SubTotal).HasPrecision(18, 6);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
+            modelBuilder.Entity<PurchaseOrderItem>().Property(e => e.Total).HasPrecision(18, 6);
 
             modelBuilder.Entity<PurchaseRequisitionItem>().Property(e => e.RequestedQuantity).HasPrecision(18, 4);
             modelBuilder.Entity<PurchaseRequisitionItem>().Property(e => e.Quantity).HasPrecision(18, 4);
+
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.UPrice).HasPrecision(18, 6);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TaxAmount).HasPrecision(18, 6);
+            modelBuilder.Entity<ParticipatingSupplierItem>().Property(e => e.TPrice).HasPrecision(18, 6);
             #endregion
 
 
@@ -591,9 +597,12 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementAfterSystemtEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveEntitlementSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveEntitleStartingDateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePlanValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePlanFinalValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeePerformanceActionsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProbationPerformanceSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SubjectTypeEntityTypeConfiguration());
@@ -611,6 +620,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new LeaveReturnEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RetirementSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TemplateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TemplateTypeSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ComplainResponseEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AppealEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CompanyEmailEntityTypeConfiguration());
@@ -699,6 +709,17 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new QuarterLengthEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new QuarterEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveNewAwajStartYearEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableWithDetailFiscalYearEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveTypeSettingEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new SeverancePayableSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeverancePayableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeverancePayableDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeveranceWithProbabilityEntityTypeConfiguration());
             #region Payroll Process
             modelBuilder.Configurations.Add(new BonusSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollProcessLongTermDeductionsEntityTypeConfiguration());
@@ -727,12 +748,15 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ContributionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BonusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BackPaymentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BackPaymentLineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BackPaymentDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BackPaymentDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollPeriodEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeTypeEntityTypeConfiguration());
 
             #endregion
 
-            
+
             #region Performance
 
             modelBuilder.Configurations.Add(new EmployeePerformanceEntityTypeConfiguration());
@@ -741,7 +765,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PerformanceActionEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new EmployeeMeasurementDefinitionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeMeasurementEntityTypeConfiguration());
-           // modelBuilder.Configurations.Add(new EmployeePerformanceActionEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new EmployeePerformanceActionEntityTypeConfiguration());
             #endregion
             #region Recruitment
             modelBuilder.Configurations.Add(new ApplicantRegistrationEntityTypeConfiguration());
@@ -922,6 +946,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestDepartmentValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestBudgetValidationEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestFinanceValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestLineEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionCriteriaEntityTypeConfiguration());
@@ -1036,8 +1061,23 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnEntityTypeConfiguration());
             #endregion
-
             #region Maintenance
+            modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestDepValidationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestValidationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ExternalPaymentRequestJobEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new InternalJobToExternalValidationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new InternalJobToExternalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new VehicleReceptionApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ServiceGroupSettingEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new AdministrativeJobDepartmentApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new PmSettingEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new PmSchedulerEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new SOPDocumentEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizedPartsEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizationDepartmentApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizationApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CloseWorkShopWithRemarkEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentTypeEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestEntityTypeConfiguration()); // 
@@ -1076,6 +1116,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new JobOrderDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobOrderEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ServiceCenterJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalServiceCenterDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobOrderServiceCenterDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalCrewEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalMaterialEntityTypeConfiguration());
@@ -1627,14 +1668,25 @@ namespace ExceedERP.DataAccess.Context
 
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingQualityInspectionEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingTaskIssueEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingProductionFollowUpTaskEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingProductionFollowUpEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingSummaryCommentEntityTypeCOnfiguration());
+            modelBuilder.Configurations.Add(new PressDailyFollowUpWastageEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingDailyFollowUpLogBookEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingDailyFollowUpMachineMaintenanceEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingSummaryCommentEntityTypeCOnfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionFollowUpTaskEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionFollowUpEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingMachineDetailEntityTypeConfiguration());       
-        // modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
-        //modelBuilder.Configurations.Add(new PrintingJobOrderJobDesignEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingMachineDetailEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingJobOrderJobDesignEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionLaborCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionMaterialCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingJobOrderProductionEntityTypeConfiguration());
@@ -1699,7 +1751,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProformaEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.GraphicEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.SettingsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PrintingProductionFinishedGoodsStoreReceiveEntityTypeConfiguration());
@@ -1708,7 +1760,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PrintingProductionFinishedGoodsStoreReceiveDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FinishedGoodsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryEntityTypeConfiguration());
-           // modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryItemsEntityTypeConfiguration());
+            // modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PFProformaItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusLineItemEntityTypeConfiguration());
             #endregion
@@ -1858,6 +1910,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.FinishedJobEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DeliveredJobEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DailyLaborRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.PrintingJobSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRSalaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRHourEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderSummaryCostCenterDetailEntityTypeConfiguration());
@@ -1915,7 +1968,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PaymentCoverageSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthRankAndValueEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthRankAndValueValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthRankAndValueFinalValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthBenefitSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthApprovalSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthExpenseAndTaxSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthAttachmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ReferralFormEntityTypeConfiguration());
@@ -1938,6 +1993,7 @@ namespace ExceedERP.DataAccess.Context
 
 
             modelBuilder.Configurations.Add(new InsuranceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsurancePremiumSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new InsuranceGroupEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AccidentRecordEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AccidentMedicalRecordEntityTypeConfiguration());
@@ -2433,6 +2489,13 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingQualityInspection> PrintingQualityInspections { get; set; }
+        public DbSet<PrintingTaskIssue> PrintingTaskIssues { get; set; }
+        public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
+        public DbSet<PrintingDailyFollowUpLogBook> PrintingDailyFollowUpLogBooks { get; set; }
+        public DbSet<PressDailyFollowUpWastage> PressDailyFollowUpWastages { get; set; }
+        public DbSet<PrintingDailyFollowUpMachineMaintenance> PrintingDailyFollowUpMachineMaintenances { get; set; }
+        public DbSet<PrintingSummaryComment> PrintingSummaryComments { get; set; }
         public DbSet<PrintingMachineDetail> PrintingMachineDetails { get; set; }
         public DbSet<PrintingJobOrderJobDesign> PrintingJobOrderJobDesigns { get; set; }
         public DbSet<PrintingJobOrderProductionJobDesign> PrintingJobOrderProductionJobDesigns { get; set; }
@@ -2555,8 +2618,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PrintingProductionFollowUp> PrintingProductionFollowUps { get; set; }
         public DbSet<PrintingProductionFollowUpTask> PrintingProductionFollowUpTasks { get; set; }
         public DbSet<PrintingProductionDailyFollowUpDetail> PrintingProductionDailyFollowUpDetails { get; set; }
-        public DbSet<PrintingDailyFollowUpDelayReason> PrintingDailyFollowUpDelayReasons { get; set; }
-        public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
+        //public DbSet<PrintingDailyFollowUpDelayReason> PrintingDailyFollowUpDelayReasons { get; set; }
+        //public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
         #endregion
         #region Production Follow UP
         public DbSet<FurniturStandardJobDesign> FurniturStandardJobDesigns { get; set; }
@@ -2655,6 +2718,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllables { get; set; }
         public DbSet<IdleTimeNonProductiveNonControllable> IdleTimeNonProductiveNonControllables { get; set; }
         public DbSet<JobCost> JobCosts { get; set; }
+        public DbSet<PrintingJobSetting> PrintingJobSetting { get; set; }
         public DbSet<JobChangeOfOrder> JobChangeOfOrders { get; set; }
         public DbSet<JobLaborCost> JobLaborCosts { get; set; }
         public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }
@@ -2678,8 +2742,13 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<LeavePayableSetting> LeavePayableSettings { get; set; }
         public System.Data.Entity.DbSet<LeavePayable> LeavePayables { get; set; }
         public System.Data.Entity.DbSet<LeavePayableDetail> LeavePayableDetails { get; set; }
+        public System.Data.Entity.DbSet<SeveranceWithProbability> SeveranceWithProbabilities { get; set; }
         public System.Data.Entity.DbSet<SeverancePayableDetail> SeverancePayableDetails { get; set; }
         public System.Data.Entity.DbSet<SeverancePayable> SeverancePayables { get; set; }
+        public System.Data.Entity.DbSet<SeverancePayableSetting> SeverancePayableSettings { get; set; }
+        public System.Data.Entity.DbSet<LeaveTypeSetting> LeaveTypeSettings { get; set; }
+
+
         #region Company
         public System.Data.Entity.DbSet<ClearanceProviderDetail> ClearanceProviderDetails { get; set; }
         public System.Data.Entity.DbSet<ClearanceRequest> ClearanceRequests { get; set; }
@@ -2705,7 +2774,8 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<Weekend> Weekends { get; set; }
         public System.Data.Entity.DbSet<QuarterLength> QuarterLengths { get; set; }
         public System.Data.Entity.DbSet<Quarter> Quarters { get; set; }
-        #endregion       
+        public System.Data.Entity.DbSet<DatePreferenceSetting> DatePreferenceSettings { get; set; }
+        #endregion
         #region Payroll
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2713,7 +2783,7 @@ namespace ExceedERP.DataAccess.Context
         ///
         /// <value> The over time. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-       
+
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.BonusSetting> BonusSettings { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.OverTime> OverTimes { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.OverTimePerDay> OverTimePerDays { get; set; }
@@ -2765,8 +2835,11 @@ namespace ExceedERP.DataAccess.Context
 
         public System.Data.Entity.DbSet<Addition> Additions { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Bonus> Bonuses { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.BackPayment> BackPayments { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Advance> Advances { get; set; }
+        public DbSet<BackPay> BackPays { get; set; }
+        public DbSet<BackPaymentLine> BackPaymentLines { get; set; }
+        public DbSet<BackPaymentDetail> BackPaymentDetails { get; set; }
+        public DbSet<BackPaymentDistribution> BackPaymentDistributions { get; set; }
+        public DbSet<Advance> Advances { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.PayrollProcessLongTermDeductions> PayrollProcessLongTermDeductions { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.EmpPayrollServiceChargeViewModel> EmpPayrollServiceChargeViewModel { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.PeriodStatus> PeriodStatuses { get; set; }
@@ -2844,6 +2917,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Leave Management
+        public System.Data.Entity.DbSet<LeaveEntitlementSetting> LeaveEntitlementSettings { get; set; }
         public System.Data.Entity.DbSet<LeaveEntitleStartingDate> LeaveEntitleStartingDates { get; set; }
         public System.Data.Entity.DbSet<LeaveNewAwajStartYear> LeaveNewAwajStartYears { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlan> MonthlyLeavePlans { get; set; }
@@ -2892,12 +2966,17 @@ namespace ExceedERP.DataAccess.Context
         //public DbSet<DepartmentDefineMeasurment> DepartmentDefineMeasurments { get; set; }
         //public DbSet<DepartmentMeasurment> DepartmentMeasurments { get; set; }
         //public DbSet<DepartmentPerformanceAction> DepartmentPerformanceActions { get; set; }
+        public System.Data.Entity.DbSet<EmployeePeerToPeerAndInternalCustomerPerformanceSetting> EmployeePeerToPeerAndInternalCustomerPerformanceSettings { get; set; }
+
         #endregion
 
         #region Plan
         public DbSet<TrainingNeedRequest> TrainingNeedRequests { get; set; }
 
         public System.Data.Entity.DbSet<LeavePlan> LeavePlans { get; set; }
+        public System.Data.Entity.DbSet<LeavePlanValidation> LeavePlanValidation { get; set; }
+        public System.Data.Entity.DbSet<LeavePlanFinalValidation> LeavePlanFinalValidation { get; set; }
+
         public System.Data.Entity.DbSet<RecruitmentPlan> RecruitmentPlans { get; set; }
         public System.Data.Entity.DbSet<TrainingPlan> TrainingPlans { get; set; }
         public System.Data.Entity.DbSet<Vacancy> VaccancyPlans { get; set; }
@@ -2991,7 +3070,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<DisciplinaryCase> DisciplinaryCases { get; set; }
         public System.Data.Entity.DbSet<DisciplineMeasuerByMoney> DisciplineMeasuerByMoney { get; set; }
         #endregion
-                
+
 
         #region Self Care
         public System.Data.Entity.DbSet<TrainingApplicant> TrainingApplicants { get; set; }
@@ -3023,6 +3102,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<LeaveReturn> LeaveReturns { get; set; }
         public DbSet<RetirementSetting> RetirementSettings { get; set; }
         public System.Data.Entity.DbSet<Template> Templates { get; set; }
+        public System.Data.Entity.DbSet<TemplateTypeSetting> TemplateTypeSettings { get; set; }
         public System.Data.Entity.DbSet<ExperienceRequest> ExprianceRequests { get; set; }
 
         public System.Data.Entity.DbSet<OverTimeJobResult> OverTimeJobResults { get; set; }
@@ -3071,9 +3151,9 @@ namespace ExceedERP.DataAccess.Context
         #region APTS
         public System.Data.Entity.DbSet<DrugToTransferTemporaryLists> DrugToTransferTemporaryLists { get; set; }
         public System.Data.Entity.DbSet<DrugStoreTransfer> DrugStoreTransfers { get; set; }
-       // public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
+        // public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
         //public DbSet<LaboratoryTests> LaboratoryTests { get; set; }
-       // public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
+        // public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
         //public DbSet<LaboratoryTestPatientCard> LaboratoryTestPatientCards { get; set; }
         public DbSet<LaboratoryDrugRequest> LaboratoryDrugRequests { get; set; }
         public DbSet<LaboratoryDrugRequestItem> LaboratoryDrugRequestItems { get; set; }
@@ -3139,6 +3219,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<RentalPaymentRequestValidation> RentalPaymentRequestValidations { get; set; }
         public DbSet<RentalPaymentRequestDepartmentValidation> RentalPaymentRequestDepartmentValidations { get; set; }
         public DbSet<RentalPaymentRequestBudgetValidation> RentalPaymentRequestBudgetValidations { get; set; }
+        // public DbSet<RentalPaymentRequestFinanceValidation> RentalPaymentRequestFinanceValidations { get; set; }
 
 
 
@@ -3294,6 +3375,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BoloRegistrationDocument> BoloRegistrationDocuments { get; set; }
         #endregion
         #region Maintenance
+        public DbSet<ExternalMaintenancePaymentRequestDepValidation> ExternalMaintenancePaymentRequestDepValidations { get; set; }
+        public DbSet<ExternalMaintenancePaymentRequestValidation> ExternalMaintenancePaymentRequestValidations { get; set; }
+        public DbSet<ExternalPaymentRequestJob> ExternalPaymentRequestJobs { get; set; }
         public DbSet<MaintenanceCompanyDocumentType> MaintenanceCompanyDocumentTypes { get; set; }
         public DbSet<MaintenanceCompanyDocument> MaintenanceCompanyDocuments { get; set; }
         public DbSet<ExternalMaintenancePaymentRequest> ExternalMaintenancePaymentRequests { get; set; }
@@ -3309,6 +3393,11 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PMScheduleDetail> PMScheduleDetails { get; set; }
         public DbSet<ServiceCrewWorkLog> ServiceCrewWorkLogs { get; set; }
         public DbSet<JobRequest> JobRequest { get; set; }
+        public DbSet<RequestToInspection> RequestToInspections { get; set; }
+        public DbSet<Canibalization> Canibalizations { get; set; }
+        public DbSet<CanibalizationDepartmentApproval> CanibalizationDepartmentApproval { get; set; }
+        public DbSet<CanibalizedParts> CanibalizedParts { get; set; }
+        public DbSet<CanibalizationApproval> CanibalizationApprovals { get; set; }
         public DbSet<LogisticPlan> LogisticPlans { get; set; }
         public DbSet<LogisticPlanDetail> LogisticPlanDetails { get; set; }
         public DbSet<MaintenaceInspectionLog> MaintenaceInspectionLog { get; set; }
@@ -3320,14 +3409,23 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<VehiclePartDamageType> VehiclePartDamageType { get; set; }
         public DbSet<VehiclePart> VehiclePart { get; set; }
         public DbSet<VehiclePartManagement> VehiclePartManagement { get; set; }
+        public DbSet<PmSetting> PmSettings { get; set; }
+        public DbSet<SOPDocument> SOPDocuments { get; set; }
+        public DbSet<PmScheduler> PmSchedulers { get; set; }
         public DbSet<VehicleReceptionForm> VehicleReceptionForm { get; set; }
+        public DbSet<VehicleReceptionApproval> VehicleReceptionApprovals { get; set; }
         public DbSet<JobOrder> JobOrder { get; set; }
+        public DbSet<CloseWorkShopWithRemark> CloseWorkShopWithRemarks { get; set; }
+        public DbSet<ExternalServiceCenterDetail> ExternalServiceCenterDetail { get; set; }
         public DbSet<ServiceCenterJob> ServiceCenterJob { get; set; }
+        public DbSet<InternalJobToExternal> InternalJobToExternal { get; set; }
+        public DbSet<InternalJobToExternalValidation> InternalJobToExternalValidation { get; set; }
         public DbSet<JobOrderServiceCenterDetail> JobOrderServiceCenterDetails { get; set; }
         public DbSet<MechanicOnHand> MechanicOnHand { get; set; }
         public DbSet<MaintenanceType> MaintenanceType { get; set; }
         public DbSet<JobCauses> JobCauses { get; set; }
         public DbSet<JobStoreRequisition> JobStoreRequisition { get; set; }
+        //public DbSet<StoreRequisition> StoreRequisitions { get; set; }
         public DbSet<JobOrderDetail> JobOrderDetail { get; set; }
         public DbSet<ExternalMaterial> ExternalMaterial { get; set; }
         public DbSet<WorkUnitSection> WorkUnitSection { get; set; }
@@ -3345,11 +3443,13 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ServiceCrew> ServiceCrew { get; set; }
         public DbSet<ServiceSpare> ServiceSpare { get; set; }
         public DbSet<RepairType> RepairType { get; set; }
+        public DbSet<ServiceGroupSetting> ServiceGroupSettings { get; set; }
         public DbSet<MaintenanceCenter> MaintenanceCenter { get; set; }
 
         public DbSet<OutsourceMaintenanceApproval> OutsourceMaintenanceApproval { get; set; }
         public DbSet<OtherCompanyMaintenaceApproval> OtherCompanyMaintenaceApproval { get; set; }
         public DbSet<AdministrativeJobApproval> AdministrativeJobApproval { get; set; }
+        public DbSet<AdministrativeJobDepartmentApproval> AdministrativeJobDepartmentApproval { get; set; }
         public DbSet<TechnicalJobApproval> TechnicalJobApproval { get; set; }
         public DbSet<FollowUp> FollowUp { get; set; }
         public DbSet<MaintenanceToolIssueAndReturn> MaintenanceToolIssueAndReturn { get; set; }
@@ -3358,7 +3458,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<MaintenanceInterval> MaintenanceIntervals { get; set; }
 
         #endregion
-      
+
         #region CMS
         public DbSet<ExceedERP.Core.Domain.CMS.CMSProgram> CMSPrograms { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.CMSCourse> CMSCourses { get; set; }
@@ -3646,11 +3746,17 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<MonthlyDepreciationItem> MonthlyDepreciationItems { get; set; }
         public DbSet<MonthlyDepreciationDistribution> MonthlyDepreciationDistributions { get; set; }
         public DbSet<MonthlyDepreciationValidation> MonthlyDepreciationValidations { get; set; }
-
+        //for tax
         public DbSet<AnnualDepreciation> AnnualDepreciations { get; set; }
         public DbSet<AnnualDepreciationItem> AnnualDepreciationItems { get; set; }
         public DbSet<AnnualDepreciationDistribution> AnnualDepreciationDistributions { get; set; }
         public DbSet<AnnualDepreciationValidation> AnnualDepreciationValidations { get; set; }
+
+        //for ifrs
+        public DbSet<IfrsDepreciation> IfrsDepreciations { get; set; }
+        public DbSet<IfrsDepreciationItem> IfrsDepreciationItems { get; set; }
+        public DbSet<IfrsDepreciationDistribution> IfrsDepreciationDistributions { get; set; }
+        public DbSet<IfrsDepreciationValidation> IfrsDepreciationValidations { get; set; }
 
         public DbSet<CategoryDepreciationValue> CategoryDepreciationValues { get; set; }
         #endregion
@@ -3824,6 +3930,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<StoreReturn> StoreReturns { get; set; }
         public DbSet<StoreReturnItems> StoreReturnItemss { get; set; }
         public DbSet<StoreReturnValidation> StoreReturnValidations { get; set; }
+        public DbSet<StoreReturnDepartmentValidation> StoreReturnDepartmentValidations { get; set; }
         public DbSet<StoreReturnDistribution> StoreReturnDistributions { get; set; }
         public DbSet<StoreReturnAttachment> StoreReturnAttachments { get; set; }
         public DbSet<PropertyCount> PropertyCounts { get; set; }
@@ -4022,6 +4129,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BankGuarantee> BankGuarantees { get; set; }
         public DbSet<Tender> Tenders { get; set; }
         public DbSet<Lot> Lots { get; set; }
+        public DbSet<LotTeam> LotTeams { get; set; }
+        public DbSet<LotTeamMember> LotTeamMembers { get; set; }
+        public DbSet<LotTeamDecision> LotTeamDecisions { get; set; }
         public DbSet<BidAwardedSupplier> BidAwardedSuppliers { get; set; }
         public DbSet<BidPParticipatingSuppliers> BidPParticipatingSupplierses { get; set; }
         public DbSet<BidParticipatingSupplierItem> BidParticipatingSupplierItems { get; set; }
@@ -4365,10 +4475,12 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<MedicalAttachment> MedicalAttachments { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValue> HealthRankAndValues { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValueValidation> HealthRankAndValueValidation { get; set; }
+        public System.Data.Entity.DbSet<HealthRankAndValueFinalValidation> HealthRankAndValueFinalValidations { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValueSetting> HealthRankAndValueSettings { get; set; }
         public System.Data.Entity.DbSet<HealthResponsiblityLevelValueSetting> HealthResponsiblityLevelValueSettings { get; set; }
         public System.Data.Entity.DbSet<PaymentCoverageSetting> PaymentCoverageSettings { get; set; }
         public System.Data.Entity.DbSet<HealthBenefitSetting> HealthBenefitSettings { get; set; }
+        public System.Data.Entity.DbSet<HealthApprovalSetting> HealthApprovalSettings { get; set; }
         public System.Data.Entity.DbSet<HealthExpenseAndTaxSetting> HealthExpenseAndTaxSettings { get; set; }
         public System.Data.Entity.DbSet<HealthAttachment> HealthAttachments { get; set; }
         public System.Data.Entity.DbSet<ReferralForm> ReferralForm { get; set; }
@@ -4389,6 +4501,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #region Insurance
         public System.Data.Entity.DbSet<InsuranceGroup> InsuranceGroup { get; set; }
+        public System.Data.Entity.DbSet<InsurancePremiumSetting> InsurancePremiumSettings { get; set; }
         public System.Data.Entity.DbSet<Insurance> Insurance { get; set; }
         public System.Data.Entity.DbSet<AccidentRecord> AccidentRecords { get; set; }
         public System.Data.Entity.DbSet<AccidentMedicalRecord> AccidentMedicalRecords { get; set; }
@@ -4553,7 +4666,7 @@ namespace ExceedERP.DataAccess.Context
         #region globals
 
         public DbSet<Notification> Notifications { get; set; }
-        
+
         public DbSet<Core.Domain.Global.GlobalRuleValue> GlobalRuleValues { get; set; }
 
         public DbSet<Core.Domain.Common.DocumentApproval.ApprovalDelegation> ApprovalDelegations { get; set; }
@@ -4565,7 +4678,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Core.Domain.Common.DocumentApproval.AssignApprovalGroupAssignment> AssignApprovalGroupAssignments { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.EmployeeDetail.Freelancer> Freelancers { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Attendance.AttendanceNew> AttendanceNews { get; set; }
-        
+
         #endregion
 
 
@@ -4610,7 +4723,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<SupplierRemoveBlackListValidation> SupplierRemoveBlackListValidations { get; set; }
         public DbSet<GlChartOfAccountCategory> GlChartOfAccountCategories { get; set; }
 
-       
+
 
         public DbSet<Core.Domain.Finance.AP.ApSetupCommonSupplier> ApSetupCommonSuppliers { get; set; }
 

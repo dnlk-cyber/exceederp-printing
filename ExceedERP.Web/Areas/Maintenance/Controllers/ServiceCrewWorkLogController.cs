@@ -40,12 +40,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                      SubCategoryCode = s.SubCategoryCode,
                      WorkShopType = s.WorkShopType,
                      WorkingHoursAfternoonFrom = s.WorkingHoursAfternoonFrom,
+                     AdditionalWork = s.AdditionalWork,
                      TotalLabourHours = s.TotalLabourHours,
                      WorkingHoursAfternoonTo = s.WorkingHoursAfternoonTo,
                      WorkingHoursMorningFrom = s.WorkingHoursMorningFrom,
                      WorkingHoursMorningto = s.WorkingHoursMorningto,
                      CreatedBy = s.CreatedBy,
                      DateCreated = s.DateCreated,
+                     RecordedDate = s.RecordedDate,
                      Status = s.Status
 
                  }
@@ -54,15 +56,60 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(ServiceCrewWorkLog.ToDataSourceResult(request));
         }
 
+        public ActionResult ServiceCrewWorkLog_ReadJobOrder([DataSourceRequest] DataSourceRequest request, int num)
+
+        {
+            var serviceCenter = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
+            if (serviceCenter == null)
+            {
+                return Json(new { Error = "Job Order not found" });
+            }
+
+            var ServiceCrewWorkLog = db.ServiceCrewWorkLogs.Where(x => x.JobId == serviceCenter.ServiceCenterJobId).Select(
+                     s => new
+                     {
+                         ServiceCrewWorkLogId = s.ServiceCrewWorkLogId,
+                         JobId = s.JobId,
+                         JobOrderDetailId = s.JobOrderDetailId,
+                         MecanicId = s.MecanicId,
+                         StandaredHours = s.StandaredHours,
+                         ServiceGroup = s.ServiceGroup,
+                         SubCategoryCode = s.SubCategoryCode,
+                         WorkShopType = s.WorkShopType,
+                         WorkingHoursAfternoonFrom = s.WorkingHoursAfternoonFrom,
+                         TotalLabourHours = s.TotalLabourHours,
+                         WorkingHoursAfternoonTo = s.WorkingHoursAfternoonTo,
+                         WorkingHoursMorningFrom = s.WorkingHoursMorningFrom,
+                         WorkingHoursMorningto = s.WorkingHoursMorningto,
+                         CreatedBy = s.CreatedBy,
+                         DateCreated = s.DateCreated,
+                         Status = s.Status
+
+                     }
+                    ).ToList();
+            
+            return Json(ServiceCrewWorkLog.ToDataSourceResult(request));
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceCrewWorkLog_Create([DataSourceRequest] DataSourceRequest request, ServiceCrewWorkLog model, string Id)
         {
+            if (!Guid.TryParse(Id, out Guid ServiceCenterJobId))
+            {
+                return Json(new { error = "Invalid Job ID. Must be a valid GUID." });
+            }
+
+            var FetchRemark = db.CloseWorkShopWithRemarks.Where(x => x.JobId == ServiceCenterJobId.ToString());
+            if (FetchRemark.Any())
+            {
+                ModelState.AddModelError("Maintenance started", "You can not close workshop with remark it is getting maintained");
+
+            }
             ModelState.Remove("ServiceCrewWorkLogId");
             ModelState.Remove("JobId");
             int Now = DateTime.Now.DayOfYear;
 
-            List<ServiceCrewWorkLog> logs = db.ServiceCrewWorkLogs.Where(f => f.MecanicId == model.MecanicId && f.Date == Now && f.JobId.ToString() == Id && f.JobOrderDetailId == model.JobOrderDetailId).ToList();
+            List<ServiceCrewWorkLog> logs = db.ServiceCrewWorkLogs.Where(f => f.MecanicId == model.MecanicId && f.RecordedDate == model.RecordedDate && f.JobId.ToString() == Id && f.JobOrderDetailId == model.JobOrderDetailId).ToList();
             if (logs.Any())
             {
                 ModelState.Clear();
@@ -82,6 +129,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     JobOrderDetailId = model.JobOrderDetailId,
                     SubCategoryCode = model.SubCategoryCode,
                     ServiceGroup = model.ServiceGroup,
+                    AdditionalWork = model.AdditionalWork,
                     TotalLabourHours = model.TotalLabourHours,
                     StandaredHours = model.StandaredHours,
                     WorkingHoursAfternoonFrom = model.WorkingHoursAfternoonFrom,
@@ -89,6 +137,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     WorkingHoursMorningFrom = model.WorkingHoursMorningFrom,
                     WorkingHoursMorningto = model.WorkingHoursMorningto,
                     Date = DateTime.Now.DayOfYear,
+                    RecordedDate=model.RecordedDate,
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
                     Status = MaintenanceConst.Pending
@@ -123,8 +172,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     ServiceCrewWorkLog.ModifiedBy = User.Identity.Name;
                     ServiceCrewWorkLog.LastModified = DateTime.Now;
                     ServiceCrewWorkLog.Date = DateTime.Now.DayOfYear;
-
-                    db.ServiceCrewWorkLogs.Attach(ServiceCrewWorkLog);
+                   db.ServiceCrewWorkLogs.Attach(ServiceCrewWorkLog);
                     db.Entry(ServiceCrewWorkLog).State = EntityState.Modified;
                     db.SaveChanges();
 

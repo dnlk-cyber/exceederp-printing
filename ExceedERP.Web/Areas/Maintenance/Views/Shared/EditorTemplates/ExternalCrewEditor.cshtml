@@ -5,7 +5,7 @@
     @(Html.Kendo().DropDownListFor(model => model.Name).HtmlAttributes(new { @class = "form-control" }).Name("Name")
                                 .DataTextField("FullName")
                                     .DataValueField("FullName").OptionLabel("Select Crew")
-                                    .DataSource(d => d.Read(r => r.Action("MechanicCrewDDBind", "MechanicCrew"))))
+                                    .DataSource(d => d.Read(r => r.Action("MechanicCrewDDBind", "MechanicCrew").Data("sendForgery"))))
 
 
 </div>

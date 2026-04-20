@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -22,14 +23,28 @@ namespace ExceedERP.Reporting.Furniture.DataSource
             var proforma = db.FurnitureProformaInvoices.FirstOrDefault(x => x.FurnitureProformaInvoiceId == id);
             if(proforma != null)
             {
+                var glTaxRate = db.GLTaxRates.Find(proforma.GLTaxRateID);
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == proforma.CustomerId);
                 return new FurnitureProformaViewModel
                 {
                     CustomerName = customer.TradeName,
+                    TransportCost = proforma.TransporCost,
+                    VAT = glTaxRate?.TaxName ?? "",
+                    VATAmount = proforma.TransporCost * glTaxRate?.CalculatedRate ?? 0,
+                    TransportCostWithVAT = proforma.TransportCostTotal,
                     DeliveryDate = proforma.DeliveryDate,
                     ModeOfPayment = proforma.ModeOfPayment,
                     PriceValidityPeriod = proforma.PriceValidityPeriod,
-                    ProformaNo = proforma.FurnitureProformaInvoiceId,                    
+                    ProformaNo = proforma.FurnitureProformaInvoiceId,
+                    ApprovedBy = proforma.OnlineApprovedBy,
+                    ApprovedDate = proforma.OnlineApprovedTime,
+                    CheckedBy = proforma.SendForApprovalBy,
+                    CheckedDate = proforma.SendForApprovalTime,
+                    CreatedBy = proforma.CreatedBy,
+                    DateCreated = proforma.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(proforma.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(proforma.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(proforma.SendForApprovalBy)
                 };
             }
             return vm;
@@ -49,19 +64,33 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
                     list.Add(new FurnitureProformaItemViewModel
                     {
-                        JobType = jobType.JobTypeName,
+                        JobType = jobType?.JobTypeName ?? "",
                         Quantity = item.Quantity,
                         SellingPrice= item.TotalPrice,
-                        TransportCost = item.TransportCost,
                         UnitPriceBeforeVAT = item.UnitPriceBeforeVAT,
                         UOM = item.UnitOfMeasurment,
-                        VAT = glTaxRate.CalculatedRate
+                        VAT = glTaxRate?.CalculatedRate ?? 0
                     });
 
                 }
                 
             }
             return list;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public FurnitureTotalViewModel GetTotal(int id) 
+        {
+            var proforma = db.FurnitureProformaInvoices.FirstOrDefault(x => x.FurnitureProformaInvoiceId == id);
+            if (proforma != null)
+            {
+                var invoiceItems = db.FurnitureProformaInvoiceItems.Where(x => x.FurnitureProformaInvoiceId == proforma.FurnitureProformaInvoiceId).ToList();
+                var total = invoiceItems.Sum(s => s.TotalPrice) + proforma.TransportCostTotal;
+                return new FurnitureTotalViewModel
+                {
+                    Total = total
+                };
+            }
+            return new FurnitureTotalViewModel();
         }
     }
 }

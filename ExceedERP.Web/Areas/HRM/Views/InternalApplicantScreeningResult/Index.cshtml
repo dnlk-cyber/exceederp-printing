@@ -91,75 +91,79 @@
                                    model.Id(p => p.InternalApplicantScreeningResultId);
                                    //   model.Field(p => p.TotalResult).Editable();
                                })
-                                                   .Read(read => read.Action("InternalApplicantScreeningResult_Read", "InternalApplicantScreeningResult"))
-                                                   .Create(create => create.Action("InternalApplicantScreeningResult_Create", "InternalApplicantScreeningResult"))
-                                       .Update(update => update.Action("InternalApplicantScreeningResult_Update", "InternalApplicantScreeningResult"))
-                                       .Destroy(destroy => destroy.Action("InternalApplicantScreeningResult_Destroy", "InternalApplicantScreeningResult"))
+                               .Read(read => read.Action("InternalApplicantScreeningResult_Read", "InternalApplicantScreeningResult"))
+                               .Create(create => create.Action("InternalApplicantScreeningResult_Create", "InternalApplicantScreeningResult"))
+                               .Update(update => update.Action("InternalApplicantScreeningResult_Update", "InternalApplicantScreeningResult"))
+                               .Destroy(destroy => destroy.Action("InternalApplicantScreeningResult_Destroy", "InternalApplicantScreeningResult"))
                                ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-                    .Name("tabstrip_#=InternalApplicantScreeningResultId#")
-                    .SelectedIndex(0)
-                    .Items(items =>
-                     {
-                         items.Add().Text(Resources.HR_Recruitment_ApplicantScreeningResult).Content(
-                            @<text>
-                                @* <legend>Screening Result</legend>*@
-                                @(Html.Kendo().Grid<InternalApplicantScreening>()
-                                                      .Name("ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#")
-                                      .Columns(columns =>
-                                      {
-                                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList");
-                                          columns.Bound(c => c.Department);
-                                          columns.Bound(c => c.TotalResult);
-                                          columns.Bound(c => c.PassOrFail);
+  @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=InternalApplicantScreeningResultId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text(Resources.HR_Recruitment_ApplicantScreeningResult).Content(
+            @<text>
+            @(Html.Kendo().Grid<InternalApplicantScreening>()
+                    .Name("ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#")
+                    .Columns(columns =>
+                    {
 
-                                          columns.Command(command =>
-                                          {
-                                              //if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
-                                              //{
-                                              //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                              //}
-                                              //command.Destroy().Text(Resources.ActionButton_Cancel);
-                                          }).Width(200);
-                                      })
-                                      .ToolBar(toolbar =>
-                                      {
-                                          //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                      })
+                        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList");
+                        columns.Bound(c => c.Department);
+                        columns.Bound(c => c.TotalResult);
+                        columns.Bound(c => c.PassOrFail);
+                        columns.Command(command =>
+                        {
 
-                                     .ClientDetailTemplateId("ApplicantScreening")
+                            //if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                            //{
+                            //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            //}
+                            //command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                      .Scrollable(h => h.Height(400))
-                                      .DataSource(dataSource => dataSource
-                                          .Ajax()
-                                                  .Events(events =>
-                                                  {
-
-                                                      events.Error("error_handler(\"ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#\")");
-                                                      events.RequestStart("onRequestStart(\"ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#\")");
-                                                      events.RequestEnd("onRequestEnd(\"ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#\")");
-                                                  })
-
-                                          .Model(model =>
-                                          {
-                                              model.Id(p => p.InternalApplicantScreeningId);
-                                          })
-                                                                  .Read(read => read.Action("InternalApplicantScreening_Read", "InternalApplicantScreeningResult", new { id = "#=InternalApplicantScreeningResultId#" }))
-                                                                  .Create(create => create.Action("ApplicantScreeningResult_Create", "InternalApplicantScreeningResult", new { id = "#=InternalApplicantScreeningResultId#" }))
-                                                  .Update(update => update.Action("ApplicantScreeningResult_Update", "InternalApplicantScreeningResult"))
-                                                  .Destroy(destroy => destroy.Action("ApplicantScreeningResult_Destroy", "InternalApplicantScreeningResult"))
-                                      ).ToClientTemplate()
-                                )
+                        }).Width(200);
 
 
-                            </text>
-                                    );
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        
+                        //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
 
-                             }).ToClientTemplate())
+                    })
+                     .ClientDetailTemplateId("ApplicantScreening")
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Scrollable(h => h.Height(400))
+                     .DataSource(dataSource => dataSource
+                           .Ajax()
+                           .Events(events =>
+                           {
+
+                               events.Error("error_handler(\"ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#\")");
+                               events.RequestStart("onRequestStart(\"ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#\")");
+                               events.RequestEnd("onRequestEnd(\"ApplicantScreeningResultgrid_#=InternalApplicantScreeningResultId#\")");
+
+
+                           })
+                           .Model(model =>
+                           {
+                               model.Id(p => p.InternalApplicantScreeningId);
+
+
+                           })
+                           .Read(read => read.Action("InternalApplicantScreening_Read", "InternalApplicantScreeningResult", new { id = "#=InternalApplicantScreeningResultId#" }))
+                           .Create(create => create.Action("ApplicantScreeningResult_Create", "InternalApplicantScreeningResult", new { id = "#=InternalApplicantScreeningResultId#" }))
+                           .Update(update => update.Action("ApplicantScreeningResult_Update", "InternalApplicantScreeningResult"))
+                           .Destroy(destroy => destroy.Action("ApplicantScreeningResult_Destroy", "InternalApplicantScreeningResult"))
+
+
+                           ).ToClientTemplate())
+                            
+                 </text>);
+        }).ToClientTemplate())
 </script>
 
 
@@ -168,68 +172,66 @@
 
 <script id="ApplicantScreening" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                           .Name("tabstrip_#InternalApplicantScreeningId#")
-                              .SelectedIndex(0)
-                              .Items(items =>
-                              {
-                                  items.Add().Text("Exam Result").Content(
-                                    @<text>
-                                        @* <legend>Measurement</legend>*@
-                                        @(Html.Kendo().Grid<ApplicantExamResult>()
-                                                                            .Name("ApplicantExamResult#=InternalApplicantScreeningId#")
-                                                         .Columns(columns =>
-                                                         {
-                                                                     columns.Bound(c => c.ExamType).Width(120);
-                                                                     columns.Bound(c => c.SettingValue).Width(120);
-                                                                     columns.Bound(c => c.CurrentResult).Width(120);
-                                                                     columns.Bound(c => c.Remark).Width(120);
-                                                                     columns.Command(command =>
-                                                         {
-                                                                                 command.Edit(); //command.Destroy();
-                                                                 }).Width(180);
-                                                                 })
-                                                                  .ToolBar(toolbar =>
-                                                                  {
-                                                                  //toolbar.Create();
-                                                              })
+        .Name("tabstrip_#InternalApplicantScreeningId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+
+          items.Add().Text("Exam Result").Content(
+            @<text>
+                @(Html.Kendo().Grid<ApplicantExamResult>()
+                    .Name("ApplicantExamResult#=InternalApplicantScreeningId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.ExamType).Width(120);
+                        columns.Bound(c => c.SettingValue).Width(120);
+                        columns.Bound(c => c.CurrentResult).Width(120);
+                        columns.Bound(c => c.Remark).Width(120);
+                        columns.Command(command =>
+                        {
+                            command.Edit(); //command.Destroy();
+
+                        }).Width(180);
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        //toolbar.Create();
+
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable(h => h.Height(300))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"ApplicantExamResult#=InternalApplicantScreeningId#\")");
+                            events.RequestStart("onRequestStart(\"ApplicantExamResult#=InternalApplicantScreeningId#\")");
+                            events.RequestEnd("onRequestEnd(\"ApplicantExamResult#=InternalApplicantScreeningId#\")");
+
+                        })
+                    .Model(model =>
+                    {
+                        model.Id(p => p.ApplicantResultId);
+                        model.Field(p => p.SettingValue).Editable(false);
+                        model.Field(p => p.ExamType).Editable(false);
+
+                    })
+                    .Read(read => read.Action("InternalApplicantExamResult_Read", "InternalApplicantExamResult", new { id = "#=InternalApplicantScreeningId#" }))
+                    .Create(create => create.Action("InternalApplicantExamResult_Create", "InternalApplicantExamResult", new { id = "#=InternalApplicantScreeningId#" }))
+                    .Update(update => update.Action("InternalApplicantExamResult_Update", "InternalApplicantExamResult"))
+                    .Destroy(destroy => destroy.Action("InternalApplicantExamResult_Destroy", "InternalApplicantExamResult"))
+                               
+                    ).ToClientTemplate()
+                                    )
 
 
-                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                          .Scrollable(h => h.Height(300))
-                                                          .DataSource(dataSource => dataSource
-                                                              .Ajax()
-
-                                                                       .Events(events =>
-                                                                       {
-                                                                                   events.Error("error_handler(\"ApplicantExamResult#=InternalApplicantScreeningId#\")");
-                                                                                   events.RequestStart("onRequestStart(\"ApplicantExamResult#=InternalApplicantScreeningId#\")");
-                                                                                   events.RequestEnd("onRequestEnd(\"ApplicantExamResult#=InternalApplicantScreeningId#\")");
-                                                                               })
-
-                                                                     .Model(model =>
-                                                                     {
-                                                                                 model.Id(p => p.ApplicantResultId);
-                                                                                 model.Field(p => p.SettingValue).Editable(false);
-                                                                                 model.Field(p => p.ExamType).Editable(false);
-                                                                             }
-                                                                         )
-                                                                                           .Read(read => read.Action("InternalApplicantExamResult_Read", "InternalApplicantExamResult", new { id = "#=InternalApplicantScreeningId#" }))
-                                                                                           .Create(create => create.Action("InternalApplicantExamResult_Create", "InternalApplicantExamResult", new { id = "#=InternalApplicantScreeningId#" }))
-                                                                                           .Update(update => update.Action("InternalApplicantExamResult_Update", "InternalApplicantExamResult"))
-                                                                                           .Destroy(destroy => destroy.Action("InternalApplicantExamResult_Destroy", "InternalApplicantExamResult"))
-                                                                               ).ToClientTemplate()
-                                        )
-
-
-                                    </text>
-
-
-                                                               );
+                   </text>);
 
 
 
 
-                                      }).ToClientTemplate())
+
+        }).ToClientTemplate())
 </script>
 
 

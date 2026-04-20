@@ -131,6 +131,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 proforma.IsSendForApproval = true;
                 proforma.SendForApprovalBy = User.Identity.Name;
                 proforma.SendForApprovalTime = DateTime.Today;
+                proforma.Status = "Checked";
                 db.Entry(proforma).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Checked" };
@@ -154,7 +155,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     proformaInvoice.IsOnlineApproved = true;
                     proformaInvoice.OnlineApprovedBy = User.Identity.Name;
                     proformaInvoice.OnlineApprovedTime = DateTime.Now;
-
+                    proformaInvoice.Status = "Approved";
                     db.Entry(proformaInvoice).State = EntityState.Modified;
                     db.SaveChanges();
 
@@ -172,6 +173,25 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 response = new { Success = false, Message = "Something's Wrong!, Proforma Not Found!" };
             }
             return Json(response);
+        }
+       
+        public JsonResult RejectProforma(int id)
+        {
+            Object response = null;
+            var proforma = db.PrintingProformaInvoices.Find(id);
+
+           
+            proforma.IsOnlineApproved = false;
+            proforma.IsSendForApproval = false;
+            
+
+            proforma.Status = "Rejected";
+            db.Entry(proforma).State = EntityState.Modified;
+            db.SaveChanges();
+            response = new { Success = true, Message = "Successfully Rejected!" };
+
+            return Json(response);
+
         }
         #endregion
     }

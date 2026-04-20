@@ -26,6 +26,7 @@
           columns.Bound(c => c.AdvanceAmount).Width(120);
           columns.Bound(c => c.TransportReference).Width(150);
           columns.Bound(c => c.Reference).Width(150);
+          columns.Bound(c => c.Remark).Width(150);
           columns.Bound(c => c.Status).Width(90);
           columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(190);
       })

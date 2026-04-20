@@ -4,7 +4,9 @@
 @using Kendo.Mvc.UI
 @model ExceedERP.Core.Domain.HRM.SelfCare.LeaveRequest
 
-
+@{
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
 <form>
 
 <div class="row">
@@ -35,7 +37,7 @@
                                   .ServerFiltering(true)
                                   .ServerPaging(true)
                                   .Type("aspnetmvc-ajax")
-                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "HRMDataProvider")))
+                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "HRMDataProvider").Data("sendForgery")))
                                   .Schema(schema =>
                                   {
                                       schema.Data("Data")

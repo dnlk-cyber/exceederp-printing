@@ -47,6 +47,39 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var detail = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == id);
             return Json(detail.ToDataSourceResult(request));
         }
+        public ActionResult PrintEstimationSummary_Update([DataSourceRequest]DataSourceRequest request, PrintingEstimationSummary model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                db.PrintingEstimationSummaries.Attach(model);
+                db.Entry(model).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult PrintEstimationSummary_Delete([DataSourceRequest]DataSourceRequest request, PrintingEstimationSummary model)
+        {
+            if (ModelState.IsValid)
+            {
+                var summary = db.PrintingEstimationSummaries.FirstOrDefault(x => x.PrintingEstimationSummaryId == model.PrintingEstimationSummaryId);
+
+                var details = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId).ToList();
+                foreach (var detail in details)
+                {
+                    ReverseEstimation(detail.PrintingCostEstimationId);
+                    DeleteSummaryDetail(detail);
+                    
+                }
+                var comments = db.PrintingSummaryComments.Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId).ToList();
+                db.PrintingSummaryComments.RemoveRange(comments);
+                db.PrintingEstimationSummaries.Remove(summary);
+                db.SaveChanges();
+            }
+
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
 
         public JsonResult CheckEstSummary(int id)
         {
@@ -58,14 +91,16 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 var details = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == estSummary.PrintingEstimationSummaryId);
                 foreach (var item in details)
                 {
-
-                    if (item.ProfitMargin == 0)
+                    var margins = db.PrintingEstimationMargins.Where(x => x.PrintingEstimationDetailId == item.PrintingEstimationDetailId).ToList();
+                    
+                    var isTrue = margins.Exists(e => e.ProfitMargin == 0);
+                    if (isTrue || !margins.Any())
                     {
-                        response = new { Success = true, Message = "Profit Margin Missing!" };
+                        response = new { Success = false, Message = "Profit Margin Missing!" };
                         return Json(response);
                     }
                 }
-
+                
                 estSummary.IsSendForApproval = true;
                 estSummary.SendForApprovalBy = User.Identity.Name;
                 estSummary.SendForApprovalTime = DateTime.Today;
@@ -85,13 +120,25 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             Object response = null;
             var summary = db.PrintingEstimationSummaries.Find(id);
+            if(summary == null)
+            {
+                response = new { Success = false, Message = "summary not found" };
+            }
             var estimationDetails = db.PrintingEstimationDetails
                 .Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId && x.ProfitMargin != 0)
                 .ToList();
+            foreach (var item in estimationDetails)
+            {
 
-            var overAllCost = db.PrintingEstimationCostSummaries
-                .Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId)
-                .ToList();
+                if (item.ProfitMargin == 0)
+                {
+                    response = new { Success = false, Message = "Profit Margin Missing!" };
+                    return Json(response);
+                }
+            }
+            //var overAllCost = db.PrintingEstimationCostSummaries
+            //    .Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId)
+            //    .ToList();
             if (estimationDetails.Any())
             {
                 summary.IsOnlineApproved = true;
@@ -154,19 +201,44 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             Object response = null;
             var summary = db.PrintingEstimationSummaries.Find(id);
 
+            summary.IsRejected = true;
+            summary.IsVoid = true;
             summary.IsOnlineApproved = false;
             summary.IsSendForApproval = false;
-
-            //summary.OnlineApprovedBy = User.Identity.Name;
-            //summary.OnlineApprovedTime = DateTime.Today;
+            var details = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId).ToList();
+            foreach (var item in details)
+            {
+                ReverseEstimation(item.PrintingCostEstimationId);
+                DeleteSummaryDetail(item);
+            }
+            
             summary.Status = "Rejected";
             db.Entry(summary).State = EntityState.Modified;
             db.SaveChanges();
             response = new { Success = true, Message = "Successfully Rejected!" };
 
             return Json(response);
-
         }
-
+        private void ReverseEstimation(int id)
+        {
+            var estimationForm = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == id);
+            estimationForm.IsOnlineTransferred = false;
+            estimationForm.IsOnlineApproved = false;
+            
+            db.Entry(estimationForm).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+        private void DeleteSummaryDetail(PrintingEstimationDetail model)
+        {
+          
+            var margins = db.PrintingEstimationMargins.Where(x => x.PrintingEstimationDetailId == model.PrintingEstimationDetailId).ToList();
+            if (margins.Any())
+            {
+                db.PrintingEstimationMargins.RemoveRange(margins);
+            }
+            db.PrintingEstimationDetails.Remove(model);
+            db.SaveChanges();
+        }
+        
     }
 }

@@ -41,7 +41,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
 
                 RetirementSettingId = retirement.RetirementSettingId,
-                RetireSetting = retirement.RetireSetting,
+                RetireTypeSetting = retirement.RetireTypeSetting,
                 CurrentValue = retirement.CurrentValue
 
             });
@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                 var entity = new RetirementSetting
                 {
-                    RetireSetting = retirement.RetireSetting,
+                    RetireTypeSetting = retirement.RetireTypeSetting,
                     CurrentValue = retirement.CurrentValue
                 };
 
@@ -84,7 +84,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 var entity = new RetirementSetting
                 {
                     RetirementSettingId = retirement.RetirementSettingId,
-                    RetireSetting = retirement.RetireSetting,
+                    RetireTypeSetting = retirement.RetireTypeSetting,
                     CurrentValue = retirement.CurrentValue
                 };
 
@@ -113,12 +113,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 var entity = new RetirementSetting
                 {
                     RetirementSettingId = retirement.RetirementSettingId,
-                    RetireSetting = retirement.RetireSetting,
+                    RetireTypeSetting = retirement.RetireTypeSetting,
                     CurrentValue = retirement.CurrentValue
                 };
 
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted retirement setting " + retirement.RetireSetting);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted retirement setting " + retirement.RetireTypeSetting);
                 #endregion
                 db.RetirementSettings.Attach(entity);
                 db.RetirementSettings.Remove(entity);

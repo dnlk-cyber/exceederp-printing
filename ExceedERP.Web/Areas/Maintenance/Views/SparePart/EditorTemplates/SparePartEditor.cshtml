@@ -17,7 +17,7 @@
                             .OptionLabel("Select ")
                             .HtmlAttributes(new { style = "width:100%" })
                             .DataSource(d =>
-                                d.Read(r => r.Action("GetSparePartAndMaterialCategory", "MaintenanceDataProvider")))
+                                d.Read(r => r.Action("GetSparePartAndMaterialCategory", "MaintenanceDataProvider").Data("sendForgery")))
                     )
                 </div>
             </div>
@@ -73,7 +73,7 @@
                     @*@(Html.Kendo().DropDownListFor(model => model.PartNo).Name("PartNo")
                 .DataTextField("Name")
                                 .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                                .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "FleetDataProvider"))).Events(ev => ev.Change("BindPrice")))*@
+                                                .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "FleetDataProvider").Data("sendForgery"))).Events(ev => ev.Change("BindPrice")))*@
                 </div>
             </div>
         </div>

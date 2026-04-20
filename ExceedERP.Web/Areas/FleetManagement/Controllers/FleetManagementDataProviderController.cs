@@ -344,7 +344,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             var result = operatorForDistribution.Select(s => new
             {
-                Text = s.FullName,
+                Text = s.OperatorID.ToString()+" "+s.FullName,
                 Value = s.OperatorID
             }).AsQueryable();
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -476,7 +476,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(operators.Select(s => new
             {
                 Value = s.OperatorID,
-                Text = s.FullName
+                Text = s.EmployeeCode+" "+s.FullName
             }).ToList(), JsonRequestBehavior.AllowGet);
         }
         public ActionResult getUnitOfMeasurement(string search)
@@ -666,7 +666,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var result = equipmentNames.Select(s => new
             {
                 Name = s.Name,
-                s.EquipmentTypeId,
                 Id = s.EquipmentNameID
             });
 

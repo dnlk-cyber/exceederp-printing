@@ -16,8 +16,10 @@
             columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
 
             columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
+            
             columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(100);
             columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(100);
+           
             columns.Bound(c => c.Amount).Width(100);
             //columns.Bound(c => c.LeaveRequestId);
             //columns.Command(command =>

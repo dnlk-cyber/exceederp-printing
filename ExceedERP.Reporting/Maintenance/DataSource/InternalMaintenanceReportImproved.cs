@@ -14,7 +14,7 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<InternalMaintenanceDTO> GetInternalMaintenanceCosts(string fleetId, DateTime? from, DateTime? to)
+        public List<InternalMaintenanceDTO> GetInternalMaintenanceCosts(string fleetId, DateTime? from, DateTime? to, string maintenanceCenter)
         {
             List<InternalMaintenanceDTO> list = new List<InternalMaintenanceDTO>();
             var jobOrder = db.JobOrder.AsNoTracking().ToList();
@@ -30,7 +30,10 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
             {
                 jobOrder = jobOrder.Where(x => x.DateCompleted <= to.Value).ToList();
             }
-
+            if(Guid.TryParse(maintenanceCenter, out Guid maintenanceCenterId))
+            {
+                jobOrder = jobOrder.Where(x => x.MaintenanceCenterId == maintenanceCenterId).ToList();
+            }
             var jobNums = jobOrder.Select(s => s.Num);
             foreach (var item in jobNums)
             {

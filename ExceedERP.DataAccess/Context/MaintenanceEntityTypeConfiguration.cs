@@ -19,6 +19,143 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.MaintenanceCompanyDocumentTypeId);
         }
     }
+    public class ExternalServiceCenterDetailEntityTypeConfiguration : EntityTypeConfiguration<ExternalServiceCenterDetail>
+    {
+        public ExternalServiceCenterDetailEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalServiceCenterDetail", "Maintenance");
+            this.HasKey<int>(p => p.ExternalServiceCenterDetailId);
+        }
+    }
+    public class ExternalMaintenancePaymentRequestValidationEntityTypeConfiguration : EntityTypeConfiguration<ExternalMaintenancePaymentRequestValidation>
+    {
+        public ExternalMaintenancePaymentRequestValidationEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalMaintenancePaymentRequestValidations", "Maintenance");
+            this.HasKey<int>(p => p.ExternalMaintenancePaymentRequestValidationId);
+        }
+    }
+    public class ExternalMaintenancePaymentRequestDepValidationEntityTypeConfiguration : EntityTypeConfiguration<ExternalMaintenancePaymentRequestDepValidation>
+    {
+        public ExternalMaintenancePaymentRequestDepValidationEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalMaintenancePaymentRequestDepValidations", "Maintenance");
+            this.HasKey<int>(p => p.ExternalMaintenancePaymentRequestDepValidationId);
+        }
+    }   
+    public class ExternalPaymentRequestJobEntityTypeConfiguration : EntityTypeConfiguration<ExternalPaymentRequestJob>
+    {
+        public ExternalPaymentRequestJobEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalMaintenancePaymentRequestHeaders", "Maintenance");
+            this.HasKey<int>(p => p.ExternalPaymentRequestJobId);
+        }
+    }
+    public class InternalJobToExternalEntityTypeConfiguration : EntityTypeConfiguration<InternalJobToExternal>
+    {
+        public InternalJobToExternalEntityTypeConfiguration()
+        {
+            this.ToTable("InternalJobToExternal", "Maintenance");
+            this.HasKey<int>(p => p.InternalJobToExternalId);
+        }
+    }
+    public class InternalJobToExternalValidationEntityTypeConfiguration : EntityTypeConfiguration<InternalJobToExternalValidation>
+    {
+        public InternalJobToExternalValidationEntityTypeConfiguration()
+        {
+            this.ToTable("InternalJobToExternalValidation", "Maintenance");
+            this.HasKey<int>(p => p.InternalJobToExternalValidationId);
+        }
+    }
+    public class VehicleReceptionApprovalEntityTypeConfiguration : EntityTypeConfiguration<VehicleReceptionApproval>
+    {
+        public VehicleReceptionApprovalEntityTypeConfiguration()
+        {
+            this.ToTable("VehicleReceptionApprovals", "Maintenance");
+            this.HasKey<int>(p => p.VehicleReceptionApprovalId);
+        }
+    }
+   
+    public class CanibalizationDepartmentApprovalEntityTypeConfiguration : EntityTypeConfiguration<CanibalizationDepartmentApproval>
+    {
+        public CanibalizationDepartmentApprovalEntityTypeConfiguration()
+        {
+            this.ToTable("CanibalizationDepartmentApproval", "Maintenance");
+            this.HasKey<int>(p => p.CanibalizationDepartmentApprovalId);
+        }
+    }
+    public class PmSchedulerEntityTypeConfiguration : EntityTypeConfiguration<PmScheduler>
+    {
+        public PmSchedulerEntityTypeConfiguration()
+        {
+            this.ToTable("PmSchedulers", "Maintenance");
+            this.HasKey<int>(p => p.PmSchedulerId);
+        }
+    }
+    public class ServiceGroupSettingEntityTypeConfiguration : EntityTypeConfiguration<ServiceGroupSetting>
+    {
+        public ServiceGroupSettingEntityTypeConfiguration()
+        {
+            this.ToTable("ServiceGroupSettings", "Maintenance");
+            this.HasKey<int>(p => p.ServiceGroupSettingId);
+        }
+    }
+    public class AdministrativeJobDepartmentApprovalEntityTypeConfiguration : EntityTypeConfiguration<AdministrativeJobDepartmentApproval>
+    {
+        public AdministrativeJobDepartmentApprovalEntityTypeConfiguration()
+        {
+            this.ToTable("AdministrativeJobDepartmentApproval", "Maintenance");
+            this.HasKey<int>(p => p.AdministrativeJobDepartmentApprovalID);
+        }
+    }
+    public class SOPDocumentEntityTypeConfiguration : EntityTypeConfiguration<SOPDocument>
+    {
+        public SOPDocumentEntityTypeConfiguration()
+        {
+            this.ToTable("SOPDocuments", "Maintenance");
+            this.HasKey<int>(p => p.SOPDocumentId);
+        }
+    }
+    public class PmSettingEntityTypeConfiguration : EntityTypeConfiguration<PmSetting>
+    {
+        public PmSettingEntityTypeConfiguration()
+        {
+            this.ToTable("PmSetting", "Maintenance");
+            this.HasKey<int>(p => p.PmSettingId);
+        }
+    }
+    public class CloseWorkShopWithRemarkEntityTypeConfiguration : EntityTypeConfiguration<CloseWorkShopWithRemark>
+    {
+        public CloseWorkShopWithRemarkEntityTypeConfiguration()
+        {
+            this.ToTable("CloseWorkShopWithRemarks", "Maintenance");
+            this.HasKey<int>(p => p.CloseWorkShopWithRemarkId);
+        }
+    }
+    public class CanibalizationEntityTypeConfiguration : EntityTypeConfiguration<Canibalization>
+    {
+        public CanibalizationEntityTypeConfiguration()
+        {
+            this.ToTable("Canibalizations", "Maintenance");
+            this.HasKey<int>(p => p.CanibalizationId);
+        }
+    }
+    public class CanibalizedPartsEntityTypeConfiguration : EntityTypeConfiguration<CanibalizedParts>
+    {
+        public CanibalizedPartsEntityTypeConfiguration()
+        {
+            this.ToTable("CanibalizedParts", "Maintenance");
+            this.HasKey<int>(p => p.CanibalizedPartsId);
+        }
+    }
+    public class CanibalizationApprovalEntityTypeConfiguration : EntityTypeConfiguration<CanibalizationApproval>
+    {
+        public CanibalizationApprovalEntityTypeConfiguration()
+        {
+            this.ToTable("CanibalizationApprovals", "Maintenance");
+            this.HasKey<int>(p => p.CanibalizationApprovalId);
+        }
+    }
     public class MaintenanceCompanyDocumentEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceCompanyDocument>
     {
         public MaintenanceCompanyDocumentEntityTypeConfiguration() 
@@ -26,7 +163,8 @@ namespace ExceedERP.DataAccess.Context
             this.ToTable("MaintenanceCompanyDocument", "Maintenance");
             this.HasKey<int>(p => p.MaintenanceCompanyDocumentId);
         }
-    }
+    }  
+    
     public class ExternalMaintenancePaymentRequestEntityTypeConfiguration : EntityTypeConfiguration<ExternalMaintenancePaymentRequest>
     {
         public ExternalMaintenancePaymentRequestEntityTypeConfiguration()

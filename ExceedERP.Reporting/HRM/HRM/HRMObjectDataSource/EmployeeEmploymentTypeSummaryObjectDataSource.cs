@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -13,92 +14,134 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeeEmploymentTypeSummaryObjectDataSource : List<EmployeeSummary>
+    public class EmployeeEmploymentTypeSummaryObjectDataSource :IDisposable
     {
-        private ExceedDbContext db = new ExceedDbContext();
+        private ExceedDbContext _db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetEmployeeTypeSummary(string branchId, string orgStructureId, string status, string source, string empStatus = "")
+        public List<EmployeeSummary> GetEmployeeTypeSummary(string branchId,object[] orgStructureIds,string status,string source,string empStatus = "")
         {
-            var list = GetEmployees(branchId, orgStructureId, status);
-
+            var list = GetEmployees(branchId, orgStructureIds, status);
             return list.OrderBy(x => x.SummaryName).ToList();
         }
-
-        public List<EmployeeSummary> GetEmployees(string branchId, string orgStructureId, string status)
+        public List<EmployeeSummary> GetEmployees(string branchId, object[] orgStructureIds, string status)
         {
-            List<EmployeeSummary> list = new List<EmployeeSummary>();
+            IQueryable<Placement> placements = _db.Placements;
+            IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
 
-            var placementsss = db.Placements.ToList();
+            //  Filter by branch ---
+            if (!string.IsNullOrEmpty(branchId) && int.TryParse(branchId, out int branch))
+            {
+                var empIds = placements
+                    .Where(x => x.BranchId == branch)
+                    .Select(x => x.EmployeeId)
+                    .Distinct();
 
-            if (!string.IsNullOrEmpty(branchId))
-            {
-                int.TryParse(branchId, out int braId);
-                placementsss = placementsss.Where(x => x.BranchId == braId).ToList();
-            }
-            if (!string.IsNullOrEmpty(orgStructureId))
-            {
-                int.TryParse(orgStructureId, out int orgId);
-                placementsss = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placementsss, orgId);
-            }
-
-            if (status == "Active")
-            {
-                placementsss = placementsss.Where(x => x.isCurrent).DistinctByField(x => x.EmployeeId).ToList();
-            }
-            if (status == "InActive")
-            {
-                placementsss = placementsss.Where(x => !x.isCurrent).DistinctByField(x => x.EmployeeId).DistinctByField(x => x.EmployeeId).ToList();
+                employees = employees.Where(x => empIds.Contains(x.EmployeeId));
             }
 
-            var males = db.Person_Employee.Where(x => x.Gender == Gender.MALE).Select(x => x.EmployeeId).ToList();
-            var females = db.Person_Employee.Where(x => x.Gender == Gender.FEMALE).Select(x => x.EmployeeId).ToList();
-
-            var allTypes = Enum.GetValues(typeof(EmployeeStatus))
-                           .Cast<EmployeeStatus>()
-                           .ToList().Select(s => new { Text = s.ToString(), Value = s.ToString() });
-
-            foreach (var a in allTypes)
+            // Filter by OrgStructure ---
+            if (orgStructureIds != null && orgStructureIds.Length > 0)
             {
-                var emplistByStatus = placementsss.Where(x => x.EmployementType.ToString() == a.Value).DistinctByField(x => x.EmployeeId).ToList();
+                var orgIds = orgStructureIds
+                    .Select(o => int.TryParse(o.ToString(), out int id) ? id : (int?)null)
+                    .Where(id => id.HasValue)
+                    .Select(id => id.Value)
+                    .ToList();
 
-                var employee = new EmployeeSummary();
+                if (orgIds.Any())
+                {
+                    var empIds = placements
+                        .Where(x => orgIds.Contains(x.OrgStructureId))
+                        .Select(x => x.EmployeeId)
+                        .Distinct();
 
-                employee.Criteria = "Employement Type";
-
-                employee.SummaryName = GetStatus(a.Value.ToString());
-                employee.NumberOfFemaleEmployee = emplistByStatus.Where(x => males.Contains(x.EmployeeId)).Count();
-                employee.NumberOfMaleEmployee = emplistByStatus.Where(x => females.Contains(x.EmployeeId)).Count();
-                employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-
-                list.Add(employee);
-
+                    employees = employees.Where(x => empIds.Contains(x.EmployeeId));
+                }
             }
 
-            return list;
+            //  Active / Inactive Filter ---
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (status.Equals("Active", StringComparison.OrdinalIgnoreCase))
+                {
+                    var activeEmpIds = placements
+                        .Where(x => x.isCurrent)
+                        .Select(x => x.EmployeeId)
+                        .Distinct();
+
+                    employees = employees.Where(x => activeEmpIds.Contains(x.EmployeeId) && x.IsActive);
+                }
+                else if (status.Equals("InActive", StringComparison.OrdinalIgnoreCase))
+                {
+                    var inactiveEmpIds = placements
+                        .Where(x => !x.isCurrent)
+                        .Select(x => x.EmployeeId)
+                        .Distinct();
+
+                    employees = employees.Where(x => inactiveEmpIds.Contains(x.EmployeeId) && !x.IsActive);
+                }
+            }
+
+            //  Execute query once ---
+            var employeeList = employees
+                .Select(e => new
+                {
+                    e.EmployeeId,
+                    e.Gender,
+                    e.Status
+                })
+                .ToList();
+
+            // Prepare all EmployeeStatus values ---
+            var allStatuses = Enum.GetValues(typeof(EmployeeStatus))
+                .Cast<EmployeeStatus>()
+                .Where(s => s != EmployeeStatus.NOTSELECTED)
+                .ToList();
+
+            var summaries = new List<EmployeeSummary>();
+
+            foreach (var empStatus in allStatuses)
+            {
+                var byStatus = employeeList
+                    .Where(x => x.Status == empStatus)
+                    .ToList();
+
+                var maleCount = byStatus.Count(x => x.Gender == Gender.MALE);
+                var femaleCount = byStatus.Count(x => x.Gender == Gender.FEMALE);
+                var othersCount = byStatus.Count(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE);
+
+                var summary = new EmployeeSummary
+                {
+                    Criteria = "Employment Type",
+                    SummaryName = GetEnumDisplayName(empStatus), // localized name
+                    NumberOfMaleEmployee = maleCount,
+                    NumberOfFemaleEmployee = femaleCount,
+                    NumberOfOtherEmployee = othersCount,
+                    TotalEmployee = maleCount + femaleCount + othersCount
+                };
+
+                summaries.Add(summary);
+            }
+
+          
+
+            return summaries;
         }
-        public string GetStatus(string empStatus)
+        public string GetEnumDisplayName(Enum value)
         {
-            switch (empStatus)
-            {
-                case "PERMANENT":
-                    return "ቋሚ";
+            var field = value.GetType().GetField(value.ToString());
+            var displayAttribute = field?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                         .Cast<DisplayAttribute>()
+                                         .FirstOrDefault();
 
-                case "CONTRACT":
-                    return "ጊዜያዊ";
-
-                case "PROBATION":
-                    return "የሙከራ ጊዜ";
-                case "FREELANCER":
-                    return "ፍሪላንሰር";
-                case "NO_STATUS":
-                    return "የማይታወቅ";
-
-
-            }
-            return empStatus;
+            return displayAttribute?.GetName() ?? value.ToString();
         }
 
+        public void Dispose()
+        {
+            _db.Dispose();
+        }
     }
 
     public class EmployeesVm

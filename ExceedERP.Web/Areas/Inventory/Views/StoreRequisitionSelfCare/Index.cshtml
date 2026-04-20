@@ -18,7 +18,6 @@
           columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(100);
           columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
-
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
           columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
@@ -37,7 +36,7 @@
           {
               command.Edit();
               command.Destroy();
-          }).Width(280);
+          }).Width(240);
 
       }).Filterable()
       .Pageable(pageable => pageable
@@ -253,6 +252,7 @@
                                                   columns.Bound(c => c.ApprovedQuantity).Width(120);
                                                   columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
                                                   columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+                                                  columns.Bound(c => c.ProductionJobNo).Width(90);
                                                   columns.Bound(c => c.ItemSpecification).Width(120);
                                                   columns.Bound(c => c.CurrentBalance).Hidden();
                                                   columns.Command(command =>

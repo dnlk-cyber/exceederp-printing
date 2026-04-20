@@ -40,14 +40,10 @@ namespace ExceedERP.Core.Domain.Maintenance
         public decimal CMCost { get; set; }
         
         public decimal PMCost { get; set; }
-
-        //
-        
         public decimal CMMaterialCost { get; set; }
         public decimal CMLaborCost { get; set; }
         public decimal PMMaterialCost { get; set; }
         public decimal PMLaborCost { get; set; }
-
         public int MaintenancePlanId { get; set; }
         public MaintenancePlan MaintenancePlan { get; set; } 
     }

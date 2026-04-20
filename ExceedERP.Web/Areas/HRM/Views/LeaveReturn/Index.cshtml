@@ -6,8 +6,9 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
-<legend>Leave Return</legend>
+<legend>@Resources.Leave_Return</legend>
 @(Html.Kendo().Grid<LeaveReturn>()
       .Name("LeaveReturngrid")
       .Columns(columns =>
@@ -23,7 +24,7 @@
           columns.Command(command =>
           {
               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-              //command.Destroy().Text(Resources.ActionButton_Cancel);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
               //  command.Custom("Print").Text("Print");
           }).Width(250);
 
@@ -138,6 +139,7 @@
                         model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
                         model.Field(p => p.ApproverId).Editable(false);
                         model.Field(p => p.ApproverDepartment).Editable(false);
+                        model.Field(p => p.DateReqStatAm).Editable(false);
 
                     })
                     .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }).Data("sendForgery"))
@@ -486,13 +488,17 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
-            if (dataItem.IsApproved === true) {
+            if (dataItem.IsApproved === true || dataItem.IsDepartmentOnlineApproved) {
 
                 row.css("background-color", "darkgrey");
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
             }
-            else {
+            else if (dataItem.IsSendForApproval) {
 
                 row.css("background-color", "lightgreen");
+                row.find(".k-grid-delete").remove();
+
             }
 
 

@@ -135,10 +135,10 @@
                         .RequestStart("onRequestStart(\"grid\")")
                         .RequestEnd("onRequestEnd(\"grid\")"))
 
-                        //.Create(update => update.Action("JobOrder_Create", "JobOrder"))
-                        .Read(read => read.Action("ServiceCenter_Read", "JobOrderServiceCenter"))
-                        //.Update(update => update.Action("JobOrder_Update", "ServiceCenter"))
-                        //.Destroy(update => update.Action("JobOrder_Refer", "ServiceCenter"))
+                        //.Create(update => update.Action("JobOrder_Create", "JobOrder").Data("sendForgery"))
+                        .Read(read => read.Action("ServiceCenter_Read", "JobOrderServiceCenter").Data("sendForgery"))
+                        //.Update(update => update.Action("JobOrder_Update", "ServiceCenter").Data("sendForgery"))
+                        //.Destroy(update => update.Action("JobOrder_Refer", "ServiceCenter").Data("sendForgery"))
 
                         ).ClientDetailTemplateId("template")
 )
@@ -233,10 +233,10 @@
                                                                     .Error("error_handler(\"JobOrderDetailgrid_#=JobOrderServiceCenterId#\")")
                                                                     .RequestStart("onRequestStart(\"JobOrderDetailgrid_#=JobOrderServiceCenterId#\")")
                                                                     .RequestEnd("onRequestEnd(\"JobOrderDetailgrid_#=JobOrderServiceCenterId#\")"))
-                                                            .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderServiceCenterId#" }))
-                                                            .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderServiceCenterId#" }))
+                                                            .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderServiceCenterId#" }).Data("sendForgery"))
+                                                            .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderServiceCenterId#" }).Data("sendForgery"))
 
-                                                            .Update(update => update.Action("JobOrderDetail_Approve", "JobOrderDetail"))
+                                                            .Update(update => update.Action("JobOrderDetail_Approve", "JobOrderDetail").Data("sendForgery"))
 
                                                             ).Events(events => events.DataBound("ServiceDataBound"))
                                                             .ToClientTemplate())
@@ -287,10 +287,10 @@
                                                                                             .Error("error_handler(\"CAGrid_#=JobOrderID#\")")
                                                                                             .RequestStart("onRequestStart(\"CAGrid_#=JobOrderID#\")")
                                                                                             .RequestEnd("onRequestEnd(\"CAGrid_#=JobOrderID#\")"))
-                                                                                .Create(create => create.Action("ServiceCrew_Create", "ServiceCrew", new { cserviceID = "#=JobOrderID#" }))
-                                                                                .Read(read => read.Action("ServiceCrewByService_Read", "ServiceCrew", new { Id = "#=JobOrderID#" }))
-                                                                                .Destroy(destroy => destroy.Action("ServiceCrew_Destroy", "ServiceCrew"))
-                                                                                .Update(update => update.Action("ServiceCrew_Update", "ServiceCrew"))
+                                                                                .Create(create => create.Action("ServiceCrew_Create", "ServiceCrew", new { cserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                .Read(read => read.Action("ServiceCrewByService_Read", "ServiceCrew", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                .Destroy(destroy => destroy.Action("ServiceCrew_Destroy", "ServiceCrew").Data("sendForgery"))
+                                                                                .Update(update => update.Action("ServiceCrew_Update", "ServiceCrew").Data("sendForgery"))
 
                                                                                 )
                                                                                 .Pageable(p => p.Refresh(true))
@@ -383,10 +383,10 @@
                                                                                     model.Field(p => p.ModifiedBy).Editable(false);
                                                                                     model.Field(p => p.LastModified).Editable(false);
                                                                                 })
-                                                                                .Read(read => read.Action("SparePartStoreRequisitions_Read", "SparePartStoreRequisition", new { Id = "#=JobOrderID#" }))
-                                                                                .Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition", new { Id = "#=JobOrderID#" }))
-                                                                                .Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition"))
-                                                                                .Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition"))
+                                                                                .Read(read => read.Action("SparePartStoreRequisitions_Read", "SparePartStoreRequisition", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                .Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                .Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition").Data("sendForgery"))
+                                                                                .Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition").Data("sendForgery"))
 
                                                                                 ).Resizable(resize => resize.Columns(true))
                                                                                 .ClientDetailTemplateId("SparePartStoreRequisitions")
@@ -460,10 +460,10 @@
 
                                                                                             model.Field(p => p.StoreReturnID).Editable(false);
                                                                                         })
-                                                                                        .Read(read => read.Action("StoreReturns_Read", "MaintenanceStoreReturn", new { Id = "#=JobOrderID#" }))
-                                                                                        .Create(create => create.Action("StoreReturns_Create", "MaintenanceStoreReturn", new { Id = "#=JobOrderID#" }))
-                                                                                        .Update(update => update.Action("StoreReturns_Update", "MaintenanceStoreReturn"))
-                                                                                        .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "MaintenanceStoreReturn"))
+                                                                                        .Read(read => read.Action("StoreReturns_Read", "MaintenanceStoreReturn", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                        .Create(create => create.Action("StoreReturns_Create", "MaintenanceStoreReturn", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                        .Update(update => update.Action("StoreReturns_Update", "MaintenanceStoreReturn").Data("sendForgery"))
+                                                                                        .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "MaintenanceStoreReturn").Data("sendForgery"))
                                                                                         ).ClientDetailTemplateId("storereturntemplate")
                                                                                         .ToClientTemplate())
                                                             </text>
@@ -515,10 +515,10 @@
                                                                                                     .Error("error_handler(\"WorkLogrid_#=JobOrderID#\")")
                                                                                                     .RequestStart("onRequestStart(\"WorkLogrid_#=JobOrderID#\")")
                                                                                                     .RequestEnd("onRequestEnd(\"WorkLogrid_#=JobOrderID#\")"))
-                                                                                                .Create(create => create.Action("ServiceCrewWorkLog_Create", "ServiceCrewWorkLog", new { Id = "#=JobOrderID#" }))
-                                                                                                .Read(read => read.Action("ServiceCrewWorkLog_Read", "ServiceCrewWorkLog", new { Id = "#=JobOrderID#" }))
-                                                                                                .Update(update => update.Action("ServiceCrewWorkLog_Update", "ServiceCrewWorkLog"))
-                                                                                                .Destroy(destroy => destroy.Action("ServiceCrewWorkLog_Destory", "ServiceCrewWorkLog"))
+                                                                                                .Create(create => create.Action("ServiceCrewWorkLog_Create", "ServiceCrewWorkLog", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                .Read(read => read.Action("ServiceCrewWorkLog_Read", "ServiceCrewWorkLog", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                .Update(update => update.Action("ServiceCrewWorkLog_Update", "ServiceCrewWorkLog").Data("sendForgery"))
+                                                                                                .Destroy(destroy => destroy.Action("ServiceCrewWorkLog_Destory", "ServiceCrewWorkLog").Data("sendForgery"))
 
                                                                                                 ).Events(events => events.DataBound("WorkSheetDataBound"))
                                                                                                 .Pageable(p => p.Refresh(true))
@@ -568,10 +568,10 @@
                             .Error("error_handler(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
                             .RequestStart("onRequestStart(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
                             .RequestEnd("onRequestEnd(\"Followupsgrid_#=ServiceCrewWorkLogId#\")"))
-                            .Create(create => create.Action("FollowUp_Create", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }))
-                            .Read(read => read.Action("FollowUp_Read", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }))
-                            .Update(update => update.Action("FollowUp_Update", "FollowUp"))
-                            .Destroy(destroy => destroy.Action("FollowUp_Destory", "FollowUp"))
+                            .Create(create => create.Action("FollowUp_Create", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }).Data("sendForgery"))
+                            .Read(read => read.Action("FollowUp_Read", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("FollowUp_Update", "FollowUp").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("FollowUp_Destory", "FollowUp").Data("sendForgery"))
 
                             )
                             .ToClientTemplate())
@@ -630,11 +630,11 @@
                             .Error("error_handler(\"ComponentServiceSparegrid_#=ExternalComponentId#\")")
                             .RequestStart("onRequestStart(\"ComponentServiceSparegrid_#=ExternalComponentId#\")")
                             .RequestEnd("onRequestEnd(\"ComponentServiceSparegrid_#=ExternalComponentId#\")"))
-                            .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }))
-                            .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentId#" }))
-                            .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                            //.Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }))
-                            .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare"))
+                            .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+                            .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                            //.Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+                            .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare").Data("sendForgery"))
 
                             )
                             .Pageable(p => p.Refresh(true))
@@ -697,10 +697,10 @@
                             .Error("error_handler(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
                             .RequestStart("onRequestStart(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
                             .RequestEnd("onRequestEnd(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")"))
-                            .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
-                            .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }))
-                            .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                            .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+                            .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                            .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                            .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
 
                             )
                             .Pageable(p => p.Refresh(true))
@@ -866,10 +866,10 @@
                         model.Field(p => p.LastModified).Editable(false);
 
                     })
-                .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
-                .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
-                .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem"))
-                .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem"))
+                .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem").Data("sendForgery"))
                 ).ToClientTemplate())
     </text>
     );
@@ -907,10 +907,10 @@
                 {
                         model.Id(p => p.StoreRequisitionValidationID);
                     })
-                .Read(read => read.Action("SparePartStoreRequisitionValidations_Read", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                .Create(create => create.Action("SparePartStoreRequisitionValidations_Create", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                .Update(update => update.Action("SparePartStoreRequisitionValidations_Update", "SparePartStoreRequisitionValidation"))
-                .Destroy(destroy => destroy.Action("SparePartStoreRequisitionValidations_Destroy", "SparePartStoreRequisitionValidation"))
+                .Read(read => read.Action("SparePartStoreRequisitionValidations_Read", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                .Create(create => create.Action("SparePartStoreRequisitionValidations_Create", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                .Update(update => update.Action("SparePartStoreRequisitionValidations_Update", "SparePartStoreRequisitionValidation").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("SparePartStoreRequisitionValidations_Destroy", "SparePartStoreRequisitionValidation").Data("sendForgery"))
 
                 ).ToClientTemplate())
 
@@ -971,8 +971,8 @@
                             .Error("error_handler(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
                             .RequestStart("onRequestStart(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
                             .RequestEnd("onRequestEnd(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")"))
-                            .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
-                            .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+                            .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail").Data("sendForgery"))
 
                             )
                             .Pageable(p => p.Refresh(true))
@@ -1122,10 +1122,10 @@
                 .RequestEnd("onRequestEnd(\"StoreReturnItem_#=StoreReturnID#\")"))
 
                 .Model(model => model.Id(p => p.StoreReturnItemsID))
-                .Read(read => read.Action("StoreReturnItems_Read", "MaintenanceStoreReturnItem", new { id = "#=StoreReturnID#" }))
-                .Create(create => create.Action("StoreReturnItems_Create", "MaintenanceStoreReturnItem", new { id = "#=StoreReturnID#" }))
-                .Update(update => update.Action("StoreReturnItems_Update", "MaintenanceStoreReturnItem"))
-                .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "MaintenanceStoreReturnItem"))
+                .Read(read => read.Action("StoreReturnItems_Read", "MaintenanceStoreReturnItem", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                .Create(create => create.Action("StoreReturnItems_Create", "MaintenanceStoreReturnItem", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                .Update(update => update.Action("StoreReturnItems_Update", "MaintenanceStoreReturnItem").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "MaintenanceStoreReturnItem").Data("sendForgery"))
                 ).ToClientTemplate())
 
     </text>);
@@ -1166,10 +1166,10 @@
                         .RequestEnd("onRequestEnd(\"StoreReturnValidation_#=StoreReturnID#\")"))
 
                         .Model(model => model.Id(p => p.StoreReturnValidationID))
-                        .Read(read => read.Action("StoreReturnValidations_Read", "MaintenanceStoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                        .Create(create => create.Action("StoreReturnValidations_Create", "MaintenanceStoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                        .Update(update => update.Action("StoreReturnValidations_Update", "MaintenanceStoreReturnValidation"))
-                        .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "MaintenanceStoreReturnValidation"))
+                        .Read(read => read.Action("StoreReturnValidations_Read", "MaintenanceStoreReturnValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                        .Create(create => create.Action("StoreReturnValidations_Create", "MaintenanceStoreReturnValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                        .Update(update => update.Action("StoreReturnValidations_Update", "MaintenanceStoreReturnValidation").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "MaintenanceStoreReturnValidation").Data("sendForgery"))
                         ).ToClientTemplate())
 
             </text>);
@@ -1189,8 +1189,8 @@
             .Scrollable()
             .DataSource(dataSource => dataSource
             .Ajax()
-            .Read(read => read.Action("StoreReturnDistributions_Read", "MaintenanceStoreReturnDistribution", new { id = "#=StoreReturnID#" }))
-            .Update(read => read.Action("StoreReturnDistributions_Update", "MaintenanceStoreReturnDistribution"))
+            .Read(read => read.Action("StoreReturnDistributions_Read", "MaintenanceStoreReturnDistribution", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+            .Update(read => read.Action("StoreReturnDistributions_Update", "MaintenanceStoreReturnDistribution").Data("sendForgery"))
             ).ToClientTemplate())
 
 
@@ -1225,10 +1225,10 @@
                             .RequestStart("onRequestStart(\"StoreReturnAttachment_#=StoreReturnID#\")")
                             .RequestEnd("onRequestEnd(\"StoreReturnAttachment_#=StoreReturnID#\")"))
                             .Model(model => model.Id(p => p.StoreReturnAttachmentId))
-                            .Read(read => read.Action("StoreReturnAttachments_Read", "MaintenanceStoreReturnAttachment", new { id = "#= StoreReturnID #" }))
-                            .Create(create => create.Action("StoreReturnAttachments_Create", "MaintenanceStoreReturnAttachment", new { id = "#=StoreReturnID #" }))
-                            .Update(update => update.Action("TenderMinuteUploads_Update", "MaintenanceStoreReturnAttachment"))
-                            .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "MaintenanceStoreReturnAttachment"))
+                            .Read(read => read.Action("StoreReturnAttachments_Read", "MaintenanceStoreReturnAttachment", new { id = "#= StoreReturnID #" }).Data("sendForgery"))
+                            .Create(create => create.Action("StoreReturnAttachments_Create", "MaintenanceStoreReturnAttachment", new { id = "#=StoreReturnID #" }).Data("sendForgery"))
+                            .Update(update => update.Action("TenderMinuteUploads_Update", "MaintenanceStoreReturnAttachment").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "MaintenanceStoreReturnAttachment").Data("sendForgery"))
                             ).ToClientTemplate())
     }
 </script>

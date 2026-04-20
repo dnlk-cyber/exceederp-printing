@@ -106,6 +106,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public bool IsSentToWorkShop { get; set; }
         public bool IsSubmittedToServiceCenter { get; set; }
         public bool IsTransferedToGarage { get; set; }
+        public bool IsSentToExternal { get; set; }
         public DateTime? OnlineAssignedTime { get; set; }
         public DateTime? OnlineSubmittedTime { get; set; }
         public string WorkShopRejectedReason { get; set; }
@@ -247,7 +248,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public decimal SalvageCost { get; set; }
         [NotMapped]
         [DisplayName(" Labor Cost ")]
-        public decimal LabourCost { get; set; }
+        public string LabourCost { get; set; }
         [NotMapped]
         [DisplayName(" Battery Cost ")]
         public decimal BattreyCost { get; set; }
@@ -271,6 +272,23 @@ namespace ExceedERP.Core.Domain.Maintenance
         public bool IsExternalMaintenanceCenter { get; set; }
         [Display(Name = "Is Insured")]
         public bool IsInsured { get; set; }
+
+        public string JobRequested { get; set; }
+        public string SparePart { get; set; }
+        public string PartNo { get; set; }
+        public string UOM { get; set; }
+        public string Qty { get; set; }
+        public string WorkExcuted { get; set; }
+        public string UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+        public string Remark { get; set; }
+        public string AssignedTechnician { get; set; }
+        public string ServiceCost { get; set; }
+        public string Forman { get; set; }
+        public string OtherCosts { get; set; }
+        public string ServiceGroup { get; set; }
+
+
 
     }
 }

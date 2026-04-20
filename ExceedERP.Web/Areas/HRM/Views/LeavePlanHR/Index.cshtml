@@ -1,0 +1,344 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HRMPlan
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorLeave_LeavePlan </legend>
+@(Html.Kendo().Grid<LeavePlan>()
+      .Name("LeavePlangrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(120);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("Employees").Filterable(ftb => ftb.Multi(true).Search(true)).Width(210);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.Day).Width (120);
+          columns.Bound(c => c.LeaveAmount).Width (120);
+          columns.Bound(c => c.Remark).Width (100);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Leave_User")
+              || HttpContext.Current.User.IsInRole("HR_Department_Head"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin")
+                            || HttpContext.Current.User.IsInRole("HR_Leave_Admin")
+                            || HttpContext.Current.User.IsInRole("HR_Department_Head"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("HR_Leave_User")
+          || HttpContext.Current.User.IsInRole("HR_Department_Head"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+          if (HttpContext.Current.User.IsInRole("HR_Admin")
+              || HttpContext.Current.User.IsInRole("HR_Leave_Admin")
+              || HttpContext.Current.User.IsInRole("HR_Department_Head"))
+          {
+              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          }
+      })
+      .Excel(excel => excel
+      .FileName(Resources.NavigatorLeave_LeavePlan + ".xlsx")
+      .Filterable(true)
+      .AllPages(true)
+      .ProxyURL(Url.Action("Excel_Export_Save", "LeavePlanHR")))
+      .Pdf(pdf => pdf
+      .AllPages()
+      .FileName(Resources.NavigatorLeave_LeavePlan + ".pdf")
+      .ProxyURL(Url.Action("Pdf_Export_Save", "LeavePlanHR")))
+      .Events(ev =>
+      {
+          ev.DetailExpand("onDetailExpandUser");
+          ev.DataBound("onDataBound");
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(srt=>srt.Add(x=>x.LeavePlanId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"LeavePlangrid\")");
+                    events.RequestStart("onRequestStart(\"LeavePlangrid\")");
+                    events.RequestEnd("onRequestEnd(\"LeavePlangrid\")");
+                })
+               .Model(model => { model.Id(p => p.LeavePlanId);
+                   model.Field(p => p.EmployeeCode).Editable (false);
+               })
+          .Read(read => read.Action("LeavePlans_Read", "LeavePlanHR").Data("sendForgery"))
+          .Create(create => create.Action("LeavePlans_Create", "LeavePlanHR").Data("sendForgery"))
+          .Update(update => update.Action("LeavePlans_Update", "LeavePlanHR").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeavePlans_Destroy", "LeavePlanHR").Data("sendForgery"))
+      ).ClientDetailTemplateId("leave_plan_template")
+)
+
+<script id="leave_plan_template" type="text/kendo-tmpl">
+   
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=LeavePlanId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+           
+                     
+            items.Add().Text("Departmental Validation").Content(
+            @<text>
+            @(Html.Kendo().Grid<LeavePlanFinalValidation>()
+                .Name("LeavePlanFinalValidationgrid_#=LeavePlanId#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Status).Width(170);
+                    columns.Bound(c => c.Remark).Width(200);
+                    columns.Command(command =>
+                    {
+
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        command.Destroy().Text(Resources.ActionButton_Cancel);
+
+
+
+                    });
+
+
+
+                })
+                .ToolBar(toolbar =>
+                {
+                     toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Events(ev => ev.DataBound("onDataBoundDetail"))
+                .Scrollable(h => h.Height(500))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(events =>
+                    {
+
+
+                        events.Error("error_handler(\"LeavePlanFinalValidationgrid_#=LeavePlanId#\")");
+                        events.RequestStart("onRequestStart(\"LeavePlanFinalValidationgrid_#=LeavePlanId#\")");
+                        events.RequestEnd("onRequestEnd(\"LeavePlanFinalValidationgrid_#=LeavePlanId#\")");
+
+
+
+
+                    })
+
+
+                    .Model(model =>
+                    {
+                        model.Id(p => p.LeavePlanFinalValidationId);
+                        //model.Field(p => p.ApproverDepartment).Editable(false);
+
+
+
+                    })
+                    .Read(read => read.Action("LeavePlanValidation_Read", "LeavePlanFinalValidation", new { gId = "#=LeavePlanId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("LeavePlanValidation_Create", "LeavePlanFinalValidation", new { gId = "#=LeavePlanId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("LeavePlanValidation_Update", "LeavePlanFinalValidation").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("LeavePlanValidation_Destroy", "LeavePlanFinalValidation").Data("sendForgery"))
+                ).ToClientTemplate()
+                )
+                    
+            </text>);
+            
+        }).ToClientTemplate())
+       
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+    @*function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "LeavePlanHR")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }*@
+
+</script>
+<script>
+    //function AssignDate() {
+    //    var list = AssignDates();
+    //    return list;
+    //}
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#LeavePlangrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var masterId = masterDataItem.LeavePlanId;
+        var gridName = "#LeavePlanFinalValidationgrid_" + masterId;
+       
+        if (masterDataItem.IsOnlineApproved) {
+            $(gridName).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", gridName).hide();
+            $(".k-grid-edit", gridName).hide();
+            $(".k-grid-delete", gridName).hide();
+
+
+        }
+        else if (masterDataItem.IsDepartmentOnlineApproved) {
+            //$(gridName).find(".k-toolbar").hide();
+            //$(".k-grid-top", gridName).hide();
+            $(".k-grid-edit", gridName).hide();
+            $(".k-grid-delete", gridName).hide();
+
+
+        }
+
+
+    }
+
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentOnlineApproved) {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                // $(".k-grid-top").show();
+
+            }
+            if (dataItem.IsOnlineApproved) {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                // $(".k-grid-top").show();
+                row.find(".k-grid-cmd-close").hide();
+            }
+            if (dataItem.IsConfirmedByHead) {
+                row.css("background-color", "darkorange");
+
+
+            }
+            if (dataItem.IsCheckedByTeamLeaer) {
+                row.css("background-color", "green");
+                row.find(".k-grid-cmd-close").show();
+
+
+            }
+            if (dataItem.IsClosedByGeneralService) {
+                row.css("background-color", "darkred");
+                row.find(".k-grid-cmd-close").hide();
+
+            }
+
+
+        }
+    }
+    function onDataBoundDetail(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Status == 0) {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+               // row.css("background-color", "darkorange");
+                row.find(".k-grid-top").hide();
+
+            }
+           
+          
+
+
+        }
+    }
+</script>
+<script>
+    function filterPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+</script>

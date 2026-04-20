@@ -3,6 +3,6 @@
                   .DataValueField("Name").Filter(FilterType.Contains)
                      .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("FollowUpTypeDDBind", "MaintenanceDataProvider"))
+                          dataSource.Read(read => read.Action("FollowUpTypeDDBind", "MaintenanceDataProvider").Data("sendForgery"))
                                     .ServerFiltering(false);
                       }).OptionLabel("Select").ValuePrimitive(true))

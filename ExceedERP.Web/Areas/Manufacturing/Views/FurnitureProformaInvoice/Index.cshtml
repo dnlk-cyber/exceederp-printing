@@ -1,63 +1,75 @@
-﻿
+﻿@using System.Web
+@using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
 <label>Proforma Invoice</label>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureProformaInvoice>()
-    .Name("grid")
-    .Columns(columns =>
-    {
-        columns.Bound(c => c.FurnitureProformaInvoiceId).Width(100);
-        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
-        columns.Bound(c => c.DeliveryPeriod).Width(120);
-        columns.Bound(c => c.PriceValidityPeriod).Width(120);
-        columns.Bound(c => c.ModeOfPayment).Width(100);
-        //columns.Bound(c => c.AdvancePaymentInPercent).Title("Advance Payment(%)").Width(100);
-        columns.Bound(c => c.Remark).Width(90);
-        columns.Command(command =>
+        .Name("grid")
+        .Columns(columns =>
         {
-            command.Edit().Text(" ");
-            command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-            command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
-            command.Destroy().Text(" ");
+            columns.Bound(c => c.FurnitureProformaInvoiceId).Width(100);
+            columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+            columns.Bound(c => c.DeliveryPeriod).Width(120);
+            columns.Bound(c => c.PriceValidityPeriod).Width(120);
+            columns.Bound(c => c.ModeOfPayment).Width(100);
+            columns.Bound(c => c.TransporCost).Width(100).Title("Transport");
+            columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Width(100).Title("VAT");
+            columns.Bound(c => c.TransportCostTotal).Width(100).Title("Transport With VAT");
+            columns.Bound(c => c.Remark).Width(90);
+            columns.Bound(c => c.Status).Width(100);
+            columns.Command(command =>
+            {
+                command.Edit().Text(" ");
+                if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationTeamLead))
+                {
+                    command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                }
+                if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead))
+                {
+                    command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                    command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("handleReject");
+                }
+                command.Destroy().Text(" ");
 
-        }).Width(200);
-    })
-    .ToolBar(toolbar =>
-    {
-        toolbar.Create();
-    })
-    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureProformaInvoiceTemplate"))
-    .Filterable()
-    .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
-    .Scrollable(s => s.Height(400))
-    
-    .DataSource(dataSource => dataSource
-        .Ajax()
-        .Sort(sort => sort.Add(e => e.FurnitureProformaInvoiceId).Descending())
-        .Events(ev => ev.Error("error_handler(\"grid\")")
-                    .RequestStart("onRequestStart(\"grid\")")
-                    .RequestEnd("onRequestEnd(\"grid\")"))
-        .Model(model => model.Id(p => p.FurnitureProformaInvoiceId))
-        .Read(read => read.Action("FurnitureProformaInvoices_Read", "FurnitureProformaInvoice"))
-        .Create(create => create.Action("FurnitureProformaInvoices_Create", "FurnitureProformaInvoice"))
-        .Update(update => update.Action("FurnitureProformaInvoices_Update", "FurnitureProformaInvoice"))
-        .Destroy(destroy => destroy.Action("FurnitureProformaInvoices_Destroy", "FurnitureProformaInvoice"))
-    ).ClientDetailTemplateId("tabstrip")
+            }).Width(200);
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+        })
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureProformaInvoiceTemplate"))
+        .Filterable()
+        .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
+        .Scrollable(s => s.Height(400))
+
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(sort => sort.Add(e => e.FurnitureProformaInvoiceId).Descending())
+            .Events(ev => ev.Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+            .Model(model => model.Id(p => p.FurnitureProformaInvoiceId))
+            .Read(read => read.Action("FurnitureProformaInvoices_Read", "FurnitureProformaInvoice"))
+            .Create(create => create.Action("FurnitureProformaInvoices_Create", "FurnitureProformaInvoice"))
+            .Update(update => update.Action("FurnitureProformaInvoices_Update", "FurnitureProformaInvoice"))
+            .Destroy(destroy => destroy.Action("FurnitureProformaInvoices_Destroy", "FurnitureProformaInvoice"))
+        ).ClientDetailTemplateId("tabstrip")
 )
 
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                .Name("tab_#=FurnitureProformaInvoiceId#")
-                .Items(item1 =>
-                {
-                    item1.Add().Text("Proforma Item")
-                    .Content(
-                    @<text>
-                        <a href='@Url.Action("Proforma", "FurniturePrint")/?id=#=FurnitureProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-
-                        @ProformaItem();
-                    </text>);
-                        }).ToClientTemplate())
+                                                .Name("tab_#=FurnitureProformaInvoiceId#")
+                                                .Items(item1 =>
+                                                {
+                                                    item1.Add().Text("Proforma Item")
+                                                    .Content(
+                                                    @<text>
+                                                        # if (IsSendForApproval) { #
+                                                        <a href='@Url.Action("Proforma", "FurniturePrint")/?id=#=FurnitureProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                        # } #
+                                                        @ProformaItem();
+                                                    </text>);
+                                                        }).ToClientTemplate())
 </script>
 
 
@@ -66,43 +78,42 @@
 
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureProformaInvoiceItem>()
-              .Name("grid_#=FurnitureProformaInvoiceId#")
-              .Columns(columns =>
-              {
+                      .Name("grid_#=FurnitureProformaInvoiceId#")
+                      .Columns(columns =>
+                      {
 
-                  columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                  columns.Bound(c => c.UnitOfMeasurment).Width(100);
-                  columns.Bound(c => c.Quantity).Width(100);
-                  columns.Bound(c => c.UnitPriceBeforeVAT).Width(100);
-                  columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
+                          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                          columns.Bound(c => c.UnitOfMeasurment).Width(100);
+                          columns.Bound(c => c.Quantity).Width(100);
+                          columns.Bound(c => c.UnitPriceBeforeVAT).Width(100);
+                          columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
 
-                  columns.Bound(c => c.UnitPriceWithVAT).Width(100);
-                  columns.Bound(c => c.TransportCost).Width(100);
-                  columns.Bound(c => c.TotalPrice).Title("Selling Price").Width(100);
-                  columns.Bound(c => c.Remark).Width(100);
+                          columns.Bound(c => c.UnitPriceWithVAT).Width(100);
+                          columns.Bound(c => c.TotalPrice).Title("Selling Price").Width(100);
+                          columns.Bound(c => c.Remark).Width(100);
 
-                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-              })
-              .ToolBar(toolbar =>
-              {
-                  toolbar.Create();
-              })
-              .Editable(editable => editable.Mode(GridEditMode.PopUp)
-              .TemplateName("ProformaItemEditorTemplate"))
-              .Filterable()
-              .Scrollable()
-              .Events(ev => ev.DataBound("onChildDataBound"))
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                  .Events(ev => ev.Error("error_handler(\"grid_#=FurnitureProformaInvoiceId#\")")
-                                            .RequestStart("onRequestStart(\"grid_#=FurnitureProformaInvoiceId#\")")
-                                            .RequestEnd("onRequestEnd(\"grid_#=FurnitureProformaInvoiceId#\")"))
-                  .Model(model => model.Id(p => p.FurnitureProformaInvoiceItemId))
-                  .Read(read => read.Action("FurnitureProformaInvoiceItems_Read", "FurnitureProformaInvoiceItem", new { proformaId = "#=FurnitureProformaInvoiceId#" }))
-                  .Create(create => create.Action("FurnitureProformaInvoiceItems_Create", "FurnitureProformaInvoiceItem", new { proformaId = "#=FurnitureProformaInvoiceId#" }))
-                  .Update(update => update.Action("FurnitureProformaInvoiceItems_Update", "FurnitureProformaInvoiceItem"))
-                  .Destroy(destroy => destroy.Action("FurnitureProformaInvoiceItems_Destroy", "FurnitureProformaInvoiceItem"))
-              ).ToClientTemplate()
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                      .TemplateName("ProformaItemEditorTemplate"))
+                      .Filterable()
+                      .Scrollable()
+                      .Events(ev => ev.DataBound("onChildDataBound"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev.Error("error_handler(\"grid_#=FurnitureProformaInvoiceId#\")")
+                                                    .RequestStart("onRequestStart(\"grid_#=FurnitureProformaInvoiceId#\")")
+                                                    .RequestEnd("onRequestEnd(\"grid_#=FurnitureProformaInvoiceId#\")"))
+                          .Model(model => model.Id(p => p.FurnitureProformaInvoiceItemId))
+                          .Read(read => read.Action("FurnitureProformaInvoiceItems_Read", "FurnitureProformaInvoiceItem", new { proformaId = "#=FurnitureProformaInvoiceId#" }))
+                          .Create(create => create.Action("FurnitureProformaInvoiceItems_Create", "FurnitureProformaInvoiceItem", new { proformaId = "#=FurnitureProformaInvoiceId#" }))
+                          .Update(update => update.Action("FurnitureProformaInvoiceItems_Update", "FurnitureProformaInvoiceItem"))
+                          .Destroy(destroy => destroy.Action("FurnitureProformaInvoiceItems_Destroy", "FurnitureProformaInvoiceItem"))
+                      ).ToClientTemplate()
     )
 
 }
@@ -166,16 +177,16 @@
         masterDataItem = masterGrid.dataItem(masterRow);
         codeid = masterDataItem.FurnitureProformaInvoiceId;
         isApproved = masterDataItem.IsOnlineApproved;
-        isChecked = masterDataItem.IsOnlineTransferred;
+        isChecked = masterDataItem.IsSendForApproval;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#grid_" + codeid).hide();
-            
+
         }
 
 
     }
     function handleChecked(e) {
-      
+
         if (confirm("Are you sure you this form is checked?")) {
             var grid = this;
             var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
@@ -223,7 +234,29 @@
             });
         }
     }
-
+    function handleReject(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RejectProforma", "FurnitureProformaInvoice", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureProformaInvoiceId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
     function onChildDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
@@ -231,6 +264,7 @@
             var dataItem = grid.dataItem(this);
             if (isChecked == true || isApproved) {
                 $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-delete").hide();
             }
 

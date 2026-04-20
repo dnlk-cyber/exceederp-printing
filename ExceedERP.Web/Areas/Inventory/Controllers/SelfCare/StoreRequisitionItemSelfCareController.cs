@@ -60,7 +60,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                 IsApproved = storeRequisitionItem.IsApproved,
                 AgreementPrice = storeRequisitionItem.AgreementPrice,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
-                Unit= ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
+                ProductionJobNo = storeRequisitionItem.ProductionJobNo,
+                Unit = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
                 CurrentBalance = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentBalance : ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
                 CurrentAPrice = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentAPrice : ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
             });
@@ -114,6 +115,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     PurchaseQuantity = 0,//assuming all will be given
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
                     CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
 
@@ -179,6 +181,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IssuedQuantity = storeRequisitionItem.ApprovedQuantity,//default issue is equal to approved
                     PurchaseQuantity = 0,//assuming all will be given
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode,sr.StoreCode),
                     CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
                     DateCreated = storeRequisitionItem.DateCreated,
@@ -223,6 +226,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
                     CurrentBalance = storeRequisitionItem.CurrentBalance,
                     CurrentAPrice = storeRequisitionItem.CurrentAPrice,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                 };
 
                 db.StoreRequisitionItems.Attach(entity);

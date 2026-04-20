@@ -67,6 +67,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 {
                     dLRSalary.Pension = 0;
                 }
+                //if(dlrRec != null && dlrRec.EmployeeType==Core.Domain.Printing.PrintingEstimation.Setting.EmployementType.Permanent)
                 if(dlrRec != null && dlrRec.EmployeeType==Core.Domain.printing.PrintingEstimation.Setting.EmployementType.Permanent)
                 {
                     dLRSalary.TotalSalary = dLRSalary.Pension + dLRSalary.Total;

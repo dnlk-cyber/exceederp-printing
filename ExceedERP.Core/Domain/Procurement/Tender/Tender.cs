@@ -65,7 +65,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender
         public bool CloseStatus { get; set; }
         [NotMapped]
         public bool OpenStatus { get; set; }
-        public virtual ICollection<Lot.Lot> Lots { get; set; }
+        public virtual ICollection<Lots.Lot> Lots { get; set; }
         public virtual ICollection<TenderValidation> TenderValidation { get; set; }
         public virtual ICollection<TenderMinuteUploadDBModel> TenderMinuteUploadDBModel { get; set; }
         public virtual ICollection<TenderCancellation> TenderCancellations { get; set; }

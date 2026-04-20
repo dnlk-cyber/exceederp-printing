@@ -93,7 +93,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(new[] { MaintenanceType }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult MaintenanceTypeDDBind()
         {
 

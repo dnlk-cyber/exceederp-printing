@@ -52,5 +52,5 @@
                   .DataValueField("Id")
                   .OptionLabel("Select")
                   .Filter(FilterType.Contains)
-                          .DataSource(d => d.Read(r => r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter")
+                          .DataSource(d => d.Read(r => r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter").Data("sendForgery")
                           ).ServerFiltering(false)))

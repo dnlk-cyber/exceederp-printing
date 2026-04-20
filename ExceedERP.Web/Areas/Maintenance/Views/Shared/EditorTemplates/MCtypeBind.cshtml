@@ -6,4 +6,4 @@
               .Placeholder("Select Type")
               .ValuePrimitive(true)
               .Filter(FilterType.Contains)
-              .DataSource(d => d.Read(r => r.Action("CenterTypeDDBind", "MaintenanceCenter")).ServerFiltering(false)))
+              .DataSource(d => d.Read(r => r.Action("CenterTypeDDBind", "MaintenanceCenter").Data("sendForgery")).ServerFiltering(false)))

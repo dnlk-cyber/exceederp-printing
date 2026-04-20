@@ -7,6 +7,47 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingQualityInspectionEntityTypeConfiguration : EntityTypeConfiguration<PrintingQualityInspection>
+    {
+        public PrintingQualityInspectionEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingQualityInspection", "Printing");
+            this.HasKey<int>(p => p.PrintingQualityInspectionId);
+        }
+    }
+    public class PrintingDailyFollowUpMachineMaintenanceEntityTypeConfiguration : EntityTypeConfiguration<PrintingDailyFollowUpMachineMaintenance>
+    {
+
+        public PrintingDailyFollowUpMachineMaintenanceEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingDailyFollowUpMachineMaintenance", "Printing");
+            this.HasKey<int>(p => p.PrintingDailyFollowUpMachineMaintenanceId);
+        }
+    }
+    public class PrintingDailyFollowUpLogBookEntityTypeConfiguration : EntityTypeConfiguration<PrintingDailyFollowUpLogBook>
+    {
+        public PrintingDailyFollowUpLogBookEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingDailyFollowUpLogBook", "Printing");
+            this.HasKey<int>(p => p.PrintingDailyFollowUpLogBookId);
+        }
+    }
+    public class PressDailyFollowUpWastageEntityTypeConfiguration : EntityTypeConfiguration<PressDailyFollowUpWastage>
+    {
+        public PressDailyFollowUpWastageEntityTypeConfiguration()
+        {
+            this.ToTable("PressDailyFollowUpWastage", "Printing");
+            this.HasKey<int>(p => p.PressDailyFollowUpWastageId);
+        }
+    }
+    public class PrintingSummaryCommentEntityTypeCOnfiguration : EntityTypeConfiguration<PrintingSummaryComment>
+    {
+        public PrintingSummaryCommentEntityTypeCOnfiguration()
+        {
+            this.ToTable("PrintingSummaryComment", "Printing");
+            this.HasKey<int>(p => p.PrintingSummaryCommentId);
+        }
+    }
     public class PrintingProductionFollowUpEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFollowUp>
     {
         public PrintingProductionFollowUpEntityTypeConfiguration()
@@ -31,12 +72,12 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.PrintingProductionDailyFollowUpDetailId);
         }
     }
-    public class PrintingDailyFollowUpDelayReasonEntityTypeConfiguration : EntityTypeConfiguration<PrintingDailyFollowUpDelayReason>
+    public class PrintingTaskIssueEntityTypeConfiguration : EntityTypeConfiguration<PrintingTaskIssue>
     {
-        public PrintingDailyFollowUpDelayReasonEntityTypeConfiguration()
+        public PrintingTaskIssueEntityTypeConfiguration()
         {
-            this.ToTable("PrintingDailyFollowUpDelayReason", "Printing");
-            this.HasKey<int>(p => p.PrintingDailyFollowUpDelayReasonId);
+            this.ToTable("PrintingTaskIssue", "Printing");
+            this.HasKey<int>(p => p.PrintingTaskIssueId);
         }
     }
     public class PrintingProductionAllottedRawMaterialEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionAllottedRawMaterial>
@@ -491,14 +532,14 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(t => t.JobId);
         }
     }
-    public class JobStatusEntityTypeConfiguration : EntityTypeConfiguration<JobStatus>
-    {
-        public JobStatusEntityTypeConfiguration()
-        {
-            this.ToTable("JobStatuses", "Printing");
-            this.HasKey<int>(t => t.JobStatusId);
-        }
-    }
+    //public class JobStatusEntityTypeConfiguration : EntityTypeConfiguration<JobStatus>
+    //{
+    //    public JobStatusEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("JobStatuses", "Printing");
+    //        this.HasKey<int>(t => t.JobStatusId);
+    //    }
+    //}
 
 
 

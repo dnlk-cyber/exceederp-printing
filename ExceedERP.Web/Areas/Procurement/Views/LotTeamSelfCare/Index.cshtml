@@ -1,0 +1,181 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Tender.Lots
+@using System.Collections
+<legend>Tender Team (Self Care) </legend>
+@(Html.Kendo().Grid<LotTeam>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.LotID).Width(100);
+          columns.Bound(c => c.Description).Width(300).EditorTemplateName("DescriptionEditor");
+         
+
+          columns.Command(command => { /*command.Edit(); command.Destroy();*/ command.Custom("Sign").Click("signDocument"); }).Width(180);
+      })
+      //.Events(events => events.DataBound("onDataBound"))
+      .ToolBar(toolbar => {
+          // toolbar.Create();
+          // toolbar.Excel();
+          // toolbar.Pdf();
+      })
+     .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Scrollable()
+   .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+
+      .ClientDetailTemplateId("teamDetail")
+.DataSource(dataSource => dataSource
+    .Ajax()
+    .Events(ev => ev
+     .Error("error_handler(\"grid\")")
+     .RequestStart("onRequestStart(\"grid\")")
+     .RequestEnd("onRequestEnd(\"grid\")"))
+    .Model(model =>
+    {
+        model.Id(p => p.LotTeamId);
+
+    })
+    .Read(read => read.Action("LotTeams_Read", "LotTeamSelfCare", new { id = "#= LotID #" }).Data("sendForgery"))
+    .Create(create => create.Action("LotTeams_Create", "LotTeamSelfCare", new { id = "#= LotID #" }).Data("sendForgery"))
+    .Update(update => update.Action("LotTeams_Update", "LotTeamSelfCare").Data("sendForgery"))
+    .Destroy(destroy => destroy.Action("LotTeams_Destroy", "LotTeamSelfCare").Data("sendForgery"))
+))
+
+
+<script id="teamDetail" type="text/Kendo-tmpl">
+
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=LotTeamId#").SelectedIndex(0).Items(itemn =>
+                                                                              {
+                                                                                  itemn.Add().Text("Members").Content(
+
+                                                @<text>
+
+                                                    @(Html.Kendo().Grid<LotTeamMember>()
+                                                                                          .Name("LotTeamMember#=LotTeamId#")
+                                                                                          .Columns(columns =>
+                                                                                          {
+                                                                                              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(150).EditorTemplateName("AllEmployeeSelector");
+                                                                                              columns.Bound(c => c.Title).Width(180);
+                                                                                              columns.Bound(c => c.Signed).Title("Signed ?").Width(130).ClientTemplate(
+                                                                                                        "<input type='checkbox' disabled = 'true' value='\\#= Signed\\#' " +
+                                                                                                        "\\# if (Signed) { \\#" +
+                                                                                                        "checked='checked'" +
+                                                                                                        "\\# } \\#" +
+                                                                                                        "/>"
+                                                                                                        );
+                                                                                              columns.Command(command =>
+                                                                                              {
+                                                                                                  //command.Edit();
+                                                                                                 // command.Destroy();
+                                                                                              }).Width(500);
+                                                                                          })
+                                                                                          .ToolBar(toolbar =>
+                                                                                          {
+                                                                                              //toolbar.Create();
+                                                                                          })
+                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                          .Scrollable()
+                                                                                          //.Events(x => x.DataBound("onDataBoundProformaLines"))
+                                                                                          .DataSource(dataSource => dataSource
+                                                                                              .Ajax()
+                                                                                              .Events(ev => ev
+                                                                                                  .Error("error_handler(\"LotTeamMember#=LotTeamId#\")")
+                                                                                                  .RequestStart("onRequestStart(\"LotTeamMember#=LotTeamId#\")")
+                                                                                                  .RequestEnd("onRequestEnd(\"LotTeamMember#=LotTeamId#\")"))
+                                                                                              .Model(model =>
+                                                                                              {
+                                                                                                  model.Id(p => p.LotTeamMemberId);
+                                                                                                  model.Field(p => p.SignedBy).Editable(false);
+                                                                                                  model.Field(p => p.Signed).Editable(false);
+                                                                                                  model.Field(p => p.SginTime).Editable(false);
+                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                                              })
+                                                                                              .Read(read => read.Action("LotTeamMembers_Read", "LotTeamMemberSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                              .Create(create => create.Action("LotTeamMembers_Create", "LotTeamMemberSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                              .Update(update => update.Action("LotTeamMembers_Update", "LotTeamMemberSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                              .Destroy(destroy => destroy.Action("LotTeamMembers_Destroy", "LotTeamMemberSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                          ).ToClientTemplate())
+
+
+                                                </text>);
+                                                 itemn.Add().Text("Remarks").Content(
+
+                                        @<text>
+
+                                            @(Html.Kendo().Grid<LotTeamDecision>()
+                                                                                  .Name("LotTeamDecision#=LotTeamId#")
+                                                                                  .Columns(columns =>
+                                                                                  {
+                                                                                      columns.Bound(c => c.Description).Width(180);
+                                                                                      columns.Command(command =>
+                                                                                      {
+                                                                                          command.Edit();
+                                                                                          command.Destroy();
+                                                                                      }).Width(500);
+                                                                                  })
+                                                                                  .ToolBar(toolbar =>
+                                                                                  {
+                                                                                     // toolbar.Create();
+                                                                                  })
+                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                  .Scrollable()
+                                                                                  //.Events(x => x.DataBound("onDataBoundProformaLines"))
+                                                                                  .DataSource(dataSource => dataSource
+                                                                                      .Ajax()
+                                                                                      .Events(ev => ev
+                                                                                          .Error("error_handler(\"LotTeamDecision#=LotTeamId#\")")
+                                                                                          .RequestStart("onRequestStart(\"LotTeamDecision#=LotTeamId#\")")
+                                                                                          .RequestEnd("onRequestEnd(\"LotTeamDecision#=LotTeamId#\")"))
+                                                                                      .Model(model =>
+                                                                                      {
+                                                                                          model.Id(p => p.LotTeamDecisionId);
+                                                                                      })
+                                                                                      .Read(read => read.Action("LotTeamDecisions_Read", "LotTeamDecisionSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                      .Create(create => create.Action("LotTeamDecisions_Create", "LotTeamDecisionSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                      .Update(update => update.Action("LotTeamDecisions_Update", "LotTeamDecisionSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                      .Destroy(destroy => destroy.Action("LotTeamDecisions_Destroy", "LotTeamDecisionSelfCare", new { id = "#=LotTeamId#" }).Data("sendForgery"))
+                                                                                  ).ToClientTemplate())
+
+
+                                        </text>);
+
+
+                                                                              }).ToClientTemplate())
+</script>
+
+
+<script>
+    function signDocument(e) {
+       var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+         $.ajax({
+            type: "POST",
+             data: dataItem.ItemCode,
+             url: '@Url.Action("Sign", "LotTeamSelfCare")/' + dataItem.LotTeamId,
+            success: function (result) {
+                alert(result.Message);
+               // console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+       // location.reload();
+
+    }
+</script>

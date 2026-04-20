@@ -56,7 +56,7 @@
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                            dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                             .ServerFiltering(false);
 
 
@@ -134,10 +134,10 @@
                 model.Field(p => p.BranchId).Editable(false);
                 model.Field(p => p.OrgStructureId).Editable(false);
             })
-            .Read(read => read.Action("SeveranceWithProbabilities_Read", "SeveranceWithProbabilities"))
-            .Create(create => create.Action("SeveranceWithProbabilities_Create", "SeveranceWithProbabilities"))
-            .Update(update => update.Action("SeveranceWithProbabilities_Update", "SeveranceWithProbabilities"))
-            .Destroy(destroy => destroy.Action("SeveranceWithProbabilities_Destroy", "SeveranceWithProbabilities"))
+            .Read(read => read.Action("SeveranceWithProbabilities_Read", "SeveranceWithProbabilities").Data("sendForgery"))
+            .Create(create => create.Action("SeveranceWithProbabilities_Create", "SeveranceWithProbabilities").Data("sendForgery"))
+            .Update(update => update.Action("SeveranceWithProbabilities_Update", "SeveranceWithProbabilities").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("SeveranceWithProbabilities_Destroy", "SeveranceWithProbabilities").Data("sendForgery"))
 
             )
 

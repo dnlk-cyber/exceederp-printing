@@ -20,11 +20,11 @@ namespace ExceedERP.Reporting.Fleet.View
             Telerik.Reporting.ReportParameter reportParameter2 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
-            this.objectDataSource1 = new Telerik.Reporting.ObjectDataSource();
             this.graph1 = new Telerik.Reporting.Graph();
             this.polarCoordinateSystem1 = new Telerik.Reporting.PolarCoordinateSystem();
             this.graphAxis1 = new Telerik.Reporting.GraphAxis();
             this.graphAxis2 = new Telerik.Reporting.GraphAxis();
+            this.objectDataSource1 = new Telerik.Reporting.ObjectDataSource();
             this.barSeries1 = new Telerik.Reporting.BarSeries();
             this.textBox1 = new Telerik.Reporting.TextBox();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
@@ -38,15 +38,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.detailSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.graph1});
             this.detailSection1.Name = "detailSection1";
-            // 
-            // objectDataSource1
-            // 
-            this.objectDataSource1.DataMember = "GetHeadOfficeInfo";
-            this.objectDataSource1.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.HeadOfficeSummaryDataSource);
-            this.objectDataSource1.Name = "objectDataSource1";
-            this.objectDataSource1.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("FiscalYear", typeof(string), "= Parameters.FiscalYear.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("Period", typeof(string), "= Parameters.Period.Value")});
             // 
             // graph1
             // 
@@ -109,6 +100,11 @@ namespace ExceedERP.Reporting.Fleet.View
             categoryScale1.SpacingSlotCount = 0D;
             this.graphAxis2.Scale = categoryScale1;
             this.graphAxis2.Style.Visible = false;
+            // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.HeadOfficeSummaryDataSource);
+            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // barSeries1
             // 

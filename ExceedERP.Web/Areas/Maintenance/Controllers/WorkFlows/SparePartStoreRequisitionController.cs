@@ -94,8 +94,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         public ActionResult SparePartStoreRequisitions_Read([DataSourceRequest] DataSourceRequest request, Guid? id)
         {            
             var storeRequisitions = _db.StoreRequisitions
-                                                         .Where(q=>q.IsForMaintenance)
-                                                         .AsQueryable();
+                                    .Where(q=>q.IsForMaintenance)
+                                    .AsQueryable();
 
             if (id != null)
             {
@@ -106,7 +106,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             var result = storeRequisitions.ToDataSourceResult(request, storeRequisition => new
                 {
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
-                   IsForMaintenance = storeRequisition.IsForMaintenance,
+                    //CurrentAvgPrice = storeRequisition.,
+                    IsForMaintenance = storeRequisition.IsForMaintenance,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
                     BranchId = storeRequisition.BranchId,
@@ -122,35 +123,28 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     JobOrderNo = storeRequisition.JobOrderNo,
                     ServiceJobOrderNo = storeRequisition.ServiceJobOrderNo,
                     PlateNo = storeRequisition.PlateNo,
-
                     Status = storeRequisition.Status,
                     Remark = storeRequisition.Remark,
                     GLPeriodId = storeRequisition.GLPeriodId,
-
                     CreatedBy = storeRequisition.CreatedBy,
                     DateCreated = storeRequisition.DateCreated,
                     ModifiedBy = storeRequisition.ModifiedBy,
                     LastModified = storeRequisition.LastModified,
-
                     IsVoid = storeRequisition.IsVoid,
                     VoidBy = storeRequisition.VoidBy,
                     VoidTime = storeRequisition.VoidTime,
                     IsOnlineApproved = storeRequisition.IsOnlineApproved,
                     OnlineApprovedBy = storeRequisition.OnlineApprovedBy,
                     OnlineApprovedTime = storeRequisition.OnlineApprovedTime,
-
                     IsSecondOnlineApproved = storeRequisition.IsSecondOnlineApproved,
                     SecondOnlineApprovedBy = storeRequisition.SecondOnlineApprovedBy,
                     SecondOnlineApprovedTime = storeRequisition.SecondOnlineApprovedTime,
-
                     IsSendForApproval = storeRequisition.IsSendForApproval,
                     SendForApprovalBy = storeRequisition.SendForApprovalBy,
                     SendForApprovalTime = storeRequisition.SendForApprovalTime,
-
                     IsSecondSendForApproval = storeRequisition.IsSecondSendForApproval,
                     SecondSendForApprovalBy = storeRequisition.SecondSendForApprovalBy,
                     SecondSendForApprovalTime = storeRequisition.SecondSendForApprovalTime,
-
                     IsOnlineTransferred = storeRequisition.IsOnlineTransferred,
                     IsOnlineTransferredBy = storeRequisition.IsOnlineTransferredBy,
                     OnlineTransferredTime = storeRequisition.OnlineTransferredTime,
@@ -158,6 +152,77 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                 });
 
             return Json(result,JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult SparePartStoreRequisitions_ReadJobOrder([DataSourceRequest] DataSourceRequest request, int num)
+        {
+            var serviceCenter = _db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
+            if (serviceCenter == null)
+            {
+                return Json(new { Error = "Job Order not found" });
+            }
+
+            var storeRequisitions = _db.StoreRequisitions
+                                        .Where(q => q.IsForMaintenance)
+                                        .Where(x => x.ServiceJobOrderNo == serviceCenter.ServiceCenterJobId.ToString())
+                                        .AsQueryable();
+            
+            var result = storeRequisitions.ToDataSourceResult(request, storeRequisition => new
+            {
+                StoreRequisitionID = storeRequisition.StoreRequisitionID,
+                IsForMaintenance = storeRequisition.IsForMaintenance,
+                Reference = storeRequisition.Reference,
+                OrgStructureId = storeRequisition.OrgStructureId,
+                BranchId = storeRequisition.BranchId,
+                BusinessUnitId = storeRequisition.BusinessUnitId,
+                IsTransfer = storeRequisition.IsTransfer,
+                ToStoreCode = storeRequisition.ToStoreCode,
+                EmployeeId = storeRequisition.EmployeeId,
+                RequestDate = storeRequisition.RequestDate,
+                StoreCode = storeRequisition.StoreCode,
+                IsForOther = storeRequisition.IsForOther,
+                ForBranchId = storeRequisition.ForBranchId,
+                ModelNo = storeRequisition.ModelNo,
+                JobOrderNo = storeRequisition.JobOrderNo,
+                ServiceJobOrderNo = storeRequisition.ServiceJobOrderNo,
+                PlateNo = storeRequisition.PlateNo,
+                //CurrentAvgPrice = storeRequisition.,
+
+                Status = storeRequisition.Status,
+                Remark = storeRequisition.Remark,
+                GLPeriodId = storeRequisition.GLPeriodId,
+
+                CreatedBy = storeRequisition.CreatedBy,
+                DateCreated = storeRequisition.DateCreated,
+                ModifiedBy = storeRequisition.ModifiedBy,
+                LastModified = storeRequisition.LastModified,
+
+                IsVoid = storeRequisition.IsVoid,
+                VoidBy = storeRequisition.VoidBy,
+                VoidTime = storeRequisition.VoidTime,
+                IsOnlineApproved = storeRequisition.IsOnlineApproved,
+                OnlineApprovedBy = storeRequisition.OnlineApprovedBy,
+                OnlineApprovedTime = storeRequisition.OnlineApprovedTime,
+
+                IsSecondOnlineApproved = storeRequisition.IsSecondOnlineApproved,
+                SecondOnlineApprovedBy = storeRequisition.SecondOnlineApprovedBy,
+                SecondOnlineApprovedTime = storeRequisition.SecondOnlineApprovedTime,
+
+                IsSendForApproval = storeRequisition.IsSendForApproval,
+                SendForApprovalBy = storeRequisition.SendForApprovalBy,
+                SendForApprovalTime = storeRequisition.SendForApprovalTime,
+
+                IsSecondSendForApproval = storeRequisition.IsSecondSendForApproval,
+                SecondSendForApprovalBy = storeRequisition.SecondSendForApprovalBy,
+                SecondSendForApprovalTime = storeRequisition.SecondSendForApprovalTime,
+
+                IsOnlineTransferred = storeRequisition.IsOnlineTransferred,
+                IsOnlineTransferredBy = storeRequisition.IsOnlineTransferredBy,
+                OnlineTransferredTime = storeRequisition.OnlineTransferredTime,
+                IsFuel = storeRequisition.IsFuel
+            });
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         //[AuthorizeRoles(InventoryConstants.PropertyRequistion)]
@@ -230,6 +295,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             }
 
             #endregion
+            var FetchWorkShopRemrak = _db.CloseWorkShopWithRemarks.Where(x => x.JobId == id.ToString());
+            if (FetchWorkShopRemrak.Any())
+            {
+                ModelState.AddModelError("Closed With Remark", "This machine is already Closed with Remark");
+
+            }
             if (ModelState.IsValid)
             {
                 var serviceJob = _db.ServiceCenterJob.Find(id);
@@ -256,11 +327,9 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
                         ModelNo = storeRequisition.ModelNo,
-
                         JobOrderNo = jobOrderNum.ToString(),
                         ServiceJobOrderNo = id.ToString(),
                         PlateNo = storeRequisition.PlateNo,
-
                         VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
                         IsOnlineApproved = storeRequisition.IsOnlineApproved,

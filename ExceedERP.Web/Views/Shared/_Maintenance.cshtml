@@ -1,11 +1,11 @@
 @using ExceedERP.Core.Domain.Maintenance;
 
-
 @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceAdmin)
             || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestor)
             || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceWorkShopUser)
             || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestVoider)
             || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestApprover)
+            || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestDepartmentApprover)
             || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceOrderUser)
             || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceServiceApprover)
             || HttpContext.Current.User.IsInRole(MaintenanceRoles.ServiceUser)
@@ -36,6 +36,7 @@
 
             @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestor)
                 || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestApprover)
+                || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestDepartmentApprover)
                 || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceWorkShopUser)
                 || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceOrderUser)
                 || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceServiceApprover)
@@ -58,6 +59,7 @@
 
                         @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestor)
                                        || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestApprover)
+                                       || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestDepartmentApprover)
                                        || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceOrderUser)
                                        || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceWorkShopUser)
                                        || HttpContext.Current.User.IsInRole(MaintenanceRoles.ServiceUser)
@@ -72,16 +74,21 @@
 
                                 <b class="arrow"></b>
                                 <ul class="submenu">
+                                    <li id="m0c2" class="actionlinlk">@Html.ActionLink("Maintainance Cost Requests", "Index", "MaintainanceRequests", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                                    <li id="m0c2" class="actionlinlk">@Html.ActionLink("Cost Sheet", "Index", "MaintainanceCostSheet", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                                     <li id="m01" class="actionlinlk">@Html.ActionLink("Equipment Reception Form", "Index", "VehicleReceptionForm", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-
-
                                     <li id="m02" class="actionlinlk">@Html.ActionLink("Maintenance Request", "Index", "JobRequest", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
 
+                                    @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestDepartmentApprover))
+                                    {
+                                        <li id="m02" class="actionlinlk">@Html.ActionLink("Maintenance Request Department Approver", "Index", "JobRequestDepartment", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+
+                                    }
 
                                     @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceOrderUser))
                                     {
                                         @*<li id="Maintenance009" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-            <li id="Maintenance009" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                                           <li id="Maintenance009" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
 
                                         <li class="">
                                             <a href="#" class="dropdown-toggle">
@@ -123,14 +130,16 @@
                                         || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestApprover))
                                     {
                                         @*<li id="Maintenance015" class="actionlinlk">@Html.ActionLink("For External", "Index", "OtherCompanyMaintenance", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                                        <li id="Maintenance016" class="actionlinlk">@Html.ActionLink("Outsource", "Index", "OutsourceMaintenance", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                                         <li id="Maintenance016" class="actionlinlk">@Html.ActionLink("Outsource", "Index", "OutsourceMaintenance", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
 
                                     }
-
+                                    <li id="mr01" class="actionlinlk">@Html.ActionLink("Maintenance History Jacket", "index", "MaintenanceHistoryJacket", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                                     <li id="m07" class="actionlinlk">@Html.ActionLink("Maintenance Plan", "Index", "MaintenancePlan", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                                     <li id="m07" class="actionlinlk">@Html.ActionLink("External Payment Request", "Index", "ExternalMaintenancePaymentRequest", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                                     <li id="m07" class="actionlinlk">@Html.ActionLink("Document Library", "Index", "MaintenanceCompanyDocumentTypes", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-
+                                    <li id="selfstockreturn0109s" class="actionlinlk">
+                                        @Html.ActionLink("Store Return", "Index", "StoreReturnSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                                    </li>
                                 </ul>
                             </li>
                         }
@@ -153,6 +162,7 @@
                     </ul>
                 </li>
             }
+
             @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceReport))
             {
                 <li class="">
@@ -162,17 +172,28 @@
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
                     <b class="arrow"></b>
-                    <ul class="submenu">     
-                        
+                    <ul class="submenu">
+
                         <li id="mr01" class="actionlinlk">@Html.ActionLink("Internal Maintenance Cost", "InternalMaintenanceCostReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         <li id="mr01" class="actionlinlk">@Html.ActionLink("Maintenance Report ", "MaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         @*<li id="mr02" class="actionlinlk">@Html.ActionLink("Internal Maintenance Cost ", "InternalMaintenanceCost", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
                         @*<li id="mr03" class="actionlinlk">@Html.ActionLink(" Maintenance Duration", "MaintenanceDuration", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        <li id="mr04" class="actionlinlk">@Html.ActionLink(" Maintenance Summary", "MaintenanceSummary", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
-                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Daily Maintenance Report", "DailyMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Machinary And Vehicle Maintenance Report", "MachinaryAndVehicelMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>                       
-                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Report", "WeeklyCMPMPerformanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>                       
-                        @*<li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Summary Report", "WeeklyCMPMPerformanceSummaryReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@   
+                    <li id="mr04" class="actionlinlk">@Html.ActionLink(" Maintenance Summary", "MaintenanceSummary", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                        <li id="mr09" class="actionlinlk">@Html.ActionLink("Daily Job Registration", "DailyJobRegistration", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr09" class="actionlinlk">@Html.ActionLink("Outsourced Maintenance Report", "OutSourcedMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr09" class="actionlinlk">@Html.ActionLink("Maintenance Standard Vs Actual Time Report", "StandardVsActualTimeReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Mechanic Performance Report", "MechanicPerformance", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Plan Vs Actual Report", "MaintenancePlanVsActual", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("MV PM Excecution Report", "MVPmExecutionReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly PM and CM Performance Report", "WeeklyPMAndCMPerformanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly PM and CM Performance Report Summary", "WeeklyPMCMPerfomanceReportSummary", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Maintenance Cost-Break Down Report", "GarageMaintenanceCostBreakDownReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Maintenance CostSheet Report", "MaintenanceCostSheetReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Daily Maintenance Report", "DailyMaintenanceReports", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Machine And Vehicle Maintenance And Repair", "MachineAndVehicleMaintenanceAndRepair", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Machinary And Vehicle Maintenance Report", "MachinaryAndVehicelMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        @*<li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Report", "WeeklyCMPMPerformanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                        @*<li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Summary Report", "WeeklyCMPMPerformanceSummaryReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
                         <li id="invrep1" class="actionlinlk">@Html.ActionLink("Stock Balance", "StockBalanceByCategory", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
                     </ul>
                 </li>
@@ -190,10 +211,13 @@
                         @*<li id="Maintenance03810100" class="actionlinlk">@Html.ActionLink("Equipment Registration", "Index", "EquipmentInformation", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
                         @*<li id="Maintenance038101001" class="actionlinlk">@Html.ActionLink("Equipment Mileage", "Index", "EquipmentMileage", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
 
+                        <li id="ms01" class="actionlinlk">@Html.ActionLink("Preventive Maintenance Scheduler", "Index", "PmScheduler", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="ms01" class="actionlinlk">@Html.ActionLink("Pm Settings", "Index", "PmSetting", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="ms01" class="actionlinlk">@Html.ActionLink("Service Group Settings", "Index", "ServiceGroupSetting", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         <li id="ms01" class="actionlinlk">@Html.ActionLink("Inspection and Handling", "Index", "VehiclePartDamageType", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         <li id="ms02" class="actionlinlk">@Html.ActionLink("Equipment Part", "Index", "VehiclePart", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         <li id="ms03" class="actionlinlk">@Html.ActionLink("Maintenance Type", "Index", "MaintenanceType", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-
+                        <li id="flt0561232" class="actionlinlk">@Html.ActionLink("Request To Inspection Setting", "Index", "RequestToInspection", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
                         <li id="ms04" class="actionlinlk">@Html.ActionLink("Maintenance Center", "Index", "MaintenanceCenter", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         @*<li id="Maintenance0383" class="actionlinlk">@Html.ActionLink(" Section  ", "Index", "WorkUnitSection", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
                         <li id="ms05" class="actionlinlk">@Html.ActionLink("Repair Activity", "Index", "RepairType", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
@@ -202,10 +226,10 @@
                         <li id="ms08" class="actionlinlk">@Html.ActionLink("Mechanic Type", "Index", "MechanicType", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
 
                         @*<li id="Maintenance045" class="actionlinlk">@Html.ActionLink("Spare Parts & Materials Category", "Index", "SpareMaterialCategory", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                            <li id="Maintenance045" class="actionlinlk">@Html.ActionLink("Spare Parts & Materials", "Index", "SparePart", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                            <li id="Maintenance04156" class="actionlinlk">@Html.ActionLink("Inventory Spare Map", "Index", "SparePartInventory", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                            <li id="Maintenance041" class="actionlinlk">@Html.ActionLink("Maintenance Tools", "Index", "MaintenanceTool", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                                  <li id="Maintenance042" class="actionlinlk">@Html.ActionLink("Inspection", "Index", "InspectionRegistration", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+        <li id="Maintenance045" class="actionlinlk">@Html.ActionLink("Spare Parts & Materials", "Index", "SparePart", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+        <li id="Maintenance04156" class="actionlinlk">@Html.ActionLink("Inventory Spare Map", "Index", "SparePartInventory", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+        <li id="Maintenance041" class="actionlinlk">@Html.ActionLink("Maintenance Tools", "Index", "MaintenanceTool", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+              <li id="Maintenance042" class="actionlinlk">@Html.ActionLink("Inspection", "Index", "InspectionRegistration", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
 
                         @*<li id="Maintenance0411" class="actionlinlk">@Html.ActionLink(" Daily Care", "Index", "DailyCare", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
                         @*<li id="Maintenance0413" class="actionlinlk">@Html.ActionLink("Daily Care Category", "Index", "DailyCareCategory", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@

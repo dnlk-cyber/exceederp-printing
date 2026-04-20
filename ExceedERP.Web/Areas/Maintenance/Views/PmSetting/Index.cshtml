@@ -1,0 +1,43 @@
+﻿
+@using System.Collections
+@using ExceedERP.Core.Domain.Maintenance;
+@using ExceedERP.Helpers.Common;
+<legend>PM Setting</legend>
+@(Html.Kendo().Grid<PmSetting>()
+            .Name("grid")
+           .Columns(
+            columns =>
+            {
+                columns.Bound(c => c.PmName);
+                columns.Bound(c => c.Description);
+                columns.Command(command =>
+                {
+                    command.Edit();
+                    command.Destroy();
+
+                });
+            }
+            )
+            .Editable(editable =>
+            {
+                editable.Mode(GridEditMode.InLine);
+            })
+            .Sortable()
+            .ToolBar(toolbar => toolbar.Create())
+            .DataSource(datasource => datasource
+            .Ajax()
+            .Model(model => model.Id(m => m.PmSettingId))
+             .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+            .Read(read => read.Action("PmSetting_Read", "PmSetting", new { area = "Maintenance" }).Data("sendForgery"))
+            .Create(create => create.Action("PmSetting_Create", "PmSetting", new { area = "Maintenance" }).Data("sendForgery"))
+            .Update(update => update.Action("PmSetting_Update", "PmSetting", new { area = "Maintenance" }).Data("sendForgery"))            
+            .Destroy(destroy => destroy.Action("PmSetting_Destroy", "PmSetting", new { area = "Maintenance" }).Data("sendForgery"))
+            .Sort(x => x.Add("PmSettingId").Descending())
+            )
+
+           // .ToClientTemplate()
+)
+

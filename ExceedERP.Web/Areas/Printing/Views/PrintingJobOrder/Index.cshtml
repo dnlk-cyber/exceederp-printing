@@ -1,24 +1,31 @@
 ﻿@using ExceedERP.Core.Domain.Printing
-
+@using System.Web
 
 <label>Printing Job Order</label>
 @(Html.Kendo().Grid<PrintingJobOrder>()
     .Name("grid")
     .Columns(columns =>
     {
-    columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120).Title("Customer");
-    columns.Bound(c => c.JobStartDate).Width(120);
-    columns.Bound(c => c.DeliveryDate).Width(120);
-    columns.Bound(c => c.CRVNo).Width(100);
-    columns.Bound(c => c.AdvancePaymentInPercent).Width(90);
-    columns.Bound(c => c.Remark).Width(100);
-    columns.Command(command =>
-    {
-        command.Edit().Text(" ");
-        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
-        command.Destroy().Text(" ");
-    }).Width(180);
+        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120).Title("Customer");
+        columns.Bound(c => c.JobStartDate).Width(120);
+        columns.Bound(c => c.DeliveryDate).Width(120);
+        columns.Bound(c => c.CRVNo).Width(100);
+        columns.Bound(c => c.AdvancePaymentInPercent).Width(90);
+        columns.Bound(c => c.Remark).Width(100);
+        columns.Command(command =>
+        {
+            command.Edit().Text(" ");
+            if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationTeamLead))
+            {
+                command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+
+            }
+            if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationDepartmentHead))
+            {
+                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+            }
+            command.Destroy().Text(" ");
+        }).Width(180);
     })
     .ToolBar(toolbar =>
     {
@@ -336,7 +343,7 @@
     function UploadCompanyFile() {
 
             $.ajax({
-                url: '@Url.Action("UploadCompanyFile", "PrintingJobOrderDesgin")',
+                url: '@Url.Action("UploadCompanyFileJobOrder", "PrintingJobOrderDesgin", new { Area = "Printing" })',
                 //contentType: "application/json; charset=utf-8",
                 data: function () {
                     var data = new FormData();

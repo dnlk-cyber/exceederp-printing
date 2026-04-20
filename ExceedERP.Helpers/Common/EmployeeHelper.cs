@@ -28,25 +28,41 @@ namespace ExceedERP.Helpers.Common
 				return headId;
 			}
 		}
-		public static int GetDelegatorEmployeeId(int empId)
-		{
-			using (ExceedDbContext db = new ExceedDbContext())
-			{
-				int delegatorEmpId = 0;
-				DateTime curentDate = DateTime.Today;
-				var delegation = db.Delegations.Where(x => x.EmployeeId == empId)
-					.Where(x => x.ToDateTime > curentDate || x.ToDateTime == null)
-					.Where(x => x.IsOpen).FirstOrDefault();
-				if (delegation != null)
-				{
-					delegatorEmpId = delegation.FromEmployeeId;
-				}
+        //public static int GetDelegatorEmployeeId(int empId)
+        //{
+        //	using (ExceedDbContext db = new ExceedDbContext())
+        //	{
+        //		int delegatorEmpId = 0;
+        //		DateTime curentDate = DateTime.Today;
+        //		var delegation = db.Delegations.Where(x => x.EmployeeId == empId)
+        //			.Where(x => x.ToDateTime > curentDate || x.ToDateTime == null)
+        //			.Where(x => x.IsOpen).FirstOrDefault();
+        //		if (delegation != null)
+        //		{
+        //			delegatorEmpId = delegation.FromEmployeeId;
+        //		}
 
-				return delegatorEmpId;
-			}
-		}
-		
-		public static List<int> GetSubordinatesOfSubortinates_FilteredByHead(int empid)
+        //		return delegatorEmpId;
+        //	}
+        //}
+        public static int GetDelegatorEmployeeId(int empId)
+        {
+            using (var db = new ExceedDbContext())
+            {
+                var today = DateTime.Today;
+
+                var activeDelegation = db.Delegations
+                    .Where(d =>
+                        d.EmployeeId == empId &&
+                        d.IsOpen &&
+                        (!d.ToDateTime.HasValue || d.ToDateTime > today))
+                    .FirstOrDefault();
+
+                return activeDelegation?.FromEmployeeId ?? 0;
+            }
+        }
+
+        public static List<int> GetSubordinatesOfSubortinates_FilteredByHead(int empid)
 		{
 			using (ExceedDbContext db = new ExceedDbContext())
 			{
@@ -435,6 +451,7 @@ namespace ExceedERP.Helpers.Common
 				//child head
 			}
 		}
+
 		public static List<int> GetSubordinates_old1(int empid)
 		{
 			using (ExceedDbContext db = new ExceedDbContext())
@@ -632,50 +649,76 @@ namespace ExceedERP.Helpers.Common
 			}
 			//child head
 		}
-		//new 
-		public static List<int> GetSubordinates_FilteredByHead(int empid)
-		{
-			using (ExceedDbContext db = new ExceedDbContext())
-			{
+        public static List<int> GetSubordinates_FilteredByHead(int empid)
+        {
+            using (var db = new ExceedDbContext())
+            {
+                var placement = db.Placements
+                    .FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
 
-				List<int> employeeList = new List<int>();
+                int delegatorId = GetDelegatorEmployeeId(empid);
 
-				var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+                // If not head and not delegated, return empty
+                if ((placement?.IsHead != true) && delegatorId == 0)
+                    return new List<int>();
 
-				if (placement != null && placement.IsHead)
-				{
-					var empPlacement = db.Placements.Where(x => x.isCurrent && x.HeadId == placement.EmployeeId).ToList();
+                // If delegated, act as head using delegatorId
+                var subordinates = db.Placements
+                    .Where(x => x.isCurrent &&
+                                (x.HeadId == empid ||
+                                 (delegatorId != 0 && x.HeadId == delegatorId)))
+                    .Select(x => x.EmployeeId)
+                    .Distinct()
+                    .ToList();
 
-					foreach (var emp in empPlacement)
-					{
-						employeeList.Add(emp.EmployeeId);
-					}
+                return subordinates;
+            }
+        }
 
-					//if the current employee is delegated by other.will add cehck endless delegation
-					int delegatetorEmpId = GetDelegatorEmployeeId(empid);
-					if (delegatetorEmpId != 0)
-					{
-						var delegatedSub = GetSubordinateEmps(delegatetorEmpId);
-						employeeList.AddRange(delegatedSub);
-					}
+        //new 
+        //      public static List<int> GetSubordinates_FilteredByHead(int empid)
+        //{
+        //	using (ExceedDbContext db = new ExceedDbContext())
+        //	{
 
-					return employeeList;
-				}
-				else
-				{
-					//if the current employee is delegated by other.will add cehck endless delegation
-					int delegatetorEmpId = GetDelegatorEmployeeId(empid);
-					if (delegatetorEmpId != 0)
-					{
-						var delegatedSub = GetSubordinateEmps(delegatetorEmpId);
-						employeeList.AddRange(delegatedSub);
-					}
-					return employeeList;
-				}
-			}
+        //		List<int> employeeList = new List<int>();
 
-		}
-		public static List<int> GetSubordinates_FilteredByHeadAndBranch(int empid, int branchId)
+        //		var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+        //		if (placement != null && placement.IsHead)
+        //		{
+        //			var empPlacement = db.Placements.Where(x => x.isCurrent && x.HeadId == placement.EmployeeId).ToList();
+
+        //			foreach (var emp in empPlacement)
+        //			{
+        //				employeeList.Add(emp.EmployeeId);
+        //			}
+
+        //			//if the current employee is delegated by other.will add cehck endless delegation
+        //			int delegatetorEmpId = GetDelegatorEmployeeId(empid);
+        //			if (delegatetorEmpId != 0)
+        //			{
+        //				var delegatedSub = GetSubordinateEmps(delegatetorEmpId);
+        //				employeeList.AddRange(delegatedSub);
+        //			}
+
+        //			return employeeList;
+        //		}
+        //		else
+        //		{
+        //			//if the current employee is delegated by other.will add cehck endless delegation
+        //			int delegatetorEmpId = GetDelegatorEmployeeId(empid);
+        //			if (delegatetorEmpId != 0)
+        //			{
+        //				var delegatedSub = GetSubordinateEmps(delegatetorEmpId);
+        //				employeeList.AddRange(delegatedSub);
+        //			}
+        //			return employeeList;
+        //		}
+        //	}
+
+        //}
+        public static List<int> GetSubordinates_FilteredByHeadAndBranch(int empid, int branchId)
 		{
 			using (ExceedDbContext db = new ExceedDbContext())
 			{

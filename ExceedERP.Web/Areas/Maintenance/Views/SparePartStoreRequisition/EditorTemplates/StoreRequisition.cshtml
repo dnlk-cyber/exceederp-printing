@@ -34,7 +34,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}))
+                              dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )*@
@@ -53,7 +53,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
+                              dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                     )
@@ -73,7 +73,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreByBranch", "DataProvider", new { area = "Inventory" }).Data("filterStoresByBranch"))
+                              dataSource.Read(read => read.Action("GetStoreByBranch", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterStoresByBranch"))
                                   .ServerFiltering(true);
                           })
                           .CascadeFrom("BranchId")
@@ -104,7 +104,7 @@
                           })
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "DataProvider", new { area = "Inventory" }).Data("filterPeriodsByStore"))
+                              dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterPeriodsByStore"))
                                   .ServerFiltering(true);
                           })
                           )
@@ -144,7 +144,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }))
+                              dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -180,7 +180,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
+                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -211,7 +211,7 @@
                                 .Filter("contains")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }))
+                                    dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                         .ServerFiltering(false);
                                 })
                           )
@@ -240,7 +240,7 @@
                           .Filter(FilterType.Contains)
                           .OptionLabel("Select Job Order ")
                           .HtmlAttributes(new { style = "width:100%" })
-                          .DataSource(d => d.Read(r => r.Action("JobOrderDDBind", "FleetDataProvider", new { area = "FleetManagement" }))
+                          .DataSource(d => d.Read(r => r.Action("JobOrderDDBind", "FleetDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                               .ServerFiltering(false)))
                     @Html.ValidationMessageFor(model => model.JobOrderNo, "", new { @class = "text-danger" })
                 </div>

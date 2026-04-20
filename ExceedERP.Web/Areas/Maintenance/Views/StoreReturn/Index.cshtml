@@ -76,10 +76,10 @@
               //model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.StoreReturnID).Editable(false);
           })
-          .Read(read => read.Action("StoreReturns_Read", "StoreReturn"))
-          .Create(create => create.Action("StoreReturns_Create", "StoreReturn"))
-          .Update(update => update.Action("StoreReturns_Update", "StoreReturn"))
-          .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "StoreReturn"))
+          .Read(read => read.Action("StoreReturns_Read", "StoreReturn").Data("sendForgery"))
+          .Create(create => create.Action("StoreReturns_Create", "StoreReturn").Data("sendForgery"))
+          .Update(update => update.Action("StoreReturns_Update", "StoreReturn").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "StoreReturn").Data("sendForgery"))
       ).ClientDetailTemplateId("storereturntemplate"))
 
 
@@ -217,10 +217,10 @@
                                                               .RequestEnd("onRequestEnd(\"StoreReturnItem_#=StoreReturnID#\")"))
 
                                                           .Model(model => model.Id(p => p.StoreReturnItemsID))
-                                                          .Read(read => read.Action("StoreReturnItems_Read", "StoreReturnItem", new { id = "#=StoreReturnID#" }))
-                                                          .Create(create => create.Action("StoreReturnItems_Create", "StoreReturnItem", new { id = "#=StoreReturnID#" }))
-                                                          .Update(update => update.Action("StoreReturnItems_Update", "StoreReturnItem"))
-                                                          .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "StoreReturnItem"))
+                                                          .Read(read => read.Action("StoreReturnItems_Read", "StoreReturnItem", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                          .Create(create => create.Action("StoreReturnItems_Create", "StoreReturnItem", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                          .Update(update => update.Action("StoreReturnItems_Update", "StoreReturnItem").Data("sendForgery"))
+                                                          .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "StoreReturnItem").Data("sendForgery"))
                                                       ).ToClientTemplate())
 
                     </text>);
@@ -261,10 +261,10 @@
                                                           .RequestEnd("onRequestEnd(\"StoreReturnValidation_#=StoreReturnID#\")"))
 
                                                       .Model(model => model.Id(p => p.StoreReturnValidationID))
-                                                      .Read(read => read.Action("StoreReturnValidations_Read", "StoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                                                      .Create(create => create.Action("StoreReturnValidations_Create", "StoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                                                      .Update(update => update.Action("StoreReturnValidations_Update", "StoreReturnValidation"))
-                                                      .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "StoreReturnValidation"))
+                                                      .Read(read => read.Action("StoreReturnValidations_Read", "StoreReturnValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                      .Create(create => create.Action("StoreReturnValidations_Create", "StoreReturnValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                      .Update(update => update.Action("StoreReturnValidations_Update", "StoreReturnValidation").Data("sendForgery"))
+                                                      .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "StoreReturnValidation").Data("sendForgery"))
                                                   ).ToClientTemplate())
 
                 </text>);
@@ -284,8 +284,8 @@
                                   .Scrollable()
                                   .DataSource(dataSource => dataSource
                                       .Ajax()
-                                      .Read(read => read.Action("StoreReturnDistributions_Read", "StoreReturnDistribution", new { id = "#=StoreReturnID#" }))
-                                      .Update(read => read.Action("StoreReturnDistributions_Update", "StoreReturnDistribution"))
+                                      .Read(read => read.Action("StoreReturnDistributions_Read", "StoreReturnDistribution", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                      .Update(read => read.Action("StoreReturnDistributions_Update", "StoreReturnDistribution").Data("sendForgery"))
                                   ).ToClientTemplate())
 
 
@@ -320,10 +320,10 @@
                                         .RequestStart("onRequestStart(\"StoreReturnAttachment_#=StoreReturnID#\")")
                                         .RequestEnd("onRequestEnd(\"StoreReturnAttachment_#=StoreReturnID#\")"))
                                     .Model(model => model.Id(p => p.StoreReturnAttachmentId))
-                                    .Read(read => read.Action("StoreReturnAttachments_Read", "StoreReturnAttachment", new { id = "#= StoreReturnID #" }))
-                                    .Create(create => create.Action("StoreReturnAttachments_Create", "StoreReturnAttachment", new { id = "#=StoreReturnID #" }))
-                                    .Update(update => update.Action("TenderMinuteUploads_Update", "StoreReturnAttachment"))
-                                    .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "StoreReturnAttachment"))
+                                    .Read(read => read.Action("StoreReturnAttachments_Read", "StoreReturnAttachment", new { id = "#= StoreReturnID #" }).Data("sendForgery"))
+                                    .Create(create => create.Action("StoreReturnAttachments_Create", "StoreReturnAttachment", new { id = "#=StoreReturnID #" }).Data("sendForgery"))
+                                    .Update(update => update.Action("TenderMinuteUploads_Update", "StoreReturnAttachment").Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "StoreReturnAttachment").Data("sendForgery"))
                                 ).ToClientTemplate())
     }
 </script>

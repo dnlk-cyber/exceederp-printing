@@ -4,6 +4,6 @@
         .Name("ServiceName")
         .DataTextField("Name")
         .DataValueField("Value").OptionLabel("Select")
-        .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "SparePart"))))
+        .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "SparePart").Data("sendForgery"))))
 
  

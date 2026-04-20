@@ -9,13 +9,13 @@ using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Insurance;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.Insurance.Controllers
 {
@@ -24,10 +24,6 @@ namespace ExceedERP.Web.Areas.Insurance.Controllers
     public class InsuranceController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime From { get; set; }
-        public static string FromAmharic { get; set; }
-        public static DateTime To { get; set; }
-        public static string ToAmharic { get; set; }
         public ActionResult Index()
         {
             GetInsuranceGroup();
@@ -40,29 +36,13 @@ namespace ExceedERP.Web.Areas.Insurance.Controllers
             var insurance = db.InsuranceCategory.ToList();
             ViewData["InsuranceCatagory"] = insurance;
             ViewData["EmployeeList"] = db.Person_Employee.Select(x => new {
-                EmployeeId=x.EmployeeId,
+                EmployeeId = x.EmployeeId,
                 FullNameaEnglish = x.EmployeeCode + "-" + x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish
             }).ToList();
-        }
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromAmharic")
-            {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
-            }
-
-            else if (name == "ToAmharic")
-            {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
-            }
+            ViewData["isEthiopicDate"] = true;
 
         }
+
         public JsonResult GetBusinessClass()
         {
             List<InsuranceType> insuranceTypeList = new List<InsuranceType>();
@@ -142,16 +122,12 @@ namespace ExceedERP.Web.Areas.Insurance.Controllers
         }
         public string GetEmployeeBirthDate(int id)
         {
-            string birthDate = "";
             var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
-            if (person != null)
-            {
-                birthDate = person.DateOfBirthAm;
-
-            }
-            return birthDate;
-
+            return person != null
+                ? $"{person.DateOfBirthAm} ({person.DateOfBirth:dd.MM.yyyy})"
+                : string.Empty;
         }
+
         [AuthorizeRoles(HrmConstants.HRInsuranceAdmin, HrmConstants.HRInsuranceUser)]
         public ActionResult Insurance_Read([DataSourceRequest]DataSourceRequest request)
         {
@@ -185,45 +161,61 @@ namespace ExceedERP.Web.Areas.Insurance.Controllers
         [AuthorizeRoles(HrmConstants.HRInsuranceUser)]
         public ActionResult Insurance_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Insurance.Insurance insurance)
         {
+
             ModelState.Clear();
+
+            bool datePreference =  true;
+
+            if (datePreference)
+            {
+                if (string.IsNullOrWhiteSpace(insurance?.FromAmharic) ||
+                    string.IsNullOrWhiteSpace(insurance?.ToAmharic))
+                {
+                    ModelState.AddModelError("", "from, To and   Clearance Date fields are mandatory");
+                    return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
+                }
+
+                insurance.From = HrHelper.ParseEthiopicDate(insurance.FromAmharic);
+                insurance.To = HrHelper.ParseEthiopicDate(insurance.ToAmharic);
+            }
+            else
+            {
+                insurance.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(insurance.From.Day,
+                                                                                        insurance.From.Month,
+                                                                                        insurance.From.Year);
+                insurance.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(insurance.To.Day,
+                                                                              insurance.To.Month,
+                                                                              insurance.To.Year);
+            }
+            if (insurance.From > insurance.To)
+            {
+                ModelState.AddModelError("", "From  must be less than to date!!");
+                return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
+            }
+            var overlaps = db.Insurance.AsNoTracking()
+                .ToList()
+                  .Where(x => x.EmployeeId == insurance.EmployeeId &&
+                   x.From.Date <= insurance.To.Date &&
+                   x.To.Date >= insurance.From.Date).Any();
+
+            if (overlaps)
+            {
+                ModelState.AddModelError("", "The record exists or dates overlap. Select another date.");
+                return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
+            }
+
+            var employee = db.Placements.Where(x => x.EmployeeId == insurance.EmployeeId).OrderByDescending(x=>x.PlacementId).FirstOrDefault();
+            insurance.Salary = employee != null ? employee.Salary : 0;
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null || ToAmharic == null)
-                {
-                    ModelState.AddModelError("", "Date values are mandatory!!");
-                }
-                else
-                {
-
-
-                    if (FromAmharic == null)
-                    {
-                        var splitDate = insurance.FromAmharic.Split('/');
-                        From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                    }
-                    if (ToAmharic == null)
-                    {
-                        var splitDate = insurance.ToAmharic.Split('/');
-                        To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                    }
-                    insurance.From = From;
-                    insurance.To = To;
-                    //if (insurance.Salary <= 0)
-                    //{
-                    //    insurance.Salary = GetInsuranceSalaryInside(insurance.InsuranceCategoryId);
-                    //}
-                    //if (insurance.Number <= 0)
-                    //{
-                    //    insurance.Number = GetInsuranceNumber(insurance.InsuranceCategoryId);
-                    //}
-                    var employee = db.Placements.FirstOrDefault(x => x.EmployeeId == insurance.EmployeeId);
-                    insurance.Salary = employee != null ? employee.Salary : 0;
+                
                     var entity = GetMappedObject(insurance);
                     db.Insurance.Add(entity);
                     db.SaveChanges();
                     insurance.InsuranceId = entity.InsuranceId;
-                }
+
             }
+            
 
             return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
         }
@@ -234,30 +226,51 @@ namespace ExceedERP.Web.Areas.Insurance.Controllers
         public ActionResult Insurance_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Insurance.Insurance insurance)
         {
             ModelState.Clear();
+            bool datePreference =  true;
+
+            if (datePreference)
+            {
+                if (string.IsNullOrWhiteSpace(insurance?.FromAmharic) ||
+                    string.IsNullOrWhiteSpace(insurance?.ToAmharic))
+                {
+                    ModelState.AddModelError("", "from, To and   Clearance Date fields are mandatory");
+                    return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
+                }
+
+                insurance.From = HrHelper.ParseEthiopicDate(insurance.FromAmharic);
+                insurance.To = HrHelper.ParseEthiopicDate(insurance.ToAmharic);
+            }
+            else
+            {
+                insurance.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(insurance.From.Day,
+                                                                                        insurance.From.Month,
+                                                                                        insurance.From.Year);
+                insurance.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(insurance.To.Day,
+                                                                              insurance.To.Month,
+                                                                              insurance.To.Year);
+            }
+            if (insurance.From > insurance.To)
+            {
+                ModelState.AddModelError("", "From Date Must be less than the date!!");
+                return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
+            }
+            var overlaps = db.Insurance.AsNoTracking().ToList()
+                                       .Where(x => x.EmployeeId == insurance.EmployeeId 
+                                                  &&x.InsuranceId != insurance.InsuranceId
+                                                  &&x.From.Date < insurance.To.Date 
+                                                  &&x.To.Date > insurance.From.Date).Any();
+
+            if (overlaps)
+            {
+                ModelState.AddModelError("", "The record exists or dates overlap. Select another date.");
+                return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
+            }
+
+            var employee = db.Placements.Where(x => x.EmployeeId == insurance.EmployeeId).OrderByDescending(x => x.PlacementId).FirstOrDefault();
+            insurance.Salary = employee != null ? employee.Salary : 0;
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
-                {
-                    var splitDate = insurance.FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (ToAmharic == null)
-                {
-                    var splitDate = insurance.ToAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                insurance.From = From;
-                insurance.To = To;
-                //if(insurance.Salary <= 0)
-                //{
-                //    insurance.Salary = GetInsuranceSalaryInside(insurance.InsuranceCategoryId);
-                //}
-                //if (insurance.Number <= 0)
-                //{
-                //    insurance.Number = GetInsuranceNumber(insurance.InsuranceCategoryId);
-                //}
-                var employee = db.Placements.FirstOrDefault(x => x.EmployeeId == insurance.EmployeeId);
-                insurance.Salary = employee != null ? employee.Salary : 0;
+               
                 var entity = GetMappedObject(insurance);
                 db.Insurance.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -404,6 +417,34 @@ namespace ExceedERP.Web.Areas.Insurance.Controllers
 
             return value;
         }
+        public string GetEmployeeSalary(int empId)
+        {
+            decimal salaryAmount = 0;
+            decimal sumOfInsured = 0;
+            decimal premium = 0;
+
+            var placement = db.Placements
+                              .Where(x => x.EmployeeId == empId && x.isCurrent)
+                              .OrderByDescending(x => x.PlacementId)
+                              .FirstOrDefault();
+
+            if (placement != null)
+            {
+                // Fetch the insurance premium setting
+                var premiumSetting = db.InsurancePremiumSettings.FirstOrDefault();
+
+                decimal totalMonths = premiumSetting?.TotalMonths ?? 60;
+                decimal premiumRate = premiumSetting?.Premium ?? 18;
+               
+
+                salaryAmount = placement.Salary;
+                sumOfInsured = salaryAmount * totalMonths;
+                premium = sumOfInsured * (premiumRate / 100);
+            }
+
+            return $"{salaryAmount:F2}-{sumOfInsured:F2}-{premium:F2}";
+        }
+
         public int GetInsuranceNumber(int group)
         {
 

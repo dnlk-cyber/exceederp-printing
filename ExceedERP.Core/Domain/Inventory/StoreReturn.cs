@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Inventory
 {
-    public class StoreReturn : Operations
+    public class StoreReturn : DepartmentNewOperations
     {
         public int StoreReturnID { get; set; }
 
@@ -43,8 +43,10 @@ namespace ExceedERP.Core.Domain.Inventory
         public int BusinessUnitId { get; set; }
         public virtual ICollection<StoreReturnItems> StoreReturnItems { get; set; }
         public virtual ICollection<StoreReturnValidation> StoreReturnValidation { get; set; }
+        public virtual ICollection<StoreReturnDepartmentValidation> StoreReturnDepartmentValidations { get; set; }
         public virtual ICollection<StoreReturnDistribution> StoreReturnDistribution { get; set; }
         public virtual ICollection<StoreReturnAttachment> StoreReturnAttachments { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
     }
     public class StoreReturnItems : TrackUserOperation, IValidatableObject
     {
@@ -67,11 +69,12 @@ namespace ExceedERP.Core.Domain.Inventory
         [Display(Name = "Unit Price")]
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }
+        public bool NoPrice { get; set; }
         public string ProductionJobNo { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if  (UnitPrice <0)
+            if  (UnitPrice <0 && !NoPrice)
             {
                 yield return new ValidationResult(
                     $"Price should be positive number.",
@@ -82,6 +85,16 @@ namespace ExceedERP.Core.Domain.Inventory
     public class StoreReturnValidation : TrackUserSettingOperation
     {
         public int StoreReturnValidationID { get; set; }
+
+        public int StoreReturnID { get; set; }
+        public virtual StoreReturn StoreReturn { get; set; }
+        public ApprovalStatuses Status { get; set; }
+        public string Approver { get; set; }
+        public string Remark { get; set; }
+    }
+    public class StoreReturnDepartmentValidation : TrackUserSettingOperation
+    {
+        public int StoreReturnDepartmentValidationID { get; set; }
 
         public int StoreReturnID { get; set; }
         public virtual StoreReturn StoreReturn { get; set; }

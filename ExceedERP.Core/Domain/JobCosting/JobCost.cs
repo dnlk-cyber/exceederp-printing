@@ -1,8 +1,10 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.printing.PrintingEstimation.Setting;
+using ExceedERP.Core.Domain.Printing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,6 +58,7 @@ namespace ExceedERP.Core.Domain.JobCosting
         public decimal ContractOverHeadCost { get; set; }
 
         public bool Beginning { get; set; }
+        public bool IsFromPrinting { get; set; }
         public decimal BeginningHour { get; set; }
     }
 
@@ -63,6 +66,8 @@ namespace ExceedERP.Core.Domain.JobCosting
     {
         public int JobMaterialCostId { get; set; }
         public int JobCostId { get; set; }
+        [NotMapped]
+        public EstimationMaterialType MaterialType { get; set; }
         public string ItemCategoryCode { get; set; }
         public string ItemCode { get; set; }
         [DataType(DataType.Date)]
@@ -111,4 +116,11 @@ namespace ExceedERP.Core.Domain.JobCosting
         public DateTime Date { get; set; }
         public decimal Quantity { get; set; }
     }
+    public class PrintingJobSetting
+    {
+        public int PrintingJobSettingId { get; set; }
+        public string Remark { get; set; }
+        public bool IsFromPrinting { get; set; }
+    }
+
 }

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExceedERP.Reporting.Furniture.ViewModel
+namespace ExceedERP.Reporting.Furniture.ViewModel 
 {
-    public class FurnitureEstimationViewModel
+    public class FurnitureEstimationViewModel : FurnitureCommonViewModel
     {
         public int EstimationNo { get; set; }
         public string CustomerName { get; set; }
@@ -45,7 +45,7 @@ namespace ExceedERP.Reporting.Furniture.ViewModel
 
     }
 
-    public class FurnitureBoqViewModel
+    public class FurnitureBoqViewModel : FurnitureCommonViewModel
     {
         public string JobCode { get; set; }
         public string JobType { get; set; }

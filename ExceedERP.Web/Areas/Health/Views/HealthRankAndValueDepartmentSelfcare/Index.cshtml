@@ -1,0 +1,761 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Health
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Health Value and Payment </legend>
+@(Html.Kendo().Grid<HealthRankAndValue>()
+        .Name("Healthgrid")
+        .Columns(columns =>
+        {
+
+            columns.Bound(c => c.PaymentRequestId).Title("Request Id ").Width(120);
+            // columns.Bound(c => c.EmployeeCode).Width(130).ClientGroupHeaderTemplate("#=value# // Total Used Amount : #=aggregates.UsedAmount.sum#");
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));//.ClientGroupFooterTemplate("#=aggregates.UsedAmount.sum#");
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));//.ClientGroupHeaderTemplate("#=value# //  Used Amount Per Budget Year : #=aggregates.UsedAmount.sum# //  Remaining Per Budget Year : #=aggregates.RemainingAmount.min#");
+            columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriods").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+            columns.Bound(c => c.RecoredDate).Hidden().Width(120);
+            columns.Bound(c => c.ClinicName).Width(120);
+            columns.Bound(c => c.DateAmh).EditorTemplateName("Calander").Width(130);
+            columns.Bound(c => c.RecoredDateAmh).EditorTemplateName("Calander").Width(130);
+            columns.Bound(c => c.AllowedAmount).Width(130);
+            columns.Bound(c => c.TotalPaid).Width(130);
+            columns.Bound(c => c.UsedAmount).Width(130);
+            columns.Bound(c => c.StaffContribution).Width(130);
+            columns.Bound(c => c.RemainingAmount).Width(150);
+            columns.Bound(c => c.BenefitType).Width(150);
+            columns.Bound(c => c.PaymentType).Width(150);
+            //columns.Bound(c => c.Organization).Width(150);
+            columns.Bound(c => c.PaymentCoverage).Width(150);
+            columns.Bound(c => c.IsOtherBenifit).Hidden();
+            columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsOnlineApproved#' " +
+              "# if (IsOnlineApproved) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>").Title("Is Approved").Width(140);
+            columns.Bound(c => c.OnlineApprovedBy).Title("Approved By").Width(140);
+            columns.Bound(c => c.IsPartnerOrGov).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsPartnerOrGov#' " +
+              "# if (IsPartnerOrGov) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>").Width(140);
+            columns.Command(command =>
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }).Width(200);
+
+
+
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+        })
+
+        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+        .TemplateName("HealthRankAndValue")
+        .Window(window =>
+        {
+            window.Title(Resources.Emyployee_Health_Value);
+
+
+        }))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Events(ev =>
+        {
+            ev.DetailExpand("onDetailExpandUser");
+            ev.DataBound("onMasterDataBound");
+            ev.Edit("onEdit");
+        })
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+
+
+
+
+        })
+        .Filterable()
+        .Events(x =>
+        {
+            x.Edit("GetDate");
+            x.Save("GetDate");
+        })
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Aggregates(x =>
+        {
+            x.Add(f => f.UsedAmount).Sum();
+            x.Add(f => f.RemainingAmount).Min();
+
+
+        })
+        .Sort(sort => sort.Add(x => x.HealthRankAndValueId).Descending())
+        //.Group(x => x.Add(p => p.EmployeeCode))
+        //.Group(x => x.Add(p => p.EmployeeId))
+        //.Group(x => x.Add(p => p.GlFiscalYearId))
+        .Events(events =>
+        {
+            events.Error("error_handler(\"Healthgrid\")");
+            events.RequestStart("onRequestStart(\"Healthgrid\")");
+            events.RequestEnd("onRequestEnd(\"Healthgrid\")");
+
+        })
+        .Model(model =>
+        {
+            model.Id(p => p.HealthRankAndValueId);
+            model.Field(p => p.AllowedAmount).Editable(false);
+            model.Field(p => p.UsedAmount).Editable(false);
+            model.Field(p => p.StaffContribution).Editable(false);
+            model.Field(p => p.RemainingAmount).Editable(false);
+            //model.Field(p => p.BranchId).Editable(false);
+            //model.Field(p => p.EmployeeCode).Editable(false);
+            model.Field(p => p.PaymentRequestId).Editable(false);
+
+
+        })
+        .Read(read => read.Action("HealthRankAndValue_Read", "HealthRankAndValueDepartmentSelfcare").Data("sendForgery"))
+        .Create(create => create.Action("HealthRankAndValue_Create", "HealthRankAndValueDepartmentSelfcare").Data("sendForgery"))
+        .Update(update => update.Action("HealthRankAndValue_Update", "HealthRankAndValueDepartmentSelfcare").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("HealthRankAndValue_Destroy", "HealthRankAndValueDepartmentSelfcare").Data("sendForgery"))
+        ).ClientDetailTemplateId("Rank_Value_template")
+)
+
+
+<script id="Rank_Value_template" type="text/kendo-tmpl">
+    #if(BenefitType ==2){#
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_#=HealthRankAndValueId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                    items.Add().Text(Resources.Details).Content(
+                    @<text>
+                            
+                    <a href='@Url.Action("HealthValueRequestReport", "HealthReport")/?id=#=HealthRankAndValueId#' target="_blank" title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                        @details()
+                    </text> );
+                    items.Add().Text("Validation").Content(
+                    @<text>
+                        @healthValidation()
+
+                    </text>);
+                    items.Add().Text("Documents").Content(@<text>
+                        @healthAttachment()
+                    </text>);
+
+
+
+
+            }).ToClientTemplate()
+    )
+    #} else{#
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_#=HealthRankAndValueId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text(Resources.Details).Content(
+                @<text>
+                    # if (!IsSendForApproval){#
+                    <a onclick='return sendForApproval("#=HealthRankAndValueId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
+                    #}#
+                    <a href='@Url.Action("HealthValueRequestReport", "HealthReport")/?id=#=HealthRankAndValueId#' target="_blank" title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                    @details()
+                        @*<a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                    </text>);
+                    items.Add().Text("Validation").Content(
+                    @<text>
+                      # if (IsOnlineApproved){#
+                            @healthValidation()
+
+                    #}#
+                    </text>);
+                    items.Add().Text("Documents").Content(@<text>
+                        @healthAttachment()
+                    </text>);
+
+
+
+
+            }).ToClientTemplate()
+    )
+    #}#
+</script>
+
+@helper details()
+{
+    @(Html.Kendo().PanelBar()
+
+        .Name("panelbar_#=HealthRankAndValueId#")
+        .ExpandMode(PanelBarExpandMode.Single)
+        .Items(panelbar =>
+        {
+
+            panelbar.Add().Text("Status")
+                .Expanded(true)
+                .Content(
+
+                        "<div>" +
+                        "<table class='table'>" +
+                        "<tr>" +
+                            "<td>" + "<div class='employee-details'>" +
+                                "<ul>" +
+                                "<li><label>" + "Approved By " + ": &nbsp; </label>#=OnlineApprovedBy#</li>" +
+                                "<li><label>" + "Approved Date " + ": &nbsp; </label>#=OnlineApprovedTime#</li>" +
+                                "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                                // "<li><label>Title:  </label>#=Title #</li>" +
+                                "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                                "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                                "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+                                "</ul>" +
+                                "</div>" + "<th>" +
+                            // "<td>" + EmployeeChartsResult() + "<th>" +
+                            "</table>" +
+                            "</div>");
+
+
+        }).ToClientTemplate()
+    )
+}
+@helper healthValidation()
+{
+    @(Html.Kendo().Grid<HealthRankAndValueValidation>()
+        .Name("Validation_grid#=HealthRankAndValueId#")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.Status).Width(150);
+            columns.Bound(c => c.Remark).Width(150);
+            columns.Command(command =>
+            {
+                if (HttpContext.Current.User.IsInRole("Health_Admin"))
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "ccEditButton" });
+                    command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id = "ccDeleteButton" });
+
+                }
+            });
+
+
+        })
+        .ToolBar(toolbar =>
+        {
+
+            if (HttpContext.Current.User.IsInRole("Health_Approver"))
+            {
+
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "ccAddButton" });
+
+            }
+        })
+        .Events(e =>
+        {
+            e.DataBound("onDetailDataBound");
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable()
+        .Selectable()
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"Validation_grid#=HealthRankAndValueId#\")");
+                events.RequestStart("onRequestStart(\"Validation_grid#=HealthRankAndValueId#\")");
+                events.RequestEnd("onRequestEnd(\"Validation_grid#=HealthRankAndValueId#\")");
+
+            })
+            .Model(model => model.Id(p => p.HealthRankAndValueValidationId))
+            .Read(read => read.Action("HealthRankAndValueValidation_Read", "HealthRankAndValueValidation", new { vId = "#=HealthRankAndValueId#" }).Data("sendForgery"))
+            .Create(create => create.Action("HealthRankAndValueValidation_Create", "HealthRankAndValueValidation", new { vId = "#=HealthRankAndValueId#" }).Data("sendForgery"))
+            .Update(update => update.Action("HealthRankAndValueValidation_Update", "HealthRankAndValueValidation").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("HealthRankAndValueValidation_Destroy", "HealthRankAndValueValidation").Data("sendForgery"))
+
+            ).ToClientTemplate()
+    )
+
+}
+@helper healthAttachment()
+{
+    @(Html.Kendo().Grid<HealthAttachment>()
+          .Name("HealthAttachmentGrid#=HealthRankAndValueId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName)
+                  .ClientTemplate("<a href='/Health/HealthAttachments/DownloadAttachment?healthAttachmentId=\\#=HealthAttachmentId\\#'> <f class='fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>")
+                  .Width(150);
+
+              columns.Template(e => { })
+                  .ClientTemplate("<a href='/Health/HealthAttachments/DownloadAttachment?healthAttachmentId=\\#=HealthAttachmentId\\#'> <f class='fa fa-download'></i>&nbsp;&nbsp; Download </a>")
+                  .Width(100);
+
+              columns.Template(e => { })
+                  .ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class='fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>")
+                  .Width(100);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy().Text("Delete");
+              }).Width(300);
+
+          })
+          .ToolBar(toolbar =>
+          {
+            toolbar.Template(@<text>
+                @Html.Kendo().Upload().Name("file").Async(a => a.Save("HealthAttachmentTemplateFiles_Create", "HealthAttachments", new { id = "#=HealthRankAndValueId#" })).Events(e => e.Complete("onUploadSuccess")
+                                                                                                          .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 2 * 1024 * 1024); }")
+                                                             .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
+            </text>);
+
+          })
+            ////.Editable(editable => editable.Mode(GridEditMode.InLine))
+            //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+            //    .Window(window =>
+            //    {
+            //        window.Title("");
+            //        window.Scrollable(false);
+            //    }))
+        .Scrollable(h => h.Height("auto"))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(sort => sort.Add(c => c.HealthAttachmentId).Descending())
+            .Events(events =>
+            {
+                events.Error("error_handler(\"HealthAttachmentGrid#=HealthRankAndValueId#\")");
+                events.RequestStart("onRequestStart(\"HealthAttachmentGrid#=HealthRankAndValueId#\")");
+                events.RequestEnd("onRequestEnd(\"HealthAttachmentGrid#=HealthRankAndValueId#\")");
+            })
+            .Model(model => model.Id(p => p.HealthAttachmentId))
+            .Read(read => read.Action("HealthAttachments_Read", "HealthAttachments", new { id = "#=HealthRankAndValueId#", area = "Health" }).Data("sendForgery"))
+            .Create(create => create.Action("HealthAttachmentTemplateFiles_Create", "HealthAttachments", new { id = "#=HealthRankAndValueId#", area = "Health" }).Data("sendForgery"))
+            .Update(update => update.Action("HealthAttachments_Update", "HealthAttachments").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("HealthAttachments_Destroy", "HealthAttachments").Data("sendForgery"))
+        ).ToClientTemplate()
+    )
+}
+@helper Hospital()
+{ 
+     @*@(Html.Kendo().Grid<HealthBenefitSettingDetail>()
+                   .Name("HealthBenefitSettingDetail#=HealthBenefitSettingId#")
+                   .Columns(columns =>
+                   {
+
+                       columns.Bound(c => c.Name).Width(100);
+                       columns.Bound(c => c.Organization).Width(160);
+                       columns.Command(command =>
+                       {
+
+                           command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                           command.Destroy().Text(Resources.ActionButton_Cancel);//
+
+
+                       });
+
+                   })
+
+                   .ToolBar(toolbar =>
+                   {
+                       toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                   })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .Selectable()
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"HealthBenefitSettingDetail#=HealthBenefitSettingId#\")");
+                            events.RequestStart("onRequestStart(\"HealthBenefitSettingDetail#=HealthBenefitSettingId#\")");
+                            events.RequestEnd("onRequestEnd(\"HealthBenefitSettingDetail#=HealthBenefitSettingId#\")");
+
+                        })
+
+                      .Model(model => model.Id(p => p.HealthBenefitSettingDetailId))
+                    .Read(read => read.Action("HealthBenefitSettingDetails_Read", "HealthBenefitSettingDetails", new { Area = "Health", id = "#=HealthBenefitSettingId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("HealthBenefitSettingDetails_Create", "HealthBenefitSettingDetails", new { Area = "Health", id = "#=HealthBenefitSettingId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("HealthBenefitSettingDetails_Update", "HealthBenefitSettingDetails").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("HealthBenefitSettingDetails_Destroy", "HealthBenefitSettingDetails").Data("sendForgery"))
+                     ).ToClientTemplate()
+
+                )*@
+}
+@(Html.Kendo().Window().Name("IncomingAttachementWindow")
+    .Title(Resources.UploadFile)
+    .Visible(false)
+    .Modal(true)
+        .Content(@<text>
+            <input type="text" id="HealthAttachmentId" name="HealthAttachmentId" hidden />
+            <div class="editor-field">
+                <input type="file" name="letter" id="letter[]" class="form-control" multiple />
+            </div>
+            <br />
+            <div class="editor-field">
+                @Html.TextArea("description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+            </div>
+            <br />
+            <div class="pull-right">
+                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("AttachArchiveFiles"))
+            </div>
+            <div id="uploadMessage" class="message" style="display:none; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                <!-- Success or Error message will be displayed here -->
+            </div>
+
+        </text>)
+        .Pinned(true)
+        .Draggable(true)
+        .Width(300)
+)
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+
+
+
+
+</script>
+<script>
+     function sendForApproval(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "HealthRankAndValueDepartmentSelfcare", new { area = "Health" })',
+            data: { id: id },
+            success: function(result) {
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+    function GetDate() {
+
+        $("#DateAmh").trigger("change");
+        $("#RecoredDateAmh").trigger("change");
+    }
+
+</script>
+
+<script>
+    function onMasterDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsOnlineApproved === true) {
+
+                row.css("background-color", "darkgrey");
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+
+            }
+
+            else if (dataItem.IsSendForApproval) {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").remove();
+            }
+
+
+
+        }
+
+    }
+    function onBranchChange(e) {
+        var branchId = $("#BranchId").data("kendoDropDownList").value();
+        console.log("the branchId=" + branchId);
+    }
+    function OpenAttachementWindow() {
+
+        $("#Healthgrid").val(masterId);
+
+        var wnd = $("#IncomingAttachementWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+    function filterperiods() {
+
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+
+
+    var masterId = 0;
+     function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+         var masterGrid = $("#Healthgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+         masterId = masterDataItem.HealthRankAndValueId;
+         var gridName = "#Validation_grid" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatuses", "HealthRankAndValueValidation")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).remove();
+                }
+
+                else if (r == "false") {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    //$(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+            }
+
+        });
+
+    }
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        //$("#HealthAttachmentGrid" + masterId).data("kendoGrid").dataSource.read();
+    }
+    function onDetailDataBound(e) {
+        var gridName = "#Validation_grid" + masterId;
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.Status == 0) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+              //  $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                $(".k-grid-top", gridName).remove();
+                row.css("background-color", "gray");
+            }
+            if (dataItem.IsDirect === false) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find("#approve").hide();
+            }
+
+        }
+    }
+</script>
+<script>
+    //function onBranch(e) {
+    //    var branchId = $("#BranchId").data("kendoDropDownList").value();
+    //    console.log("the branchId="+branchId);
+    //}
+    function EnableDisableBenefitType(e) {
+        var x = $('#IsOtherBenifit').is(':checked');;
+        if (x == true) {
+
+            $("#BenefitType").data("kendoDropDownList").enable(true);
+            // Disable the checkbox
+            $("#IsPartnerOrGov").prop("disabled", true);
+        }
+        else {
+
+            $("#BenefitType").data("kendoDropDownList").enable(false);
+            $("#BenefitType").data("kendoDropDownList").enable(false);
+
+            $("#IsPartnerOrGov").prop("disabled", false);
+
+            // $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+            $("#BenefitType").data("kendoDropDownList").val(0);
+            $("#BenefitType").trigger("change");
+        }
+
+    }
+
+    function AttachArchiveFiles() {
+        try {
+
+            $.ajax({
+                url: '@Url.Action("UploadIncomingHealthFiles", "HealthAttachments")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+
+                   // var kkk = $("#letter").get(0).files[0];
+                    $.each($("input[type=file]"), function (i, obj) {
+                        $.each(obj.files, function (j, file) {
+                            data.append('letter[' + j + ']', file);
+                        })
+                    });
+
+                    //data.append("file", $("#letter").get(0).files[0]);
+                    data.append("description", $("#description").val());
+                    data.append("masterId", masterId);
+
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#IncomingAttachementWindow").data("kendoWindow");
+                    wnd.close();
+
+                    $("#HealthAttachmentGrid" + masterId).data("kendoGrid").dataSource.read();
+                    //$("#IncommingLetterRegistration").data("kendoGrid").dataSource.read();
+                }
+            });
+        } catch (e) {
+            // alert("Please select the row!!");
+        }
+    }
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+</script>
+
+
+@(Html.Kendo().Window()
+            .Name("UploadDoc")
+            .Title("Upload File")
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Width(400).Content(
+            @<text>
+                <div class="form-group">
+                    <form id="uploadForm" action="@Url.Action("UploadIncomingHealthFiles", "HealthAttachments", new { })" method="post" , new { enctype="multipart/form-data" }>
+                        <input type="hidden" name="masterId" id="masterId">
+                        <div class="row">
+                            <div class="col-md-10">
+                                @Html.TextBox("file", "", new { type = "file", required = "true" })
+                                <br />
+                            </div>
+                        </div>
+                        <div>
+                            <div class="editor-field">
+                                @Html.TextArea("Description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-7"></div>
+                            <input type="submit" class="btn-primary k-button" value=" Submit " />
+                        </div>
+
+                    </form>
+                    <div id="uploadMessage" class="message" style="display:none; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                        <!-- Success or Error message will be displayed here -->
+                    </div>
+                </div>
+            </text>)
+)
+
+<script>
+    $(document).ready(function () {
+        // Handle form submission via AJAX
+        $('#uploadForm').submit(function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        // If upload was successful, display success message
+                        $('#uploadMessage').text(response.message).css('background-color', 'green').css('color', 'white').show();
+                    } else {
+                        // If upload failed, display error message
+                        $('#uploadMessage').text(response.message).css('background-color', 'red').css('color', 'white').show();
+                    }
+
+                    // Optionally close the window after some time
+                    setTimeout(function () {
+                        $('#UploadDoc').data('kendoWindow').close();
+                    }, 3000);
+                },
+                error: function () {
+                    // In case of AJAX error, show a generic error message
+                    $('#uploadMessage').text('An error occurred while uploading the file. Please try again.').css('background-color', 'red').css('color', 'white').show();
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        });
+    });
+   
+    function onBenefitTypeChange(e) {
+        var evaluationType = $("#BenefitType").data("kendoDropDownList");
+        var dStatus = evaluationType.value();
+        if (dStatus == 2) {
+            var showField = document.querySelector('.clasToBeShow');
+            
+            showField.style.display = 'block';
+          
+
+        }
+        else {
+            var hiddenField = document.querySelector('.clasToBeShow');
+          
+
+            hiddenField.style.display = 'none';
+
+        }
+
+
+    }
+    function onEdit(e) {
+        var evaluationType = $("#BenefitType").data("kendoDropDownList");
+        var dStatus = evaluationType.value();
+        if (dStatus == 2) {
+            var showField = document.querySelector('.clasToBeShow');
+            
+            showField.style.display = 'block';
+          
+
+        }
+        else {
+            var hiddenField = document.querySelector('.clasToBeShow');
+          
+
+            hiddenField.style.display = 'none';
+
+        }
+
+
+    }
+
+
+</script>

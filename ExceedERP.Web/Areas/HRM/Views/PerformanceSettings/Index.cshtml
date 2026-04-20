@@ -11,6 +11,9 @@
           {
               columns.Bound(c => c.PerformanceSettingId).Title("S.N").Width(80);
               columns.Bound(c => c.Value).Width(200);
+              columns.Bound(x => x.IsPeerAndInternalCustomerHide)
+                                  .ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPeerAndInternalCustomerHide #' " + " # if (IsPeerAndInternalCustomerHide) { #" + "checked='checked'" + "# } #" + " />").Width(160);
+
               columns.Bound(c => c.CreatedBy).Width(150);
               columns.Bound(c => c.DateCreated).Width(150);
 

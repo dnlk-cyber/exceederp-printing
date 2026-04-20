@@ -33,7 +33,7 @@
     .DataSource(dataSource => dataSource
     .Ajax()
     .PageSize(20)
-    .ServerOperation(false)
+   
                 .Model(model =>
                 {
                     model.Id(p => p.MaintenanceIntervalId);
@@ -42,10 +42,10 @@
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-                .Create(update => update.Action("Interval_Create", "MaintenanceInterval"))
-                .Read(read => read.Action("Intervals_Read", "MaintenanceInterval"))
-                .Update(update => update.Action("Interval_Update", "MaintenanceInterval"))
-                .Destroy(update => update.Action("Interval_Destroy", "MaintenanceInterval"))
+                .Create(update => update.Action("Interval_Create", "MaintenanceInterval").Data("sendForgery"))
+                .Read(read => read.Action("Intervals_Read", "MaintenanceInterval").Data("sendForgery"))
+                .Update(update => update.Action("Interval_Update", "MaintenanceInterval").Data("sendForgery"))
+                .Destroy(update => update.Action("Interval_Destroy", "MaintenanceInterval").Data("sendForgery"))
     )
 )
 <br />
@@ -86,7 +86,7 @@
     .DataSource(dataSource => dataSource
     .Ajax()
     .PageSize(20)
-    .ServerOperation(false)
+   
                 .Model(model =>
                 {
                     model.Id(p => p.EquipmentInformationId);
@@ -98,10 +98,10 @@
                             .Error("error_handler(\"equipment_specific_Setting_grid\")")
                             .RequestStart("onRequestStart(\"equipment_specific_Setting_grid\")")
                             .RequestEnd("onRequestEnd(\"equipment_specific_Setting_grid\")"))
-                .Create(update => update.Action("Equipment_Create", "EquipmentInformation"))
-                .Read(read => read.Action("Equipments_Read", "EquipmentInformation"))
-                .Update(update => update.Action("Equipment_Update", "EquipmentInformation"))
-                .Destroy(update => update.Action("Equipment_Destroy", "EquipmentInformation"))
+                .Create(update => update.Action("Equipment_Create", "EquipmentInformation").Data("sendForgery"))
+                .Read(read => read.Action("Equipments_Read", "EquipmentInformation").Data("sendForgery"))
+                .Update(update => update.Action("Equipment_Update", "EquipmentInformation").Data("sendForgery"))
+                .Destroy(update => update.Action("Equipment_Destroy", "EquipmentInformation").Data("sendForgery"))
     )
 )
 

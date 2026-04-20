@@ -17,23 +17,35 @@ namespace ExceedERP.Helpers.Common
 
         public static Image GetUserSignature(string userName)
         {
-            if(userName!=null)
-            {
-                byte[] byteArrayIn = null;
-                if (InventoryConfigurationHelper.IsElectronicSignatureEnabled())
-                {
-                    byteArrayIn = GetUserSignatureData(userName);
+            byte[] byteArrayIn = null;
 
-                }
-                
-                return ByteArrayToImage(byteArrayIn);
-            }
-            else
+            if (GlobalHelper.IsElectronicSignatureEnabled()&& !string.IsNullOrEmpty(userName))
             {
-                return null;
+                byteArrayIn = UserHelper.GetUserSignature(userName);
+
             }
-          
+            return ByteArrayToImage(byteArrayIn);
         }
+
+        //public static Image GetUserSignature(string userName)
+        //{
+        //    if(userName!=null)
+        //    {
+        //        byte[] byteArrayIn = null;
+        //        if (InventoryConfigurationHelper.IsElectronicSignatureEnabled())
+        //        {
+        //            byteArrayIn = GetUserSignatureData(userName);
+
+        //        }
+                
+        //        return ByteArrayToImage(byteArrayIn);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+          
+        //}
         public static Image ByteArrayToImage(byte[] byteArrayIn)
         {
             if (byteArrayIn != null)
@@ -47,7 +59,6 @@ namespace ExceedERP.Helpers.Common
             
         }
 
-        
         public static byte[] GetUserSignatureData(string userName)
         {
             string userid = "";

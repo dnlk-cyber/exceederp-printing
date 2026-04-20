@@ -124,6 +124,7 @@ namespace ExceedERP.Core.Domain.HRM.Payroll
         public string BankAccount { get; set; }
         public int BranchId { get; set; }
         public virtual Branch Branch { get; set; }
+        public decimal OriginalBasicSalary { get; set; }
     }
 
     public class PayrollDistribution : TrackUserOperation

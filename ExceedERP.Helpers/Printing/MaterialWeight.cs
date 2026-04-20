@@ -10,7 +10,7 @@ namespace ExceedERP.Helpers.Printing
 {
     public static class MaterialWeight
     {
-        readonly static private ExceedDbContext db = new ExceedDbContext();
+       
 
         public static double TotalProductWeight(PrintingCostEstimation estimation)
         {
@@ -30,78 +30,98 @@ namespace ExceedERP.Helpers.Printing
         }
         public static double TextPaperWeight(PrintingCostEstimation estimation)
         {
-            var materialCost = db.PrintingEstimationMaterialCosts
-                .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
-                && x.EstimationMaterialType == EstimationMaterialType.TextPaper); // text paper
-            if (materialCost == null)
-                return 0;
+            using (var db = new ExceedDbContext())
+            {
+                var materialCost = db.PrintingEstimationMaterialCosts
+               .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
+               && x.EstimationMaterialType == EstimationMaterialType.TextPaper); // text paper
+                if (materialCost == null)
+                    return 0;
 
-            var paper = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.TextPaperSizeId); // text paper
-            if (paper == null)
-                return 0;
-            var categoryItem = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
-            if (categoryItem == null)
-                return 0;
-            return ((paper.Length * paper.Width * categoryItem.Weight) / 10000000)
-                * estimation.ProductQuantity * estimation.Pages / estimation.TextPrintSide;
+                var paper = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.TextPaperSizeId); // text paper
+                if (paper == null)
+                    return 0;
+                var categoryItem = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
+                if (categoryItem == null)
+                    return 0;
+                return ((paper.Length * paper.Width * categoryItem.Weight) / 10000000)
+                    * estimation.ProductQuantity * estimation.Pages / estimation.TextPrintSide;
+
+            }
 
         }
 
         public static double CoverPaperWeight(PrintingCostEstimation estimation)
         {
-            var materialCost = db.PrintingEstimationMaterialCosts
+            using (var db = new ExceedDbContext())
+            {
+                var materialCost = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
                 && x.EstimationMaterialType == EstimationMaterialType.CoverPaper); // cover paper
-            if (materialCost == null)
-                return 0;
-            var paper = db.PrintingPaperSizes
-                .FirstOrDefault(x => x.PrintingPaperSizeId == estimation.CoverPaperSizeId); // cover paper
-            if (paper == null)
-                return 0;
-            var categoryItem = db.PrintingMaterialCategoryItems
-                .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
-            if (categoryItem == null)
-                return 0;
-            return ((paper.Length * paper.Width * categoryItem.Weight) / 10000000) * estimation.ProductQuantity;
+                if (materialCost == null)
+                    return 0;
+                var paper = db.PrintingPaperSizes
+                    .FirstOrDefault(x => x.PrintingPaperSizeId == estimation.CoverPaperSizeId); // cover paper
+                if (paper == null)
+                    return 0;
+                var categoryItem = db.PrintingMaterialCategoryItems
+                    .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
+                if (categoryItem == null)
+                    return 0;
+                return ((paper.Length * paper.Width * categoryItem.Weight) / 10000000) * estimation.ProductQuantity;
+            }
+            
 
         }
 
         public static double PackingPaperWeight(PrintingCostEstimation estimation)
         {
-            var materialCost = db.PrintingEstimationMaterialCosts
+            using (var db = new ExceedDbContext())
+            {
+                var materialCost = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
                 && x.EstimationMaterialType == EstimationMaterialType.WrappingPaper); // packing paper
 
-            if (materialCost == null)
-                return 0;
+                if (materialCost == null)
+                    return 0;
 
-            var categoryItem = db.PrintingMaterialCategoryItems
-                .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
-            if (categoryItem == null)
-                return 0;
-            return ((categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000) * (double)materialCost.Quantity;
+                var categoryItem = db.PrintingMaterialCategoryItems
+                    .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
+                if (categoryItem == null)
+                    return 0;
+                return ((categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000) * (double)materialCost.Quantity;
+
+            }
 
         }
 
         public static double InkWeight(PrintingCostEstimation estimation)
         {
-            var inkText = db.PrintingEstimationMaterialCosts
+            using (var db = new ExceedDbContext())
+            {
+                var inkText = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
                 && x.EstimationMaterialType == EstimationMaterialType.InkText)?.Quantity ?? 0; // ink text
-            var inkCover = db.PrintingEstimationMaterialCosts
-                .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
-                && x.EstimationMaterialType == EstimationMaterialType.InkCover)?.Quantity ?? 0; // ink cover
-            return (double)(inkText + inkCover) * 0.6;
+                var inkCover = db.PrintingEstimationMaterialCosts
+                    .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
+                    && x.EstimationMaterialType == EstimationMaterialType.InkCover)?.Quantity ?? 0; // ink cover
+                return (double)(inkText + inkCover) * 0.6;
+            }
+            
 
         }
 
         public static double GlueWeight(PrintingCostEstimation estimation)
         {
-            var glueQuantity = db.PrintingEstimationMaterialCosts
+            using (var db = new ExceedDbContext())
+            {
+                var glueQuantity = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
                 && x.EstimationMaterialType == EstimationMaterialType.Glue)?.Quantity ?? 0; // ink text
 
-            return (double)(glueQuantity) * 0.6;
+                return (double)(glueQuantity) * 0.6;
+
+            }
 
         }
     }

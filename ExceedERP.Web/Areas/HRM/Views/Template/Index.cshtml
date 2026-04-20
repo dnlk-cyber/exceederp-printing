@@ -1,46 +1,125 @@
-﻿@using System.Collections
-@using ExceedERP.Core.Domain.HRM.Templates
-@using ExceedERP.Core.Localization
+﻿@using ExceedERP.Core.Localization
+@using PagedList.Mvc
+@using PagedList
+@model PagedList.IPagedList<ExceedERP.Core.Domain.HRM.Templates.Template>
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div>
-    <div class="cards-container">
-        <div class="k-card k-card-horizontal">
-            
-            <div class="k-vbox k-column">
-                <div class="k-card-header">
-                    <h5 class="k-card-title">Card Title</h5>
-                </div>
-                <div class="k-card-body">
-                    <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                </div>
-                <div class="k-card-actions k-card-actions-stretched k-card-actions-horizontal">
-                    <span class="k-card-action">
-                        <span class="k-button k-flat fa fa-edit">Edit</span>
-                    </span>
-                    <span class="k-card-action">
-                        <span class="k-button k-flat k-primary fa fa-trash">Delete</span>
-                    </span>
-                </div>
-            </div>
-        </div>
+<legend>@Resources.Templates</legend>
 
-      
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-12 text-left">
+            @Html.ActionLink(Resources.ActionButton_AddNewRecord, "Create", null, new { @class = "fa fa-plus btn btn-primary" })
+        </div>
     </div>
 
-    <style>
-        .cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+    <div class="row gx-3 gy-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex">
+                <div class="k-card flex-fill">
+                    <div class="k-card-header">
+                        <h5 class="k-card-title">@Html.DisplayFor(modelItem => item.TemplateType)</h5>
+                    </div>
+                    <div class="k-card-header">
+                        <h5 class="k-card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+                    </div>
+                    <div class="k-card-body">
+                        <p>@Html.DisplayFor(modelItem => item.Document)</p>
+                    </div>
+                    <div class="k-card-actions k-card-actions-stretched k-card-actions-horizontal">
+                        <span class="k-card-action">
+                            <span class="k-button k-flat">
+                                @Html.ActionLink(Resources.ActionButton_Edit, "Edit", new { id = item.TemplateId }, new { @class = "fa fa-edit btn btn-outline-secondary" })
+                            </span>
+                        </span>
+                        <span class="k-card-action">
+                            <span class="k-button k-flat k-primary">
+                                @Html.ActionLink(Resources.ActionButton_Cancel, "Delete", new { id = item.TemplateId }, new { @class = "fa fa-trash btn btn-outline-danger", style = "color:red;" })
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
         }
+    </div>
 
-        .k-card {
-            margin: 5%;
-            width: 300px;
-        }
-    </style>
+    <footer class="pagination-footer">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+        {
+            UlElementClasses = new[] { "custom-pagination" }
+        })
+    </footer>
 </div>
 
+<style>
+    .k-card {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: box-shadow 0.3s ease, transform 0.2s ease;
+        height: 100%;
+    }
+
+        .k-card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+    .k-card-title {
+        font-size: 20px;
+        font-weight: bold;
+        word-wrap: break-word;
+    }
+
+    .k-card-body p {
+        font-size: 16px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    .pagination-footer {
+        padding: 10px 15px;
+        border-top: 1px solid #ddd;
+        background-color: #f9f9f9;
+        text-align: right;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 20px;
+    }
+
+    .custom-pagination {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        font-size: 12px;
+    }
+
+        .custom-pagination li {
+            display: inline;
+            margin-left: 5px;
+        }
+
+            .custom-pagination li a,
+            .custom-pagination li span {
+                padding: 4px 8px;
+                background-color: #007bff;
+                color: white;
+                text-decoration: none;
+                border-radius: 3px;
+                font-size: 12px;
+            }
+
+            .custom-pagination li.disabled span,
+            .custom-pagination li.active span {
+                background-color: #0056b3;
+            }
+</style>

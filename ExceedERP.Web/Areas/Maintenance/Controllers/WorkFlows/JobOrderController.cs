@@ -1,4 +1,4 @@
-﻿using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
+using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
@@ -8,10 +8,12 @@ using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.CRM;
+//using ExceedERP.Helpers.CRM;
 using ExceedERP.Helpers.Fleet;
 using ExceedERP.Web.Areas.Maintenance.Models;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Hubs;
+using ExceedERP.Web.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -27,6 +29,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
     [AuthorizeRoles(MaintenanceRoles.MaintenanceOrderUser)]
     public class JobOrderController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         IJobOrderDetailService _JobOrderDetailService;
         private IJobOrderDetailService JobOrderDetailService;
         private IJobOrderService _JobOrderService;
@@ -103,6 +106,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Code = s.RepairTypeID,
                 Name = s.Code + "-" + s.Name
             }).ToList();
+            ViewData["ServiceGroup"] = db.ServiceGroupSettings.Select(s => new
+            {
+                Code = s.ServiceGroupSettingId,
+                Name = s.ServiceGroupName
+            }).ToList();
             ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
             {
                 Code = s.ItemCategoryCode,
@@ -158,12 +166,23 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             ViewData["Structure"] = structure;
 
-            ViewData["Branches"] = branches;
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             BranchId = i.Id
+         }).AsQueryable();
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                var businessUnits = db.BusinessUnits.ToList();
-                ViewData["BusinessUnits"] = businessUnits;
+                var businessUnits = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
+
+          ViewData["BusinessUnits"] = businessUnits;
             }
 
             var items = db.ApSetupItems.ToList();
@@ -194,23 +213,33 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return Redirect("Index");
         }
+
+        private int GetEmployeeBranch(string userName)
+
+        {
+            int BranchId = 0;
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            if (empId!=null)
+            {
+                BranchId = db.Placements.FirstOrDefault(x => x.EmployeeId == empId).BranchId;
+            }
+            return BranchId;
+        }
         public ActionResult JobOrder_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
-
+            var employeeBranch = GetEmployeeBranch(User.Identity.Name);
+            List<MaintenanceCenter> GetMaintenanceCenters = new List<MaintenanceCenter>();
+            GetMaintenanceCenters = db.MaintenanceCenter.Where(x => x.BranchId == employeeBranch).ToList();
+            List<string> MaintenanceCenterIds = new List<string>();
+            MaintenanceCenterIds = GetMaintenanceCenters.Select(x => x.MaintenanceCenterID.ToString()).ToList();
             IQueryable<JobOrder> jobOrders =
                 db.JobOrder
                 .AsNoTracking()
-                .ToList()
                 //.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
-                .Where(x => mybraches.Contains(x.CreatedAtBranchId) || x.CreatedAtBranchId == 0)
-                .Where(x => !x.IsSecondOnlineApproved)
+                .Where(x=> MaintenanceCenterIds.Contains(x.MaintenanceCenterId.ToString()))
+                //.Where(x => !x.IsSecondOnlineApproved)
                 .AsQueryable();
-            if (GlobalHelper.IsMultipleBusinessUnit())
-            {
-                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
-                jobOrders = jobOrders.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId) || x.CreatedAtBusinessUnitId == 0);
-            }
             DataSourceResult result = jobOrders.ToDataSourceResult(request, j => new JobOrder
             {
                 IsPM = j.IsPM,
@@ -235,6 +264,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 AdvanceMeasure = j.AdvanceMeasure,
                 Referance = j.Referance,
                 Odometer = j.Odometer,
+                FleetsID = j.FleetsID,
                 //InspectorComments = GetMaintenaceDuration(j.JobOrderID),
                 IsOnlineApproved = j.IsOnlineApproved,
                 SecondOnlineApprovedTime = j.SecondOnlineApprovedTime,
@@ -261,6 +291,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 CreatedAtBranchId = j.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = j.CreatedAtBusinessUnitId,
                 IsInsured = j.IsInsured,
+                KMReading = j.KMReading,
+                GPSInfo = j.GPSInfo,
                 Description = j.Description
             });
 
@@ -269,11 +301,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult JobOrderClosed_Read([DataSourceRequest] DataSourceRequest request)
         {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
             IQueryable<JobOrder> jobOrders =
                 db.JobOrder
-                .AsNoTracking()
-                .ToList()
-                .Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+                //.AsNoTracking()
+                //.ToList()
+                // .Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+                .Where(x => mybraches.Contains(x.CreatedAtBranchId) || x.CreatedAtBranchId == 0)
                 .Where(x => x.Status == "Closed")
                 .AsQueryable();
             DataSourceResult result = jobOrders.ToDataSourceResult(request, j => new JobOrder
@@ -326,12 +361,15 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult JobOrderClosing_Read([DataSourceRequest] DataSourceRequest request)
         {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
             IQueryable<JobOrder> jobOrders =
                 db.JobOrder
-                .AsNoTracking()
-                .ToList()
-                .Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
-                .Where(x => x.Status != "Closed")
+                 //.AsNoTracking()
+                 //.ToList()
+                 //.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+                 .Where(x => mybraches.Contains(x.CreatedAtBranchId) || x.CreatedAtBranchId == 0)
+                 .Where(x => x.Status != "Closed")
                 .Where(x => x.IsSubmittedToServiceCenter)
                 .AsQueryable();
             DataSourceResult result = jobOrders.ToDataSourceResult(request, j => new JobOrder
@@ -802,10 +840,42 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
                 jobOrder.Status = MaintenanceConst.Delivered;
+                jobOrder.SecondOnlineApprovedBy = User.Identity.Name;
+                jobOrder.SecondOnlineApprovedTime = DateTime.Now;
                 db.JobOrder.Attach(jobOrder);
                 db.Entry(jobOrder).State = EntityState.Modified;
                 db.SaveChanges();
+                List<UserVM> list = new List<UserVM>();
+                list = UserInformationHelper.GetUsersInRole(MaintenanceRoles.ServiceUser);
+                foreach (var user in list)
+                {
+                    NotifModels jobRequesterNotif = new NotifModels
+                    {
+                        UserId = user.UserId,
+                        Title = "Delivered Maintenance",
+                        Message = $"There is delivered maintenance",
+                        URL = "/Maintenance/JobOrder",
+
+                    };
+                    Notify.NotifyUser(jobRequesterNotif);
+                }
+                list = UserInformationHelper.GetUsersInRole(MaintenanceRoles.MaintenanceOrderUser);
+                foreach (var user in list)
+                {
+                    NotifModels jobApproverNotif = new NotifModels
+                    {
+                        //UserId = UserInformationHelper.GetEmployeeUserId(empId.),
+                        UserId = user.UserId,
+                        Title = "Delivered Maintenance",
+                        Message = $"There is delivered maintenance",
+                        URL = "/Maintenance/JobOrder"
+
+                    };
+                    Notify.NotifyUser(jobApproverNotif);
+                }
+
                 return Json(new[] { jobOrder }.ToDataSourceResult(request, ModelState));
+
 
             }
             else
@@ -825,15 +895,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             IJobOrderDetailService _JobOrderDetailService = new JobOrderDetailService();
             IServiceSpareService _ServiceSpareService = new ServiceSpareService();
             var JobOrder = _JobOrderService.GetById(jobOrder.JobOrderID);
-
             JobOrder.IsSecondOnlineApproved = true;
             JobOrder.SecondOnlineApprovedBy = User.Identity.Name;
             JobOrder.SecondOnlineApprovedTime = DateTime.Now;
             JobOrder.Status = MaintenanceConst.Closed;
-
-
             var updateStatus = _JobOrderService.Update(JobOrder);
-
             var jobOrderDetail = db.JobOrderDetail.Where(x => x.JobOrderID == JobOrder.JobOrderID).ToList();
             var jobRequests = db.JobRequest.Where(x => x.Num == JobOrder.Referance).ToList();
             foreach (var item in jobOrderDetail)
@@ -886,7 +952,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                         GenerateExternalPaymentRequest(jobOrder.Num);
                     }
                 }
-
             }
 
             // return Json(new[] { JobOrder }.ToDataSourceResult(request));
@@ -903,7 +968,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             var jobOrder = db.JobOrder.FirstOrDefault(x => x.Num == num);
             if (jobOrder != null)
             {
-                
                 var serviceCenterJob = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
                 if (serviceCenterJob != null)
                 {
@@ -917,11 +981,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                         EquipmentName = jobOrder.EquipmentName,
                         ExitDate = jobOrder.DateCompleted,
                         FleetId = jobOrder.FleetsID,
-                        
                         MaintenanceCenterId = serviceCenterJob.MaintenanceCenterId,
-
                         JobNum = (int)serviceCenterJob.Num
-
                     };
                     db.ExternalMaintenancePaymentRequests.Add(externalMaintenancePaymentRequest);
                     db.SaveChanges();
@@ -1032,9 +1093,37 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
                 _JobOrderService.Update(JobOrder);
-
+              
             }
+            List<UserVM> list = new List<UserVM>();
+            list = UserInformationHelper.GetUsersInRole(MaintenanceRoles.ServiceUser);
+            foreach (var user in list)
+            {
+                NotifModels jobRequesterNotif = new NotifModels
+                {
+                    UserId = user.UserId,
+                    Title = "Delivered Maintenance",
+                    Message = $"There is delivered maintenance",
+                    URL ="/Maintenance/JobOrder",
 
+                };
+                Notify.NotifyUser(jobRequesterNotif);
+            }
+            list = UserInformationHelper.GetUsersInRole(MaintenanceRoles.MaintenanceOrderUser);
+            foreach (var user in list)
+            {
+                NotifModels jobApproverNotif = new NotifModels
+                {
+                    //UserId = UserInformationHelper.GetEmployeeUserId(empId.),
+                    UserId = user.UserId,
+                    Title = "Delivered Maintenance",
+                    Message = $"There is delivered maintenance",
+                    URL ="/Maintenance/JobOrder"
+
+                };
+                Notify.NotifyUser(jobApproverNotif);
+            }
+            
             return Json(new[] { JobOrder }.ToDataSourceResult(request));
         }
 
@@ -1076,6 +1165,43 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
                 _JobOrderService.Update(JobOrder);
+                // MaintenanceRoles.ServiceUser, MaintenanceRoles.MaintenanceOrderUser
+                List<UserVM> list = new List<UserVM>();
+                //MaintenanceRoles.MaintenanceOrderUser MaintenanceRoles.MaintenanceRequestor, MaintenanceRoles.MaintenanceRequestApprover, MaintenanceRoles.MaintenanceServiceApprover
+                list = UserInformationHelper.GetUsersInRole(MaintenanceRoles.MaintenanceOrderUser);
+                foreach (var user in list)
+                {
+                    NotifModels jobRequesterNotif = new NotifModels
+                    {
+                        UserId = user.UserId,
+                        Title = "Technical to be approved",
+                        Message = "There is new technical document to be approved",
+                        DeadLine = DateTime.Now,
+                         URL = Url.Action("Index", "JobOrder", new { area = "Maintenance" }),
+                    };
+
+
+                    Notify.NotifyUser(jobRequesterNotif);
+                }
+                List<UserVM> maintenanceServiceUser = new List<UserVM>();
+                //MaintenanceRoles.MaintenanceOrderUser MaintenanceRoles.MaintenanceRequestor, MaintenanceRoles.MaintenanceRequestApprover, MaintenanceRoles.MaintenanceServiceApprover
+                list = UserInformationHelper.GetUsersInRole(MaintenanceRoles.ServiceUser);
+                foreach (var user in list)
+                {
+                    NotifModels jobRequesterNotif = new NotifModels
+                    {
+                        UserId = user.UserId,
+                        Title = "Technical to be approved",
+                        Message = "There is new technical document to be approved",
+                        DeadLine = DateTime.Now,
+                        URL = Url.Action("Index", "JobOrder", new { area = "Maintenance" }),
+
+                    };
+
+
+                    Notify.NotifyUser(jobRequesterNotif);
+                }
+
 
             }
             ViewBag.ServiceType = db.MaintenanceType.ToList();

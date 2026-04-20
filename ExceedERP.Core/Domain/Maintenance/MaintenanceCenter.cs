@@ -35,5 +35,6 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string Name { get; set; }
         public string Description { get; set; }
         public Guid MaintenanceCenterId { get; set; }
+        public Decimal Weight { get; set; }
     }
 }

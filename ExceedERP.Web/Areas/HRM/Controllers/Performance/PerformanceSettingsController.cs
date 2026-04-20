@@ -29,6 +29,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             DataSourceResult result = performances.ToDataSourceResult(request, performance => new {
                 PerformanceSettingId = performance.PerformanceSettingId,
                 Value = performance.Value,
+                IsPeerAndInternalCustomerHide = performance.IsPeerAndInternalCustomerHide,
                 DateCreated = performance.DateCreated,
                 CreatedBy = performance.CreatedBy,
                 LastModified = performance.LastModified,
@@ -41,6 +42,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PerformanceSettings_Create([DataSourceRequest]DataSourceRequest request, PerformanceSetting performance)
         {
+            var performanceSetting = db.PerformanceSettings.FirstOrDefault();
+            if (performanceSetting !=null)
+            {
+                ModelState.AddModelError("", "You can't add more than one record");
+                return Json(new[] { performance }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
 
@@ -71,8 +79,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
-
-
                 UserHelper.OperationLog(Request.UserHostAddress, "Performance Setting ", "Success", User.Identity.Name, User.Identity.Name + " update Performance Seting called " + entity.Value + " date " + DateTime.Today.ToShortDateString(), Modules.HRM);
 
 
@@ -104,6 +110,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 PerformanceSettingId = performance.PerformanceSettingId,
                 Value = performance.Value,
+                IsPeerAndInternalCustomerHide = performance.IsPeerAndInternalCustomerHide,
                 DateCreated= performance.DateCreated,
                 CreatedBy = performance.CreatedBy,
                 LastModified = performance.LastModified,

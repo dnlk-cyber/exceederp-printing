@@ -1,5 +1,4 @@
-﻿
-using ExceedERP.Core.Domain.Maintenance;
+﻿using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.Maintenance.Models;
 using System;

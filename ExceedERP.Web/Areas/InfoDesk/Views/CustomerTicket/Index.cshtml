@@ -17,7 +17,7 @@
                              .Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
           columns.Bound(c => c.Description).Width(180);
           columns.Bound(c => c.TicketPriority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(100);
-          columns.ForeignKey(c => c.SupportGroup_HelpDeskId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(150);
+          columns.ForeignKey(c => c.SupportGroup_HelpDeskId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
           columns.Bound(c => c.TicketStatus)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(100);
           columns.Bound(c => c.Rate).Width(120);
           columns.Bound(c => c.DueDate).Width(120);
@@ -37,7 +37,7 @@
       })
       .ToolBar(toolbar =>
       {
-          // toolbar.Create();
+           toolbar.Create();
       })
       .Events(ev =>
       {
@@ -150,8 +150,8 @@
                 {
 
 
-                    columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList");
-                    columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList");
+                    columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList").Filterable(ftb => ftb.Multi(true).Search(true));
+                    columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Filterable(ftb => ftb.Multi(true).Search(true));
                     columns.Bound(c => c.Role);
                     columns.Bound(c => c.AssignedDate);
                     columns.Bound(c => c.RootCause);
@@ -253,7 +253,7 @@
                 .Name("MaterialUsed_#=AssignTicket_HelpDeskId#")
                 .Columns(columns =>
                 {
-                    columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(120);
+                    columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                     columns.Bound(c => c.Quantity).Width(120);
                     columns.Bound(c => c.Remark).Width(120);
                     columns.Command(command =>
@@ -569,3 +569,47 @@
             </div>
         </text>)
 )
+          
+  <script>
+      function filterAssetsForReturn() {
+
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryId").val(),
+            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
+        };
+
+      }
+
+    function filterSubCategory() {
+
+        return {
+            categoryCode: $("#FixedAssetCategoryId").data("kendoDropDownList").value(),
+            text: $("#FixedAssetSubCategoryId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+      function onSelectFixedAssetId()
+      {
+            var id = $("#AssetRegistrationId").data("kendoDropDownList").value();
+            if (!id) return; // Skip if no selection
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetAssetDetails", "FixedAssetDataProvider", new { area = "FixedAsset" })',
+                data: { id: id },
+                success: function (result) {
+                    // Fill form fields with returned asset data
+                    $("#TagNo").val(result.Tag).trigger("change");
+                    $("#ItemName").val(result.Name).trigger("change");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Asset fetch failed:", error);
+                    alert("Unable to fetch asset details.");
+                }
+            });
+
+
+      }
+
+
+
+  </script>

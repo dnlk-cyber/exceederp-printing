@@ -34,13 +34,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 ProformaTeamId = team.ProformaTeamId,
                 EmployeeId = team.EmployeeId,
                 Title = team.Title,
+                SignedBy = team.SignedBy,
+                SginTime = team.SginTime,
+                Signed = team.Signed,
                 OrgBranchName = team.OrgBranchName,
                 DateCreated = team.DateCreated,
                 LastModified = team.LastModified,
                 CreatedBy = team.CreatedBy,
                 ModifiedBy = team.ModifiedBy
             });
-
+                
             return Json(result);
         }
 
@@ -56,6 +59,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                         ProformaTeamId =id,
                         EmployeeId = team.EmployeeId,
                         Title = team.Title,
+                        SignedBy = team.SignedBy,
+                        SginTime = team.SginTime,
+                        Signed = team.Signed,
                         OrgBranchName = team.OrgBranchName,
                         DateCreated = DateTime.Today,
                         LastModified = team.LastModified,
@@ -87,6 +93,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                         {
                             EmployeeId= team.EmployeeId,
                             Title = team.Title,
+                            SignedBy = team.SignedBy,
+                            SginTime = team.SginTime,
+                            Signed = team.Signed,
                             ProformaTeamMemberId = team.ProformaTeamMemberId,
                             ProformaTeamId = team.ProformaTeamId,
                             OrgBranchName = team.OrgBranchName,
@@ -121,6 +130,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     ProformaTeamMemberId = team.ProformaTeamMemberId,
                     ProformaTeamId = team.ProformaTeamId,
                     EmployeeId = team.EmployeeId,
+                    Title = team.Title,
+                    SignedBy = team.SignedBy,
+                    SginTime = team.SginTime,
+                    Signed = team.Signed,
                     OrgBranchName = team.OrgBranchName,
                     DateCreated = team.DateCreated,
                     LastModified = team.LastModified,

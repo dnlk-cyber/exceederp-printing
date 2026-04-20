@@ -273,6 +273,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         if (assignment != null)
                         {
                             payroldata.BasicSalary = assignment.Salary;
+                            payroldata.OriginalBasicSalary = assignment.Salary;
                             //branchCode = assignment.Branch.Code;
                             var br = db.Branch.Find(assignment.BranchId);
                             if(br != null)

@@ -1,4 +1,4 @@
-﻿
+﻿using ExceedERP.Core.Domain.Construction;
 using ExceedERP.Core.Domain.Planning.Project;
 using ExceedERP.DataAccess.Context;
 using System;

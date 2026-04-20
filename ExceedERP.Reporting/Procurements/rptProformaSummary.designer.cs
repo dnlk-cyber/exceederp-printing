@@ -93,6 +93,7 @@ namespace ExceedERP.Reporting.Procurements
             this.table2 = new Telerik.Reporting.Table();
             this.textBox28 = new Telerik.Reporting.TextBox();
             this.textBox35 = new Telerik.Reporting.TextBox();
+            this.pictureBox2 = new Telerik.Reporting.PictureBox();
             this.TeamOds = new Telerik.Reporting.ObjectDataSource();
             this.textBox10 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
@@ -108,14 +109,13 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox24 = new Telerik.Reporting.TextBox();
             this.textBox31 = new Telerik.Reporting.TextBox();
             this.textBox58 = new Telerik.Reporting.TextBox();
+            this.pictureBox1 = new Telerik.Reporting.PictureBox();
+            this.pictureBox3 = new Telerik.Reporting.PictureBox();
+            this.pictureBox4 = new Telerik.Reporting.PictureBox();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.subReport1 = new Telerik.Reporting.SubReport();
             this.letterOds = new Telerik.Reporting.ObjectDataSource();
             this.SecondWinnerSupplierODS = new Telerik.Reporting.ObjectDataSource();
-            this.pictureBox2 = new Telerik.Reporting.PictureBox();
-            this.pictureBox1 = new Telerik.Reporting.PictureBox();
-            this.pictureBox3 = new Telerik.Reporting.PictureBox();
-            this.pictureBox4 = new Telerik.Reporting.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.headerSubReport1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -516,9 +516,9 @@ namespace ExceedERP.Reporting.Procurements
             this.tblSingleSummary.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.94387853145599365D)));
             this.tblSingleSummary.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.91047430038452148D)));
             this.tblSingleSummary.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.90212273597717285D)));
-            this.tblSingleSummary.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19610019028186798D)));
+            this.tblSingleSummary.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19610020518302918D)));
             this.tblSingleSummary.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21306471526622772D)));
-            this.tblSingleSummary.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.17777025699615479D)));
+            this.tblSingleSummary.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.17777027189731598D)));
             this.tblSingleSummary.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21306447684764862D)));
             this.tblSingleSummary.Body.SetCellContent(0, 0, this.textBox43);
             this.tblSingleSummary.Body.SetCellContent(0, 1, this.textBox60);
@@ -761,7 +761,7 @@ namespace ExceedERP.Reporting.Procurements
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.2916665077209473D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.9500000476837158D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6624996662139893D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21250008046627045D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21250002086162567D)));
             this.table2.Body.SetCellContent(0, 0, this.textBox28);
             this.table2.Body.SetCellContent(0, 1, this.textBox35);
             this.table2.Body.SetCellContent(0, 2, this.pictureBox2);
@@ -779,10 +779,10 @@ namespace ExceedERP.Reporting.Procurements
             this.table2.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox28,
             this.textBox35,
+            this.pictureBox2,
             this.textBox27,
             this.textBox34,
-            this.textBox29,
-            this.pictureBox2});
+            this.textBox29});
             this.table2.KeepTogether = false;
             this.table2.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(3D));
             this.table2.Name = "table2";
@@ -808,6 +808,24 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox35.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox35.StyleName = "";
             this.textBox35.Value = "= Fields.Title";
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Bindings.Add(new Telerik.Reporting.Binding("Value", "= Fields.Signature"));
+            this.pictureBox2.MimeType = "";
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6624996662139893D), Telerik.Reporting.Drawing.Unit.Inch(0.21250008046627045D));
+            this.pictureBox2.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.ScaleProportional;
+            this.pictureBox2.Style.BackgroundColor = System.Drawing.Color.White;
+            this.pictureBox2.Style.BorderColor.Bottom = System.Drawing.Color.DarkGray;
+            this.pictureBox2.Style.BorderColor.Right = System.Drawing.Color.DarkGray;
+            this.pictureBox2.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.pictureBox2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.pictureBox2.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
+            this.pictureBox2.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.pictureBox2.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(0D);
+            this.pictureBox2.Style.BorderWidth.Right = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.pictureBox2.Value = "";
             // 
             // TeamOds
             // 
@@ -1003,57 +1021,6 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox58.Style.Visible = true;
             this.textBox58.Value = "Sign";
             // 
-            // reportHeaderSection1
-            // 
-            this.reportHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.90000003576278687D);
-            this.reportHeaderSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
-            this.subReport1});
-            this.reportHeaderSection1.Name = "reportHeaderSection1";
-            // 
-            // subReport1
-            // 
-            this.subReport1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Cm(0.00010076903708977625D), Telerik.Reporting.Drawing.Unit.Cm(0.00010004234354710206D));
-            this.subReport1.Name = "subReport1";
-            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormTitle", "= Parameters.FormTitle.Value"));
-            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormNumber", "= Parameters.FormNumber.Value"));
-            instanceReportSource1.ReportDocument = this.headerSubReport1;
-            this.subReport1.ReportSource = instanceReportSource1;
-            this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(14.491129875183106D), Telerik.Reporting.Drawing.Unit.Cm(2.2858002185821533D));
-            // 
-            // letterOds
-            // 
-            this.letterOds.DataMember = "GetProforma";
-            this.letterOds.DataSource = typeof(ExceedERP.Reporting.Procurements.DataSource.ReportTemplateDS);
-            this.letterOds.Name = "letterOds";
-            this.letterOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});
-            // 
-            // SecondWinnerSupplierODS
-            // 
-            this.SecondWinnerSupplierODS.DataMember = "GetSecondWinnerSupplier";
-            this.SecondWinnerSupplierODS.DataSource = typeof(ExceedERP.Reporting.Procurements.DataSource.ProformaSummaryObjectDataSource);
-            this.SecondWinnerSupplierODS.Name = "SecondWinnerSupplierODS";
-            this.SecondWinnerSupplierODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Bindings.Add(new Telerik.Reporting.Binding("Value", "= Fields.Signature"));
-            this.pictureBox2.MimeType = "";
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6624996662139893D), Telerik.Reporting.Drawing.Unit.Inch(0.21250008046627045D));
-            this.pictureBox2.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.ScaleProportional;
-            this.pictureBox2.Style.BackgroundColor = System.Drawing.Color.White;
-            this.pictureBox2.Style.BorderColor.Bottom = System.Drawing.Color.DarkGray;
-            this.pictureBox2.Style.BorderColor.Right = System.Drawing.Color.DarkGray;
-            this.pictureBox2.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.pictureBox2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.pictureBox2.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
-            this.pictureBox2.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.pictureBox2.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(0D);
-            this.pictureBox2.Style.BorderWidth.Right = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.pictureBox2.Value = "";
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Bindings.Add(new Telerik.Reporting.Binding("Value", "= Fields.PreparedSignature"));
@@ -1107,6 +1074,39 @@ namespace ExceedERP.Reporting.Procurements
             this.pictureBox4.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(0D);
             this.pictureBox4.Style.BorderWidth.Right = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.pictureBox4.Value = "";
+            // 
+            // reportHeaderSection1
+            // 
+            this.reportHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.90000003576278687D);
+            this.reportHeaderSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
+            this.subReport1});
+            this.reportHeaderSection1.Name = "reportHeaderSection1";
+            // 
+            // subReport1
+            // 
+            this.subReport1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Cm(0.00010076903708977625D), Telerik.Reporting.Drawing.Unit.Cm(0.00010004234354710206D));
+            this.subReport1.Name = "subReport1";
+            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormTitle", "= Parameters.FormTitle.Value"));
+            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormNumber", "= Parameters.FormNumber.Value"));
+            instanceReportSource1.ReportDocument = this.headerSubReport1;
+            this.subReport1.ReportSource = instanceReportSource1;
+            this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(14.491129875183106D), Telerik.Reporting.Drawing.Unit.Cm(2.2858002185821533D));
+            // 
+            // letterOds
+            // 
+            this.letterOds.DataMember = "GetProforma";
+            this.letterOds.DataSource = typeof(ExceedERP.Reporting.Procurements.DataSource.ReportTemplateDS);
+            this.letterOds.Name = "letterOds";
+            this.letterOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});
+            // 
+            // SecondWinnerSupplierODS
+            // 
+            this.SecondWinnerSupplierODS.DataMember = "GetSecondWinnerSupplier";
+            this.SecondWinnerSupplierODS.DataSource = typeof(ExceedERP.Reporting.Procurements.DataSource.ProformaSummaryObjectDataSource);
+            this.SecondWinnerSupplierODS.Name = "SecondWinnerSupplierODS";
+            this.SecondWinnerSupplierODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});
             // 
             // rptProformaSummary
             // 

@@ -1,100 +1,115 @@
-﻿
+﻿@using System.Web
+@using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
+
 <label>Bill of Quantity</label>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBillOfQuantity>()
-                              .Name("grid")
-                              .Columns(columns =>
-                              {
-                                  columns.Bound(c => c.JobNo).Width(100);
-                                  columns.Bound(c => c.JobTypeName).Width(120);
-                                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
-                                  columns.Bound(c => c.Quantity).Width(100);
+                                      .Name("grid")
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(c => c.JobNo).Width(100);
+                                          columns.Bound(c => c.JobTypeName).Width(120);
+                                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+                                          columns.Bound(c => c.Quantity).Width(100).Format("{0:n4}");
+                                          columns.Bound(c => c.Status).Width(100);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit().Text(" ");
+                                              if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionTeamLead))
+                                              {
+                                                  command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
 
-                                  columns.Command(command =>
-                                  {
-                                      command.Edit().Text(" ");
-                                      command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
-                                      command.Destroy().Text(" ");
+                                              }
+                                              if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionHead))
+                                              {
+                                                  command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                                                  command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("handleReject");
 
-                                  }).Width(180);
-                              })
-                              .ToolBar(toolbar =>
-                              {
-                                  toolbar.Create();
-                              })
-                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureBillOfQuantityTemplate"))
-                              .Pageable()
-                              .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
-                              .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
-                              .Scrollable(s => s.Height(400))
-                              .DataSource(dataSource => dataSource
-                                  .Ajax()
-                                  .Sort(sort => sort.Add(e => e.FurnitureBillOfQuantityId).Descending())
-                                  .Events(ev => ev.Error("error_handler(\"grid\")")
-                                    .RequestStart("onRequestStart(\"grid\")")
-                                    .RequestEnd("onRequestEnd(\"grid\")"))
-                                  .Model(model => model.Id(p => p.FurnitureBillOfQuantityId))
-                                  .Read(read => read.Action("FurnitureBillOfQuantities_Read", "FurnitureBillOfQuantity"))
-                                  .Create(create => create.Action("FurnitureBillOfQuantities_Create", "FurnitureBillOfQuantity"))
-                                  .Update(update => update.Action("FurnitureBillOfQuantities_Update", "FurnitureBillOfQuantity"))
-                                  .Destroy(destroy => destroy.Action("FurnitureBillOfQuantities_Destroy", "FurnitureBillOfQuantity"))
-                              ).ClientDetailTemplateId("tabstrip")
+                                              }
+                                              command.Destroy().Text(" ");
+                                          }).Width(180);
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Create();
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureBillOfQuantityTemplate"))
+                                      .Pageable()
+                                      .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
+                                      .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
+                                      .Scrollable(s => s.Height(400))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Sort(sort => sort.Add(e => e.FurnitureBillOfQuantityId).Descending())
+                                          .Events(ev => ev.Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                                          .Model(model => model.Id(p => p.FurnitureBillOfQuantityId))
+                                          .Read(read => read.Action("FurnitureBillOfQuantities_Read", "FurnitureBillOfQuantity"))
+                                          .Create(create => create.Action("FurnitureBillOfQuantities_Create", "FurnitureBillOfQuantity"))
+                                          .Update(update => update.Action("FurnitureBillOfQuantities_Update", "FurnitureBillOfQuantity"))
+                                          .Destroy(destroy => destroy.Action("FurnitureBillOfQuantities_Destroy", "FurnitureBillOfQuantity"))
+                                      ).ClientDetailTemplateId("tabstrip")
 )
 
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                        .Name("grid_#=FurnitureBillOfQuantityId#")
-                                                                        .Items(item1 =>
-                                                                        {
-                                                                            item1.Add().Text("Material").Content(@<text>
-                                                                                <a href='@Url.Action("FurnitureBoqPrint", "FurniturePrint")/?id=#=FurnitureBillOfQuantityId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                .Name("grid_#=FurnitureBillOfQuantityId#")
+                                .Items(item1 =>
+                                {
+                                    item1.Add().Text("Material").Content(@<text>
+                                        #if(IsSendForApproval){#
+                                        <a href='@Url.Action("FurnitureBoqPrint", "FurniturePrint")/?id=#=FurnitureBillOfQuantityId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                                                                                @Material()
-                                                                            </text>);
-                                                                                    item1.Add().Text("Labor").Content(@<text>
-                                                                                        @Labor()
-                                                                                    </text>);
-                                                                                            item1.Add().Text("Job Design").Content(@<text>
-                                                                                                <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBillOfQuantityId#)" />
-                                                                                                @BoqDocs()
-                                                                                            </text>);
-                                                                                                }).ToClientTemplate())
+                                        #}#
+
+                                        @Material()
+                                    </text>);
+                                            item1.Add().Text("Labor").Content(@<text>
+                                                @Labor()
+                                            </text>);
+                                                    item1.Add().Text("Job Design").Content(@<text>
+                                                        #if(true){#
+                                                        <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBillOfQuantityId#)" />
+                                                        #}#
+                                                        @BoqDocs()
+                                                    </text>);
+                                                        }).ToClientTemplate())
 </script>
 
 @helper Material()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBOQMaterial>()
-                                                      .Name("material_#=FurnitureBillOfQuantityId#")
-                                                      .Columns(columns =>
-                                                      {
-                                                          columns.Bound(c => c.WorkshopType);
-                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Title("Category");
-                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text").Title("Item");
-                                                          columns.Bound(c => c.UnitOfMeasurement);
-                                                          columns.Bound(c => c.Quantity).Format("{0:n2}");
-                                                          columns.Bound(c => c.Remark);
-                                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                                      })
-                                                      .ToolBar(toolbar =>
-                                                      {
-                                                          toolbar.Create();
-                                                      })
-                                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MaterialBOQTemplate"))
-                                                      .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
-                                                      .Scrollable()
-                                                      .Events(e => e.DataBound("onChildDataBound"))
-                                                      .DataSource(dataSource => dataSource
-                                                          .Ajax()
-                                                          .Events(ev => ev.Error("error_handler(\"material_#=FurnitureBillOfQuantityId#\")")
-                                                            .RequestStart("onRequestStart(\"material_#=FurnitureBillOfQuantityId#\")")
-                                                            .RequestEnd("onRequestEnd(\"material_#=FurnitureBillOfQuantityId#\")"))
-                                                          .Model(model => model.Id(p => p.FurnitureBOQMaterialId))
-                                                          .Read(read => read.Action("FurnitureBOQMaterials_Read", "FurnitureBOQMaterial", new { id = "#=FurnitureBillOfQuantityId#" }))
-                                                          .Create(create => create.Action("FurnitureBOQMaterials_Create", "FurnitureBOQMaterial", new { id = "#=FurnitureBillOfQuantityId#" }))
-                                                          .Update(update => update.Action("FurnitureBOQMaterials_Update", "FurnitureBOQMaterial"))
-                                                          .Destroy(destroy => destroy.Action("FurnitureBOQMaterials_Destroy", "FurnitureBOQMaterial"))
-                                                      ).ToClientTemplate()
+                                                                      .Name("material_#=FurnitureBillOfQuantityId#")
+                                                                      .Columns(columns =>
+                                                                      {
+                                                                          columns.Bound(c => c.WorkshopType);
+                                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Title("Category");
+                                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text").Title("Item");
+                                                                          columns.Bound(c => c.UnitOfMeasurement);
+                                                                          columns.Bound(c => c.Quantity).Format("{0:n2}");
+                                                                          columns.Bound(c => c.Remark);
+                                                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                                      })
+                                                                      .ToolBar(toolbar =>
+                                                                      {
+                                                                          toolbar.Create();
+                                                                      })
+                                                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MaterialBOQTemplate"))
+                                                                      .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
+                                                                      .Scrollable()
+                                                                      .Events(e => e.DataBound("onChildDataBound"))
+                                                                      .DataSource(dataSource => dataSource
+                                                                          .Ajax()
+                                                                          .Events(ev => ev.Error("error_handler(\"material_#=FurnitureBillOfQuantityId#\")")
+                                                                            .RequestStart("onRequestStart(\"material_#=FurnitureBillOfQuantityId#\")")
+                                                                            .RequestEnd("onRequestEnd(\"material_#=FurnitureBillOfQuantityId#\")"))
+                                                                          .Model(model => model.Id(p => p.FurnitureBOQMaterialId))
+                                                                          .Read(read => read.Action("FurnitureBOQMaterials_Read", "FurnitureBOQMaterial", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                                                          .Create(create => create.Action("FurnitureBOQMaterials_Create", "FurnitureBOQMaterial", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                                                          .Update(update => update.Action("FurnitureBOQMaterials_Update", "FurnitureBOQMaterial"))
+                                                                          .Destroy(destroy => destroy.Action("FurnitureBOQMaterials_Destroy", "FurnitureBOQMaterial"))
+                                                                      ).ToClientTemplate()
     )
 }
 
@@ -102,41 +117,41 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBOQLabor>()
-                                              .Name("labor_#=FurnitureBillOfQuantityId#")
-                                              .Columns(columns =>
-                                              {
-                                                  columns.Bound(c => c.WorkShopType).Width(120);
-                                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
-                                                  columns.Bound(c => c.NumberOfEmloyees).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Employees: \\#=sum\\# ").Width(100);
-                                                  columns.Bound(c => c.EstimatedMinute).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Est Minute: \\#=sum\\# ").Width(100);
+                                                              .Name("labor_#=FurnitureBillOfQuantityId#")
+                                                              .Columns(columns =>
+                                                              {
+                                                                  columns.Bound(c => c.WorkShopType).Width(120);
+                                                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+                                                                  columns.Bound(c => c.NumberOfEmloyees).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Employees: \\#=sum\\# ").Width(100);
+                                                                  columns.Bound(c => c.EstimatedMinute).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Est Minute: \\#=sum\\# ").Width(100);
 
 
-                                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                              })
-                                              .ToolBar(toolbar =>
-                                              {
-                                                  toolbar.Create();
-                                              })
-                                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LaborBOQTemplate"))
-                                              .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
-                                              .Scrollable()
-                                              .Events(e => e.DataBound("onChildDataBound"))
-                                              .DataSource(dataSource => dataSource
-                                                  .Ajax()
-                                                   .Aggregates(aggregates =>
-                                                   {
-                                                       aggregates.Add(c => c.EstimatedMinute).Sum();
-                                                       aggregates.Add(c => c.NumberOfEmloyees).Sum();
-                                                   })
-                                                  .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureBillOfQuantityId#\")")
-                                                            .RequestStart("onRequestStart(\"labor_#=FurnitureBillOfQuantityId#\")")
-                                                            .RequestEnd("onRequestEnd(\"labor_#=FurnitureBillOfQuantityId#\")"))
-                                                  .Model(model => model.Id(p => p.FurnitureBOQLaborId))
-                                                  .Read(read => read.Action("FurnitureBOQLabors_Read", "FurnitureBOQLabor", new { id = "#=FurnitureBillOfQuantityId#" }))
-                                                  .Create(create => create.Action("FurnitureBOQLabors_Create", "FurnitureBOQLabor", new { id = "#=FurnitureBillOfQuantityId#" }))
-                                                  .Update(update => update.Action("FurnitureBOQLabors_Update", "FurnitureBOQLabor"))
-                                                  .Destroy(destroy => destroy.Action("FurnitureBOQLabors_Destroy", "FurnitureBOQLabor"))
-                                              ).ToClientTemplate()
+                                                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                              })
+                                                              .ToolBar(toolbar =>
+                                                              {
+                                                                  toolbar.Create();
+                                                              })
+                                                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LaborBOQTemplate"))
+                                                              .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
+                                                              .Scrollable()
+                                                              .Events(e => e.DataBound("onChildDataBound"))
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                   .Aggregates(aggregates =>
+                                                                   {
+                                                                       aggregates.Add(c => c.EstimatedMinute).Sum();
+                                                                       aggregates.Add(c => c.NumberOfEmloyees).Sum();
+                                                                   })
+                                                                  .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureBillOfQuantityId#\")")
+                                                                            .RequestStart("onRequestStart(\"labor_#=FurnitureBillOfQuantityId#\")")
+                                                                            .RequestEnd("onRequestEnd(\"labor_#=FurnitureBillOfQuantityId#\")"))
+                                                                  .Model(model => model.Id(p => p.FurnitureBOQLaborId))
+                                                                  .Read(read => read.Action("FurnitureBOQLabors_Read", "FurnitureBOQLabor", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                                                  .Create(create => create.Action("FurnitureBOQLabors_Create", "FurnitureBOQLabor", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                                                  .Update(update => update.Action("FurnitureBOQLabors_Update", "FurnitureBOQLabor"))
+                                                                  .Destroy(destroy => destroy.Action("FurnitureBOQLabors_Destroy", "FurnitureBOQLabor"))
+                                                              ).ToClientTemplate()
     )
 
 }
@@ -145,46 +160,46 @@
 @helper BoqDocs()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBoqJobDesign>()
-                                                .Name("CompanyDocument#=FurnitureBillOfQuantityId#")
-                                                .Columns(columns =>
-                                                {
-                                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/FurnitureBoqJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
-                                                    columns.Bound(c => c.Description);
+                                                                .Name("CompanyDocument#=FurnitureBillOfQuantityId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/FurnitureBoqJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
+                                                                    columns.Bound(c => c.Description);
 
-                                                    columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
+                                                                    columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
                                                     //columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
 
                                                     columns.Command(command =>
-                                                    {
-                                                        command.Destroy().Text("Delete");
-                                                    });
-                                                })
+                                                                    {
+                                                                        command.Destroy().Text("Delete");
+                                                                    });
+                                                                })
 
-                                                 .ToolBar(toolbar =>
-                                                 {
+                                                                 .ToolBar(toolbar =>
+                                                                 {
 
-                                                 })
+                                                                 })
 
-                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
-                                                  .Events(ev =>
-                                                  {
-                                                      ev.DataBound("onDetailDataBound");
+                                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+                                                                  .Events(ev =>
+                                                                  {
+                                                                      ev.DataBound("onDetailDataBound");
 
-                                                  })
-                                                    .Scrollable(h => h.Height("auto"))
-                                                    .DataSource(dataSource => dataSource
-                                                    .Ajax()
-                                                     .Sort(sort => sort.Add(c => c.FurnitureBoqJobDesignId).Descending())
-                                                    .Events(events =>
-                                                    {
-                                                        events.Error("error_handler(\"CompanyDocument#=FurnitureBillOfQuantityId#\")");
-                                                        events.RequestStart("onRequestStart(\"CompanyDocument#=FurnitureBillOfQuantityId#\")");
-                                                        events.RequestEnd("onRequestEnd(\"CompanyDocument#=FurnitureBillOfQuantityId#\")");
-                                                    })
-                                                    .Model(model => model.Id(p => p.FurnitureBoqJobDesignId))
-                                                    .Read(read => read.Action("Read", "FurnitureBoqJobDesign", new { id = "#=FurnitureBillOfQuantityId#" }))
-                                                    .Destroy(destroy => destroy.Action("Delete", "FurnitureBoqJobDesign", new { area = "Manufacturing" }))
-                                                    ).ToClientTemplate())
+                                                                  })
+                                                                    .Scrollable(h => h.Height("auto"))
+                                                                    .DataSource(dataSource => dataSource
+                                                                    .Ajax()
+                                                                     .Sort(sort => sort.Add(c => c.FurnitureBoqJobDesignId).Descending())
+                                                                    .Events(events =>
+                                                                    {
+                                                                        events.Error("error_handler(\"CompanyDocument#=FurnitureBillOfQuantityId#\")");
+                                                                        events.RequestStart("onRequestStart(\"CompanyDocument#=FurnitureBillOfQuantityId#\")");
+                                                                        events.RequestEnd("onRequestEnd(\"CompanyDocument#=FurnitureBillOfQuantityId#\")");
+                                                                    })
+                                                                    .Model(model => model.Id(p => p.FurnitureBoqJobDesignId))
+                                                                    .Read(read => read.Action("Read", "FurnitureBoqJobDesign", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                                                    .Destroy(destroy => destroy.Action("Delete", "FurnitureBoqJobDesign", new { area = "Manufacturing" }))
+                                                                    ).ToClientTemplate())
 
 }
 
@@ -315,6 +330,29 @@
             });
         }
     }
+    function handleReject(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RejectBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureBillOfQuantityId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
 
      function onJobCategoryChange() {
          var selectedValue = $("#JobTypeCategory").val();
@@ -416,20 +454,20 @@
     }
 </script>
 @(Html.Kendo().Window().Name("UploadCompanyFileWindow")
-                    .Title("Upload Answer")
-                    .Visible(false)
-                    .Modal(true)
-                    .Content(@<text>
-                        <input type="hidden" id="FurnitureBillOfQuantityId" name="FurnitureBillOfQuantityId" />
+                            .Title("Upload Answer")
+                            .Visible(false)
+                            .Modal(true)
+                            .Content(@<text>
+                                <input type="hidden" id="FurnitureBillOfQuantityId" name="FurnitureBillOfQuantityId" />
 
-                        @*@Html.TextBox("CompanyFile", "", new { type = "file", @class = "form-control" })*@
-                        <input type="file" name="CompanyFile" id="CompanyFile[]" class="form-control" multiple />
-                        <br />
-                        <textarea id="Description" class="form-control"></textarea>
-                        <br />
-                        <div class="pull-right">
-                            @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadCompanyFile"))
-                        </div>
-                    </text>)
-                                             .Draggable(true)
-                                             .Width(400))
+                                @*@Html.TextBox("CompanyFile", "", new { type = "file", @class = "form-control" })*@
+                                <input type="file" name="CompanyFile" id="CompanyFile[]" class="form-control" multiple />
+                                <br />
+                                <textarea id="Description" class="form-control"></textarea>
+                                <br />
+                                <div class="pull-right">
+                                    @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadCompanyFile"))
+                                </div>
+                            </text>)
+                                                                     .Draggable(true)
+                                                                     .Width(400))

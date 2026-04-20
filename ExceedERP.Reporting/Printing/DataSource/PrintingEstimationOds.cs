@@ -1,6 +1,7 @@
 ﻿
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,10 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     CheckedBy = estimation.IsOnlineTransferredBy,
                     CheckedDate = estimation.OnlineTransferredTime,
                     DateCreated = estimation.DateCreated,
-                    CreatedBy = estimation.CreatedBy
+                    CreatedBy = estimation.CreatedBy,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(estimation.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(estimation.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(estimation.SendForApprovalBy)
                 };
             }
             return new PrintingEstimationViewModel();
@@ -77,13 +81,61 @@ namespace ExceedERP.Reporting.Printing.DataSource
             return list;
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PrintingLaborViewModel> GetLabor(int id)
+        public List<PrintingLaborViewModel> GetLaborPrePress(int id)
         {
             List<PrintingLaborViewModel> list = new List<PrintingLaborViewModel>();
-            var estimationLaborCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == id).ToList();
+            var estimationLaborCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == id)
+                .Where(x => x.PressCategory == PressCategory.PrePress)
+                .ToList();
             foreach (var item in estimationLaborCosts)
             {
                 
+                list.Add(new PrintingLaborViewModel
+                {
+                    Quantity = item.Quantity,
+                    UoM = item.UOM,
+                    LaborRate = item.LaborRate,
+                    TotalCost = item.TotalCost,
+                    LaborActivity = item.LabourActivity,
+                    PressCategory = item.PressCategory
+                });
+
+            }
+            return list;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<PrintingLaborViewModel> GetLaborPress(int id)
+        {
+            List<PrintingLaborViewModel> list = new List<PrintingLaborViewModel>();
+            var estimationLaborCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == id)
+                .Where(x => x.PressCategory == PressCategory.Press)
+                .ToList();
+            foreach (var item in estimationLaborCosts)
+            {
+
+                list.Add(new PrintingLaborViewModel
+                {
+                    Quantity = item.Quantity,
+                    UoM = item.UOM,
+                    LaborRate = item.LaborRate,
+                    TotalCost = item.TotalCost,
+                    LaborActivity = item.LabourActivity,
+                    PressCategory = item.PressCategory
+                });
+
+            }
+            return list;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<PrintingLaborViewModel> GetLaborPostPress(int id)
+        {
+            List<PrintingLaborViewModel> list = new List<PrintingLaborViewModel>();
+            var estimationLaborCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == id)
+                .Where(x => x.PressCategory == PressCategory.PostPress)
+                .ToList();
+            foreach (var item in estimationLaborCosts)
+            {
+
                 list.Add(new PrintingLaborViewModel
                 {
                     Quantity = item.Quantity,

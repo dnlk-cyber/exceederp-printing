@@ -22,9 +22,9 @@
       .Tools(tools => tools.Clear().InsertImage())
       .ImageBrowser(imageBrowser => imageBrowser
     .Image("Image", "ImageBrowser", new { path = "{0}" })
-    .Read("Read", "ImageBrowser")
-    .Create("Create", "ImageBrowser")
-    .Destroy("Destroy", "ImageBrowser")
+    .Read("Read", "ImageBrowser").Data("sendForgery")
+    .Create("Create", "ImageBrowser").Data("sendForgery")
+    .Destroy("Destroy", "ImageBrowser").Data("sendForgery")
     .Upload("Upload", "ImageBrowser")
     .Thumbnail("Thumbnail", "ImageBrowser"))
 )

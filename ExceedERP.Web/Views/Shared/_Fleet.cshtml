@@ -1,5 +1,5 @@
 @using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
-
+@using ExceedERP.Core.Domain.FleetManagement.FleetResource
 <style>
     #reportViewer1 {
         position: relative;
@@ -73,31 +73,44 @@
                             <b class="arrow"></b>
                             <ul class="submenu">
                                 <li id="flt000" class="actionlinlk">
-                                    @Html.ActionLink("Internal Equipment Registration", "Index", "EquipmentRegistration", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Internal Equipment Registration", "Index", "EquipmentRegistration", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt0001" class="actionlinlk">
-                                    @Html.ActionLink("External Equipment Registration", "Index", "EquipmentRegistrationRental", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("External Equipment Registration", "Index", "EquipmentRegistrationRental", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt001" class="actionlinlk">
-                                    @Html.ActionLink("Operator Registration", "Index", "OperatorRegistration", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Operator Registration", "Index", "OperatorRegistration", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt002" class="actionlinlk">
-                                    @Html.ActionLink("Insurance Registration", "Index", "InsuranceRegistration", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Insurance Registration", "Index", "InsuranceRegistration", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt004" class="actionlinlk">
-                                    @Html.ActionLink("Accident Registration", "Index", "AccidentRegistration", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Accident Registration", "Index", "AccidentRegistration", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt005" class="actionlinlk">
-                                    @Html.ActionLink("Bolo Registration", "Index", "FleetBoloRegistration", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Bolo Registration", "Index", "FleetBoloRegistration", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
+                                <li id="flt009" class="actionlinlk">
+                                    @Html.ActionLink("Bolo Registration History", "Index", "BoloRegistrationHistory", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
+                                <li id="flt0015" class="actionlinlk">
+                                    @Html.ActionLink("Fleet Insurance History", "Index", "FleetInsuranceHistory", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt005" class="actionlinlk">
-                                    @Html.ActionLink("Equipment History Jacket", "Index", "FleetEquipmentHistoryJacket", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Equipment History Jacket", "Index", "FleetEquipmentHistoryJacket", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
+
+                                <li id="flt00i59" class="actionlinlk">
+                                    @Html.ActionLink("Equipment Insurance Requests", "Index", "FleetEquipmentInsuranceRequests", new { area = "Insurance" }, null)
                                     <b class="arrow"></b>
                                 </li>
 
@@ -116,27 +129,36 @@
                             </a>
                             <b class="arrow"></b>
                             <ul class="submenu">
-                                @* <li id="flt004" class="actionlinlk">@Html.ActionLink("Rent Requisition", "Index", "RentRequest", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                @* <li id="flt004" class="actionlinlk">@Html.ActionLink("Rent Requisition", "Index", "RentRequest", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
                                 *@
                                 @if (HttpContext.Current.User.IsInRole("Rent_Approver")
                                     || HttpContext.Current.User.IsInRole("Rent_User"))
                                 {
                                     <li id="flt005" class="actionlinlk">
-                                @Html.ActionLink("Rent Time Sheet", "Index", "RentTimeSheet", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
+                                        @Html.ActionLink("Rent Time Sheet", "Index", "RentTimeSheet", new { area = "FleetManagement" }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
                                 }
                                 <li id="flt006" class="actionlinlk">
-                                @Html.ActionLink("Rent To External", "Index", "RentToExternal", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Rent To External", "Index", "RentToExternal", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="flt008" class="actionlinlk">
-                                @Html.ActionLink("Rent From External", "Index", "RentFromExternal", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Rent From External", "Index", "RentFromExternal", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
+                                <li id="flt008" class="actionlinlk">
+                                    @Html.ActionLink("Rent From External History", "RentHistory", "RentFromExternal", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="flt009" class="actionlinlk">
-                                @Html.ActionLink("Rental Inspection", "Index", "RentalInspection", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Rental Inspection", "Index", "RentalInspection", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="flt009" class="actionlinlk">
-                                @Html.ActionLink("Rental Payment Request", "Index", "RentalPaymentRequest", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Rental Payment Request", "Index", "RentalPaymentRequest", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                             </ul>
                         </li>
                     }
@@ -153,8 +175,9 @@
                             <b class="arrow"></b>
                             <ul class="submenu">
                                 <li id="flt018" class="actionlinlk">
-                                @Html.ActionLink("Fuel ", "Index", "Fuel", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Fuel ", "Index", "Fuel", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                             </ul>
                         </li>
                     }
@@ -171,18 +194,18 @@
                             <b class="arrow"></b>
                             <ul class="submenu">
                                 <li id="flt019" class="actionlinlk">
-                                    @Html.ActionLink("Equipment Inspection", "Index", "AnnualEquipmentInventoryInspection", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Equipment Inspection", "Index", "AnnualEquipmentInventoryInspection", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="Maintenance010" class="actionlinlk">
-                                    @Html.ActionLink("Maintenance Request", "Index", "FleetJobRequest", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Maintenance Request", "Index", "FleetJobRequest", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="Maintenance010" class="actionlinlk">
-                                    @Html.ActionLink("Closed Maintenance Request", "Index", "ClosedJobRequest", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Closed Maintenance Request", "Index", "ClosedJobRequest", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
-                                @*<li id="fltif002" class="actionlinlk">@Html.ActionLink("Insurance FollowUp", "InsuranceFollowUp", "InsuranceRegistration", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>*@
+                                @*<li id="fltif002" class="actionlinlk">@Html.ActionLink("Insurance FollowUp", "InsuranceFollowUp", "InsuranceRegistration", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>*@
                             </ul>
                         </li>
                     }
@@ -198,16 +221,16 @@
                             <b class="arrow"></b>
                             <ul class="submenu">
                                 <li id="fltoc020" class="actionlinlk">
-                                    @Html.ActionLink("Equipment Owning Cost", "Index", "OwningOperatingCost", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Equipment Owning Cost", "Index", "OwningOperatingCost", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
 
                                 <li id="flt020" class="actionlinlk">
-                                    @Html.ActionLink("Equipment Plan", "Index", "EquipmentPlanandEvaluations", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Equipment Plan", "Index", "EquipmentPlanandEvaluations", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt020" class="actionlinlk">
-                                    @Html.ActionLink("Equipment Annual Plan", "Index", "FleetAnnualPlan", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Equipment Annual Plan", "Index", "FleetAnnualPlan", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                             </ul>
@@ -230,76 +253,99 @@
                             <ul class="submenu">
                                 @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
                                 {
-                                    @*<li id="Fleetreq1444" class="actionlinlk">@Html.ActionLink("Job Request", "Index", "JobRequest", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>*@
+                                    @*<li id="Fleetreq1444" class="actionlinlk">@Html.ActionLink("Job Request", "Index", "JobRequest", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>*@
                                     <li id="flt021" class="actionlinlk">
-                                @Html.ActionLink("Requisition", "Index", "EquipmentDemand", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
+                                        @Html.ActionLink("Requisition", "Index", "EquipmentDemand", new { area = "FleetManagement" }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
                                 }
                                 @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
                                 {
                                     <li id="flt022" class="actionlinlk">
-                                @Html.ActionLink("Distribution", "Index", "EquipmentDistribution", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
+                                        @Html.ActionLink("Distribution", "Index", "EquipmentDistribution", new { area = "FleetManagement" }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
                                 }
                                 @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
                                 {
                                     <li id="flt02d1" class="actionlinlk">
-                                @Html.ActionLink("Arrival", "Index", "EquipmentArrival", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
-                                }
+                                        @Html.ActionLink("Arrival", "Index", "AssignedEquipments", new { area = "FleetManagement", type = FleetReturnType.A }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
+                                } 
+                              
+                                @*@if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                            {
+                                <li id="flt02d1" class="actionlinlk">
+                                    @Html.ActionLink("Arrival", "Index", "EquipmentArrival", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
+                            }*@
+
                                 @if (HttpContext.Current.User.IsInRole("Resource_Return_User"))
                                 {
                                     <li id="flt023" class="actionlinlk">
-                                @Html.ActionLink("Return", "Index", "EquipmentReturn", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
+                                        @Html.ActionLink("Return", "Index", "AssignedEquipments", new { area = "FleetManagement", type = FleetReturnType.R }, new { target = "_self" })
+
+                                        @*@Html.ActionLink("Return", "Index", "EquipmentReturn", new { area = "FleetManagement" }, new { target = "_self" })*@
+                                        <b class="arrow"></b>
+                                    </li>
                                 }
                                 @if (HttpContext.Current.User.IsInRole("Resource_Request_Approver")
                                             || HttpContext.Current.User.IsInRole("Resource_Approver"))
                                 {
                                     <li id="flt032421924" class="actionlinlk">
-                                @Html.ActionLink("Time Sheet", "Index", "DistributionTimeSheet", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
+                                        @Html.ActionLink("Time Sheet", "Index", "DistributionTimeSheet", new { area = "FleetManagement" }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
+                                <li id="flt032421924" class="actionlinlk">
+                                        @Html.ActionLink("Canibalization", "IndexForFleet", "WorkShop", new { area = "Maintenance" }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
 
                                     <li id="flt024" class="actionlinlk">
-                                @Html.ActionLink("Driver Transfer", "Index", "DriverTransfer", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
+                                        @Html.ActionLink("Driver Transfer", "Index", "DriverTransfer", new { area = "FleetManagement" }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
                                     <li id="flt02345344" class="actionlinlk">
-                                @Html.ActionLink("Drivers Assignment", "Index", "DriverAssignment", new { area = "FleetManagement" }, new { target = "_blank" })
-                                    <b class="arrow"></b></li>
+                                        @Html.ActionLink("Drivers Assignment", "Index", "DriverAssignment", new { area = "FleetManagement" }, new { target = "_self" })
+                                        <b class="arrow"></b>
+                                    </li>
                                     <li id="flt025" class="actionlinlk">
 
-                                @Html.ActionLink("Site Transfer", "Index", "SitesVehicleTransfer", new { area = "FleetManagement" }, new { target = "_blank" })
+                                        @Html.ActionLink("Site Transfer", "Index", "SitesVehicleTransfer", new { area = "FleetManagement" }, new { target = "_self" })
 
-                                <b class="arrow"></b></li>
+                                        <b class="arrow"></b>
+                                    </li>
                                 }
 
-                                <li id="flt0256" class="actionlinlk">
+                                @*<li id="flt0256" class="actionlinlk">
 
-                                @Html.ActionLink("Assigned Equipments", "Index", "AssignedEquipments", new { area = "FleetManagement" }, new { target = "_blank" })
-                                
-                                <b class="arrow"></b></li>
+                            @Html.ActionLink("Assigned Equipments", "Index", "AssignedEquipments", new { area = "FleetManagement", type = FleetReturnType.A}, new { target = "_self" })
+
+                            <b class="arrow"></b></li>*@
 
                             </ul>
                         </li>
                     }
                     @*if( HttpContext.Current.User.IsInRole("Salvage_Store_Issue_User")
-         || HttpContext.Current.User.IsInRole("Salvage_Store_Issue_Approver")
-         || HttpContext.Current.User.IsInRole("Store_Good_Receiving_User")
-         || HttpContext.Current.User.IsInRole("Store_Good_Receiving_Approver"))
-         {
-                         <li class="">
-                             <a href="#" class="dropdown-toggle">
-                                 <i class="menu-icon fa fa-caret-right"></i>
-                                 Salvage Store
-                                 <b class="arrow fa fa-angle-down"></b>
-                             </a>
-                             <b class="arrow"></b>
-                             <ul class="submenu">
-                                 <li id="flt026" class="actionlinlk">@Html.ActionLink("Good Receiving Note", "Index", "SalvageStoreGoodReceiving", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                                 <li id="flt027" class="actionlinlk">@Html.ActionLink("Salvage Store Issue", "Index", "SalvageStore", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                             </ul>
-                         </li>
-        }*@
+                 || HttpContext.Current.User.IsInRole("Salvage_Store_Issue_Approver")
+                 || HttpContext.Current.User.IsInRole("Store_Good_Receiving_User")
+                 || HttpContext.Current.User.IsInRole("Store_Good_Receiving_Approver"))
+                 {
+                                 <li class="">
+                                     <a href="#" class="dropdown-toggle">
+                                         <i class="menu-icon fa fa-caret-right"></i>
+                                         Salvage Store
+                                         <b class="arrow fa fa-angle-down"></b>
+                                     </a>
+                                     <b class="arrow"></b>
+                                     <ul class="submenu">
+                                         <li id="flt026" class="actionlinlk">@Html.ActionLink("Good Receiving Note", "Index", "SalvageStoreGoodReceiving", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                         <li id="flt027" class="actionlinlk">@Html.ActionLink("Salvage Store Issue", "Index", "SalvageStore", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                     </ul>
+                                 </li>
+                }*@
                     @if (HttpContext.Current.User.IsInRole("Tyre_Requestor")
                     || HttpContext.Current.User.IsInRole("Tyre_Approver"))
                     {
@@ -312,18 +358,18 @@
                             <b class="arrow"></b>
                             <ul class="submenu">
                                 <li id="flt028" class="actionlinlk">
-                                    @Html.ActionLink("Issue", "Index", "TyreManagementIssue", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Issue", "Index", "TyreManagementIssue", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt0t28" class="actionlinlk">
-                                    @Html.ActionLink("Return", "Index", "TyreManagementReturn", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Return", "Index", "TyreManagementReturn", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
                                 <li id="flt02129" class="actionlinlk">
-                                    @Html.ActionLink("Usage History", "Index", "TyreUsageHistory", new { area = "FleetManagement" }, new { target = "_blank" })
+                                    @Html.ActionLink("Usage History", "Index", "TyreUsageHistory", new { area = "FleetManagement" }, new { target = "_self" })
                                     <b class="arrow"></b>
                                 </li>
-                                @* <li id="flt029" class="actionlinlk">@Html.ActionLink("Tyre Transfer", "Index", "TyreTransfer", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>*@
+                                @* <li id="flt029" class="actionlinlk">@Html.ActionLink("Tyre Transfer", "Index", "TyreTransfer", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>*@
                             </ul>
                         </li>
                     }
@@ -339,20 +385,25 @@
                             <b class="arrow"></b>
                             <ul class="submenu">
                                 <li id="fltts001" class="actionlinlk">
-                                @Html.ActionLink("Dump Truck", "Index", "DumpTruckTimeSheet", new { area = "FleetManagement", dumpTruck = TimeSheetType.DumpTruck }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Dump Truck", "Index", "DumpTruckTimeSheet", new { area = "FleetManagement", dumpTruck = TimeSheetType.DumpTruck }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts002" class="actionlinlk">
-                                @Html.ActionLink("Dry Load", "Index", "DryLoadingTimeSheets", new { area = "FleetManagement", dryLoading = TimeSheetType.DryLoading }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Dry Load", "Index", "DryLoadingTimeSheets", new { area = "FleetManagement", dryLoading = TimeSheetType.DryLoading }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts003" class="actionlinlk">
-                                @Html.ActionLink("Machnery Working", "Index", "MachineryWorkingTimeSheet", new { area = "FleetManagement", machinery = TimeSheetType.Machinery }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Machnery Working", "Index", "MachineryWorkingTimeSheet", new { area = "FleetManagement", machinery = TimeSheetType.Machinery }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts004" class="actionlinlk">
-                                @Html.ActionLink("Wagon Drill", "Index", "WagonDrillTimesheet", new { area = "FleetManagement", wagonDrill = TimeSheetType.WagonDrill }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Wagon Drill", "Index", "WagonDrillTimesheet", new { area = "FleetManagement", wagonDrill = TimeSheetType.WagonDrill }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts004" class="actionlinlk">
-                                @Html.ActionLink("Light Vehicle", "Index", "LightVehicleTimeSheet", new { area = "FleetManagement", lightVehicle = TimeSheetType.LightVehicle }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Light Vehicle", "Index", "LightVehicleTimeSheet", new { area = "FleetManagement", lightVehicle = TimeSheetType.LightVehicle }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                             </ul>
                         </li>
                         <li class="">
@@ -364,43 +415,48 @@
                             </a>
                             <b class="arrow"></b>
                             <ul class="submenu">
-                                
+
                                 <li id="fltts003" class="actionlinlk">
-                                @Html.ActionLink("Machnery Cost Sheet", "Index", "MachineryCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("Machnery Cost Sheet", "Index", "MachineryCostSheet", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts003" class="actionlinlk">
-                                @Html.ActionLink("DumpTruck Cost Sheet", "Index", "DumpTruckCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("DumpTruck Cost Sheet", "Index", "DumpTruckCostSheet", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts003" class="actionlinlk">
-                                @Html.ActionLink("DryLoading Cost Sheet", "Index", "DryLoadingCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("DryLoading Cost Sheet", "Index", "DryLoadingCostSheet", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts003" class="actionlinlk">
-                                @Html.ActionLink("WagonDrill Cost Sheet", "Index", "WagonDrillCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
+                                    @Html.ActionLink("WagonDrill Cost Sheet", "Index", "WagonDrillCostSheet", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
                                 <li id="fltts003" class="actionlinlk">
-                                @Html.ActionLink("Light Vehicle Cost Sheet", "Index", "LightVehicleCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })
-                                <b class="arrow"></b></li>
-                                
+                                    @Html.ActionLink("Light Vehicle Cost Sheet", "Index", "LightVehicleCostSheet", new { area = "FleetManagement" }, new { target = "_self" })
+                                    <b class="arrow"></b>
+                                </li>
+
                             </ul>
                         </li>
                     }
                     @*@if (HttpContext.Current.User.IsInRole("Tyre_Requestor")
-        || HttpContext.Current.User.IsInRole("Tyre_Approver"))
-        {
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-caret-right"></i>
-                    Battery Management
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-                <b class="arrow"></b>
-                <ul class="submenu">
-                    <li id="fltBattery01" class="actionlinlk">@Html.ActionLink("Battery Issue", "Index", "BatteryIssue", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltBattery02" class="actionlinlk">@Html.ActionLink("Battery Return", "Index", "BatteryReturn", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltbattery02129" class="actionlinlk">@Html.ActionLink("Battery History", "Index", "BatteryUsageHistory", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                </ul>
-            </li>
-        }*@
+                || HttpContext.Current.User.IsInRole("Tyre_Approver"))
+                {
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Battery Management
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="fltBattery01" class="actionlinlk">@Html.ActionLink("Battery Issue", "Index", "BatteryIssue", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                            <li id="fltBattery02" class="actionlinlk">@Html.ActionLink("Battery Return", "Index", "BatteryReturn", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                            <li id="fltbattery02129" class="actionlinlk">@Html.ActionLink("Battery History", "Index", "BatteryUsageHistory", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        </ul>
+                    </li>
+                }*@
                 </ul>
             </li>
             @*
@@ -412,8 +468,8 @@
             </a>
             <b class="arrow"></b>
             <ul class="submenu">
-                <li id="flt030" class="actionlinlk">@Html.ActionLink("Training Types", "Index", "TrainingType", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt031" class="actionlinlk">@Html.ActionLink("Training Registration", "Index", "Training", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                <li id="flt030" class="actionlinlk">@Html.ActionLink("Training Types", "Index", "TrainingType", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                <li id="flt031" class="actionlinlk">@Html.ActionLink("Training Registration", "Index", "Training", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
             </ul>
         </li>
             *@
@@ -428,111 +484,138 @@
                         Report
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
-                <b class="arrow"></b>
-                <ul class="submenu">
-                    <li class="">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Timesheet Report
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-                        <b class="arrow"></b>
-                        <ul class="submenu">
-                            <li id="flttmr1" class="actionlinlk">@Html.ActionLink(" Machinary Costsheet", "MachineTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr2" class="actionlinlk">@Html.ActionLink(" Dry Loading Costsheet", "DryLoadingTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr3" class="actionlinlk">@Html.ActionLink(" Dump Truck Costsheet", "DumpTruckTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr7" class="actionlinlk">@Html.ActionLink(" Wagon Drill Costsheet", "WagonDrillTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr7" class="actionlinlk">@Html.ActionLink("Light-Vehicle Costsheet", "LightVehicleTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr4" class="actionlinlk">@Html.ActionLink(" External Machine Costsheet", "ExternalMachineTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr5" class="actionlinlk">@Html.ActionLink(" External Dump Truck Costsheet", "DumpTruckExternalTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr6" class="actionlinlk">@Html.ActionLink(" External Dry Loading Costsheet", "DryLoadingExternalTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr8" class="actionlinlk">@Html.ActionLink(" External Wagon Drill Costsheet", "WagonDrillExternalTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr8" class="actionlinlk">@Html.ActionLink(" External Light-Vehicle Costsheet", "ExternalLightVehicleTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Timesheet Report
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+                            <b class="arrow"></b>
+                            <ul class="submenu">
+                                <li id="flttmr1" class="actionlinlk">@Html.ActionLink(" Machinary Costsheet", "MachineTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr1" class="actionlinlk">@Html.ActionLink(" Machinary Costsheet Summary", "MachineTimeSheetReportSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr2" class="actionlinlk">@Html.ActionLink(" Dry Loading Costsheet", "DryLoadingTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr2" class="actionlinlk">@Html.ActionLink(" Dry Loading Costsheet Summary", "DryLoadingTimeSheetReportSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr3" class="actionlinlk">@Html.ActionLink(" Dump Truck Costsheet", "DumpTruckTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr3" class="actionlinlk">@Html.ActionLink(" Dump Truck Costsheet Summary", "DumpTruckTimesheetReportSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr7" class="actionlinlk">@Html.ActionLink(" Wagon Drill Costsheet", "WagonDrillTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr7" class="actionlinlk">@Html.ActionLink(" Wagon Drill Costsheet Summary", "WagonDrillTimesheetReportSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr7" class="actionlinlk">@Html.ActionLink("Light-Vehicle Costsheet", "LightVehicleTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr7" class="actionlinlk">@Html.ActionLink("Light-Vehicle Costsheet Summary", "LightVehicleTimeSheetReportSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr4" class="actionlinlk">@Html.ActionLink(" External Machine Costsheet", "ExternalMachineTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr5" class="actionlinlk">@Html.ActionLink(" External Dump Truck Costsheet", "DumpTruckExternalTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr6" class="actionlinlk">@Html.ActionLink(" External Dry Loading Costsheet", "DryLoadingExternalTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr8" class="actionlinlk">@Html.ActionLink(" External Wagon Drill Costsheet", "WagonDrillExternalTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr8" class="actionlinlk">@Html.ActionLink(" External Light-Vehicle Costsheet", "ExternalLightVehicleTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
 
-                            @* Timesheet only Report *@
-                            <li id="flttmr8" class="actionlinlk">@Html.ActionLink("Machinery Timesheet", "MachineTimeSheetOnlyReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr8" class="actionlinlk">@Html.ActionLink("Wagon Drill Timesheet", "WagoneDrillTimeSheetOnly", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr8" class="actionlinlk">@Html.ActionLink("DryLoading Timesheet", "DryLoadingTimeSheetOnly", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr8" class="actionlinlk">@Html.ActionLink("DumpTruck Timesheet", "DumpTruckTimeSheetOnlyView", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                            <li id="flttmr8" class="actionlinlk">@Html.ActionLink("Light-Vehicle Timesheet", "LightVehicleTimeSheetOnlyReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                @* Timesheet only Report *@
+                                <li id="flttmr8" class="actionlinlk">@Html.ActionLink("Machinery Timesheet", "MachineTimeSheetOnlyReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr8" class="actionlinlk">@Html.ActionLink("Wagon Drill Timesheet", "WagoneDrillTimeSheetOnly", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr8" class="actionlinlk">@Html.ActionLink("DryLoading Timesheet", "DryLoadingTimeSheetOnly", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr8" class="actionlinlk">@Html.ActionLink("DumpTruck Timesheet", "DumpTruckTimeSheetOnlyView", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                                <li id="flttmr8" class="actionlinlk">@Html.ActionLink("Light-Vehicle Timesheet", "LightVehicleTimeSheetOnlyReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
 
-                        </ul>
-                    </li>
-                    <li id="fltR030" class="actionlinlk">@Html.ActionLink(" Head Office Summary ", "HeadOfficeSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR12030" class="actionlinlk">@Html.ActionLink(" Project Summary ", "ProjectSummaryReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0d30" class="actionlinlk">@Html.ActionLink(" Tyre Consumption ", "TyreReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltXR033" class="actionlinlk">@Html.ActionLink("Rent From External", "RentFromExternal", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                            </ul>
+                        </li>
+                        <li id="fltR030" class="actionlinlk">@Html.ActionLink(" Head Office Summary ", "HeadOfficeSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR12030" class="actionlinlk">@Html.ActionLink(" Project Summary ", "ProjectSummaryReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0d30" class="actionlinlk">@Html.ActionLink(" Tyre And Battery Consumption ", "TyreReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltXR033" class="actionlinlk">@Html.ActionLink("Rent From External", "RentFromExternal", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
 
-                    <li id="fltXR0F323" class="actionlinlk">@Html.ActionLink(" Equipment Maintenace Summary ", "EquipmentMaintenaceSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltXR0F33" class="actionlinlk">@Html.ActionLink(" Equipment Mechanic Summary", "EquipmentMechanicSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    @*<li id="fixLReport7878" class="actionlinlk">@Html.ActionLink(" Job Request Status ", "JObRequestStatus", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>*@
-                    <li id="fltR034323" class="actionlinlk">@Html.ActionLink(" Fuel Consumption ", "FuelConsumptionReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR032" class="actionlinlk">@Html.ActionLink(" Equipment Utilization ", "EquipmentUtilizationReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR032" class="actionlinlk">@Html.ActionLink(" Equipment Demand & Supply ", "EquipmentDistrubtionReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR033" class="actionlinlk">@Html.ActionLink(" Project Work Performance ", "TimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0F322213" class="actionlinlk">@Html.ActionLink(" SiteTransfer ", "EquipmentSiteTransferReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0F323" class="actionlinlk">@Html.ActionLink(" Equipment ", "EquipmentReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0F33" class="actionlinlk">@Html.ActionLink(" Operator", "OperatorReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0F322213n" class="actionlinlk">@Html.ActionLink(" Equipment Plan Evaluation ", "PlanPerEquipmentEvaluation", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0F323n" class="actionlinlk">@Html.ActionLink(" Rent TimeSheet ", "RentTimeSheet", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0F3n3" class="actionlinlk">@Html.ActionLink(" Rent TimeSheet Evaluation", "RentTimeSheetEvaluation", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="fltR0F3vn3" class="actionlinlk">@Html.ActionLink("Plan Vs Accomplishment", "PlanVsAccomplishment", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    @*<li id="Fleet53" class="actionlinlk">@Html.ActionLink(" PM Schedule", "PMSchedule", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>*@
-                    <li id="Fleet71" class="actionlinlk">@Html.ActionLink("Plan Vs Actual Schedule", "PMActualSchedule", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet73" class="actionlinlk">@Html.ActionLink("Machinery And Vehicle Status Report", "MachineryAndVehicleStatusReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet74" class="actionlinlk">@Html.ActionLink("Fleet Insurance Report", "FleetInsurance", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet75" class="actionlinlk">@Html.ActionLink("Fleet Accident Report", "FleetAccident", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet76" class="actionlinlk">@Html.ActionLink("Fleet Accident Report Alert", "FleetAccident", "FleetAccidentNested", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                        <li id="fltXR0F323" class="actionlinlk">@Html.ActionLink(" Equipment Maintenace Summary ", "EquipmentMaintenaceSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltXR0F33" class="actionlinlk">@Html.ActionLink(" Equipment Mechanic Summary", "EquipmentMechanicSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        @*<li id="fixLReport7878" class="actionlinlk">@Html.ActionLink(" Job Request Status ", "JObRequestStatus", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>*@
+                        <li id="fltR034323" class="actionlinlk">@Html.ActionLink(" Fuel Consumption ", "FuelConsumptionReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR032" class="actionlinlk">@Html.ActionLink(" Equipment Utilization ", "EquipmentUtilizationReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR032" class="actionlinlk">@Html.ActionLink(" Equipment Demand & Supply ", "EquipmentDistrubtionReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR033" class="actionlinlk">@Html.ActionLink(" Project Work Performance ", "TimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0F322213" class="actionlinlk">@Html.ActionLink(" SiteTransfer ", "EquipmentSiteTransferReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0F323" class="actionlinlk">@Html.ActionLink(" Equipment ", "EquipmentReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0F33" class="actionlinlk">@Html.ActionLink(" Operator", "OperatorReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0F322213n" class="actionlinlk">@Html.ActionLink(" Equipment Plan Evaluation ", "PlanPerEquipmentEvaluation", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0F323n" class="actionlinlk">@Html.ActionLink(" Rent TimeSheet ", "RentTimeSheet", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0F3n3" class="actionlinlk">@Html.ActionLink(" Rent TimeSheet Evaluation", "RentTimeSheetEvaluation", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltR0F3vn3" class="actionlinlk">@Html.ActionLink("Plan Vs Accomplishment", "PlanVsAccomplishment", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        @*<li id="Fleet53" class="actionlinlk">@Html.ActionLink(" PM Schedule", "PMSchedule", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>*@
+                        <li id="Fleet71" class="actionlinlk">@Html.ActionLink("Plan Vs Actual Schedule", "PMActualSchedule", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet73" class="actionlinlk">@Html.ActionLink("Machinery And Vehicle Status Report", "MachineryAndVehicleStatusReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet74" class="actionlinlk">@Html.ActionLink("Fleet Insurance Report", "FleetInsurance", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet75" class="actionlinlk">@Html.ActionLink("Fleet Accident Report", "FleetAccident", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet76" class="actionlinlk">@Html.ActionLink("Fleet Accident Report Alert", "FleetAccident", "FleetAccidentNested", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
 
-                    <li id="Fleet77" class="actionlinlk">@Html.ActionLink("Weekly Utilization Summary", "UtilizationSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet77" class="actionlinlk">@Html.ActionLink("Monthly Utilization Summary", "MonthlyUtilizationSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet78" class="actionlinlk">@Html.ActionLink("ToDate Utilization Summary ", "UtilizationSummaryToDate", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet79" class="actionlinlk">@Html.ActionLink("Annual Plan Summary", "FleetAnnualPlanSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    <li id="Fleet80" class="actionlinlk">@Html.ActionLink("Total Fuel Consumption", "TotalFleetFuelConsumption", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                    @*<li id="Fleeetr12" class="actionlinlk">@Html.ActionLink("  Logistic Plan ", "LogisticPlan", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>*@
-                </ul>
-</li>
-    }
-    @if (HttpContext.Current.User.IsInRole("Fleet_Admin"))
-    {
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
+                        <li id="Fleet77" class="actionlinlk">@Html.ActionLink("Weekly Utilization Summary", "UtilizationSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet77" class="actionlinlk">@Html.ActionLink("Monthly Utilization Summary", "MonthlyUtilizationSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet78" class="actionlinlk">@Html.ActionLink("ToDate Utilization Summary ", "UtilizationSummaryToDate", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet79" class="actionlinlk">@Html.ActionLink("Annual Plan Summary", "FleetAnnualPlanSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="Fleet80" class="actionlinlk">@Html.ActionLink("Total Fuel Consumption", "TotalFleetFuelConsumption", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        @*<li id="Fleeetr12" class="actionlinlk">@Html.ActionLink("  Logistic Plan ", "LogisticPlan", "FleetReport", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>*@
+                        <li id="flt0333" class="actionlinlk">@Html.ActionLink("Own Machinery Schedule", "OwnMachinerySchedule", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                        <li id="flt0334" class="actionlinlk">@Html.ActionLink("Rental Machinery Schedule", "RentalMachinerySchedule", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                    </ul>
+                </li>
+            }
+            @if (HttpContext.Current.User.IsInRole("Fleet_Admin"))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
 
-                Setting
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
+                        Setting
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
 
-            <b class="arrow"></b>
+                    <b class="arrow"></b>
 
-            <ul class="submenu">
-                <li id="flt0j35" class="actionlinlk">@Html.ActionLink("Rental Rate", "index", "FleetRentalRate", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt0j35" class="actionlinlk">@Html.ActionLink("Battery And Tire", "index", "FleetBatteryAndTire", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt0j35" class="actionlinlk">@Html.ActionLink("Employee job type", "index", "Employeefleetmap", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt035" class="actionlinlk">@Html.ActionLink("Education Level", "Index", "Educationallevel", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt036" class="actionlinlk">@Html.ActionLink("Operator Position", "Index", "OperatorPosition", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt0561232" class="actionlinlk">@Html.ActionLink(" Alert Level", "Index", "AlertLevel", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                    <ul class="submenu">
+                        <li id="flt0j35" class="actionlinlk">@Html.ActionLink("Rental Rate", "index", "FleetRentalRate", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt0j35" class="actionlinlk">@Html.ActionLink("Battery And Tire", "index", "FleetBatteryAndTire", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt0j35" class="actionlinlk">@Html.ActionLink("TimeSheet Setting", "index", "TimeSheetSetting", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt0j35" class="actionlinlk">@Html.ActionLink("Employee job type", "index", "Employeefleetmap", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt035" class="actionlinlk">@Html.ActionLink("Education Level", "Index", "Educationallevel", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt036" class="actionlinlk">@Html.ActionLink("Operator Position", "Index", "OperatorPosition", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt0561232" class="actionlinlk">@Html.ActionLink(" Alert Level", "Index", "AlertLevel", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt023136" class="actionlinlk">@Html.ActionLink("Fuel Type", "Index", "FuelType", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt023136" class="actionlinlk">@Html.ActionLink("Inspection Status Key", "Index", "InspectionCheckList", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
 
-                <li id="flt023136" class="actionlinlk">@Html.ActionLink("Fuel Type", "Index", "FuelType", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                        <li id="flt040" class="actionlinlk">@Html.ActionLink("Manufacturer", "Index", "EquipmentManufacturer", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltowc032" class="actionlinlk">@Html.ActionLink(" Equipment Owning Constant ", "Index", "EquipmentOwningCostConstant", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltpc0166" class="actionlinlk">@Html.ActionLink("Fleet Check List", "Index", "FleetCheckList", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
 
-                <li id="flt040" class="actionlinlk">@Html.ActionLink("Manufacturer", "Index", "EquipmentManufacturer", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="fltowc032" class="actionlinlk">@Html.ActionLink(" Equipment Owning Constant ", "Index", "EquipmentOwningCostConstant", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="fltpc0166" class="actionlinlk">@Html.ActionLink("Fleet Check List", "Index", "FleetCheckList", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
+                        <li id="fltpc0166" class="actionlinlk">@Html.ActionLink(" Petty Cash Type", "Index", "FleetPettyCashType", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt016F6" class="actionlinlk">@Html.ActionLink("Fuel Consumption Standard", "Index", "EquipmentTypeFuelConsumption", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt003" class="actionlinlk">@Html.ActionLink("Insurance Company", "Index", "InsuranceCompany", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt0010" class="actionlinlk">@Html.ActionLink("Rental Inspection Criteria", "Index", "RentalInspectionCriteria", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltset016F6" class="actionlinlk">@Html.ActionLink("License Level", "Index", "LicenseLevel", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltset016Fd36" class="actionlinlk">@Html.ActionLink("License Type", "Index", "LicenseType", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="fltset016xsF6" class="actionlinlk">@Html.ActionLink("Condition", "Index", "EquipmentCondition", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt034" class="actionlinlk">@Html.ActionLink("Equipment Name", "Index", "EquipmentName", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt033" class="actionlinlk">@Html.ActionLink("Equipment Type", "Index", "EquipmentType", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
+                        <li id="flt032" class="actionlinlk">@Html.ActionLink("Equipment Category", "Index", "EquipmentCategory", new { area = "FleetManagement" }, new { target = "_self" })<b class="arrow"></b></li>
 
-                <li id="fltpc0166" class="actionlinlk">@Html.ActionLink(" Petty Cash Type", "Index", "FleetPettyCashType", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt016F6" class="actionlinlk">@Html.ActionLink("Fuel Consumption Standard", "Index", "EquipmentTypeFuelConsumption", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt003" class="actionlinlk">@Html.ActionLink("Insurance Company", "Index", "InsuranceCompany", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt0010" class="actionlinlk">@Html.ActionLink("Rental Inspection Criteria", "Index", "RentalInspectionCriteria", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="fltset016F6" class="actionlinlk">@Html.ActionLink("License Level", "Index", "LicenseLevel", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="fltset016Fd36" class="actionlinlk">@Html.ActionLink("License Type", "Index", "LicenseType", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="fltset016xsF6" class="actionlinlk">@Html.ActionLink("Condition", "Index", "EquipmentCondition", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt034" class="actionlinlk">@Html.ActionLink("Equipment Name", "Index", "EquipmentName", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt033" class="actionlinlk">@Html.ActionLink("Equipment Type", "Index", "EquipmentType", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-                <li id="flt032" class="actionlinlk">@Html.ActionLink("Equipment Category", "Index", "EquipmentCategory", new { area = "FleetManagement" }, new { target = "_blank" })<b class="arrow"></b></li>
-            </ul>
+                    </ul>
 
-        </li>
-    }
+                </li>
+            }
+            @if (HttpContext.Current.User.IsInRole("Fleet_Admin"))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        Dash Board
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">                       
+                        <li id="dashboa" class="actionlinlk">@Html.ActionLink("Dashboard", "FleetDashboard", "Dashboard", new { area = "" }, null)<b class="arrow"></b></li>
+                    </ul>
+
+                </li>
+            }
         </ul>
     </li>
 }

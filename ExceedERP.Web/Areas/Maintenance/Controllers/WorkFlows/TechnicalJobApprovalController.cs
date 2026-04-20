@@ -90,17 +90,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
                 else if (Request.IsSendForApproval && !Request.IsOnlineApproved)
                 {
-
-
-
                     var adminApproval = new TechnicalApprovalViewModel();
                     adminApproval.JobOrderID = JId;
-
                     adminApproval.Status = ApprovalStatuses.Pending;
                     adminApproval.Remark = string.Empty;
                     adminApproval.CreatedBy = User.Identity.Name;
                     adminApproval.DateCreated = DateTime.Now;
-
                     Admin.Add(adminApproval);
 
                 }
@@ -141,7 +136,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(new[] { TechnicalJobApproval }.ToDataSourceResult(request));
         }
 
-        public ActionResult Technical_Approval([DataSourceRequest] DataSourceRequest request, TechnicalApprovalViewModel technicalApprovalViewModel, string id)
+        public ActionResult Technical_Approval([DataSourceRequest] DataSourceRequest request, TechnicalApprovalViewModel technicalApprovalViewModel)
         {
             try
             {
@@ -150,17 +145,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 _JobOrderDetailService = new JobOrderDetailService();
                 var jobOrder = db.JobOrder.Where(x => x.JobOrderID == technicalApprovalViewModel.JobOrderID).FirstOrDefault();
                 var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == technicalApprovalViewModel.MaintenanceCenterId);
-
                 technicalApprovalViewModel.MaintenanceCenter = maintenanceCenter.Name;
                 if (technicalApprovalViewModel.ApproveStatus == ApprovalStatuses.Approve && jobOrder != null && maintenanceCenter != null)
                 {
-
-
                     var Jobs = db.JobOrder.Where(x => x.JobOrderID == technicalApprovalViewModel.JobOrderID).FirstOrDefault();
                     var JobRequest = db.JobRequest.Where(x => x.Num == Jobs.Referance).FirstOrDefault();
 
                     var jobOrderDetail = new List<JobOrderDetail>();
-
                     if (JobRequest != null)
                     {
                         jobOrderDetail = _JobOrderDetailService.GetAll()
@@ -184,17 +175,15 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
                     }
                     List<ServiceCrew> JobCrew = new List<ServiceCrew>();
-
-
                     _ServiceCrewService.InsertBatch(JobCrew.DistinctByField(x => x.MechanicCrewID).ToList());
-
                     jobOrder.MaintenanceCenterId = technicalApprovalViewModel.MaintenanceCenterId;
                     jobOrder.MaintenanceCenter = technicalApprovalViewModel.MaintenanceCenter;
+                    //jobOrder.KMReading = technicalApprovalViewModel.KMReading;
+                    //jobOrder.GPSInfo = technicalApprovalViewModel.GPSInfo;
                     jobOrder.OnlineApprovedBy = User.Identity.Name;
                     jobOrder.OnlineApprovedTime = DateTime.Now;
                     jobOrder.IsOnlineApproved = true;
                     jobOrder.Status = MaintenanceConst.Open;
-
                     db.JobOrder.Attach(jobOrder);
                     db.Entry(jobOrder).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
@@ -202,10 +191,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
                     if (jobOrder != null)
                     {
-
-
                         approval = new TechnicalJobApproval();
-
                         approval.TechnicalJobId = jobOrder.JobOrderID;
                         approval.Status = technicalApprovalViewModel.ApproveStatus;
                         approval.Remark = technicalApprovalViewModel.Remark;
@@ -214,104 +200,194 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
                         _TechnicalJobApprovalService.Insert(approval);
                     }
-
                     if (maintenanceCenter.IsExternal)
                     {
                         #region create service center External
 
 
                         var jobOrderDetails = db.JobOrderDetail.Where(x => x.JobOrderID == jobOrder.JobOrderID).ToList();
-                        foreach (var d in jobOrderDetails)
+                        var d = jobOrderDetails.First();
+                        var jobOrderServiceCenter = new ServiceCenterJob
                         {
-                            var jobOrderServiceCenter = new ServiceCenterJob
-                            {
-                                ServiceCenterJobId = Guid.NewGuid(),
-                                AdvanceMeasure = jobOrder.AdvanceMeasure,
-                                AssetNum = jobOrder.AssetNum,
-                                BattreyCost = jobOrder.BattreyCost,
-                                ComponentCost = jobOrder.ComponentCost,
-                                CreatedBy = jobOrder.CreatedBy,
-                                CurrentFuel = jobOrder.CurrentFuel,
-                                CustomerId = jobOrder.CustomerId,
-                                DateCompleted = jobOrder.DateCompleted,
-                                DateCreated = jobOrder.DateCreated,
-                                DateIssued = jobOrder.DateIssued,
-                                Efficiency = jobOrder.Efficiency,
-                                EquipmentInformationId = jobOrder.EquipmentInformationId,
-                                EquipmentName = jobOrder.EquipmentName,
-                                EquipmentNo = jobOrder.EquipmentNo,
-                                EquipmentType = jobOrder.EquipmentType,
-                                FailureReason = jobOrder.FailureReason,
-                                FleetsID = jobOrder.FleetsID,
-                                InspectedBy = jobOrder.InspectedBy,
-                                InspectorComments = jobOrder.InspectorComments,
-                                IsExternal = jobOrder.IsExternal,
-                                IsOnlineApproved = jobOrder.IsOnlineApproved,
-                                IsOnlineTransferred = jobOrder.IsOnlineTransferred,
-                                IsOnlineTransferredBy = jobOrder.IsOnlineTransferredBy,
-                                IsPM = jobOrder.IsPM,
-                                IsRework = jobOrder.IsRework,
-                                JobOrderID = jobOrder.JobOrderID,
-                                JobOrderNum = jobOrder.JobOrderNum,
-                                LabourCost = jobOrder.LabourCost,
-                                LicensePlate = jobOrder.LicensePlate,
-                                MaintenanceCenter = jobOrder.MaintenanceCenter,
-                                MaintenanceCenterId = jobOrder.MaintenanceCenterId,
-                                ServiceCenterId = d.ServiceCenterId,
-                                Num = jobOrder.Num,
-                                Odometer = jobOrder.Odometer,
-                                OilLubricantCost = jobOrder.OilLubricantCost,
-                                OperatorName = jobOrder.OperatorName,
-                                OrgBranchName = jobOrder.OrgBranchName,
-                                OtherCost = jobOrder.OtherCost,
-                                Progress = jobOrder.Progress,
-                                PercentCompleted = jobOrder.PercentCompleted,
-                                ProjectName = jobOrder.ProjectName,
-                                Referance = jobOrder.Referance,
-                                RejectionReason = jobOrder.RejectionReason,
-                                SalvageCost = jobOrder.SalvageCost,
-                                ServiceCenterStatus = jobOrder.ServiceCenterStatus,
-                                WorkShopRejectedReason = jobOrder.WorkShopRejectedReason,
-                                Type = jobOrder.Type,
-                                TyreCost = jobOrder.TyreCost,
-                                Site = jobOrder.Site,
-                                Status = jobOrder.Status,
-                                SpareCost = jobOrder.SpareCost,
-                                IsSentToWorkShop = jobOrder.IsSentToWorkShop,
-                                IsSubmittedToServiceCenter = jobOrder.IsSubmittedToServiceCenter,
-                                IsSecondOnlineApproved = jobOrder.IsSecondOnlineApproved,
-                                IsSecondSendForApproval = jobOrder.IsSecondSendForApproval,
-                                IsSendForApproval = jobOrder.IsSendForApproval,
-                                IsVoid = jobOrder.IsVoid,
-                                Remark = jobOrder.Remark,
-                                IsExternalMaintenanceCenter = true,
-                                IsInsured = jobOrder.IsInsured
-                            };
+                            ServiceCenterJobId = Guid.NewGuid(),
+                            AdvanceMeasure = jobOrder.AdvanceMeasure,
+                            AssetNum = jobOrder.AssetNum,
+                            BattreyCost = jobOrder.BattreyCost,
+                            ComponentCost = jobOrder.ComponentCost,
+                            CreatedBy = jobOrder.CreatedBy,
+                            CurrentFuel = jobOrder.CurrentFuel,
+                            CustomerId = jobOrder.CustomerId,
+                            DateCompleted = jobOrder.DateCompleted,
+                            DateCreated = jobOrder.DateCreated,
+                            DateIssued = jobOrder.DateIssued,
+                            Efficiency = jobOrder.Efficiency,
+                            EquipmentInformationId = jobOrder.EquipmentInformationId,
+                            EquipmentName = jobOrder.EquipmentName,
+                            EquipmentNo = jobOrder.EquipmentNo,
+                            EquipmentType = jobOrder.EquipmentType,
+                            FailureReason = jobOrder.FailureReason,
+                            FleetsID = jobOrder.FleetsID,
+                            InspectedBy = jobOrder.InspectedBy,
+                            InspectorComments = jobOrder.InspectorComments,
+                            IsExternal = jobOrder.IsExternal,
+                            IsOnlineApproved = jobOrder.IsOnlineApproved,
+                            IsOnlineTransferred = jobOrder.IsOnlineTransferred,
+                            IsOnlineTransferredBy = jobOrder.IsOnlineTransferredBy,
+                            IsPM = jobOrder.IsPM,
+                            IsRework = jobOrder.IsRework,
+                            JobOrderID = jobOrder.JobOrderID,
+                            JobOrderNum = jobOrder.JobOrderNum,
+                            LabourCost = jobOrder.LabourCost,
+                            LicensePlate = jobOrder.LicensePlate,
+                            MaintenanceCenter = jobOrder.MaintenanceCenter,
+                            MaintenanceCenterId = jobOrder.MaintenanceCenterId,
+                            ServiceCenterId = d.ServiceCenterId,
+                            Num = jobOrder.Num,
+                            Odometer = jobOrder.Odometer,
+                            OilLubricantCost = jobOrder.OilLubricantCost,
+                            OperatorName = jobOrder.OperatorName,
+                            OrgBranchName = jobOrder.OrgBranchName,
+                            OtherCost = jobOrder.OtherCost,
+                            Progress = jobOrder.Progress,
+                            PercentCompleted = jobOrder.PercentCompleted,
+                            ProjectName = jobOrder.ProjectName,
+                            Referance = jobOrder.Referance,
+                            RejectionReason = jobOrder.RejectionReason,
+                            SalvageCost = jobOrder.SalvageCost,
+                            ServiceCenterStatus = jobOrder.ServiceCenterStatus,
+                            WorkShopRejectedReason = jobOrder.WorkShopRejectedReason,
+                            Type = jobOrder.Type,
+                            TyreCost = jobOrder.TyreCost,
+                            Site = jobOrder.Site,
+                            Status = jobOrder.Status,
+                            SpareCost = jobOrder.SpareCost,
+                            IsSentToWorkShop = jobOrder.IsSentToWorkShop,
+                            IsSubmittedToServiceCenter = jobOrder.IsSubmittedToServiceCenter,
+                            IsSecondOnlineApproved = jobOrder.IsSecondOnlineApproved,
+                            IsSecondSendForApproval = jobOrder.IsSecondSendForApproval,
+                            IsSendForApproval = jobOrder.IsSendForApproval,
+                            IsVoid = jobOrder.IsVoid,
+                            Remark = jobOrder.Remark,
+                            IsExternalMaintenanceCenter = true,
+                            IsInsured = jobOrder.IsInsured
 
-                            db.ServiceCenterJob.Add(jobOrderServiceCenter);
-                            db.SaveChanges();
-
+                        };
+                        db.ServiceCenterJob.Add(jobOrderServiceCenter);
+                        db.SaveChanges();
+                        foreach (var dd in jobOrderDetails)
+                        {
                             var jobOrderServiceCenterDetail = new JobOrderServiceCenterDetail
                             {
                                 JobOrderServiceCenterDetailId = Guid.NewGuid(),
                                 ServiceCenterJobId = jobOrderServiceCenter.ServiceCenterJobId,
-                                SubCategoryCode = d.SubCategoryCode,
-                                JobCausesId = d.JobCausesId,
-                                ServiceGroup = d.ServiceGroup,
-                                RepairTypeID = d.RepairTypeID,
-                                ServiceCenterId = d.ServiceCenterId,
-                                Status = d.Status,
-                                ApprovalStatus = d.ApprovalStatus,
-                                Remark = d.Remark,
-                                ServiceID = d.ServiceID,
-                                ModifiedBy = d.ModifiedBy,
-                                DateCreated = d.DateCreated,
-                                JobOrderDetailId = d.JobOrderDetailID
+                                SubCategoryCode = dd.SubCategoryCode,
+                                JobCausesId = dd.JobCausesId,
+                                ServiceGroup = dd.ServiceGroup,
+                                RepairTypeID = dd.RepairTypeID,
+                                ServiceCenterId = dd.ServiceCenterId,
+                                Status = dd.Status,
+                                ApprovalStatus = dd.ApprovalStatus,
+                                Remark = dd.Remark,
+                                ServiceID = dd.ServiceID,
+                                ModifiedBy = dd.ModifiedBy,
+                                DateCreated = dd.DateCreated,
+                                JobOrderDetailId = dd.JobOrderDetailID
 
                             };
                             db.JobOrderServiceCenterDetails.Add(jobOrderServiceCenterDetail);
                             db.SaveChanges();
                         }
+                        //foreach (var d in jobOrderDetails)
+                        //{
+                        //    var jobOrderServiceCenter = new ServiceCenterJob
+                        //    {
+                        //        ServiceCenterJobId = Guid.NewGuid(),
+                        //        AdvanceMeasure = jobOrder.AdvanceMeasure,
+                        //        AssetNum = jobOrder.AssetNum,
+                        //        BattreyCost = jobOrder.BattreyCost,
+                        //        ComponentCost = jobOrder.ComponentCost,
+                        //        CreatedBy = jobOrder.CreatedBy,
+                        //        CurrentFuel = jobOrder.CurrentFuel,
+                        //        CustomerId = jobOrder.CustomerId,
+                        //        DateCompleted = jobOrder.DateCompleted,
+                        //        DateCreated = jobOrder.DateCreated,
+                        //        DateIssued = jobOrder.DateIssued,
+                        //        Efficiency = jobOrder.Efficiency,
+                        //        EquipmentInformationId = jobOrder.EquipmentInformationId,
+                        //        EquipmentName = jobOrder.EquipmentName,
+                        //        EquipmentNo = jobOrder.EquipmentNo,
+                        //        EquipmentType = jobOrder.EquipmentType,
+                        //        FailureReason = jobOrder.FailureReason,
+                        //        FleetsID = jobOrder.FleetsID,
+                        //        InspectedBy = jobOrder.InspectedBy,
+                        //        InspectorComments = jobOrder.InspectorComments,
+                        //        IsExternal = jobOrder.IsExternal,
+                        //        IsOnlineApproved = jobOrder.IsOnlineApproved,
+                        //        IsOnlineTransferred = jobOrder.IsOnlineTransferred,
+                        //        IsOnlineTransferredBy = jobOrder.IsOnlineTransferredBy,
+                        //        IsPM = jobOrder.IsPM,
+                        //        IsRework = jobOrder.IsRework,
+                        //        JobOrderID = jobOrder.JobOrderID,
+                        //        JobOrderNum = jobOrder.JobOrderNum,
+                        //        LabourCost = jobOrder.LabourCost,
+                        //        LicensePlate = jobOrder.LicensePlate,
+                        //        MaintenanceCenter = jobOrder.MaintenanceCenter,
+                        //        MaintenanceCenterId = jobOrder.MaintenanceCenterId,
+                        //        ServiceCenterId = d.ServiceCenterId,
+                        //        Num = jobOrder.Num,
+                        //        Odometer = jobOrder.Odometer,
+                        //        OilLubricantCost = jobOrder.OilLubricantCost,
+                        //        OperatorName = jobOrder.OperatorName,
+                        //        OrgBranchName = jobOrder.OrgBranchName,
+                        //        OtherCost = jobOrder.OtherCost,
+                        //        Progress = jobOrder.Progress,
+                        //        PercentCompleted = jobOrder.PercentCompleted,
+                        //        ProjectName = jobOrder.ProjectName,
+                        //        Referance = jobOrder.Referance,
+                        //        RejectionReason = jobOrder.RejectionReason,
+                        //        SalvageCost = jobOrder.SalvageCost,
+                        //        ServiceCenterStatus = jobOrder.ServiceCenterStatus,
+                        //        WorkShopRejectedReason = jobOrder.WorkShopRejectedReason,
+                        //        Type = jobOrder.Type,
+                        //        TyreCost = jobOrder.TyreCost,
+                        //        Site = jobOrder.Site,
+                        //        Status = jobOrder.Status,
+                        //        SpareCost = jobOrder.SpareCost,
+                        //        IsSentToWorkShop = jobOrder.IsSentToWorkShop,
+                        //        IsSubmittedToServiceCenter = jobOrder.IsSubmittedToServiceCenter,
+                        //        IsSecondOnlineApproved = jobOrder.IsSecondOnlineApproved,
+                        //        IsSecondSendForApproval = jobOrder.IsSecondSendForApproval,
+                        //        IsSendForApproval = jobOrder.IsSendForApproval,
+                        //        IsVoid = jobOrder.IsVoid,
+                        //        Remark = jobOrder.Remark,
+                        //        IsExternalMaintenanceCenter = true,
+                        //        IsInsured = jobOrder.IsInsured
+                        //    };
+
+                        //    db.ServiceCenterJob.Add(jobOrderServiceCenter);
+                        //    db.SaveChanges();
+
+                        //    var jobOrderServiceCenterDetail = new JobOrderServiceCenterDetail
+                        //    {
+                        //        JobOrderServiceCenterDetailId = Guid.NewGuid(),
+                        //        ServiceCenterJobId = jobOrderServiceCenter.ServiceCenterJobId,
+                        //        SubCategoryCode = d.SubCategoryCode,
+                        //        JobCausesId = d.JobCausesId,
+                        //        ServiceGroup = d.ServiceGroup,
+                        //        RepairTypeID = d.RepairTypeID,
+                        //        ServiceCenterId = d.ServiceCenterId,
+                        //        Status = d.Status,
+                        //        ApprovalStatus = d.ApprovalStatus,
+                        //        Remark = d.Remark,
+                        //        ServiceID = d.ServiceID,
+                        //        ModifiedBy = d.ModifiedBy,
+                        //        DateCreated = d.DateCreated,
+                        //        JobOrderDetailId = d.JobOrderDetailID
+
+                        //    };
+                        //    db.JobOrderServiceCenterDetails.Add(jobOrderServiceCenterDetail);
+                        //    db.SaveChanges();
+                        //}
 
 
                         #endregion

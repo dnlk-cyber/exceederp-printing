@@ -23,11 +23,13 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.Inventory;
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
       [AuthorizeRoles(FleetManagementRoles.ResourceRequestor, FleetManagementRoles.ResourceRequestApprover)] 
     public class EquipmentDistributionController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         IVehicleDistributionService _VehicleDistributionService;
         ExceedDbContext db = new ExceedDbContext();
 
@@ -41,7 +43,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                var businessUnits = db.BusinessUnits.ToList();
+                var businessUnits = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
                 ViewData["BusinessUnits"] = businessUnits;
             }
             ViewData["Fleets"] = db.Fleets.ToList().Select(s => new {
@@ -74,7 +81,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             });
             ViewData["Operators"] = db.Operator.ToList().Select(s => new {
                 Id = s.OperatorID,
-                Name = s.FullName
+                Name = s.OperatorID.ToString() + " " + s.FullName
             });
 
             ViewData["EquipmentName"] = db.EquipmentName.Select(s => new
@@ -92,8 +99,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             var categories = db.ItemCategorys;
             var items = db.InventoryItems;
-            var costCenter = db.BranchCostCenter;
-            var branches = db.Branch;
+            var costCenter = CacheData.GetWorkUnitCaches().AsQueryable();
+
+            var branches = CacheData.GetBranchCaches().Select(
+                             i => new
+                             {
+                                 Name = i.Name,
+                                 BranchId = i.Id
+                             }).AsQueryable();
             ViewData["Branches"] = branches;
 
             var inventoryPeriods = db.InventoryPeriods;
@@ -131,13 +144,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             //    }).AsQueryable();
             //ViewData["personEmployees"] = selectedEmployee;
 
-            var selectedcostCenter = costCenter.Select(
-               i => new
-               {
-                   Name = i.MainCompanyStructure.Name,
-                   Code = i.OrgStructureId
-               }).AsQueryable();
-
+            var selectedcostCenter = CacheData.GetWorkUnitCaches().AsQueryable();
             ViewData["costCenters"] = selectedcostCenter;
 
         }

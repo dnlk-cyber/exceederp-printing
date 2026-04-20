@@ -1,0 +1,75 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Severance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Severance Payable setting</Legend>
+@(Html.Kendo().Grid<SeverancePayableSetting>()
+          .Name("SeverancePayableSetting_grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ResponsibilityLevel).Width(150);
+              columns.Bound(c => c.SalaryValue).Width(160);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"SeverancePayableSetting_grid\")");
+                      events.RequestStart("onRequestStart(\"SeverancePayableSetting_grid\")");
+                      events.RequestEnd("onRequestEnd(\"SeverancePayableSetting_grid\")");
+                  })
+
+              .Model(model => model.Id(p => p.SeverancePayableSettingId))
+              .Read(read => read.Action("SeverancePayableSetting_Read", "SeverancePayableSetting").Data("sendForgery"))
+              .Create(create => create.Action("SeverancePayableSetting_Create", "SeverancePayableSetting").Data("sendForgery"))
+              .Update(update => update.Action("SeverancePayableSetting_Update", "SeverancePayableSetting").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("SeverancePayableSetting_Destroy", "SeverancePayableSetting").Data("sendForgery"))
+          )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

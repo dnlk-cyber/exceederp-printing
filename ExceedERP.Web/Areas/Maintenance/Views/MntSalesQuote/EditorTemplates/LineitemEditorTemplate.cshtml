@@ -25,7 +25,7 @@
                               .DataValueField("StoreCode")
                               .DataSource(datasource =>
                               {
-                                  datasource.Read(read => read.Action("GetStoreList", "CRMDataProvider", new { area="CRM"}).Data("getHeaderStoreId"))
+                                  datasource.Read(read => read.Action("GetStoreList", "CRMDataProvider", new { area="CRM"}).Data("sendForgery").Data("getHeaderStoreId"))
                                       .ServerFiltering(true);
                               })//.Events(e => e.Select("ClearValMsg"))
                     )
@@ -226,7 +226,7 @@
                                                     .Filter("contains")
                                                     .DataSource(dataSource =>
                                                     {
-                                                        dataSource.Read(read => read.Action("GetPossibleConvertableUoMOfProduct", "CRMDataProvider", new { area="CRM"}).Data("getSelectedProduct")).ServerFiltering(true);
+                                                        dataSource.Read(read => read.Action("GetPossibleConvertableUoMOfProduct", "CRMDataProvider", new { area="CRM"}).Data("sendForgery").Data("getSelectedProduct")).ServerFiltering(true);
                                                     })
                                                     .Events(ev =>
                                                     {
@@ -429,7 +429,7 @@
                                                       .DataValueField("GLTaxRateID")
                                                       .DataSource(datasource =>
                                                       {
-                                                          datasource.Read(read => read.Action("GetTaxList", "CRMDataProvider", new { area="CRM"}))
+                                                          datasource.Read(read => read.Action("GetTaxList", "CRMDataProvider", new { area="CRM"}).Data("sendForgery"))
                                                               .ServerFiltering(true);
                                                       })
                                                               .Events(e => e.Change("GetTaxValue")/*.Select("ClearValMsg")*/)
@@ -491,7 +491,7 @@
                                                                       .DataValueField("GLTaxRateID")
                                       .DataSource(datasource =>
                                       {
-                                          datasource.Read(read => read.Action("GetWithholdingTaxList", "CRMDataProvider", new { area="CRM"}))
+                                          datasource.Read(read => read.Action("GetWithholdingTaxList", "CRMDataProvider", new { area="CRM"}).Data("sendForgery"))
                                               .ServerFiltering(true);
                                       })
 

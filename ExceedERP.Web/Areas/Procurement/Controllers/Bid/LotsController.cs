@@ -4,7 +4,8 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement.Settings;
-using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.Core.Domain.Procurement.Tender;
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -27,7 +28,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Lots_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<Lot> lots = _db.Lots.Where(t => t.TenderID == id);
+            IQueryable<Core.Domain.Procurement.Tender.Lots.Lot> lots = _db.Lots.Where(t => t.TenderID == id);
             DataSourceResult result = lots.ToDataSourceResult(request, lot => new
             {
                 LotID = lot.LotID,
@@ -48,7 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Lots_Create([DataSourceRequest]DataSourceRequest request, Lot lot, int id)
+        public ActionResult Lots_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.Tender.Lots.Lot lot, int id)
         {
             #region validation
 
@@ -68,7 +69,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             #endregion
             if (ModelState.IsValid)
             {
-                    var entity = new Lot
+                    var entity = new Core.Domain.Procurement.Tender.Lots.Lot
                     {
                         LotNumber = lot.LotNumber,
                         TenderID = id,
@@ -99,7 +100,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Lots_Update([DataSourceRequest]DataSourceRequest request, Lot lot)
+        public ActionResult Lots_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.Tender.Lots.Lot lot)
         {
             #region validation
 
@@ -121,7 +122,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             #endregion
             if (ModelState.IsValid)
             {
-                    var entity = new Lot
+                    var entity = new Core.Domain.Procurement.Tender.Lots.Lot
                     {
                         LotID = lot.LotID,
                         TenderID = lot.TenderID,
@@ -152,7 +153,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Lots_Destroy([DataSourceRequest]DataSourceRequest request, Lot lot)
+        public ActionResult Lots_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.Tender.Lots.Lot lot)
         {
             #region validation
             var exists = _db.LotItems.Where(x => x.LotID == lot.LotID).ToList();
@@ -174,7 +175,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             #endregion
             if (ModelState.IsValid)
             {
-                var entity = new Lot
+                var entity = new Core.Domain.Procurement.Tender.Lots.Lot
                 {
                     LotID = lot.LotID,
                     LotNumber = lot.LotNumber,

@@ -40,8 +40,14 @@ namespace ExceedERP.Web.Areas.Health.Controllers.Setting
         }
         public JsonResult HealthResponsiblityLevelValueSettings_Create([DataSourceRequest] DataSourceRequest request, HealthResponsiblityLevelValueSetting health)
         {
-            
-            if(ModelState.IsValid)
+            var exist = db.HealthResponsiblityLevelValueSettings.Where(x=>x.Level==health.Level).Any();
+            if (exist)
+            {
+                ModelState.AddModelError("exist", " already Setted Once you can modify it");
+                return Json(new[] { health }.ToDataSourceResult(request));
+
+            }
+            if (ModelState.IsValid)
             {
                 var entity = new HealthResponsiblityLevelValueSetting
                 {

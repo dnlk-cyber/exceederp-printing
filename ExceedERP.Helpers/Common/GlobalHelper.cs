@@ -12,6 +12,32 @@ namespace ExceedERP.Helpers.Common
 {
     public class GlobalHelper
     {
+        public static bool IsDepreciationMonthly()
+        {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+
+                bool isbyPeriod = false;
+
+                string reference = SecurityHelper.Encrypt("DepreciationSchedule", XAPI.Common.KEY);
+
+
+                //string currentValue = SecurityHelper.Encrypt(currentValue, XAPI.Common.KEY);
+
+                var conf = db.Configurations
+                    .Where(x => x.Category == "S")
+                    .Where(x => x.Reference == reference).FirstOrDefault();
+
+                if (conf != null)
+                {
+                    string attributeValue = SecurityHelper.Encrypt("Monthly", XAPI.Common.KEY);
+                    if (attributeValue == conf.Attribute)
+                        isbyPeriod = true;
+                }
+
+                return isbyPeriod;
+            }
+        }
         public static bool IsProcessAllBranchPayroll()
         {
             return false;

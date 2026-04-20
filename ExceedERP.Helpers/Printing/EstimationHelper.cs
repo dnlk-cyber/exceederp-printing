@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,7 @@ namespace ExceedERP.Helpers.Printing
         {
             int[] allowedSizes = { 8, 4, 2 };
             var x = Math.Ceiling(quantity / (fade));
-            result = ((page * color) / sectionUp);
+            result = ((page/* * color*/) / sectionUp);
             int wholePlates = (int)Math.Floor(result);
             var a = wholePlates * sectionUp;
             var remainingPage = page - a;
@@ -26,7 +26,8 @@ namespace ExceedERP.Helpers.Printing
                 result++;
             }
             result = result * x;
-            result = Math.Ceiling(result * (1 + (wastage / 100)));
+            result = Math.Ceiling(result * (1 + wastage));
+            result = result * color;
             return result;
         }
         private static List<int> BreakDownToValidSizes(int remainingPages, int[] allowedSizes)

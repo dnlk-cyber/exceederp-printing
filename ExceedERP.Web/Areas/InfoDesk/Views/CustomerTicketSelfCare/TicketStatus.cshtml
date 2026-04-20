@@ -17,7 +17,7 @@
       {
           columns.Bound(c => c.CustomerTicket_HelpDeskId).Width(70).Title("#");
           // columns.ForeignKey(c => c.CustomerID, (System.Collections.IEnumerable)ViewData["CustomerList"], "CustomerID", "CustomerName").Width(150);
-          columns.ForeignKey(c => c.TicketType_HelpDeskId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "type").EditorTemplateName("SpecificTicket").Width(180);
+          columns.ForeignKey(c => c.TicketType_HelpDeskId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "type").EditorTemplateName("SpecificTicket").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
           columns.Bound(c => c.TicketPriority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" });
           //columns.Bound(c => c.StatusType); /*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/
           columns.Bound(c => c.SupportGroup_HelpDeskId);

@@ -4,7 +4,7 @@
               .DataValueField("Name") 
                      .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("IdealTypeDDBind", "FleetDataProvider"))
+                          dataSource.Read(read => read.Action("IdealTypeDDBind", "FleetDataProvider").Data("sendForgery"))
                                     .ServerFiltering(true);
                       }).OptionLabel("Select").ValuePrimitive(true))
                 

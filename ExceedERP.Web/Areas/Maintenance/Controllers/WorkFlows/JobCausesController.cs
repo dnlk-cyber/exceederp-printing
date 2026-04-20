@@ -10,7 +10,6 @@ using System.Web.Mvc;
 
 using System.Data.Entity;
 using ExceedERP.Core.Domain.Maintenance;
-
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
     public class JobCausesController : Controller
@@ -111,9 +110,9 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(new[] { JobCauses }.ToDataSourceResult(request));
         }
 
-        [AllowAnonymous]
+        
         public ActionResult JobCauseDDBind(string Id)
-        {
+        {           
             var Request = db.JobRequest.Where(x => x.Num.ToString() == Id).FirstOrDefault();
             if (Request != null)
             {

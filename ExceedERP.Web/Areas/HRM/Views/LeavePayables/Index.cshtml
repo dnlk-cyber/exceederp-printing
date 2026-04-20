@@ -6,166 +6,251 @@
 }
 <Legend>@Resources.NavigatorLeave_LeavePayable </Legend>
 @(Html.Kendo().Grid<LeavePayable>()
-          .Name("LeavePayable_grid")
-          .Columns(columns =>
+      .Name("LeavePayable_grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.Bound(c => c.Description).Width(200);
+          columns.Command(command =>
           {
-              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-              columns.Bound(c => c.Description).Width(200);
-              columns.Command(command =>
-              {
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-              }).Width(200);
-          })
-          .ToolBar(toolbar =>
-          {
-              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-          })
-          .Editable(editable => editable.Mode(GridEditMode.InLine))
-            .Scrollable(h => h.Height(550))
-                 .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-              .Filterable()
-              .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-          .DataSource(dataSource => dataSource
-              .Ajax()
-              .Events(events =>
-              {
-                  events.Error("error_handler(\"LeavePayable_grid\")");
-                  events.RequestStart("onRequestStart(\"LeavePayable_grid\")");
-                  events.RequestEnd("onRequestEnd(\"LeavePayable_grid\")");
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
 
-              })
 
-              .Model(model => model.Id(p => p.LeavePayableId))
-              .Read(read => read.Action("LeavePayables_Read", "LeavePayables"))
-              .Create(create => create.Action("LeavePayables_Create", "LeavePayables"))
-              .Update(update => update.Action("LeavePayables_Update", "LeavePayables"))
-              .Destroy(destroy => destroy.Action("LeavePayables_Destroy", "LeavePayables"))
-          ).ClientDetailTemplateId("Leave_Payable_Template")
+
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+
+      })
+     .Editable(editable => editable.Mode(GridEditMode.InLine))
+     .Scrollable(h => h.Height(550))
+    //.Sortable(sortable =>
+    //{
+    //   sortable.SortMode(GridSortMode.SingleColumn);
+
+
+    //})
+    .Filterable()
+    .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+        .Ajax()                    
+        .Sort(sort => sort.Add(x => x.LeavePayableId).Descending())
+        .Events(events =>
+        {
+            events.Error("error_handler(\"LeavePayable_grid\")");
+            events.RequestStart("onRequestStart(\"LeavePayable_grid\")");
+            events.RequestEnd("onRequestEnd(\"LeavePayable_grid\")");
+
+        })
+
+        .Model(model => model.Id(p => p.LeavePayableId))
+        .Read(read => read.Action("LeavePayables_Read", "LeavePayables").Data("sendForgery"))
+        .Create(create => create.Action("LeavePayables_Create", "LeavePayables").Data("sendForgery"))
+        .Update(update => update.Action("LeavePayables_Update", "LeavePayables").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("LeavePayables_Destroy", "LeavePayables").Data("sendForgery"))
+    ).ClientDetailTemplateId("Leave_Payable_Template")
 )
 <script id="Leave_Payable_Template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-              .Name("tabstrip_#=LeavePayableId#")
-              .SelectedIndex(0)
-                 .Items(items =>
-                 {
-                     items.Add().Text("Leave Payable Details").Content(
-        @<text>
-    <div class="row">
-        <div class="col-sm-4" style="padding-right:0px">
-            <a onclick='return generateLeavePayable("#=LeavePayableId#")' href=' \#' title="Generate"><i class="fa fa-wrench fa-2x"></i>Generate</a>
-
-        </div>
-        <div class="col-sm-4" style="padding-left:0px">
-            <a href='@Url.Action("LeavePayableReport", "LeaveReport")/#=LeavePayableId#' title="Print"><i class="fa fa-print fa-2x">Print</i></a>
-            
-        </div>
-        </div>
-        @(Html.Kendo().Grid<LeavePayableDetail>()
-                                  .Name("LeavePayableDetail_grid#=LeavePayableId#")
-                                  .Columns(columns =>
-                                  {
-
-                                          columns.Bound(c => c.EmployeeCode).Width(120);
-                                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullName").EditorTemplateName("EmployeeEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(210);
-                                          columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-                                          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
-                                          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-                                          columns.Bound(c => c.Year1).Width(120);
-                                          columns.Bound(c => c.Year2).Width(120);
-                                          columns.Bound(c => c.PayableDays).Width(120);
-                                          columns.Bound(c => c.Balance).Width(120);
+           .Name("tabstrip_#=LeavePayableId#")
+           .SelectedIndex(0)
+           .Items(items =>
+           {
 
 
-                                          columns.Command(command =>
-                  {
-                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                          command.Destroy().Text(Resources.ActionButton_Cancel);
-                                      }).Width(400);
-                                      })
-                                            //.ToolBar(toolbar =>
-                                            //{
-                                            //    // toolbar.Custom().Action("SendForApproval", "LeaveReturn").Text(Resources.HR_Send_For_Approval);
-                                            //    toolbar.Custom().Action("GenerateLeavePayable", "LeavePayables", new { id = "#=LeavePayableId#" }).Text("Generate");
-                                            //})
+                  items.Add().Text("Leave Payable Details").Content(
+                    @<text>
+                        
 
-
-                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                            .Scrollable(h => h.Height(500))
-                                            .Filterable()
-                                            .DataSource(dataSource => dataSource
-                                                .Ajax()
-                                                .Events(events =>
-                                                {
-                                                        events.Error("error_handler(\"LeavePayableDetail_grid#=LeavePayableId#\")");
-                                                        events.RequestStart("onRequestStart(\"LeavePayableDetail_grid#=LeavePayableId#\")");
-                                                        events.RequestEnd("onRequestEnd(\"LeavePayableDetail_grid#=LeavePayableId#\")");
-
-
-                                                    })
-                                               .Model(model =>
-                                               {
-                                                       model.Id(p => p.LeavePayableDetailId);
-                                           //model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                           model.Field(p => p.EmployeeId).Editable(false);
-                                                       model.Field(p => p.EmployeeCode).Editable(false);
-                                                       model.Field(p => p.EmployeeId).Editable(false);
-                                                       model.Field(p => p.BranchId).Editable(false);
-                                                       model.Field(p => p.BusinessUnitId).Editable(false);
-                                                       model.Field(p => p.PayableDays).Editable(false);
-                                                       model.Field(p => p.OrgStructureId).Editable(false);
-                                                       model.Field(p => p.Balance).Editable(false);
-                                                   })
-                                              .Read(read => read.Action("LeavePayableDetails_Read", "LeavePayableDetails", new { leavPId = "#=LeavePayableId#" }))
-                                              .Create(create => create.Action("LeavePayableDetails_Create", "LeavePayableDetails", new { lPId = "#=LeavePayableId#" }))
-                                              .Update(update => update.Action("LeavePayableDetails_Update", "LeavePayableDetails"))
-                                              .Destroy(destroy => destroy.Action("LeavePayableDetails_Destroy", "LeavePayableDetails"))
-
-                                              ).ToClientTemplate()
-
-        )
-
-        </text>);
+                        <div class="row">
 
 
 
+                            <div class="col-sm-3" style="padding-right:0px">
+                               
+                                @(Html.Kendo().DropDownListFor(m => m)
+                                        .Name("EmployeeId")
+                                        .OptionLabel("Select Employee")
+                                        .Filter("contains")
+                                        .DataTextField("FullNameaEnglish")
+                                        .DataValueField("EmployeeId")
+                                        .HtmlAttributes(new { style = "width: 170px;" })
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
+                                            .ServerFiltering(true);
 
-                     }).ToClientTemplate())
+
+
+                                        }).ToClientTemplate()
+                                )
+
+                            </div>
+                            <div class="col-sm-3" style="padding-right:5px">
+                                <a onclick='return generateLeavePayable("#=LeavePayableId#")' href=' \#' title="Generate"><i class="fa fa-wrench fa-2x"></i>Generate</a>
+
+                            </div>
+                            <div class="col-sm-3" style="padding-right:5px">
+                                <a href='@Url.Action("LeavePayableReport", "LeaveReport")/#=LeavePayableId#' title="Print"><i class="fa fa-print fa-2x">Print</i></a>
+
+                            </div>
+                        </div>
+                        @(Html.Kendo().Grid<LeavePayableDetail>()
+                            .Name("LeavePayableDetail_grid#=LeavePayableId#")
+                            .Columns(columns =>
+                            {
+
+                                columns.Bound(c => c.EmployeeCode).Width(120);
+                                columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullName").EditorTemplateName("EmployeeEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(210);
+                                columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+                                columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                                columns.Bound(c => c.BasicSalary).Width(120);
+                                columns.Bound(c => c.Year1).Width(120);
+                                columns.Bound(c => c.Year2).Width(120);
+                                columns.Bound(c => c.PayableDays).Width(120);
+                                columns.Bound(c => c.Balance).Width(120);
+                                columns.Bound(c => c.AnnualLeavePerMonth).Width(140);
+                                columns.Bound(c => c.AgregateTaxableAmount).Width(150);
+                                columns.Bound(c => c.AgregateIncomeTax).Width(140);
+                                columns.Bound(c => c.BasicSalaryIncomeTax).Width(120);
+                                columns.Bound(c => c.TaxDifference).Width(120);
+                                columns.Bound(c => c.NetPayment).Width(120);
+
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(400);
+
+
+                            })
+                            //.ToolBar(toolbar =>
+                            //{
+                            //    // toolbar.Custom().Action("SendForApproval", "LeaveReturn").Text(Resources.HR_Send_For_Approval);
+                            //    toolbar.Custom().Action("GenerateLeavePayable", "LeavePayables", new { id = "#=LeavePayableId#" }).Text("Generate");
+                            //})
+
+
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            .Filterable()
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Sort(sort=>sort.Add(x=>x.LeavePayableDetailId).Descending())
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"LeavePayableDetail_grid#=LeavePayableId#\")");
+                                    events.RequestStart("onRequestStart(\"LeavePayableDetail_grid#=LeavePayableId#\")");
+                                    events.RequestEnd("onRequestEnd(\"LeavePayableDetail_grid#=LeavePayableId#\")");
+
+
+
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.LeavePayableDetailId);
+                                    //model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                    model.Field(p => p.EmployeeId).Editable(false);
+                                    model.Field(p => p.EmployeeCode).Editable(false);
+                                    model.Field(p => p.EmployeeId).Editable(false);
+                                    model.Field(p => p.BranchId).Editable(false);
+                                    model.Field(p => p.BusinessUnitId).Editable(false);
+                                    model.Field(p => p.PayableDays).Editable(false);
+                                    model.Field(p => p.OrgStructureId).Editable(false);
+                                    model.Field(p => p.Balance).Editable(false);
+                                })
+                                .Read(read => read.Action("LeavePayableDetails_Read", "LeavePayableDetails", new { leavPId = "#=LeavePayableId#" }).Data("sendForgery"))
+                                .Create(create => create.Action("LeavePayableDetails_Create", "LeavePayableDetails", new { lPId = "#=LeavePayableId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("LeavePayableDetails_Update", "LeavePayableDetails").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("LeavePayableDetails_Destroy", "LeavePayableDetails").Data("sendForgery"))
+                                ).ToClientTemplate())
+
+                    </text>);
+
+           }).ToClientTemplate())
 </script>
 
 <script>
     function generateLeavePayable(id) {
+        //var employee = $("#EmployeeId").data("kendoDropDownList").value();
+        var employee = $("#EmployeeId").val();
+        //var leaveDate = $("#leaveDate").val();
         $('#loading-image').show();
         $.ajax({
             type: "POST",
             url: '@Url.Action("GenerateLeavePayable", "LeavePayables", new { area = "HRM" })',
-            data: { id: id },
-            success: function (result) {
+            data: { id: id, employee: employee},
+            success: function (result)
+            {
                 alert(result.Message);
                 $('#loading-image').hide();
                 location.reload(true);
-               
-
-            }, 
-            error: function (result) {
+            },
+            error: function (result)
+            {
                 alert(result.Message);
                 $('#loading-image').hide();
-
             }
         });
     }
 
+    function filterEmployeeBranch() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+
+        };
+    }
     function sync_handler(e) {
         this.read();
 
     }
 </script>
+
+<script>
+    //document.getElementById("employeeFilter").addEventListener("input", function () {
+    //    // Get the filter input value
+    //    var filterValue = this.value.toLowerCase();
+
+    //    // Get the dropdown element
+    //    var dropdown = document.getElementById("EmployeeId");
+
+    //    // Get all options in the dropdown
+    //    var options = dropdown.getElementsByTagName("option");
+
+    //    // Iterate over each option to apply the filter
+    //    for (var i = 0; i < options.length; i++) {
+    //        var option = options[i];
+    //        var text = option.textContent || option.innerText;
+
+    //        // Show the option if it matches the filter or is the default option
+    //        if (option.value === "" || text.toLowerCase().includes(filterValue)) {
+    //            option.style.display = ""; // Show option
+    //        } else {
+    //            option.style.display = "none"; // Hide option
+    //        }
+    //    }
+
+    //    // Reset the dropdown selection if the current selection is filtered out
+    //    if (!dropdown.value || !options[dropdown.selectedIndex].style.display) {
+    //        dropdown.selectedIndex = 0; // Set to the default option
+    //    }
+    //});
+</script>
+

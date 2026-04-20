@@ -38,6 +38,7 @@ namespace ExceedERP.Core.Domain.Common.DocumentApproval
         ProformaPurchase,
         ServiceReceiveSelfCare,
         PurchaseRequisitionSelfCare,
+        ExternalMaintenanceRequestPayment
     }
     public enum ApprovalWorkflow
     {

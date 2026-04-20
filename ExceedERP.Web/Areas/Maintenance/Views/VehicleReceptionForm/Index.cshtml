@@ -5,17 +5,18 @@
               .Columns(columns =>
               {
                   columns.Bound(x=>x.Source);
-                  columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customer"], "OrganizationCustomerID", "TradeName").Width(150);
-                  columns.ForeignKey(e => e.TechnicianAssignedId, (IEnumerable)ViewData["Employee"], "Code", "Name").Width(150);
+                  columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customer"], "OrganizationCustomerID", "TradeName").Filterable(ft=>ft.Search(true)).Width(150);
+                  columns.ForeignKey(e => e.TechnicianAssignedId, (IEnumerable)ViewData["Employee"], "Code", "Name").Title("Inspector").Width(150);
                   columns.ForeignKey(c => c.VehicleCategoryId, (IEnumerable)ViewData["category"], "Id", "Name").Title("Category").Width(120);
                   columns.Bound(c => c.DateCreated).Title("Date").Format("{0:yyyy-MM-dd}").Width(80);
                   columns.Bound(c => c.PlateNo).Width(80);
                   columns.Bound(c => c.VehicleType).Width(80);
-                  columns.Bound(c => c.VehicleModel).Width(80);
+                  columns.Bound(c => c.VehicleModel).Title("Vehicle Model").Width(80);
                   columns.Bound(c => c.Mileage).Width(100);
                   columns.Bound(c => c.Fuel).Width(100);
+                  columns.Bound(c => c.DateCreated).Width(100);
+                  columns.Bound(c => c.ReferenceNumber).Width(150);
                   columns.Bound(c => c.Remark).Width(150);
-
                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
               })
@@ -24,13 +25,15 @@
                 toolbar.Create();
                 //toolbar.Excel();
             })
-            .Events(ev=>ev.DataBound("dataBound"))
+           // .Events(ev=>ev.DataBound("dataBound"))
+          
             .Scrollable(s => s.Height(600))
             .Sortable()
             .Filterable()
             .Editable(editable => editable.Mode(GridEditMode.PopUp)
             .Window(w => w.Width(600).Title("Vehicle Reception Form"))
             .TemplateName("VehicleReceptionForm"))
+            .Events(ev=>ev.DataBound("ReceptionDataBound"))
             .Pageable(pageable => pageable
             .Refresh(true)
             .PageSizes(true)
@@ -40,17 +43,17 @@
             .Events(ev => ev.Error("error_handler(\"grid\")")
             .RequestStart("onRequestStart(\"grid\")")
             .RequestEnd("onRequestEnd(\"grid\")"))
-            .ServerOperation(false)
+
             .Model(model =>
             {
                 model.Id(p => p.VehicleReceptionFormId);
-                model.Field(p => p.VehicleModel).Editable(false);
-                model.Field(p => p.VehicleType).Editable(false);
+                // model.Field(p => p.VehicleModel).Editable(false);
+                //model.Field(p => p.ReferenceNumber).Editable(false);
             })
-            .Read(read => read.Action("VehicleReceptionForm_Read", "VehicleReceptionForm"))
-            .Create(create => create.Action("VehicleReceptionForm_Create", "VehicleReceptionForm"))
-            .Update(update => update.Action("VehicleReceptionForm_Update", "VehicleReceptionForm"))
-            .Destroy(destroy => destroy.Action("VehicleReceptionForm_Destroy", "VehicleReceptionForm"))
+            .Read(read => read.Action("VehicleReceptionForm_Read", "VehicleReceptionForm").Data("sendForgery"))
+            .Create(create => create.Action("VehicleReceptionForm_Create", "VehicleReceptionForm").Data("sendForgery"))
+            .Update(update => update.Action("VehicleReceptionForm_Update", "VehicleReceptionForm").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("VehicleReceptionForm_Destroy", "VehicleReceptionForm").Data("sendForgery"))
             .Sort(sort =>
             {
                 sort.Add(m => m.VehicleReceptionFormId).Descending();
@@ -60,75 +63,224 @@
 
 <script id="detailTemplate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
+                                                               .Name("tabStrip_#=VehicleReceptionFormId#")
+                                                               .SelectedIndex(0)
+                                                               .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                               .Items(items =>
+                                                               {
+                                                                   items.Add().Text("Detail").Content(@<text>
 
-               .Name("tabStrip_#=VehicleReceptionFormId#")
-               .SelectedIndex(0)
-               .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-               .Items(items =>
-               {
-                   items.Add().Text("Vehicle Part Management").Content(@<text>
-                     <a href='@Url.Action("Print", "VehicleReceptionForm")/#=VehicleReceptionFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.VehiclePartManagement>()
-                     .Name("vehicle_part_management_#=VehicleReceptionFormId#")
-                     .Columns(columns =>
-                     {
-                         columns.ForeignKey(e => e.VehiclePartId, (IEnumerable)ViewData["VehicleParts"], "VehiclePartId", "Name")
-                         .Title("Vehicle Part").Width(150);
-                         columns.Bound(c => c.Quantity);
-                         columns.ForeignKey(e => e.VehiclePartDamageTypeId, (IEnumerable)ViewData["VehiclePartDamageType"], "VehiclePartDamageTypeId", "Code_Name")
-                         .EditorTemplateName("VehiclePartDamageTypeMapping")
-                         .Title("Vehicle Part Damage Type").Width(150);
-                         columns.Bound(c => c.Remark);
 
-                     })
-                   .ToolBar(toolbar =>
-                   {
-                       toolbar.Save();
-                   })
+                                                                    # if (!IsSendForApproval)
+                                                                    {#
 
-                   .Scrollable(s => s.Height(600))
-                   .Sortable()
-                   .Filterable()
-                   .Editable(editable => editable.Mode(GridEditMode.InCell))
-                   .Pageable(pageable => pageable
-                   .Refresh(true)
-                   .PageSizes(true)
-                   .ButtonCount(5))
-                   .DataSource(dataSource => dataSource
-                   .Ajax()
-                   .Batch(true)
+                                                                    @*<a href='@Url.Action("SendReceptionForApproval", "VehicleReceptionForm")/?Id=#=VehicleReceptionFormId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>*@
+                                                                    # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                                    {#
+                                                                    <a onclick='return SendReceptionForApproval("#=VehicleReceptionFormId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                    <br />
+                                                                    # } #
 
-                   .Events(ev => ev.Error("error_handler(\"vehicle_part_management_#=VehicleReceptionFormId#\")")
-                   .RequestStart("onRequestStart(\"vehicle_part_management_#=VehicleReceptionFormId#\")")
-                   .RequestEnd("onRequestEnd(\"vehicle_part_management_#=VehicleReceptionFormId#\")"))
-                   .ServerOperation(false)
-                   .Model(model => model.Id(p => p.VehiclePartManagementId))
-                   .Read(read => read.Action("VehiclePartManagement_Read", "VehiclePartManagement", new { id = "#=VehicleReceptionFormId #" }))
-                   .Create(create => create.Action("VehiclePartManagement_Create", "VehiclePartManagement", new { id = "#=VehicleReceptionFormId #" }))
-                   .Update(update => update.Action("VehiclePartManagement_Update", "VehiclePartManagement"))
-                   .Destroy(destroy => destroy.Action("VehiclePartManagement_Destroy", "VehiclePartManagement"))
-                   .Sort(sort =>
-                   {
-                       sort.Add(m => m.VehicleReceptionFormId).Descending();
-                   }).PageSize(10))
-                   .ToClientTemplate()
-                       )
-                   </text>);
-                       }).ToClientTemplate())
+                                                                    # }#
+                                                                </text>
+                                                        );
+items.Add().Text("Vehicle Part Management").Content(@<text>
+<a href='@Url.Action("Print", "VehicleReceptionForm")/#=VehicleReceptionFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.VehiclePartManagement>()
+                                        .Name("vehicle_part_management_#=VehicleReceptionFormId#")
+                                        .Columns(columns =>
+                                        {
+                                                            columns.ForeignKey(e => e.VehiclePartId, (IEnumerable)ViewData["VehicleParts"], "VehiclePartId", "Name")
+.Title("Vehicle Part").Width(150);
+                                                            columns.Bound(c => c.Quantity);
+                                                            columns.ForeignKey(e => e.VehiclePartDamageTypeId, (IEnumerable)ViewData["VehiclePartDamageType"], "VehiclePartDamageTypeId", "Code_Name")
+.EditorTemplateName("VehiclePartDamageTypeMapping")
+.Title("Vehicle Part Damage Type").Width(150);
+                                                            columns.Bound(c => c.Remark);
+
+                                                        })
+                                        .ToolBar(toolbar =>
+                                        {
+                                                        toolbar.Save();
+                                                    })
+
+                                        .Scrollable(s => s.Height(600))
+                                        .Sortable()
+                                        .Filterable()
+                                        .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                        .Pageable(pageable => pageable
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Batch(true)
+
+                                        .Events(ev => ev.Error("error_handler(\"vehicle_part_management_#=VehicleReceptionFormId#\")")
+                                        .RequestStart("onRequestStart(\"vehicle_part_management_#=VehicleReceptionFormId#\")")
+                                        .RequestEnd("onRequestEnd(\"vehicle_part_management_#=VehicleReceptionFormId#\")"))
+
+                                        .Model(model =>
+                                            {
+                                                                model.Id(p => p.VehiclePartManagementId);
+                                                                model.Field(f => f.VehiclePartId).Editable(false);
+                                                            })
+                                        .Read(read => read.Action("VehiclePartManagement_Read", "VehiclePartManagement", new { id = "#=VehicleReceptionFormId #" }).Data("sendForgery"))
+                                        //.Create(create => create.Action("VehiclePartManagement_Create", "VehiclePartManagement", new { id = "#=VehicleReceptionFormId #" }).Data("sendForgery"))
+                                        .Update(update => update.Action("VehiclePartManagement_Update", "VehiclePartManagement").Data("sendForgery"))
+                                        .Destroy(destroy => destroy.Action("VehiclePartManagement_Destroy", "VehiclePartManagement").Data("sendForgery"))
+                                        .Sort(sort =>
+                                        {
+                                                        sort.Add(m => m.VehicleReceptionFormId).Descending();
+                                                    }).PageSize(10))
+                                        .ToClientTemplate()
+)
+</text>);
+
+                                                                                items.Add().Text(" Causes  ").Content(@<text>
+                                                                                    @*#if(FromRequest){#
+
+                                                                                    <a onclick='return sendBackToRequest("#=VehicleReceptionFormId#")' href=' \#' title="Send Back To Request"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                                    # }#*@
+                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobCauses>()
+                                                                                                                                                .Name("JobCauses_#=VehicleReceptionFormId#")
+                                                                                                                                                .Columns(columns =>
+                                                                                                                                                {
+                                                                                                                                                                         columns.Bound(o => o.Name).Width(120);
+                                                                                                                                                                         columns.Bound(o => o.Description).EditorTemplateName("JobReasonDescEditor").Width(200);
+                                                                                                                                                                         columns.Command(command =>
+                                                                                                                                     {
+                                                                                                                                                                  command.Edit();
+                                                                                                                                                                  command.Destroy();
+                                                                                                                                                              }).Width(100);
+
+                                                                                                                                                                     })
+                                                                                                                                                           .Events(ev => ev.DataBound("CauseDataBound"))
+                                                                                                                                                .ToolBar(toolbar => toolbar.Create())
+                                                                                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                .DataSource(dataSource => dataSource
+                                                                                                                                                .Ajax()
+                                                                                                                                                .PageSize(20)
+                                                                                                                                                .Model(model => model.Id(p => p.JobCausesId)).Events(ev => ev
+                                                                                                                                                .Error("error_handler(\"JobCauses_#=VehicleReceptionFormId#\")")
+                                                                                                                                                .RequestStart("onRequestStart(\"JobCauses_#=VehicleReceptionFormId#\")")
+                                                                                                                                                .RequestEnd("onRequestEnd(\"JobCauses_#=VehicleReceptionFormId#\")"))
+                                                                                                                                                .Create(create => create.Action("JobCauses_Create", "JobCausesReception", new { Id = "#=VehicleReceptionFormId#" }).Data("sendForgery"))
+                                                                                                                                                .Read(read => read.Action("JobCauses_Read", "JobCausesReception", new { Id = "#=VehicleReceptionFormId#" }).Data("sendForgery"))
+                                                                                                                                                .Update(update => update.Action("JobCauses_Update", "JobCausesReception").Data("sendForgery"))
+                                                                                                                                                .Destroy(d => d.Action("JobCauses_Destroy", "JobCausesReception").Data("sendForgery"))
+
+                                                                                                                                                )
+                                                                                                                                                .Pageable(p => p.Refresh(true))
+
+                                                                                                                                                .ToClientTemplate())
+
+                                                                                </text>
+                                                                           );
+                                                                                        items.Add().Text("Reception Approval").Content(@<text>
+                                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.VehicleReceptionApproval>()
+                                                                                                                    .Name("Receptiongrid_#=VehicleReceptionFormId#")
+                                                                                                                .Columns(columns =>
+                                                                                                                {
+                                                                                                                columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
+                                                                                                                columns.Bound(o => o.Remark).Width(160);
+                                                                                                                columns.Bound(o => o.CreatedBy).Width(120);
+                                                                                                                columns.Bound(o => o.DateCreated).Format("{0:d}").Width(120);
+                                                                                                                columns.Command(command =>
+                                                                                                             {
+                                                                                                  command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
+                                                                          .Text("&nbsp;Approve").Click("approveJobRequest").IconClass("fa fa-check");
+                                                                                                  command.Custom("cmd-reject-request").HtmlAttributes(new { @class = "kendoDanger" })
+                                                                          .Text("&nbsp;Reject").Click("rejectJobRequest").IconClass("fa fa-close");
+                                                                                      //command.Custom().Text("Approve");
+                                                                                  }).Width(250);
+                                                                                                                                             }).Events(ev =>
+                                                                                                             {
+                                                                                      ev.DataBound("InspectionApprovalDataBound");
+                                                                                  })
+                                                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                    .Ajax()
+                                                                                                                    .PageSize(20)
+                                                                                                                    .Model(model =>
+                                                                                                                    {
+                                                                                                                                                     model.Id(p => p.VehicleReceptionApprovalId);
+                                                                                                                                                     model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                     model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                                 }).Events(ev => ev
+                                                                                                             .Error("error_handler(\"Receptiongrid_#=VehicleReceptionFormId#\")")
+                                                                                                             .RequestStart("onRequestStart(\"Receptiongrid_#=VehicleReceptionFormId#\")")
+                                                                                                             .RequestEnd("onRequestEnd(\"Receptiongrid_#=VehicleReceptionFormId#\")"))
+                                                                                                                        .Create(create => create.Action("Admin_Approve", "VehicleReceptionForm", new { Id = "#=VehicleReceptionFormId#" }).Data("sendForgery"))
+                                                                                                                        .Read(read => read.Action("Admin_Read", "VehicleReceptionForm", new { Id = "#=VehicleReceptionFormId#" }).Data("sendForgery"))
+                                                                                                                        .Update(update => update.Action("Admin_Approve", "VehicleReceptionForm", new { Id = "#=VehicleReceptionFormId#" }).Data("sendForgery"))
+                                                                                                                    )
+                                                                                                                .ToClientTemplate())
+                                                                                        </text>
+                                                                                );
+                                                                                            }).ToClientTemplate())
 
 
 </script>
 
 <script>
+    var CheckIfIsRequest = false; // GLOBAL scope
+    
+    function ReceptionDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            var isApproved = dataItem.IsSendForApproval === true || dataItem.IsSendForApproval === "true";
+            CheckIfIsRequest = dataItem.IsSendForApproval;
+            if (isApproved) {
+                $(this).find(".k-grid-edit").remove();   // lowercase
+                $(this).find(".k-grid-delete").remove(); // lowercase
+                CheckIfIsRequest = true;
+            }
+        });
+    }
+    function CauseDataBound(e) {
+        //if (CheckIfIsRequest === true) {
+        //    $(".k-grid-add").hide(); // hide global add button
+        //} else {
+        //    $(".k-grid-add").show();
+        //}
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (CheckIfIsRequest===true) {
+                $(this).find(".k-grid-edit").hide(); // lowercase, inside row
+                $(this).find(".k-grid-edit").remove();   // lowercase
+                $(this).find(".k-grid-delete").remove(); // lowercase
+            }
+        });
+       
+    }
+    function InspectionApprovalDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status==0) {
+                $(this).find(".k-grid-cmd-approve-request").remove();
+                $(this).find(".k-grid-cmd-reject-request").remove();
+            }
+        });
+    }
+    var isExternal = true;
     function SourceSelectorChanged(e) {
         var dd = $("#Source").data("kendoDropDownList");
         if (dd) {
             var selectedValue = dd.value();
            // alert("selected Value : " + selectedValue);
             if (selectedValue == 1) {
+                isExternal = false;
                 $("#CustomerId").data("kendoDropDownList").enable(false);
                 $("#CustomerId").val(null);
             } else if (selectedValue == 0) {
+                isExternal = false;
                 $("#CustomerId").data("kendoDropDownList").enable(true);
             }
         }
@@ -151,31 +303,144 @@
             //search: $("#VehicleCategoryId").val()
         };
     }
-    function getModelType() {
-        var plateNo = $("#PlateNo").val()
-        console.log(plateNo);
-         $.ajax({
-                type: 'GET',
-             url: '@Url.Action("GetEquipmentModel", "MaintenanceDataProvider")',
-             data: {
-                 plateNo: plateNo,
+   function getModelType() {
+    var plateNo = $("#PlateNo").val();
+    console.log(plateNo);
 
-             },
-                 async: false,
-             success: function (result) {
-                 data = result;
-                 $("#VehicleType").val(data.GroupName).trigger("change");
-                 $("#VehicleModel").val(data.DeviceNumber).trigger("change");
+    if (isExternal) {
+        $.ajax({
+            type: 'GET',
+            url: '/MaintenanceDataProvider/GetEquipmentModel', 
+            data: { plateNo: plateNo },
+            success: function (result) {
+                if (result.error) {
+                    alert(result.error); // Show error message if any
+                    return;
+                }
 
-
-                 
+                $('#EquipmentName').val(result.EquipmentName).trigger("change");
+                $('#EquipmentType').val(result.EquipmentType).trigger("change");
+                $('#VehicleCategoryId').val(result.EquipmentCategory).trigger("change");
+                $('#CustomerId').val(result.customerId).trigger("change");
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: " + error);
             }
-            });
+        });
+    } else {
+        $.ajax({
+            type: 'GET',
+            url: '/MaintenanceDataProvider/GetInternalEquipmentModel', 
+            data: { plateNo: plateNo },
+            success: function (result) {
+                if (result.error) {
+                    alert(result.error); // Show error message if any
+                    return;
+                }
+
+                $('#VehicleModel').val(result.EquipmentName).trigger("change");
+                $("#VehicleType").val(result.EquipmentType).trigger("change");
+                $("#VehicleCategoryId").data("kendoDropDownList").value(result.EquipmentCategory);
+                $("#VehicleCategoryId").data("kendoDropDownList").trigger("change");
+
+                //var inpt = $("#VehicleCategoryId").data("kendoDropDownList");
+                //inpt.value(result.EquipmentCategory);
+                //inpt.trigger("change");
+            },
+            
+        });
     }
+}
     //function getModel() {
     //    $("#VehicelType").val(data.GroupName).trigger("change");
     //    $("#VehicelModel").val(data.DeviceNumber).trigger("change");
     //}
+     function sendBackToRequest(id) {
+       var recordStatus = "";
+
+       $.ajax({
+           type: "POST",
+           url: '@Url.Action("sendBackToRequest", "VehicleReceptionForm", new { area = "Maintenance" })',
+           data: { id: id },
+           success: function(result) {
+                alert(result);
+                location.reload(true);
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+    }
+    function approveJobRequest(e) {
+var grid = this,
+dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+$.ajax({
+type: "POST",
+url: '@Url.Action("ApproveJobRequest", "VehicleReceptionForm", new { area = "Maintenance" })',
+    data: { id: dataItem.VehicleReceptionApprovalId },
+success: function (result) {
+location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+    }
+    var ReceptionIsApproved = false;
+    function ReceptionDetail() {
+        dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        ReceptionIsApproved = dataItem.IsOnlineApproved;
+    }
+
+    function ReceptionApprovalDatabound() {
+        var grid = $(this);
+        grid.tbody.find('tr[role="row"]').each(function () {
+       
+            var dataItem = grid.dataItem(this);
+            if (ReceptionIsApproved == true) {
+                $(this).data('k_grid_rejectJobRequest').hide();
+                $(this).data('k_grid.approveJobRequest').hide();
+            }
+        })
+    }
+
+function rejectJobRequest(e) {
+var grid = this,
+dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+$.ajax({
+type: "POST",
+url: '@Url.Action("RejectJobRequest", "VehicleReceptionForm", new { area = "Maintenance" })',
+    data: { id: dataItem.VehicleReceptionApprovalId },
+success: function (result) {
+console.log(result.Message);
+//alert(result.Message);
+location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+    }
+
+     function SendReceptionForApproval(id) {
+        var recordStatus = "";
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendReceptionForApproval", "VehicleReceptionForm")',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+   
 </script>
 <style type="text/css">
     div.k-edit-form-container {

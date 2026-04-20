@@ -10,33 +10,32 @@
 <div class="toolbar">
     <label class="category-label" for="From">@Resources.HR_LeaveManagment_Leave_From</label>
     @(Html.Kendo().ComboBox()
-                                                .Placeholder(Resources.HR_LeaveManagment_Leave_From)
-                                               .Name("From")
-
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("GetPeriod", "Leave", new { area = "HRM" }))
-                                                              .ServerFiltering(false);
-                                            })
-
-                                                      .DataTextField("Name")
-                                                     .DataValueField("GlFiscalYearId")
-                                                   .AutoBind(false)
-                                        // .Events(e => e.Change("Period"))
-                                        .HtmlAttributes(new { style = "width: 300px;" })
+            .Placeholder(Resources.HR_LeaveManagment_Leave_From)
+            .Name("From")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetPeriod", "Leave", new { area = "HRM" }))
+                                .ServerFiltering(false);
+            })
+            .DataTextField("Name")
+            .DataValueField("GlFiscalYearId")
+            .AutoBind(false)
+            // .Events(e => e.Change("Period"))
+            .HtmlAttributes(new { style = "width: 300px;" })
 
     )
     <label class="category-label" for="To">@Resources.HR_LeaveManagment_LeaveTransfer_To</label>
     @(Html.Kendo().ComboBox()
                                     .Name("To")
-                                                    .Placeholder(Resources.HR_LeaveManagment_LeaveTransfer_To)
-                                            .DataTextField("Name")
-                                                                   .DataSource(dataSource =>
-                                                                   {
-                                                                       dataSource.Read(read => read.Action("GetPeriod", "Leave", new { area = "HRM" }))
-                                                                                             .ServerFiltering(false);
-                                                                   })
-                                                            .DataValueField("GlFiscalYearId")
+                                     .Placeholder(Resources.HR_LeaveManagment_LeaveTransfer_To)
+                                      .DataTextField("Name")
+                                      .DataSource(dataSource =>
+                                      {
+                                          dataSource.Read(read => read.Action("GetPeriod", "Leave", new { area = "HRM" }))
+                                                                .ServerFiltering(false);
+
+                                      })
+                                      .DataValueField("GlFiscalYearId")
                             .AutoBind(false)
                             //   .Events(e => e.Change("ToPeriod"))
                             .HtmlAttributes(new { style = "width: 300px;" })
@@ -81,7 +80,7 @@
 
       })
            .Excel(excel => excel
-                                            .FileName(Resources.NavigatorLeave_LeaveTransfer + ".xlsx")
+                               .FileName(Resources.NavigatorLeave_LeaveTransfer + ".xlsx")
                                .Filterable(true)
                                     .AllPages(true)
                                                     .ProxyURL(Url.Action("Excel_Export_Save", "LeaveTransfer"))
@@ -138,19 +137,20 @@
                 @* <legend>Status</legend>*@
 
                 @(Html.Kendo().Grid<RequestesStatus>()
-                                          .Name("RequestesStatusgrid_#=LeaveTransferId#")
-                          .Columns(columns =>
-                          {
-                              //columns.Bound(c => c.RequestId);
-                              columns.Bound(c => c.DateReqStatAm);
-                              columns.Bound(c => c.Status).EditorTemplateName("Enum");
-                              columns.Bound(c => c.Remark);
-                              //columns.Command(command =>
-                              //{
-                              //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                              //   command.Destroy().Text(Resources.ActionButton_Cancel);//
-                              //}).Width(180);
-                          })
+                        .Name("RequestesStatusgrid_#=LeaveTransferId#")
+                        .Columns(columns =>
+                        {
+                            //columns.Bound(c => c.RequestId);
+                            columns.Bound(c => c.DateReqStatAm);
+                            columns.Bound(c => c.Status).EditorTemplateName("Enum");
+                            columns.Bound(c => c.Remark);
+                            //columns.Command(command =>
+                            //{
+                            //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            //   command.Destroy().Text(Resources.ActionButton_Cancel);//
+                            //}).Width(180);
+
+                        })
                           .ToolBar(toolbar =>
                           {
                               toolbar.Custom().Action("SendForApproval", "LeaveTransfer").Text(Resources.HR_Send_For_Approval);
@@ -171,12 +171,13 @@
                model.Id(p => p.RequestStatusId);
                model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
            })
-                                                  .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType = "LeaveTransfer" }))
-                                                  .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType2 = "LeaveTransfer" }))
-                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
-                          ).ToClientTemplate()
-                )
+           .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType = "LeaveTransfer" }))
+           .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType2 = "LeaveTransfer" }))
+           .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+           .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                          
+            ).ToClientTemplate()
+            )
 
 
             </text>

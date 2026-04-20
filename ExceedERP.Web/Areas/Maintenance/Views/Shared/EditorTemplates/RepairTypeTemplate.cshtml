@@ -8,8 +8,8 @@
           .Events(ev => ev.Change("onChangeService"))
           .Filter(FilterType.Contains)
                     .CascadeFrom("ServiceGroup")
-                  .DataSource(d => d.Read(r => r.Action("GetServices", "MaintenanceDataProvider")
+                  .DataSource(d => d.Read(r => r.Action("GetServices", "MaintenanceDataProvider").Data("sendForgery")
                   .Data("filterServices"))
                   .ServerFiltering(true)))
-                  @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("filterSerivce")).ServerFiltering(false)))*@
+                  @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("sendForgery").Data("filterSerivce")).ServerFiltering(false)))*@
 </div>

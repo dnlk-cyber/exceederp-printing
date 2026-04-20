@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
@@ -15,23 +15,46 @@ using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Web.Areas.Maintenance.Models;
 using System.Data.Entity;
-using static ExceedERP.Web.Areas.Maintenance.Controllers.MaintenanceDashboardController;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
+using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Web.Controllers
 {
 
 	public partial class DashboardController : Controller
 	{
-		private readonly ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db = new ExceedDbContext();
 		private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 		private readonly DashboardHelper _dashboardHelper = new DashboardHelper();
 
-		public ActionResult RealEstate()
-		{
-			return View();
-		}
+        public ActionResult ShareHolderDashboard()
+        {
+            return View();
+        }
+        public ActionResult LabDashboard()
+        {
+            return View();
+        }
+        public ActionResult CpmDashboard()
+        {
+            return View();
+        }
 
-		[AuthorizeRoles(CommonConstants.DashboardHr)]
+        //public ActionResult RemDashboard()
+        //{
+        //    var Totalprospective = _db.RemSalesPersonDailyActivitys.Count();
+        //    var TotalSites = _db.ReEstSites.Count();
+        //    var TotalHouseStock = _db.ReEstHouses.Count();
+
+
+        //    ViewBag.Totalprospective = Totalprospective;
+        //    ViewBag.TotalSites = TotalSites;
+        //    ViewBag.TotalHouseStock = TotalHouseStock;
+        //    return View();
+        //}
+
+        [AuthorizeRoles(CommonConstants.DashboardHr)]
 		public ActionResult ImportExportDashboard()
 		{
 			return View();
@@ -56,7 +79,25 @@ namespace ExceedERP.Web.Controllers
 		{
 			return View();
 		}
+		#region ImportExport Dashboard
+		public IList<string> getImpExpLabels()
+		{
+			var labelArray = new List<string>();
+			labelArray.Add("Quotation");
+			labelArray.Add("Purchase");
+			labelArray.Add("Proforma");
+			labelArray.Add("BillOfLading");
+			labelArray.Add("Commericial");
 
+			return labelArray;
+		}
+		public class Mapper
+		{
+			public object labels;
+			public object datas;
+
+		}
+		#endregion
 
 		#region Maintenance Dashboard
 		public IList<string> getMaintenanceLabels()
@@ -270,8 +311,6 @@ namespace ExceedERP.Web.Controllers
 			return jobOrders;
 		}
 		#endregion
-
-		
 
 
 		[AuthorizeRoles(CommonConstants.DashboardHr)]
@@ -738,898 +777,1352 @@ namespace ExceedERP.Web.Controllers
 
 			return sectors;
 		}
-		#endregion
-
-		#region hrm
-		public JsonResult GetEmployeeCount()
-		{
-			var contrat = _db.Person_Employee.Where(x => x.IsActive && x.Status == EmployeeStatus.CONTRACT).ToList();
-			var permanent = _db.Person_Employee.Where(x => x.IsActive && x.Status == EmployeeStatus.PERMANENT).ToList();
-			var probation = _db.Person_Employee.Where(x => x.IsActive && x.Status == EmployeeStatus.PROBATION).ToList();
-			var others = _db.Person_Employee.Where(x => x.IsActive  /*(x.Status == EmployeeStatus.FREELANCER || x.Status == EmployeeStatus.NO_STATUS*/ && (x.Status != EmployeeStatus.CONTRACT
-																																					  && x.Status != EmployeeStatus.PERMANENT
-																																					  && x.Status != EmployeeStatus.PROBATION)).ToList();
-			var formattedData = new
-			{
-				Data = new int[] { contrat.Count(), permanent.Count(), probation.Count(), others.Count() },
-				Labels = new string[] { "Contract", "Permanent", "Probation", "Others" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-		public JsonResult GetContratEmployee()
-		{
-			var MaleContratemployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.CONTRACT).ToList();
-			var femaleContEmployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.CONTRACT).ToList();
-			var others = _db.Person_Employee
-			   .Where(x => x.IsActive && x.Gender != Gender.FEMALE
-										   && x.Gender != Gender.MALE
-										   && x.Status == EmployeeStatus.CONTRACT).ToList();
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-					MaleContratemployees.Count(), femaleContEmployees.Count(),others.Count(),
-
-					MaleContratemployees.Count()+femaleContEmployees.Count()+others.Count()
-
-				},
-				Labels = new string[] { "Male", "Female", "Others", "Total" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-		public JsonResult GetPermanentEmployee()
-		{
-			var MalePermaemployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PERMANENT).ToList();
-			var femaleEmployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.PERMANENT).ToList();
-			var others = _db.Person_Employee
-			   .Where(x => x.IsActive
-								   && x.Gender != Gender.FEMALE
-								   && x.Gender != Gender.MALE
-									   && x.Status == EmployeeStatus.PERMANENT).ToList();
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-					MalePermaemployees.Count(), femaleEmployees.Count(),others.Count(),
-
-					MalePermaemployees.Count()+femaleEmployees.Count()+others.Count()
-
-				},
-				Labels = new string[] { "Male", "Female", "Others", "Total" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-		public JsonResult GetProbationEmployee()
-		{
-			var MaleProbationemployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PROBATION).ToList();
-			var femaleProbationEmployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.FEMALE
-				&& x.Status == EmployeeStatus.PROBATION).ToList();
-			var others = _db.Person_Employee.Where(x => x.IsActive
-								&& x.Gender != Gender.MALE
-								&& x.Gender != Gender.FEMALE
-								&& x.Status == EmployeeStatus.PROBATION).ToList();
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-					MaleProbationemployees.Count(), femaleProbationEmployees.Count(),others.Count(),
-
-					MaleProbationemployees.Count()+femaleProbationEmployees.Count()+others.Count()
-
-				},
-				Labels = new string[] { "Male ", "Female", "Others", "Total" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-		public JsonResult GetOtherEmployee()
-		{
-			var MaleOtheremployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status != EmployeeStatus.CONTRACT
-																  && x.Status != EmployeeStatus.PERMANENT
-																  && x.Status != EmployeeStatus.PROBATION).ToList();
-
-			var femaleOtherEmployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status != EmployeeStatus.CONTRACT
-																	&& x.Status != EmployeeStatus.PERMANENT
-																	&& x.Status != EmployeeStatus.PROBATION).ToList();
-
-
-			var otherEmployees = _db.Person_Employee
-				.Where(x => x.IsActive && x.Gender != Gender.MALE
-										&& x.Gender != Gender.FEMALE
-										&& x.Status != EmployeeStatus.CONTRACT
-										&& x.Status != EmployeeStatus.PERMANENT
-										&& x.Status != EmployeeStatus.PROBATION).ToList();
-
-
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-					MaleOtheremployees.Count(), femaleOtherEmployees.Count(),otherEmployees.Count(),
-
-					MaleOtheremployees.Count()+femaleOtherEmployees.Count()+otherEmployees.Count()
-
-				},
-				Labels = new string[] { "Male ", "Female", "Others", "Total" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public ActionResult GetEmployeeType()
-		{
-			var formattedData = new
-			{
-				Data = new List<List<int>>(),
-				Labels = new List<string>()
-			};
-			var employeeTypeIdLists = _db.Person_Employee.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct();
-			var employeeTypeIds = _db.Person_Employee.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct().ToArray();
-			foreach (var employeeTypeId in employeeTypeIds)
-			{
-				var employeeType = _db.EmployeeTypes.Find(employeeTypeId);
-				if (employeeType != null)
-				{
-					var employeeCount = _db.Person_Employee
-						.Where(x => x.EmployeeTypeId == employeeTypeId && x.IsActive)
-						.Count();
-					formattedData.Data.Add(new List<int> { employeeCount });
-					formattedData.Labels.Add(employeeType.Name);
-				}
-			}
-
-			//var totalEmployeeCount = _db.Person_Employee
-			//    .Where(x => employeeTypeIdLists.Contains(x.EmployeeTypeId) && x.IsActive)
-			//    .Count();
-			//formattedData.Data.Add(new List<int> { totalEmployeeCount });
-			//formattedData.Labels.Add("Total");
-
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		//public ActionResult GetEmployeeType()
-		//{
-		//    var formattedData = new
-		//    {
-		//        Data = new List<List<int>>(),
-		//        Labels = new List<string>()
-		//    };
-
-		//    var employeeTypeIds = _db.Person_Employee.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct().ToArray();
-		//    for (var i = 0; i < employeeTypeIds.Length; i++)
-		//    {
-		//        var employeeType = _db.EmployeeTypes.Find(employeeTypeIds[i]);
-		//        if (employeeType != null)
-		//        {
-		//            var productionCount = _db.Person_Employee
-		//                .Where(x => x.EmployeeTypeId == employeeType.EmployeeTypeId && x.IsActive).Count();
-		//            formattedData.Data.Add(new List<int> { productionCount });
-		//            formattedData.Labels.Add(employeeType.Name);
-		//        }
-		//    }
-		//    formattedData.Data.Add(new List<int> { _db.Person_Employee
-		//                .Where(x =>employeeTypeIds.Contains( x.EmployeeTypeId)&&x.IsActive).Count() });
-		//    formattedData.Labels.Add("Total");
-		//    return Json(formattedData, JsonRequestBehavior.AllowGet);
-		//}
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetEmployeeByAssignmentType()
-		{
-
-			var Newemployees = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.NEW).ToList();
-			var promotedEmployees = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.PROMOTION).ToList();
-			var demotedEmployees = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.DEMOTION).ToList();
-			var recomendedEmployee = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.RECOMENDATION).ToList();
-			var TransfredEmployee = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.TRANSFER).ToList();
-			var structureChange = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.STRUCTURE_CHANGE).ToList();
-			var assignment = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.ASSIGNMENT).ToList();
-			var yearlyPromoted = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.YEARLY_PROMOTION).ToList();
-			var others = _db.Placements.Where(x => x.isCurrent
-													&& x.AssignmentType != AssignmentType.NEW
-													&& x.AssignmentType != AssignmentType.PROMOTION
-													&& x.AssignmentType != AssignmentType.YEARLY_PROMOTION
-													&& x.AssignmentType != AssignmentType.RECOMENDATION
-													&& x.AssignmentType != AssignmentType.TRANSFER
-													&& x.AssignmentType != AssignmentType.STRUCTURE_CHANGE
-													&& x.AssignmentType != AssignmentType.ASSIGNMENT
-													&& x.AssignmentType != AssignmentType.ANNUAL_SALARY_INCREMENT).ToList();
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-					Newemployees.Count(), promotedEmployees.Count(), demotedEmployees.Count(),
-					recomendedEmployee.Count(), TransfredEmployee.Count(), structureChange.Count(), assignment.Count(),
-					yearlyPromoted.Count(),others.Count()
-				},
-				Labels = new string[]
-				{
-					"NEW", "PROMOTION", "DEMOTION", "RECOMENDATION", "TRANSFER", "STRUCTURE_CHANGE", "ASSIGNMENT","YEARLY_PROMOTION","Others"
-				}
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetEmployeeByResponsibilityLevel()
-		{
-			var staff = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.STAFF).ToList();
-			var low = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.LOW_MANAGMENT).ToList();
-			var medium = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.MEDIUM_MANAGMENT).ToList();
-			var top = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT).ToList();
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-					staff.Count() ,low.Count(), medium.Count(), top.Count()
-				},
-				Labels = new string[] { "Staff", "Low Management", "Medium Management", "Top Management" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetlLeave()
-		{
-
-			var todayD = DateTime.Now.Date;
-			var today = new DateTime(todayD.Year, todayD.Month, 1);
-			var prevMonth = today.AddMonths(-1);
-			var secondMonth = today.AddMonths(-2);
-
-			var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
-			var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
-			var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
-
-
-
-			#region Curremt Month
-			var annualleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.ANNUAL && x.From >= today && x.To <= todayEnd);
-			var merrageleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.MARRIAGE && x.From >= today && x.To <= todayEnd);
-			var maternityleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.MATERNITY && x.From >= today && x.To <= todayEnd);
-			var paternityleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.PATERNITY && x.From >= today && x.To <= todayEnd);
-			var sickleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.SICK_LEAVE && x.From >= today && x.To <= todayEnd);
-			var otherleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.OTHER && x.From >= today && x.To <= todayEnd);
-			#endregion
-			#region second Month
-			var annualleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.ANNUAL && x.From >= prevMonth && x.To <= prevMonthEnd);
-			var merrageleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.MARRIAGE && x.From >= prevMonth && x.To <= prevMonthEnd);
-			var maternityleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.MATERNITY && x.From >= prevMonth && x.To <= prevMonthEnd);
-			var paternityleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.PATERNITY && x.From >= prevMonth && x.To <= prevMonthEnd);
-			var sickleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.SICK_LEAVE && x.From >= prevMonth && x.To <= prevMonthEnd);
-			var otherleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.OTHER && x.From >= prevMonth && x.To <= prevMonthEnd);
-			#endregion
-			#region third Month
-			var annualleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.ANNUAL && x.From >= secondMonth && x.To <= secondMonthEnd);
-			var merrageleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.MARRIAGE && x.From >= secondMonth && x.To <= secondMonthEnd);
-			var maternityleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.MATERNITY && x.From >= secondMonth && x.To <= secondMonthEnd);
-			var paternityleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.PATERNITY && x.From >= secondMonth && x.To <= secondMonthEnd);
-			var sickleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.SICK_LEAVE && x.From >= secondMonth && x.To <= secondMonthEnd);
-			var otherleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.OTHER && x.From >= secondMonth && x.To <= secondMonthEnd);
-			#endregion
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-					 annualleavethird, annualleavesecond, annualleaveCurrent ,
-
-				},
-				Labels = new string[] { "Before Previous Month", "Previous Month ", "Current Month " }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetTraining()
-		{
-			var todayD = DateTime.Now.Date;
-			var today = new DateTime(todayD.Year, todayD.Month, 1);
-			var fyearId = _fiscalYearHelper.GetCurrentFYearId();
-			var fiscalYear = _db.GLFiscalYears.Find(fyearId);
-			DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
-			DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
-			var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
-			var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
-			//var prevYearStart = today.AddYears(-1);
-			//var todayD = DateTime.Now.Date;
-			//var today = new DateTime(todayD.Year, todayD.Month, 1);
-			var prevMonth = today.AddMonths(-1);
-			var secondMonth = today.AddMonths(-2);
-
-			var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
-			var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
-			var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
-
-
-			#region Curremt year
-			var trainings = from c in _db.CourseTrackings
-							join
-								t in _db.Trainee
-								on c.CourseTrackingId equals t.CourseTrackingId
-
-							select new { c.From, c.To, c.TrainingType };
-
-			var trainingCurrent = trainings.Count(x => x.From >= CurrentYearStartDate && x.To <= CurrentYearEnddate && x.TrainingType == TrainingType.TRAINING);
-
-
-
-			#endregion
-			#region before Current year
-			var trainingBeforeCurrentYear = trainings.Count(x => x.From >= prevYearStartDate && x.To <= prevYearEndDate && x.TrainingType == TrainingType.TRAINING);
-
-			#endregion
-			#region third Month
-			var trainingthird = trainings.Count(x => x.From >= secondMonth && x.To <= secondMonthEnd && x.TrainingType == TrainingType.TRAINING);
-
-			#endregion
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-					 trainingBeforeCurrentYear,trainingCurrent
-
-				},
-				Labels = new string[] { "Before Current", "Current  " }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetEducation()
-		{
-			var todayD = DateTime.Now.Date;
-			var today = new DateTime(todayD.Year, todayD.Month, 1);
-			var fyearId = _fiscalYearHelper.GetCurrentFYearId();
-			var fiscalYear = _db.GLFiscalYears.Find(fyearId);
-			DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
-			DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
-			var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
-			var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
-			var prevMonth = today.AddMonths(-1);
-			var secondMonth = today.AddMonths(-2);
-
-			var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
-			var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
-			var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
-
-
-			#region Curremt Month
-			var education = from c in _db.CourseTrackings
-							join
-								t in _db.Trainee
-								on c.CourseTrackingId equals t.CourseTrackingId
-
-							select new { c.From, c.To, c.TrainingType };
-
-			var educationCurrent = education.Count(x => x.From >= CurrentYearStartDate && x.To <= CurrentYearEnddate && x.TrainingType == TrainingType.EDUCATION);
-
-
-
-			#endregion
-			#region Before this Year
-			var educationBeforeCurrentYear = education.Count(x => x.From >= prevYearStartDate && x.To <= prevYearEndDate && x.TrainingType == TrainingType.EDUCATION);
-
-			#endregion
-			//#region third Month
-			//var educationthird = education.Count(x => x.From >= secondMonth && x.To <= secondMonthEnd && x.TrainingType == TrainingType.EDUCATION);
-
-			//#endregion
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-						educationBeforeCurrentYear,educationCurrent
-
-				},
-				Labels = new string[] { "Before Current", "Current " }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetAbsentEmployee()
-		{
-
-			var todayD = DateTime.Now.Date;
-			var currentMonthStartDate = new DateTime(todayD.Year, todayD.Month, 1);
-			var prevMonth = currentMonthStartDate.AddMonths(-1);
-			var secondMonth = currentMonthStartDate.AddMonths(-2);
-
-			var currentManthEndDate = new DateTime(currentMonthStartDate.Year, currentMonthStartDate.Month, DateTime.DaysInMonth(currentMonthStartDate.Year, currentMonthStartDate.Month));
-			var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
-			var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
-
-			#region Absent
-
-			int index = 0;
-			GLPeriod periodOne = new GLPeriod();
-			GLPeriod periodTwo = new GLPeriod();
-			string namecurrent = "";
-			string nameOne = "";
-			string nameTwo = "";
-			List<string> allPeriodsname = new List<string>();
-			var currentPeriod = _db.GLPeriods.FirstOrDefault(x => currentMonthStartDate >= x.DateFrom && currentManthEndDate <= x.DateTo);
-			if (currentPeriod != null)
-			{
-				namecurrent = currentPeriod.Name;
-				var allPeriods = _db.GLPeriods.Where(x => x.DateTo <= currentPeriod.DateTo && x.GLPeriodId != currentPeriod.GLPeriodId).OrderBy(x => x.DateTo).ToList();
-				foreach (var a in allPeriods)
-				{
-					if (index == 0)
-					{
-						periodOne = new GLPeriod();
-						periodOne = a;
-						nameOne = a.Name;
-					}
-					else if (index == 1)
-					{
-						periodTwo = new GLPeriod();
-						periodTwo = a;
-						nameTwo = a.Name;
-					}
-
-					else
-					{
-						break;
-					}
-					index++;
-				}
-			}
-
-
-			if (nameOne != "")
-			{
-				allPeriodsname.Add(nameOne);
-
-			}
-			if (nameTwo != "")
-			{
-				allPeriodsname.Add(nameTwo);
-
-			}
-			if (namecurrent != "")
-			{
-				allPeriodsname.Add(namecurrent);
-
-			}
-
-			#region Curremt Month
-			var lateComming = _db.LateCommings.ToList();
-			var abcets = _db.EmpPayrollNoDaysWorkeds.ToList();
-
-			var absentCurrent = abcets.Where(x => currentPeriod != null && x.GLPeriodId >= currentPeriod.GLPeriodId).ToList().Select(x => x.EmployeeId).Distinct().Count();
-			// var lateCurrent = lateComming.Where(x => currentPeriod != null && (x.Date >= currentPeriod.DateFrom && x.Date <= currentPeriod.DateTo)).ToList().Sum(x => (int)x.Time);
-			var lateCurrent = lateComming.Where(x => x.Date >= currentMonthStartDate && x.Date <= currentManthEndDate).ToList().Select(x => x.EmployeeId).Distinct().Count();
-
-			#endregion
-			#region second Month
-			//var absentsecond = abcets.Where(x => x.GLPeriodId >= periodTwo.GLPeriodId).ToList().Sum(x => x.Days);
-			var absentsecond = abcets.Where(x => x.GLPeriodId >= periodTwo.GLPeriodId).ToList().Select(x => x.EmployeeId).Distinct().Count();
-			var latesecond = lateComming.Where(x => x.Date >= periodTwo.DateFrom && x.Date <= periodTwo.DateTo).ToList().Select(x => x.EmployeeId).Distinct().Count();
-			#endregion
-			#region third Month
-			var absentthird = abcets.Where(x => x.GLPeriodId >= periodOne.GLPeriodId).ToList().Select(x => x.EmployeeId).Distinct().Count();
-			var latethird = lateComming.Where(x => x.Date >= periodOne.DateFrom && x.Date <= periodOne.DateTo).ToList().Select(x => x.EmployeeId).Distinct().Count();
-			#endregion
-
-			#endregion
-
-
-			//var formattedData = new
-			//{
-			//    Data = new int[,]
-			//    {
-
-			//         { absentthird,latethird, absentsecond,latesecond, absentCurrent,  lateCurrent }
-
-			//    },
-			//    Labels = new string[,] { { "Absent Before Two month", "Late Coming Before Two month", "Absent Before month", "Late Coming Before  month", "Absent Current Month", "Late Coming Current Month" } }
-			//};
-			//return Json(formattedData, JsonRequestBehavior.AllowGet);
-			var formattedData = new
-			{
-				Data = new int[]
-			   {
-					 absentCurrent,  lateCurrent
-			   },
-				Labels = new string[] { "Absent", "Late Coming" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetVacantByBranch()
-		{
-			#region  Vacant Postion By Branch
-			//var listOfBranchs = _db.Branch.OrderBy(x => x.Name).ToList();
-			//var userBranch = UserInformationHelper.GetUserBranchs(User.Identity.Name).FirstOrDefault();
-			decimal quntity = 0;
-			decimal assignedQuant = 0;
-			decimal vacantQuantity = 0;
-
-			var mapping = _db.JobTitleMapping.Where(x => x.IsActive).ToList();
-			if (mapping.Any())
-			{
-				quntity = mapping.Sum(x => x.Quntity);
-			}
-			var placments = _db.Placements.Where(x => x.isCurrent).ToList();
-			if (placments.Any())
-			{
-				assignedQuant = placments.Count();
-			}
-
-			#endregion
-
-			var formattedData = new
-			{
-				Data = new decimal[]
-				{
-
-					quntity - assignedQuant,assignedQuant
-
-				},
-				Labels = new string[] { "Vacant Position", "Assigned Quantity" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetTermination()
-		{
-
-
-			var fyearId = _fiscalYearHelper.GetCurrentFYearId();
-			var fiscalYear = _db.GLFiscalYears.Find(fyearId);
-			var todayD = DateTime.Now.Date;
-			var today = new DateTime(todayD.Year, todayD.Month, 1);
-			DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
-			DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
-			var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
-			var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
-			var prevYearStart = today.AddYears(-1);
-			var prevMonth = today.AddYears(-1);
-			var secondMonth = today.AddMonths(-2);
-
-			var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
-			var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
-			var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
-
-			var allTermination = _db.Terminations.ToList();
-
-			#region Current Year
-
-			var terminationCurrent =
-				allTermination.Count(x => x.TerminationDate >= CurrentYearStartDate && x.TerminationDate <= CurrentYearEnddate);
-
-			#endregion
-
-			#region last year 
-
-			var terminationsecond =
-				allTermination.Count(x => x.TerminationDate >= prevYearStartDate && x.TerminationDate <= prevYearEndDate);
-
-			#endregion
-
-
-			#region third Month
-
-			var terminationthird = allTermination.Count(x =>
-				x.TerminationDate <= secondMonth && x.TerminationDate <= secondMonthEnd);
-
-			#endregion
-
-			#region commented
-			//#region Termination
-			//var terminationTypes = _db.Lookups.Where(x => x.LookupType == LookUpTypes.TERMINATIONTYPE).ToList();
-
-
-			//var formattedData = new
-			//{
-			//    Data = new int[]{},
-			//    Labels = new string[] { }
-			//};
-			//foreach (var t in terminationTypes)
-			//{
-			//    #region Curremt Month
-
-			//    //var terminations = _db.Terminations.Where(x => x.LookupId == t.LookupId).ToList();
-
-			//    //var terminationCurrent =
-			//    //    terminations.Count(x => x.TerminationDate >= today && x.TerminationDate <= todayEnd);
-
-
-
-			//    #endregion
-
-			//    #region second Month
-
-			//    //var terminationsecond =
-			//    //    terminations.Count(x => x.TerminationDate >= prevMonth && x.TerminationDate <= prevMonthEnd);
-
-			//    #endregion
-
-			//    #region third Month
-
-			//    //var terminationthird = terminations.Count(x =>
-			//    //    x.TerminationDate >= secondMonth && x.TerminationDate <= secondMonthEnd);
-
-			//    #endregion
-
-
-
-			//    #endregion
-
-			//     formattedData = new
-			//    {
-			//        Data = new int[]
-			//        {
-
-			//            terminationthird,terminationsecond, terminationCurrent
-
-			//        },
-			//        Labels = new string[] {"Month Before Prev","Prev Month","Current Month"}
-			//    };
-			//}
-
-			#endregion
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-						terminationsecond, terminationCurrent
-
-
-
-				},
-				Labels = new string[] { "Last Year", "Current Year" }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetAccidentRecored()
-		{
-			#region Accident Record
-			var fyearId = _fiscalYearHelper.GetCurrentFYearId();
-			var fiscalYear = _db.GLFiscalYears.Find(fyearId);
-			var todayD = DateTime.Now.Date;
-			var today = new DateTime(todayD.Year, todayD.Month, 1);
-			DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
-			DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
-			var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
-			var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
-			string[] types = { "On Work Place", "Not On Work Place" };
-
-			var CurrentAccidentIns = _db.AccidentRecords.Where(x => x.Date >= CurrentYearStartDate && x.Date <= CurrentYearEnddate).Where(x => x.IsInWorkPlace == true).ToList();
-			var CurrentAccidentOuts = _db.AccidentRecords.Where(x => x.Date >= today && x.Date <= CurrentYearEnddate).Where(x => x.IsInWorkPlace == false).ToList();
-
-			#region Curremt Month
-
-
-			var LastaccidentIn = _db.AccidentRecords.Where(x => x.IsInWorkPlace == true)
-										.Where(x => x.Date >= prevYearStartDate && x.Date <= prevYearEndDate).Select(x => x.EmployeeId).Distinct().Count();
-			var Lataccidentout = _db.AccidentRecords.Where(x => x.Date >= prevYearStartDate && x.Date <= prevYearEndDate).Select(x => x.EmployeeId).Distinct().Count();
-
-
-
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-					{
-
-					   LastaccidentIn,Lataccidentout, CurrentAccidentIns.Count(), CurrentAccidentOuts.Count()
-
-					},
-				Labels = new string[] { "On Work Place", "Out of Work Place", " On Work Place", " Out of Work Place" }
-			};
-
-
-			#endregion
-
-
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetVacancy()
-		{
-
-			var fyearId = _fiscalYearHelper.GetCurrentFYearId();
-			var fiscalYear = _db.GLFiscalYears.Find(fyearId);
-			var todayD = DateTime.Now.Date;
-			var today = new DateTime(todayD.Year, todayD.Month, 1);
-			DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
-			DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
-			var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
-			var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
-
-
-			var prevMonth = today.AddMonths(-1);
-			var secondMonth = today.AddMonths(-2);
-
-			var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
-			var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
-			var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
-
-			#region Vacancy
-			string[] vacancytypes = { "INTERNAL", "EXTERNAL" };
-			int vacancyCurrent = 0;
-			int vacancysecond = 0;
-			int vacancythird = 0;
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{ },
-				Labels = new string[] { }
-			};
-
-			foreach (var t in vacancytypes)
-			{
-				var vacancies = new List<Vacancy>();
-				var allVacancy = from v in _db.VaccancyPlans
-								 join r in _db.RecruitmentVacancy
-								 on v.VacancyId equals r.VacancyId
-								 select new { v.From, v.To, v.RecruSource };
-
-				#region Curremt Month
-
-				if (t == "INTERNAL")
-				{
-					// vacancies = allVacancy.Where(v => ).ToList();
-
-					vacancyCurrent = allVacancy.Count(x => x.From >= CurrentYearStartDate && x.To <= CurrentYearEnddate && x.RecruSource == RecruitmentSource.INTERNAL);
-					vacancysecond = vacancies.Count(x => x.From >= prevYearStartDate && x.To <= prevYearEndDate && x.RecruSource == RecruitmentSource.INTERNAL);
-					//vacancythird = vacancies.Count(x => x.From >= secondMonth && x.To <= secondMonthEnd && x.RecruSource == RecruitmentSource.INTERNAL);
-				}
-				else
-				{
-					vacancyCurrent = allVacancy.Count(x => x.From >= CurrentYearStartDate && x.To <= CurrentYearEnddate && x.RecruSource == RecruitmentSource.EXTERNAL);
-					vacancysecond = vacancies.Count(x => x.From >= prevYearStartDate && x.To <= prevYearEndDate && x.RecruSource == RecruitmentSource.EXTERNAL);
-					//vacancythird = vacancies.Count(x => x.From >= secondMonth && x.To <= secondMonthEnd && x.RecruSource == RecruitmentSource.EXTERNAL);
-
-				}
-
-
-				#endregion
-
-				formattedData = new
-				{
-					Data = new int[]
-					 {
-
-						vacancysecond, vacancyCurrent
-
-					 },
-					Labels = new string[] { "Before Current ", "Current" }
-				};
-			}
-
-			#endregion
-
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetEmployeeDispline()
-		{
-
-
-			var fyearId = _fiscalYearHelper.GetCurrentFYearId();
-			var fiscalYear = _db.GLFiscalYears.Find(fyearId);
-
-			//var todayD = DateTime.Now.Date;
-			//var today = new DateTime(todayD.Year, todayD.Month, 1);
-			//var prevMonth = today.AddMonths(-1);
-			//var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
-			//var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
-			var todayD = DateTime.Now.Date;
-			var today = new DateTime(todayD.Year, todayD.Month, 1);
-			DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
-			DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
-			var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
-			var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
-
-			#region Curremt Month
-
-			var CurrentMonth = _db.DisciplinaryCases.Where(x => x.TransgressionDate >= CurrentYearStartDate && x.TransgressionDate <= CurrentYearEnddate).Select(x => x.EmployeeId).Distinct().Count();
-
-
-
-			#endregion
-			#region before Current Month
-			var disciplinaryCases = _db.DisciplinaryCases.Where(x => x.TransgressionDate >= prevYearStartDate && x.TransgressionDate <= prevYearEndDate).Select(x => x.EmployeeId).Distinct().Count();
-
-			#endregion
-
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-					 disciplinaryCases,CurrentMonth
-
-				},
-				Labels = new string[] { "Last Year", "Current Year " }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-		[AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetNewHiredEmployeeCopy()
-		{
-			var todayD = DateTime.Now.Date;
-			var fyearId = _fiscalYearHelper.GetCurrentFYearId();
-
-			var fiscalYear = _db.GLFiscalYears.Find(fyearId);
-			var currentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 7, 1);
-			var currentYearEndDate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.AddYears(1).Year, 6, 1);
-			var lastYearStartDate = currentYearStartDate.AddYears(-1);
-			var lastYearEndDate = currentYearEndDate.AddYears(-1);
-			var employeeIds = _db.Placements.Where(x => x.isCurrent).Select(x => x.EmployeeId).Distinct().ToList();
-			var employeesQuery = _db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId));
-			#region Curremt year
-
-			var HiredCurrentYear = employeesQuery.Count(x => x.HiredDate >= currentYearStartDate);
-
-
-
-			#endregion
-			#region Last year
-			var hiredLastYear = employeesQuery.Count(x => x.HiredDate >= lastYearStartDate && x.HiredDate <= lastYearEndDate);
-
-			#endregion
-
-
-
-			var formattedData = new
-			{
-				Data = new int[]
-				{
-
-					hiredLastYear,HiredCurrentYear,
-
-				},
-				Labels = new string[] { "Previous  Year", "Current Year", }
-			};
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-
-        public JsonResult GetNewHiredEmployee()
+        #endregion
+
+        #region hrm
+        private IQueryable<Person_Employee> GetFilteredEmployees(string branch, string businessUnitId)
+        {
+            var query = _db.Person_Employee.Where(x => x.IsActive);
+
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
+
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+                placements = placements.Where(p => p.BranchId == branchId);
+
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int unitId))
+                placements = placements.Where(p => p.BusinessUnitId == unitId);
+
+            var empIds = placements.Select(p => p.EmployeeId);
+            query = query.Where(e => empIds.Contains(e.EmployeeId));
+
+            return query;
+        }
+
+        public JsonResult GetEmployeeCount(string branch, string businessUnitId)
+        {
+            var person_Employees = GetFilteredEmployees(branch, businessUnitId).ToList();
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(person_Employees);
+
+            var contract = person_Employees
+                .Where(x => !probationIds.Contains(x.EmployeeId) && x.Status == EmployeeStatus.CONTRACT)
+                .ToList();
+
+            var permanent = person_Employees
+                .Where(x => !probationIds.Contains(x.EmployeeId) && x.Status == EmployeeStatus.PERMANENT)
+                .ToList();
+
+            var probation = person_Employees
+                .Where(x => probationIds.Contains(x.EmployeeId))
+                .ToList();
+
+            var others = person_Employees
+                .Where(x => !probationIds.Contains(x.EmployeeId)
+                    && x.Status != EmployeeStatus.CONTRACT
+                    && x.Status != EmployeeStatus.PERMANENT)
+                .ToList();
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                    contract.Count(),
+                    permanent.Count(),
+                    probation.Count(),
+                    others.Count()
+                },
+                Labels = new string[]
+                {
+                    "Contract",
+                    "Permanent",
+                    "Probation",
+                    "Others"
+                }
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetContratEmployee(string branch, string businessUnitId)
+        {
+            // Base query: only active employees
+            IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
+
+            // Branch filter
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+                placements = placements.Where(p => p.BranchId == branchId);
+
+            // Business Unit filter
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+                placements = placements.Where(p => p.BusinessUnitId == buUnitId);
+
+            // Get employee IDs from filtered placements
+            var empIds = placements.Select(p => p.EmployeeId).Distinct();
+            employees = employees.Where(e => empIds.Contains(e.EmployeeId));
+
+            // Convert once to list
+            var personList = employees.ToList();
+
+            // Exclude probation employees
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(personList);
+
+            // Filter only contract employees (not probation)
+            var contractEmployees = personList
+                .Where(e => !probationIds.Contains(e.EmployeeId)
+                            && e.Status == EmployeeStatus.CONTRACT)
+                .ToList();
+
+            // Gender-based counts
+            var maleContract = contractEmployees.Count(x => x.Gender == Gender.MALE);
+            var femaleContract = contractEmployees.Count(x => x.Gender == Gender.FEMALE);
+            var otherContract = contractEmployees.Count(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE);
+            var total = maleContract + femaleContract + otherContract;
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                    maleContract,
+                    femaleContract,
+                    otherContract,
+                    total
+                },
+                Labels = new string[]
+                {
+                    "Male",
+                    "Female",
+                    "Others",
+                    "Total"
+                }
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPermanentEmployee(string branch, string businessUnitId)
+        {
+            // Base query: active employees
+            IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
+
+            // Filter by branch
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+                placements = placements.Where(p => p.BranchId == branchId);
+
+            // Filter by business unit
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+                placements = placements.Where(p => p.BusinessUnitId == buUnitId);
+
+            // Get filtered employees by placement
+            var empIds = placements.Select(p => p.EmployeeId).Distinct();
+            employees = employees.Where(e => empIds.Contains(e.EmployeeId));
+
+            // Convert to list once
+            var personList = employees.ToList();
+
+            // Exclude probation employees
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(personList);
+            var permanentEmployees = personList
+                .Where(e => !probationIds.Contains(e.EmployeeId)
+                            && e.Status == EmployeeStatus.PERMANENT)
+                .ToList();
+
+            // Gender-wise split
+            var malePermanent = permanentEmployees.Where(x => x.Gender == Gender.MALE).Count();
+            var femalePermanent = permanentEmployees.Where(x => x.Gender == Gender.FEMALE).Count();
+            var otherPermanent = permanentEmployees
+                .Where(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE)
+                .Count();
+
+            var total = malePermanent + femalePermanent + otherPermanent;
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                    malePermanent,
+                    femalePermanent,
+                    otherPermanent,
+                    total
+                },
+                Labels = new string[]
+                {
+                    "Male",
+                    "Female",
+                    "Others",
+                    "Total"
+                }
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProbationEmployee(string branch, string businessUnitId)
+        {
+            var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+            {
+                var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+            {
+                var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+            var MaleProbationemployees = person_Employees
+                .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PROBATION).ToList();
+            var femaleProbationEmployees = person_Employees
+                .Where(x => x.IsActive && x.Gender == Gender.FEMALE
+                && x.Status == EmployeeStatus.PROBATION).ToList();
+            var others = person_Employees.Where(x => x.IsActive
+                                && x.Gender != Gender.MALE
+                                && x.Gender != Gender.FEMALE
+                                && x.Status == EmployeeStatus.PROBATION).ToList();
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+
+                    MaleProbationemployees.Count(), femaleProbationEmployees.Count(),others.Count(),
+
+                    MaleProbationemployees.Count()+femaleProbationEmployees.Count()+others.Count()
+
+                },
+                Labels = new string[] { "Male ", "Female", "Others", "Total" }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetOtherEmployee(string branch, string businessUnitId)
+        {
+            // Base query: active employees only
+            IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
+            IQueryable<Placement> placements = _db.Placements.Where(p => p.isCurrent);
+
+            // Branch filter
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+                placements = placements.Where(p => p.BranchId == branchId);
+
+            // Business unit filter
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+                placements = placements.Where(p => p.BusinessUnitId == buUnitId);
+
+            // Filter employees by placements
+            var empIds = placements.Select(p => p.EmployeeId).Distinct();
+            employees = employees.Where(e => empIds.Contains(e.EmployeeId));
+
+            // Materialize the list once
+            var personList = employees.ToList();
+
+            // Exclude probation employees using helper
+            List<int> probationIds = HrHelper.GetEmployeeInProbaition(personList);
+
+            // Select employees that are not in probation and not permanent or contract
+            var otherEmployees = personList
+                .Where(e => !probationIds.Contains(e.EmployeeId)
+                            && e.Status != EmployeeStatus.CONTRACT
+                            && e.Status != EmployeeStatus.PERMANENT)
+                .ToList();
+
+            // Count by gender
+            var maleOther = otherEmployees.Count(x => x.Gender == Gender.MALE);
+            var femaleOther = otherEmployees.Count(x => x.Gender == Gender.FEMALE);
+            var otherGender = otherEmployees.Count(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE);
+
+            var total = maleOther + femaleOther + otherGender;
+
+            // Format for dashboard chart
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                    maleOther,
+                    femaleOther,
+                    otherGender,
+                    total
+                },
+                Labels = new string[]
+                {
+                    "Male",
+                    "Female",
+                    "Others",
+                    "Total"
+                }
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult GetEmployeeType(string branch, string businessUnitId)
+        {
+            var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+            {
+                var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
+                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+            {
+                var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).ToList();
+                person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+
+            var formattedData = new
+            {
+                Data = new List<List<int>>(),
+                Labels = new List<string>()
+            };
+            var employeeTypeIdLists = person_Employees.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct();
+            var employeeTypeIds = person_Employees.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct().ToArray();
+            foreach (var employeeTypeId in employeeTypeIds)
+            {
+                var employeeType = _db.EmployeeTypes.Find(employeeTypeId);
+                if (employeeType != null)
+                {
+                    var employeeCount = _db.Person_Employee
+                        .Where(x => x.EmployeeTypeId == employeeTypeId && x.IsActive)
+                        .Count();
+                    formattedData.Data.Add(new List<int> { employeeCount });
+                    formattedData.Labels.Add(employeeType.Name);
+                }
+            }
+
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        //public JsonResult GetEmployeeCount(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int UnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == UnitId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    List<int> employeeIds = HrHelper.GetEmployeeInProbaition(person_Employees);
+        //    var contrat = person_Employees.Where(x => !employeeIds.Contains(x.EmployeeId)
+        //                                             && x.Status == EmployeeStatus.CONTRACT).ToList();
+        //    var permanent = person_Employees
+        //                .Where(x => !employeeIds.Contains(x.EmployeeId)
+        //                && x.Status == EmployeeStatus.PERMANENT)
+        //                .ToList();
+        //    var probation = person_Employees
+        //                    .Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
+        //    var others = person_Employees
+        //                        .Where(x => !employeeIds.Contains(x.EmployeeId)
+        //                                    && x.Status != EmployeeStatus.CONTRACT
+        //                                    && x.Status != EmployeeStatus.PERMANENT)
+        //                                   .ToList();
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+        //            contrat.Count(),
+        //            permanent.Count(),
+        //            probation.Count(),
+        //            others.Count()
+        //        },
+        //        Labels = new string[]
+        //        {
+        //            "Contract",
+        //            "Permanent",
+        //            "Probation",
+        //            "Others"
+        //        }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetContratEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MaleContratemployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.CONTRACT).ToList();
+        //    var femaleContEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.CONTRACT).ToList();
+        //    var others = person_Employees
+        //       .Where(x => x.IsActive && x.Gender != Gender.FEMALE
+        //                                   && x.Gender != Gender.MALE
+        //                                   && x.Status == EmployeeStatus.CONTRACT).ToList();
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MaleContratemployees.Count(), femaleContEmployees.Count(),others.Count(),
+
+        //            MaleContratemployees.Count()+femaleContEmployees.Count()+others.Count()
+
+        //        },
+        //        Labels = new string[] { "Male", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetPermanentEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MalePermaemployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PERMANENT).ToList();
+        //    var femaleEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status == EmployeeStatus.PERMANENT).ToList();
+        //    var others = person_Employees
+        //       .Where(x => x.IsActive
+        //                           && x.Gender != Gender.FEMALE
+        //                           && x.Gender != Gender.MALE
+        //                               && x.Status == EmployeeStatus.PERMANENT).ToList();
+
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MalePermaemployees.Count(), femaleEmployees.Count(),others.Count(),
+
+        //            MalePermaemployees.Count()+femaleEmployees.Count()+others.Count()
+
+        //        },
+        //        Labels = new string[] { "Male", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetProbationEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MaleProbationemployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status == EmployeeStatus.PROBATION).ToList();
+        //    var femaleProbationEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE
+        //        && x.Status == EmployeeStatus.PROBATION).ToList();
+        //    var others = person_Employees.Where(x => x.IsActive
+        //                        && x.Gender != Gender.MALE
+        //                        && x.Gender != Gender.FEMALE
+        //                        && x.Status == EmployeeStatus.PROBATION).ToList();
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MaleProbationemployees.Count(), femaleProbationEmployees.Count(),others.Count(),
+
+        //            MaleProbationemployees.Count()+femaleProbationEmployees.Count()+others.Count()
+
+        //        },
+        //        Labels = new string[] { "Male ", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetOtherEmployee(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    var MaleOtheremployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.MALE && x.Status != EmployeeStatus.CONTRACT
+        //                                                          && x.Status != EmployeeStatus.PERMANENT
+        //                                                          && x.Status != EmployeeStatus.PROBATION).ToList();
+
+        //    var femaleOtherEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender == Gender.FEMALE && x.Status != EmployeeStatus.CONTRACT
+        //                                                            && x.Status != EmployeeStatus.PERMANENT
+        //                                                            && x.Status != EmployeeStatus.PROBATION).ToList();
+
+
+        //    var otherEmployees = person_Employees
+        //        .Where(x => x.IsActive && x.Gender != Gender.MALE
+        //                                && x.Gender != Gender.FEMALE
+        //                                && x.Status != EmployeeStatus.CONTRACT
+        //                                && x.Status != EmployeeStatus.PERMANENT
+        //                                && x.Status != EmployeeStatus.PROBATION).ToList();
+
+
+
+
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //        {
+
+        //            MaleOtheremployees.Count(), femaleOtherEmployees.Count(),otherEmployees.Count(),
+
+        //            MaleOtheremployees.Count()+femaleOtherEmployees.Count()+otherEmployees.Count()
+
+        //        },
+        //        Labels = new string[] { "Male ", "Female", "Others", "Total" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        //[AcceptVerbs(HttpVerbs.Get)]
+        //public ActionResult GetEmployeeType(string branch, string businessUnitId)
+        //{
+        //    var person_Employees = _db.Person_Employee.Where(x => x.IsActive).ToList();
+        //    if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+        //    if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int buUnitId))
+        //    {
+        //        var empIds = _db.Placements.Where(x => x.BusinessUnitId == buUnitId).Select(x => x.EmployeeId).ToList();
+        //        person_Employees = person_Employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+        //    }
+
+        //    var formattedData = new
+        //    {
+        //        Data = new List<List<int>>(),
+        //        Labels = new List<string>()
+        //    };
+        //    var employeeTypeIdLists = person_Employees.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct();
+        //    var employeeTypeIds = person_Employees.Where(x => x.IsActive).Select(x => x.EmployeeTypeId).Distinct().ToArray();
+        //    foreach (var employeeTypeId in employeeTypeIds)
+        //    {
+        //        var employeeType = _db.EmployeeTypes.Find(employeeTypeId);
+        //        if (employeeType != null)
+        //        {
+        //            var employeeCount = _db.Person_Employee
+        //                .Where(x => x.EmployeeTypeId == employeeTypeId && x.IsActive)
+        //                .Count();
+        //            formattedData.Data.Add(new List<int> { employeeCount });
+        //            formattedData.Labels.Add(employeeType.Name);
+        //        }
+        //    }
+
+        //    //var totalEmployeeCount = _db.Person_Employee
+        //    //    .Where(x => employeeTypeIdLists.Contains(x.EmployeeTypeId) && x.IsActive)
+        //    //    .Count();
+        //    //formattedData.Data.Add(new List<int> { totalEmployeeCount });
+        //    //formattedData.Labels.Add("Total");
+
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetEmployeeByAssignmentType(string branch, string businessUnitId)
+        {
+            var placements = _db.Placements.Where(x => x.isCurrent).ToList();
+
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+            {
+                placements = placements.Where(x => x.BranchId == branchId).ToList();
+            }
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int busUnitId))
+            {
+                placements = placements.Where(x => x.BusinessUnitId == busUnitId).ToList();
+            }
+            var Newemployees = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.NEW).ToList();
+            var promotedEmployees = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.PROMOTION).ToList();
+            var demotedEmployees = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.DEMOTION).ToList();
+            var recomendedEmployee = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.RECOMENDATION).ToList();
+            var TransfredEmployee = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.TRANSFER).ToList();
+            var structureChange = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.STRUCTURE_CHANGE).ToList();
+            var assignment = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.ASSIGNMENT).ToList();
+            var yearlyPromoted = placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.YEARLY_PROMOTION).ToList();
+            var others = placements.Where(x => x.isCurrent
+                                                    && x.AssignmentType != AssignmentType.NEW
+                                                    && x.AssignmentType != AssignmentType.PROMOTION
+                                                    && x.AssignmentType != AssignmentType.YEARLY_PROMOTION
+                                                    && x.AssignmentType != AssignmentType.RECOMENDATION
+                                                    && x.AssignmentType != AssignmentType.TRANSFER
+                                                    && x.AssignmentType != AssignmentType.STRUCTURE_CHANGE
+                                                    && x.AssignmentType != AssignmentType.ASSIGNMENT
+                                                    && x.AssignmentType != AssignmentType.ANNUAL_SALARY_INCREMENT).ToList();
+            //var Newemployees = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.NEW).ToList();
+            //var promotedEmployees = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.PROMOTION).ToList();
+            //var demotedEmployees = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.DEMOTION).ToList();
+            //var recomendedEmployee = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.RECOMENDATION).ToList();
+            //var TransfredEmployee = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.TRANSFER).ToList();
+            //var structureChange = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.STRUCTURE_CHANGE).ToList();
+            //var assignment = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.ASSIGNMENT).ToList();
+            //var yearlyPromoted = _db.Placements.Where(x => x.isCurrent && x.AssignmentType == AssignmentType.YEARLY_PROMOTION).ToList();
+            //var others = _db.Placements.Where(x => x.isCurrent 
+            //                                        && x.AssignmentType != AssignmentType.NEW
+            //                                        && x.AssignmentType != AssignmentType.PROMOTION
+            //                                        && x.AssignmentType != AssignmentType.YEARLY_PROMOTION
+            //                                        && x.AssignmentType != AssignmentType.RECOMENDATION
+            //                                        && x.AssignmentType != AssignmentType.TRANSFER
+            //                                        && x.AssignmentType != AssignmentType.STRUCTURE_CHANGE
+            //                                        && x.AssignmentType != AssignmentType.ASSIGNMENT
+            //                                        && x.AssignmentType != AssignmentType.ANNUAL_SALARY_INCREMENT).ToList();
+
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                    Newemployees.Count(), promotedEmployees.Count(), demotedEmployees.Count(),
+                    recomendedEmployee.Count(), TransfredEmployee.Count(), structureChange.Count(), assignment.Count(),
+                    yearlyPromoted.Count(),others.Count()
+                },
+                Labels = new string[]
+                {
+                    "NEW", "PROMOTION", "DEMOTION", "RECOMENDATION", "TRANSFER", "STRUCTURE_CHANGE", "ASSIGNMENT","YEARLY_PROMOTION","Others"
+                }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetEmployeeByResponsibilityLevel(string branch, string businessUnitId)
+        {
+            var placements = _db.Placements.Where(x => x.isCurrent).ToList();
+
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+            {
+                placements = placements.Where(x => x.BranchId == branchId).ToList();
+            }
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int busUnitId))
+            {
+                placements = placements.Where(x => x.BusinessUnitId == busUnitId).ToList();
+            }
+            var staff = placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.STAFF).ToList();
+            var low = placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.LOW_MANAGMENT).ToList();
+            var medium = placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.MEDIUM_MANAGMENT).ToList();
+            var top = placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT).ToList();
+            // var staff = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.STAFF).ToList();
+            //var low = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.LOW_MANAGMENT).ToList();
+            //var medium = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.MEDIUM_MANAGMENT).ToList();
+            //var top = _db.Placements.Where(x => x.isCurrent && x.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT).ToList();
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                    staff.Count() ,low.Count(), medium.Count(), top.Count()
+                },
+                Labels = new string[] { "Staff", "Low Management", "Medium Management", "Top Management" }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetlLeave()
+        {
+
+            var todayD = DateTime.Now.Date;
+            var today = new DateTime(todayD.Year, todayD.Month, 1);
+            var prevMonth = today.AddMonths(-1);
+            var secondMonth = today.AddMonths(-2);
+
+            var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+            var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
+            var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
+            #region Curremt Month
+            var annualleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.ANNUAL && x.From >= today && x.To <= todayEnd);
+            var merrageleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.MARRIAGE && x.From >= today && x.To <= todayEnd);
+            var maternityleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.MATERNITY && x.From >= today && x.To <= todayEnd);
+            var paternityleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.PATERNITY && x.From >= today && x.To <= todayEnd);
+            var sickleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.SICK_LEAVE && x.From >= today && x.To <= todayEnd);
+            var otherleaveCurrent = _db.Leaves.Count(x => x.LeaveType == LeaveType.OTHER && x.From >= today && x.To <= todayEnd);
+            #endregion
+            #region second Month
+            var annualleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.ANNUAL && x.From >= prevMonth && x.To <= prevMonthEnd);
+            var merrageleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.MARRIAGE && x.From >= prevMonth && x.To <= prevMonthEnd);
+            var maternityleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.MATERNITY && x.From >= prevMonth && x.To <= prevMonthEnd);
+            var paternityleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.PATERNITY && x.From >= prevMonth && x.To <= prevMonthEnd);
+            var sickleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.SICK_LEAVE && x.From >= prevMonth && x.To <= prevMonthEnd);
+            var otherleavesecond = _db.Leaves.Count(x => x.LeaveType == LeaveType.OTHER && x.From >= prevMonth && x.To <= prevMonthEnd);
+            #endregion
+            #region third Month
+            var annualleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.ANNUAL && x.From >= secondMonth && x.To <= secondMonthEnd);
+            var merrageleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.MARRIAGE && x.From >= secondMonth && x.To <= secondMonthEnd);
+            var maternityleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.MATERNITY && x.From >= secondMonth && x.To <= secondMonthEnd);
+            var paternityleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.PATERNITY && x.From >= secondMonth && x.To <= secondMonthEnd);
+            var sickleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.SICK_LEAVE && x.From >= secondMonth && x.To <= secondMonthEnd);
+            var otherleavethird = _db.Leaves.Count(x => x.LeaveType == LeaveType.OTHER && x.From >= secondMonth && x.To <= secondMonthEnd);
+            #endregion
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                     annualleavethird, annualleavesecond, annualleaveCurrent,
+
+                },
+                Labels = new string[] { "Before Previous Month", "Previous Month ", "Current Month " }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetTraining()
+        {
+            var todayD = DateTime.Now.Date;
+            var today = new DateTime(todayD.Year, todayD.Month, 1);
+            var fyearId = _fiscalYearHelper.GetCurrentFYearId();
+            var fiscalYear = _db.GLFiscalYears.Find(fyearId);
+            DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
+            DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
+            var prevYearId = _db.GLFiscalYears.Where(x => x.DateTo < CurrentYearStartDate)
+                                .OrderByDescending(x => x.DateTo).FirstOrDefault()?.GlFiscalYearId;
+
+            #region Current year
+            var courseTrainings = _db.CourseTrackings.ToList();
+
+            var currentCourseIds = courseTrainings.Where(x =>
+                                    x.GlFiscalYearId == fyearId &&
+                                    x.TrainingType == TrainingType.TRAINING)
+                                    .Select(x => x.CourseTrackingId);
+            var trainingCurrent = _db.Trainee
+                .Where(x => currentCourseIds.Contains(x.CourseTrackingId))
+                .Select(x => x.EmployeeId)
+                .Count();
+            #endregion
+
+            #region Before Current year
+            var beforeCurrentCourseIds = courseTrainings.Where(x =>
+                                      x.GlFiscalYearId == prevYearId
+                                      && x.TrainingType == TrainingType.TRAINING)
+                                      .Select(x => x.CourseTrackingId);
+            var trainingBeforeCurrentYear = _db.Trainee
+                               .Where(x => beforeCurrentCourseIds.Contains(x.CourseTrackingId))
+                                .Select(x => x.EmployeeId)
+                                .Count();
+            #endregion
+
+
+
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+
+                     trainingBeforeCurrentYear,trainingCurrent
+
+                },
+                Labels = new string[] { "Before Current", "Current  " }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetEducation()
+        {
+            var todayD = DateTime.Now.Date;
+            var today = new DateTime(todayD.Year, todayD.Month, 1);
+            var fyearId = _fiscalYearHelper.GetCurrentFYearId();
+            var fiscalYear = _db.GLFiscalYears.Find(fyearId);
+            DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
+            DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
+            var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
+            var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
+            var prevMonth = today.AddMonths(-1);
+            var secondMonth = today.AddMonths(-2);
+
+            var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+            var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
+            var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
+
+
+            #region Curremt Month
+            var education = from c in _db.CourseTrackings
+                            join
+                                t in _db.Trainee
+                                on c.CourseTrackingId equals t.CourseTrackingId
+
+                            select new { c.From, c.To, c.TrainingType };
+
+            var educationCurrent = education.Count(x => x.From >= CurrentYearStartDate && x.To <= CurrentYearEnddate && x.TrainingType == TrainingType.EDUCATION);
+
+
+
+            #endregion
+            #region Before this Year
+            var educationBeforeCurrentYear = education.Count(x => x.From >= prevYearStartDate && x.To <= prevYearEndDate && x.TrainingType == TrainingType.EDUCATION);
+
+            #endregion
+            //#region third Month
+            //var educationthird = education.Count(x => x.From >= secondMonth && x.To <= secondMonthEnd && x.TrainingType == TrainingType.EDUCATION);
+
+            //#endregion
+
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                        educationBeforeCurrentYear,educationCurrent
+
+                },
+                Labels = new string[] { "Before Current", "Current " }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetAbsentEmployee()
+        {
+            var today = DateTime.Now.Date;
+
+            // Get start and end dates for current, previous, and two months ago
+            var currentMonthStart = today;
+
+            // Fetch periods
+            var currentPeriod = _db.GLPeriods.FirstOrDefault(x => currentMonthStart >= x.DateFrom && currentMonthStart <= x.DateTo);
+
+            GLPeriod periodOne = null;
+            GLPeriod periodTwo = null;
+
+            if (currentPeriod != null)
+            {
+                var previousMonthStart = currentPeriod.DateFrom.AddMonths(-1);
+                var secondPreviousMonthStart = currentPeriod.DateFrom.AddMonths(-2);
+
+                var currentMonthEnd = currentPeriod.DateTo;
+                var previousMonthEnd = currentMonthEnd.AddMonths(1);
+                var secondPreviousMonthEnd = secondPreviousMonthStart.AddMonths(1).AddDays(-1);
+
+                var previousPeriods = _db.GLPeriods
+                    .Where(x => x.DateTo < currentPeriod.DateFrom)
+                    .OrderByDescending(x => x.DateTo)
+                    .Take(2)
+                    .ToList();
+
+                if (previousPeriods.Count > 0)
+                    periodOne = previousPeriods.ElementAtOrDefault(0);
+
+                if (previousPeriods.Count > 1)
+                    periodTwo = previousPeriods.ElementAtOrDefault(1);
+            }
+
+            // Load attendance-related data
+            var lateComings = _db.LateCommings.ToList();
+            var absents = _db.EmpPayrollNoDaysWorkeds.ToList();
+
+            // CURRENT month
+            var absentCurrent = currentPeriod != null
+                ? absents.Where(x => x.GLPeriodId == currentPeriod.GLPeriodId).Select(x => x.EmployeeId).Distinct().Count()
+                : 0;
+
+            var lateCurrent = lateComings
+                .Where(x => x.Date >= currentMonthStart && x.Date <= currentPeriod.DateTo)
+                .Select(x => x.EmployeeId).Distinct().Count();
+
+            // PREVIOUS month (periodOne)
+            var absentPrevious = periodOne != null
+                ? absents.Where(x => x.GLPeriodId == periodOne.GLPeriodId).Select(x => x.EmployeeId).Distinct().Count()
+                : 0;
+
+            var latePrevious = periodOne != null
+                ? lateComings.Where(x => x.Date >= periodOne.DateFrom && x.Date <= periodOne.DateTo).Select(x => x.EmployeeId).Distinct().Count()
+                : 0;
+
+            // TWO MONTHS AGO (periodTwo)
+            var absentTwoMonthsAgo = periodTwo != null
+                ? absents.Where(x => x.GLPeriodId == periodTwo.GLPeriodId).Select(x => x.EmployeeId).Distinct().Count()
+                : 0;
+
+            var lateTwoMonthsAgo = periodTwo != null
+                ? lateComings.Where(x => x.Date >= periodTwo.DateFrom && x.Date <= periodTwo.DateTo).Select(x => x.EmployeeId).Distinct().Count()
+                : 0;
+
+            // Return formatted result
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+                    absentTwoMonthsAgo, lateTwoMonthsAgo,
+                    absentPrevious, latePrevious,
+                    absentCurrent, lateCurrent
+                },
+                Labels = new string[]
+                {
+                    "Absent Two Months Ago", "Late Two Months Ago",
+                    "Absent Last Month", "Late Last Month",
+                    "Absent Current Month", "Late Current Month"
+                }
+
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        //public JsonResult GetAbsentEmployee()
+        //{
+
+        //    var today = DateTime.Now.Date;
+
+        //    // Determine the start date of the current month
+        //    var currentMonthStart = new DateTime(today.Year, today.Month, 1);
+
+        //    // Get previous and second previous month start dates
+        //    var previousMonthStart = currentMonthStart.AddMonths(-1);
+        //    var secondPreviousMonthStart = currentMonthStart.AddMonths(-2);
+
+        //    // Determine end dates for each of those months
+        //    var currentMonthEnd = new DateTime(currentMonthStart.Year, currentMonthStart.Month, DateTime.DaysInMonth(currentMonthStart.Year, currentMonthStart.Month));
+        //    var previousMonthEnd = new DateTime(previousMonthStart.Year, previousMonthStart.Month, DateTime.DaysInMonth(previousMonthStart.Year, previousMonthStart.Month));
+        //    var secondPreviousMonthEnd = new DateTime(secondPreviousMonthStart.Year, secondPreviousMonthStart.Month, DateTime.DaysInMonth(secondPreviousMonthStart.Year, secondPreviousMonthStart.Month));
+
+
+        //    #region Absent
+
+        //    int index = 0;
+        //    GLPeriod periodOne = new GLPeriod();
+        //    GLPeriod periodTwo = new GLPeriod();
+        //    string namecurrent = "";
+        //    string nameOne = "";
+        //    string nameTwo = "";
+        //    List<string> allPeriodsname = new List<string>();
+        //    // Get the current GL period
+        //    var currentPeriod = _db.GLPeriods.FirstOrDefault(x => currentMonthStart >= x.DateFrom && currentMonthEnd <= x.DateTo);
+        //    if (currentPeriod != null)
+        //    {
+        //        namecurrent = currentPeriod.Name;
+        //        var allPeriods = _db.GLPeriods.Where(x => x.DateTo <= currentPeriod.DateTo && x.GLPeriodId != currentPeriod.GLPeriodId).OrderBy(x => x.DateTo).ToList();
+        //        foreach (var a in allPeriods)
+        //        {
+        //            if (index == 0)
+        //            {
+        //                periodOne = new GLPeriod();
+        //                periodOne = a;
+        //                nameOne = a.Name;
+        //            }
+        //            else if (index == 1)
+        //            {
+        //                periodTwo = new GLPeriod();
+        //                periodTwo = a;
+        //                nameTwo = a.Name;
+        //            }
+
+        //            else
+        //            {
+        //                break;
+        //            }
+        //            index++;
+        //        }
+        //    }
+
+
+        //    if (nameOne != "")
+        //    {
+        //        allPeriodsname.Add(nameOne);
+
+        //    }
+        //    if (nameTwo != "")
+        //    {
+        //        allPeriodsname.Add(nameTwo);
+
+        //    }
+        //    if (namecurrent != "")
+        //    {
+        //        allPeriodsname.Add(namecurrent);
+
+        //    }
+
+        //    #region Curremt Month
+        //    var lateComming = _db.LateCommings.ToList();
+        //    var abcets = _db.EmpPayrollNoDaysWorkeds.ToList();
+
+        //    var absentCurrent = abcets.Where(x => currentPeriod != null && x.GLPeriodId == currentPeriod.GLPeriodId).ToList().Select(x=>x.EmployeeId).Distinct().Count();
+        //   // var lateCurrent = lateComming.Where(x => currentPeriod != null && (x.Date >= currentPeriod.DateFrom && x.Date <= currentPeriod.DateTo)).ToList().Sum(x => (int)x.Time);
+        //    var lateCurrent = lateComming.Where(x =>x.Date >= currentMonthStartDate && x.Date <= currentManthEndDate).ToList().Select(x=>x.EmployeeId).Distinct().Count();
+
+        //    #endregion
+        //    #region second Month
+        //    //var absentsecond = abcets.Where(x => x.GLPeriodId >= periodTwo.GLPeriodId).ToList().Sum(x => x.Days);
+        //    var absentsecond = abcets.Where(x => x.GLPeriodId == periodTwo.GLPeriodId).ToList().Select(x => x.EmployeeId).Distinct().Count();
+        //    var latesecond = lateComming.Where(x => x.Date >= periodTwo.DateFrom && x.Date <= periodTwo.DateTo).ToList().Select(x => x.EmployeeId).Distinct().Count();
+        //    #endregion
+        //    #region third Month
+        //    var absentthird = abcets.Where(x => x.GLPeriodId >= periodOne.GLPeriodId).ToList().Select(x => x.EmployeeId).Distinct().Count();
+        //    var latethird = lateComming.Where(x => x.Date >= periodOne.DateFrom && x.Date <= periodOne.DateTo).ToList().Select(x => x.EmployeeId).Distinct().Count();
+        //    #endregion
+
+        //    #endregion
+
+
+        //    //var formattedData = new
+        //    //{
+        //    //    Data = new int[,]
+        //    //    {
+
+        //    //         { absentthird,latethird, absentsecond,latesecond, absentCurrent,  lateCurrent }
+
+        //    //    },
+        //    //    Labels = new string[,] { { "Absent Before Two month", "Late Coming Before Two month", "Absent Before month", "Late Coming Before  month", "Absent Current Month", "Late Coming Current Month" } }
+        //    //};
+        //    //return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //    var formattedData = new
+        //    {
+        //        Data = new int[]
+        //       {
+        //             absentCurrent,  lateCurrent
+        //       },
+        //        Labels = new string[] {  "Current Month Absent", "Current Month Late Coming" }
+        //    };
+        //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //}
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetVacantByBranch()
+        {
+            #region  Vacant Postion By Branch
+            //var listOfBranchs = _db.Branch.OrderBy(x => x.Name).ToList();
+            //var userBranch = UserInformationHelper.GetUserBranchs(User.Identity.Name).FirstOrDefault();
+            decimal quntity = 0;
+            decimal assignedQuant = 0;
+            decimal vacantQuantity = 0;
+
+            var mapping = _db.JobTitleMapping.Where(x => x.IsActive).ToList();
+            if (mapping.Any())
+            {
+                quntity = mapping.Sum(x => x.Quntity);
+            }
+            var placments = _db.Placements.Where(x => x.isCurrent).ToList();
+            if (placments.Any())
+            {
+                assignedQuant = placments.Count();
+            }
+
+            #endregion
+
+            var formattedData = new
+            {
+                Data = new decimal[]
+                {
+
+                    quntity - assignedQuant,assignedQuant
+
+                },
+                Labels = new string[] { "Vacant Position", "Assigned Quantity" }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetTermination()
+        {
+
+
+            var fyearId = _fiscalYearHelper.GetCurrentFYearId();
+            var fiscalYear = _db.GLFiscalYears.Find(fyearId);
+            var todayD = DateTime.Now.Date;
+            var today = new DateTime(todayD.Year, todayD.Month, 1);
+            DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
+            DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
+            var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
+            var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
+            var prevYearStart = today.AddYears(-1);
+            var prevMonth = today.AddYears(-1);
+            var secondMonth = today.AddMonths(-2);
+
+            var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+            var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
+            var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
+
+            var allTermination = _db.Terminations.Where(x => x.IsOnlineApproved).ToList();
+
+            #region Current Year
+
+            //var terminationCurrent =
+            //    allTermination.Count(x => x.TerminationDate >= CurrentYearStartDate && x.TerminationDate <= CurrentYearEnddate);
+            var terminationCurrent = allTermination.Where(x => x.TerminationDate >= CurrentYearStartDate
+                                                        && x.TerminationDate <= CurrentYearEnddate)
+                                                        .Select(x => x.EmployeeId)
+                                                        .Distinct()
+                                                        .Count();
+
+
+            #endregion
+
+            #region last year 
+
+            //var terminationsecond =
+            //    allTermination
+            //    .Count(x => x.TerminationDate >= prevYearStartDate 
+            //               && x.TerminationDate <= prevYearEndDate); 
+            var terminationsecond =
+                allTermination
+                .Where(x => x.TerminationDate >= prevYearStartDate
+                           && x.TerminationDate <= prevYearEndDate)
+                .Select(x => x.EmployeeId)
+                .Distinct()
+                .Count(); ;
+
+            #endregion
+
+
+            #region third Month
+
+            //var terminationthird = allTermination.Count(x =>
+            //    x.TerminationDate <= secondMonth && x.TerminationDate <= secondMonthEnd);
+            var terminationthird = allTermination
+                                        .Where(x => x.TerminationDate <= secondMonth
+                                                 && x.TerminationDate <= secondMonthEnd)
+                                        .Select(x => x.EmployeeId)
+                                        .Distinct()
+                                        .Count();
+
+            #endregion
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+
+                        terminationsecond, terminationCurrent
+
+
+
+                },
+                Labels = new string[] { "Last Year", "Current Year" }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetAccidentRecored()
+        {
+            #region Accident Record
+            var fyearId = _fiscalYearHelper.GetCurrentFYearId();
+            var fiscalYear = _db.GLFiscalYears.Find(fyearId);
+            var todayD = DateTime.Now.Date;
+            var today = new DateTime(todayD.Year, todayD.Month, 1);
+            DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
+            DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
+            var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
+            var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
+            string[] types = { "On Work Place", "Not On Work Place" };
+
+            var CurrentAccidentIns = _db.EmployeeAccidents
+                                        .Where(x => x.AccidentDate >= CurrentYearStartDate
+                                        && x.AccidentDate <= CurrentYearEnddate)
+                                        .Where(x => x.IsAtWorkPlace == true)
+                                        .Select(x => x.EmployeeId).Distinct()
+                                        .ToList();
+            var CurrentAccidentOuts = _db.EmployeeAccidents
+                                                .Where(x => x.AccidentDate >= today
+                                                        && x.AccidentDate <= CurrentYearEnddate)
+                                                          .Where(x => x.IsAtWorkPlace == false)
+                                                          .Select(x => x.EmployeeId).Distinct()
+                                                        .ToList();
+            #region Curremt Month
+
+
+            var LastaccidentIn = _db.EmployeeAccidents.Where(x => x.IsAtWorkPlace == true)
+                                        .Where(x => x.AccidentDate >= prevYearStartDate
+                                        && x.AccidentDate <= prevYearEndDate)
+                                        .Select(x => x.EmployeeId)
+                                        .Distinct().Count();
+            var Lataccidentout = _db.EmployeeAccidents
+                .Where(x => x.IsAtWorkPlace == false)
+                .Where(x => x.AccidentDate >= prevYearStartDate
+                && x.AccidentDate <= prevYearEndDate)
+                .Select(x => x.EmployeeId)
+                .Distinct().Count();
+            var formattedData = new
+            {
+                Data = new int[]
+                    {
+
+                       LastaccidentIn,Lataccidentout, CurrentAccidentIns.Count(), CurrentAccidentOuts.Count()
+
+                    },
+                Labels = new string[] { "On Work Place", "Out of Work Place", " On Work Place", " Out of Work Place" }
+            };
+
+
+            #endregion
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetVacancy()
+        {
+
+            var fyearId = _fiscalYearHelper.GetCurrentFYearId();
+            var fiscalYear = _db.GLFiscalYears.Find(fyearId);
+            var todayD = DateTime.Now.Date;
+            var today = new DateTime(todayD.Year, todayD.Month, 1);
+            DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
+            DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
+            var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
+            var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
+            var prevMonth = today.AddMonths(-1);
+            var secondMonth = today.AddMonths(-2);
+            var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+            var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
+            var secondMonthEnd = new DateTime(secondMonth.Year, secondMonth.Month, DateTime.DaysInMonth(secondMonth.Year, secondMonth.Month));
+
+            #region Vacancy
+            string[] vacancytypes = { "INTERNAL", "EXTERNAL" };
+            int vacancyCurrent = 0;
+            int vacancysecond = 0;
+            int vacancythird = 0;
+
+            var formattedData = new
+            {
+                Data = new int[]
+                { },
+                Labels = new string[] { }
+            };
+
+            foreach (var t in vacancytypes)
+            {
+                var vacancies = new List<Vacancy>();
+                var allVacancy = from v in _db.VaccancyPlans
+                                 join r in _db.RecruitmentVacancy
+                                 on v.VacancyId equals r.VacancyId
+                                 select new { v.From, v.To, v.RecruSource };
+
+                #region Curremt Month
+
+                if (t == "INTERNAL")
+                {
+                    // vacancies = allVacancy.Where(v => ).ToList();
+
+                    vacancyCurrent = allVacancy.Count(x => x.From >= CurrentYearStartDate && x.To <= CurrentYearEnddate && x.RecruSource == RecruitmentSource.INTERNAL);
+                    vacancysecond = vacancies.Count(x => x.From >= prevYearStartDate && x.To <= prevYearEndDate && x.RecruSource == RecruitmentSource.INTERNAL);
+                    //vacancythird = vacancies.Count(x => x.From >= secondMonth && x.To <= secondMonthEnd && x.RecruSource == RecruitmentSource.INTERNAL);
+                }
+                else
+                {
+                    vacancyCurrent = allVacancy.Count(x => x.From >= CurrentYearStartDate && x.To <= CurrentYearEnddate && x.RecruSource == RecruitmentSource.EXTERNAL);
+                    vacancysecond = vacancies.Count(x => x.From >= prevYearStartDate && x.To <= prevYearEndDate && x.RecruSource == RecruitmentSource.EXTERNAL);
+                    //vacancythird = vacancies.Count(x => x.From >= secondMonth && x.To <= secondMonthEnd && x.RecruSource == RecruitmentSource.EXTERNAL);
+
+                }
+
+
+                #endregion
+
+                formattedData = new
+                {
+                    Data = new int[]
+                     {
+
+                        vacancysecond, vacancyCurrent
+
+                     },
+                    Labels = new string[] { "Before Current ", "Current" }
+                };
+            }
+
+            #endregion
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetEmployeeDispline()
+        {
+
+            var fyearId = _fiscalYearHelper.GetCurrentFYearId();
+            var fiscalYear = _db.GLFiscalYears.Find(fyearId);
+
+            //var todayD = DateTime.Now.Date;
+            //var today = new DateTime(todayD.Year, todayD.Month, 1);
+            //var prevMonth = today.AddMonths(-1);
+            //var todayEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+            //var prevMonthEnd = new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month));
+            var todayD = DateTime.Now.Date;
+            var today = new DateTime(todayD.Year, todayD.Month, 1);
+            DateTime CurrentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 1, 1);
+            DateTime CurrentYearEnddate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.Year, 12, 1);
+            var prevYearStartDate = CurrentYearStartDate.AddYears(-1);
+            var prevYearEndDate = CurrentYearEnddate.AddYears(-1);
+            #region Curremt Month
+            var CurrentMonth = _db.DisciplinaryCases
+                                    .Where(x => x.TransgressionDate >= CurrentYearStartDate
+                                    && x.TransgressionDate <= CurrentYearEnddate)
+                                    .Select(x => x.EmployeeId)
+                                    .Distinct()
+                                    .Count();
+            #endregion
+            #region before Current Month
+            var disciplinaryCases = _db.DisciplinaryCases.Where(x => x.TransgressionDate >= prevYearStartDate && x.TransgressionDate <= prevYearEndDate).Select(x => x.EmployeeId).Distinct().Count();
+
+            #endregion
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+
+                     disciplinaryCases,CurrentMonth
+
+                },
+                Labels = new string[] { "Last Year", "Current Year " }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetNewHiredEmployeeCopy()
+        {
+            var todayD = DateTime.Now.Date;
+            var fyearId = _fiscalYearHelper.GetCurrentFYearId();
+
+            var fiscalYear = _db.GLFiscalYears.Find(fyearId);
+            var currentYearStartDate = fiscalYear != null ? fiscalYear.DateFrom : new DateTime(todayD.Year, 7, 1);
+            var currentYearEndDate = fiscalYear != null ? fiscalYear.DateTo : new DateTime(todayD.AddYears(1).Year, 6, 1);
+            var lastYearStartDate = currentYearStartDate.AddYears(-1);
+            var lastYearEndDate = currentYearEndDate.AddYears(-1);
+            var employeeIds = _db.Placements.Where(x => x.isCurrent).Select(x => x.EmployeeId).Distinct().ToList();
+            var employeesQuery = _db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId));
+            #region Curremt year
+            var HiredCurrentYear = employeesQuery
+                .Count(x => x.HiredDate >= currentYearStartDate);
+            #endregion
+            #region Last year
+            var hiredLastYear = employeesQuery
+                .Count(x => x.HiredDate >= lastYearStartDate
+                && x.HiredDate <= lastYearEndDate);
+
+            #endregion
+
+
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+
+                    hiredLastYear,HiredCurrentYear,
+
+                },
+                Labels = new string[] { "Previous  Year", "Current Year", }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetNewHiredEmployee(string branch, string businessUnitId)
         {
             var today = DateTime.Now.Date;
             var fiscalYearId = _fiscalYearHelper.GetCurrentFYearId();
@@ -1638,341 +2131,347 @@ namespace ExceedERP.Web.Controllers
             var currentYearEndDate = fiscalYear?.DateTo ?? new DateTime(today.Year + 1, 6, 30);
             var lastYearStartDate = currentYearStartDate.AddYears(-1);
             var lastYearEndDate = currentYearEndDate.AddYears(-1);
+            var employeesQuery = _db.Person_Employee.AsQueryable();
+
+            if (!string.IsNullOrEmpty(branch) && int.TryParse(branch, out int branchId))
+            {
+                var empIds = _db.Placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId).Distinct().ToList();
+                employeesQuery = employeesQuery.Where(x => empIds.Contains(x.EmployeeId));
+            }
+            if (!string.IsNullOrEmpty(businessUnitId) && int.TryParse(businessUnitId, out int bUnitId))
+            {
+                var empIds = _db.Placements.Where(x => x.BusinessUnitId == bUnitId).Select(x => x.EmployeeId).Distinct().ToList();
+                employeesQuery = employeesQuery.Where(x => empIds.Contains(x.EmployeeId));
+            }
             //var employeeIds = _db.Placements
             //                     .Where(x => x.isCurrent)
             //                     .Select(x => x.EmployeeId).ToList();
-            var employeesQuery = _db.Person_Employee.AsQueryable();
+
             /* .Where(x => employeeIds.Contains(x.EmployeeId))*/
-            ;
+                                                                                       ;
+
             // Current year hires
             var hiredCurrentYear = employeesQuery.Where(x => x.IsPlaced)
                                    .Count(x => x.HiredDate >= currentYearStartDate
                                                 && x.HiredDate <= currentYearEndDate);
+
             // Last year hires
             var hiredLastYear = employeesQuery.Where(x => x.IsPlaced)
                                 .Count(x => x.HiredDate >= lastYearStartDate && x.HiredDate <= lastYearEndDate);
+
             var formattedData = new
             {
                 Data = new[] { hiredLastYear, hiredCurrentYear },
                 Labels = new[] { "Last Year", "Current Year" }
             };
+
             return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetPayrollPerMonth()
+        {
+            List<PayrollDashboardViewModel> payrollProcess = new List<PayrollDashboardViewModel>();
+
+            var fiscalyearname = _fiscalYearHelper.GetCurrentFYearName();
+            var fiscalYear = _db.GLFiscalYears.FirstOrDefault(x => x.Name == fiscalyearname);
+            var payrolList = _db.PayrollProcessViewModel.ToList();
+            if (fiscalYear != null)
+            {
+
+                var periods = _db.GLPeriods.Where(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId).OrderBy(x => x.Index).ToList();
+                for (int i = 0; i < periods.Count(); i++)
+                {
+
+                    PayrollDashboardViewModel payroll = new PayrollDashboardViewModel();
+                    payroll.PayrollPeriod = new List<string>();
+                    payroll.PayrollData = new List<decimal>();
+                    payroll.PayrollPeriod.Add(periods[i].Name);
+                    var payrollPeriod = payrolList.Where(x => x.GLPeriodId == periods[i].GLPeriodId).ToList();
+                    if (payrollPeriod.Any())
+                    {
+                        payroll.PayrollData.Add(payrollPeriod.Sum(x => x.GrossEarning));
+                    }
+                    payrollProcess.Add(payroll);
+
+
+                }
+
+
+            }
+            var formattedData = new
+            {
+                Data = payrollProcess.Select(x => x.PayrollData).ToArray(),
+                Labels = payrollProcess.Select(x => x.PayrollPeriod).ToArray()
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public class PayrollDashboardViewModel
+        {
+            public List<string> PayrollPeriod { get; set; }
+            public List<decimal> PayrollData { get; set; }
+
+        }
+        public class PayrollData
+        {
+            public decimal Earn { get; set; }
+            public decimal Loan { get; set; }
+            public decimal Allowance { get; set; }
+            public decimal Deduction { get; set; }
+            public decimal Addition { get; set; }
+
+
+        }
+        #endregion
+        #endregion
+
+
+        #region fleet dashboard
+
+        public JsonResult GetFleetOwnershipCount(int? branch)
+        {
+            var fleets = _db.Fleets.AsQueryable();
+
+            if (branch.HasValue)
+            {
+                fleets = fleets.Where(x => x.BranchId == branch);
+            }
+
+            var own = fleets.Where(x => !x.IsExternal).Count();
+            var rental = fleets.Where(x => x.IsExternal).Count();
+
+            var returnData = new
+            {
+                Data = new int[] { own, rental },
+                Labels = new string[] { "Own", "Rental" }
+            };
+
+            return Json(returnData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetOwnEquipmentByCategoryData(int? branch)
+        {
+            var fleetQuery = _db.Fleets.Where(x => !x.IsExternal);
+
+            if (branch.HasValue)
+            {
+                fleetQuery = fleetQuery.Where(x => x.BranchId == branch.Value);
+            }
+
+            var fleetData = fleetQuery
+                .Join(_db.EquipmentIdentity,
+                      f => f.EquipmentIdentityID,
+                      et => et.EquipmentIdentityID,
+                      (f, et) => new { f, et })
+                .GroupBy(fe => fe.et.EquipmentCategoryName)
+                .Select(g => new
+                {
+                    EquipmentType = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            var result = new
+            {
+                Labels = fleetData.Select(fd => fd.EquipmentType.ToString()).ToArray(),
+                Data = fleetData.Select(fd => fd.Count).ToArray()
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetRentalEquipmentByCategoryData(int? branch)
+        {
+            var fleetQuery = _db.Fleets.Where(x => x.IsExternal);
+
+            if (branch.HasValue)
+            {
+                fleetQuery = fleetQuery.Where(x => x.BranchId == branch.Value);
+            }
+
+            var fleetData = fleetQuery
+                .Join(_db.EquipmentIdentity,
+                      f => f.EquipmentIdentityID,
+                      et => et.EquipmentIdentityID,
+                      (f, et) => new { f, et })
+                .GroupBy(fe => fe.et.EquipmentCategoryName)
+                .Select(g => new
+                {
+                    EquipmentType = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            var result = new
+            {
+                Labels = fleetData.Select(fd => fd.EquipmentType.ToString()).ToArray(),
+                Data = fleetData.Select(fd => fd.Count).ToArray()
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetMachineryAggregateHours(int? branch)
+        {
+            var fetchFleets = _db.Fleets.ToList();
+            if (branch.HasValue)
+            {
+                fetchFleets = fetchFleets.Where(x => x.BranchId == branch).ToList();
+            }
+            var FleetIds = fetchFleets.Select(x => x.FleetsID);
+            var totalDownHours = _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownHours) : 0;
+            var totalIdleHours = _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHours) : 0;
+            var totalOperationalHours = _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m =>
+                (DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
+                 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
+                 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value)) : 0;
+
+            var result = new
+            {
+                DownHour = totalDownHours,
+                IdleHour = totalIdleHours,
+                OperationalHour = totalOperationalHours
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetLightVehicleAggregateHours(int? branch)
+        {
+            var fetchFleets = _db.Fleets.ToList();
+            if (branch.HasValue)
+            {
+                fetchFleets = fetchFleets.Where(x => x.BranchId == branch).ToList();
+            }
+            var FleetIds = fetchFleets.Select(x => x.FleetsID);
+            var totalDownHours = _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownHours) : 0;
+            var totalIdleHours = _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHours) : 0;
+            var totalOperationalHours = _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m =>
+                (DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
+                 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
+                 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value)) : 0;
+
+            var result = new
+            {
+                DownHour = totalDownHours,
+                IdleHour = totalIdleHours,
+                OperationalHour = totalOperationalHours
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetDryLoadAggregateHours(int? branch)
+        {
+            var fetchFleets = _db.Fleets.ToList();
+            if (branch.HasValue)
+            {
+                fetchFleets = fetchFleets.Where(x => x.BranchId == branch).ToList();
+            }
+            var FleetIds = fetchFleets.Select(x => x.FleetsID);
+            var totalIdleHours = _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHour) : 0;
+            var totalOperationalHours = _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.WorkingHour) : 0;
+            var result = new
+            {
+                DownHour = 0,//totalDownHours,
+                IdleHour = totalIdleHours,
+                OperationalHour = totalOperationalHours
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetWagonDrillAggregateHours(int? branch)
+        {
+            var fetchFleets = _db.Fleets.ToList();
+            if (branch.HasValue)
+            {
+                fetchFleets = fetchFleets.Where(x => x.BranchId == branch).ToList();
+            }
+            var FleetIds = fetchFleets.Select(x => x.FleetsID);
+            var totalDownHours = _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownTime) : 0;
+            var totalIdleHours = _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHour) : 0;
+            var totalOperationalHours = _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.OperationNetWorkingHour) : 0;
+
+
+            var result = new
+            {
+                DownHour = totalDownHours,
+                IdleHour = totalIdleHours,
+                OperationalHour = totalOperationalHours
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetDumpTruckAggregateHours(int? branch)
+        {
+            var fetchFleets = _db.Fleets.ToList();
+            if (branch.HasValue)
+            {
+                fetchFleets = fetchFleets.Where(x => x.BranchId == branch).ToList();
+            }
+            var FleetIds = fetchFleets.Select(x => x.FleetsID);
+            var totalDownHours = _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownHour) : 0;
+            var totalIdleHours = _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHour) : 0;
+            var totalOperationalHours = _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.NetworkingHour) : 0;
+
+
+            var result = new
+            {
+                DownHour = totalDownHours,
+                IdleHour = totalIdleHours,
+                OperationalHour = totalOperationalHours
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetTotalFleetOID(int? branch)
+        {
+            var fetchFleets = _db.Fleets.ToList();
+            if (branch.HasValue)
+            {
+                fetchFleets = fetchFleets.Where(x => x.BranchId == branch).ToList();
+            }
+            var FleetIds = fetchFleets.Select(x => x.FleetsID);
+            var mtotalDownHours = _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownHours) : 0;
+            var mtotalIdleHours = _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHours) : 0;
+            var mtotalOperationalHours = _db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? (decimal)_db.MachineryWorkingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m =>
+                (DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
+                 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
+                 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value)) : 0;
+
+            var lvtotalDownHours = _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownHours) : 0;
+            var lvtotalIdleHours = _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHours) : 0;
+            var lvtotalOperationalHours = _db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? (decimal)_db.LightVehicleTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m =>
+                (DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
+                 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
+                 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value)) : 0;
+
+            //var dltotalDownHours = _db.DryLoadingTimeSheets.Sum(m => m.d);
+            var dltotalIdleHours = _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHour) : 0;
+            var dltotalOperationalHours = _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DryLoadingTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.WorkingHour) : 0;
+
+            var wdtotalDownHours = _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownTime) : 0;
+            var wdtotalIdleHours = _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHour) : 0;
+            var wdtotalOperationalHours = _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.WagonDrillTimesheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.OperationNetWorkingHour) : 0;
+
+            var dttotalDownHours = _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.DownHour) : 0;
+            var dttotalIdleHours = _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.IdleHour) : 0;
+            var dttotalOperationalHours = _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Any() ? _db.DumpTruckTimeSheets.Where(x => FleetIds.Contains(x.FleetsID)).Sum(m => m.NetworkingHour) : 0;
+
+            var result = new
+            {
+                DownHour = mtotalDownHours + lvtotalDownHours + 0 + wdtotalDownHours + dttotalDownHours,
+                IdleHour = mtotalIdleHours + lvtotalIdleHours + dltotalIdleHours + wdtotalIdleHours + dttotalIdleHours,
+                OperationalHour = mtotalOperationalHours + lvtotalOperationalHours + dltotalOperationalHours + dttotalOperationalHours + wdtotalOperationalHours
+            };
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
 
-        [AcceptVerbs(HttpVerbs.Get)]
-		public JsonResult GetPayrollPerMonth()
-		{
-			List<PayrollDashboardViewModel> payrollProcess = new List<PayrollDashboardViewModel>();
 
-			var fiscalyearname = _fiscalYearHelper.GetCurrentFYearName();
-			var fiscalYear = _db.GLFiscalYears.FirstOrDefault(x => x.Name == fiscalyearname);
-			var payrolList = _db.PayrollProcessViewModel.ToList();
-			if (fiscalYear != null)
-			{
+        #endregion
 
-				var periods = _db.GLPeriods.Where(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId).OrderBy(x => x.Index).ToList();
-				for (int i = 0; i < periods.Count(); i++)
-				{
-
-					PayrollDashboardViewModel payroll = new PayrollDashboardViewModel();
-					payroll.PayrollPeriod = new List<string>();
-					payroll.PayrollData = new List<decimal>();
-					payroll.PayrollPeriod.Add(periods[i].Name);
-					var payrollPeriod = payrolList.Where(x => x.GLPeriodId == periods[i].GLPeriodId).ToList();
-					if (payrollPeriod.Any())
-					{
-						payroll.PayrollData.Add(payrollPeriod.Sum(x => x.GrossEarning));
-					}
-					payrollProcess.Add(payroll);
-
-
-				}
-
-
-			}
-			var formattedData = new
-			{
-				Data = payrollProcess.Select(x => x.PayrollData).ToArray(),
-				Labels = payrollProcess.Select(x => x.PayrollPeriod).ToArray()
-			};
-
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
-		//public JsonResult GetPayrollPerMonth_old()
-		//{
-		//    List<PayrollDashboardViewModel> payrollProcess = new List<PayrollDashboardViewModel>();
-
-		//    var fiscalyearname = _fiscalYearHelper.GetCurrentFYearName();
-
-		//    var fiscalYear = _db.GLFiscalYears.FirstOrDefault(x => x.Name == fiscalyearname);
-
-		//    decimal totalAllowance = 0;
-		//    decimal totalDeduction = 0;
-		//    decimal totalAddition = 0;
-		//    decimal totalEarn = 0;
-		//    decimal totalLoan = 0;
-
-
-		//    var payrolList = _db.PayrollProcessViewModel.ToList();
-		//    if (fiscalYear != null)
-		//    {
-
-		//        var periods =
-		//            _db.GLPeriods.Where(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId).OrderBy(x => x.Index).ToList();
-
-		//        for (int i = 0; i < periods.Count(); i++)
-		//        {
-		//            totalAllowance = 0;
-		//            totalDeduction = 0;
-		//            totalAddition = 0;
-		//            totalEarn = 0;
-		//            totalLoan = 0;
-
-		//            PayrollDashboardViewModel payroll = new PayrollDashboardViewModel();
-		//            payroll.PayrollData = new List<PayrollData>();
-		//            payroll.PayrollPeriod = new String[1] { periods[i].Name };
-		//            var payrollPeriod = payrolList.Where(x => x.GLPeriodId == periods[i].GLPeriodId).ToList();
-
-		//            if (payrollPeriod.Any())
-		//            {
-		//                var data = new PayrollData();
-		//                data.Earn = payrollPeriod.Sum(x => x.GrossEarning);
-		//                data.Loan = payrollPeriod.Sum(x => x.TotalLoan);
-		//                data.Allowance = payrollPeriod.Sum(x => x.TotalAllowance);
-		//                data.Deduction = payrollPeriod.Sum(x => x.TotalDeductions);
-		//                data.Addition = payrollPeriod.Sum(x => x.TotalAdditions);
-
-		//                payroll.PayrollData.Add(data); //new decimal[5] { totalEarn, totalLoan, totalAllowance, totalDeduction, totalAddition };
-		//                payrollProcess.Add(payroll);
-
-		//            }
-
-
-
-		//        }
-
-
-		//    }
-		//    var formattedData = new
-		//    {
-		//        Data = payrollProcess.Select(x => x.PayrollData),
-		//        Labels = payrollProcess.Select(x => x.PayrollPeriod).ToArray()
-		//    };
-
-		//    return Json(formattedData, JsonRequestBehavior.AllowGet);
-		//}
-
-		public class PayrollDashboardViewModel
-		{
-			public List<string> PayrollPeriod { get; set; }
-			public List<decimal> PayrollData { get; set; }
-		}
-
-		public class PayrollData
-		{
-			public decimal Earn { get; set; }
-			public decimal Loan { get; set; }
-			public decimal Allowance { get; set; }
-			public decimal Deduction { get; set; }
-			public decimal Addition { get; set; }
-
-		}
-
-
-		#endregion
-
-
-
-		#endregion
-
-
-
-		#region fleet dashboard
-		public JsonResult GetFleetOwnershipCount()
-		{
-			var own = _db.Fleets.Where(x => !x.IsExternal).ToList();
-
-			var rental = _db.Fleets.Where(x => x.IsExternal).ToList();
-
-
-			var retrunData = new
-			{
-				Data = new int[] { own.Count(), rental.Count(), },
-				Labels = new string[] { "Own", "Rental" }
-			};
-
-			return Json(retrunData, JsonRequestBehavior.AllowGet);
-		}
-
-		public JsonResult GetOwnEquipmentByCategoryData()
-		{
-			var fleetData = _db.Fleets.Where(x => !x.IsExternal)
-				.Join(_db.EquipmentIdentity, f => f.EquipmentIdentityID, et => et.EquipmentIdentityID, (f, et) => new { f, et })
-				.GroupBy(fe => fe.et.EquipmentCategoryName)
-				.Select(g => new
-				{
-					EquipmentType = g.Key,
-					Count = g.Count()
-				})
-				.ToList();
-
-			var result = new
-			{
-				Labels = fleetData.Select(fd => fd.EquipmentType.ToString()).ToArray(),
-				Data = fleetData.Select(fd => fd.Count).ToArray()
-			};
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-
-		public JsonResult GetRentalEquipmentByCategoryData()
-		{
-			var fleetData = _db.Fleets.Where(x => x.IsExternal)
-				.Join(_db.EquipmentIdentity, f => f.EquipmentIdentityID, et => et.EquipmentIdentityID, (f, et) => new { f, et })
-				.GroupBy(fe => fe.et.EquipmentCategoryName)
-				.Select(g => new
-				{
-					EquipmentType = g.Key,
-					Count = g.Count()
-				})
-				.ToList();
-
-			var result = new
-			{
-				Labels = fleetData.Select(fd => fd.EquipmentType.ToString()).ToArray(),
-				Data = fleetData.Select(fd => fd.Count).ToArray()
-			};
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-		public JsonResult GetMachineryAggregateHours()
-		{
-			var totalDownHours = _db.MachineryWorkingTimeSheets.Sum(m => m.DownHours);
-			var totalIdleHours = _db.MachineryWorkingTimeSheets.Sum(m => m.IdleHours);
-			var totalOperationalHours = _db.MachineryWorkingTimeSheets.Sum(m =>
-				(DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
-				 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
-				 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value));
-
-			var result = new
-			{
-				DownHour = totalDownHours,
-				IdleHour = totalIdleHours,
-				OperationalHour = totalOperationalHours
-			};
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-		public JsonResult GetLightVehicleAggregateHours()
-		{
-			var totalDownHours = _db.LightVehicleTimeSheets.Sum(m => m.DownHours);
-			var totalIdleHours = _db.LightVehicleTimeSheets.Sum(m => m.IdleHours);
-			var totalOperationalHours = _db.LightVehicleTimeSheets.Sum(m =>
-				(DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
-				 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
-				 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value));
-
-			var result = new
-			{
-				DownHour = totalDownHours,
-				IdleHour = totalIdleHours,
-				OperationalHour = totalOperationalHours
-			};
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-
-		public JsonResult GetDryLoadAggregateHours()
-		{
-			//var totalDownHours = _db.DryLoadingTimeSheets.Sum(m => m.d);
-			var totalIdleHours = _db.DryLoadingTimeSheets.Sum(m => m.IdleHour);
-			var totalOperationalHours = _db.DryLoadingTimeSheets.Sum(m => m.WorkingHour);
-
-
-			var result = new
-			{
-				DownHour = 0,//totalDownHours,
-				IdleHour = totalIdleHours,
-				OperationalHour = totalOperationalHours
-			};
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-
-		public JsonResult GetWagonDrillAggregateHours()
-		{
-			var totalDownHours = _db.WagonDrillTimesheets.Sum(m => m.DownTime);
-			var totalIdleHours = _db.WagonDrillTimesheets.Sum(m => m.IdleHour);
-			var totalOperationalHours = _db.WagonDrillTimesheets.Sum(m => m.OperationNetWorkingHour);
-
-
-			var result = new
-			{
-				DownHour = totalDownHours,
-				IdleHour = totalIdleHours,
-				OperationalHour = totalOperationalHours
-			};
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-
-		public JsonResult GetDumpTruckAggregateHours()
-		{
-			var totalDownHours = _db.DumpTruckTimeSheets.Sum(m => m.DownHour);
-			var totalIdleHours = _db.DumpTruckTimeSheets.Sum(m => m.IdleHour);
-			var totalOperationalHours = _db.DumpTruckTimeSheets.Sum(m => m.NetworkingHour);
-
-
-			var result = new
-			{
-				DownHour = totalDownHours,
-				IdleHour = totalIdleHours,
-				OperationalHour = totalOperationalHours
-			};
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-
-		public JsonResult GetTotalFleetOID()
-		{
-			var mtotalDownHours = _db.MachineryWorkingTimeSheets.Sum(m => m.DownHours);
-			var mtotalIdleHours = _db.MachineryWorkingTimeSheets.Sum(m => m.IdleHours);
-			var mtotalOperationalHours = (decimal)_db.MachineryWorkingTimeSheets.Sum(m =>
-				(DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
-				 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
-				 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value));
-
-			var lvtotalDownHours = _db.LightVehicleTimeSheets.Sum(m => m.DownHours);
-			var lvtotalIdleHours = _db.LightVehicleTimeSheets.Sum(m => m.IdleHours);
-			var lvtotalOperationalHours = (decimal)_db.LightVehicleTimeSheets.Sum(m =>
-				(DbFunctions.DiffHours(m.MorningTimeStart, m.MorningTimeEnd).Value +
-				 DbFunctions.DiffHours(m.AfternoonTimeStart, m.AfternoonTimeEnd).Value +
-				 DbFunctions.DiffHours(m.NightTimeStart, m.NightTimeEnd).Value));
-
-			//var dltotalDownHours = _db.DryLoadingTimeSheets.Sum(m => m.d);
-			var dltotalIdleHours = _db.DryLoadingTimeSheets.Sum(m => m.IdleHour);
-			var dltotalOperationalHours = _db.DryLoadingTimeSheets.Sum(m => m.WorkingHour);
-
-			var wdtotalDownHours = _db.WagonDrillTimesheets.Sum(m => m.DownTime);
-			var wdtotalIdleHours = _db.WagonDrillTimesheets.Sum(m => m.IdleHour);
-			var wdtotalOperationalHours = _db.WagonDrillTimesheets.Sum(m => m.OperationNetWorkingHour);
-
-			var dttotalDownHours = _db.DumpTruckTimeSheets.Sum(m => m.DownHour);
-			var dttotalIdleHours = _db.DumpTruckTimeSheets.Sum(m => m.IdleHour);
-			var dttotalOperationalHours = _db.DumpTruckTimeSheets.Sum(m => m.NetworkingHour);
-
-			var result = new
-			{
-				DownHour = mtotalDownHours + lvtotalDownHours + 0 + wdtotalDownHours + dttotalDownHours,
-				IdleHour = mtotalIdleHours + lvtotalIdleHours + dltotalIdleHours + wdtotalIdleHours + dttotalIdleHours,
-				OperationalHour = mtotalOperationalHours + lvtotalOperationalHours + dltotalOperationalHours + dttotalOperationalHours + wdtotalOperationalHours
-			};
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
-		#endregion
-
-		public JsonResult RefreshInventoryDashboard()
+        public JsonResult RefreshInventoryDashboard()
 		{
 			//_dashboardHelper.UpdateInventoryDocStatusDict();
 			_dashboardHelper.UpdateDashboardItemBalance();
@@ -2050,6 +2549,9 @@ namespace ExceedERP.Web.Controllers
 			return Json(formattedData, JsonRequestBehavior.AllowGet);
 		}
 		#endregion
-	  
-	}
+		
+
+
+
+    }
 }

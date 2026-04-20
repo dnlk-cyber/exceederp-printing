@@ -4,7 +4,7 @@
                   .DataValueField("Name").Filter(FilterType.Contains)
                      .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("InventoryStoresDDBind", "FleetDataProvider"))
+                          dataSource.Read(read => read.Action("InventoryStoresDDBind", "FleetDataProvider").Data("sendForgery"))
                                     .ServerFiltering(false);
                       }).OptionLabel("Select").ValuePrimitive(true))
                 

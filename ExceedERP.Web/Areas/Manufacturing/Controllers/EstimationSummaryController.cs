@@ -76,42 +76,54 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult EstimationSummaries_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<EstimationSummary> estimationsummaries = db.EstimationSummaries;
-            DataSourceResult result = estimationsummaries.ToDataSourceResult(request, estimationSummary => new {
-                EstimationSummaryId = estimationSummary.EstimationSummaryId,
-                CustomerId = estimationSummary.CustomerId,
-                IsClosed = estimationSummary.IsClosed,
-                FurnitureEstimationId = estimationSummary.FurnitureEstimationId,
-                Status = estimationSummary.Status,
-                Remark = estimationSummary.Remark,
-                IsVoid = estimationSummary.IsVoid,
-                VoidBy = estimationSummary.VoidBy,
-                VoidTime = estimationSummary.VoidTime,
-                IsOnlineApproved = estimationSummary.IsOnlineApproved,
-                OnlineApprovedBy = estimationSummary.OnlineApprovedBy,
-                OnlineApprovedTime = estimationSummary.OnlineApprovedTime,
-                IsOnlineTransferred = estimationSummary.IsOnlineTransferred,
-                IsOnlineTransferredBy = estimationSummary.IsOnlineTransferredBy,
-                OnlineTransferredTime = estimationSummary.OnlineTransferredTime,
-                IsSendForApproval = estimationSummary.IsSendForApproval,
-                OrgBranchName = estimationSummary.OrgBranchName,
-                SendForApprovalBy = estimationSummary.SendForApprovalBy,
-                SendForApprovalTime = estimationSummary.SendForApprovalTime,
-                DateCreated = estimationSummary.DateCreated,
-                LastModified = estimationSummary.LastModified,
-                CreatedBy = estimationSummary.CreatedBy,
-                ModifiedBy = estimationSummary.ModifiedBy,
-                IsMarginApproved = estimationSummary.IsMarginApproved
-            });
+            
+            return Json(estimationsummaries.ToDataSourceResult(request));
+        }
+        public ActionResult EstimationSummaries_Update([DataSourceRequest]DataSourceRequest request, EstimationSummary model)
+        {
+            if (ModelState.IsValid)
+            {
+                
+                db.EstimationSummaries.Attach(model);
+                db.Entry(model).State = EntityState.Modified;
+                db.SaveChanges();
+            }
 
-            return Json(result);
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+        public JsonResult CheckEstimationSummary(int id)
+        {
+            Object response = null;
+            var summary = db.EstimationSummaries.FirstOrDefault(x => x.EstimationSummaryId == id);
+            var overAllCost = db.EstimationCostSummaries.Where(x => x.EstimationSummaryId == summary.EstimationSummaryId).ToList();
+            if (overAllCost.Any())
+            {
+                summary.IsSendForApproval = true;
+                summary.SendForApprovalBy = User.Identity.Name;
+                summary.SendForApprovalTime = DateTime.Today;
+                summary.Status = "pending approval";
+                db.Entry(summary).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully sent!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Margin not set" };
+
+            }
+            return Json(response);
         }
         public JsonResult ApproveEstimationSummary(int id)
         {
             Object response = null;
-            var summary = db.EstimationSummaries.Find(id);
+            var summary = db.EstimationSummaries.FirstOrDefault(x => x.EstimationSummaryId == id);
             var overAllCost = db.EstimationCostSummaries.Where(x => x.EstimationSummaryId == summary.EstimationSummaryId).ToList();
             if (overAllCost.Any())
             {
+                if(!overAllCost.Exists(x => x.IsApprovedMargin))
+                {
+                    response = new { Success = false, Message = "Approve margin first!" };
+                }
                 summary.IsOnlineApproved = true;
                 summary.OnlineApprovedBy = User.Identity.Name;
                 summary.OnlineApprovedTime = DateTime.Today;
@@ -155,9 +167,17 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var overAllCost = db.EstimationCostSummaries.Where(x => x.EstimationSummaryId == summary.EstimationSummaryId).ToList();
             if (overAllCost.Any())
             {
+                var details = db.EstimationDetails
+                    .Where(x => x.EstimationSummaryId == summary.EstimationSummaryId)
+                    .ToList();
+                foreach (var item in details)
+                {
+                    ReverseEstimation(item.FurnitureEstimationId);
+                    DeleteSummaryDetail(item);
+                }
                 summary.IsOnlineApproved = false;
-                summary.OnlineApprovedBy = User.Identity.Name;
-                summary.OnlineApprovedTime = DateTime.Today;
+                summary.IsSendForApproval = false;
+                
                 summary.Status = "Rejected";
                 db.Entry(summary).State = EntityState.Modified;
                 db.SaveChanges();
@@ -169,6 +189,33 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             }
             return Json(response);
+
+        }
+
+        private void ReverseEstimation(int id)
+        {
+            var estimationForm = db.FurnitureEstimationForms
+                .FirstOrDefault(x => x.FurnitureEstimationId == id);
+            estimationForm.IsSendForApproval = false;
+            estimationForm.IsOnlineApproved = false;
+            
+            db.Entry(estimationForm).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+        private void DeleteSummaryDetail(EstimationDetail model)
+        {
+            DeleteMargin(model.EstimationSummaryId);
+            db.EstimationDetails.Remove(model);
+            db.SaveChanges();
+        }
+        private void DeleteMargin(int id)
+        {
+            var margin = db.EstimationCostSummaries.FirstOrDefault(x => x.EstimationSummaryId == id);
+            if (margin != null)
+            {
+                db.EstimationCostSummaries.Remove(margin);
+                db.SaveChanges();
+            }
 
         }
         protected override void Dispose(bool disposing)

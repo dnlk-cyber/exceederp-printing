@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,15 +7,21 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Printing.PrintingProduction
 {
-    public enum OperationStatus
+    public enum PrintingOperationStatus
     {
-        NotStarted = 0,
-        InProgress = 1,
-        Completed = 2
+        Started = 0,
+        PrePressInProgress = 1,
+        PrePressCompleted = 2,
+        PressInProgress = 3,
+        PressCompleted = 4,
+        PostPressInProgress = 5,
+        PostPressCompleted = 6,
+        Reverted = 7, 
+        Closed = 8
     }
-    public class PrintingCommon
-    {
-        public OperationStatus OperationStatus { get; set; } = OperationStatus.NotStarted;
+    public class PrintingCommon : Operations
+    { 
+        public PrintingOperationStatus PrintingOperationStatus { get; set; }
 
         public bool IsPrePressChecked { get; set; }
         public bool IsPressChecked { get; set; }
@@ -35,5 +42,8 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         public DateTime? PrePressApprovedTime { get; set; }
         public DateTime? PressApprovedTime { get; set; }
         public DateTime? PostPressApprovedTime { get; set; }
+        public bool IsClosed { get; set; }
+        public string ClosedBy { get; set; }
+        public DateTime? DateClosed { get; set; } 
     }
 }

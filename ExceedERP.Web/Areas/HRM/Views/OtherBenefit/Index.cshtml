@@ -6,48 +6,51 @@
 }
 <legend>@Resources.NavigatorBenefit_OtherBenefit</legend>
 @(Html.Kendo().Grid<OtherBenefit>()
-                  .Name("OtherBenefitgrid")
-                  .Columns(columns =>
-                  {
-                      columns.Bound(c => c.IsForAll).ClientTemplate("# if (IsForAll) { #"
-                          +"<input type='checkbox' checked ='checked' disabled='disabled'/>"
-                          +"#} else { # "
-                          +"<input type='checkbox' disabled ='disabled'/>"
-                          +"# } #").Width(100);
-                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("JobTitles").Width(120);
-                      columns.ForeignKey(c => c.BenefitName, (IEnumerable)ViewData["Benefits"], "LookupId", "Description").Filterable(ft => ft.Multi(true).Search(true)).EditorTemplateName("Benefits").Width(150);
-                      columns.ForeignKey(c => c.UnitofMeasurement, (IEnumerable)ViewData["UOM"], "LookupId", "Description").Filterable(ft => ft.Multi(true).Search(true)).EditorTemplateName("UnitOfMeasurement").Width(150);
-                      columns.Bound(c => c.Quantity).Width(100);
-                      columns.Bound(c => c.TimeInterval).Width(120);
-                      //columns.Bound(c => c.Remark);
-                      columns.Command(command =>
-                      {
-                          if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
-                          {
-                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                          }
-                          if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
-                          {
-                              command.Destroy().Text(Resources.ActionButton_Cancel);
-                          }
-                      }).Width(200);
-                  })
-                  .ToolBar(toolbar => {
-                      if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
-                      {
-                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                      }
-                  })
-                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OtherBenefit").Window(window => { window.Title(Resources.NavigatorBenefit_OtherBenefit); window.Scrollable(false); }))
-                      .Scrollable(h => h.Height(500))
-                         .Filterable()
-                         .Events(ev =>  {
-                             //ev.Edit("onEdit");
-                             ev.Cancel("onCancel");
-                             ev.Change("onChange");
-                             //ev.BeforeEdit("onChange");
+      .Name("OtherBenefitgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IsForAll).ClientTemplate("# if (IsForAll) { #"
+              +"<input type='checkbox' checked ='checked' disabled='disabled'/>"
+              +"#} else { # "
+              +"<input type='checkbox' disabled ='disabled'/>"
+              +"# } #").Width(100);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("JobTitles").Width(120);
+          columns.ForeignKey(c => c.BenefitName, (IEnumerable)ViewData["Benefits"], "LookupId", "Description").Filterable(ft => ft.Multi(true).Search(true)).EditorTemplateName("Benefits").Width(150);
+          columns.ForeignKey(c => c.UnitofMeasurement, (IEnumerable)ViewData["UOM"], "LookupId", "Description").Filterable(ft => ft.Multi(true).Search(true)).EditorTemplateName("UnitOfMeasurement").Width(150);
+          columns.Bound(c => c.Quantity).Width(100);
+          columns.Bound(c => c.TimeInterval).Width(120);
+          columns.Bound(c => c.Gender).Width(120);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
 
-                         } )
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OtherBenefit").Window(window => { window.Title(Resources.NavigatorBenefit_OtherBenefit); window.Scrollable(false); }))
+      .Scrollable(h => h.Height(500))
+            .Filterable()
+            .Events(ev =>  {
+                //ev.Edit("onEdit");
+                ev.Cancel("onCancel");
+                ev.Change("onChange");
+                //ev.BeforeEdit("onChange");
+
+            } )
              .Pageable(pageable => pageable
                         .Input(true)
                         .Numeric(false)
@@ -56,6 +59,7 @@
                         .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(sort=>sort.Add(x=>x.OtherBenefitId).Descending())
                  .Events(events =>
                  {
                      events.Error("error_handler(\"OtherBenefitgrid\")");
@@ -63,11 +67,14 @@
                      events.RequestEnd("onRequestEnd(\"OtherBenefitgrid\")");
                  })
 
-          .Model(model => model.Id(p => p.OtherBenefitId))
-          .Read(read => read.Action("OtherBenefits_Read", "OtherBenefit"))
-          .Create(create => create.Action("OtherBenefits_Create", "OtherBenefit"))
-          .Update(update => update.Action("OtherBenefits_Update", "OtherBenefit"))
-          .Destroy(destroy => destroy.Action("OtherBenefits_Destroy", "OtherBenefit"))
+          .Model(model => {
+              model.Id(p => p.OtherBenefitId);
+              model.Field(p => p.OtherBenefitId).Editable(false);
+              })
+          .Read(read => read.Action("OtherBenefits_Read", "OtherBenefit").Data("sendForgery"))
+          .Create(create => create.Action("OtherBenefits_Create", "OtherBenefit").Data("sendForgery"))
+          .Update(update => update.Action("OtherBenefits_Update", "OtherBenefit").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("OtherBenefits_Destroy", "OtherBenefit").Data("sendForgery"))
       )
 )
 <script>

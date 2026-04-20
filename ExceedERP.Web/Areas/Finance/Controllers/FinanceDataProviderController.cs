@@ -17,7 +17,7 @@ using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
-
+using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers
 {

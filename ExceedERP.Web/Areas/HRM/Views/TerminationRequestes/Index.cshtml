@@ -4,27 +4,33 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <Legend>@Resources.NavigatorTermination_TerminationRequestes</Legend>
 @(Html.Kendo().Grid<Termination>()
       .Name("TerminationGrid")
       .Columns(columns =>
       {
-
-          columns.Bound(c => c.EmployeeCode).Width(150);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(200);
-          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Width (150);
-          columns.Bound(c => c.ApplicationDateAm).Width(150);
-          columns.Bound(c => c.Reason).Width (150);
+          columns.Bound(c => c.EmployeeCode).Width(100);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Filterable(ftb => ftb.Multi(true).Search(true)).Width (130);
+          columns.Bound(c => c.Reason).Width (300);
           columns.Bound(c => c.IsForciblyTerminated).ClientTemplate(
                       "<input type='checkbox' disabled = 'true' value='#= IsForciblyTerminated#' " +
                       "# if (IsForciblyTerminated) { #" +
                       "checked='checked'" +
                       "# } #" +
-                      "/>"
-                      ).Width(150);
-          columns.Bound(c => c.TerminationDateAm).Width (150);
-          // columns.Bound(c => c.Remark).Width (120);
+                      "/>" ).Width(150);
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(100);
+              columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(100);
+          }
+          else
+          {
+              columns.Bound(c => c.ApplicationDate).Width(120);
+              columns.Bound(c => c.TerminationDate).Width(120);
+          }          // columns.Bound(c => c.Remark).Width (120);
           //  columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
       .ToolBar(toolbar => {
@@ -60,10 +66,10 @@
                })
 
           .Model(model => model.Id(p => p.TerminationId))
-              .Read(read => read.Action("Terminations_Read", "TerminationRequestes"))
-              .Create(create => create.Action("Terminations_Create", "TerminationRequestes"))
-              .Update(update => update.Action("Terminations_Update", "TerminationRequestes"))
-              .Destroy(destroy => destroy.Action("Terminations_Destroy", "TerminationRequestes"))
+              .Read(read => read.Action("Terminations_Read", "TerminationRequestes").Data("sendForgery"))
+              .Create(create => create.Action("Terminations_Create", "TerminationRequestes").Data("sendForgery"))
+              .Update(update => update.Action("Terminations_Update", "TerminationRequestes").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("Terminations_Destroy", "TerminationRequestes").Data("sendForgery"))
 
                   ).ClientDetailTemplateId("template")
       )
@@ -115,10 +121,10 @@
                                   model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
                               })
 
-                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TerminationId#", referenceType = "Termination" }))
-                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TerminationId#", referenceType2 = "Termination" }))
-                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TerminationId#", referenceType = "Termination" }).Data("sendForgery"))
+                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TerminationId#", referenceType2 = "Termination" }).Data("sendForgery"))
+                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
                           ).ToClientTemplate()
                     )
 

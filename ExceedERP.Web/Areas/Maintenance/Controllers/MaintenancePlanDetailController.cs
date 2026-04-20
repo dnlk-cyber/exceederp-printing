@@ -32,7 +32,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
            
             if (ModelState.IsValid)
             {
-
+                model.CMCost = model.CMLaborCost + model.CMMaterialCost;
+                model.PMCost = model.PMMaterialCost + model.PMLaborCost;
                 model.ModifiedBy = User.Identity.Name;
                 model.LastModified = DateTime.Today;
                 

@@ -506,9 +506,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Person_Employee_Read([DataSourceRequest]DataSourceRequest request)
         {
 
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.OrgBranchName.ToString()) && x.IsActive == false && x.Remark.Contains("Retirement"));
+            List<int> mybracheIds = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            DateTime sixtyYearsAgo = DateTime.Now.AddYears(-60);
+            DateTime retirementNotificationDate = sixtyYearsAgo.AddDays(180);
+
+            IQueryable<Person_Employee> person_employees = db.Person_Employee
+                .Where(x => x.DateOfBirth <= retirementNotificationDate)
+                .Where(x => mybracheIds.Contains(x.BranchId) && !x.IsActive && x.IsPlaced)
+                .AsQueryable();
+            //IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => mybracheIds.Contains(x.BranchId) && x.IsActive == false && x.Remark.Contains("Retirement"));
 
             #region Commented
             //string searchedValue = "";

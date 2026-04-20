@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel( Resources.Select)
+         .DataTextField("Name")
+                    .DataValueField("GLPeriodId")
+                     .Filter("contains")
+                     .CascadeFrom("GlFiscalYearId")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("filterPeriod"))
+                                                    .ServerFiltering(true);
+                          })
+                         .ValuePrimitive(true)
+)

@@ -22,6 +22,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
     [AuthorizeRoles(MaintenanceRoles.MaintenanceOrderUser)]
     public class JobOrderClosingController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         IJobOrderDetailService _JobOrderDetailService;
         private IJobOrderDetailService JobOrderDetailService;
         private IJobOrderService _JobOrderService;
@@ -99,7 +100,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     Code = i.EmployeeId
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
-            var branches = db.Branch;
+            var branches = CacheData.GetWorkUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Code = i.Id
+         }).AsQueryable();
             var structure = db.MainCompanyStructures;
 
 
@@ -109,7 +115,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                var businessUnits = db.BusinessUnits.ToList();
+                var businessUnits = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
                 ViewData["BusinessUnits"] = businessUnits;
             }
 
