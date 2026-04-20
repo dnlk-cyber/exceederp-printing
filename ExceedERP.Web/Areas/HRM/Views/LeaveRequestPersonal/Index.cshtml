@@ -27,6 +27,7 @@
         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
         columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
         columns.Bound(c => c.Type).EditorTemplateName("LeaveType").Width(100);
         columns.Bound(c => c.Day).Width(80);
         columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
@@ -38,7 +39,7 @@
         else
         {
             columns.Bound(c => c.From).Width(100);
-            columns.Bound(c => c.To).Width(100).Visible(false);
+            columns.Bound(c => c.To).Width(100);
         }
 
 
@@ -75,10 +76,9 @@
             .Filterable()
             .Events(e =>
             {
-                e.Save("GetDate");
-                e.Edit("GetDate");
                 e.DetailExpand("onDetailExpandUser");
                 e.DataBound("onDataBound");
+                e.Edit("onEdit");
 
 
             })
@@ -206,6 +206,8 @@
                                     columns.Bound(c => c.To).Width(80);
                                 }
                                 columns.Bound(c => c.Amount).Width(90);
+                                //columns.Bound(c => c.Reason).Width(150);
+
                                 columns.Command(command =>
                                 {
                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -231,11 +233,11 @@
 
                             })
                             .Filterable()
-                            .Events(e =>
-                            {
-                                e.Save("GetDateForVoid");
-                                e.Edit("GetDateForVoid");
-                            })
+                        //.Events(e =>
+                        //{
+                        //    e.Save("GetDateForVoid");
+                        //    e.Edit("GetDateForVoid");
+                        //})
 
                         .Pageable(pageable => pageable
                                                     .Input(true)
@@ -273,41 +275,42 @@
 
                 items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
         @<text>
-            <button onclick='uploadFile(#=LeaveRequestId#)' class='fa fa-upload btn btn-primary'>&nbsp;@Resources.HR_ActionButton_Upload </button>
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
+             @documentAttachment()
+            @*<button onclick='uploadFile(#=LeaveRequestId#)' class='fa fa-upload btn btn-primary'>&nbsp;@Resources.HR_ActionButton_Upload </button>
+            @(Html.Kendo().Grid<LeaveRequestAttachement>()
                             .Name("Documents_Leave_Requests#=LeaveRequestId#")
                             .Columns(columns =>
                             {
-                                        columns.Bound(c => c.FileName);
-                                        columns.Bound(c => c.Description);
-                                        columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadDoument", "LeaveRequestPersonal", new { filename = "#=LeaveRequestId#", attachId = "\\#=AttachmentId\\#" }, null).ToString());
+                                columns.Bound(c => c.FileName);
+                                columns.Bound(c => c.Description);
+                                columns.Bound(m => m.FilePath).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadDoument", "LeaveRequestPersonal", new { filename = "#=LeaveRequestId#", attachId = "\\#=AttachmentId\\#" }, null).ToString());
 
-                                        columns.Command(command =>
-                                        {
+                                columns.Command(command =>
+                                {
 
-                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                                        }).Width(300);
-
-
+                                }).Width(300);
 
 
-                                    })
+
+
+                            })
                             .Events(e =>
                             {
-                                        e.Change("onChange");
-                                        e.Edit("onGridEdit");
+                                e.Change("onChange");
+                                e.Edit("onGridEdit");
 
-                                    })
 
+                            })
                             .Editable(editable => editable.Mode(GridEditMode.InCell).TemplateName("UploadDocument").Window(window =>
                             {
 
-                                        window.Scrollable(false);
-                                        window.Title(Resources.Navigator_Company_UploadDocument);
+                                window.Scrollable(false);
+                                window.Title(Resources.Navigator_Company_UploadDocument);
 
 
-                                    }))
+                            }))
 
                             .Scrollable()
                             .Selectable()
@@ -316,19 +319,20 @@
                                 .Events(events =>
                                 {
 
-                                            events.Error("error_handler(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-                                            events.RequestStart("onRequestStart(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-                                            events.RequestEnd("onRequestEnd(\"Documents_Leave_Requests#=LeaveRequestId#\")");
+                                    events.Error("error_handler(\"Documents_Leave_Requests#=LeaveRequestId#\")");
+                                    events.RequestStart("onRequestStart(\"Documents_Leave_Requests#=LeaveRequestId#\")");
+                                    events.RequestEnd("onRequestEnd(\"Documents_Leave_Requests#=LeaveRequestId#\")");
 
 
-                                        })
-                                .Model(model => model.Id(p => p.AttachmentId))
-                                .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=LeaveRequestId#", fileOwner = "#=LeaveRequestId#" }).Data("sendForgery"))
-                                .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=LeaveRequestId#", fileOwner = "#=LeaveRequestId#" }).Data("sendForgery"))
-                                .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile").Data("sendForgery"))
+                                })
+                                .Model(model => model.Id(p => p.LeaveRequestAttachementId))
+                                .Read(read => read.Action("LeaveRequestAttachements_Read", "LeaveRequestAttachements", new { Area = "HRM",  id = "#=LeaveRequestId#" }).Data("sendForgery"))
+                                .Create(create => create.Action("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new { Area = "HRM", id = "#=LeaveRequestId#"}).Data("sendForgery"))
+                                .Update(update => update.Action("LeaveRequestAttachements_Update", "LeaveRequestAttachements", new { Area = "HRM" }).Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("LeaveRequestAttachements_Destroy", "LeaveRequestAttachements", new { Area = "HRM" }).Data("sendForgery"))
 
                                 ).ToClientTemplate()
-            )
+            )*@
         </text>);
         items.Add().Text(Resources.Details).Content(
         @<text>
@@ -374,12 +378,12 @@
 
 
 @(Html.Kendo().Window()
-                .Name("UploadDoc")
-                .Title(Resources.HR_ActionButton_Upload)
-                .Visible(false)
-                .Modal(true)
-                .Draggable(true)
-                .Width(400).Content(@<text><div class="form-group">
+      .Name("UploadDoc")
+      .Title(Resources.HR_ActionButton_Upload)
+      .Visible(false)
+      .Modal(true)
+      .Draggable(true)
+      .Width(400).Content(@<text><div class="form-group">
                         <form action="@Url.Action("UploadDocument", "LeaveRequestPersonal", new { })" method="post" , new { enctype="multipart/form-data" }>
                             <input type="hidden" name="leaveRequestId" id="leaveRequestId">
                             <div class="row">
@@ -406,6 +410,50 @@
                 </text>)
 )
 
+@helper documentAttachment()
+{ 
+     @(Html.Kendo().Grid<LeaveRequestAttachement>()
+            .Name("LeaveRequestAttachementGrid#=LeaveRequestId#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                columns.Bound(c => c.Description).Width(100);
+
+                columns.Template(e => { }).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                columns.Command(command =>
+                {
+                    command.Destroy().Text("Delete");
+                }).Width(300);
+
+            })
+            .ToolBar(toolbar =>
+            {
+            toolbar.Template(@<text>
+                @Html.Kendo().Upload().Name("file").Async(a => a.Save("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new {area="HRM", id = "#=LeaveRequestId#" })).Events(e => e.Complete("onUploadSuccess")
+                                                                                                            .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 50 * 1024 * 1024); }")
+                                                                .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
+            </text>);
+            })
+
+            .Scrollable(h => h.Height("auto"))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+                events.RequestStart("onRequestStart(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+                events.RequestEnd("onRequestEnd(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+
+            })
+            .Model(model => model.Id(p => p.LeaveRequestAttachementId))
+            .Read(read => read.Action("LeaveRequestAttachements_Read", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
+            .Create(create => create.Action("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
+            .Update(update => update.Action("LeaveRequestAttachements_Update", "LeaveRequestAttachements").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("LeaveRequestAttachements_Destroy", "LeaveRequestAttachements").Data("sendForgery"))
+            ).ToClientTemplate())
+}
 
 <style type="text/css">
     div.k-edit-form-container {
@@ -454,18 +502,18 @@
     //    }
 
     //}
-
+    
     function sync_handler(e) {
         this.read();
 
     }
 </script>
 <script>
-    function GetDateForVoid() {
-        $("#FromAm").trigger("change");
-        $("#ToAm").trigger("change");
-    }
-    function GetDate() {
+    //function GetDateForVoid() {
+    //    $("#FromAm").trigger("change");
+    //    $("#ToAm").trigger("change");
+    //}
+    @*function GetDate() {
 
         var x = AssignDate();
         var y = x;
@@ -484,11 +532,11 @@
                 }
 
             });
-        }
+        }*@
 
         /////////////////////////////////////////////////////////
 
-             $("#LeaveBalance").val(0);
+             @*$("#LeaveBalance").val(0);
              $("#LeaveBalance").val(0);
         var employee = $("#EmployeeId").data("kendoDropDownList");
         var empId = employee.value();
@@ -511,7 +559,7 @@
             });
         }
 
-    }
+    }*@
 
 </script>
 <script>
@@ -546,6 +594,7 @@
 
         });
     }*@
+    var masterId = 0;
     function onDetailExpandUser(e)
     {
         var masterRow = e.masterRow;
@@ -588,72 +637,12 @@
         });
 
     }
-    function SetEmployee(e) {
-        var x = e.checked;
-        var dropDown = $("#EmployeeId").data("kendoDropDownList");
-        if (x == true) {
-            $("#LeaveBalance").val(0);
-            $("#ExactDeserveLeaveDays").val(0);
-            $("#LeaveBalance").trigger("change");
-            dropDown.enable(true);
 
-
-        }
-        else {
-            $("#LeaveBalance").val(0);
-            $("#ExactDeserveLeaveDays").val(0);
-            $("#LeaveBalance").trigger("change");
-            $("#ExactDeserveLeaveDays").trigger("change");
-            dropDown.value(0);
-            dropDown.enable(false);
-
-             /////////////////////////////////////////////////////////
-
-        var employee = $("#EmployeeId").data("kendoDropDownList");
-        var empId = employee.value();
-        if (empId == "0" )
-        {
-            $.ajax({
-                url: '@Url.Action("GetBalance", "LeaveRequestPersonal")',
-
-                //data: { empId: empId },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                    var s = r.split(/-/);
-
-                    $("#LeaveBalance").val(s[0]);
-                    $("#LeaveBalance").trigger("change");
-                }
-
-            });
-            }
-
-        }
-        $.ajax({
-            contentType: "application/json; charset=utf-8",
-            url: '@Url.Action("SetEmployee", "LeaveRequestPersonal")',
-            data: { x: x },
-            type: 'GET',
-            cache: false,
-            success: function (result) {
-                r = result;
-                if (x==true && r == "0")
-                {
-                    e.checked = false;
-                    dropDown.value(0);
-                    dropDown.enable(false);
-                    alert("You can not request for other employee!!.\nThere is no employee under your postion.");
-                }
-              //  $("#EmployeeId").data('kendoComboBox').dataSource.read();
-                //$("#EmployeeId").data('kendoComboBox').refresh();
-            }
-
-        });
-
-
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#LeaveRequestAttachementGrid" + masterId).data("kendoGrid").dataSource.read();
     }
+    
     function valueMapper(options) {
         $.ajax({
             url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
@@ -689,36 +678,155 @@
 
 
 <script>
-    function GetTotalBalance()
-    {
+    
 
+    // ✅ Toggle subordinate request (server-side validation)
+    function SetEmployee(e) {
+        var isChecked = e.checked;
+        var dropDown = $("#EmployeeId").data("kendoDropDownList");
+
+        if (isChecked) {
+            dropDown.enable(true);
+            $("#LeaveBalance").val(0).trigger("change");
+        } else {
+            dropDown.value(0);
+            dropDown.enable(false);
+        }
+
+        $.ajax({
+            url: '@Url.Action("SetEmployee", "LeaveRequestPersonal")',
+            type: 'POST',
+            data: { isForOther: isChecked },
+            success: function (result) {
+                if (isChecked && result === 0) {
+                    e.checked = false;
+                    dropDown.value(0);
+                    dropDown.enable(false);
+                    alert("You cannot request for other employees!\nNo subordinates under your position.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error in SetEmployee:", error);
+            }
+        });
+    }
+    function onEdit(e) {
+        GetTotalBalance();
+    }
+    // ✅ Get total balance based on employee and date range
+    function GetTotalBalance() {
+        $("#LeaveBalance").val(0);
+        $("#LeaveDays").val(0);
+        $("#ExactDeserveLeaveDays").val(0);
+
+        var employee = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employee ? employee.value() : 0;
+        var morningOrAfternoon = $("#MorningOrAfternoon").data("kendoDropDownList").value(); // 👈 FIXED
+        var fromAm =  $("#FromAmharic").val();
+        var toAm =  $("#ToAmharic").val() ;
+        var from = $("#From").val();
+        var to = $("#To").val();
+        //if (!empId || empId === "0" || !from || !to) return;
+        if (!empId) {
+            empId = 0;
+            from =from?? null;
+            to = to??null;
+        }
+        $.ajax({
+            url: '@Url.Action("GetTotalLeaveAmount", "LeaveRequestPersonal")',
+            type: 'POST',
+            data: {
+                empId: empId,
+                from: from,
+                to: to,
+                fromAm: fromAm,
+                toAm: toAm,
+                morningOrAfternoon: morningOrAfternoon
+            },
+            cache: false,
+            success: function (result) {
+                if (!result) return;
+
+                var parts = result.split('-');
+                var totalBalance = parts[0] || "0";
+                var exactDays = parts[1] || "0";
+                var leaveDays = parts[2] || "0";
+
+                $("#LeaveBalance").val(totalBalance).trigger("change");
+                $("#ExactDeserveLeaveDays").val(exactDays).trigger("change");
+                $("#LeaveDays").val(leaveDays).trigger("change");
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching leave balance:", error);
+            }
+        });
+    }
+    // ✅ Get total balance based on employee and date range goergorian
+    function GetTotalBalanceGord() {
         $("#LeaveBalance").val(0);
         $("#ExactDeserveLeaveDays").val(0);
+        $("#LeaveDays").val(0);
+
         var employee = $("#EmployeeId").data("kendoDropDownList");
-        var empId = employee.value();
-        var from = $('#FromAmharic').val();
-        var to = $('#ToAmharic').val();
-        if (empId.length !== 0) {
+        var empId = employee ? employee.value() : 0;
+       // var useEthiopian = $(".et-popup-picker").length > 0;
+        var morningOrAfternoon = $("#MorningOrAfternoon").data("kendoDropDownList").value(); // 👈 FIXED
+        var from = $("#From").val();
+        var to =  $("#To").val();
 
-            $.ajax({
-                url: '@Url.Action("GetTotalLeaveAmount", "LeaveRequestPersonal")',
-
-                data: { empId: empId, from: from, to: to },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    var s = result.split('-');;
-
-                    $("#LeaveBalance").val(s[0]);
-                    //$("#LeaveBalance").val(result);
-                    $("#ExactDeserveLeaveDays").val(s[1]);
-                    $("#LeaveBalance").trigger("change");
-                    $("#ExactDeserveLeaveDays").trigger("change");
-                }
-
-            });
+        //if (!empId || empId === "0" || !from || !to) return;
+        if (!empId) {
+            empId = 0;
+            from =from?? null;
+            to = to??null;
         }
+        $.ajax({
+            url: '@Url.Action("GetTotalLeaveAmountGorg", "LeaveRequestPersonal")',
+            type: 'POST',
+            data: { empId: empId, from: from, to: to, morningOrAfternoon: morningOrAfternoon  },
+            cache: false,
+            success: function (result) {
+                if (!result) return;
+
+                var parts = result.split('-');
+                var totalBalance = parts[0] || "0";
+                var exactDays = parts[1] || "0";
+                var leaveDays = parts[2] || "0";
+
+                $("#LeaveBalance").val(totalBalance).trigger("change");
+                $("#ExactDeserveLeaveDays").val(exactDays).trigger("change");
+                $("#LeaveDays").val(leaveDays).trigger("change");
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching leave balance:", error);
+            }
+        });
     }
+@*unction GetTotalBalance() {
+    $("#LeaveBalance").val(0);
+    $("#ExactDeserveLeaveDays").val(0);
+
+    var employee = $("#EmployeeId").data("kendoDropDownList");
+    var empId = employee.value();
+    var from = $('#FromAmharic').val();
+    var to = $('#ToAmharic').val();
+
+    if (empId && empId.length !== 0) {
+        $.ajax({
+            url: '@Url.Action("GetTotalLeaveAmount", "LeaveRequestPersonal")',
+            data: { empId: empId, from: from, to: to },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                var s = result.split('-');
+                $("#LeaveBalance").val(s[0]);
+                $("#ExactDeserveLeaveDays").val(s[1]);
+                $("#LeaveBalance").trigger("change");
+                $("#ExactDeserveLeaveDays").trigger("change");
+            }
+        });
+    }
+}*@
 
     function GetExactDerevedLeavedays()
     {
@@ -851,10 +959,11 @@
         $("#ExactDeserveLeaveDays").val(0);
         var employee = $("#EmployeeId").data("kendoDropDownList");
         var empId = employee.value();
-       // var fromDate = $("#FromAmharic").data('kendoTextBox').value();
-        var from = $('#FromAmharic').val();
-        //var toDate = $("#ToAmharic").data('kendoTextBox').value();
-        var to = $('#ToAmharic').val();
+        var morningOrAfternoon = $("#MorningOrAfternoon").data("kendoDropDownList").value(); // 👈 FIXED
+        var fromAm = $('#FromAmharic').val();
+        var toAm = $('#ToAmharic').val();
+        var from = $("#From").val();
+        var to = $("#To").val();
         var dayT = $("#Day").data("kendoDropDownList");
         var half = dayT.value();
         if (half == 1) {
@@ -875,7 +984,7 @@
             $.ajax({
                 url: '@Url.Action("GetLeaveDaysToPulate", "LeaveRequestPersonal")',
 
-                data: { empId:empId,from: from, to: to, half: half, hour: hour },
+                data: { empId: empId, from: from, to: to, fromAm: fromAm, toAm: toAm, half: half, hour: hour, morningOrAfternoon: morningOrAfternoon  },
                 type: 'POST',
                 cache: false,
                 success: function (result) {

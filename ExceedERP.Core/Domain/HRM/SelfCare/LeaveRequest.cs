@@ -57,6 +57,8 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
 
         public int BusinessUnitId { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_JobTitleName", ResourceType = typeof(Localization.Resources))]
+        public int? LookupId { get; set; }
 
         [Display(Name = "HR_SelfCare_LeaveRequest_LeaveBalance", ResourceType = typeof(Localization.Resources))]
         public decimal LeaveBalance { get; set; }
@@ -92,5 +94,18 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public bool IsChangeInDepartment { get; set; }
         public int? RequesterId { get; set; }
         public LeaveActionTypes LeaveActionTypes { get; set; }
+    }
+
+    public class LeaveRequestAttachement: TrackUserSettingOperation
+    {
+        [Key]
+        public int LeaveRequestAttachementId { get; set; }
+        public int LeaveRequestId { get; set; }
+        public  LeaveRequest LeaveRequest { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
     }
 }

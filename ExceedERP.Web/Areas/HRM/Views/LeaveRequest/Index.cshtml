@@ -9,72 +9,77 @@
 <legend>@Resources.NavigatorLeave_LeaveRequests</legend>
 <div class="row">
     <p>
-        <span class="fa fa-circle" style="color:darkgrey;"></span>&nbsp;&nbsp;Final Approved &nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:limegreen;"></span>&nbsp;&nbsp;Department Aproved &nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp;Waiting for approval,&nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:Orange;"></span>&nbsp;&nbsp;Pending &nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:LightGray;"></span>&nbsp;&nbsp;Rejected &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:darkgrey;"></span>&nbsp;&nbsp;  Final Approved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:limegreen;"></span>&nbsp;&nbsp; Department Aproved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp; Waiting for approval,&nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:Orange;"></span>&nbsp;&nbsp; Pending &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:LightGray;"></span>&nbsp;&nbsp; Rejected &nbsp;&nbsp;
+
     </p>
 </div>
-@(Html.Kendo().Grid<LeaveRequest>()
-          .Name("LeaveRequestgrid")
-          .Columns(columns =>
-          {
-              //columns.Bound(c => c.IsApproved).Visible(false);
-              columns.Bound(c => c.LeaveRequestId).Width(100).Title("Request Id");
-              columns.Bound(c => c.EmployeeCode).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-              columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-              columns.Bound(c => c.Type).EditorTemplateName("LeaveType").Width(100);
-              columns.Bound(c => c.Day).Width(80);
-              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
-              if (useEthiopian)
-              {
-                  columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
-                  columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
-              }
-              else
-              {
-                  columns.Bound(c => c.From).Width(100);
-                  columns.Bound(c => c.To).Width(100);
-              }
-              columns.Bound(c => c.LeaveBalance).Width(110);
-              columns.Bound(c => c.LeaveDays).Width(100);
-              columns.Bound(c => c.Status).Width(100);
-              columns.Bound(c => c.Reason).Width(150);
-              columns.Bound(c => c.Day).Width(80);
-              columns.Command(command =>
-              {
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-              }).Width(190);
-          })
-          .ToolBar(toolbar =>
-          {
-              //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-          })
-          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
-          .Events(events => {
-              events.DetailExpand("onDetailExpandUser");
-              events.DataBound("onDataBound");
-              events.Save("GetDate");
-              events.Edit("GetDate");
-          })
-           .Scrollable(h => h.Height(500))
-           .Sortable(sortable =>
-           {
-               sortable.SortMode(GridSortMode.SingleColumn);
 
-           })
-           .Filterable()
-           .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
-          .DataSource(dataSource => dataSource
+@(Html.Kendo().Grid<LeaveRequest>()
+      .Name("LeaveRequestgrid")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.LeaveRequestId).Width(100).Title("Request Id");
+          columns.Bound(c => c.EmployeeCode).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+          columns.Bound(c => c.Type).EditorTemplateName("LeaveType").Width(100);
+          columns.Bound(c => c.Day).Width(80);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
+              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
+          }
+          else
+          {
+              columns.Bound(c => c.From).Width(100);
+              columns.Bound(c => c.To).Width(100);
+          }
+          columns.Bound(c => c.LeaveBalance).Width(110);
+          columns.Bound(c => c.LeaveDays).Width(100);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Bound(c => c.Reason).Width(150);
+          columns.Bound(c => c.Day).Width(80);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(190);
+
+      })
+    .ToolBar(toolbar =>
+    {
+        //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+    })
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+    .Events(events =>
+    {
+        events.DetailExpand("onDetailExpandUser");
+        events.DataBound("onDataBound");
+        //events.Save("GetDate");
+        //events.Edit("GetDate");
+    })
+    .Scrollable(h => h.Height(500))
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
+
+    })
+    .Filterable()
+    .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+    .DataSource(dataSource => dataSource
               .Ajax()
               .Sort(sort => sort.Add("LeaveRequestId").Descending())
               .Events(events =>
@@ -153,8 +158,8 @@
                                     model.Field(p => p.ApproverId).Editable(false);
                                     model.Field(p => p.ApproverDepartment).Editable(false);
                                 })
-                                .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType = "Leave" }).Data("sendForgery"))
-                                .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType2 = "Leave" }).Data("sendForgery"))
+                                .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { area="HRM", id = "#=LeaveRequestId#", referenceType = "Leave" }).Data("sendForgery"))
+                                .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { area = "HRM", id = "#=LeaveRequestId#", referenceType2 = "Leave" }).Data("sendForgery"))
                                 .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
                                 .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
 
@@ -167,65 +172,8 @@
                   //*****************************************************************************************************//
                     items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
                       @<text>
-                       <button onclick='uploadFile(#=LeaveRequestId#)' class='fa fa-upload btn btn-primary'>&nbsp;@Resources.HR_ActionButton_Upload </button>
-                      @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
-                         .Name("Documents_Leave_Requests#=LeaveRequestId#")
-                         .Columns(columns =>
-                         {
-                             columns.Bound(c => c.FileName);
-                             columns.Bound(c => c.Description);
-                             columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadDoument", "LeaveRequest", new { filename = "#=LeaveRequestId#", attachId = "\\#=AttachmentId\\#" }, null).ToString());
-
-                             columns.Command(command =>
-                             {
-                                 //if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                 //{
-                                     //  command.Destroy().Text(Resources.ActionButton_Cancel);//
-                                                                                       
-                                 //}
-
-                             }).Width(300);
-
-                         })
-                         //.Events(e =>
-                         //{
-                         //    e.Change("onChange");
-                         //    e.Edit("onGridEdit");
-
-                         //})
-                         //.ToolBar(toolbar =>
-                         //{
-                         //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-
-                         //})
-                         .Editable(editable => editable.Mode(GridEditMode.InCell).TemplateName("UploadDocument").Window(window =>
-                         {
-
-                             window.Scrollable(false);
-                             window.Title(Resources.Navigator_Company_UploadDocument);
-
-                         }))
-
-                      .Scrollable()
-                      .Selectable()
-                      .DataSource(dataSource => dataSource
-                         .Ajax()
-                         .Events(events =>
-                         {
-
-                             events.Error("error_handler(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-                             events.RequestStart("onRequestStart(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-                             events.RequestEnd("onRequestEnd(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-
-                         })
-                          .Model(model => model.Id(p => p.AttachmentId))
-                          .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=LeaveRequestId#", fileOwner = "#=LeaveRequestId#" }).Data("sendForgery"))
-                          .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=LeaveRequestId#", fileOwner = "#=LeaveRequestId#" }).Data("sendForgery"))
-                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile").Data("sendForgery"))
-
-                          ).ToClientTemplate()
-                        )
+                        @documentAttachment()
+                      
                     </text>);
                   items.Add().Text(Resources.Details).Content(
                 @<text>
@@ -301,6 +249,52 @@
                 </div>
                 </text>)
 )
+
+@helper documentAttachment()
+{ 
+     @(Html.Kendo().Grid<LeaveRequestAttachement>()
+            .Name("LeaveRequestAttachementGrid#=LeaveRequestId#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                columns.Bound(c => c.Description).Width(100);
+
+                columns.Template(e => { }).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                columns.Command(command =>
+                {
+                    command.Destroy().Text("Delete");
+                }).Width(300);
+
+            })
+            .ToolBar(toolbar =>
+            {
+            toolbar.Template(@<text>
+                @Html.Kendo().Upload().Name("file").Async(a => a.Save("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new {area="HRM", id = "#=LeaveRequestId#" })).Events(e => e.Complete("onUploadSuccess")
+                                                                                                            .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 50 * 1024 * 1024); }")
+                                                                .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
+            </text>);
+            })
+
+            .Scrollable(h => h.Height("auto"))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+                events.RequestStart("onRequestStart(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+                events.RequestEnd("onRequestEnd(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+
+            })
+            .Model(model => model.Id(p => p.LeaveRequestAttachementId))
+            .Read(read => read.Action("LeaveRequestAttachements_Read", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
+            .Create(create => create.Action("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
+            .Update(update => update.Action("LeaveRequestAttachements_Update", "LeaveRequestAttachements").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("LeaveRequestAttachements_Destroy", "LeaveRequestAttachements").Data("sendForgery"))
+            ).ToClientTemplate())
+}
+
 <style type="text/css">
     div.k-edit-form-container {
         width: 850px;
@@ -334,57 +328,14 @@
         var wnd = $("#UploadDoc").data("kendoWindow");
         wnd.center().open();
     }
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
 
     function sync_handler(e) {
         this.read();
 
     }
 </script>
-<script>
-    function GetDate() {
 
-        var x = AssignDate();
-        var y = x;
-        $("#FromAmharic").trigger("change");
-        $("#ToAmharic").trigger("change");
-        for (var o in y) {
-            $.ajax({
-                contentType: "application/json; charset=utf-8",
-                url: '@Url.Action("SetDate", "LeaveRequest")',
-                data: { name: y[o].id, value: y[o].date },
-                type: 'GET',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                }
 
-            });
-        }
-    }
-
-</script>
-<script>
-    function AssignDate() {
-        var list = AssignDates();
-        return list;
-    }
-
-</script>
 
 <script>
     function GetBalance() {
@@ -438,6 +389,7 @@
 </script>
 <script>
 
+    var masterId = 0;
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 
@@ -483,6 +435,10 @@
 
         });
        // e.sender.refresh();
+    }
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#ArchiveAttachementGrid" + masterId).data("kendoGrid").dataSource.read();
     }
     function SetEmployee(e) {
         var x = e.checked;
@@ -570,24 +526,19 @@
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
             }
-            else if (model.IsPending === true) {
+            else if (model.Status = "Pending") {
 
                 $(this).css("background-color", "Orange");
                 $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-delete").show();
             }
-            else if (model.IsRejected === true) {
+            else if (model.Status = "Rejected") {
 
                 $(this).css("background-color", "LightGray");
                 $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-delete").show();
             }
-            else if (model.IsSendForApproval === true) {
-
-                $(this).css("background-color", "lightblue");
-                $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
-            }
+           
             else if (model.IsWaiting === true || model.Status == "WAITING_FOR_APPROVAL") {
 
                 $(this).css("background-color", "lightblue");

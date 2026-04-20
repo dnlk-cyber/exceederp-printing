@@ -16,36 +16,29 @@
           tabstrip.Add().Text(Resources.NavigatorLeave_LeaveSetting)
          .Content(@<text>
               @leaveSetting()
-
             </text>);
          tabstrip.Add().Text(Resources.Rpt_LeaveType + " "+ Resources.Settings)
          .Content(@<text>
               @leaveTypeSetting()
-
             </text>);
-        tabstrip.Add().Text(Resources.SickLeaveSetting)
-        .Selected(true)
-        .Content(@<text>
-        <Legend>@Resources.SickLeaveSetting</Legend>
-         @sickLeaveSetting()
-        </text>);
-
-        tabstrip.Add().Text(Resources.SickLeaveSetting+" "+Resources.Rpt_Salary)
-         .Content(@<text>
-              @sickLeaveWithSalary()
-
+            tabstrip.Add().Text(Resources.SickLeaveSetting)
+            .Selected(true)
+            .Content(@<text>
+            <Legend>@Resources.SickLeaveSetting</Legend>
+             @sickLeaveSetting()
             </text>);
-        
-        
-        tabstrip.Add().Text(Resources.NavigatorLeave_LeavePayable +" "+Resources.Settings+"|| No of working days")
-         .Content(@<text>
-              @leavePayableSetting()
 
-            </text>);
-        tabstrip.Add().Text(Resources.NavigatorLeave_LeaveEntitlement +" "+Resources.Settings)
-         .Content(@<text>
+            tabstrip.Add().Text(Resources.SickLeaveSetting+" "+Resources.Rpt_Salary)
+             .Content(@<text>
+                  @sickLeaveWithSalary()
+                </text>);
+            tabstrip.Add().Text(Resources.NavigatorLeave_LeavePayable +" "+Resources.Settings+"|| No of working days")
+             .Content(@<text>
+                  @leavePayableSetting()
+                </text>);
+            tabstrip.Add().Text(Resources.NavigatorLeave_LeaveEntitlement +" "+Resources.Settings)
+             .Content(@<text>
               @leaveEntitlementSetting()
-
             </text>);
      })
 )
@@ -163,8 +156,9 @@
 }
 @helper leaveTypeSetting()
 { 
+    
     <Legend>@Resources.Rpt_LeaveType @Resources.Settings</Legend>
-@(Html.Kendo().Grid<LeaveTypeSetting>()
+     @(Html.Kendo().Grid<LeaveTypeSetting>()
           .Name("LeaveTypeSettinggrid")
           .Columns(columns =>
           {
@@ -192,10 +186,13 @@
                      "# } #" +
                      "/>").Width(140);
               columns.Bound(c => c.Remark).Width(150);
-              columns.Command(command => {
+              columns.Command(command =>
+              {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
                   command.Destroy().Text(Resources.ActionButton_Cancel);
-              })/*.Width(200)*/;
+
+              }).Width(200);
           })
           .ToolBar(toolbar =>
           {
