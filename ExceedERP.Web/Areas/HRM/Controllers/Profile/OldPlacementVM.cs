@@ -14,6 +14,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public string Department { get; set; }
         public int LookupId { get; set; }
         public string JobTitle { get; set; }
+        public string Grade { get; set; }
+        public string Step { get; set; }
         public string AssignmentDate { get; set; }
         public DateTime Date { get; set; }
         public bool IsHead { get; set; }

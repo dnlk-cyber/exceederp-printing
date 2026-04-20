@@ -2302,6 +2302,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 {
                     pp.JobTitle = jobtitle.Description;
                 }
+                var step = db.Steps.FirstOrDefault(x => x.StepId == place.StepId );
+                if (step != null)
+                {
+                    pp.Step = step.StepName;
+                }
+                var grade = db.Ranks.FirstOrDefault(x => x.RankId == place.RankId );
+                if (grade != null)
+                {
+                    pp.Grade = grade.RankName;
+                }
                 pp.LookupId = place.LookupId;
                 pp.AssignmentDate = place.AssignmentDateAmharic;
                 pp.Date = place.AssignmentDate;
@@ -2319,6 +2329,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 Department = placement.Department,
                 LookupId = placement.LookupId,
                 JobTitle = placement.JobTitle,
+                Grade = placement.Grade,
+                Step = placement.Step,
                 IsHead = placement.IsHead,
                 IsCurrent = placement.IsCurrent,
                 AssignmentDate = placement.AssignmentDate,

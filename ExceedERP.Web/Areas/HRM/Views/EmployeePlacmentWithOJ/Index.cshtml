@@ -176,7 +176,8 @@
                                                 .DataSource(dataSource =>
                                                 {
                                                                     dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
-                                                                }))
+                                                                
+                                                }))
                                 </div>
 
                                 <div class="col-md-2 flex-item">
@@ -411,6 +412,8 @@
                             columns.Bound(c => c.Branch).Width(80);
                             columns.Bound(c => c.Department).Width(80);
                             columns.Bound(c => c.JobTitle).Width(80);
+                            columns.Bound(c => c.Grade).Width(80);
+                            columns.Bound(c => c.Step).Width(80);
                             //columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Title("Job Title").EditorTemplateName("JobTitles").Width(80);
                             columns.Bound(c => c.AssignmentDate).Width(80);
                             columns.Bound(c => c.AssignmentType).Width(80);
