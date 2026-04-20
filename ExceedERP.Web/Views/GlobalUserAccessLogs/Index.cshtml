@@ -14,15 +14,26 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.GlobalUserAccessLogID).Title("#");
-          columns.Bound(c => c.IPAddress);
-          columns.Bound(c => c.UserName);
-          columns.Bound(c => c.TimeAccessed).Format("{0:dd MMMM yyyy hh:mm tt}");
-          columns.Bound(c => c.Type);
-          columns.Bound(c => c.Status);
-          columns.Bound(c => c.Description);
+          columns.Bound(c => c.GlobalUserAccessLogID).Title("#").Width(60);
+          columns.Bound(c => c.IPAddress).Width(60);
+          columns.Bound(c => c.UserName).Width(60);
+          columns.Bound(c => c.TimeAccessed).Format("{0:dd MMMM yyyy hh:mm tt}").Width(120);
+          columns.Bound(c => c.Type).Width(60);
+          columns.Bound(c => c.Status).Width(30);
+          columns.Bound(c => c.Description).Width(300);
 
       })
+       .ToolBar(toolbar =>
+       {
+
+           toolbar.Excel();
+           // toolbar.Pdf();
+       })
+      .Excel(excel => excel
+          .FileName("Login Log.xlsx")
+          .Filterable(true)
+          .AllPages(true)
+      )
        .HtmlAttributes(new { style = "height: 550px;" })
                           .Pageable(pageable => pageable
                                             .Input(true)
@@ -35,13 +46,14 @@
                                 .Sortable()
                                 .Filterable()
                                 .Groupable()
+
       .DataSource(dataSource => dataSource
           .Ajax()
           .Sort(sort => sort.Add("GlobalUserAccessLogID").Descending())
                 .Events(events => events
                   .Error("error_handler")
                   .Sync("sync_handler"))
-                  .Read(read => read.Action("GlobalUserAccessLogs_Read", "GlobalUserAccessLogs"))
+                  .Read(read => read.Action("GlobalUserAccessLogs_Read", "GlobalUserAccessLogs").Data("sendForgery"))
       )
 )
 

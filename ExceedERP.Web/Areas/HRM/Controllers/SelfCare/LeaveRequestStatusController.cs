@@ -26,23 +26,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         private ExceedDbContext db = new ExceedDbContext();
         private readonly CacheData CacheData = new CacheData();
 
-        //HRMInputs inputs = new HRMInputs();
 
         public ActionResult Index()
         {
             PopulateViewData();
-            //GetStatusType();
-            //GetPeriod();
 
             return View();
         }
+
         private void PopulateViewData()
         {
-            //HRMInputs inputs = new HRMInputs();
-            //var list = inputs.GetEmployees(User.Identity.Name);
-            //ViewData["EmployeeList"] = db.Person_Employee.AsQueryable();// list.Where(x => x.IsActive);
-            //var employeName = db.Person_Employee.ToList();
-            //ViewData["EmployeeName"] = employeName;
+           
             ViewData["PeriodList"] = CacheData.GetFiscalYearCaches().Select(
                              i => new
                              {
@@ -80,14 +74,80 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                    OrgStructureId = i.Id,
                }).AsQueryable();
             ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
-
-            //ViewData["Department"] = db.MainCompanyStructures.ToList();
-            //var branches = db.Branch;
-            //ViewData["branches"] = branches;
-            //var businessUnits = db.BusinessUnits;
-            //ViewData["businessUnits"] = businessUnits;
+            ViewData["jobTitle"] = CacheData.GetJobTitlesCaches().Select(
+              i => new
+              {
+                  Description = i.Name,
+                  LookupId = i.Id,
+              }).AsQueryable();
+           
 
         }
+        public JsonResult UpdateLeaveRequestinfo()
+        {
+            try
+            {
+                // Load current placements
+                var currentPlacements = db.Placements
+                    .Where(x => x.isCurrent)
+                    .ToList();
+
+                if (!currentPlacements.Any())
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "No current placements found."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Load employees who have current placements
+                var employeeIds = currentPlacements
+                    .Select(p => p.EmployeeId)
+                    .Distinct()
+                    .ToList();
+
+                // Find all leave requests missing LookupId
+                var leaveRequests = db.LeaveRequest
+                    .Where(e => employeeIds.Contains(e.EmployeeId) &&
+                                (!e.LookupId.HasValue || e.LookupId == 0))
+                    .ToList();
+
+                // Dictionary for quick lookup
+                var currentPlacementDic = currentPlacements
+                    .ToDictionary(p => p.EmployeeId, p => p);
+
+                // Update each leave request
+                foreach (var leaveRequest in leaveRequests)
+                {
+                    if (currentPlacementDic.TryGetValue(leaveRequest.EmployeeId, out var placement))
+                    {
+                        leaveRequest.LookupId = placement.LookupId;
+                        leaveRequest.BusinessUnitId = placement.BusinessUnitId;
+                        leaveRequest.BranchId = placement.BranchId;
+                        db.Entry(leaveRequest).State = EntityState.Modified;
+                    }
+                }
+
+                db.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Successfully updated {leaveRequests.Count} leave requests."
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unexpected error occurred.",
+                    details = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         private JsonResult GetPeriod()
         {
             var periodList = db.GLFiscalYears;
@@ -234,6 +294,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     EmployeeId = lr.EmployeeId,
                     BranchId = lr.BranchId,
                     BusinessUnitId = lr.BusinessUnitId,
+                    LookupId = lr.LookupId,
                     From = lr.From,
                     GlFiscalYearId = lr.GlFiscalYearId,
                     To = lr.To,

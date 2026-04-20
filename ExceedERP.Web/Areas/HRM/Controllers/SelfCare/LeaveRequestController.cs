@@ -28,37 +28,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
     public class LeaveRequestController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        static ApplicationDbContext dbApplication = new ApplicationDbContext();
+        private ApplicationDbContext dbApplication = new ApplicationDbContext();
         private readonly CacheData CacheData = new CacheData();
 
-        HRMInputs inputs = new HRMInputs();
-        public static List<string> reportsToEmployee = new List<string>();
         public ActionResult Index()
         {
-            //ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
-            //GetStatusType();
-            //GetPeriod();
+           
             PopulateViewData();
             return View();
 
         }
         private void PopulateViewData()
         {
-            //var EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            //var list = UserInformationHelper.GetEmployeesByReportsTo(User.Identity.Name);
-            //ViewData["EmployeeList"] = list.Where(x => x.IsActive);
-            //reportsToEmployee = list.Select(x => x.PersonId.ToString()).ToList();
-            //reportsToEmployee.Add(EmployeeId.ToString());
-
-            //var employeName = db.Person_Employee.ToList();
-            //ViewData["EmployeeName"] = employeName;
-
-            //ViewData["UserName"] = dbApplication.Users.ToList();
-            //ViewData["Department"] = db.MainCompanyStructures.Where(x=>x.IsActive).ToList();
-            //var branches = db.Branch;
-            //ViewData["branches"] = branches;
-            //var businessUnits = db.BusinessUnits;
-            //ViewData["businessUnits"] = businessUnits;
+           
             ViewData["PeriodList"] = CacheData.GetFiscalYearCaches().Select(
                              i => new
                              {
@@ -95,8 +77,80 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                    Name = i.Name,
                    OrgStructureId = i.Id,
                }).AsQueryable();
+            ViewData["jobTitle"] = CacheData.GetJobTitlesCaches().Select(
+               i => new
+               {
+                   Description = i.Name,
+                   LookupId = i.Id,
+               }).AsQueryable();
             ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
         }
+
+        public JsonResult UpdateLeaveRequestinfo()
+        {
+            try
+            {
+                // Load current placements
+                var currentPlacements = db.Placements
+                    .Where(x => x.isCurrent)
+                    .ToList();
+
+                if (!currentPlacements.Any())
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "No current placements found."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Load employees who have current placements
+                var employeeIds = currentPlacements
+                    .Select(p => p.EmployeeId)
+                    .Distinct()
+                    .ToList();
+
+                // Find all leave requests missing LookupId
+                var leaveRequests = db.LeaveRequest
+                    .Where(e => employeeIds.Contains(e.EmployeeId) &&
+                                (!e.LookupId.HasValue || e.LookupId == 0))
+                    .ToList();
+
+                // Dictionary for quick lookup
+                var currentPlacementDic = currentPlacements
+                    .ToDictionary(p => p.EmployeeId, p => p);
+
+                // Update each leave request
+                foreach (var leaveRequest in leaveRequests)
+                {
+                    if (currentPlacementDic.TryGetValue(leaveRequest.EmployeeId, out var placement))
+                    {
+                        leaveRequest.LookupId = placement.LookupId;
+                        leaveRequest.BusinessUnitId = placement.BusinessUnitId;
+                        leaveRequest.BranchId = placement.BranchId;
+                        db.Entry(leaveRequest).State = EntityState.Modified;
+                    }
+                }
+
+                db.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Successfully updated {leaveRequests.Count} leave requests."
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unexpected error occurred.",
+                    details = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public double GetWeekDays(DateTime startDate, DateTime endDate, int empId)
         {
             double noOfWeek = 0;
@@ -237,6 +291,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             lr.EmployeeId,
                             lr.BranchId,
                             lr.BusinessUnitId,
+                            lr.LookupId,
                             lr.From,
                             lr.GlFiscalYearId,
                             lr.To,
@@ -252,7 +307,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             lr.RequestDate,
                             lr.FromAmharic,
                             lr.ToAmharic,
-                            // ✅ handle cases where RequestesStatus is missing
+                            //  handle cases where RequestesStatus is missing
                             IsApproved = rs != null && rs.LatestStatus != null && rs.LatestStatus.Status == RequestStatus.APPROVE,
                             IsChangeInDepartment = rs != null && rs.LatestStatus != null && rs.LatestStatus.Status == RequestStatus.DEPARTMENT_APPROVAL,
                             IsPending = rs != null && rs.LatestStatus != null && rs.LatestStatus.Status == RequestStatus.PEND,
@@ -272,6 +327,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             lr.MorningOrAfternoon,
                             lr.IsSendForApproval,
                             lr.ToTime,
+                            lr.ModifiedBy,
+                            lr.LastModified,
+                            lr.CreatedBy,
+                            lr.DateCreated,
                             lr.IsVoid,
                             lr.VoidBy,
                             lr.VoidTime
@@ -296,6 +355,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 EmployeeId = leaveRequest.EmployeeId,
                 BranchId = leaveRequest.BranchId,
                 BusinessUnitId = leaveRequest.BusinessUnitId,
+                LookupId = leaveRequest.LookupId,
                 From = leaveRequest.From,
                 IsForOther = leaveRequest.IsForOther,
                 To = leaveRequest.To,
@@ -613,6 +673,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 leaveRequest.BranchId = placement.BranchId;
                 leaveRequest.BusinessUnitId = placement.BusinessUnitId;
+                leaveRequest.LookupId = placement.LookupId;
             }
             else
             {
@@ -676,7 +737,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             #endregion
             leaveRequest.LeaveActionTypes = leaveRequest.Type != LeaveType.ANNUAL ? LeaveActionTypes.Without_Plan : leaveRequest.LeaveActionTypes;
-
             if (ModelState.IsValid)
             {
 
@@ -712,7 +772,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     DepartmentSendForApprovalTime = DateTime.Now,
                     BranchId = leaveRequest.BranchId,
                     BusinessUnitId = leaveRequest.BusinessUnitId,
-                    EmployeeCode = inputs.GetEmployeeCode(leaveRequest.EmployeeId)
+                    LookupId = leaveRequest.LookupId,
+                    EmployeeCode = employee?.EmployeeCode??null
 
 
                 };
@@ -961,6 +1022,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 leaveRequest.BranchId = placement.BranchId;
                 leaveRequest.BusinessUnitId = placement.BusinessUnitId;
+                leaveRequest.LookupId = placement.LookupId;
             }
             else
             {
@@ -1056,7 +1118,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                      leavrequest.ToAmharic = leaveRequest.ToAmharic;
                      leavrequest.IsForOther = leaveRequest.IsForOther;
                      leavrequest.LeaveActionTypes = leaveRequest.LeaveActionTypes;
-                     leavrequest.EmployeeCode = inputs.GetEmployeeCode(leaveRequest.EmployeeId);
+                     leavrequest.EmployeeCode = employee?.EmployeeCode ?? null;
                      leavrequest.RequesterId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                      db.Entry(leavrequest).State = EntityState.Modified;
                      db.SaveChanges();
@@ -1530,6 +1592,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         EmployeeId = leaveRequest.EmployeeId,
                         BranchId = leaveRequest.BranchId,
                         BusinessUnitId = leaveRequest.BusinessUnitId,
+                        LookupId = leaveRequest.LookupId,
                         From = leaveRequest.From,
                         To = leaveRequest.To,
                         LeaveDays = leaveRequest.LeaveDays,
@@ -1675,6 +1738,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return false;
         }
+
         public bool CheckPendStatusForBackColor(int leaveId)
         {
             var status = db.RequestesStatus.Where(x => x.RequestId == leaveId

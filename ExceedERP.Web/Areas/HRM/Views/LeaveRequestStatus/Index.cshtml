@@ -3,7 +3,9 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
+
 <legend>@Resources.NavigatorLeave_LeaveRequests</legend>
 <div class="row">
     <p>
@@ -12,278 +14,253 @@
         <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp;Waiting for approval,&nbsp;&nbsp;
         <span class="fa fa-circle" style="color:Orange;"></span>&nbsp;&nbsp;Pending &nbsp;&nbsp;
         <span class="fa fa-circle" style="color:LightGray;"></span>&nbsp;&nbsp;Rejected &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:olive;">
+            <a href="javascript:void(0);"
+               onclick="updateEmployeeLeaveRequest(this)"
+               class="btn btn-link btn-xs">
+                <i class="fa fa-refresh"></i> @Resources.ActionButton_Update @Resources.Leave_Request
+            </a>
+        </span>
     </p>
-    </div>
+</div>
 @(Html.Kendo().Grid<LeaveRequest>()
-          .Name("LeaveRequestgrid")
-          .Columns(columns =>
-          {
-              columns.Bound(c => c.IsApproved).Visible(false);
-              columns.Bound(c => c.LeaveRequestId).Width(150);
-              columns.Bound(c => c.EmployeeCode).Width(150);
-              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-              columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-              columns.Bound(c => c.Type).EditorTemplateName("LeaveType").Width(100);
-              columns.Bound(c => c.Day).Width(80);
-              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
-              columns.Bound(c => c.FromAmharic).Width(100);
-              columns.Bound(c => c.ToAmharic).Width(100);
-              columns.Bound(c => c.Status).Width(100);
-              columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
-                   "<input type='checkbox' disabled = 'true' value='#=IsOnlineApproved#' " +
-                   "# if (IsOnlineApproved) { #" +
-                   "checked='checked'" +
-                   "# } #" +
-                   "/>").Width(120);
-              columns.Bound(c => c.IsVoid).ClientTemplate(
-                   "<input type='checkbox' disabled = 'true' value='#=IsVoid#' " +
-                   "# if (IsVoid) { #" +
-                   "checked='checked'" +
-                   "# } #" +
-                   "/>").Width(120);
-              columns.Bound(c => c.LeaveBalance).Width(120);
-              columns.Bound(c => c.LeaveDays).Width(130);
-              columns.Bound(c => c.Reason).Width(150);
-              //columns.Bound(c => c.Remark);
-              columns.Command(command =>
+              .Name("LeaveRequestgrid")
+              .Columns(columns =>
               {
-                  //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  //command.Destroy().Text(Resources.ActionButton_Cancel);
-              }).Width(180);
-          })
-          .ToolBar(toolbar =>
-          {
-          toolbar.Template(@<text>
-                <div class="toolbar">
-                    @(Html.Kendo().Button()
-                             .Name("btnCopy")
-                             .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-left" })
-                             .Events(e => e.Click("RefreshBranchAndBussinessUnit"))
-                             .Content(Resources.HR_Button_Refresh_Branch + " & " + Resources.BussinessUnit))
+                  columns.Bound(c => c.IsApproved).Visible(false);
+                  columns.Bound(c => c.LeaveRequestId).Width(150);
+                  columns.Bound(c => c.EmployeeCode).Width(150);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                  columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+
+                  columns.Bound(c => c.Type).EditorTemplateName("LeaveType").Width(100);
+                  columns.Bound(c => c.Day).Width(80);
+                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
+                  if (useEthiopian)
+                  {
+                      columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
+                      columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
+                  }
+                  else
+                  {
+                      columns.Bound(c => c.From).Width(100);
+                      columns.Bound(c => c.To).Width(100);
+                  }
+                  columns.Bound(c => c.Status).Width(100);
+                  columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
+                       "<input type='checkbox' disabled = 'true' value='#=IsOnlineApproved#' " +
+                       "# if (IsOnlineApproved) { #" +
+                       "checked='checked'" +
+                       "# } #" +
+                       "/>").Width(120);
+                  columns.Bound(c => c.IsVoid).ClientTemplate(
+                       "<input type='checkbox' disabled = 'true' value='#=IsVoid#' " +
+                       "# if (IsVoid) { #" +
+                       "checked='checked'" +
+                       "# } #" +
+                       "/>").Width(120);
+                  columns.Bound(c => c.LeaveBalance).Width(120);
+                  columns.Bound(c => c.LeaveDays).Width(130);
+                  columns.Bound(c => c.Reason).Width(150);
+                  //columns.Bound(c => c.Remark);
+                  columns.Command(command =>
+                  {
+                      //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      //command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                  }).Width(180);
+
+              })
+              .ToolBar(toolbar =>
+              {
+              toolbar.Template(@<text>
+                    <div class="toolbar">
+                        @(Html.Kendo().Button()
+                                                 .Name("btnCopy")
+                                                 .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-left" })
+                                                 .Events(e => e.Click("RefreshBranchAndBussinessUnit"))
+                                                 .Content(Resources.HR_Button_Refresh_Branch + " & " + Resources.BussinessUnit))
 
 
-                </div>
+                    </div>
 
-            </text>);
+                </text>);
 
-                })
-                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequests); window.Scrollable(false); }))
-                .Scrollable(h => h.Height(500))
-                .Sortable(sortable =>
-                {
-                    sortable.SortMode(GridSortMode.SingleColumn);
-
-                })
-                .Filterable()
-                .Events(e =>
-                {
-                    e.DataBound("onDataBound");
-                    e.DetailExpand("onDetailExpandUser");
-                })
-                .Pageable(pageable => pageable
-                                      .Input(true)
-                                      .Numeric(false)
-                                      .Refresh(true)
-                                      .PageSizes(true)
-                                      .ButtonCount(5))
-                .DataSource(dataSource => dataSource
-                    .Ajax()
-                    .Sort(sort => sort.Add("LeaveRequestId").Descending())
-                    .Events(events =>
-                    {
-                        events.Error("error_handler(\"LeaveRequestgrid\")");
-                        events.RequestStart("onRequestStart(\"LeaveRequestgrid\")");
-                        events.RequestEnd("onRequestEnd(\"LeaveRequestgrid\")");
 
                     })
-                     .Model(model =>
-                     {
-                         model.Id(p => p.LeaveRequestId);
-                         model.Field(p => p.BranchId).Editable(false);
-                         model.Field(p => p.BusinessUnitId).Editable(false);
-                         model.Field(p => p.IsOnlineApproved).Editable(false);
+                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequests); window.Scrollable(false); }))
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
 
-                     })
-                        .Read(read => read.Action("LeaveRequest_Read", "LeaveRequestStatus").Data("sendForgery"))
-                        .Create(create => create.Action("LeaveRequest_Create", "LeaveRequestStatus").Data("sendForgery"))
-                        .Update(update => update.Action("LeaveRequest_Update", "LeaveRequestStatus").Data("sendForgery"))
-                        .Destroy(destroy => destroy.Action("LeaveRequest_Destroy", "LeaveRequestStatus").Data("sendForgery"))
-                    ).ClientDetailTemplateId("template")
+
+                          })
+                            .Filterable()
+                            .Events(e =>
+                            {
+                                e.DataBound("onDataBound");
+                                e.DetailExpand("onDetailExpandUser");
+                            })
+                            .Pageable(pageable => pageable
+                                                          .Input(true)
+                                                          .Numeric(false)
+                                                          .Refresh(true)
+                                                          .PageSizes(true)
+                                                          .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Sort(sort => sort.Add("LeaveRequestId").Descending())
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"LeaveRequestgrid\")");
+                                            events.RequestStart("onRequestStart(\"LeaveRequestgrid\")");
+                                            events.RequestEnd("onRequestEnd(\"LeaveRequestgrid\")");
+
+                                        })
+                                         .Model(model =>
+                                         {
+                                             model.Id(p => p.LeaveRequestId);
+                                             model.Field(p => p.BranchId).Editable(false);
+                                             model.Field(p => p.BusinessUnitId).Editable(false);
+                                             model.Field(p => p.IsOnlineApproved).Editable(false);
+
+                                         })
+                                            .Read(read => read.Action("LeaveRequest_Read", "LeaveRequestStatus").Data("sendForgery"))
+                                            .Create(create => create.Action("LeaveRequest_Create", "LeaveRequestStatus").Data("sendForgery"))
+                                            .Update(update => update.Action("LeaveRequest_Update", "LeaveRequestStatus").Data("sendForgery"))
+                                            .Destroy(destroy => destroy.Action("LeaveRequest_Destroy", "LeaveRequestStatus").Data("sendForgery"))
+                                        ).ClientDetailTemplateId("template")
 )
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                .Name("tabstrip_#=LeaveRequestId#")
-                .SelectedIndex(0)
-                .Items(items =>
-                {
-                    items.Add().Text(Resources.HR_RequestStatus).Content(
-                    @<text>
-
-                        @(Html.Kendo().Grid<RequestesStatus>()
-                              .Name("RequestesStatusgrid#=LeaveRequestId#")
-                              .Columns(columns =>
-                              {
-                                  columns.Bound(c => c.RequestId).Visible(false);
-                                  columns.Bound(c => c.IsApproved).Visible(false);
-                                  columns.Bound(c => c.DateReqStatAm).Width(150);
-                                  columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(200);
-                                  columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                  columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                  columns.Bound(c => c.Remark).Width(200);
-
-                                  columns.Command(command =>
-                                  {
-                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                      command.Destroy().Text(Resources.ActionButton_Cancel);
-                                  });
-
-
-
-                              })
-                              .ToolBar(toolbar =>
-                              {
-                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-
-                              })
-                              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                              .Scrollable()
-                              .Events(e =>
-                              {
-                                  e.DataBound("onRequestesStatusDataBound");
+          .Name("tabstrip_#=LeaveRequestId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+                items.Add().Text(Resources.HR_RequestStatus).Content(
+                @<text>
+                    @(Html.Kendo().Grid<RequestesStatus>()
+                        .Name("RequestesStatusgrid#=LeaveRequestId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.RequestId).Visible(false);
+                            columns.Bound(c => c.IsApproved).Visible(false);
+                            if (useEthiopian)
+                            {
+                                columns.Bound(c => c.DateReqStatAm).EditorTemplateName("Calander").Width(100);
+                            }
+                            else
+                            {
+                                columns.Bound(c => c.Date).Width(100);
+                            }
+                            columns.Bound(c => c.DateReqStatAm).Width(150);
+                            columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(200);
+                            columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.Bound(c => c.Remark).Width(200);
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            });
+                            
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
 
-
-                              })
-                             .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"RequestesStatusgrid#=LeaveRequestId#\")");
-                                    events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                    events.RequestEnd("onRequestEnd(\"RequestesStatusgrid#=LeaveRequestId#\")");
-
-                                })
-                                .Model(model =>
-                                {
-                                    model.Id(p => p.RequestStatusId);
-                                    model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                    model.Field(p => p.ApproverId).Editable(false);
-                                    model.Field(p => p.ApproverDepartment).Editable(false);
-                                    model.Field(p => p.DateReqStatAm).Editable(false);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable()
+                        .Events(e =>
+                        {
+                            e.DataBound("onRequestesStatusDataBound");
 
 
-                                })
 
-                                .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType = "Leave" }).Data("sendForgery"))
-                                .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType2 = "Leave", reference = "hrApprover" }).Data("sendForgery"))
-                                .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
-                                .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
-                                ).ToClientTemplate()
+                        })
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"RequestesStatusgrid#=LeaveRequestId#\")");
+                            events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                            events.RequestEnd("onRequestEnd(\"RequestesStatusgrid#=LeaveRequestId#\")");
+
+
+
+                        })
+                        .Model(model =>
+                        {
+                            model.Id(p => p.RequestStatusId);
+                            model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                            model.Field(p => p.DateReqStatAm).Editable(false);
+                            model.Field(p => p.ApproverId).Editable(false);
+                            model.Field(p => p.ApproverDepartment).Editable(false);
+                            model.Field(p => p.DateReqStatAm).Editable(false);
+
+
+                        })
+
+                        .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { area="HRM", id = "#=LeaveRequestId#", referenceType = "Leave" }).Data("sendForgery"))
+                        .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { area = "HRM", id = "#=LeaveRequestId#", referenceType2 = "Leave", reference = "hrApprover" }).Data("sendForgery"))
+                        .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
+                        ).ToClientTemplate()
                         )
 
                         <a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' target="_blank" title="Print"><i class="fa fa-print fa-2x"></i></a>
-                    </text> );
-                //*****************************************************************************************************//
-                items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
-                @<text>
-                    <button onclick='uploadFile(#=LeaveRequestId#)' class='fa fa-upload btn btn-primary'>&nbsp;@Resources.HR_ActionButton_Upload </button>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
-                        .Name("Documents_Leave_Requests#=LeaveRequestId#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(c => c.FileName);
-                            columns.Bound(c => c.Description);
-                            columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadDoument", "LeaveRequestStatus", new { filename = "#=LeaveRequestId#", attachId = "\\#=AttachmentId\\#" }, null).ToString());
+                        </text> );
+                        items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
+                            @<text>
+                              @documentAttachment()
+                            </text>);
+                                items.Add().Text(Resources.Details).Content(
+                            @<text>
+                            @(Html.Kendo().PanelBar()
+                                .Name("panelbar_#=LeaveRequestId#")
+                                .ExpandMode(PanelBarExpandMode.Single)
+                                .Items(panelbar =>
+                                {
 
-                            columns.Command(command =>
-                            {
-                                //if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                //{
-                                //  command.Destroy().Text(Resources.ActionButton_Cancel);//
-                                //}
+                                    panelbar.Add().Text("Status")
+                                    .Expanded(true)
+                                    .Content(
 
+                                            "<div>" +
+                                    "<table class='table'>" +
+                                    "<tr>" +
+                                    "<td>" + "<div class='employee-details'>" +
+                                        "<ul>" +
 
-                            }).Width(300);
+                                        "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                                        // "<li><label>Title:  </label>#=Title #</li>" +
+                                        "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                                        "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                                        "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
 
-                        })
-                               .Events(e =>
-                               {
-                                   e.DataBound("onRequestesStatusDataBound");
+                                        "</ul>" +
+                                        "</div>" + "<th>" +
+                                    // "<td>" + EmployeeChartsResult() + "<th>" +
 
-                               })
-                               .ToolBar(toolbar =>
-                               {
-                                   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-
-                               })
-                               .Editable(editable => editable.Mode(GridEditMode.InCell).TemplateName("UploadDocument").Window(window =>
-                               {
-
-                                   window.Scrollable(false);
-                                   window.Title(Resources.Navigator_Company_UploadDocument);
-
-                               }))
-
-                            .Scrollable()
-                            .Selectable()
-                            .DataSource(dataSource => dataSource
-                               .Ajax()
-                               .Events(events =>
-                               {
-
-                                   events.Error("error_handler(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-                                   events.RequestStart("onRequestStart(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-                                   events.RequestEnd("onRequestEnd(\"Documents_Leave_Requests#=LeaveRequestId#\")");
-
-                               })
-                                .Model(model => model.Id(p => p.AttachmentId))
-                                .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=LeaveRequestId#", fileOwner = "#=LeaveRequestId#" }).Data("sendForgery"))
-                                .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=LeaveRequestId#", fileOwner = "#=LeaveRequestId#" }).Data("sendForgery"))
-                                .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile").Data("sendForgery"))
-
-                                ).ToClientTemplate()
-                    )
-                </text>);
-                      items.Add().Text(Resources.Details).Content(
-        @<text>
-            @(Html.Kendo().PanelBar()
-              .Name("panelbar_#=LeaveRequestId#")
-              .ExpandMode(PanelBarExpandMode.Single)
-              .Items(panelbar =>
-              {
-
-                  panelbar.Add().Text("Status")
-                  .Expanded(true)
-                  .Content(
-
-                       "<div>" +
-                "<table class='table'>" +
-                "<tr>" +
-                "<td>" + "<div class='employee-details'>" +
-                      "<ul>" +
-
-                      "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                      // "<li><label>Title:  </label>#=Title #</li>" +
-                      "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                      "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                      "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
-
-                      "</ul>" +
-                      "</div>" + "<th>" +
-                // "<td>" + EmployeeChartsResult() + "<th>" +
-
-                "</table>" +
-                "</div>"
-                  );
+                                    "</table>" +
+                                    "</div>"
+                                    );
 
 
-              }).ToClientTemplate() )
-                  
-           </text>);
+
+
+
+                                }).ToClientTemplate() )
+
+                                </text>);
+
+
 
 
 
@@ -291,37 +268,82 @@
 </script>
 
 @(Html.Kendo().Window()
-                    .Name("UploadDoc")
-                    .Title(Resources.HR_ActionButton_Upload)
-                    .Visible(false)
-                    .Modal(true)
-                    .Draggable(true)
-                    .Width(400).Content(@<text><div class="form-group">
-                            <form action="@Url.Action("UploadDocument", "LeaveRequestStatus", new { })" method="post" , new { enctype="multipart/form-data" }>
-                                <input type="hidden" name="leaveRequestId" id="leaveRequestId">
-                                <div class="row">
-                                    <div class="col-md-10">
-                                        @Html.TextBox("file", "", new { type = "file", required = "true" })
-                                        <br />
-                                    </div>
+        .Name("UploadDoc")
+        .Title(Resources.HR_ActionButton_Upload)
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(400).Content(@<text>
+                <div class="form-group">
+                        <form action="@Url.Action("UploadDocument", "LeaveRequestStatus", new { })" method="post" , new { enctype="multipart/form-data" }>
+                            <input type="hidden" name="leaveRequestId" id="leaveRequestId">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    @Html.TextBox("file", "", new { type = "file", required = "true" })
+                                    <br />
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-10">
-                                        @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
-                                        <br />
-                                    </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10">
+                                    @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
+                                    <br />
                                 </div>
-                                <div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-7"></div>
-                                    <input type="@Resources.Button_Submit" class="btn-primary k-button" value="@Resources.Button_Submit " />
-                                </div>
-                            </form>
-                            <div class="pull-right"></div>
-                        </div>
-                    </text>)
+                            </div>
+                            <div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-7"></div>
+                                <input type="@Resources.Button_Submit" class="btn-primary k-button" value="@Resources.Button_Submit " />
+                            </div>
+                        </form>
+                        <div class="pull-right"></div>
+                    </div>
+                </text>)
 )
+@helper documentAttachment()
+{ 
+     @(Html.Kendo().Grid<LeaveRequestAttachement>()
+            .Name("LeaveRequestAttachementGrid#=LeaveRequestId#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                columns.Bound(c => c.Description).Width(100);
+
+                columns.Template(e => { }).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                columns.Command(command =>
+                {
+                    command.Destroy().Text("Delete");
+                }).Width(300);
+
+            })
+            .ToolBar(toolbar =>
+            {
+            toolbar.Template(@<text>
+                @Html.Kendo().Upload().Name("file").Async(a => a.Save("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new {area="HRM", id = "#=LeaveRequestId#" })).Events(e => e.Complete("onUploadSuccess")
+                                                                                                            .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 50 * 1024 * 1024); }")
+                                                                .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
+            </text>);
+            })
+
+            .Scrollable(h => h.Height("auto"))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+                events.RequestStart("onRequestStart(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+                events.RequestEnd("onRequestEnd(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
+
+            })
+            .Model(model => model.Id(p => p.LeaveRequestAttachementId))
+            .Read(read => read.Action("LeaveRequestAttachements_Read", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
+            .Create(create => create.Action("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
+            .Update(update => update.Action("LeaveRequestAttachements_Update", "LeaveRequestAttachements").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("LeaveRequestAttachements_Destroy", "LeaveRequestAttachements").Data("sendForgery"))
+            ).ToClientTemplate())
+}
 
 <style type="text/css">
     div.k-edit-form-container {
@@ -355,26 +377,13 @@
         var wnd = $("#UploadDoc").data("kendoWindow");
         wnd.center().open();
     }
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
+   
 
     function sync_handler(e) {
         this.read();
 
     }
+    var masterId = 0;
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 
@@ -419,6 +428,10 @@
         });
 
     }
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#LeaveRequestAttachementGrid" + masterId).data("kendoGrid").dataSource.read();
+    }
     function valueMapper(options) {
         $.ajax({
             url: "/HRM/Leave/Employee_ValueMapper/",
@@ -448,8 +461,7 @@
 
 <script>
 
-    function onDataBound(e)
-    {
+    function onDataBound(e) {
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function (e) {
             var model = grid.dataItem(this);
@@ -483,63 +495,14 @@
                 $(this).find(".k-grid-delete").remove();
             }
             else {
-               // $(this).css("background-color", "darkgrey");
                 $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-delete").show();
+
 
 
             }
         });
     }
-    //function onDataBound(e) {
-    //    var rows = e.sender.tbody.children();
-
-    //    for (var j = 0; j < rows.length; j++) {
-    //        var row = $(rows[j]);
-    //        var dataItem = e.sender.dataItem(row);
-    //        if (dataItem.IsApproved === true) {
-
-    //            row.css("background-color", "darkgrey");
-    //            row.find(".k-grid-edit").remove();
-    //            row.find(".k-grid-delete").remove();
-
-    //        }
-    //        else if (dataItem.IsPending === true) {
-
-    //            row.css("background-color", "Orange");
-    //            row.find(".k-grid-edit").show();
-    //            row.find(".k-grid-delete").show();
-    //        }
-    //        else if (dataItem.IsRejected === true) {
-
-    //            row.css("background-color", "LightGray");
-    //            row.find(".k-grid-edit").show();
-    //            row.find(".k-grid-delete").show();
-    //        }
-    //        else if (dataItem.IsChangeInDepartment === true) {
-
-    //            row.css("background-color", "lightblue");
-    //            row.find(".k-grid-edit").remove();
-    //            row.find(".k-grid-delete").remove();
-    //        }
-    //        else if (dataItem.Status === "DEPARTMENT_APPROVAL") {
-
-    //            row.find(".k-grid-edit").remove();
-    //            row.find(".k-grid-delete").remove();
-    //            row.css("background-color", "deepskyblue");
-
-    //        }
-    //        else {
-
-    //            row.css("background-color", "lightgreen");
-    //            row.find(".k-grid-delete").remove();
-
-    //        }
-
-
-    //    }
-
-    //}
 
 
     function RefreshBranchAndBussinessUnit(e) {
@@ -559,12 +522,50 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function (e) {
             var model = grid.dataItem(this);
-            if (model.Status == 0 || model.Status == 1 || model.Status == 2 || model.Status == 3 || model.Status == 4 || IsApproved) {
+            if (model.Status == 0
+                || model.Status == 1
+                || model.Status == 2
+                || model.Status == 3
+                || model.Status == 4
+                || IsApproved)
+            {
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
             }
 
         });
 
+    }
+</script>
+<script>
+    function updateEmployeeLeaveRequest(element) {
+        var $button = $(element);
+        var $icon = $button.find('i');
+        var originalIcon = $icon.attr('class');
+
+        // Show loading spinner
+        $icon.attr('class', 'fa fa-spinner fa-spin');
+        $button.prop('disabled', true);
+        $('#loading-image').show();
+        $.ajax({
+            url: '@Url.Action("UpdateLeaveRequestinfo", "LeaveRequestStatus")',
+            type: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                alert(response.message);
+                $('#loading-image').hide();
+                $button.prop('disabled', false);
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred while updating leave request info. Please try again.');
+                $('#loading-image').hide();
+                $button.prop('disabled', false);
+            },
+            complete: function () {
+                // Restore original button state
+                $icon.attr('class', originalIcon);
+                $button.prop('disabled', false);
+            }
+        });
     }
 </script>
