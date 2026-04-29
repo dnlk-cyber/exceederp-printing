@@ -964,14 +964,33 @@ namespace ExceedERP.Core.Domain.Common
         MAXIMUM_LEAVE_ENTITLEMENT,
         [Display(Name = "Enum_LeaveSetting_LEAVE_ENTITLE_THRESHOLD", ResourceType = typeof(Resources))]
         LEAVE_ENTITLE_THRESHOLD,
+        [Display(Name = "Initial Leave for Leaders")]
         LEAVE_FOR_LEADRES_NEW,
+
+        [Display(Name = "Initial Leave for Performers")]
         LEAVE_FOR_PERFORMERS_NEW,
+
+        [Display(Name = "Old Initial Leave End Year")]
         Old_Initial_Leave_End_Year,
+
+        [Display(Name = "Maximum Leave for Leaders")]
         MAXIMUM_Leave_For_Leaders,
+
+        [Display(Name = "Apply Working Days for Maternity Leave")]
         APPLY_WORKING_DAYS_FOR_MATERNITY,
-        LEAVE_ENTITLEMENT_INCREEMENT_YEAR
+
+        [Display(Name = "Leave Entitlement Increase every  (Year)")]
+        LEAVE_ENTITLEMENT_INCREEMENT_YEAR,
+
+        [Display(Name = "Staff Leave Entitlement Increase Every (Years)")]
+        Staff_Leave_Entitlement_Increase_Period,
+
+        [Display(Name = "Management Leave Entitlement Increase Every (Years)")]
+        Management_Leave_Entitlement_Increase_Period
+
 
     }
+
     public enum RecruitmentSetting
     {
         [Display(Name = "Enum_RecruitmentSetting_EDUCATIONAL_FIELD", ResourceType = typeof(Resources))]

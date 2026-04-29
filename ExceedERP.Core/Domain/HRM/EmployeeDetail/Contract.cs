@@ -30,4 +30,10 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public string Remark { get; set; }
 		
     }
+
+    public class ContactVM
+    {
+        public int EmployeeId { get; set; }
+        public DateTime AssignmentDate { get; set; }
+    }
 }
