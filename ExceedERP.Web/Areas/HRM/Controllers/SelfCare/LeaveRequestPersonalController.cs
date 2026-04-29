@@ -176,7 +176,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     UserId = UserInformationHelper.GetEmployeeUserId(headId),
                     Title = "Leave Request",
                     Message = $"{User.Identity.Name} has submitted a leave request that requires your approval.",
-                    URL = "~/HRM/LeaveRequest"
+                    URL = "/HRM/LeaveRequest"
                 };
 
                 Notify.NotifyUser(notif);
