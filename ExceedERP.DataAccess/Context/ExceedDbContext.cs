@@ -3073,17 +3073,18 @@ namespace ExceedERP.DataAccess.Context
 
 
         #region Self Care
-        public System.Data.Entity.DbSet<TrainingApplicant> TrainingApplicants { get; set; }
-        public System.Data.Entity.DbSet<EducationRequest> EducationRequests { get; set; }
-        public System.Data.Entity.DbSet<MedicalRequest> MedicalRequest { get; set; }
-        public System.Data.Entity.DbSet<LeaveRequest> LeaveRequest { get; set; }
-        public System.Data.Entity.DbSet<RecruitmentRequest> RecruitmentRequest { get; set; }
-        public System.Data.Entity.DbSet<RequestesStatus> RequestesStatus { get; set; }
-        public System.Data.Entity.DbSet<ApplicantExperience> ApplicantExperience { get; set; }
-        public System.Data.Entity.DbSet<ApplicantTraining> ApplicantTraining { get; set; }
-        ///public System.Data.Entity.DbSet<PromotionRequest> PromotionRequest { get; set; }
-        public System.Data.Entity.DbSet<OverTimeRequest> OverTimeRequest { get; set; }
-        public System.Data.Entity.DbSet<OverTimeRequestEmployee> OverTimeRequestEmployee { get; set; }
+        public DbSet<TrainingApplicant> TrainingApplicants { get; set; }
+        public DbSet<EducationRequest> EducationRequests { get; set; }
+        public DbSet<MedicalRequest> MedicalRequest { get; set; }
+        public DbSet<LeaveRequest> LeaveRequest { get; set; }
+        public DbSet<LeaveRequestAttachement> LeaveRequestAttachements { get; set; }
+        public DbSet<RecruitmentRequest> RecruitmentRequest { get; set; }
+        public DbSet<RequestesStatus> RequestesStatus { get; set; }
+        public DbSet<ApplicantExperience> ApplicantExperience { get; set; }
+        public DbSet<ApplicantTraining> ApplicantTraining { get; set; }
+        ///publty.DbSet<PromotionRequest> PromotionRequest { get; set; }
+        public DbSet<OverTimeRequest> OverTimeRequest { get; set; }
+        public DbSet<OverTimeRequestEmployee> OverTimeRequestEmployee { get; set; }
         #endregion
 
         #region Company

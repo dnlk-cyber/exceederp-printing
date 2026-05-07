@@ -1585,6 +1585,7 @@
     <Compile Include="Areas\HRM\Controllers\SelfCare\InternalApplicationController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\LeavePlanDeparmentalValidationController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\LeavePlan_PesonalController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\LeaveRequestAttachementsController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\LeaveRequestPersonalController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ManPowerPlanningRequestController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ManPowerPlanningRequestsController.cs" />

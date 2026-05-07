@@ -41,8 +41,6 @@
             columns.Bound(c => c.From).Width(100);
             columns.Bound(c => c.To).Width(100);
         }
-
-
         columns.Bound(c => c.LeaveBalance).Width(110);
         columns.Bound(c => c.LeaveDays).Width(100);
         columns.Bound(c => c.Status).Width(100);
@@ -59,30 +57,30 @@
 
 
     })
-            .ToolBar(toolbar =>
-            {
+    .ToolBar(toolbar =>
+    {
 
-                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-            })
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+    })
 
-            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
-            .Scrollable(h => h.Height(500))
-            .Groupable()
-            .Sortable(sortable =>
-            {
-                sortable.SortMode(GridSortMode.SingleColumn);
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+    .Scrollable(h => h.Height(500))
+    .Groupable()
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
 
-            })
-            .Filterable()
-            .Events(e =>
-            {
-                e.DetailExpand("onDetailExpandUser");
-                e.DataBound("onDataBound");
-                e.Edit("onEdit");
+    })
+    .Filterable()
+    .Events(e =>
+    {
+        e.DetailExpand("onDetailExpandUser");
+        e.DataBound("onDataBound");
+        e.Edit("onEdit");
 
 
-            })
-            .Pageable(pageable => pageable
+    })
+    .Pageable(pageable => pageable
                             .Input(true)
                             .Numeric(false)
                             .Refresh(true)
