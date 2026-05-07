@@ -809,6 +809,10 @@
     <Compile Include="Migrations\202604200920033_LeavemodelChanges.Designer.cs">
       <DependentUpon>202604200920033_LeavemodelChanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605071408357_LeaveRequestAttachment.cs" />
+    <Compile Include="Migrations\202605071408357_LeaveRequestAttachment.Designer.cs">
+      <DependentUpon>202605071408357_LeaveRequestAttachment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1367,6 +1371,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202604200920033_LeavemodelChanges.resx">
       <DependentUpon>202604200920033_LeavemodelChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605071408357_LeaveRequestAttachment.resx">
+      <DependentUpon>202605071408357_LeaveRequestAttachment.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
