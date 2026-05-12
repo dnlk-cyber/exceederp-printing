@@ -24,7 +24,7 @@
         columns.Bound(c => c.LeaveRequestId).Title("#").Width(80);
         columns.Bound(c => c.IsApproved).Visible(false);
         columns.Bound(c => c.EmployeeCode).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
         columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
         columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
@@ -41,6 +41,8 @@
             columns.Bound(c => c.From).Width(100);
             columns.Bound(c => c.To).Width(100);
         }
+
+
         columns.Bound(c => c.LeaveBalance).Width(110);
         columns.Bound(c => c.LeaveDays).Width(100);
         columns.Bound(c => c.Status).Width(100);
@@ -56,31 +58,32 @@
 
 
 
-    })
-    .ToolBar(toolbar =>
-    {
-
-        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-    })
-
-    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
-    .Scrollable(h => h.Height(500))
-    .Groupable()
-    .Sortable(sortable =>
-    {
-        sortable.SortMode(GridSortMode.SingleColumn);
 
     })
-    .Filterable()
-    .Events(e =>
-    {
-        e.DetailExpand("onDetailExpandUser");
-        e.DataBound("onDataBound");
-        e.Edit("onEdit");
+            .ToolBar(toolbar =>
+            {
+
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            })
+
+            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+            .Scrollable(h => h.Height(500))
+            .Groupable()
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            .Events(e =>
+            {
+                e.DetailExpand("onDetailExpandUser");
+                e.DataBound("onDataBound");
+                e.Edit("onEdit");
 
 
-    })
-    .Pageable(pageable => pageable
+            })
+            .Pageable(pageable => pageable
                             .Input(true)
                             .Numeric(false)
                             .Refresh(true)
@@ -188,7 +191,7 @@
 
 
                 items.Add().Text("Leave Return").Content(
-            @<text>
+                 @<text>
                 @(Html.Kendo().Grid<LeaveReturn>()
                             .Name("LeaveReturngrid#=LeaveRequestId#")
                             .Columns(columns =>
@@ -203,8 +206,8 @@
                                     columns.Bound(c => c.From).Width(80);
                                     columns.Bound(c => c.To).Width(80);
                                 }
+
                                 columns.Bound(c => c.Amount).Width(90);
-                               // columns.Bound(c => c.Reason).Width(150);
 
                                 columns.Command(command =>
                                 {

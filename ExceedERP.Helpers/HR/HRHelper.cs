@@ -1296,15 +1296,22 @@ namespace ExceedERP.Helpers.HR
 
                 var employeeProbationSetting = db.EmployeeProbationSettings.FirstOrDefault();
 
+                //var probationSettings = db.ProbationsSettings.ToList();
 
                 var placements = db.Placements
-                    .Where(x => x.isCurrent)
+                    .Where(x => x.isCurrent).DistinctByField(e=>e.EmployeeId)
                     .ToList();
 
                 // Convert to dictionary for O(1) lookup
                 var placementDict = placements.ToDictionary(x => x.EmployeeId);
 
-               
+                //var probationDict = probationSettings
+                //        .Where(x => x.ResponsibilityLevel != null)
+                //        .GroupBy(x => x.ResponsibilityLevel)
+                //        .ToDictionary(
+                //            g => g.Key,
+                //            g => g.FirstOrDefault()?.ProbationDays ?? 0
+                //        );
 
                 // Use HashSet for fast lookup
                 HashSet<DateTime> holidays = new HashSet<DateTime>( db.Holidays.Select(h => h.Date));
@@ -1470,7 +1477,7 @@ namespace ExceedERP.Helpers.HR
 
                 // Determine probation days
                 int probationDays = 60; // default
-            
+              
 
                 // Load holidays once (HashSet for O(1) lookup)
                 var holidays = new HashSet<DateTime>(db.Holidays.Select(x => x.Date));
@@ -1495,6 +1502,11 @@ namespace ExceedERP.Helpers.HR
                 return workingDays >= probationDays;
             }
         }
+        public static decimal CalculateEmployeePension(decimal salary)
+        {
+            decimal pensionRate = 0.07m; // example 7%
+            return salary * pensionRate;
+        }
         public static bool GetDatePreference()
         {
             using (ExceedDbContext db = new ExceedDbContext())
@@ -1502,5 +1514,42 @@ namespace ExceedERP.Helpers.HR
                 return db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
             }
         }
+        public static OTSetting GetOTSetting()
+        {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                var otrates = db.Configurations
+                .Where(x => x.Reference == "OverTime")
+                .ToList();
+
+                return new OTSetting
+                {
+                    RestDayRate = GetValue(otrates, OverTimeAttribute.RESTDAY_RATE),
+                    NormalRate = GetValue(otrates, OverTimeAttribute.NORMAL_RATE),
+                    NightRate = GetValue(otrates, OverTimeAttribute.NIGHT_RATE),
+                    HolidayRate = GetValue(otrates, OverTimeAttribute.HOLIDAY_RATE),
+                    OTCoefficient = GetValue(otrates, OverTimeAttribute.COEFFICIENT)
+                };
+            }
+        }
+        private static decimal GetValue(List<Configuration> list, OverTimeAttribute attr)
+        {
+            return list
+                .FirstOrDefault(x => x.Attribute == attr.ToString())
+                ?.CurrentValue is string val
+                ? Convert.ToDecimal(val)
+                : 0;
+        }
+     
+
+    }
+
+    public struct OTSetting
+    {
+        public decimal RestDayRate { get; set; }
+        public decimal NormalRate { get; set; }
+        public decimal NightRate { get; set; }
+        public decimal HolidayRate { get; set; }
+        public decimal OTCoefficient { get; set; }
     }
 }
