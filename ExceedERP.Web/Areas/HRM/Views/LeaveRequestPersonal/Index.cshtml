@@ -60,36 +60,35 @@
 
 
     })
-            .ToolBar(toolbar =>
-            {
+    .ToolBar(toolbar =>
+    {
 
-                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-            })
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+    })
 
-            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
-            .Scrollable(h => h.Height(500))
-            .Groupable()
-            .Sortable(sortable =>
-            {
-                sortable.SortMode(GridSortMode.SingleColumn);
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+    .Scrollable(h => h.Height(500))
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
 
-            })
-            .Filterable()
-            .Events(e =>
-            {
-                e.DetailExpand("onDetailExpandUser");
-                e.DataBound("onDataBound");
-                e.Edit("onEdit");
+    })
+    .Filterable()
+    .Events(e =>
+    {
+        e.DetailExpand("onDetailExpandUser");
+        e.DataBound("onDataBound");
+        e.Edit("onEdit");
 
 
-            })
-            .Pageable(pageable => pageable
-                            .Input(true)
-                            .Numeric(false)
-                            .Refresh(true)
-                            .PageSizes(true)
-                            .ButtonCount(5))
-            .DataSource(dataSource => dataSource
+    })
+    .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+    .DataSource(dataSource => dataSource
                 .Ajax()
                 .Sort(sort => sort.Add("LeaveRequestId").Descending())
                 .Events(events =>

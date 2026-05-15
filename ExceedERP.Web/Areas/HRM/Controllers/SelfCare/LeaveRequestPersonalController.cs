@@ -1652,7 +1652,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 if (entitleCurrentYear != null)
                 {
                     exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, toDate, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalBalance);
-
+                    if (exactDeserve >= totalBalance)
+                        exactDeserve = totalBalance;
                 }
 
             }
@@ -1735,6 +1736,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
 
             exactDeserve = (int)exactDeserve + added;
+            if (exactDeserve >= totalbalance)
+                exactDeserve = totalbalance;
 
             return exactDeserve;
         }
@@ -2066,7 +2069,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
 
 
-                if (exactDeserve == 0 && totalBalance > 0)
+                if ((exactDeserve == 0 && totalBalance > 0)|| exactDeserve>=totalBalance)
                 {
                     exactDeserve = totalBalance;
                 }
@@ -2127,6 +2130,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     exactDeserve = totalBalance;
                 }
+                if (exactDeserve >= totalBalance)
+                    exactDeserve = totalBalance;
+
                 leaveDays = HrHelper.GetLeaveDays(fromDate, toDate, fiscalYear.GlFiscalYearId, LeaveDay.Full_Day, LeaveType.ANNUAL, empId);
                
                 if (morningOrAfternoon == MorningOrAfternoon.Afternoon)
@@ -2196,6 +2202,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     exactDeserve = totalBalance;
                 }
+                if (exactDeserve >= totalBalance)
+                    exactDeserve = totalBalance;
 
             }
            
