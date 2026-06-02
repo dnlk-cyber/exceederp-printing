@@ -291,28 +291,29 @@
                                                                                            .Name("ChangeOrder#=JobId#")
                                                                                        .Columns(columns =>
                                                                                        {
-                                                                                                                                                           columns.Bound(c => c.Quantity);
-                                                                                                                                                           columns.Bound(c => c.Price).Title("Unit Price");
-                                                                                                                                                           columns.Bound(c => c.Total);
-                                                                                                                                                           columns.Bound(c => c.Size);
-                                                                                                                                                           columns.Bound(c => c.Reason);
-                                                                                                                                                           columns.Template(c => @Html.ActionLink("ChangeOfOrder", "ReportProductionFollowUp", new { id = c.ChangeOrderId, }));
-                                                                                                                                                           columns.Bound(p => p.ChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "ReportProductionFollowUp", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
-                                                                                                                                                           columns.Command(command =>
-{
-        //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
-}).Width(100);
-                                                                                                                                                       })
+                                                                                           columns.Bound(c => c.Quantity);
+                                                                                           columns.Bound(c => c.Price).Title("Unit Price");
+                                                                                           columns.Bound(c => c.Total);
+                                                                                           columns.Bound(c => c.Size);
+                                                                                           columns.Bound(c => c.Reason);
+                                                                                           columns.Template(c => @Html.ActionLink("ChangeOfOrder", "ReportProductionFollowUp", new { id = c.ChangeOrderId, }));
+                                                                                           columns.Bound(p => p.ChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "ReportProductionFollowUp", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
+                                                                                           columns.Command(command =>
+                                                                                           {
+                                                                                               //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
+                                                                                           }).Width(100);
+                                                                                       })
 .ToolBar(toolbar =>
 {
-                                                    })
+})
 .NoRecords("No Data Registered")
 .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
 {
 
-                                                            window.Scrollable(false);
-                                                            window.Title("Change Of Order");
-                                                        }))
+    window.Scrollable(false);
+    window.Title("Change Of Order");
+
+}))
 .Pageable(pageable => pageable
 .Refresh(true)
 )
@@ -324,16 +325,16 @@
 //  .Sort(s => s.Add(x => x.ProformaId).Descending())
 .Events(events =>
 {
-                                                                    events.Error("error_handler(\"ChangeOrder#=JobId#\")");
-                                                                    events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
-                                                                    events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
-                                                                }
+    events.Error("error_handler(\"ChangeOrder#=JobId#\")");
+    events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
+    events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
+}
 )
 
 .Model(model =>
 {
-                                                                    model.Id(p => p.ChangeOrderId);
-                                                                })
+    model.Id(p => p.ChangeOrderId);
+})
 
 .Read(read => read.Action("ChangeOrders_Read", "ChangeOfOrders", new { id = "#=JobId#" }))
 
