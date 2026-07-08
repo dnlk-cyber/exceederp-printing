@@ -97,9 +97,6 @@
                                 .HtmlAttributes(new { type = "button", @class = "k-primary" })
                                 .Events(e => e.Click("Refresh"))
                                 .Content(Resources.Generate_Leave_Entitlement))
-
-
-
                     }
                       
 
@@ -113,18 +110,15 @@
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-
                     @if (HttpContext.Current.User.IsInRole("LeaveExpire"))
-                        {
+                     {
                         @(Html.Kendo().Button()
                                 .Name("btnExpire")
                                 .HtmlAttributes(new { type = "button", @class = "k-primary" })
                                     .Events(e => e.Click("Expire"))
                                     .Content("Expire Leave"))
 
-
-
-                        }
+                    }
                        
 
 
