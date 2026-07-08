@@ -90,7 +90,8 @@
                             })
                             .ValuePrimitive(true)
                     )
-                    @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+                    @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin")
+                        ||HttpContext.Current.User.IsInRole("HR_Admin"))
                                 {
                         @(Html.Kendo().Button()
                                 .Name("btnRefresh")
@@ -99,8 +100,6 @@
                                 .Content(Resources.Generate_Leave_Entitlement))
                     }
                       
-
-
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -110,7 +109,8 @@
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    @if (HttpContext.Current.User.IsInRole("LeaveExpire"))
+                    @if (HttpContext.Current.User.IsInRole("LeaveExpire")
+                        ||HttpContext.Current.User.IsInRole("HR_Admin"))
                      {
                         @(Html.Kendo().Button()
                                 .Name("btnExpire")
@@ -123,7 +123,8 @@
 
 
 
-                    @if (HttpContext.Current.User.IsInRole("LeaveExpireReverse"))
+                    @if (HttpContext.Current.User.IsInRole("LeaveExpireReverse")
+                        || HttpContext.Current.User.IsInRole("HR_Admin"))
                         {
                         @(Html.Kendo().Button()
                             .Name("btnReverseExpire")
@@ -170,8 +171,6 @@
         events.Error("error_handler(\"LeaveEntitlegrid\")");
         events.RequestStart("onRequestStart(\"LeaveEntitlegrid\")");
         events.RequestEnd("onRequestEnd(\"LeaveEntitlegrid\")");
-
-
     })
     .Model(model =>
     {
