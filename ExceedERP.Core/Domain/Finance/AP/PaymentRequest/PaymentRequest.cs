@@ -16,6 +16,13 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public bool IsNewSupplier { get; set; }
         [Display(Name = "Supplier Name")]
         public string Supplier { get; set; }
+
+        //
+        public string Source { get; set; }
+
+        //
+        public string SourceId { get; set; }
+
         public int? Purchaser { get; set; }
         [Required]
         public string ReasonOfPayment { get; set; }

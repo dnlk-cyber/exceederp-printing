@@ -22,11 +22,11 @@
           })
           .Editable(editable => editable.Mode(GridEditMode.InLine))
             .Scrollable(h => h.Height(500))
-                 .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
+                .Groupable()
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
               .Filterable()
                  .Pageable(pageable => pageable
                                             .Input(true)

@@ -16,30 +16,42 @@
           tabstrip.Add().Text(Resources.NavigatorLeave_LeaveSetting)
          .Content(@<text>
               @leaveSetting()
+
             </text>);
          tabstrip.Add().Text(Resources.Rpt_LeaveType + " "+ Resources.Settings)
          .Content(@<text>
               @leaveTypeSetting()
-            </text>);
-            tabstrip.Add().Text(Resources.SickLeaveSetting)
-            .Selected(true)
-            .Content(@<text>
-            <Legend>@Resources.SickLeaveSetting</Legend>
-             @sickLeaveSetting()
-            </text>);
 
-            tabstrip.Add().Text(Resources.SickLeaveSetting+" "+Resources.Rpt_Salary)
-             .Content(@<text>
-                  @sickLeaveWithSalary()
-                </text>);
-            tabstrip.Add().Text(Resources.NavigatorLeave_LeavePayable +" "+Resources.Settings+"|| No of working days")
-             .Content(@<text>
-                  @leavePayableSetting()
-                </text>);
-            tabstrip.Add().Text(Resources.NavigatorLeave_LeaveEntitlement +" "+Resources.Settings)
-             .Content(@<text>
-              @leaveEntitlementSetting()
             </text>);
+        tabstrip.Add().Text(Resources.SickLeaveSetting)
+        .Selected(true)
+        .Content(@<text>
+        <Legend>@Resources.SickLeaveSetting</Legend>
+         @sickLeaveSetting()
+        </text>);
+
+        tabstrip.Add().Text(Resources.SickLeaveSetting+" "+Resources.Rpt_Salary)
+         .Content(@<text>
+              @sickLeaveWithSalary()
+
+            </text>);
+        
+        
+        tabstrip.Add().Text(Resources.NavigatorLeave_LeavePayable +" "+Resources.Settings+"|| No of working days")
+         .Content(@<text>
+              @leavePayableSetting()
+
+            </text>);
+        tabstrip.Add().Text(Resources.NavigatorLeave_LeaveEntitlement +" "+Resources.Settings)
+         .Content(@<text>
+              @leaveEntitlementSetting()
+
+            </text>);
+     @*tabstrip.Add().Text("Company Leave Work-flow Setting")
+         .Content(@<text>
+              @companyLeaveWorkflowSetting()
+
+            </text>);*@
      })
 )
 
@@ -236,6 +248,72 @@
     
  }
 
+@*@helper companyLeaveWorkflowSetting()
+{ 
+    
+     @(Html.Kendo().Grid<CompanyLeaveWorkflowSetting>()
+          .Name("CompanyLeaveWorkflowSetting_grid")
+          .Columns(columns =>
+          {
+
+              columns.Bound(c => c.CompanyLeaveWorkflowSettingId).Title("#").Width(100);
+              columns.Bound(c => c.UseProjectManagerApproval).ClientTemplate(
+                     "<input type='checkbox' disabled = 'true' value='#=UseProjectManagerApproval#' " +
+                     "# if (UseProjectManagerApproval) { #" +
+                     "checked='checked'" +
+                     "# } #" +
+                     "/>").Width(200);
+              columns.Bound(c => c.Remark).Width(160);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+
+              })/*.Width(200)*/;
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(550))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort=>sort.Add(x=>x.CompanyLeaveWorkflowSettingId).Descending())
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"CompanyLeaveWorkflowSetting_grid\")");
+                  events.RequestStart("onRequestStart(\"CompanyLeaveWorkflowSetting_grid\")");
+                  events.RequestEnd("onRequestEnd(\"CompanyLeaveWorkflowSetting_grid\")");
+
+              })
+              .Model(model => {
+                  model.Id(p => p.CompanyLeaveWorkflowSettingId);
+                  model.Field(p => p.CompanyLeaveWorkflowSettingId).Editable(false);
+              })
+              .Read(read => read.Action("CompanyLeaveWorkflowSettings_Read", "CompanyLeaveWorkflowSetting").Data("sendForgery"))
+              .Create(create => create.Action("CompanyLeaveWorkflowSettings_Create", "CompanyLeaveWorkflowSetting").Data("sendForgery"))
+              .Update(update => update.Action("CompanyLeaveWorkflowSettings_Update", "CompanyLeaveWorkflowSetting").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("CompanyLeaveWorkflowSettings_Destroy", "CompanyLeaveWorkflowSetting").Data("sendForgery"))
+          )
+)
+
+    
+ }*@
+
 @helper leaveSetting()
 { 
     <Legend>@Resources.NavigatorLeave_LeaveSetting</Legend>
@@ -244,16 +322,16 @@
           .Columns(columns =>
           {
 
-              columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"], "Text", "Text").EditorTemplateName("Setting");
-              columns.Bound(c => c.CurrentValue);
+              columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"], "Text", "Text").EditorTemplateName("Setting").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              columns.Bound(c => c.CurrentValue).Width(150);
               // columns.Bound(c => c.PreviousValue);
               // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYeaer"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
-              columns.Bound(c => c.Remark);
-              columns.Command(command => 
+              columns.Bound(c => c.Remark).Width(150);
+              columns.Command(command =>
               {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                   command.Destroy().Text(Resources.ActionButton_Cancel);
-              }).Width(200);
+              })/*.Width(200)*/;
           })
           .ToolBar(toolbar =>
           {
@@ -300,7 +378,7 @@
           .Name("LeaveNewAwajStartYearGrid")
           .Columns(columns =>
           {
-              columns.ForeignKey(c => c.GlFisicalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
+              columns.ForeignKey(c => c.GlFisicalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           
 
               columns.Command(command =>
@@ -352,7 +430,7 @@
           .Name("LeaveEntitleStartingDateGrid")
           .Columns(columns =>
           {
-              columns.Bound(c => c.Start).EditorTemplateName("Enum");
+              columns.Bound(c => c.Start).EditorTemplateName("Enum").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
               columns.Bound(c => c.Remark);
 
               columns.Command(command =>
@@ -409,7 +487,7 @@
               {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                   command.Destroy().Text(Resources.ActionButton_Cancel);
-              }).Width(200);
+              })/*.Width(200)*/;
           })
           .ToolBar(toolbar =>
           {
@@ -452,7 +530,7 @@
           .Name("LeaveEntitlementSetting_grid")
           .Columns(columns =>
           {
-              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear").Width(200);
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
               columns.Bound(c => c.IsGenerated).ClientTemplate(
                     "<input type='checkbox' disabled = 'true' value='#=IsGenerated#' " +
                     "# if (IsGenerated) { #" +
@@ -465,6 +543,9 @@
                      "checked='checked'" +
                      "# } #" +
                      "/>").Width(140);
+
+              columns.Bound(c => c.LeaveIncrementAmount).Width(140);
+
               columns.Command(command =>
               {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -522,11 +603,14 @@
 
     //}
 
-    function sync_handler(e) {
+    function sync_handler(e)
+    {
         this.read();
 
     }
-    document.addEventListener('DOMContentLoaded', function () {
+
+    document.addEventListener('DOMContentLoaded', function ()
+    {
 
          $.ajax({
                 url: '@Url.Action("CheckNewAwajDataIfExists", "LeaveSetting")',

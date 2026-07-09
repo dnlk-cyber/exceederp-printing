@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     public class LeavePayableSettingController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
-        // GET: HRM/SickLeaveSetting
+        // GET: HRM/LeavePayableSetting
         public ActionResult Index()
         {
             return View();

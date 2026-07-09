@@ -48,8 +48,11 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
 
         [Display(Name = "Is Regenerating Allowed")]
         public bool IsRegeneratingAllowed { get; set; } = false;
+        [Display(Name = "Increment Amount")]
+        public decimal LeaveIncrementAmount { get; set; }
 
         public string Remark { get; set; }
+
     }
 
 

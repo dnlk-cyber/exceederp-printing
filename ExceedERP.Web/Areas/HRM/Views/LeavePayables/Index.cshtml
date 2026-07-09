@@ -28,12 +28,12 @@
       })
      .Editable(editable => editable.Mode(GridEditMode.InLine))
      .Scrollable(h => h.Height(550))
-    //.Sortable(sortable =>
-    //{
-    //   sortable.SortMode(GridSortMode.SingleColumn);
-
-
-    //})
+   
+      .Events(ev =>
+      {
+          ev.DataBound("onDataBoundMaster");
+          ev.DetailExpand("onDetailExpandUser");
+      })
     .Filterable()
     .Pageable(pageable => pageable
                             .Input(true)
@@ -42,7 +42,7 @@
                             .PageSizes(true)
                             .ButtonCount(5))
     .DataSource(dataSource => dataSource
-        .Ajax()                    
+        .Ajax()
         .Sort(sort => sort.Add(x => x.LeavePayableId).Descending())
         .Events(events =>
         {
@@ -96,6 +96,7 @@
 
                             </div>
                             <div class="col-sm-3" style="padding-right:5px">
+
                                 <a onclick='return generateLeavePayable("#=LeavePayableId#")' href=' \#' title="Generate"><i class="fa fa-wrench fa-2x"></i>Generate</a>
 
                             </div>
@@ -129,19 +130,26 @@
 
                                 columns.Command(command =>
                                 {
+
                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                                    command.Custom("cmd-pay").Click("sendLeavePayableForPayment")
+                                                    .Text("pay")
+                                                    .IconClass("fa fa-money fa-2x")
+                                                    .HtmlAttributes(new { @class = "btn btn-primary", title = "Pay" });
+
                                     command.Destroy().Text(Resources.ActionButton_Cancel);
-                                }).Width(400);
+
+                                }).Width(300);
 
 
                             })
-                            //.ToolBar(toolbar =>
-                            //{
-                            //    // toolbar.Custom().Action("SendForApproval", "LeaveReturn").Text(Resources.HR_Send_For_Approval);
-                            //    toolbar.Custom().Action("GenerateLeavePayable", "LeavePayables", new { id = "#=LeavePayableId#" }).Text("Generate");
-                            //})
 
 
+                             .Events(ev =>
+                             {
+                                 ev.DataBound("onDataBound");
+                             })
                             .Editable(editable => editable.Mode(GridEditMode.InLine))
                             .Scrollable(h => h.Height(500))
                             .Pageable(pageable => pageable
@@ -156,17 +164,18 @@
                                 .Sort(sort=>sort.Add(x=>x.LeavePayableDetailId).Descending())
                                 .Events(events =>
                                 {
+
                                     events.Error("error_handler(\"LeavePayableDetail_grid#=LeavePayableId#\")");
                                     events.RequestStart("onRequestStart(\"LeavePayableDetail_grid#=LeavePayableId#\")");
                                     events.RequestEnd("onRequestEnd(\"LeavePayableDetail_grid#=LeavePayableId#\")");
 
-
-
                                 })
                                 .Model(model =>
                                 {
+
+
                                     model.Id(p => p.LeavePayableDetailId);
-                                    //model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+
                                     model.Field(p => p.EmployeeId).Editable(false);
                                     model.Field(p => p.EmployeeCode).Editable(false);
                                     model.Field(p => p.EmployeeId).Editable(false);
@@ -174,7 +183,10 @@
                                     model.Field(p => p.BusinessUnitId).Editable(false);
                                     model.Field(p => p.PayableDays).Editable(false);
                                     model.Field(p => p.OrgStructureId).Editable(false);
+
                                     model.Field(p => p.Balance).Editable(false);
+
+
                                 })
                                 .Read(read => read.Action("LeavePayableDetails_Read", "LeavePayableDetails", new { leavPId = "#=LeavePayableId#" }).Data("sendForgery"))
                                 .Create(create => create.Action("LeavePayableDetails_Create", "LeavePayableDetails", new { lPId = "#=LeavePayableId#" }).Data("sendForgery"))
@@ -188,10 +200,20 @@
 </script>
 
 <script>
+    var masterId = 0;
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#LeavePayable_grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.SeverancePayableId;
+
+
+    }
+
     function generateLeavePayable(id) {
-        //var employee = $("#EmployeeId").data("kendoDropDownList").value();
         var employee = $("#EmployeeId").val();
-        //var leaveDate = $("#leaveDate").val();
         $('#loading-image').show();
         $.ajax({
             type: "POST",
@@ -224,33 +246,101 @@
 </script>
 
 <script>
-    //document.getElementById("employeeFilter").addEventListener("input", function () {
-    //    // Get the filter input value
-    //    var filterValue = this.value.toLowerCase();
+   
+   
 
-    //    // Get the dropdown element
-    //    var dropdown = document.getElementById("EmployeeId");
+    function onDataBoundMaster(e) {
+        var rows = e.sender.tbody.children();
 
-    //    // Get all options in the dropdown
-    //    var options = dropdown.getElementsByTagName("option");
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsAnySentForPayment)
+            {
 
-    //    // Iterate over each option to apply the filter
-    //    for (var i = 0; i < options.length; i++) {
-    //        var option = options[i];
-    //        var text = option.textContent || option.innerText;
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-close").hide();
+                row.find(".k-grid-cmd-pay").hide();
+                row.css("background-color", "gray");
+            }
+           
 
-    //        // Show the option if it matches the filter or is the default option
-    //        if (option.value === "" || text.toLowerCase().includes(filterValue)) {
-    //            option.style.display = ""; // Show option
-    //        } else {
-    //            option.style.display = "none"; // Hide option
-    //        }
-    //    }
 
-    //    // Reset the dropdown selection if the current selection is filtered out
-    //    if (!dropdown.value || !options[dropdown.selectedIndex].style.display) {
-    //        dropdown.selectedIndex = 0; // Set to the default option
-    //    }
-    //});
+        }
+
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForPayment) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-close").hide();
+                row.find(".k-grid-cmd-pay").hide();
+                row.css("background-color", "gray");
+            }
+            else {
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-cmd-pay").show();
+            }
+
+
+        }
+
+    }
+
+    function sendLeavePayableForPayment(e)
+    {
+
+        e.preventDefault();
+
+        //var grid = $("#LeavePayableDetail_grid" + masterId).data("kendoGrid"); // ensure correct ID
+        //var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.LeavePayableDetailId;
+
+        if (!id) {
+            alert("Invalid Leave Payable ID.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to send this for payment?")) {
+            return;
+        }
+
+        $('#loading-image').show();
+
+        var button = $(e.currentTarget);
+        button.prop("disabled", true); // prevent double click
+
+        $.ajax({
+            url: '@Url.Action("SendLeavePayableForPayment", "LeavePayables")',
+            type: 'POST',
+            data: { id: id },
+            cache: false,
+
+            success: function (result) {
+                    alert(result.Message );
+                    grid.dataSource.read(); // refresh grid
+            
+            },
+
+            error: function (xhr) {
+                alert("Error: " + (xhr.responseText || "Something went wrong."));
+            },
+
+            complete: function () {
+                $('#loading-image').hide();
+                button.prop("disabled", false); // re-enable
+            }
+        });
+
+    }
 </script>
 

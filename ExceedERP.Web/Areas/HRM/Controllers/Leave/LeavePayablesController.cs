@@ -14,6 +14,8 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
+using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
+using XAPI;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -21,19 +23,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         HrmConstants.HRLeaveUser)]
     public class LeavePayablesController : BaseController
     {
-        ExceedDbContext db = new ExceedDbContext();
-        // GET: HRM/SickLeaveSetting
-        HRMInputs inputs = new HRMInputs();
+        private ExceedDbContext db = new ExceedDbContext();
+
+        // GET: HRM/LeavePayables
 
         public ActionResult Index()
         {
-            GetPeriod();
+            //GetPeriod();
             PopulateViewData();
-            var branches = db.Branch;
-            ViewData["branches"] = branches;
-            var workunits = db.MainCompanyStructures.ToList();
-            ViewData["workunits"] = workunits;
-            ViewData["businessUnits"] = db.BusinessUnits;
+           
 
             return View();
         }
@@ -42,11 +40,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var lists = db.Person_Employee.Select(x=>new 
             {
                             EmployeeId = x.EmployeeId,
-                            FullName =x.EmployeeCode+"-" +x.FirstName + " " + x.MiddleName + " " + x.LastName,
+                            FullName = x.EmployeeCode+"-" +x.FirstName + " " + x.MiddleName + " " + x.LastName,
                             FullNameEnglish = x.EmployeeCode + "-"+x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish,
+
                         }).ToList();
             ViewData["EmployeeList"] = lists;
-            
+
+            var branches = db.Branch;
+            ViewData["branches"] = branches;
+            var workunits = db.MainCompanyStructures.ToList();
+            ViewData["workunits"] = workunits;
+            ViewData["businessUnits"] = db.BusinessUnits;
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+            var periodList = db.GLFiscalYears;
+            ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
 
         }
         public JsonResult GetPeriod()
@@ -63,6 +70,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 LeavePayableId = leavePayable.LeavePayableId,
                 GlFiscalYearId = leavePayable.GlFiscalYearId,
+                IsAnySentForPayment = db.LeavePayableDetails.Any(x=>x.LeavePayableId==leavePayable.LeavePayableId&&x.IsSendForPayment),
                 Description = leavePayable.Description,
                 DateCreated = leavePayable.DateCreated,
                 CreatedBy = leavePayable.CreatedBy,
@@ -92,7 +100,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 #region operation log
 
-                        UserHelper.OperationLog(Request.UserHostAddress, "Leave payable ", "Success", User.Identity.Name, "Leave payable  is Created By  " + User.Identity.Name,Modules.HRM);
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Leave payable ", "Success", User.Identity.Name, "Leave payable  is Created By  " + User.Identity.Name,Modules.HRM);
                 
                 #endregion
             }
@@ -129,6 +138,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavePayables_Destroy([DataSourceRequest]DataSourceRequest request, LeavePayable leave)
         {
+            if (db.LeavePayableDetails.Any(x => x.LeavePayableId == leave.LeavePayableId&&x.IsSendForPayment))
+            {
+                ModelState.AddModelError("", "This record cannot be deleted because payment requests have already been generated for its employees.");
+                return Json(new[] { leave }.ToDataSourceResult(request, ModelState));
+            }
             if (ModelState.IsValid)
             {
                 var entity = GetMappedObject(leave);
@@ -162,6 +176,213 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             };
             return entity;
         }
+
+        public JsonResult SendLeavePayableForPayment(int id)
+        {
+            var payableDetail = db.LeavePayableDetails.Find(id);
+
+            if (payableDetail == null)
+                return Json(new { Message = "Record not found", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+
+            if (payableDetail.IsSendForPayment)
+                return Json(new { Message = "Already sent for payment.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+
+            var now = DateTime.Now;
+            var user = User.Identity.Name;
+
+            // Create Payment Request
+            var paymentRequest = new PaymentRequest
+            {
+                SupplierId = "0",
+                IsNewSupplier = false,
+                Supplier = " ",
+                Purchaser = 0,
+                ReasonOfPayment = "Payable Leave Payment",
+                RequestDate = now.Date,
+                RequestDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(now.Day, now.Month, now.Year),
+
+                InvoiceNo = "0",
+                PurchaseRequestNo = "0",
+                PONo = "0",
+                GRN = "0",
+
+                BranchId = payableDetail.BranchId,
+                BusinessUnitId = payableDetail.BusinessUnitId ?? 0,
+                OrgStuructureId = payableDetail.OrgStructureId,
+                EmployeeId = payableDetail.EmployeeId,
+
+                Paid = false,
+
+                FromBranchId = payableDetail.BranchId,
+                FromBusinessUnitId = payableDetail.BusinessUnitId ?? 0,
+
+                CreatedAtBranchId = payableDetail.BranchId,
+                CreatedAtBusinessUnitId = payableDetail.BusinessUnitId ?? 0,
+                CreatedAtOrgStructureId = payableDetail.OrgStructureId,
+
+                CreatedBy = user,
+                DateCreated = now,
+                ModifiedBy = user,
+                LastModified = now,
+
+                IsDepartmentOnlineApproved = true,
+                DepartmentOnlineApprovedBy = user,
+                DepartmentOnlineApprovedTime = now
+            };
+
+            db.PaymentRequests.Add(paymentRequest);
+            //db.SaveChanges();
+
+            // Get Tax Setting
+            //var taxSetting = db.ExpenseAndTaxSettings.FirstOrDefault();
+            var tax = db.GLTaxRates.FirstOrDefault();
+
+            // Create Payment Line (single logic)
+            var paymentLine = new PaymentRequestLine
+            {
+                PaymentRequest = paymentRequest, // use navigation instead of ID
+                Amount = payableDetail.NetPayment,
+                TaxAmount =  payableDetail?.BasicSalaryIncomeTax?? 0,
+                TotalAmount = payableDetail.NetPayment,
+
+                ItemName = tax?.TaxName.ToString() ?? "0",
+                GLTaxRateID = tax?.GLTaxRateID ?? 0,
+
+                Description = "Payable Leave Payment",
+                Remark = "Payable Leave Payment",
+
+                CreatedBy = user,
+                DateCreated = now,
+                ModifiedBy = user,
+                LastModified = now
+            };
+
+            db.PaymentRequestLines.Add(paymentLine);
+
+            // Update payable detail
+            payableDetail.IsSendForPayment = true;
+            payableDetail.SendForPaymentBy = user;
+            payableDetail.SendForPaymentTime = now;
+            payableDetail.PaymentRequestId = paymentRequest.PaymentRequestId;
+
+            db.Entry(payableDetail).State = EntityState.Modified;
+
+            // Single SaveChanges (important optimization)
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Message = "Successfully sent for payment request.",
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult PayLeavePayble(int id)
+        {
+            var payableDetail = db.LeavePayableDetails.Find(id);
+            if (payableDetail == null)
+            {
+                return Json(new { Message = "Record tot found", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+            }
+            if (payableDetail.IsSendForPayment)
+            {
+                return Json(new { Message = "Already sent for Payment .", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var requestEntity = new PaymentRequest
+            {
+                SupplierId = "0",
+                IsNewSupplier = false,
+                Supplier = " ",
+                Purchaser = 0,
+                ReasonOfPayment = "Payable Leave Payment ",
+                Source = "Payable Leave Payment ",
+                SourceId = payableDetail.LeavePayableId.ToString(),
+                RequestDate = DateTime.Now.Date,
+                RequestDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
+                InvoiceNo = "0",
+                PurchaseRequestNo = "0",
+                PONo = "0",
+                GRN = "0",
+                BranchId = payableDetail.BranchId,
+                BusinessUnitId = payableDetail.BusinessUnitId ?? 0,
+                OrgStuructureId = payableDetail.OrgStructureId,
+                EmployeeId = payableDetail.EmployeeId,
+                Paid = false,
+                FromBranchId = payableDetail.BranchId,
+                FromBusinessUnitId = payableDetail.BusinessUnitId ?? 0,
+                CreatedAtBranchId = payableDetail.BranchId,
+                CreatedAtBusinessUnitId = payableDetail.BusinessUnitId ?? 0,
+                CreatedAtOrgStructureId = payableDetail.OrgStructureId,
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Now.Date,
+                ModifiedBy = User.Identity.Name,
+                LastModified = DateTime.Now.Date,
+                IsDepartmentOnlineApproved = true,
+                DepartmentOnlineApprovedBy = User.Identity.Name,
+                DepartmentOnlineApprovedTime = DateTime.Now,
+
+
+
+            };
+            db.PaymentRequests.Add(requestEntity);
+            db.SaveChanges();
+            //var glTaxRate = db.ExpenseAndTaxSettings.FirstOrDefault();
+            var gLTax = db.GLTaxRates.FirstOrDefault();
+            if (gLTax != null)
+            {
+                var RequestEntityDetail = new PaymentRequestLine
+                {
+                    PaymentRequestId = requestEntity.PaymentRequestId,
+                    Amount = payableDetail.NetPayment,
+                    TaxAmount = payableDetail.BasicSalaryIncomeTax,
+                    TotalAmount = payableDetail.NetPayment,
+                    ItemName = gLTax.TaxName.ToString(),
+                    GLTaxRateID = gLTax?.GLTaxRateID??0,
+                    Description = "Payable leave Pay Payment",
+                    Remark = "Payable Leave Payment",
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now.Date,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Now.Date,
+
+                };
+                db.PaymentRequestLines.Add(RequestEntityDetail);
+                db.SaveChanges();
+            }
+            else
+            {
+                var RequestEntityDetail = new PaymentRequestLine
+                {
+                    PaymentRequestId = requestEntity.PaymentRequestId,
+                    Amount = payableDetail.NetPayment,
+                    TaxAmount = 0,
+                    TotalAmount = payableDetail.NetPayment,
+                    ItemName = "0",
+                    GLTaxRateID = 0,
+                    Description = "Payable Leave Payment",
+                    Remark = "Description",
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now.Date,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Now.Date,
+
+                };
+                db.PaymentRequestLines.Add(RequestEntityDetail);
+                db.SaveChanges();
+            }
+            payableDetail.IsSendForPayment = true;
+            payableDetail.SendForPaymentBy = User.Identity.Name;
+            payableDetail.SendForPaymentTime = DateTime.Now.Date;
+            payableDetail.PaymentRequestId = requestEntity.PaymentRequestId;
+            db.Entry(payableDetail).State = EntityState.Modified;
+            db.SaveChanges();
+            return Json(new { Message = "Successfully Sent for payment Request.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+
+
+        }
+
         public ActionResult GenerateLeavePayable(int id,string employee=null)
         {
             var leavePayable = db.LeavePayables.Find(id);
@@ -180,21 +401,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 return Json(new { Message = "There Is no setted Leave PayableS ettings, set it first.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
             }
-            if (leavePayableSetting.CurrentValue == 0)
-            {
-                return Json(new { Message = "There Is no Fiscal Year Record, check it first.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
-            }
+           
             var glFiscalYears = db.GLFiscalYears
                 .Where(x => x.DateTo < fiscalYear.DateTo)
-                .OrderByDescending(x => x.DateTo)
-                .Take(2)
-                .Select(x => x.GlFiscalYearId)
-                .ToArray();
+                .OrderByDescending(x => x.DateTo).Take(2).Select(x => x.GlFiscalYearId).ToArray();
 
             var leaveEntitlements = db.LeavesEntitle
                 .Where(x => !x.IsExpired && glFiscalYears.Contains(x.GlFiscalYearId))
                 .ToList();
-            if(!string.IsNullOrEmpty(employee)&&int.TryParse(employee,out int employeeId))
+            if(!string.IsNullOrEmpty(employee) && int.TryParse(employee,out int employeeId))
             {
                  leaveEntitlements = db.LeavesEntitle
                        .Where(x => !x.IsExpired &&x.EmployeeId==employeeId
@@ -206,8 +421,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 var fiscalYear1 = glFiscalYears[0];
                 var fiscalYear2 = glFiscalYears[1];
-                var leavesEntitle1 = db.LeavesEntitle
-                    .Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalYear1);
+                var leavesEntitle1 = db.LeavesEntitle.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalYear1);
                 var balance1 = leavesEntitle1.Any()?
                     leavesEntitle1.Sum(x => x.Balance):0;
                 var payableDays1 = leavesEntitle1.Any() ?
@@ -256,8 +470,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         Balance = total,
                         AnnualLeavePerMonth = annualLeavePerMonth,
                         AgregateTaxableAmount = aggregateTaxableAmount,
-                        AgregateIncomeTax = CalculateTax(aggregateTaxableAmount),
-                        BasicSalaryIncomeTax = CalculateBasicSalaryIncomeTax(placement.Salary),
+                        AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount),
+                        BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary) /*CalculateBasicSalaryIncomeTax(placement.Salary)*/,
                         Remark = "Generated Leave Payable",
                         DateCreated = leavePayable.DateCreated,
                         CreatedBy = leavePayable.CreatedBy,
@@ -277,8 +491,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     leavePayableDetail.BasicSalary = placement.Salary;
                     leavePayableDetail.AnnualLeavePerMonth = annualLeavePerMonth;
                     leavePayableDetail.AgregateTaxableAmount = aggregateTaxableAmount;
-                    leavePayableDetail.AgregateIncomeTax = CalculateTax(aggregateTaxableAmount);
-                    leavePayableDetail.BasicSalaryIncomeTax = CalculateBasicSalaryIncomeTax(placement.Salary);
+                    leavePayableDetail.AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount);/* CalculateTax(aggregateTaxableAmount);*/
+                    leavePayableDetail.BasicSalaryIncomeTax =(decimal) IncomeTax.GetIncomeTax((float)placement.Salary);
                     leavePayableDetail.Remark = "Generated Leave Payable";
                     leavePayableDetail.LastModified = DateTime.Now;
                     leavePayableDetail.ModifiedBy = User.Identity.Name;
@@ -521,15 +735,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 Balance = total,
                 AnnualLeavePerMonth = total / 12,
                 AgregateTaxableAmount = agregateTaxableAmount,
-                AgregateIncomeTax = CalculateTax(agregateTaxableAmount),
-                BasicSalaryIncomeTax = CalculateBasicSalaryIncomeTax(placement.Salary),
+                AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)agregateTaxableAmount),// CalculateTax(agregateTaxableAmount),
+                BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary), //CalculateBasicSalaryIncomeTax(placement.Salary),
                 Remark = "Generated Leave Payable",
                 DateCreated = DateTime.Now,
                 CreatedBy = User.Identity.Name,
                 LastModified = DateTime.Now,
                 ModifiedBy = User.Identity.Name,
-                TaxDifference = (agregateTaxableAmount - CalculateTax(agregateTaxableAmount)) * 12,
-                NetPayment = total - ((agregateTaxableAmount - CalculateTax(agregateTaxableAmount)) * 12)
+                TaxDifference = (agregateTaxableAmount -((decimal)IncomeTax.GetIncomeTax((float)agregateTaxableAmount)) ) * 12,
+                NetPayment = total - ((agregateTaxableAmount -((decimal)IncomeTax.GetIncomeTax((float)agregateTaxableAmount))) * 12)
             };
         }
 
@@ -540,47 +754,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             detail.PayableDays = payableDays1 + payableDays2;
             detail.Balance = total;
             detail.AgregateTaxableAmount = agregateTaxableAmount;
-            detail.AgregateIncomeTax = CalculateTax(agregateTaxableAmount);
+            detail.AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)agregateTaxableAmount);
             detail.NetPayment = total - ((agregateTaxableAmount - detail.AgregateIncomeTax) * 12);
             detail.LastModified = DateTime.Now;
             detail.ModifiedBy = User.Identity.Name;
             db.Entry(detail).State = EntityState.Modified;
         }
         #endregion
-        public decimal CalculateTax(decimal income)
-        {
-            if (income <= 600)
-                return income * 0;
-            else if (income <= 1650)
-                return income * 0.1m - 60;
-            else if (income <= 3200)
-                return income * 0.15m - 142.5m;
-            else if (income <= 5250)
-                return income * 0.2m - 302.5m;
-            else if (income <= 7800)
-                return income * 0.25m - 565;
-            else if (income <= 10900)
-                return income * 0.3m - 955;
-            else // if income > 10900
-                return income * 0.35m - 1500; // Adjust as needed for income > 10900
-        }
-        public decimal CalculateBasicSalaryIncomeTax(decimal income)
-        {
-            if (income <= 600)
-                return income * 0;
-            else if (income <= 1650)
-                return income * 0.1m - 60;
-            else if (income <= 3200)
-                return income * 0.15m - 142.5m;
-            else if (income <= 5250)
-                return income * 0.2m - 302.5m;
-            else if (income <= 7800)
-                return income * 0.25m - 565;
-            else if (income <= 10900)
-                return income * 0.3m - 955;
-            else // income > 10900
-                return income * 0.35m - 1500;
-        }
+      
 
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)

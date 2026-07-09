@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -21,6 +22,8 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public int GlFiscalYearId { get; set; }
         public virtual GlFiscalYear GlFiscalYear { get; set; }
         public string Description { get; set; }
+        [NotMapped]
+        public bool IsAnySentForPayment { get; set; }
        
     }
     public class LeavePayableDetail : TrackUserOperation  //About Le
@@ -66,6 +69,10 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public decimal TaxDifference  { get; set; }
         [Display(Name = "Net Payment ")]
         public decimal NetPayment   { get; set; }
+        public bool IsSendForPayment { get; set; }
+        public string SendForPaymentBy { get; set; }
+        public DateTime? SendForPaymentTime { get; set; }
+        public int? PaymentRequestId { get; set; }
         public string Remark { get; set; }
         public int LeavePayableId { get; set; }
         public virtual LeavePayable Payable { get; set; }
