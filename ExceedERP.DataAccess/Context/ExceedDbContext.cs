@@ -716,6 +716,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new LeavePayableWithDetailFiscalYearEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveTypeSettingEntityTypeConfiguration());
 
+            modelBuilder.Configurations.Add(new SeveranceCalculationSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SeverancePayableSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SeverancePayableEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SeverancePayableDetailEntityTypeConfiguration());
@@ -2746,6 +2747,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<SeverancePayableDetail> SeverancePayableDetails { get; set; }
         public System.Data.Entity.DbSet<SeverancePayable> SeverancePayables { get; set; }
         public System.Data.Entity.DbSet<SeverancePayableSetting> SeverancePayableSettings { get; set; }
+        public System.Data.Entity.DbSet<SeveranceCalculationSetting> SeveranceCalculationSettings { get; set; }
         public System.Data.Entity.DbSet<LeaveTypeSetting> LeaveTypeSettings { get; set; }
 
 

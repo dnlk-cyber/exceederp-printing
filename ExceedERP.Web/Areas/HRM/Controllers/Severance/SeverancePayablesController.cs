@@ -18,7 +18,7 @@ using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 {
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin, HrmConstants.HRAttendanceUser)]
     public class SeverancePayablesController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
@@ -34,6 +34,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             var workunits = db.MainCompanyStructures.ToList();
             ViewData["workunits"] = workunits;
             ViewData["businessUnits"] = db.BusinessUnits;
+
             return View();
         }
         private void PopulateViewData()
@@ -43,6 +44,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 PersonId = e.EmployeeId,
                 FullNameWithOutCode = e.FirstName + " " + e.MiddleName + " " + e.LastName,
             }).ToList();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
         }
 
         public JsonResult GetPeriod()
@@ -114,6 +117,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SeverancePayables_Destroy([DataSourceRequest]DataSourceRequest request, SeverancePayable severance)
         {
+            if (db.SeverancePayableDetails.Any(x => x.SeverancePayableId == severance.SeverancePayableId))
+            {
+                ModelState.AddModelError("", "Reacord Exists, it has generated employees you can't delete!!");
+                return Json(new[] { severance }.ToDataSourceResult(request, ModelState));
+            }
             if (ModelState.IsValid)
             {
                 var entity = GetMappedObject(severance);
@@ -143,88 +151,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             };
             return entity;
         }
-        public ActionResult GenerateSeverancePayableCopy(int id)
-        {
-            
-            var payable = db.SeverancePayables.Find(id);
-            if (payable != null)
-            {
-                var fiscalYear = db.GLFiscalYears.Find(payable.GlFiscalYearId);
-                if (fiscalYear != null)
-                {
-                    var employees = db.Person_Employee.Where(x => x.IsActive).ToList();
-                    foreach (var employee in employees)
-                    {
-                        var payableDetail = db.SeverancePayableDetails.Where(x => x.EmployeeId == employee.EmployeeId&&x.SeverancePayableId==id).FirstOrDefault();
-                        if(payableDetail == null)
-                        {
-                            
-                            DateTime toDate = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId).DateTo;
-                            var placement = db.Placements.Where(x=>x.EmployeeId==employee.EmployeeId).Where(x => x.isCurrent).FirstOrDefault();
-                            if (placement != null &&toDate !=null && ((((decimal)(fiscalYear.DateTo - employee.HiredDate).TotalDays) / 365)>5))
-                            {
-                                decimal balance = 0;
-                                decimal totaYearOfExperience = (decimal)(fiscalYear.DateTo - employee.HiredDate).TotalDays;
-                                totaYearOfExperience = totaYearOfExperience / 365;
-                                balance =  (decimal)(1.0 / 3) * (decimal)(totaYearOfExperience - 1) * placement.Salary+ placement.Salary;
-                                var entity = new SeverancePayableDetail
-                                {
-                                    SeverancePayableId = id,
-                                    EmployeeCode = employee.EmployeeCode,
-                                    EmployeeId = employee.EmployeeId,
-                                    Balance = balance,
-                                    BasicSalary = placement.Salary,
-                                    BranchId = placement.BranchId,
-                                    BusinessUnitId = placement.BusinessUnitId,
-                                    OrgStructureId = placement.OrgStructureId,
-                                    GrossComponsation = balance,
-                                    NetPay = placement.Salary!=0?(balance - (balance / placement.Salary) * (decimal)XAPI.IncomeTax.GetIncomeTax((float)placement.Salary)):0,
-                                    NoneTaxableTotal = balance,
-                                    NumberOFYears = Math.Round(totaYearOfExperience,2)  + "  years",
-                                    SpecialSalaryDeduction = 0,
-                                    TaxWithheldComTax = placement.Salary != 0 ? (balance/placement.Salary)*(decimal)XAPI.IncomeTax.GetIncomeTax((float)placement.Salary):0,
-                                    TaxOnBasicSalary = (decimal)XAPI.IncomeTax.GetIncomeTax((float)placement.Salary),
-                                    TotalDeductions = placement.Salary != 0 ? (balance / placement.Salary) * (decimal)XAPI.IncomeTax.GetIncomeTax((float)placement.Salary) : 0,
-                                    DateCreated = DateTime.Now.Date,
-                                    CreatedBy = User.Identity.Name,
-                                    LastModified = DateTime.Now.Date,
-                                    ModifiedBy = User.Identity.Name
-                                };
-                                db.SeverancePayableDetails.Add(entity);
-                                db.SaveChanges();
-                            }
-                        }
-
-                    }
-                    var formattedData2 = new
-                    {
-                        Message = "Successfully Generated.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
-                         
-                }
-
-                var formattedData21 = new
-                {
-                    Message = " there is no record for this fiscal year.",
-                    Status = "not-OK"
-                };
-                return Json(formattedData21, JsonRequestBehavior.AllowGet);
-
-
-
-            }
-
-
-
-            var formattedData3 = new
-            {
-                Message = "File Not Found  ",
-                Status = "not-OK"
-            };
-            return Json(formattedData3, JsonRequestBehavior.AllowGet);
-        }
         public JsonResult PaySeverancePayble(int id)
         {
             var payableDetail = db.SeverancePayableDetails.Find(id);
@@ -244,7 +170,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 IsNewSupplier = false,
                 Supplier = " ",
                 Purchaser = 0,
-                ReasonOfPayment = "Severance Payment ",
+                ReasonOfPayment = "Severance Payment detail ",
+                Source = "Severance Payment Detail",
+                SourceId = id.ToString(),
                 RequestDate = DateTime.Now.Date,
                 RequestDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
                 InvoiceNo = "0",
@@ -256,6 +184,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 OrgStuructureId = payableDetail.OrgStructureId,
                 EmployeeId = payableDetail.EmployeeId,
                 Paid = false,
+                IsSendForApproval = true,
+                SendForApprovalBy = User.Identity.Name,
+                SendForApprovalTime = DateTime.Now,
+                IsDepartmentOnlineApproved = true,
+                DepartmentOnlineApprovedBy = User.Identity.Name,
+                DepartmentOnlineApprovedTime = DateTime.Now,
+
                 FromBranchId = payableDetail.BranchId,
                 FromBusinessUnitId = payableDetail.BusinessUnitId??0,
                 CreatedAtBranchId = payableDetail.BranchId,
@@ -264,18 +199,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 CreatedBy = User.Identity.Name,
                 DateCreated = DateTime.Now.Date,
                 ModifiedBy = User.Identity.Name,
-                LastModified = DateTime.Now.Date,
-                CurrentApprovalStep = 0,
-                IsDepartmentOnlineApproved = true,
-                DepartmentOnlineApprovedBy = User.Identity.Name,
-                DepartmentOnlineApprovedTime = DateTime.Now,
+                LastModified = DateTime.Now.Date
+              
 
 
 
             };
             db.PaymentRequests.Add(requestEntity);
             db.SaveChanges();
-            var glTaxRate = db.HealthExpenseAndTaxSettings.FirstOrDefault();
+            var glTaxRate = db.ExpenseAndTaxSettings.FirstOrDefault();
+            var glTax = db.GLTaxRates.FirstOrDefault();
             if (glTaxRate != null)
             {
                 var RequestEntityDetail = new PaymentRequestLine
@@ -285,7 +218,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                     TaxAmount = 0,
                     TotalAmount = payableDetail.NetPay,
                     ItemName = glTaxRate.ApSetupItemId.ToString(),
-                    GLTaxRateID = glTaxRate.GLTaxRateID,
+                    GLTaxRateID = glTax?.GLTaxRateID??0,
                     Description = "Severance Payment",
                     Remark = "Severance Payment",
                     CreatedBy = User.Identity.Name,
@@ -328,9 +261,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 
 
         }
+
         #region Generate payable
-        public JsonResult GenerateSeverancePayable(int id, string severanceDate, string empId = null)
+        public JsonResult GenerateSeverancePayable(int id, string empId = null, string severanceDate = null, DateTime? severanceDateGorg = null)
         {
+
             var payable = db.SeverancePayables.Find(id);
             if (payable == null)
             {
@@ -348,16 +283,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             }
 
             //include recent terminated employee
-            var terminatedEmployeeIds = db.Terminations.Where(x => x.TerminationDate >= fiscalYear.DateFrom&&x.IsOnlineApproved).Select(x => x.EmployeeId);
-            var employees = db.Person_Employee.Where(x => x.IsActive||terminatedEmployeeIds.Contains(x.EmployeeId)).ToList();
-            if(!string.IsNullOrEmpty(empId)&& employees.Any())
+            var terminatedEmployeeIds = db.Terminations.Where(x => x.TerminationDate >= fiscalYear.DateFrom && x.IsOnlineApproved).Select(x => x.EmployeeId);
+            var employees = db.Person_Employee.Where(x => x.IsActive || terminatedEmployeeIds.Contains(x.EmployeeId)).ToList();
+            if (!string.IsNullOrEmpty(empId) && employees.Any())
             {
                 int.TryParse(empId, out int employeeId);
                 employees = employees.Where(x => x.EmployeeId == employeeId).ToList();
             }
-            
+
             DateTime toDate = fiscalYear.DateTo;
-            DateTime severanceDateGC = DateTime.Now;
+            DateTime severanceDateGC = severanceDateGorg.HasValue ? severanceDateGorg.Value : DateTime.Now;
             DateTime now = DateTime.Now;
 
             if (!string.IsNullOrEmpty(severanceDate))
@@ -366,150 +301,328 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 severanceDateGC = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
 
             }
-            if (severanceDateGC < now)
+            if (severanceDateGC.Date < now.Date)
             {
                 now = severanceDateGC;
             }
-            foreach (var employee in employees)
+            var formulaSetting = db.SeveranceCalculationSettings
+                       .FirstOrDefault(x => x.IsActive);
+
+            if (formulaSetting?.FormulaType == SeveranceFormulaType.NewFormula)
             {
-                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.isCurrent);
-                if (placement == null)
+                // New calculation
+                foreach (var employee in employees)
                 {
-                    placement = db.Placements.Where(x => x.EmployeeId == employee.EmployeeId&&terminatedEmployeeIds.Contains(x.EmployeeId)).OrderByDescending(x => x.PlacementId).FirstOrDefault();
-                    if (placement ==null)
+                    var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.isCurrent);
+                    if (placement == null)
                     {
-                        continue;
-                    }
-                   
-                   
-                }
-               
-                DateTime date = fiscalYear.DateTo > DateTime.Now ? DateTime.Now : fiscalYear.DateTo;
-                
-                decimal totaYearOfExperience = 0;
-                string Experience = "";
-                decimal years = 0;
-                decimal months = 0;
-                decimal totalServiceInmonth = 0;
-                decimal grossCompensatioPayment = 0;
-                decimal compensatioPaymentT = 0;
-                decimal grossCompensation = 0;
-                decimal taxOnMonthlySalaryCompensation = 0;
-                decimal taxdiffernce= 0;
-                decimal accTaxdiffernce= 0;
-                decimal days = 0;
-                decimal tax = 0;
-                decimal netPay = 0;
-                decimal balance = 0;
-                if (HasRequiredExperience(now, employee))
-                {
-                     totaYearOfExperience = CalculateTotalYearsOfExperience(now, employee.HiredDate);
-                     balance = CalculateBalance(totaYearOfExperience, placement);
-                     years = TotalYears(now, employee.HiredDate);
-                     months = TotalMonths(now, employee.HiredDate);
-                     days = TotalDays(now, employee.HiredDate);
-                    //grossCompensatioPayment = CalculateBalance(totaYearOfExperience, placement);
-                    var (year, month, day) = TotalYearsOfExperience(now, employee.HiredDate);
-
-                    //totalServiceInmonth = TotalServiceInMonths(now, employee.HiredDate);
-                    totalServiceInmonth = (year * 12) + month + ((decimal)day / 30); ;
-                    grossCompensatioPayment = CalculateGrossCompensationPayment(totalServiceInmonth, placement);
-                    compensatioPaymentT = grossCompensatioPayment / totalServiceInmonth;
-                    grossCompensation = compensatioPaymentT + placement.Salary;
-                    Experience = TotalYearsOfExperienceWord(now, employee.HiredDate);
-                    tax = (decimal)XAPI.IncomeTax.GetIncomeTax((float)placement.Salary);
-                    taxOnMonthlySalaryCompensation = CalculateTaxOnMonthlySalaryAndComponsation(grossCompensation);
-                    taxdiffernce = taxOnMonthlySalaryCompensation - tax;
-                    accTaxdiffernce = totalServiceInmonth * taxdiffernce;
-                    //netPay = CalculateNetPay(balance, placement.Salary, tax);
-                    netPay = grossCompensatioPayment-accTaxdiffernce;
-                    var payableDetail = db.SeverancePayableDetails
-                       .FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.SeverancePayableId == id);
-                    if (payableDetail == null)
-                    {
-                        var entity = new SeverancePayableDetail
+                        placement = db.Placements.Where(x => x.EmployeeId == employee.EmployeeId && terminatedEmployeeIds.Contains(x.EmployeeId)).OrderByDescending(x => x.PlacementId).FirstOrDefault();
+                        if (placement == null)
                         {
-                            SeverancePayableId = id,
-                            EmployeeCode = employee.EmployeeCode,
-                            EmployeeId = employee.EmployeeId,
-                            Balance = balance,
-                            BranchId = placement.BranchId,
-                            BusinessUnitId = placement.BusinessUnitId,
-                            OrgStructureId = placement.OrgStructureId,
-                            Years = year,
-                            Months = month,
-                            Days = day,
-                            ServicePeriod = employee.HiredDate.ToString("dd.MM.yyyy") +"-"+ now.ToString("dd.MM.yyyy"),
-                            BasicSalary = placement.Salary,
-                            TotalServiceMonths = totalServiceInmonth,
-                            GrossCompensationPayment = grossCompensatioPayment,
-                            CompensationPaymentT = compensatioPaymentT,
-                            GrossComponsation = grossCompensation,
-                            TaxOnMonthlySalaryAndCompensation = taxOnMonthlySalaryCompensation ,
-                            TaxOnBasicSalary = tax,
-                            TaxDifference = taxdiffernce,
-                            AccTaxDifference = accTaxdiffernce,
-                            NetPay = netPay,
-                            NoneTaxableTotal = balance,
-                            NumberOFYears = Experience,
-                            SpecialSalaryDeduction = 0,
-                            OrgBranchName = " ",
-                            TaxWithheldComTax = CalculateTaxWithheld(balance, placement.Salary, tax),
-                            TotalDeductions = CalculateDeductions(balance, placement.Salary, tax),
-                            Remark = "this Severance is Generated On " +now.ToString("dd.MM.yyyy"),
-                            DateCreated = DateTime.Now.Date,
-                            CreatedBy = User.Identity.Name,
-                            LastModified = null,
-                            ModifiedBy = null
-                        };
+                            continue;
+                        }
+                    }
 
-                        db.SeverancePayableDetails.Add(entity);
-                        db.SaveChanges();
-                    
-                    }
-                    else
+                    DateTime date = fiscalYear.DateTo > DateTime.Now ? DateTime.Now : fiscalYear.DateTo;
+                    decimal totaYearOfExperience = 0;
+                    string Experience = "";
+                    decimal years = 0;
+                    decimal months = 0;
+                    decimal totalServiceInmonth = 0;
+                    decimal grossCompensatioPayment = 0;
+                    decimal compensatioPaymentT = 0;
+                    decimal grossCompensation = 0;
+                    decimal taxOnMonthlySalaryCompensation = 0;
+                    decimal taxdiffernce = 0;
+                    decimal accTaxdiffernce = 0;
+                    decimal days = 0;
+                    decimal tax = 0;
+                    decimal netPay = 0;
+                    decimal balance = 0;
+                    decimal monthsFromGrossCompansations = 0;
+                    decimal monthlySalary = placement.Salary;
+                    if (HasRequiredExperience(now, employee, placement))
                     {
-                        payableDetail.BasicSalary = placement.Salary;
-                        payableDetail.BranchId = placement.BranchId;
-                        payableDetail.BusinessUnitId = placement.BusinessUnitId;
-                        payableDetail.OrgStructureId = placement.OrgStructureId;
-                        payableDetail.Years = year;
-                        payableDetail.Months = month;
-                        payableDetail.Days = day;
-                        payableDetail.ServicePeriod = employee.HiredDate.ToString("dd.MM.yyyy")+" (" +employee.HiredDateAmharic+ ") - " + now.ToString("dd.MM.yyyy")+"("+XAPI.EthiopicDateTime.GetEthiopicDate(now.Day,now.Month,now.Year) +")";
-                        payableDetail.BasicSalary = placement.Salary;
-                        payableDetail.TotalServiceMonths = totalServiceInmonth;
-                        payableDetail.GrossCompensationPayment = grossCompensatioPayment;
-                        payableDetail.CompensationPaymentT = compensatioPaymentT;
-                        payableDetail.GrossComponsation = grossCompensation;
-                        payableDetail.TaxOnMonthlySalaryAndCompensation = taxOnMonthlySalaryCompensation;
-                        payableDetail.TaxOnBasicSalary = tax;
-                        payableDetail.TaxDifference = taxdiffernce;
-                        payableDetail.AccTaxDifference = accTaxdiffernce;
-                        payableDetail.NetPay = netPay;
-                        payableDetail.NoneTaxableTotal = balance;
-                        payableDetail.NumberOFYears = Experience;
-                        payableDetail.SpecialSalaryDeduction = 0;
-                        payableDetail.OrgBranchName = " ";
-                        payableDetail.TaxWithheldComTax = CalculateTaxWithheld(balance, placement.Salary, tax);
-                        payableDetail.TotalDeductions = CalculateDeductions(balance, placement.Salary, tax);
-                        payableDetail.Remark = "This Severance is regenerated on " + now.ToString("dd.MM.yyyy");
-                        payableDetail.TotalDeductions = CalculateDeductions(balance, placement.Salary, tax);
-                        payableDetail.LastModified = DateTime.Now;
-                        payableDetail.ModifiedBy = User.Identity.Name;
-                        db.Entry(payableDetail).State = EntityState.Modified;
-                        db.SaveChanges();
+                        totaYearOfExperience = CalculateTotalYearsOfExperience(now, employee.HiredDate);
+                        balance = CalculateBalance(totaYearOfExperience, placement);
+                        years = TotalYears(now, employee.HiredDate);
+                        months = TotalMonths(now, employee.HiredDate);
+                        days = TotalDays(now, employee.HiredDate);
+                        //grossCompensatioPayment = CalculateBalance(totaYearOfExperience, placement);
+                        var (year, month, day) = TotalYearsOfExperience(now, employee.HiredDate);
+                        tax = (decimal)XAPI.IncomeTax.GetIncomeTax((float)monthlySalary);
+
+                        //totalServiceInmonth = TotalServiceInMonths(now, employee.HiredDate);
+                        totalServiceInmonth = (year * 12) + month + ((decimal)day / 30); ;
+
+                        decimal rate = db.SeverancePayableSettings.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                                                                   .Select(x => x.SalaryValue)
+                                                                   .FirstOrDefault();
+
+                        rate = rate > 0 ? rate : (1m / 3m);
+
+                        decimal otherYearPayment = monthlySalary * rate;
+                        grossCompensatioPayment = CalculateGrossCompensationPaymentNew(year,month,day, placement);
+
+                        monthsFromGrossCompansations = Math.Round(grossCompensatioPayment / monthlySalary, 4);
+
+                        // Whole months
+                        int wholeMonths = (int)Math.Floor(monthsFromGrossCompansations);
+
+                        // Fractional month
+                        decimal fractionMonths =
+                            monthsFromGrossCompansations - wholeMonths;
+
+                        // Tax for complete months
+                        decimal wholeMonthsTax = wholeMonths * tax;
+
+                        // Gross for complete months
+                        decimal wholeMonthsGross = wholeMonths * monthlySalary;
+
+
+
+                        decimal differenceWholeMonthsGrossandGrossComponsation = grossCompensatioPayment - wholeMonthsGross;
+
+                        decimal TaxOnDifferenceWholeMonthsGrossandGrossComponsation =
+                            (decimal)XAPI.IncomeTax.GetIncomeTax((float)differenceWholeMonthsGrossandGrossComponsation);
+
+                        decimal TotalTax =
+                            TaxOnDifferenceWholeMonthsGrossandGrossComponsation + wholeMonthsTax;
+
+                        compensatioPaymentT = grossCompensatioPayment / totalServiceInmonth;
+                        grossCompensation = compensatioPaymentT + placement.Salary;
+                        Experience = TotalYearsOfExperienceWord(now, employee.HiredDate);
+                        taxOnMonthlySalaryCompensation = (decimal)XAPI.IncomeTax.GetIncomeTax((float)otherYearPayment);
+                        taxdiffernce = TaxOnDifferenceWholeMonthsGrossandGrossComponsation;
+                        accTaxdiffernce = TotalTax;
+                        //netPay = CalculateNetPay(balance, placement.Salary, tax);
+                        netPay = grossCompensatioPayment - accTaxdiffernce;
+                        var payableDetail = db.SeverancePayableDetails
+                           .FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.SeverancePayableId == id);
+                        if (payableDetail == null)
+                        {
+                            var entity = new SeverancePayableDetail
+                            {
+                                SeverancePayableId = id,
+                                EmployeeCode = employee.EmployeeCode,
+                                EmployeeId = employee.EmployeeId,
+                                Balance = balance,
+                                BranchId = placement.BranchId,
+                                BusinessUnitId = placement.BusinessUnitId,
+                                OrgStructureId = placement.OrgStructureId,
+                                Years = year,
+                                Months = month,
+                                Days = day,
+                                ServicePeriod = employee.HiredDate.ToString("dd.MM.yyyy") + "-" + now.ToString("dd.MM.yyyy"),
+                                BasicSalary = placement.Salary,
+                                TotalServiceMonths = totalServiceInmonth,
+                                GrossCompensationPayment = grossCompensatioPayment,
+                                CompensationPaymentT = compensatioPaymentT,
+                                GrossComponsation = grossCompensation,
+                                TaxOnMonthlySalaryAndCompensation = taxOnMonthlySalaryCompensation,
+                                TaxOnBasicSalary = tax,
+                                TaxDifference = taxdiffernce,
+                                AccTaxDifference = accTaxdiffernce,
+                                NetPay = netPay,
+                                NoneTaxableTotal = balance,
+                                NumberOFYears = Experience,
+                                SpecialSalaryDeduction = 0,
+                                OrgBranchName = " ",
+                                TaxWithheldComTax = CalculateTaxWithheld(balance, placement.Salary, tax),
+                                TotalDeductions = CalculateDeductions(balance, placement.Salary, tax),
+                                Remark = "this Severance is Generated On " + now.ToString("dd.MM.yyyy"),
+                                DateCreated = DateTime.Now.Date,
+                                CreatedBy = User.Identity.Name,
+                                LastModified = null,
+                                ModifiedBy = null
+                            };
+
+                            db.SeverancePayableDetails.Add(entity);
+                            db.SaveChanges();
+
+                        }
+                        else
+                        {
+                            payableDetail.BasicSalary = placement.Salary;
+                            payableDetail.BranchId = placement.BranchId;
+                            payableDetail.BusinessUnitId = placement.BusinessUnitId;
+                            payableDetail.OrgStructureId = placement.OrgStructureId;
+                            payableDetail.Years = year;
+                            payableDetail.Months = month;
+                            payableDetail.Days = day;
+                            payableDetail.ServicePeriod = employee.HiredDate.ToString("dd.MM.yyyy") + " (" + employee.HiredDateAmharic + ") - " + now.ToString("dd.MM.yyyy") + "(" + XAPI.EthiopicDateTime.GetEthiopicDate(now.Day, now.Month, now.Year) + ")";
+                            payableDetail.BasicSalary = placement.Salary;
+                            payableDetail.TotalServiceMonths = totalServiceInmonth;
+                            payableDetail.GrossCompensationPayment = grossCompensatioPayment;
+                            payableDetail.CompensationPaymentT = compensatioPaymentT;
+                            payableDetail.GrossComponsation = grossCompensation;
+                            payableDetail.TaxOnMonthlySalaryAndCompensation = taxOnMonthlySalaryCompensation;
+                            payableDetail.TaxOnBasicSalary = tax;
+                            payableDetail.TaxDifference = taxdiffernce;
+                            payableDetail.AccTaxDifference = accTaxdiffernce;
+                            payableDetail.NetPay = netPay;
+                            payableDetail.NoneTaxableTotal = balance;
+                            payableDetail.NumberOFYears = Experience;
+                            payableDetail.SpecialSalaryDeduction = 0;
+                            payableDetail.OrgBranchName = " ";
+                            payableDetail.TaxWithheldComTax = CalculateTaxWithheld(balance, placement.Salary, tax);
+                            payableDetail.TotalDeductions = CalculateDeductions(balance, placement.Salary, tax);
+                            payableDetail.Remark = "This Severance is regenerated on " + now.ToString("dd.MM.yyyy");
+                            payableDetail.TotalDeductions = CalculateDeductions(balance, placement.Salary, tax);
+                            payableDetail.LastModified = DateTime.Now;
+                            payableDetail.ModifiedBy = User.Identity.Name;
+                            db.Entry(payableDetail).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
                     }
+
                 }
 
             }
+            else
+            {
+                // Old calculation
+            
+                foreach (var employee in employees)
+                {
+                    var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.isCurrent);
+                    if (placement == null)
+                    {
+                        placement = db.Placements.Where(x => x.EmployeeId == employee.EmployeeId && terminatedEmployeeIds.Contains(x.EmployeeId)).OrderByDescending(x => x.PlacementId).FirstOrDefault();
+                        if (placement == null)
+                        {
+                            continue;
+                        }
+                    }
 
+                    DateTime date = fiscalYear.DateTo > DateTime.Now ? DateTime.Now : fiscalYear.DateTo;
+                    decimal totaYearOfExperience = 0;
+                    string Experience = "";
+                    decimal years = 0;
+                    decimal months = 0;
+                    decimal totalServiceInmonth = 0;
+                    decimal grossCompensatioPayment = 0;
+                    decimal compensatioPaymentT = 0;
+                    decimal grossCompensation = 0;
+                    decimal taxOnMonthlySalaryCompensation = 0;
+                    decimal taxdiffernce = 0;
+                    decimal accTaxdiffernce = 0;
+                    decimal days = 0;
+                    decimal tax = 0;
+                    decimal netPay = 0;
+                    decimal balance = 0;
+                    if (HasRequiredExperience(now, employee, placement))
+                    {
+                        totaYearOfExperience = CalculateTotalYearsOfExperience(now, employee.HiredDate);
+                        balance = CalculateBalance(totaYearOfExperience, placement);
+                        years = TotalYears(now, employee.HiredDate);
+                        months = TotalMonths(now, employee.HiredDate);
+                        days = TotalDays(now, employee.HiredDate);
+                        //grossCompensatioPayment = CalculateBalance(totaYearOfExperience, placement);
+                        var (year, month, day) = TotalYearsOfExperience(now, employee.HiredDate);
+
+                        //totalServiceInmonth = TotalServiceInMonths(now, employee.HiredDate);
+                        totalServiceInmonth = (year * 12) + month + ((decimal)day / 30); ;
+                        grossCompensatioPayment = CalculateGrossCompensationPayment(totalServiceInmonth, placement);
+                        compensatioPaymentT = grossCompensatioPayment / totalServiceInmonth;
+                        grossCompensation = compensatioPaymentT + placement.Salary;
+                        Experience = TotalYearsOfExperienceWord(now, employee.HiredDate);
+                        tax = (decimal)XAPI.IncomeTax.GetIncomeTax((float)placement.Salary);
+                        taxOnMonthlySalaryCompensation = CalculateTaxOnMonthlySalaryAndComponsation(grossCompensation);
+                        taxdiffernce = taxOnMonthlySalaryCompensation - tax;
+                        accTaxdiffernce = totalServiceInmonth * taxdiffernce;
+                        //netPay = CalculateNetPay(balance, placement.Salary, tax);
+                        netPay = grossCompensatioPayment - accTaxdiffernce;
+                        var payableDetail = db.SeverancePayableDetails
+                           .FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.SeverancePayableId == id);
+                        if (payableDetail == null)
+                        {
+                            var entity = new SeverancePayableDetail
+                            {
+                                SeverancePayableId = id,
+                                EmployeeCode = employee.EmployeeCode,
+                                EmployeeId = employee.EmployeeId,
+                                Balance = balance,
+                                BranchId = placement.BranchId,
+                                BusinessUnitId = placement.BusinessUnitId,
+                                OrgStructureId = placement.OrgStructureId,
+                                Years = year,
+                                Months = month,
+                                Days = day,
+                                ServicePeriod = employee.HiredDate.ToString("dd.MM.yyyy") + "-" + now.ToString("dd.MM.yyyy"),
+                                BasicSalary = placement.Salary,
+                                TotalServiceMonths = totalServiceInmonth,
+                                GrossCompensationPayment = grossCompensatioPayment,
+                                CompensationPaymentT = compensatioPaymentT,
+                                GrossComponsation = grossCompensation,
+                                TaxOnMonthlySalaryAndCompensation = taxOnMonthlySalaryCompensation,
+                                TaxOnBasicSalary = tax,
+                                TaxDifference = taxdiffernce,
+                                AccTaxDifference = accTaxdiffernce,
+                                NetPay = netPay,
+                                NoneTaxableTotal = balance,
+                                NumberOFYears = Experience,
+                                SpecialSalaryDeduction = 0,
+                                OrgBranchName = " ",
+                                TaxWithheldComTax = CalculateTaxWithheld(balance, placement.Salary, tax),
+                                TotalDeductions = CalculateDeductions(balance, placement.Salary, tax),
+                                Remark = "this Severance is Generated On " + now.ToString("dd.MM.yyyy"),
+                                DateCreated = DateTime.Now.Date,
+                                CreatedBy = User.Identity.Name,
+                                LastModified = null,
+                                ModifiedBy = null
+                            };
+
+                            db.SeverancePayableDetails.Add(entity);
+                            db.SaveChanges();
+
+                        }
+                        else
+                        {
+                            payableDetail.BasicSalary = placement.Salary;
+                            payableDetail.BranchId = placement.BranchId;
+                            payableDetail.BusinessUnitId = placement.BusinessUnitId;
+                            payableDetail.OrgStructureId = placement.OrgStructureId;
+                            payableDetail.Years = year;
+                            payableDetail.Months = month;
+                            payableDetail.Days = day;
+                            payableDetail.ServicePeriod = employee.HiredDate.ToString("dd.MM.yyyy") + " (" + employee.HiredDateAmharic + ") - " + now.ToString("dd.MM.yyyy") + "(" + XAPI.EthiopicDateTime.GetEthiopicDate(now.Day, now.Month, now.Year) + ")";
+                            payableDetail.BasicSalary = placement.Salary;
+                            payableDetail.TotalServiceMonths = totalServiceInmonth;
+                            payableDetail.GrossCompensationPayment = grossCompensatioPayment;
+                            payableDetail.CompensationPaymentT = compensatioPaymentT;
+                            payableDetail.GrossComponsation = grossCompensation;
+                            payableDetail.TaxOnMonthlySalaryAndCompensation = taxOnMonthlySalaryCompensation;
+                            payableDetail.TaxOnBasicSalary = tax;
+                            payableDetail.TaxDifference = taxdiffernce;
+                            payableDetail.AccTaxDifference = accTaxdiffernce;
+                            payableDetail.NetPay = netPay;
+                            payableDetail.NoneTaxableTotal = balance;
+                            payableDetail.NumberOFYears = Experience;
+                            payableDetail.SpecialSalaryDeduction = 0;
+                            payableDetail.OrgBranchName = " ";
+                            payableDetail.TaxWithheldComTax = CalculateTaxWithheld(balance, placement.Salary, tax);
+                            payableDetail.TotalDeductions = CalculateDeductions(balance, placement.Salary, tax);
+                            payableDetail.Remark = "This Severance is regenerated on " + now.ToString("dd.MM.yyyy");
+                            payableDetail.TotalDeductions = CalculateDeductions(balance, placement.Salary, tax);
+                            payableDetail.LastModified = DateTime.Now;
+                            payableDetail.ModifiedBy = User.Identity.Name;
+                            db.Entry(payableDetail).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+
+                }
+
+            }
             return Json(new { Message = "Successfully Generated.", Status = "OK" }, JsonRequestBehavior.AllowGet);
         }
         //check if the empleyee has  minimum requied experience
-        private bool HasRequiredExperience(DateTime date, Person_Employee employee)
+        private bool HasRequiredExperience(DateTime date, Person_Employee employee,Placement placement)
         {
-            return ((decimal)((date - employee.HiredDate).TotalDays / 365.25)) > 5;
+            var severanceSetting = db.SeverancePayableSettings.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel).FirstOrDefault();
+            decimal minExprerience = severanceSetting != null && severanceSetting.MinYearsOfService > 0 ? (decimal)severanceSetting.MinYearsOfService : 5m;
+            return ((decimal)((date - employee.HiredDate).TotalDays / 365.25)) > minExprerience;
         }
 
         private decimal CalculateTotalYearsOfExperience(DateTime dateTo, DateTime hiredDate)
@@ -593,6 +706,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             return years;
         }
 
+
         private decimal TotalMonths(DateTime dateTo, DateTime hiredDate)
         {
             TimeSpan totalExperience = dateTo - hiredDate;
@@ -604,6 +718,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 
             return months;
         }
+
+
         private int TotalDays(DateTime dateTo, DateTime hiredDate)
         {
             if (dateTo <= hiredDate)
@@ -638,6 +754,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             return totalDays;
         }
 
+
         //private decimal TotalDays(DateTime dateTo, DateTime hiredDate)
         //{
         //    TimeSpan totalExperience = dateTo - hiredDate;
@@ -649,6 +766,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 
         //    return days;
         //}
+
         private decimal TotalServiceInMonths(DateTime dateTo, DateTime hiredDate)
         {
             if (dateTo <= hiredDate)
@@ -705,31 +823,121 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 
             }
         }
+
+
+        //private decimal CalculateGrossCompensationPayment(decimal totalMonths, Placement placement)
+        //{
+        //    if (totalMonths < 13)
+        //    {
+        //        return totalMonths * placement.Salary / 12;
+        //    }
+        //    else // K6 > 12
+        //    {
+        //        var setting = db.SeverancePayableSettings.FirstOrDefault(x => x.ResponsibilityLevel == placement.ResponsibilityLevel);
+        //        if (setting != null && setting.SalaryValue > 0)
+        //        {
+        //            return (placement.Salary * 12 / 12) + (placement.Salary * (totalMonths - 12) / 12 * setting.SalaryValue);
+
+
+        //        }
+        //        else
+        //        {
+        //            return (placement.Salary * 12 / 12) + (placement.Salary * (totalMonths - 12) / 12 * 1.0m / 3);
+
+        //           // return (1.0M / 3) * (totalYearsOfExperience - 1) * placement.Salary + placement.Salary;
+
+        //        }
+        //    }
+
+        //}
+
+        //private decimal CalculateGrossCompensationPaymentNew(int year, int month, int day, Placement placement)
+        //{
+        //    decimal monthlySalary = placement.Salary;
+
+        //    var severancePayableSetting = db.SeverancePayableSettings
+        //        .Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+        //        .FirstOrDefault();
+
+
+        //    decimal rate = severancePayableSetting !=null&& severancePayableSetting.SalaryValue > 0 ? severancePayableSetting.SalaryValue : (1m / 3m);
+        //    decimal currentYearMultiplier = severancePayableSetting !=null&& severancePayableSetting.InitialYearsSalaryMultiplier.HasValue&& severancePayableSetting.InitialYearsSalaryMultiplier.Value > 0 ? severancePayableSetting.InitialYearsSalaryMultiplier.Value : 1m;
+
+        //    decimal otherYearPayment = monthlySalary * rate;
+
+        //    decimal remainingYears = Math.Max(year - currentYearMultiplier, 0);
+        //    int totalDays = (month * 30) + day;
+
+        //    return (monthlySalary* currentYearMultiplier) +
+        //           (remainingYears * otherYearPayment) +
+        //           ((otherYearPayment / 365m) * totalDays);
+        //}
+        private decimal CalculateGrossCompensationPaymentNew(int year, int month,int day, Placement placement)
+        {
+            decimal monthlySalary = placement.Salary;
+
+            var severancePayableSetting = db.SeverancePayableSettings
+                .FirstOrDefault(x => x.ResponsibilityLevel == placement.ResponsibilityLevel);
+
+            decimal rate =
+                severancePayableSetting != null &&
+                severancePayableSetting.SalaryValue > 0
+                    ? severancePayableSetting.SalaryValue
+                    : (1m / 3m);
+
+            // Number of years paid with full salary
+            decimal initialYears =
+                severancePayableSetting != null &&
+                severancePayableSetting.YearsPaidWithFullSalary.HasValue &&
+                severancePayableSetting.YearsPaidWithFullSalary.Value > 0
+                    ? severancePayableSetting.YearsPaidWithFullSalary.Value
+                    : 1m;
+
+            // Full salary payment for initial years
+            decimal initialYearsPayment = monthlySalary * initialYears;
+
+            // Remaining years paid by rate
+            decimal remainingYears = Math.Max(year - initialYears, 0);
+
+            decimal ratedYearlyPayment = monthlySalary * rate;
+
+            // Remaining month/day proportional payment
+            int totalDays = (month * 30) + day;
+
+            decimal proportionalPayment =
+                (ratedYearlyPayment / 365m) * totalDays;
+
+            return initialYearsPayment +
+                   (remainingYears * ratedYearlyPayment) +
+                   proportionalPayment;
+        }
         private decimal CalculateGrossCompensationPayment(decimal totalMonths, Placement placement)
         {
-            if (totalMonths < 13)
+            var monthlySalary = placement.Salary;
+            var monthsInYear = 12m;
+            var defaultRate = 1m / 3m;
+
+            if (totalMonths <= 12)
             {
-                return totalMonths * placement.Salary / 12;
+                return (totalMonths / monthsInYear) * monthlySalary;
             }
-            else // K6 > 12
-            {
-                var setting = db.SeverancePayableSettings.FirstOrDefault(x => x.ResponsibilityLevel == placement.ResponsibilityLevel);
-                if (setting != null && setting.SalaryValue != 0)
-                {
-                    return (placement.Salary * 12 / 12) + (placement.Salary * (totalMonths - 12) / 12 * setting.SalaryValue);
 
-                    //return (1.0M / setting.SalaryValue) * (totalYearsOfExperience - 1) * placement.Salary + placement.Salary;
+            // First year (fixed full salary)
+            var firstYearPayment = monthlySalary;
 
-                }
-                else
-                {
-                    return (placement.Salary * 12 / 12) + (placement.Salary * (totalMonths - 12) / 12 * 1.0m / 3);
+            // Remaining months
+            var extraMonths = totalMonths - 12;
 
-                   // return (1.0M / 3) * (totalYearsOfExperience - 1) * placement.Salary + placement.Salary;
+            var setting = db.SeverancePayableSettings
+                            .FirstOrDefault(x => x.ResponsibilityLevel == placement.ResponsibilityLevel);
 
-                }
-            }
-           
+            var rate = (setting != null && setting.SalaryValue > 0)
+                ? setting.SalaryValue
+                : defaultRate;
+
+            var additionalPayment = (extraMonths / monthsInYear) * monthlySalary * rate;
+
+            return firstYearPayment + additionalPayment;
         }
 
         private decimal CalculateNetPay(decimal balance, decimal salary, decimal tax)
@@ -742,44 +950,79 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             return salary != 0 ? (balance / salary) * tax : 0;
         }
 
-        decimal CalculateTaxOnMonthlySalaryAndComponsation(decimal N5)
+        decimal CalculateTaxOnMonthlySalaryAndComponsation(decimal grossCompensation)
         {
-            if (N5 <= 600)
+            decimal tax;
+
+            if (grossCompensation <= 2000)
             {
-                return N5 * 0;
+                tax = 0;
             }
-            else if (N5 <= 1650)
+            else if (grossCompensation <= 4000)
             {
-                return N5 * 0.1m - 60;
+                tax = grossCompensation * 0.15m - 300;
             }
-            else if (N5 <= 3200)
+            else if (grossCompensation <= 7000)
             {
-                return N5 * 0.15m - 142.5m;
+                tax = grossCompensation * 0.20m - 500;
             }
-            else if (N5 <= 5250)
+            else if (grossCompensation <= 10000)
             {
-                return N5 * 0.2m - 302.5m;
+                tax = grossCompensation * 0.25m - 850;
             }
-            else if (N5 <= 7800)
+            else if (grossCompensation <= 14000)
             {
-                return N5 * 0.25m - 565;
+                tax = grossCompensation * 0.30m - 1350;
             }
-            else if (N5 <= 10900)
+            else
             {
-                return N5 * 0.3m - 955;
+                tax = grossCompensation * 0.35m - 2050;
+            }
+
+            return Math.Max(tax, 0); // prevent negative tax
+        }
+
+        decimal CalculateTaxOnMonthlySalaryAndComponsation_Old(decimal grossCompensation)
+        {
+            if (grossCompensation <= 600)
+            {
+                return grossCompensation * 0;
+            }
+            else if (grossCompensation <= 1650)
+            {
+                return grossCompensation * 0.1m - 60;
+            }
+            else if (grossCompensation <= 3200)
+            {
+                return grossCompensation * 0.15m - 142.5m;
+            }
+            else if (grossCompensation <= 5250)
+            {
+                return grossCompensation * 0.2m - 302.5m;
+            }
+            else if (grossCompensation <= 7800)
+            {
+                return grossCompensation * 0.25m - 565;
+            }
+            else if (grossCompensation <= 10900)
+            {
+                return grossCompensation * 0.3m - 955;
             }
             else // N5 > 10900
             {
-                return N5 * 0.35m - 1500;
+                return grossCompensation * 0.35m - 1500;
             }
         }
+
 
         private decimal CalculateDeductions(decimal balance, decimal salary, decimal tax)
         {
             return CalculateTaxWithheld(balance, salary, tax);
         }
 
+
         #endregion
+
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -789,6 +1032,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             #endregion
             return File(fileContents, contentType, fileName);
         }
+
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
         {
@@ -798,6 +1042,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             #endregion
             return File(fileContents, contentType, fileName);
         }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

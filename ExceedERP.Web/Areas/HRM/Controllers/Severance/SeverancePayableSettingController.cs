@@ -2,30 +2,25 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using System;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.Severance;
 
-namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
+namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 {
+    // it is used to configure % or fraction and expreience
     [AuthorizeRoles(HrmConstants.HRAdmin)]
     public class SeverancePayableSettingController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
-        // GET: HRM/SickLeaveSetting
+        // GET: HRM/SeverancePayableSetting
         public ActionResult Index()
         {
             return View();
@@ -38,6 +33,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 SeverancePayableSettingId = payableSetting.SeverancePayableSettingId,
                 SalaryValue = payableSetting.SalaryValue,
                 ResponsibilityLevel = payableSetting.ResponsibilityLevel,
+                MinYearsOfService = payableSetting.MinYearsOfService,
+                MaxYearsOfService = payableSetting.MaxYearsOfService,
+                YearsPaidWithFullSalary = payableSetting.YearsPaidWithFullSalary,
                 Description = payableSetting.Description,
                 DateCreated = payableSetting.DateCreated,
                 CreatedBy = payableSetting.CreatedBy,
@@ -115,6 +113,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 SeverancePayableSettingId = payableSetting.SeverancePayableSettingId,
                 SalaryValue = payableSetting.SalaryValue,
                 ResponsibilityLevel = payableSetting.ResponsibilityLevel,
+                MinYearsOfService = payableSetting.MinYearsOfService,
+                MaxYearsOfService = payableSetting.MaxYearsOfService,
+                YearsPaidWithFullSalary = payableSetting.YearsPaidWithFullSalary,
                 Description = payableSetting.Description,
                 DateCreated = payableSetting.DateCreated,
                 CreatedBy = payableSetting.CreatedBy,

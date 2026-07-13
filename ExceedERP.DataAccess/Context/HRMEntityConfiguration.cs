@@ -1573,6 +1573,15 @@ namespace ExceedERP.DataAccess
 
         }
     }
+    public class SeveranceCalculationSettingEntityTypeConfiguration : EntityTypeConfiguration<SeveranceCalculationSetting>
+    {
+        public SeveranceCalculationSettingEntityTypeConfiguration()
+        {
+            this.ToTable("SeveranceCalculationSettings", "HRM");
+            this.HasKey<int>(o => o.SeveranceCalculationSettingId);
+
+        }
+    }
     #endregion
     public class ComplainDetailEntityTypeConfiguration : EntityTypeConfiguration<ComplainDetail>
     {

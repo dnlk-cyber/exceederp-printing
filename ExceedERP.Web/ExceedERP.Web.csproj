@@ -1639,6 +1639,7 @@
     <Compile Include="Areas\HRM\Controllers\SelfCare\SelfCareAccouncmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\SelfCareEmployeeIncomingController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\WorkunitIncomingController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Severance\SeveranceCalculationSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayableDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayablesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayableSettingController.cs" />

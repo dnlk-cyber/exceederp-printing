@@ -3,6 +3,8 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+
 }
 <Legend>Severance Payables </Legend>
 @(Html.Kendo().Grid<SeverancePayable>()
@@ -28,6 +30,12 @@
       .Sortable(sortable =>
       {
           sortable.SortMode(GridSortMode.SingleColumn);
+      })
+       
+      .Events(ev =>
+      {
+          ev.DataBound("onDataBoundMaster");
+          ev.DetailExpand("onDetailExpandUser");
       })
      .Filterable()
      .Pageable(pageable => pageable
@@ -63,43 +71,57 @@
 
             items.Add().Text("Severance Payable Details").Content(
             @<text>
-                <div class="row">
+            <div class="row">
 
 
 
-                <div class="col-sm-2" style="padding-right:0px">
-                               
-                    @(Html.Kendo().DropDownListFor(m => m)
-                                            .Name("EmployeeId")
-                                            .OptionLabel(Resources.Select)
-                                            .Filter("contains")
-                                            .DataTextField("FullNameaEnglish")
-                                            .DataValueField("EmployeeId")
-                                            .HtmlAttributes(new { style = "width: 170px;" })
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
-                                                .ServerFiltering(true);
+        <div class="col-sm-2" style="padding-right:0px">
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                            .Name("EmployeeId")
+                            .OptionLabel(Resources.Select)
+                            .Filter("contains")
+                            .DataTextField("FullNameaEnglish")
+                            .DataValueField("EmployeeId")
+                            .HtmlAttributes(new { style = "width: 170px;" })
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
+                                .ServerFiltering(true);
 
 
 
-                                            }).ToClientTemplate()
-                    )
 
-                </div>
-                <div class="col-sm-2" style="padding-right:0px">
-                    @Html.TextBox("severanceDate", "", new { disabled = "disabled", @class = "et-popup-picker" });<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                            }).ToClientTemplate()
+            )
 
-                </div>
-                <div class="col-sm-2" style="padding-right:0px">
-                    <a onclick='return generateSeverancePayable("#=SeverancePayableId#")' href=' \#' title="Generate"><i class=" fa fa-wrench fa-2x">Generate</i></a>
+        </div>
 
-                </div>
-                <div class="col-sm-2" style="padding-right:0px">
-                    <a href='@Url.Action("SeverancePayableReport", "EmployeeReport")/#=SeverancePayableId#' title="Print"><i class="fa fa-print fa-2x">Print</i></a>
+        @if (useEthiopian) {
+            <div class="col-sm-2" style="padding-right:0px">
+                @Html.TextBox("severanceDate", "", new { disabled = "disabled", @class = "et-popup-picker" });<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
 
-                </div>
             </div>
+        }
+        else {
+        <div class="col-sm-2" style="padding-right:0px">
+            @(Html.Kendo().DatePicker()
+                                    .Name("SeveranceDateGorg_#=SeverancePayableId#")
+                                    .HtmlAttributes(new { style = "width:150px;height:40px" })
+                                    .ToClientTemplate()
+            )
+        </div>
+
+        }
+        <div class="col-sm-2" style="padding-right:0px">
+            <a onclick='return generateSeverancePayable("#=SeverancePayableId#")' href=' \#' title="Generate"><i class=" fa fa-wrench fa-2x">Generate</i></a>
+
+        </div>
+        <div class="col-sm-2" style="padding-right:0px">
+            <a href='@Url.Action("SeverancePayableReport", "EmployeeReport")/#=SeverancePayableId#' title="Print"><i class="fa fa-print fa-2x">Print</i></a>
+
+        </div>
+    </div>
 
               @*<div class="row">
                   <div class="col-sm-1">
@@ -212,23 +234,31 @@
 </script>
 
 <script>
-    
+    var masterId = 0;
+    function onDetailExpandUser(e)
+    {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#SeverancePayable_grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.SeverancePayableId;
+    }
     function generateSeverancePayable(id) {
         var severanceDate = $("#severanceDate").val();
         var employee = $("#EmployeeId").val();
-
+        var severanceDateGorg = $("#SeveranceDateGorg_"+masterId).val();
         $('#loading-image').show();
-
         $.ajax({
             type: "POST",
             url: '@Url.Action("GenerateSeverancePayable", "SeverancePayables", new { area = "HRM" })',
-            data: { id: id, empId: employee, severanceDate: severanceDate },
+            data: { id: id, empId: employee, severanceDate: severanceDate, severanceDateGorg: severanceDateGorg },
             success: function (result) {
                 alert(result.Message);
                 $('#loading-image').hide();
                 location.reload(true);
             }, 
-            error: function (result) {
+            error: function (result)
+            {
                 alert(result.Message);
                 $('#loading-image').hide();
 
@@ -241,15 +271,43 @@
     }
 </script>
 <script>
-    function filterEmployeeBranch() {
+    function filterEmployeeBranch()
+    {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
-
         };
+
     }
 
 </script>
 <script>
+
+    function onDataBoundMaster(e)
+    {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            //if (dataItem.IsSendForPayment) {
+
+            //    row.find(".k-grid-edit").hide();
+            //    row.find(".k-grid-delete").hide();
+            //    row.find(".k-grid-close").hide();
+            //    row.find(".k-grid-cmd-pay").hide();
+            //    row.css("background-color", "gray");
+            //}
+            //else {
+            //    row.find(".k-grid-edit").show();
+            //    row.find(".k-grid-delete").hide();
+            //    row.find(".k-grid-cmd-pay").show();
+            //}
+           
+
+        }
+
+    }
+
     function onDataBound(e) {
         var rows = e.sender.tbody.children();
 
@@ -275,49 +333,7 @@
 
     }
 
-    var masterId = 0;
-    function onDetailExpandUser(e)
-    {
-        var masterRow = e.masterRow;
-
-          var masterGrid = $("#SeverancePayable_grid").data("kendoGrid");
-          var masterDataItem = masterGrid.dataItem(masterRow);
-
-          masterId = masterDataItem.SeverancePayableId;
-          @*var gridName = "#SeverancePayableDetail_grid" + masterId;
-        $.ajax({
-            url: '@Url.Action("CheckStatus", "LeaveReturn")',
-
-            data: { masterId: masterId },
-            type: 'POST',
-            cache: false,
-            success: function (result) {
-                r = result;
-                if (r == "true") {
-                    $(gridName).find(".k-toolbar").show(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                }
-                if (r == "Dapproved") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                    $(".k-grid-edit", gridName).hide();
-                    $(".k-grid-delete", gridName).hide();
-
-                }
-                if (r == "approved") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                    $(".k-grid-edit", gridName).hide();
-                    $(".k-grid-delete", gridName).hide();
-                }
-               
-               
-
-            }
-
-        });*@
-
-    }
+   
     function PaySeverance(e) {
 
         //var row = $(e.target).closest("tr");
