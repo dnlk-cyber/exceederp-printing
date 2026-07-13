@@ -163,7 +163,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 return Json(new { Message = "Already sent for Payment .", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
 
             }
-          
+            var glTax = db.GLTaxRates.FirstOrDefault();
+            if (glTax == null)
+            {
+                return Json(new { Message = "set  GLTax Rates first .", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+
+            }
             var requestEntity = new PaymentRequest
             {
                 SupplierId = "0",
@@ -207,50 +212,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             };
             db.PaymentRequests.Add(requestEntity);
             db.SaveChanges();
-            var glTaxRate = db.ExpenseAndTaxSettings.FirstOrDefault();
-            var glTax = db.GLTaxRates.FirstOrDefault();
-            if (glTaxRate != null)
+          
+            var RequestEntityDetail = new PaymentRequestLine
             {
-                var RequestEntityDetail = new PaymentRequestLine
-                {
-                    PaymentRequestId = requestEntity.PaymentRequestId,
-                    Amount = payableDetail.NetPay,
-                    TaxAmount = 0,
-                    TotalAmount = payableDetail.NetPay,
-                    ItemName = glTaxRate.ApSetupItemId.ToString(),
-                    GLTaxRateID = glTax?.GLTaxRateID??0,
-                    Description = "Severance Payment",
-                    Remark = "Severance Payment",
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now.Date,
-                    ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now.Date,
+                PaymentRequestId = requestEntity.PaymentRequestId,
+                Amount = payableDetail.NetPay,
+                TaxAmount = payableDetail.AccTaxDifference,
+                TotalAmount = payableDetail.NetPay,
+                ItemName = glTax.TaxName.ToString(),
+                GLTaxRateID = glTax?.GLTaxRateID??0,
+                Description = "Severance Payment",
+                Remark = "Severance Payment",
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Now.Date,
+                ModifiedBy = User.Identity.Name,
+                LastModified = DateTime.Now.Date,
 
-                };
-                db.PaymentRequestLines.Add(RequestEntityDetail);
-                db.SaveChanges();
-            }
-            else
-            {
-                var RequestEntityDetail = new PaymentRequestLine
-                {
-                    PaymentRequestId = requestEntity.PaymentRequestId,
-                    Amount = payableDetail.NetPay,
-                    TaxAmount = 0,
-                    TotalAmount = payableDetail.NetPay,
-                    ItemName = "0",
-                    GLTaxRateID = 0,
-                    Description = "Severance Payment",
-                    Remark = "Description",
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now.Date,
-                    ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now.Date,
-
-                };
-                db.PaymentRequestLines.Add(RequestEntityDetail);
-                db.SaveChanges();
-            }
+            };
+            db.PaymentRequestLines.Add(RequestEntityDetail);
+            db.SaveChanges();
+            
+           
             payableDetail.IsSendForPayment = true;
             payableDetail.SendBy = User.Identity.Name;
             payableDetail.DateSent = DateTime.Now.Date;
