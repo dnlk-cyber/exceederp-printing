@@ -10,19 +10,19 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class SeverancePayableObjectDataSource : List<SeverancePayableVM>
+    public class SeverancePayableObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public SeverancePayableVM GetLeavePayable(string id, string paidStatus, string branch, string workunit)
+        public SeverancePayableVM GetLeavePayable(string id, string paidStatus, string branch, string workunit,string empId)
         {
             SeverancePayableVM result = new SeverancePayableVM();
 
             if (!int.TryParse(id, out int payableId))
                 return result;
 
-            var payable = db.SeverancePayables.Find(payableId);
+            var payable = db.SeverancePayables.FirstOrDefault(x=>x.SeverancePayableId == payableId);
             if (payable == null)
                 return result;
 
@@ -39,6 +39,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             if (int.TryParse(workunit, out int orgId))
                 detailsQuery = detailsQuery.Where(x => x.OrgStructureId == orgId);
+
+            if (int.TryParse(empId, out int employeeId))
+                detailsQuery = detailsQuery.Where(x => x.EmployeeId == employeeId);
 
             if (!string.IsNullOrEmpty(paidStatus))
             {
@@ -68,18 +71,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     Basicalary = detail.BasicSalary,
                     NomberOfYears = detail.NumberOFYears,
                     GrossComposition = detail.GrossComponsation,
-                    Total = detail.NoneTaxableTotal,
-                    IncomeTax = detail.TaxWithheldIncomeTax,
-                    TotalIncomeTax = detail.TaxWithheldComTax,
-                    Deduction = detail.SpecialSalaryDeduction,
-                    TotalDeuduction = detail.TotalDeductions,
+                    GrossCompensationPayment = detail.GrossCompensationPayment,
+                    IncomeTax = detail.TaxOnBasicSalary,
+                    AccTaxDifference = detail.AccTaxDifference,
+                    TaxOnMonthlySalaryAndCompensation = detail.TaxOnMonthlySalaryAndCompensation,
+                    TaxDifference = detail.TaxDifference,
                     NetPay = detail.NetPay
                 };
             }).ToList();
 
             return result;
         }
-
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> GetPaidStatus()
         {
@@ -88,5 +90,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             list.Add("NotPaid");
             return list;
         }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
+      
     }
 }

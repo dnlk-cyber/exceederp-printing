@@ -16,13 +16,15 @@ using ExceedERP.Core.Domain.HRM.Severance;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
+
 namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 {
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin, HrmConstants.HRAttendanceUser)]
+
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin, HrmConstants.HRDepartmentHead)]
     public class SeverancePayablesController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
-        // GET: HRM/SickLeaveSetting
+        // GET: HRM/SeverancePayables
         HRMInputs inputs = new HRMInputs();
 
         public ActionResult Index()
@@ -256,12 +258,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             var fiscalYear = db.GLFiscalYears.Find(payable.GlFiscalYearId);
             if (fiscalYear == null)
             {
-                return Json(new { Message = "No record for this fiscal year.", Status = "NOK-OK" }, JsonRequestBehavior.AllowGet);
+                return Json(new { Message = "No record for this fiscal year.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
             }
             var setting = db.SeverancePayableDetails.FirstOrDefault();
             if (fiscalYear == null)
             {
-                return Json(new { Message = "set the severance setting first .", Status = "NOK-OK" }, JsonRequestBehavior.AllowGet);
+                return Json(new { Message = "set the severance setting first .", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
             }
 
             //include recent terminated employee

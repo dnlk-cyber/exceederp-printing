@@ -19,11 +19,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public decimal Basicalary { get; set; }
         public string NomberOfYears { get; set; }
         public decimal GrossComposition { get; set; }
+        public decimal GrossCompensationPayment { get; set; }
         public decimal Total { get; set; }
         public decimal IncomeTax { get; set; }
-        public decimal TotalIncomeTax { get; set; }
-        public decimal Deduction { get; set; }
-        public decimal TotalDeuduction { get; set; }
+        public decimal AccTaxDifference { get; set; }
+        public decimal TaxOnMonthlySalaryAndCompensation { get; set; }
+        public decimal TaxDifference { get; set; }
         public decimal NetPay { get; set; }
 
     }
