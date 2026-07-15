@@ -817,6 +817,10 @@
     <Compile Include="Migrations\202607091503249_leaveconfigurations.Designer.cs">
       <DependentUpon>202607091503249_leaveconfigurations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202607130656414_severance-payable.cs" />
+    <Compile Include="Migrations\202607130656414_severance-payable.Designer.cs">
+      <DependentUpon>202607130656414_severance-payable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1381,6 +1385,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202607091503249_leaveconfigurations.resx">
       <DependentUpon>202607091503249_leaveconfigurations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202607130656414_severance-payable.resx">
+      <DependentUpon>202607130656414_severance-payable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
