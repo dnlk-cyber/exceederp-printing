@@ -2,7 +2,7 @@
 using System.Linq;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
+
 
 namespace ExceedERP.Helpers.Procurement
 {

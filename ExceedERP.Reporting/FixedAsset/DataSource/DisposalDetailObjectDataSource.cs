@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.DataAccess.Migrations;
+
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel;

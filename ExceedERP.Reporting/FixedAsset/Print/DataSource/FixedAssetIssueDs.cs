@@ -4,7 +4,7 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
+
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.FixedAsset.Print.ViewModel;
 using ExceedERP.Reporting.Inventory.DataSource.Print;

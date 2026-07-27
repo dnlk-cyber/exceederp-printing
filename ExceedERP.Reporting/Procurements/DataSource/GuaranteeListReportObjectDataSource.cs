@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Reporting.Procurements.ViewModel;
 
 namespace ExceedERP.Reporting.Procurements.DataSource

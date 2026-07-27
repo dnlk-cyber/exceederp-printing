@@ -14,7 +14,6 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
-using ExceedERP.DataAccess.Migrations;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 {

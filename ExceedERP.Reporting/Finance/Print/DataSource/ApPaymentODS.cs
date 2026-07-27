@@ -1,6 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
+
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Finance.ViewModel.Print;
 using ExceedERP.Reporting.SharedDataSources;

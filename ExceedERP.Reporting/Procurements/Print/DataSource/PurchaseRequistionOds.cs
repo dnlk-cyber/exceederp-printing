@@ -10,7 +10,6 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
-using ExceedERP.DataAccess.Migrations;
 using System.Data.Entity;
 
 namespace ExceedERP.Reporting.Procurements.Print.Print

@@ -10,6 +10,7 @@ namespace ExceedERP.DataAccess.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            MigrationsDirectory = @"Migrations";
         }
 
         protected override void Seed(ExceedERP.DataAccess.Context.ExceedDbContext context)

@@ -7,7 +7,7 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
+
 using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Helpers.Procurement

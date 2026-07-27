@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
+
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Reporting.Finance.ViewModel;
 using ExceedERP.Reporting.Finance.ViewModel.GAAP;

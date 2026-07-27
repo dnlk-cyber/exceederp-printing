@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Reporting.Finance.ViewModel;
 
 namespace ExceedERP.Reporting.Finance.DataSource.GL

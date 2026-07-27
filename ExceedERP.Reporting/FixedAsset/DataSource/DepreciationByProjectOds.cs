@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Reporting.SharedDataSources;
 
 namespace ExceedERP.Reporting.FixedAsset.DataSource

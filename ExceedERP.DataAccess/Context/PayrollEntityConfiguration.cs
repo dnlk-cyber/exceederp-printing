@@ -27,7 +27,7 @@ using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.APTS;
 using ExceedERP.Core.Domain.HRM.Payroll.Setting;
-using ExceedERP.DataAccess.Migrations;
+
 using ExceedERP.Core.Domain.HRM.Payroll.BackPays;
 using ExceedERP.Core.Domain.HRM.Payroll.MissingPayrollBackPays;
 
