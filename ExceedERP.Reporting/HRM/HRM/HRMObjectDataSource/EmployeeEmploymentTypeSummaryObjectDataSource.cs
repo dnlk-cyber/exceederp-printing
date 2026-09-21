@@ -14,22 +14,24 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeeEmploymentTypeSummaryObjectDataSource :IDisposable
+    public class EmployeeEmploymentTypeSummaryObjectDataSource : IDisposable
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetEmployeeTypeSummary(string branchId,object[] orgStructureIds,string status,string source,string empStatus = "")
+        public List<EmployeeSummary> GetEmployeeTypeSummary(string branchId, object[] orgStructureIds, string status, string source, string empStatus = "")
         {
-            var list = GetEmployees(branchId, orgStructureIds, status);
+            // Pass empStatus down to the query method
+            var list = GetEmployees(branchId, orgStructureIds, status, empStatus);
             return list.OrderBy(x => x.SummaryName).ToList();
         }
-        public List<EmployeeSummary> GetEmployees(string branchId, object[] orgStructureIds, string status)
+
+        public List<EmployeeSummary> GetEmployees(string branchId, object[] orgStructureIds, string status, string empStatus = "")
         {
             IQueryable<Placement> placements = _db.Placements;
             IQueryable<Person_Employee> employees = _db.Person_Employee.Where(x => x.IsActive);
 
-            //  Filter by branch ---
+            // Filter by branch
             if (!string.IsNullOrEmpty(branchId) && int.TryParse(branchId, out int branch))
             {
                 var empIds = placements
@@ -40,11 +42,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 employees = employees.Where(x => empIds.Contains(x.EmployeeId));
             }
 
-            // Filter by OrgStructure ---
+            // Filter by OrgStructure
             if (orgStructureIds != null && orgStructureIds.Length > 0)
             {
                 var orgIds = orgStructureIds
-                    .Select(o => int.TryParse(o.ToString(), out int id) ? id : (int?)null)
+                    .Select(o => int.TryParse(o?.ToString(), out int id) ? id : (int?)null)
                     .Where(id => id.HasValue)
                     .Select(id => id.Value)
                     .ToList();
@@ -60,7 +62,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
             }
 
-            //  Active / Inactive Filter ---
+            // Active / Inactive Filter
             if (!string.IsNullOrEmpty(status))
             {
                 if (status.Equals("Active", StringComparison.OrdinalIgnoreCase))
@@ -83,7 +85,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
             }
 
-            //  Execute query once ---
+            // Execute query once
             var employeeList = employees
                 .Select(e => new
                 {
@@ -93,18 +95,27 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 })
                 .ToList();
 
-            // Prepare all EmployeeStatus values ---
+            // Prepare EmployeeStatus values
             var allStatuses = Enum.GetValues(typeof(EmployeeStatus))
                 .Cast<EmployeeStatus>()
                 .Where(s => s != EmployeeStatus.NOTSELECTED)
                 .ToList();
 
+            // Filter by Employment Type / Status if a specific option is chosen
+            if (!string.IsNullOrEmpty(empStatus) && !empStatus.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                allStatuses = allStatuses.Where(s =>
+                    s.ToString().Equals(empStatus, StringComparison.OrdinalIgnoreCase) ||
+                    GetEnumDisplayName(s).Equals(empStatus, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
             var summaries = new List<EmployeeSummary>();
 
-            foreach (var empStatus in allStatuses)
+            foreach (var statusItem in allStatuses)
             {
                 var byStatus = employeeList
-                    .Where(x => x.Status == empStatus)
+                    .Where(x => x.Status == statusItem)
                     .ToList();
 
                 var maleCount = byStatus.Count(x => x.Gender == Gender.MALE);
@@ -114,7 +125,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 var summary = new EmployeeSummary
                 {
                     Criteria = "Employment Type",
-                    SummaryName = GetEnumDisplayName(empStatus), // localized name
+                    SummaryName = GetEnumDisplayName(statusItem),
                     NumberOfMaleEmployee = maleCount,
                     NumberOfFemaleEmployee = femaleCount,
                     NumberOfOtherEmployee = othersCount,
@@ -124,10 +135,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 summaries.Add(summary);
             }
 
-          
-
             return summaries;
         }
+
         public string GetEnumDisplayName(Enum value)
         {
             var field = value.GetType().GetField(value.ToString());
@@ -142,16 +152,5 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             _db.Dispose();
         }
-    }
-
-    public class EmployeesVm
-    {
-        public int EmployeeId { get; set; }
-        public Gender Gender { get; set; }
-        public EmployeeStatus EmployeeStatus { get; set; }
-        public int BranchId { get; set; }
-        public int OrgStructureId { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsCurrent { get; set; }
     }
 }

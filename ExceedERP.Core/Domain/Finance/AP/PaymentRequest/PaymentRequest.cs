@@ -5,8 +5,22 @@ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
 {
-    
-   public class PaymentRequest: DepartmentNewOperations
+    public enum PaymentRequestSource
+    {
+        FinalSettlement,
+        ConsultantOT,
+        LeavePaidInCash,
+        LeavePayable,
+        SeverancePayable,
+        DisciplinePunishment,
+        HealthAndValueBenefit,
+        EmployeeAccidentCreditService,
+        EmployeeMedicalExpenseRefund,
+        LoanRequest,
+        HolidayGift
+
+    }
+    public class PaymentRequest : DepartmentOperationsWithAudit
     {
         public int PaymentRequestId { get; set; }
 
@@ -16,13 +30,6 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public bool IsNewSupplier { get; set; }
         [Display(Name = "Supplier Name")]
         public string Supplier { get; set; }
-
-        //
-        public string Source { get; set; }
-
-        //
-        public string SourceId { get; set; }
-
         public int? Purchaser { get; set; }
         [Required]
         public string ReasonOfPayment { get; set; }
@@ -50,6 +57,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public decimal PaymentAmount { get; set; }
         [Display(Name = "Remaining")]
         public decimal AmountDue { get; set; }
+        public string BankAccount { get; set; }
         [Display(Name = "From Branch/Project")]
         public int FromBranchId { get; set; }
         [Display(Name = "From Business Unit")]
@@ -66,22 +74,25 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
         public int CreatedAtOrgStructureId { get; set; }
+        public string Source { get; set; }
+        public string SourceId { get; set; }
         public virtual ICollection<PaymentRequestLine> PaymentRequestLines { get; set; }
-        public virtual ICollection<FundTransferLine> FundTransferLines { get; set; }
+        //public virtual ICollection<FundTransferLine> FundTransferLines { get; set; }
         public virtual ICollection<PaymentRequestAttachment> PaymentRequestAttachments { get; set; }
-        public virtual ICollection<PaymentRequestDepartmentValidation> PaymentRequestDepartmentValidations { get; set; }       
+        public virtual ICollection<PaymentRequestDepartmentValidation> PaymentRequestDepartmentValidations { get; set; }
         public virtual ICollection<PaymentRequestBudgetValidation> PaymentRequestBudgetValidations { get; set; }
+        // public virtual ICollection<PaymentRequestAuditValidation> PaymentRequestAuditValidations { get; set; }
         public virtual ICollection<PaymentRequestAuthorizeValidation> PaymentRequestAuthorizeValidations { get; set; }
         public virtual ICollection<PaymentRequestValidation> PaymentRequestValidations { get; set; }
     }
-
+    //not used
     public class FundTransferLine : TrackUserSettingOperation
     {
         public int FundTransferLineId { get; set; }
         public int PaymentRequestId { get; set; }
         public PaymentRequest PaymentRequest { get; set; }
         [Display(Name = "Branch/Project")]
-        public int? BranchId { get; set; }    
+        public int? BranchId { get; set; }
         public decimal Material { get; set; }
         public decimal FuelAndLubricant { get; set; }
         public decimal ManPower { get; set; }

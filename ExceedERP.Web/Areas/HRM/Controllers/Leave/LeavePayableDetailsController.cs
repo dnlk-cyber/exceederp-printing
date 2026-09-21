@@ -33,6 +33,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 BasicSalary = leavePayable.BasicSalary,
                 Year1 = leavePayable.Year1,
                 Year2 = leavePayable.Year2,
+                CurrentYear = leavePayable.CurrentYear,
                 PayableDays = leavePayable.PayableDays,
                 Balance = leavePayable.Balance,
                 AgregateTaxableAmount = leavePayable.AgregateTaxableAmount,
@@ -69,7 +70,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 db.SaveChanges();
                 #region operation log
 
-                UserHelper.OperationLog(Request.UserHostAddress, "Leave payable ", "Success", User.Identity.Name, "Leave payable  is Created By  " + User.Identity.Name,Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Leave payable ", "Success", User.Identity.Name, "Leave payable  is Created By  " + User.Identity.Name,Modules.HRM);
                 
                 #endregion
             }
@@ -126,24 +127,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return Json(new[] { payableDetail }.ToDataSourceResult(request, ModelState));
 
             //  Calculations
-            decimal totalDays = payableDetail.Year1 + payableDetail.Year2;
+
+            //bool allowCurrentYearBalance = setting.IncludeCurrentFiscalYearDays;
+
+            //if (allowCurrentYearBalance)
+            //{
+            //    var currentLeavesEntitle = db.LeavesEntitle
+            //                        .Where(x => x.EmployeeId == payableDetail.EmployeeId
+            //                                 && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+
+            //    var totalBalance = currentLeavesEntitle?.Sum(x => x.Balance) ?? 0;
+
+            //    if (fiscalYear.DateTo > DateTime.Now)
+            //    {
+            //        decimal totalFiscalYearDays = (decimal)(fiscalYear.DateTo - fiscalYear.DateFrom).TotalDays;
+            //        decimal elapsedDays = (decimal)(DateTime.Now - fiscalYear.DateFrom).TotalDays;
+
+            //        currentLeaveBalance = (elapsedDays / totalFiscalYearDays) * totalBalance;
+            //    }
+            //    else
+            //    {
+            //        currentLeaveBalance = totalBalance;
+            //    }
+            //}
+            decimal totalDays = payableDetail.Year1 + payableDetail.Year2+ payableDetail.CurrentYear;
             decimal salary = placement.Salary;
 
             decimal totalPayable = (salary * totalDays) / setting.CurrentValue;
             decimal monthlyLeave = totalPayable / 12;
+
             decimal aggregateTaxable = monthlyLeave + salary;
 
             decimal aggregateTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxable);
-            //decimal aggregateTax = CalculateTax(aggregateTaxable);
-           // decimal basicTax = CalculateBasicSalaryIncomeTax(salary);
             decimal basicTax = (decimal)IncomeTax.GetIncomeTax((float)salary);
-
             decimal taxDifference = (aggregateTax - basicTax) * 12;
             decimal netPayment = totalPayable - taxDifference;
 
             //  Update entity
             payableDetail.Year1 = payableDetail.Year1;
             payableDetail.Year2 = payableDetail.Year2;
+            payableDetail.CurrentYear = payableDetail.CurrentYear;
             payableDetail.PayableDays = totalDays;
 
             payableDetail.BasicSalary = salary;
@@ -165,7 +188,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             db.Entry(entity).State = EntityState.Modified;
             db.SaveChanges();
 
-            // Logging
+            //Logging
             UserHelper.OperationLog(
                 Request.UserHostAddress,
                 "Leave Payable Detail",
@@ -177,6 +200,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return Json(new[] { payableDetail }.ToDataSourceResult(request, ModelState));
         }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavePayables_Destroy([DataSourceRequest]DataSourceRequest request, LeavePayableDetail leave)
         {
@@ -184,8 +208,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 var entity = GetMappedObject(leave);
                 #region delete log
-                var leaves = db.Person_Employee.Find(leave.EmployeeId);
-                var delete = leaves.FullNameaEnglish;
+                var employee = db.Person_Employee.Find(leave.EmployeeId);
+                var delete = employee.FullNameaEnglish;
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted   employee"  + delete);
                 #endregion
                 db.LeavePayableDetails.Attach(entity);
@@ -208,6 +232,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 OrgStructureId = leavePayable.OrgStructureId,
                 Year1 = leavePayable.Year1,
                 Year2 = leavePayable.Year2,
+                CurrentYear = leavePayable.CurrentYear,
                 PayableDays = leavePayable.PayableDays,
                 Balance = leavePayable.Balance,
                 BasicSalary = leavePayable.BasicSalary,

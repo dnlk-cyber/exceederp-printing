@@ -13,7 +13,6 @@ using System;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.Global;
@@ -45,7 +44,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             DataSourceResult result = leavePayableSettings.ToDataSourceResult(request, leavePayableSetting => new
             {
                 LeavePayableSettingId = leavePayableSetting.LeavePayableSettingId,
-                CurrentValue = leavePayableSetting.CurrentValue
+                IncludeCurrentFiscalYearDays = leavePayableSetting.IncludeCurrentFiscalYearDays,
+                CurrentValue = leavePayableSetting.CurrentValue,
+                CreatedBy = leavePayableSetting.CreatedBy,
+                DateCreated = leavePayableSetting.DateCreated,
+                LastModified = leavePayableSetting.LastModified,
+                ModifiedBy = leavePayableSetting.ModifiedBy,
+
             });
 
             return Json(result);
@@ -53,7 +58,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeavePayableSetting_Create([DataSourceRequest]DataSourceRequest request, LeavePayableSetting leave)
+        public ActionResult LeavePayableSetting_Create([DataSourceRequest]DataSourceRequest request, LeavePayableSetting leavePayableSetting)
         {
             if (ModelState.IsValid)
             {
@@ -62,7 +67,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 var entity = new LeavePayableSetting
                 {
 
-                    CurrentValue = leave.CurrentValue,
+                    CurrentValue = leavePayableSetting.CurrentValue,
+                    IncludeCurrentFiscalYearDays = leavePayableSetting.IncludeCurrentFiscalYearDays,
+                    DateCreated = DateTime.UtcNow,
+                    CreatedBy = User.Identity.Name
+
+
                 };
                 db.LeavePayableSettings.Add(entity);
                 db.SaveChanges();
@@ -73,12 +83,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 
                 #endregion
             }
-            return Json(new[] { leave }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { leavePayableSetting }.ToDataSourceResult(request, ModelState));
         }
 
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeavePayableSetting_Update([DataSourceRequest]DataSourceRequest request, LeavePayableSetting leave)
+        public ActionResult LeavePayableSetting_Update([DataSourceRequest]DataSourceRequest request, LeavePayableSetting leavePayableSetting)
         {
 
             if (ModelState.IsValid)
@@ -86,46 +96,57 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 var entity = new LeavePayableSetting
                 {
-                    LeavePayableSettingId = leave.LeavePayableSettingId,
-                    CurrentValue = leave.CurrentValue,
+                    LeavePayableSettingId = leavePayableSetting.LeavePayableSettingId,
+                    CurrentValue = leavePayableSetting.CurrentValue,
+                    IncludeCurrentFiscalYearDays = leavePayableSetting.IncludeCurrentFiscalYearDays,
+                    CreatedBy = leavePayableSetting.CreatedBy,
+                    DateCreated = leavePayableSetting.DateCreated,
+                    LastModified = leavePayableSetting.LastModified,
+                    ModifiedBy = leavePayableSetting.ModifiedBy,
+
                 };
                 db.LeavePayableSettings.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
 
                 #region operation log
-              
-                   
-                        UserHelper.OperationLog(Request.UserHostAddress, "Leave payable Setting", "Success", User.Identity.Name, "Leave payable Setting is Updated By  " + User.Identity.Name,Modules.HRM);
+
+
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Leave payable Setting", "Success", User.Identity.Name, "Leave payable Setting is Updated By  " + User.Identity.Name,Modules.HRM);
                 
                 #endregion
             }
 
 
-            return Json(new[] { leave }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { leavePayableSetting }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeavePayableSetting_Destroy([DataSourceRequest]DataSourceRequest request, LeavePayableSetting leave)
+        public ActionResult LeavePayableSetting_Destroy([DataSourceRequest]DataSourceRequest request, LeavePayableSetting leavePayableSetting)
         {
             if (ModelState.IsValid)
             {
                 var entity = new LeavePayableSetting
                 {
-                    LeavePayableSettingId = leave.LeavePayableSettingId,
-                    CurrentValue = leave.CurrentValue,
+                    LeavePayableSettingId = leavePayableSetting.LeavePayableSettingId,
+                    CurrentValue = leavePayableSetting.CurrentValue,
+                    IncludeCurrentFiscalYearDays = leavePayableSetting.IncludeCurrentFiscalYearDays,
+                    CreatedBy = leavePayableSetting.CreatedBy,
+                    DateCreated = leavePayableSetting.DateCreated,
+                    LastModified = leavePayableSetting.LastModified,
+                    ModifiedBy = leavePayableSetting.ModifiedBy,
+
                 };
                 #region delete log
-                //var leaves = db.GLFiscalYears.Find(leavePlan.GlFiscalYearId);
-                //var delete = leaves.Name;
-                //UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Leave payable Setting", "Success", User.Identity.Name, "Leave payable Setting is Updated By  " + User.Identity.Name);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted leave Payable Setting"+ leavePayableSetting.LeavePayableSettingId);
                 #endregion
                 db.LeavePayableSettings.Attach(entity);
                 db.LeavePayableSettings.Remove(entity);
                 db.SaveChanges();
             }
 
-            return Json(new[] { leave }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { leavePayableSetting }.ToDataSourceResult(request, ModelState));
         }
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)

@@ -10,7 +10,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public int PaymentRequestId { get; set; }
         public PaymentRequest PaymentRequest { get; set; }
         [Display(Name = "Tax")]
-        public int GLTaxRateID { get; set; }
+        public int? GLTaxRateID { get; set; }
         public GLTaxRate GLTaxRate { get; set; }       
         [Required]
         public string ItemName { get; set; }

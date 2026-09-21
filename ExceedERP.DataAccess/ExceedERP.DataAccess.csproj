@@ -93,6 +93,10 @@
     <Compile Include="Migrations\202607270956152_Initial.Designer.cs">
       <DependentUpon>202607270956152_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202609142150212_HRandothermodelchanges.cs" />
+    <Compile Include="Migrations\202609142150212_HRandothermodelchanges.Designer.cs">
+      <DependentUpon>202609142150212_HRandothermodelchanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -114,6 +118,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202607270956152_Initial.resx">
       <DependentUpon>202607270956152_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202609142150212_HRandothermodelchanges.resx">
+      <DependentUpon>202609142150212_HRandothermodelchanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

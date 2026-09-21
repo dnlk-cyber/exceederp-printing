@@ -1,5 +1,4 @@
 using ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource;
-using ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource;
 
 namespace ExceedERP.Reporting.HRM.HRM
 {
@@ -254,17 +253,37 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.tblEmployeeSumm.Body.SetCellContent(1, 4, this.textBox11);
             this.tblEmployeeSumm.Body.SetCellContent(0, 0, this.textBox19);
             this.tblEmployeeSumm.Body.SetCellContent(1, 0, this.textBox20);
+
             tableGroup1.Name = "group2";
             tableGroup1.ReportItem = this.textBox18;
+
             tableGroup2.Name = "tableGroup";
             tableGroup2.ReportItem = this.textBox45;
-            tableGroup3.Filters.Add(new Telerik.Reporting.Filter("=\'NoOfMaleEmployee\'", Telerik.Reporting.FilterOperator.In, "= Parameters.columns.Value"));
+
+            // Dynamic Column Filter: Male (Shows column by default or when selected)
+            tableGroup3.Filters.Add(new Telerik.Reporting.Filter(
+                "= Parameters.columns.Value is Null Or 'NoOfMaleEmployee' In Parameters.columns.Value",
+                Telerik.Reporting.FilterOperator.Equal,
+                "= True"));
             tableGroup3.Name = "NoOfMaleEmployee";
             tableGroup3.ReportItem = this.NoOfMaleEmployee;
+
+            // Dynamic Column Filter: Female (Shows column by default or when selected)
+            tableGroup4.Filters.Add(new Telerik.Reporting.Filter(
+                "= Parameters.columns.Value is Null Or 'NoOfFemaleEmployee' In Parameters.columns.Value",
+                Telerik.Reporting.FilterOperator.Equal,
+                "= True"));
             tableGroup4.Name = "tableGroup1";
             tableGroup4.ReportItem = this.NoOfFemaleEmployee;
+
+            // Dynamic Column Filter: Total (Shows column by default or when selected)
+            tableGroup5.Filters.Add(new Telerik.Reporting.Filter(
+                "= Parameters.columns.Value is Null Or 'TotalEmployee' In Parameters.columns.Value",
+                Telerik.Reporting.FilterOperator.Equal,
+                "= True"));
             tableGroup5.Name = "tableGroup2";
             tableGroup5.ReportItem = this.TotalEmployee;
+
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup1);
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup2);
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup3);
@@ -616,7 +635,6 @@ namespace ExceedERP.Reporting.HRM.HRM
             reportParameter1.AvailableValues.ValueMember = "= Fields.Item";
             reportParameter1.Name = "age";
             resources.ApplyResources(reportParameter1, "reportParameter1");
-            reportParameter1.Value = "Active";
             reportParameter1.Visible = true;
             reportParameter2.AllowNull = true;
             reportParameter2.AvailableValues.DataSource = this.BranchObjectDataSource;
@@ -645,6 +663,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             reportParameter5.AvailableValues.ValueMember = "= Fields.Item";
             reportParameter5.Name = "status";
             resources.ApplyResources(reportParameter5, "reportParameter5");
+            reportParameter5.Value = "Active";
             reportParameter5.Visible = true;
             reportParameter6.AllowNull = true;
             reportParameter6.AutoRefresh = true;

@@ -5666,6 +5666,12 @@
     <EmbeddedResource Include="HRM\HRM\rptDisciplineReason.resx">
       <DependentUpon>rptDisciplineReason.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\rptEmpAge.am.resx">
+      <DependentUpon>rptEmpAge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\rptEmpAge.om.resx">
+      <DependentUpon>rptEmpAge.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpAge.resx">
       <DependentUpon>rptEmpAge.cs</DependentUpon>
     </EmbeddedResource>

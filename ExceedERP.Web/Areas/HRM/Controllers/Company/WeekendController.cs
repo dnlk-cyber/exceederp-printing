@@ -1,9 +1,15 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+
+using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -31,6 +37,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
                 WeekendId = weekend.WeekendId,
                 IsHalfDay = weekend.IsHalfDay,
+                IsFullDay = weekend.IsFullDay,
                 Name = weekend.Name,
                 Remark = weekend.Remark,
                 OrgBranchName = weekend.OrgBranchName,
@@ -46,21 +53,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Weekend_Create([DataSourceRequest]DataSourceRequest request, Weekend weekend)
         {
+            
+            var checkExstance = db.Weekends.Where(x => x.Name == weekend.Name).ToList();
+            // var jobName = weekend.Name;
+            //var mainCompanyStructures = checkExstance.FirstOrDefault(j => j.Name.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)) == jobName.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)));
+
+            if (checkExstance.Any())
+            {
+                ModelState.AddModelError("", "This weekend is already exist!!");
+                return Json(new[] { weekend }.ToDataSourceResult(request, ModelState));
+
+            }
+
+            if (weekend.IsFullDay &&weekend.IsHalfDay)
+            {
+                ModelState.AddModelError("", "it is either Half day or Full Day or none of them !!");
+                return Json(new[] { weekend }.ToDataSourceResult(request, ModelState));
+            }
             if (ModelState.IsValid)
             {
-                var checkExstance = db.Weekends.Where(x => x.Name == weekend.Name).ToList();
-                // var jobName = weekend.Name;
-                //var mainCompanyStructures = checkExstance.FirstOrDefault(j => j.Name.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)) == jobName.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)));
-
-                if (checkExstance.Any())
-                {
-                    ModelState.AddModelError("", "This weekend is already exist!!");
-                }
-                else
-                {
+                
                     var entity = new Weekend
                     {
                         IsHalfDay = weekend.IsHalfDay,
+                        IsFullDay = weekend.IsFullDay,
                         Name = weekend.Name,
                         Remark = weekend.Remark,
                         OrgBranchName = weekend.OrgBranchName,
@@ -96,7 +112,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     
 
                     #endregion
-                }
+                
             }
 
             return Json(new[] { weekend }.ToDataSourceResult(request, ModelState));
@@ -106,12 +122,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Weekend_Update([DataSourceRequest]DataSourceRequest request, Weekend weekend)
         {
+            var checkExstance = db.Weekends.Where(x => x.Name == weekend.Name&&x.WeekendId !=weekend.WeekendId).ToList();
+           
+            if (checkExstance.Any())
+            {
+                ModelState.AddModelError("", "This weekend is already exist!!");
+                return Json(new[] { weekend }.ToDataSourceResult(request, ModelState));
+
+            }
+            if (weekend.IsFullDay && weekend.IsHalfDay)
+            {
+                ModelState.AddModelError("", "it is either Half day or Full Day or none of them !!");
+                return Json(new[] { weekend }.ToDataSourceResult(request, ModelState));
+            }
             if (ModelState.IsValid)
             {
                 var entity = new Weekend
                 {
                     WeekendId = weekend.WeekendId,
                     IsHalfDay = weekend.IsHalfDay,
+                    IsFullDay = weekend.IsFullDay,
                     Name = weekend.Name,
                     Remark = weekend.Remark,
                     OrgBranchName = weekend.OrgBranchName,
@@ -163,6 +193,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 {
                     WeekendId = weekend.WeekendId,
                     IsHalfDay = weekend.IsHalfDay,
+                    IsFullDay = weekend.IsFullDay,
                     Name = weekend.Name,
                     Remark = weekend.Remark,
                     OrgBranchName = weekend.OrgBranchName,

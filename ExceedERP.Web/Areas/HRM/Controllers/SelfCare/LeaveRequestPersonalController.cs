@@ -86,24 +86,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     Description = i.Name,
                     LookupId = i.Id,
                 }).AsQueryable();
-            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? false;
         }
-
-        //[HttpPost]
-        //public JsonResult SetEmployee(bool x)
-        //{
-        //    if (x)
-        //    {
-        //        var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-        //        return Json(employeeId, JsonRequestBehavior.AllowGet);
-        //    }
-
-        //    return Json(0, JsonRequestBehavior.AllowGet);
-        //}
-
+        
         public JsonResult SendForApproval(int id)
         {
-            var leaveRequest = db.LeaveRequest.Find(id);
+            var leaveRequest = db.LeaveRequest.FirstOrDefault(x=>x.LeaveRequestId == id);
             if (leaveRequest == null)
             {
                 return Json(new { Message = "Leave request not found.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
@@ -116,20 +104,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 return Json(new { Message = "The Leave Request is already sent for approval.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
             }
-
-            //bool hasOverlappingRequest = db.LeaveRequest.Any(x =>
-            //                                  x.EmployeeId == leaveRequest.EmployeeId
-            //                                  &&!x.IsDepartmentOnlineApproved
-            //                                  &&!x.IsOnlineApproved
-            //                                  && x.LeaveRequestId != leaveRequest.LeaveRequestId
-            //                                  && x.From <= leaveRequest.To
-            //                                  && x.To >= leaveRequest.From);
             if (db.LeaveRequest.Any(x => !x.IsVoid
                                      && x.EmployeeId == leaveRequest.EmployeeId
                                      && x.LeaveRequestId != leaveRequest.LeaveRequestId
-                                     && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) ||
-                                        (x.From <= leaveRequest.To && x.To >= leaveRequest.To)
-                                    )))
+                                     && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) 
+                                     ||(x.From <= leaveRequest.To && x.To >= leaveRequest.To))))
             {
               
                     return Json(new
@@ -137,15 +116,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         Message = "You can't send this request; it overlaps with another leave request you already submitted.",
                         Status = "Not-Ok"
                     }, JsonRequestBehavior.AllowGet);
-               
-                //ModelState.AddModelError("", "Your request overlaps with another existing leave request.");
-                //return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
            
-
-
-
-
             var requestStatus = new RequestesStatus
             {
                 RequestId = id,
@@ -156,13 +128,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Date = DateTime.Now,
                 DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
             };
-
             leaveRequest.IsSendForApproval = true;
             leaveRequest.IsDepartmentSendForApproval = true;
             leaveRequest.SendForApprovalBy = User.Identity.Name;
             leaveRequest.Status = RequestStatus.WAITING_FOR_APPROVAL.ToString();
             leaveRequest.SendForApprovalTime = DateTime.Now;
-
             db.RequestesStatus.Add(requestStatus);
             db.Entry(leaveRequest).State = EntityState.Modified;
             db.SaveChanges();
@@ -335,6 +305,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             EmployeeCode = lr.Employee.EmployeeCode, // navigation property
                             lr.DepartmentOnlineApprovedBy,
                             lr.Status,
+                            lr.IsSendForApproval,
                             lr.DepartmentSendForApprovalBy,
                             lr.DepartmentSendForApprovalTime,
                             lr.IsDepartmentSendForApproval,
@@ -345,7 +316,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             lr.OnlineApprovedTime,
                             lr.IsOnlineApproved,
                             lr.MorningOrAfternoon,
-                            lr.IsSendForApproval,
                             lr.ToTime,
                             lr.IsVoid,
                             lr.VoidBy,
@@ -439,7 +409,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             #region Pre Conditions for validation
 
 
-            bool useEthiopian = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            bool useEthiopian = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? false;
 
             if (useEthiopian)
             {
@@ -447,7 +417,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 if (string.IsNullOrWhiteSpace(leaveRequest.FromAmharic) ||
                     string.IsNullOrWhiteSpace(leaveRequest.ToAmharic))
                 {
-                    ModelState.AddModelError("", "Both From and To Date fields are mandatory.");
+                    ModelState.AddModelError("", "Both From and To Ethiopian Date fields are mandatory.");
                     return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
                 // Convert Ethiopic → Gregorian
@@ -459,7 +429,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 // User inputs Gregorian dates → must validate
                 if (leaveRequest.From == default(DateTime) || leaveRequest.To == default(DateTime))
                 {
-                    ModelState.AddModelError("", "Both From and To Date fields are mandatory.");
+                    ModelState.AddModelError("", "Both From and To Gorgorian Date fields are mandatory.");
                     return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
 
@@ -475,7 +445,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From && x.DateTo >= leaveRequest.From);
             if (fiscalYear == null)
             {
-                ModelState.AddModelError("", "Check your Period if it is defined!!");
+                ModelState.AddModelError("", "No fiscal year is defined for the selected leave start date. Please define the fiscal period or select a valid date.");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
 
             }
@@ -585,7 +555,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             && x.GlFiscalYearId == fiscalYear.GlFiscalYearId
                             && x.IsExpired);
 
-                        if (leaveEntitle == null && leaveRequest.Type == LeaveType.ANNUAL)
+                        if (leaveEntitle == null&& totalBalance<=0 && leaveRequest.Type == LeaveType.ANNUAL)
                         {
                             string message = leaveEntitleExpired != null
                                 ? "You have used all your annual leave balance."
@@ -792,7 +762,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
               
             }
-            else if (leaveRequest.Type == LeaveType.ANNUAL)
+            else if (leaveRequest.Type == LeaveType.ANNUAL && totalBalance <= 0)
             {
                 ModelState.AddModelError("", "You have no entitlement for this budget year");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
@@ -885,7 +855,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             if (leaveRequest.LeaveDays == 0)
             {
-                ModelState.AddModelError("", "Leave Days must be greater than 0!!");
+                ModelState.AddModelError("", "Leave days must be greater than 0!!");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+
+            if (leaveRequest.LeaveDays > totalBalance && leaveRequest.Type==LeaveType.ANNUAL)
+            {
+                ModelState.AddModelError("",
+                    $"The requested leave days ({leaveRequest.LeaveDays}) cannot exceed the available leave balance ({totalBalance}).");
+
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
@@ -958,7 +937,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                                                   .Sum(x => x);
             #region Pre Conditions for validation
 
-            bool useEthiopian = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            bool useEthiopian = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? false;
             if (useEthiopian)
             {
                 // User inputs Ethiopian dates → must validate
@@ -1001,8 +980,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 && x.DateTo >= leaveRequest.From);
             if (fiscalYear == null)
             {
-                ModelState.AddModelError("",
-                    "The selected leave date does not fall within any defined fiscal year. Please verify that the fiscal period is properly configured.");
+                ModelState.AddModelError("", "No fiscal year is defined for the selected leave start date. Please define the fiscal period or select a valid date.");
+
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
 
             }
@@ -1241,7 +1220,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
 
             }
-            else if (leaveRequest.Type == LeaveType.ANNUAL)
+            else if (leaveRequest.Type == LeaveType.ANNUAL && totalBalance<=0)
             {
                 ModelState.AddModelError("", "You have no entitlement for this budget year");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
@@ -1326,6 +1305,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (leaveRequest.LeaveDays == 0)
             {
                 ModelState.AddModelError("", "Leave days must be greater than 0!!");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            }
+            if (leaveRequest.LeaveDays > totalBalance && leaveRequest.Type == LeaveType.ANNUAL)
+            {
+                ModelState.AddModelError("",
+                    $"The requested leave days ({leaveRequest.LeaveDays}) cannot exceed the available leave balance ({totalBalance}).");
+
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
@@ -1652,8 +1638,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 if (entitleCurrentYear != null)
                 {
                     exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, toDate, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalBalance);
-                    if (exactDeserve >= totalBalance)
-                        exactDeserve = totalBalance;
+
                 }
 
             }
@@ -1690,6 +1675,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 days -= afternoonOffDays;
             }
             if (exactDeserve == 0 && totalBalance > 0)
+            {
+                exactDeserve = totalBalance;
+            }
+            if(exactDeserve> totalBalance)
             {
                 exactDeserve = totalBalance;
             }
@@ -1736,9 +1725,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
 
             exactDeserve = (int)exactDeserve + added;
-            if (exactDeserve >= totalbalance)
+            if (exactDeserve > totalbalance)
+            {
                 exactDeserve = totalbalance;
-
+            }
             return exactDeserve;
         }
         public decimal GetCurrentYearDeserve(DateTime from, DateTime to, decimal amount)
@@ -2069,7 +2059,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
 
 
-                if ((exactDeserve == 0 && totalBalance > 0)|| exactDeserve>=totalBalance)
+                if (exactDeserve == 0 && totalBalance > 0)
+                {
+                    exactDeserve = totalBalance;
+                }
+                if (exactDeserve > totalBalance)
                 {
                     exactDeserve = totalBalance;
                 }
@@ -2130,9 +2124,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     exactDeserve = totalBalance;
                 }
-                if (exactDeserve >= totalBalance)
-                    exactDeserve = totalBalance;
-
+                if (exactDeserve > 0 && exactDeserve > totalBalance)
+                {
+                    exactDeserve = Math.Min(exactDeserve, totalBalance);
+                }
                 leaveDays = HrHelper.GetLeaveDays(fromDate, toDate, fiscalYear.GlFiscalYearId, LeaveDay.Full_Day, LeaveType.ANNUAL, empId);
                
                 if (morningOrAfternoon == MorningOrAfternoon.Afternoon)
@@ -2202,9 +2197,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     exactDeserve = totalBalance;
                 }
-                if (exactDeserve >= totalBalance)
+                if (exactDeserve>0 && exactDeserve > totalBalance)
+                {
                     exactDeserve = totalBalance;
-
+                }
             }
            
             return $"{totalBalance}-{exactDeserve}";

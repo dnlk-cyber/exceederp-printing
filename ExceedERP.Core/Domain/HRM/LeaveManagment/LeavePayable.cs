@@ -52,6 +52,8 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public decimal Year1 { get; set; }
         [Display(Name = "Year 2")]
         public decimal Year2 { get; set; }
+        [Display(Name = "Current Year")]
+        public decimal CurrentYear { get; set; }
         //[Display(Name = "Total Annual leave")]
         //public decimal TotalAnnualLeave { get; set; }
         [Display(Name = "Annual leave per month")]

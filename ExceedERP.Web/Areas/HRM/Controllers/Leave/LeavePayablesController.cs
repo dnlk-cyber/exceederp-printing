@@ -16,6 +16,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using XAPI;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -199,13 +200,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 Purchaser = 0,
                 ReasonOfPayment = "Payable Leave Payment",
                 RequestDate = now.Date,
-                RequestDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(now.Day, now.Month, now.Year),
+                RequestDateAm = HrHelper.GetECDate(now),
 
                 InvoiceNo = "0",
                 PurchaseRequestNo = "0",
                 PONo = "0",
                 GRN = "0",
-
+                Source = PaymentRequestSource.LeavePayable.ToString(),
+                SourceId = payableDetail.LeavePayableDetailId.ToString(),
                 BranchId = payableDetail.BranchId,
                 BusinessUnitId = payableDetail.BusinessUnitId ?? 0,
                 OrgStuructureId = payableDetail.OrgStructureId,
@@ -231,22 +233,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             };
 
             db.PaymentRequests.Add(paymentRequest);
-            //db.SaveChanges();
+            db.SaveChanges();
 
             // Get Tax Setting
             //var taxSetting = db.ExpenseAndTaxSettings.FirstOrDefault();
-            var tax = db.GLTaxRates.FirstOrDefault();
+            //var tax = db.GLTaxRates.FirstOrDefault();
 
             // Create Payment Line (single logic)
             var paymentLine = new PaymentRequestLine
             {
+
                 PaymentRequest = paymentRequest, // use navigation instead of ID
                 Amount = payableDetail.NetPayment,
-                TaxAmount =  payableDetail?.BasicSalaryIncomeTax?? 0,
+                TaxAmount = payableDetail.BasicSalaryIncomeTax,
                 TotalAmount = payableDetail.NetPayment,
 
-                ItemName = tax?.TaxName.ToString() ?? "0",
-                GLTaxRateID = tax?.GLTaxRateID ?? 0,
+                ItemName = " ",
+                GLTaxRateID = null,
 
                 Description = "Payable Leave Payment",
                 Remark = "Payable Leave Payment",
@@ -297,7 +300,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 Supplier = " ",
                 Purchaser = 0,
                 ReasonOfPayment = "Payable Leave Payment ",
-                Source = "Payable Leave Payment ",
+                Source = PaymentRequestSource.LeavePayable.ToString(),
                 SourceId = payableDetail.LeavePayableId.ToString(),
                 RequestDate = DateTime.Now.Date,
                 RequestDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
@@ -328,50 +331,47 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             };
             db.PaymentRequests.Add(requestEntity);
             db.SaveChanges();
-            //var glTaxRate = db.ExpenseAndTaxSettings.FirstOrDefault();
-            var gLTax = db.GLTaxRates.FirstOrDefault();
-            if (gLTax != null)
+          
+            var RequestEntityDetail = new PaymentRequestLine
             {
-                var RequestEntityDetail = new PaymentRequestLine
-                {
-                    PaymentRequestId = requestEntity.PaymentRequestId,
-                    Amount = payableDetail.NetPayment,
-                    TaxAmount = payableDetail.BasicSalaryIncomeTax,
-                    TotalAmount = payableDetail.NetPayment,
-                    ItemName = gLTax.TaxName.ToString(),
-                    GLTaxRateID = gLTax?.GLTaxRateID??0,
-                    Description = "Payable leave Pay Payment",
-                    Remark = "Payable Leave Payment",
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now.Date,
-                    ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now.Date,
+                PaymentRequestId = requestEntity.PaymentRequestId,
+                Amount = payableDetail.NetPayment,
+                TaxAmount = payableDetail.BasicSalaryIncomeTax,
+                TotalAmount = payableDetail.NetPayment,
+                ItemName = "Payable leave Pay Payment",
+                GLTaxRateID = null,
+                Description = "Payable leave Pay Payment",
+                Remark = "Payable Leave Payment",
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Now.Date,
+                ModifiedBy = User.Identity.Name,
+                LastModified = DateTime.Now.Date,
 
-                };
-                db.PaymentRequestLines.Add(RequestEntityDetail);
-                db.SaveChanges();
-            }
-            else
-            {
-                var RequestEntityDetail = new PaymentRequestLine
-                {
-                    PaymentRequestId = requestEntity.PaymentRequestId,
-                    Amount = payableDetail.NetPayment,
-                    TaxAmount = 0,
-                    TotalAmount = payableDetail.NetPayment,
-                    ItemName = "0",
-                    GLTaxRateID = 0,
-                    Description = "Payable Leave Payment",
-                    Remark = "Description",
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now.Date,
-                    ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now.Date,
+            };
+            db.PaymentRequestLines.Add(RequestEntityDetail);
+            db.SaveChanges();
+           
+            //else
+            //{
+            //    var RequestEntityDetail = new PaymentRequestLine
+            //    {
+            //        PaymentRequestId = requestEntity.PaymentRequestId,
+            //        Amount = payableDetail.NetPayment,
+            //        TaxAmount = 0,
+            //        TotalAmount = payableDetail.NetPayment,
+            //        ItemName = "0",
+            //        GLTaxRateID = 0,
+            //        Description = "Payable Leave Payment",
+            //        Remark = "Description",
+            //        CreatedBy = User.Identity.Name,
+            //        DateCreated = DateTime.Now.Date,
+            //        ModifiedBy = User.Identity.Name,
+            //        LastModified = DateTime.Now.Date,
 
-                };
-                db.PaymentRequestLines.Add(RequestEntityDetail);
-                db.SaveChanges();
-            }
+            //    };
+            //    db.PaymentRequestLines.Add(RequestEntityDetail);
+            //    db.SaveChanges();
+            //}
             payableDetail.IsSendForPayment = true;
             payableDetail.SendForPaymentBy = User.Identity.Name;
             payableDetail.SendForPaymentTime = DateTime.Now.Date;
@@ -383,7 +383,159 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
         }
 
-        public ActionResult GenerateLeavePayable(int id,string employee=null)
+        //public ActionResult GenerateLeavePayable(int id,string employee=null)
+        //{
+        //    var leavePayable = db.LeavePayables.Find(id);
+        //    if (leavePayable == null)
+        //    {
+        //        return Json(new { Message = "There Is no Such record.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+        //    }
+
+        //    var fiscalYear = db.GLFiscalYears.FirstOrDefault(x=>x.GlFiscalYearId == leavePayable.GlFiscalYearId);
+        //    if (fiscalYear == null)
+        //    {
+        //        return Json(new { Message = "There Is no Fiscal Year Record, check it first.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+        //    }
+        //    var leavePayableSetting = db.LeavePayableSettings.FirstOrDefault();
+
+        //    if (leavePayableSetting == null || leavePayableSetting.CurrentValue == 0)
+        //    {
+        //        return Json(new { Message = "There Is no setted Leave PayableS ettings, set it first.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+        //    }
+
+        //    bool allowCurrentYearBalance = leavePayableSetting.IncludeCurrentFiscalYearDays;
+        //    decimal currentLeaveBalance = 0;
+        //    var glFiscalYears = db.GLFiscalYears
+        //        .Where(x => x.DateTo < fiscalYear.DateTo)
+        //        .OrderByDescending(x => x.DateTo).Take(2).Select(x => x.GlFiscalYearId).ToArray();
+
+        //    var leaveEntitlements = db.LeavesEntitle
+        //        .Where(x => !x.IsExpired && glFiscalYears.Contains(x.GlFiscalYearId))
+        //        .ToList();
+        //    if(!string.IsNullOrEmpty(employee) && int.TryParse(employee,out int employeeId))
+        //    {
+        //         leaveEntitlements = db.LeavesEntitle
+        //               .Where(x => !x.IsExpired &&x.EmployeeId==employeeId
+        //               && glFiscalYears.Contains(x.GlFiscalYearId))
+        //               .ToList();
+        //    }
+
+        //    foreach (var leaveEntitlement in leaveEntitlements.DistinctByField(x => x.EmployeeId))
+        //    {
+        //        var fiscalYear1 = glFiscalYears[0];
+        //        var fiscalYear2 = glFiscalYears[1];
+        //        var leavesEntitle1 = db.LeavesEntitle.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalYear1);
+        //        var balance1 = leavesEntitle1.Any()?
+        //            leavesEntitle1.Sum(x => x.Balance):0;
+        //        var payableDays1 = leavesEntitle1.Any() ?
+        //            leavesEntitle1.Sum(x => x.Amount):0;
+        //        var leavesEntitle2 = db.LeavesEntitle
+        //            .Where(x => x.EmployeeId == leaveEntitlement.EmployeeId
+        //            && x.GlFiscalYearId == fiscalYear2);
+
+        //        var balance2 = leavesEntitle2.Any()? leavesEntitle2
+        //                          .Sum(x => x.Balance):0;
+
+        //        var payableDays2 = leavesEntitle2.Any() ? leavesEntitle2
+        //            .Sum(x => x.Amount):0;
+        //        if (allowCurrentYearBalance)
+        //        {
+        //            var currentLeavesEntitle = db.LeavesEntitle
+        //                .Where(x => x.EmployeeId == leaveEntitlement.EmployeeId
+        //                         && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+
+        //            var totalBalance = currentLeavesEntitle.Any()?currentLeavesEntitle.Sum(x => x.Balance) : 0;
+
+        //            if (fiscalYear.DateTo > DateTime.Now)
+        //            {
+        //                decimal totalFiscalYearDays =(decimal) (fiscalYear.DateTo - fiscalYear.DateFrom).TotalDays;
+        //                decimal elapsedDays = (decimal)(DateTime.Now - fiscalYear.DateFrom).TotalDays;
+
+        //                currentLeaveBalance =(elapsedDays / totalFiscalYearDays) * totalBalance;
+        //            }
+        //            else
+        //            {
+        //                currentLeaveBalance = totalBalance;
+        //            }
+        //        }
+
+        //        var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == leaveEntitlement.EmployeeId);
+        //        if (placement == null)
+        //        {
+        //            continue;
+        //        }
+        //        decimal payable1 = (placement.Salary * balance1) / leavePayableSetting.CurrentValue;
+        //        decimal payable2 = (placement.Salary * balance2) / leavePayableSetting.CurrentValue;
+        //        decimal currentpayable = (placement.Salary * currentLeaveBalance) / leavePayableSetting.CurrentValue;
+        //       // decimal total = payable1 + payable2;
+        //        decimal total = (placement.Salary*(balance1+balance2+currentLeaveBalance))/ leavePayableSetting.CurrentValue;
+        //        decimal annualLeavePerMonth = total / 12;
+        //        decimal aggregateTaxableAmount = annualLeavePerMonth + placement.Salary;
+        //        var leavePayableDetail = db.LeavePayableDetails.FirstOrDefault(x => x.EmployeeId == leaveEntitlement.EmployeeId 
+        //                                                             && x.LeavePayableId == id);
+
+        //        if (leavePayableDetail == null)
+        //        {
+        //            leavePayableDetail = new LeavePayableDetail
+        //            {
+        //                LeavePayableId = leavePayable.LeavePayableId,
+        //                EmployeeCode = leaveEntitlement.EmployeeCode,
+        //                EmployeeId = leaveEntitlement.EmployeeId,
+        //                BranchId = leaveEntitlement.BranchId,
+        //                BusinessUnitId = placement.BusinessUnitId,
+        //                OrgStructureId = placement.OrgStructureId,
+        //                BasicSalary = placement.Salary,
+        //                PayableDays = balance1 + balance2+currentLeaveBalance,
+        //                Year1 = balance1,
+        //                Year2 = balance2,
+        //                CurrentYear = currentLeaveBalance,
+
+        //                //Year1 = payableDays1,
+        //                //Year2 = payableDays2,
+        //                //Balance = total,
+
+        //                Balance = total,
+        //                AnnualLeavePerMonth = annualLeavePerMonth,
+        //                AgregateTaxableAmount = aggregateTaxableAmount,
+        //                AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount),
+        //                BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary) /*CalculateBasicSalaryIncomeTax(placement.Salary)*/,
+        //                Remark = "Generated Leave Payable",
+        //                DateCreated = leavePayable.DateCreated,
+        //                CreatedBy = leavePayable.CreatedBy,
+        //                LastModified = leavePayable.LastModified,
+        //                ModifiedBy = leavePayable.ModifiedBy
+        //            };
+        //            leavePayableDetail.TaxDifference = (leavePayableDetail.AgregateIncomeTax - leavePayableDetail.BasicSalaryIncomeTax) * 12;
+        //            leavePayableDetail.NetPayment = leavePayableDetail.Balance - leavePayableDetail.TaxDifference;
+        //            db.LeavePayableDetails.Add(leavePayableDetail);
+        //        }
+        //        else
+        //        {
+        //            leavePayableDetail.PayableDays = balance1 + balance2+ currentLeaveBalance;
+        //            leavePayableDetail.Year1 = balance1;
+        //            leavePayableDetail.Year2 = balance2;
+        //            leavePayableDetail.CurrentYear = currentLeaveBalance;
+        //            leavePayableDetail.Balance = total;
+        //            leavePayableDetail.BasicSalary = placement.Salary;
+        //            leavePayableDetail.AnnualLeavePerMonth = annualLeavePerMonth;
+        //            leavePayableDetail.AgregateTaxableAmount = aggregateTaxableAmount;
+        //            leavePayableDetail.AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount);
+        //            /* CalculateTax(aggregateTaxableAmount);*/
+        //            leavePayableDetail.BasicSalaryIncomeTax =(decimal) IncomeTax.GetIncomeTax((float)placement.Salary);
+        //            leavePayableDetail.Remark = "Generated Leave Payable";
+        //            leavePayableDetail.LastModified = DateTime.Now;
+        //            leavePayableDetail.ModifiedBy = User.Identity.Name;
+        //            leavePayableDetail.TaxDifference = (leavePayableDetail.AgregateIncomeTax - leavePayableDetail.BasicSalaryIncomeTax) * 12;
+        //            leavePayableDetail.NetPayment = leavePayableDetail.Balance - leavePayableDetail.TaxDifference;
+        //            db.Entry(leavePayableDetail).State = EntityState.Modified;
+        //        }
+        //    }
+
+        //    db.SaveChanges();
+
+        //    return Json(new { Message = "Successfully Generated.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+        //}
+        public ActionResult GenerateLeavePayable(int id, string employee = null)
         {
             var leavePayable = db.LeavePayables.Find(id);
             if (leavePayable == null)
@@ -391,108 +543,155 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return Json(new { Message = "There Is no Such record.", Status = "OK" }, JsonRequestBehavior.AllowGet);
             }
 
-            var fiscalYear = db.GLFiscalYears.Find(leavePayable.GlFiscalYearId);
+            var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == leavePayable.GlFiscalYearId);
             if (fiscalYear == null)
             {
                 return Json(new { Message = "There Is no Fiscal Year Record, check it first.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
             }
+
             var leavePayableSetting = db.LeavePayableSettings.FirstOrDefault();
             if (leavePayableSetting == null || leavePayableSetting.CurrentValue == 0)
             {
                 return Json(new { Message = "There Is no setted Leave PayableS ettings, set it first.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
             }
-           
-            var glFiscalYears = db.GLFiscalYears
-                .Where(x => x.DateTo < fiscalYear.DateTo)
-                .OrderByDescending(x => x.DateTo).Take(2).Select(x => x.GlFiscalYearId).ToArray();
 
-            var leaveEntitlements = db.LeavesEntitle
-                .Where(x => !x.IsExpired && glFiscalYears.Contains(x.GlFiscalYearId))
+            bool allowCurrentYearBalance = leavePayableSetting.IncludeCurrentFiscalYearDays;
+
+            // 1. Get up to 2 previous fiscal years
+            var pastFiscalYears = db.GLFiscalYears
+                .Where(x => x.DateTo < fiscalYear.DateTo)
+                .OrderByDescending(x => x.DateTo)
+                .Take(2)
+                .Select(x => x.GlFiscalYearId)
                 .ToList();
-            if(!string.IsNullOrEmpty(employee) && int.TryParse(employee,out int employeeId))
+
+            int? fiscalYear1 = pastFiscalYears.Count > 0 ? pastFiscalYears[0] : (int?)null;
+            int? fiscalYear2 = pastFiscalYears.Count > 1 ? pastFiscalYears[1] : (int?)null;
+
+            // 2. Include current fiscal year ID alongside past fiscal years
+            var targetFiscalYears = new List<int>(pastFiscalYears) { fiscalYear.GlFiscalYearId };
+
+            // 3. Query entitlements across past + current fiscal years
+            var query = db.LeavesEntitle.Where(x => !x.IsExpired && targetFiscalYears.Contains(x.GlFiscalYearId));
+
+            if (!string.IsNullOrEmpty(employee) && int.TryParse(employee, out int employeeId))
             {
-                 leaveEntitlements = db.LeavesEntitle
-                       .Where(x => !x.IsExpired &&x.EmployeeId==employeeId
-                       && glFiscalYears.Contains(x.GlFiscalYearId))
-                       .ToList();
+                query = query.Where(x => x.EmployeeId == employeeId);
             }
 
-            foreach (var leaveEntitlement in leaveEntitlements.DistinctByField(x => x.EmployeeId))
+            var leaveEntitlements = query.ToList();
+
+            // 4. Extract distinct employees who have entitlement records
+            var distinctEmployeeIds = leaveEntitlements.Select(x => x.EmployeeId).Distinct().ToList();
+
+            foreach (var empId in distinctEmployeeIds)
             {
-                var fiscalYear1 = glFiscalYears[0];
-                var fiscalYear2 = glFiscalYears[1];
-                var leavesEntitle1 = db.LeavesEntitle.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalYear1);
-                var balance1 = leavesEntitle1.Any()?
-                    leavesEntitle1.Sum(x => x.Balance):0;
-                var payableDays1 = leavesEntitle1.Any() ?
-                    leavesEntitle1.Sum(x => x.Amount):0;
-                var leavesEntitle2 = db.LeavesEntitle
-                    .Where(x => x.EmployeeId == leaveEntitlement.EmployeeId
-                    && x.GlFiscalYearId == fiscalYear2);
+                var empEntitlements = leaveEntitlements.Where(x => x.EmployeeId == empId).ToList();
+                var sampleEntitlement = empEntitlements.First();
 
-                var balance2 = leavesEntitle2.Any()? leavesEntitle2
-                                  .Sum(x => x.Balance):0;
+                // Calculate Year 1 Balance
+                decimal balance1 = 0;
+                if (fiscalYear1.HasValue)
+                {
+                    balance1 = empEntitlements
+                        .Where(x => x.GlFiscalYearId == fiscalYear1.Value)
+                        .Sum(x => (decimal?)x.Balance) ?? 0;
+                }
 
-                var payableDays2 = leavesEntitle2.Any() ? leavesEntitle2
-                    .Sum(x => x.Amount):0;
+                // Calculate Year 2 Balance
+                decimal balance2 = 0;
+                if (fiscalYear2.HasValue)
+                {
+                    balance2 = empEntitlements
+                        .Where(x => x.GlFiscalYearId == fiscalYear2.Value)
+                        .Sum(x => (decimal?)x.Balance) ?? 0;
+                }
 
-                var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == leaveEntitlement.EmployeeId);
+                // Calculate Current Year Balance
+                decimal currentLeaveBalance = 0;
+                if (allowCurrentYearBalance)
+                {
+                    var currentEntitlements = empEntitlements.Where(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+                    decimal totalBalance = currentEntitlements.Sum(x => (decimal?)x.Balance) ?? 0;
+
+                    if (fiscalYear.DateTo > DateTime.Now)
+                    {
+                        decimal totalFiscalYearDays = (decimal)(fiscalYear.DateTo - fiscalYear.DateFrom).TotalDays;
+                        decimal elapsedDays = (decimal)(DateTime.Now - fiscalYear.DateFrom).TotalDays;
+
+                        currentLeaveBalance = totalFiscalYearDays > 0
+                            ? (elapsedDays / totalFiscalYearDays) * totalBalance
+                            : 0;
+                    }
+                    else
+                    {
+                        currentLeaveBalance = totalBalance;
+                    }
+                }
+
+                // Skip if total payable days across all eligible years is 0
+                decimal totalPayableDays = balance1 + balance2 + currentLeaveBalance;
+                if (totalPayableDays <= 0)
+                {
+                    continue;
+                }
+
+                var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empId);
                 if (placement == null)
                 {
                     continue;
                 }
-                decimal payable1 = (placement.Salary * balance1) / leavePayableSetting.CurrentValue;
-                decimal payable2 = (placement.Salary * balance2) / leavePayableSetting.CurrentValue;
-               // decimal total = payable1 + payable2;
-                decimal total = (placement.Salary*(balance1+balance2))/ leavePayableSetting.CurrentValue;
+
+                decimal total = (placement.Salary * totalPayableDays) / leavePayableSetting.CurrentValue;
                 decimal annualLeavePerMonth = total / 12;
                 decimal aggregateTaxableAmount = annualLeavePerMonth + placement.Salary;
-                var leavePayableDetail = db.LeavePayableDetails
-                    .FirstOrDefault(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.LeavePayableId == id);
+
+                var leavePayableDetail = db.LeavePayableDetails.FirstOrDefault(x => x.EmployeeId == empId && x.LeavePayableId == id);
 
                 if (leavePayableDetail == null)
                 {
                     leavePayableDetail = new LeavePayableDetail
                     {
                         LeavePayableId = leavePayable.LeavePayableId,
-                        EmployeeCode = leaveEntitlement.EmployeeCode,
-                        EmployeeId = leaveEntitlement.EmployeeId,
-                        BranchId = leaveEntitlement.BranchId,
+                        EmployeeCode = sampleEntitlement.EmployeeCode,
+                        EmployeeId = empId,
+                        BranchId = sampleEntitlement.BranchId,
                         BusinessUnitId = placement.BusinessUnitId,
                         OrgStructureId = placement.OrgStructureId,
                         BasicSalary = placement.Salary,
-                        PayableDays = balance1 + balance2,
+                        PayableDays = totalPayableDays,
                         Year1 = balance1,
                         Year2 = balance2,
-                        //Year1 = payableDays1,
-                        //Year2 = payableDays2,
-                        //Balance = total,
+                        CurrentYear = currentLeaveBalance,
                         Balance = total,
                         AnnualLeavePerMonth = annualLeavePerMonth,
                         AgregateTaxableAmount = aggregateTaxableAmount,
                         AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount),
-                        BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary) /*CalculateBasicSalaryIncomeTax(placement.Salary)*/,
+                        BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary),
                         Remark = "Generated Leave Payable",
                         DateCreated = leavePayable.DateCreated,
                         CreatedBy = leavePayable.CreatedBy,
                         LastModified = leavePayable.LastModified,
                         ModifiedBy = leavePayable.ModifiedBy
                     };
+
                     leavePayableDetail.TaxDifference = (leavePayableDetail.AgregateIncomeTax - leavePayableDetail.BasicSalaryIncomeTax) * 12;
                     leavePayableDetail.NetPayment = leavePayableDetail.Balance - leavePayableDetail.TaxDifference;
                     db.LeavePayableDetails.Add(leavePayableDetail);
                 }
                 else
                 {
-                    leavePayableDetail.PayableDays = balance1 + balance2;
+                    leavePayableDetail.EmployeeCode = placement.EmployeeCode;
+                    leavePayableDetail.PayableDays = totalPayableDays;
                     leavePayableDetail.Year1 = balance1;
                     leavePayableDetail.Year2 = balance2;
+                    leavePayableDetail.CurrentYear = currentLeaveBalance;
                     leavePayableDetail.Balance = total;
                     leavePayableDetail.BasicSalary = placement.Salary;
                     leavePayableDetail.AnnualLeavePerMonth = annualLeavePerMonth;
                     leavePayableDetail.AgregateTaxableAmount = aggregateTaxableAmount;
-                    leavePayableDetail.AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount);/* CalculateTax(aggregateTaxableAmount);*/
-                    leavePayableDetail.BasicSalaryIncomeTax =(decimal) IncomeTax.GetIncomeTax((float)placement.Salary);
+                    leavePayableDetail.AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount);
+                    leavePayableDetail.BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary);
                     leavePayableDetail.Remark = "Generated Leave Payable";
                     leavePayableDetail.LastModified = DateTime.Now;
                     leavePayableDetail.ModifiedBy = User.Identity.Name;
@@ -507,186 +706,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return Json(new { Message = "Successfully Generated.", Status = "OK" }, JsonRequestBehavior.AllowGet);
         }
         #region old codes
-        //public ActionResult GenerateLeavePayable1(int id)
-        //{
-            
-        //    var leavePayable = db.LeavePayables.Find(id);
-        //    if (leavePayable != null)
-        //    {
-        //        var fiscalyear = db.GLFiscalYears.Find(leavePayable.GlFiscalYearId);
-        //        if (fiscalyear != null)
-        //        {
-        //            var glfiscal = db.GLFiscalYears.Where(x => x.DateTo < fiscalyear.DateTo).OrderByDescending(x => x.DateTo).Select(x => x.GlFiscalYearId).Take(2).ToArray();
-        //            var glfiscalyearIds = db.GLFiscalYears.Where(x => x.DateTo < fiscalyear.DateTo).OrderByDescending(x => x.DateTo).Select(x => x.GlFiscalYearId).Take(2);
-        //            var leaveEntitlements = db.LeavesEntitle.Where(x => !x.IsExpired).Where(x => glfiscalyearIds.Contains(x.GlFiscalYearId)).ToList();
-        //            var entitlements = leaveEntitlements.DistinctByField(x => x.EmployeeId).ToList();
-        //            foreach (var leaveEntitlement in entitlements)
-        //            {
-        //                int fiscalyear1 = glfiscal[0];
-        //                int fiscalyear2 = glfiscal[1];
-        //                var balance1 = db.LeavesEntitle.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalyear1).Sum(x => x.Balance);
-        //                var payableDays1 = db.LeavesEntitle.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalyear1).Sum(x => x.Amount);
-        //                var payableDays2 = db.LeavesEntitle.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalyear2).Sum(x => x.Amount);
-        //                var balance2 = db.LeavesEntitle.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId && x.GlFiscalYearId == fiscalyear2).Sum(x => x.Balance);
-        //                var placement = db.Placements.Where(x => x.isCurrent && x.EmployeeId == leaveEntitlement.EmployeeId).FirstOrDefault();
-        //                var PayableDetail = db.LeavePayableDetails.Where(x => x.EmployeeId == leaveEntitlement.EmployeeId&&x.LeavePayableId==id).FirstOrDefault();
-        //                if (PayableDetail == null)
-        //                {
-                            
-        //                    if (placement != null)
-        //                    {
-        //                        decimal payable1 = 0;
-        //                        decimal payable2 = 0;
-        //                        decimal total = 0;
-        //                        decimal agregateTaxableAmount = 0;
-        //                        var leavePayableSetting = db.LeavePayableSettings.FirstOrDefault();
-
-        //                        if (leavePayableSetting != null && leavePayableSetting.CurrentValue != 0)
-        //                        {
-        //                            payable1 += ((placement.Salary * balance1) / leavePayableSetting.CurrentValue);
-        //                            payable2 += ((placement.Salary * balance2) / leavePayableSetting.CurrentValue);
-        //                            total += (payable1 + payable2);
-        //                            agregateTaxableAmount = total + placement.Salary;
-        //                        }
-        //                        var entity = new LeavePayableDetail
-        //                        {
-        //                            LeavePayableId = leavePayable.LeavePayableId,
-        //                            EmployeeCode = leaveEntitlement.EmployeeCode,
-        //                            EmployeeId = leaveEntitlement.EmployeeId,
-        //                            BranchId = leaveEntitlement.BranchId,
-        //                            BusinessUnitId = placement.BusinessUnitId,
-        //                            OrgStructureId = placement.OrgStructureId,
-        //                            BasicSalary = placement.Salary,
-        //                            PayableDays = payableDays1 + payableDays2,
-        //                            Year1 = payableDays1,
-        //                            Year2 = payableDays2,
-        //                            Balance = total,
-        //                            AnnualLeavePerMonth = total/12,
-        //                            AgregateTaxableAmount = agregateTaxableAmount,
-        //                            AgregateIncomeTax = CalculateTax(agregateTaxableAmount),
-        //                            BasicSalaryIncomeTax = CalculateBasicSalaryIncomeTax(placement.Salary),
-        //                            Remark = "Generated Leave Payable",
-        //                            DateCreated = leavePayable.DateCreated,
-        //                            CreatedBy = leavePayable.CreatedBy,
-        //                            LastModified = leavePayable.LastModified,
-        //                            ModifiedBy = leavePayable.ModifiedBy
-        //                        };
-        //                        entity.TaxDifference = (entity.AgregateTaxableAmount - entity.AgregateIncomeTax) * 12;
-        //                        entity.NetPayment = entity.Balance - entity.TaxDifference;
-        //                        db.LeavePayableDetails.Add(entity);
-                               
-
-        //                    }
-                           
-
-        //                }
-        //                {
-        //                    if (placement != null)
-        //                    {
-        //                        decimal payable1 = 0;
-        //                        decimal payable2 = 0;
-        //                        decimal total = 0;
-        //                        decimal agregateTaxableAmount = 0;
-        //                        var leavePayableSetting = db.LeavePayableSettings.FirstOrDefault();
-
-        //                        if (leavePayableSetting != null && leavePayableSetting.CurrentValue != 0)
-        //                        {
-        //                            payable1 += ((placement.Salary * balance1) / leavePayableSetting.CurrentValue);
-        //                            payable2 += ((placement.Salary * balance2) / leavePayableSetting.CurrentValue);
-        //                            total += (payable1 + payable2);
-        //                            agregateTaxableAmount = total + placement.Salary;
-        //                        }
-
-        //                        PayableDetail.LeavePayableId = leavePayable.LeavePayableId;
-        //                        PayableDetail.EmployeeCode = leaveEntitlement.EmployeeCode;
-        //                        PayableDetail.EmployeeId = leaveEntitlement.EmployeeId;
-        //                        PayableDetail.BranchId = leaveEntitlement.BranchId;
-        //                        PayableDetail.BusinessUnitId = placement.BusinessUnitId;
-        //                        PayableDetail.OrgStructureId = placement.OrgStructureId;
-        //                        PayableDetail.BasicSalary = placement.Salary;
-        //                        PayableDetail.PayableDays = payableDays1 + payableDays2;
-        //                        PayableDetail.Year1 = payableDays1;
-        //                        PayableDetail.Year2 = payableDays2;
-        //                        PayableDetail.Balance = total;
-        //                        PayableDetail.AnnualLeavePerMonth = total / 12;
-        //                        PayableDetail.AgregateTaxableAmount = agregateTaxableAmount;
-        //                        PayableDetail.AgregateIncomeTax = CalculateTax(agregateTaxableAmount);
-        //                        PayableDetail.BasicSalaryIncomeTax = CalculateBasicSalaryIncomeTax(placement.Salary);
-        //                        PayableDetail.Remark = "Generated Leave Payable";
-        //                        PayableDetail.LastModified = DateTime.Now;
-        //                        PayableDetail.ModifiedBy = User.Identity.Name;
-        //                        PayableDetail.TaxDifference = (PayableDetail.AgregateTaxableAmount - PayableDetail.AgregateIncomeTax) * 12;
-        //                        PayableDetail.NetPayment = PayableDetail.Balance - PayableDetail.TaxDifference;
-        //                        db.Entry(PayableDetail).State =EntityState.Modified;
-
-        //                    }
-        //                }
-                           
-        //            }
-        //            db.SaveChanges();
-        //            var formattedData2 = new
-        //            {
-        //                Message = "Successfully Generated.",
-        //                Status = "OK"
-        //            };
-        //            return Json(formattedData2, JsonRequestBehavior.AllowGet);
-
-        //        }
-        //        var formattedData1 = new
-        //        {
-        //            Message = "There Is no Fiscal Year Record check it first .",
-        //            Status = "OK"
-        //        };
-        //        return Json(formattedData1, JsonRequestBehavior.AllowGet);
-        //    }
-        //    var formattedData3 = new
-        //    {
-        //        Message = "There Is no Such record.",
-        //        Status = "OK"
-        //    };
-        //    return Json(formattedData3, JsonRequestBehavior.AllowGet);
-           
-        //}
-        //public ActionResult GenerateLeavePayable2(int id)
-        //{
-        //    var leavePayable = db.LeavePayables.Find(id);
-        //    if (leavePayable == null)
-        //        return Json(new { Message = "No such record.", Status = "Error" }, JsonRequestBehavior.AllowGet);
-
-        //    var fiscalYear = db.GLFiscalYears.Find(leavePayable.GlFiscalYearId);
-        //    if (fiscalYear == null)
-        //        return Json(new { Message = "No Fiscal Year Record found.", Status = "Error" }, JsonRequestBehavior.AllowGet);
-
-        //    var previousFiscalYears = db.GLFiscalYears
-        //        .Where(x => x.DateTo < fiscalYear.DateTo)
-        //        .OrderByDescending(x => x.DateTo)
-        //        .Select(x => x.GlFiscalYearId)
-        //        .Take(2)
-        //        .ToArray();
-
-        //    if (previousFiscalYears.Length < 2)
-        //        return Json(new { Message = "Not enough Fiscal Year data.", Status = "Error" }, JsonRequestBehavior.AllowGet);
-
-        //    var leaveEntitlements = db.LeavesEntitle
-        //        .Where(x => !x.IsExpired && previousFiscalYears.Contains(x.GlFiscalYearId))
-        //        .ToList()
-        //        .GroupBy(x => x.EmployeeId)
-        //        .Select(g => g.First())
-        //        .ToList();
-
-        //    var leavePayableSetting = db.LeavePayableSettings.FirstOrDefault();
-        //    if (leavePayableSetting == null || leavePayableSetting.CurrentValue == 0)
-        //        return Json(new { Message = "Leave Payable Settings are invalid.", Status = "Error" }, JsonRequestBehavior.AllowGet);
-
-        //    foreach (var entitlement in leaveEntitlements)
-        //    {
-        //        ProcessLeavePayable(entitlement, previousFiscalYears, leavePayable, leavePayableSetting);
-        //    }
-
-        //    db.SaveChanges();
-
-        //    return Json(new { Message = "Successfully Generated.", Status = "OK" }, JsonRequestBehavior.AllowGet);
-        //}
 
         private void ProcessLeavePayable(LeaveEntitle entitlement, int[] fiscalYears, LeavePayable leavePayable, LeavePayableSetting setting)
         {

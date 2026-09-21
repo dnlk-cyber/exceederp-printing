@@ -96,6 +96,13 @@ namespace ExceedERP.Core.Domain.Common
         public string SecondSendForApprovalBy { get; set; }
         public DateTime? SecondSendForApprovalTime { get; set; }
     }
+    public class DepartmentOperationsWithAudit : DepartmentNewOperations
+    {
+        //for payment requests
+        public bool IsAuditOnlineApproved { get; set; }
+        public string AuditOnlineApprovedBy { get; set; }
+        public DateTime? AuditOnlineApprovedTime { get; set; }
+    }
     public class OperationWithSecondValidation : Operations
     {
         public bool IsSecondOnlineApproved { get; set; }

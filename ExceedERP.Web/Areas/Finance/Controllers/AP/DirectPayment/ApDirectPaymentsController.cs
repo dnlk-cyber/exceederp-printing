@@ -610,7 +610,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 								ExchangeRate = 1,
 								Currency = "NA",
 								AccountCode = apitem.AccountCode,
-								GLTaxRateID = requestLine.GLTaxRateID,
+								GLTaxRateID = requestLine?.GLTaxRateID??0,
 								TaxAmount = requestLine.TaxAmount,
 								WithholdingType = 0,
 								WithholdingAmount = 0,

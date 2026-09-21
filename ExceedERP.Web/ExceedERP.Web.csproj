@@ -1298,6 +1298,7 @@
     <Compile Include="Areas\HRM\Controllers\Company\CommitteeMemberController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\CompanyEmailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\ComplainResponseController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\DatePreferenceSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\EmployeeComplainController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\EmployeeProbationSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\HolidayController.cs" />
@@ -1324,6 +1325,7 @@
     <Compile Include="Areas\HRM\Controllers\Company\ProjectTypeController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\WaterMarkController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\WeekendController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\WeekendExceptionsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\WorkUnitCostCenterMapController.cs" />
     <Compile Include="Areas\HRM\Controllers\Discipline\CommitteMinuteDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Discipline\DisciplinaryCaseCourtController.cs" />
@@ -7434,6 +7436,7 @@
     <Content Include="Areas\HRM\Views\LeaveConfigurations\Index.cshtml" />
     <Content Include="Areas\HRM\Views\TerminationRequestes\EditorTemplates\TerminationRequest.cshtml" />
     <Content Include="Areas\FixedAsset\Views\IfrsDepreciation\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\DatePreferenceSettings\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
