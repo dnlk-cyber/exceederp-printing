@@ -1,6 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FleetManagement;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
@@ -323,7 +322,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved)
                 {
 
-                    record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                    record.Status = Enum.GetName(typeof(Core.Domain.Maintenance.OperationStatuses), 4);
                     record.IsSendForApproval = true;
                     record.SendForApprovalBy = User.Identity.Name;
                     record.SendForApprovalTime = DateTime.Now;
@@ -376,6 +375,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return null;
 
 
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

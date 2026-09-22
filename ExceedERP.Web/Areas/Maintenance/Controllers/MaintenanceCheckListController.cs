@@ -25,7 +25,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/CheckList/
         public ActionResult Index()
         {
-            ViewData["EquipmentIdentity"] = db.EquipmentIdentity.ToList();
+           // ViewData["EquipmentIdentity"] = db.EquipmentIdentity.ToList();
             return View();
         }
         public ActionResult CheckList_Read([DataSourceRequest] DataSourceRequest request)
@@ -216,6 +216,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
         #endregion
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

@@ -62,6 +62,28 @@ namespace ExceedERP.Core.Domain.Inventory
         [Required]
         [DisplayName("Item Code")]
         public string ItemCode { get; set; }
+        public bool IsLubricant { get; set; }
+        public bool IsSparePart { get; set; }
+        public bool IsBattery { get; set; }
+        public bool IsTire { get; set; }
+        public bool IsOil { get; set; }
+        public virtual InventoryItem InventoryItem { get; set; }
+    }
+    public class NonFuelItemSetting : TrackUserSettingOperation
+    {
+        public int NonFuelItemSettingId { get; set; }
+        [Required]
+        [DisplayName("Item Category")]
+        public string ItemCategoryCode { get; set; }
+        public virtual ItemCategory ItemCategory { get; set; }
+        [Required]
+        [DisplayName("Item Code")]
+        public string ItemCode { get; set; }
+        public bool IsLubricant { get; set; }
+        public bool IsSparePart { get; set; }
+        public bool IsBattery { get; set; }
+        public bool IsTire { get; set; }
+        public bool IsOil { get; set; }
         public virtual InventoryItem InventoryItem { get; set; }
     }
 

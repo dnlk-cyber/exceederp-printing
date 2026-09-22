@@ -16,8 +16,10 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
         public Guid EquipmentIdentityID { get; set; }
         public Guid? EquipmentTypeID { get; set; }      
         public string Code { get; set; }
+        public string DriverVehicleTransferID { get; set; }
         public string Description { get; set; }
         public string Remark { get; set; }
+
 
         
     }

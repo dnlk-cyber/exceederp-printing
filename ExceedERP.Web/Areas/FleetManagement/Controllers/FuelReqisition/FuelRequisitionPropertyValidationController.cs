@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -59,7 +60,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
             {
                 if (storeRequisition != null)
                 {
-                    storeRequisition.Status = Enum.GetName(typeof(OperationStatuses), 8);
+                    storeRequisition.Status = Enum.GetName(typeof(Core.Domain.FleetManagement.FleetOperationStatuses), 8);
                     storeRequisition.IsSecondSendForApproval = false;
                 }
             }

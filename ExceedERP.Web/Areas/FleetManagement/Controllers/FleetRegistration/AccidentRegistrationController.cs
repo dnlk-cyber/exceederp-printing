@@ -32,16 +32,23 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/Accident/
         public ActionResult Index()
         {
-            ViewData["Operators"] = db.Operator.ToList().Select(s => new {
+            ViewData["Operators"] = db.Operator.Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName
             });
+            var setting = db.RequestToInspections.FirstOrDefault();
+            ViewBag.setting=setting!=null?setting.Remark:"";
             return View();
         }
         public JsonResult Accident_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var accident = _Accidentervice.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
-            var accidents = accident.Select(a => new Accident
+            string userBranch = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+
+            // Now EF sees userBranch as a simple string value (not a method call)
+            var accident = db.Accident
+                //.Include(a => a.Fleet) // optional: if you need Fleet data
+                .Where(x => x.OrgBranchName == userBranch);
+            DataSourceResult Result=accident.ToDataSourceResult(request,a => new Accident
             {
                 FleetsID = a.FleetsID,
                 PlateNo = a.Fleet.PlateNumber,
@@ -87,9 +94,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 PoliceReportAddress = a.PoliceReportAddress,
                 PoliceReportDate = a.PoliceReportDate
 
-            }).ToList();
+            });
 
-            return Json(accidents.ToDataSourceResult(request));
+            return Json(Result,JsonRequestBehavior.AllowGet);
         }
         public JsonResult Accident_Create([DataSourceRequest] DataSourceRequest request, Accident Accident)
         {
@@ -100,7 +107,49 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             Accident.DateCreated = DateTime.Now;
             Accident.Status = "Pending";
             Accident.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            string eName = null;
+            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == Accident.EmployeeId);
+            if(person!=null)
+            {
+                eName = person.FirstNameEnglish + " " + person.MiddleNameEnglish + " " + person.LastNameEnglish;
+            }
+            var setting = db.RequestToInspections.FirstOrDefault();
+            if(setting!=null&&setting.Remark=="MIDROC")
+            {
+                var fetchOperator = db.Operator.FirstOrDefault(x => x.EmployeeId == Accident.EmployeeId);
+                 if(fetchOperator==null)
+                {
 
+                    var operatorr = new Operator
+                    {
+                        OperatorID = Guid.NewGuid(),
+                        FullName = eName,
+                        EmployeeId = Accident.EmployeeId,
+                        EmployeeCode = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == Accident.EmployeeId)?.EmployeeCode ?? "",
+                        LicenseCity = "Addis Ababa",
+                        LicenseExpireDate = DateTime.Now,
+                        LicenseLevel = LicenseLevelenum.Hizeb1.ToString(),
+                        LicenseIssuedDate = DateTime.Now,
+                        SalaryIncentive = "5000",
+                        Gender = "Male", // or fetch actual value
+                        HireDate = DateTime.Now,
+                        Postion = "Operator",
+                        LicenseNo = "TEMP",
+                        LicenseType = "Public",
+                        IsActive = true
+                    };
+                    
+                    db.Operator.Add(operatorr);
+                    db.SaveChanges();
+                    Accident.OperatorId = operatorr.OperatorID;
+                }
+                 else
+                {
+                    Accident.OperatorId = fetchOperator.OperatorID;
+                }
+                
+            }
+            
             if (Accident != null)
             {
                 _Accidentervice.Insert(Accident);
@@ -121,6 +170,34 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Accident.LastModified = DateTime.Now;
                 Accident.RenewalDate = DateTime.Now;
                 Accident.ModifiedBy = User.Identity.Name;
+                var setting = db.RequestedEquipments.FirstOrDefault();
+                if (setting != null && setting.Remark == "MIDROC")
+                {
+                    var fetchOperator = db.Operator.FirstOrDefault(x => x.EmployeeId == Accident.EmployeeId);
+                    if (fetchOperator == null)
+                    {
+                        var operatorr = new Operator
+                        {
+                            FullName = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == Accident.EmployeeId)?.FullNameaEnglish ?? "",
+                            EmployeeId = Accident.EmployeeId,
+                            EmployeeCode = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == Accident.EmployeeId)?.EmployeeCode ?? "",
+                            LicenseCity = "Addis Ababa",
+                            LicenseExpireDate = DateTime.Now,
+                            LicenseLevel = LicenseLevelenum.Hizeb1.ToString(),
+                            LicenseIssuedDate = DateTime.Now,
+                            SalaryIncentive = "5000",
+                            LicenseNo = null,
+                        };
+                        db.Operator.Add(operatorr);
+                        db.SaveChanges();
+                        Accident.OperatorId = operatorr.OperatorID;
+                    }
+                    else
+                    {
+                        Accident.OperatorId = fetchOperator.OperatorID;
+                    }
+
+                }
                 Accident.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
 
                 _Accidentervice.Update(Accident);

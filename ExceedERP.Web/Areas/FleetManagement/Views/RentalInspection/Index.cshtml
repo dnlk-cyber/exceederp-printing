@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "DryLoadingTimeSheets";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool IsMCG = (ViewBag.setting as string) == "MCG";
+
 }
 
 <legend>Rental Inspection</legend>
@@ -11,8 +13,8 @@
           .Columns(columns =>
           {
               columns.Bound(c => c.RentalInspectionId).Title("#").Width(50);
-              columns.ForeignKey(c => c.EquipmentTypeID, (IEnumerable)ViewData["EquipmentType"], "EquipmentTypeID", "EquipmentTypeName").Title("Equipment Type").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
-              columns.ForeignKey(c => c.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "EquipmentNameID", "Name").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.ForeignKey(c => c.EquipmentTypeID, (IEnumerable)ViewData["EquipmentType"], "Id", "Name").Title("Equipment Type").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.ForeignKey(c => c.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Id", "Name").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["BranchName"], "BranchId", "Name").Title("Branch").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.Model).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.ChasisSerialNo).Title("Chasis/Serial No.").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
@@ -26,6 +28,11 @@
               columns.Bound(c => c.OperatorName).Width(140).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.Lessor).Title("Lessor").Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.PlateNo).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+              if (IsMCG)
+              {
+                  columns.Bound(e => e.Unit).Title("Unit").Width(120);
+                  columns.Bound(e => e.Volume).Title("Volume/Capacity").Width(120);
+              }
               columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
           })
           .ToolBar(toolbar =>
@@ -41,6 +48,7 @@
           .Events(ev =>
           {
               ev.DataBound("onDataBound");
+              ev.DetailExpand("MasterDetailExpand");
           })
           .Scrollable(s => s.Height(550))
           .DataSource(dataSource => dataSource
@@ -94,7 +102,7 @@
     #if(IsOnlineApproved)
     {#
     <a onclick='return VoidRecord("#=RentalInspectionId#")' href=' \#' title="Void Rental Inspection"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-    # }#
+    #}#
 </text>);
                 items.Add().Text("Inspection Parameters").Content(@<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.RentalMVInspection>()
@@ -104,10 +112,10 @@
                                                                             columns.Bound(o => o.Index).Title("S.N").Filterable(false).Width(40);
                                                                             columns.ForeignKey(c => c.RentalInspectionCriteriaId, (IEnumerable)ViewData["RentalInspectionCriteria"], "RentalInspectionCriteriaId", "CriteriaCategory").Title("Technical Parameter").Width(150);
                                                                             columns.ForeignKey(c => c.RentalInspectionCriteriaDetailId, (IEnumerable)ViewData["RentalInspectionCriteriaDetail"], "RentalInspectionCriteriaDetailId", "CriteriaName").Title("Criteria Detail").Width(150);
-                                                                            columns.Bound(o => o.HeadOfficeGoodCondtion).Title("Head.off Good Condtion").Width(120);
-                                                                            columns.Bound(o => o.HeadOfficePoorCondtion).Title("Head Office Poor Condtion").Width(120);
-                                                                            columns.Bound(o => o.BranchOfficeGoodCondtion).Title("Branch Office Good Condtion").Width(120);
-                                                                            columns.Bound(o => o.BranchOfficePoorCondtion).Title("Branch Office Poor Condtion").Width(120);
+                                                                            columns.Bound(o => o.HeadOfficeGoodCondtion).EditorTemplateName("HeadOfficeGoodCondtion").Title("Head.off Good Condtion").Width(120);
+                                                                            columns.Bound(o => o.HeadOfficePoorCondtion).EditorTemplateName("HeadOfficePoorCondtion").Title("Head Office Poor Condtion").Width(120);
+                                                                            columns.Bound(o => o.BranchOfficeGoodCondtion).EditorTemplateName("BranchOfficeGoodCondtion").Title("Branch Office Good Condtion").Width(120);
+                                                                            columns.Bound(o => o.BranchOfficePoorCondtion).EditorTemplateName("BranchOfficePoorCondtion").Title("Branch Office Poor Condtion").Width(120);
 
                                                                 //columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
                                                                 //command.Destroy().Text("Delete"); }).Title("Action").Width(160);
@@ -136,7 +144,7 @@
                                                                     .Update(update => update.Action("RentalMVInspection_Update", "RentalMVInspection").Data("sendForgery"))
                                                                     .Destroy(destroy => destroy.Action("RentalInspectionCriteriaDetail_Destroy", "RentalMVInspection").Data("sendForgery"))
                                                                     )
-
+                                                                    .Events(ev=>ev.DataBound("MVDataBound"))
                                                                     .Pageable()
                                                                     .Sortable()
                                                                     .ToClientTemplate()
@@ -149,7 +157,7 @@
                                                                                         .Name("RentalInspectionValidation_grid#=RentalInspectionId#")
                                                                                         .Columns(columns =>
                                                                                         {
-                                                                                            columns.Bound(o => o.Status).Title("Status").Width(120);
+                                                                                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatus").Title("Status").Width(120);
                                                                                             columns.Bound(o => o.Remark).Title("Remark").Width(120);
                                                                                             columns.Command(command =>
                                             {
@@ -322,6 +330,13 @@
 
         });
     }
+
+    function FilterTypeId() {
+        var TypeId = $("#EquipmentTypeID").data("kendoDropDownList").value();
+        return {
+            ETId:TypeId,
+        };
+    }
 </script>
 <style>
     p {
@@ -333,10 +348,29 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            if (dataItem.IsOnlineApproved) { 
+            if (dataItem.IsOnlineApproved || dataItem.IsSendForApproval) { 
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
                 $(this).css("background-color", "#b7ff9e");
+            }
+        });
+    }
+    var isMaterApproved = false;
+    var isMasterSendForApproval = false;
+    function MasterDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isMaterApproved = masterDataItem.IsOnlineApproved;
+        isMasterSendForApproval = masterDataItem.IsSendForApproval;
+    }
+    function MVDataBound() {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isMasterSendForApproval || isMaterApproved) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                //$(this).css("background-color", "#b7ff9e");
             }
         });
     }

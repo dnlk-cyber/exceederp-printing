@@ -21,48 +21,59 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
     public class RentalPaymentRequestController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["BusinessUnit"] = db.BusinessUnits.Select(s => new
-            {
-                Value = s.BusinessUnitId,
-                Text = s.Name
-            }).ToList();
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
+            ViewData["BusinessUnit"] = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
+            ViewData["Branch"] = CacheData.GetBranchCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            BranchId = i.Id
+        }).AsQueryable();
 
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
+           
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Text = i.Name,
+          Value = i.Id
+      }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
                 Text = s.PlateNumber + " " + s.SerialNo
-            }).ToList();
+            }).AsQueryable();
             
-            ViewData["Employee"] = db.Person_Employee.Select(x => new { x.EmployeeId, FullName = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish }).ToList();
-            ViewData["Branch"] = db.Branch.Select(x => new { x.BranchId, x.Name }).ToList();
-            ViewData["Department"] = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, x.Name }).ToList();
-            ViewData["Supplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
-            ViewData["GLPeriod"] = db.GLPeriods.Select(x => new { x.GLPeriodId, x.Name }).ToList();
-            ViewData["GlFiscalYear"] = db.GLFiscalYears.Select(x => new { x.GlFiscalYearId, x.Name }).ToList();
+            ViewData["Employee"] = db.Person_Employee.Select(x => new { x.EmployeeId, FullName = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish }).AsQueryable();
+            ViewData["Department"] = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, x.Name }).AsQueryable();
+            ViewData["Supplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).AsQueryable();
+            ViewData["GLPeriod"] = db.GLPeriods.Select(x => new { x.GLPeriodId, x.Name }).AsQueryable();
+            ViewData["GlFiscalYear"] = db.GLFiscalYears.Select(x => new { x.GlFiscalYearId, x.Name }).AsQueryable();
 
             
             ViewData["Taxes"] = db.GLTaxRates.Select(s => new
             {
                 Value = s.GLTaxRateID,
                 Text = s.TaxName 
-            }).ToList();
+            }).AsQueryable();
             return View();
         }
         public ActionResult RentalPaymentRequests_Read([DataSourceRequest] DataSourceRequest request)
@@ -96,11 +107,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 BusinessUnitId = rentalPaymentRequest.BusinessUnitId,
                 ForwardedFrom = rentalPaymentRequest.ForwardedFrom,
                 ForwardedTo = rentalPaymentRequest.ForwardedTo,
+                WithHoldingTax = rentalPaymentRequest.WithHoldingTax,
                 IsFinalApproval = rentalPaymentRequest.IsFinalApproval,
                 CurrentApprovalStep = rentalPaymentRequest.CurrentApprovalStep,
                 IsOnlineApproved = rentalPaymentRequest.IsOnlineApproved,
                 OnlineApprovedBy = rentalPaymentRequest.OnlineApprovedBy,
                 OnlineApprovedTime = rentalPaymentRequest.OnlineApprovedTime,
+                IsAuthorized = rentalPaymentRequest.IsAuthorized,
+                AuthorizedBy = rentalPaymentRequest.AuthorizedBy,
+                AuthorizedTime = rentalPaymentRequest.AuthorizedTime,
                 IsSendForApproval = rentalPaymentRequest.IsSendForApproval,
                 SendForApprovalBy = rentalPaymentRequest.SendForApprovalBy,
                 SendForApprovalTime = rentalPaymentRequest.SendForApprovalTime,
@@ -131,19 +146,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         public ActionResult RentalPaymentRequests_Create([DataSourceRequest] DataSourceRequest request, RentalPaymentRequest rentalPaymentRequest)
          {
             var durations = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == rentalPaymentRequest.GLPeriodId);
-            //var result = CheckNull(rentalPaymentRequest);
-            //if (result == RentalValidation.RentFromExternaNotFound)
-            //{
-            //    ModelState.AddModelError(string.Empty, "No equipment was found under the supplier name in rent from external");
-            //}
-            //if (result == RentalValidation.FleetNotFound)
-            //{
-            //    ModelState.AddModelError(string.Empty, "no fleet was found under rent from external fleet registration");
-            //}
-            //if (result == RentalValidation.DateInvalid)
-            //{
-            //    ModelState.AddModelError(string.Empty, $"No Timesheet was found under the period {durations.DateFrom} to {durations.DateTo}");
-            //}
+           
 
             if (ModelState.IsValid)
 
@@ -162,11 +165,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     GLFiscalYearId = rentalPaymentRequest.GLFiscalYearId,
                     DurationFrom = durations.DateFrom,
                     DurationTo = durations.DateTo,
+                    WithHoldingTax = rentalPaymentRequest.WithHoldingTax,
                     OrgStructureId = rentalPaymentRequest.OrgStructureId,
                     ProcurementSupplierID = rentalPaymentRequest.ProcurementSupplierID,
                     IsOnlineApproved = rentalPaymentRequest.IsOnlineApproved,
                     OnlineApprovedBy = rentalPaymentRequest.OnlineApprovedBy,
                     OnlineApprovedTime = rentalPaymentRequest.OnlineApprovedTime,
+                    IsAuthorized = rentalPaymentRequest.IsAuthorized,
+                    AuthorizedBy = rentalPaymentRequest.AuthorizedBy,
+                    AuthorizedTime = rentalPaymentRequest.AuthorizedTime,
                     IsSendForApproval = rentalPaymentRequest.IsSendForApproval,
                     SendForApprovalBy = rentalPaymentRequest.SendForApprovalBy,
                     SendForApprovalTime = rentalPaymentRequest.SendForApprovalTime,
@@ -228,6 +235,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     rentalPaymentRequest.ModifiedBy = User.Identity.Name;
                     db.RentalPaymentRequests.Attach(rentalPaymentRequest);
                     db.Entry(rentalPaymentRequest).State = EntityState.Modified;
+                    db.SaveChanges();
+                    var fetchLines = db.RentalPaymentRequestLines.Where(x => x.RentalPaymentRequestId == rentalPaymentRequest.RentalPaymentRequestId);
+                    foreach (var line in fetchLines)
+                    {
+                        if (line.WithholdingAmount == 0)
+                        {
+                            line.WithholdingAmount = rentalPaymentRequest.WithHoldingTax * line.GrossBeforeVat;
+                            line.SubTotalAmount -= line.WithholdingAmount;
+                            line.Amount -= line.WithholdingAmount;
+                            db.Entry(line).State = EntityState.Modified;
+                     }
+                    }
                     db.SaveChanges();
                 }
                 
@@ -294,10 +313,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             }
             if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
             {
-                record.Status = Enum.GetName(typeof(Core.Domain.Common.OperationStatuses), 16);
+                record.Status = Enum.GetName(typeof(Core.Domain.FleetManagement.FleetOperationStatuses), 16);
                 record.IsDepartmentSendForApproval = true;
                 record.DepartmentSendForApprovalBy = User.Identity.Name;
                 record.DepartmentSendForApprovalTime = DateTime.Now;
+                record.IsVoid = false;
                 db.Entry(record).State = EntityState.Modified;
                 db.SaveChanges();
                 #region approval workflow
@@ -374,13 +394,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             if (rentFromExternal != null)
             {
                 var fleet = db.Fleets.FirstOrDefault(x => x.RentId == rentFromExternal.RentFromExternalID);
-
                 var machinery = db.MachineryWorkingTimeSheets.Where(x => x.FleetsID == fleet.FleetsID).ToList();
                 var dumpTruck = db.DumpTruckTimeSheets.Where(x => x.FleetsID == fleet.FleetsID).ToList();
                 var dryLoading = db.DryLoadingTimeSheets.Where(x => x.FleetsID == fleet.FleetsID).ToList();
                 var wagonDrill = db.WagonDrillTimesheets.Where(x => x.FleetsID == fleet.FleetsID).ToList();
                 var lightVehicle = db.LightVehicleTimeSheets.Where(x => x.FleetsID == fleet.FleetsID).ToList();
-
                 if (machinery.Any())
                 {
                     machinery = machinery.Where(x => x.Date.Date >= rentalPaymentRequest.DurationFrom.Date && x.Date.Date <= rentalPaymentRequest.DurationTo.Date).ToList();
@@ -595,7 +613,77 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 }
             }
         }
-
+        public JsonResult AuthorizePaymentRequest(int Id)
+        {
+            var existing = db.RentalPaymentRequests.FirstOrDefault(x => x.RentalPaymentRequestId == Id);
+            existing.IsAuthorized = true;
+            existing.AuthorizedTime = DateTime.Now;
+            existing.IsFinalApproval = true;
+            existing.AuthorizedBy = User.Identity.Name;
+            existing.Status = "Approved";
+            db.Entry(existing).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
+           
+            var formattedData = new
+            {
+                Message = "Successfully Authorzed",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult RejectAuthorization(int Id)
+        {
+            var existing = db.RentalPaymentRequests.FirstOrDefault(x => x.RentalPaymentRequestId == Id);
+            existing.IsDepartmentOnlineApproved = false;
+            existing.DepartmentOnlineApprovedTime = DateTime.Now;
+            existing.DepartmentOnlineApprovedBy = null;
+            existing.Status = "Authorization Rejected";
+            db.Entry(existing).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
+            var validation = db.RentalPaymentRequestDepartmentValidations.FirstOrDefault(x => x.RentalPaymentRequestId == Id);
+            db.RentalPaymentRequestDepartmentValidations.Remove(validation);
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Authorization Rejected",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult VoidPRequest(int id)
+        {
+            var record = db.RentalPaymentRequests.FirstOrDefault(x => x.RentalPaymentRequestId == id);
+           
+            record.IsDepartmentSendForApproval = false;
+            record.IsSendForApproval = false;
+            record.IsDepartmentOnlineApproved = false;
+            record.IsOnlineApproved = false;
+            record.IsAuthorized = false;
+            //record.IsFinanceApproved = false;
+            //record.IsBudgetApproved = false;
+            //record.FinanceApprovedBy = null;
+            //record.BudgetApprovedBy = null;
+            record.DepartmentSendForApprovalBy = null;
+            record.DepartmentOnlineApprovedBy = null;
+            record.OnlineApprovedBy = null;
+            record.SendForApprovalBy = null;
+            record.AuthorizedBy = null;
+            record.IsVoid = true;
+            db.Entry(record).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
+            var approval = db.RentalPaymentRequestDepartmentValidations.FirstOrDefault(x => x.RentalPaymentRequestId == id);
+            if (approval != null)
+            {
+                db.RentalPaymentRequestDepartmentValidations.Remove(approval);
+                db.SaveChanges();
+            }           
+            var formattedData = new
+            {
+                Message = "Void Successfully",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

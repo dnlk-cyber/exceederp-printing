@@ -24,14 +24,38 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
     public class RentalInspectionController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
-        
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["EquipmentType"] = db.EquipmentType.Select(x => new { x.EquipmentTypeID, x.EquipmentTypeName }).ToList();
-            ViewData["EquipmentName"] = db.EquipmentName.Select(x => new { x.EquipmentNameID, x.Name}).ToList();
-            ViewData["BranchName"] = db.Branch.Select(x => new { x.BranchId, x.Name }).ToList();
-            ViewData["RentalInspectionCriteria"] = db.RentalInspectionCriteria.Select(x => new { x.RentalInspectionCriteriaId, x.CriteriaCategory }).ToList();
-            ViewData["RentalInspectionCriteriaDetail"] = db.RentalInspectionCriteriaDetails.Select(x => new { x.RentalInspectionCriteriaDetailId, x.CriteriaName }).ToList();
+            //ViewData["EquipmentType"] = db.EquipmentType.Select(x => new
+            //{ x.EquipmentTypeID,
+            //  x.EquipmentTypeName }).ToList();
+            //ViewData["EquipmentName"] = db.EquipmentName.Select(x => new
+            //{ x.EquipmentNameID,
+            //  x.Name}).ToList();
+            ViewBag.setting = db.RequestToInspections
+                  .FirstOrDefault()?.Remark ?? " ";
+            ViewData["EquipmentType"] = CacheData.GetEquipmentTypeCaches().Select(
+       i => new
+       {
+           i.Id,
+           i.Name
+         
+       }).AsQueryable();
+            ViewData["EquipmentName"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            i.Id,
+            i.Name
+        }).AsQueryable();
+            ViewData["BranchName"] = CacheData.GetBranchCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            BranchId = i.Id
+        }).AsQueryable();
+            ViewData["RentalInspectionCriteria"] = db.RentalInspectionCriteria.Select(x => new { x.RentalInspectionCriteriaId, x.CriteriaCategory }).AsQueryable();
+            ViewData["RentalInspectionCriteriaDetail"] = db.RentalInspectionCriteriaDetails.Select(x => new { x.RentalInspectionCriteriaDetailId, x.CriteriaName }).AsQueryable();
             return View();
         }
         private int GetValidationStaus(int id)
@@ -62,6 +86,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 OperatorLicenceNo = rentalInspection.OperatorLicenceNo,
                 Lessor = rentalInspection.Lessor,
                 PlateNo = rentalInspection.PlateNo,
+                Volume=rentalInspection.Volume,
+                Unit=rentalInspection.Unit,
                 BranchId = rentalInspection.BranchId,
                 EngineSerialNo=rentalInspection.EngineSerialNo,
                 MeterReading = rentalInspection.MeterReading,
@@ -103,6 +129,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 RentalInspectionCriteriaDetailId = rentalInspection.RentalInspectionCriteriaDetailId,
                 RentalInspectionId = rentalInspection.RentalInspectionId,
                 Index = rentalInspection.Index,
+
                 HeadOfficeGoodCondtion = rentalInspection.HeadOfficeGoodCondtion,
                 HeadOfficePoorCondtion = rentalInspection.HeadOfficePoorCondtion,
                 BranchOfficeGoodCondtion = rentalInspection.BranchOfficeGoodCondtion,
@@ -139,6 +166,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BranchId = rentalInspection.BranchId,
                     DateCreated = DateTime.Now.Date,
                     CreatedBy = User.Identity.Name,
+                    Volume = rentalInspection.Volume,
+                    Unit = rentalInspection.Unit,
                     ModifiedBy = rentalInspection.ModifiedBy,
                     LastModified = rentalInspection.LastModified,
                     EngineSerialNo = rentalInspection.EngineSerialNo,
@@ -172,10 +201,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                             Index = criteriaDetail.Index,
                            
                         };
-                        detail.HeadOfficeGoodCondtion = GoodCondition.__;
-                        detail.HeadOfficePoorCondtion = PoorCondition.__;
-                        detail.BranchOfficeGoodCondtion = GoodCondition.__;
-                        detail.BranchOfficePoorCondtion = PoorCondition.__;
+                        detail.HeadOfficeGoodCondtion = GoodCondition.Good;
+                        detail.HeadOfficePoorCondtion = PoorCondition.Poor;
+                        detail.BranchOfficeGoodCondtion = GoodCondition.Good;
+                        detail.BranchOfficePoorCondtion = PoorCondition.Poor;
 
                         db.RentalMVInspections.Add(detail);
                         db.SaveChanges();
@@ -241,101 +270,147 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             
           if (ModelState.IsValid)
             {
-                var entity = new RentalInspectionValidation
+                var inspectedEquipment = db.RentalInspections.FirstOrDefault(x => x.RentalInspectionId == rentalInspectionValidation.RentalInspectionId);
+                var fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentTypeID && x.PlateNumber == inspectedEquipment.PlateNo);
+                if(fleet==null)
                 {
-                    RentalInspectionValidationId = rentalInspectionValidation.RentalInspectionValidationId,
-                    RentalInspectionId = rentalInspectionValidation.RentalInspectionId,
-                    Status = rentalInspectionValidation.Status,
-                    Remark = rentalInspectionValidation.Remark
-                };                
-                db.RentalInspectionValidations.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                    fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentTypeID && x.SerialNo == inspectedEquipment.ChasisSerialNo);
+                }
+                if (fleet==null)
+                {
+                    fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentTypeID && x.Model == inspectedEquipment.Model);
+                }
+                
+               
                 #region Register Equipment
                 if (rentalInspectionValidation.Status == ApprovalStatuses.Approve)
                 {
-                    var inspectedEquipment = db.RentalInspections.FirstOrDefault(x => x.RentalInspectionId == rentalInspectionValidation.RentalInspectionId);
-                   //var equipmentName = db.EquipmentName.Where(x => x.EquipmentTypeId == inspectedEquipment.EquipmentTypeID).FirstOrDefault();
                     var equipmntCategory = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID);
                     var planner = db.Planner.Select(x => x.PlannerID).FirstOrDefault();
-                    var equipment = new Fleets
+                    if (fleet == null)
                     {
-                        FleetsID = Guid.NewGuid(),
-                        EquipmentIdentityID = equipmntCategory.EquipmentIdentityID,
-                        EquipmentTypeID = inspectedEquipment.EquipmentTypeID,
-                        PlannerID = planner,
-                        LastMaintained = DateTime.Now,
-                        EquipmentNameID = (Guid)inspectedEquipment.EquipmentNameID, //equipmentName.EquipmentNameID,
-                        SubType = "",
-                        Type = "",
-                        UnitNum = "",
-                        Manufacturer = inspectedEquipment.Manufacturer,
-                        ManufacturerYear = inspectedEquipment.ManufacturingYear,
-                        Condition = "New",
-                        ReadingType = ReadingType.HR,
-                        EngineModel = inspectedEquipment.EngineModel,
-                        OperatorName = "",
-                        EngineManufacturer = "",
-                        Location = inspectedEquipment.BranchId.ToString(),
-                        HistoricalCost = "",
-                        Model = inspectedEquipment.Model,
-                        IsReturned = false,
-                        Capacity = inspectedEquipment.Capacity,
-                        IsExternal = true,
-                        RentType = RentType.Daily,
-                        RentId = Guid.NewGuid(),
-                        Color = "",
-                        TyreSize = "",
-                        PlateNumber = inspectedEquipment.PlateNo,
-                        EngineNumber = inspectedEquipment.EngineSerialNo,
-                        IFRSCondition = "",
-                        ChasisNumber = inspectedEquipment.ChasisSerialNo,
-                        MinFuelStandard = 0,
-                        MaxFuelStandard = 10,
-                        Battery = "",
-                        Tyre = "",
-                        RentalRate = 1,
-                        IdealRentalRate = 10,
-                        WayOfSupplyenum = WayOfSupplyenum.Rental, /*WayOfSupplyenum.Donated,*/
-                        manufaturerenum = manufaturerenum.SINO,
-                        Colorenum = Colorenum.BLACK,
-                        yearenum = yearenum.EthiopianCalendar,
-                        WayOfSupply = "",
-                        SupplierCompany = "",
-                        PreviousOdoMeter = 0,
-                        CurentOdoMeter = 0,
-                        LastMaintenanceOdometer = 0,
-                        PurchasingCost = 0,
-                        AnnualDepreciationCost = 0,
-                        DepreciationCost = 0,
-                        BookValue = 100,
-                        SerialNo = inspectedEquipment.ChasisSerialNo,
-                        Libre = "",
-                        TypeOfFuelenum = TypeOfFuelenum.Benzene,
-                        TypeOfFuel = "",
-                        StateOfOdoMeter = "",
-                        StateOfOdoMeterenum = StateOfOdoMeterenum.Functional,
-                        Attachment = "",
-                        FleetPhoto = "",
-                        PurchasedDate = DateTime.Now,
-                        ApprovalStatus = "",
-                        Status = ""
+                        var equipment = new Fleets
+                        {
+                            FleetsID = Guid.NewGuid(),
+                            EquipmentIdentityID = equipmntCategory.EquipmentIdentityID,
+                            EquipmentTypeID = inspectedEquipment.EquipmentTypeID,
+                            PlannerID = planner,
+                            LastMaintained = DateTime.Now,
+                            EquipmentNameID = (Guid)inspectedEquipment.EquipmentNameID, //equipmentName.EquipmentNameID,
+                            SubType = "",
+                            Type = "",
+                            UnitNum = "",
+                            Manufacturer = inspectedEquipment.Manufacturer,
+                            ManufacturerYear = inspectedEquipment.ManufacturingYear,
+                            Condition = "New",
+                            ReadingType = ReadingType.HR,
+                            EngineModel = inspectedEquipment.EngineModel,
+                            OperatorName = "",
+                            EngineManufacturer = "",
+                            Location = inspectedEquipment.BranchId.ToString(),
+                            HistoricalCost = "",
+                            Model = inspectedEquipment.Model,
+                            IsReturned = false,
+                            Capacity = inspectedEquipment.Capacity,
+                            IsExternal = true,
+                            RentType = RentType.Daily,
+                            RentId = Guid.NewGuid(),
+                            IsContractTerminated = true,
+                            Color = "",
+                            TyreSize = "",
+                            Unit = inspectedEquipment.Unit,
+                            Volume = inspectedEquipment.Volume,
+                            PlateNumber = inspectedEquipment.PlateNo,
+                            EngineNumber = inspectedEquipment.EngineSerialNo,
+                            IFRSCondition = "",
+                            ChasisNumber = inspectedEquipment.ChasisSerialNo,
+                            MinFuelStandard = 0,
+                            MaxFuelStandard = 10,
+                            Battery = "",
+                            Tyre = "",
+                            RentalRate = 1,
+                            IdealRentalRate = 10,
+                            WayOfSupplyenum = WayOfSupplyenum.Rental, /*WayOfSupplyenum.Donated,*/
+                            manufaturerenum = manufaturerenum.SINO,
+                            Colorenum = Colorenum.BLACK,
+                            yearenum = yearenum.EthiopianCalendar,
+                            WayOfSupply = "",
+                            SupplierCompany = "",
+                            PreviousOdoMeter = 0,
+                            CurentOdoMeter = 0,
+                            LastMaintenanceOdometer = 0,
+                            PurchasingCost = 0,
+                            AnnualDepreciationCost = 0,
+                            DepreciationCost = 0,
+                            BookValue = 100,
+                            SerialNo = inspectedEquipment.ChasisSerialNo,
+                            Libre = "",
+                            TypeOfFuelenum = TypeOfFuelenum.Benzene,
+                            TypeOfFuel = "",
+                            StateOfOdoMeter = "",
+                            StateOfOdoMeterenum = StateOfOdoMeterenum.Functional,
+                            Attachment = "",
+                            FleetPhoto = "",
+                            PurchasedDate = DateTime.Now,
+                            ApprovalStatus = "",
+                            Status = ""
 
 
 
-                    };
-                    db.Fleets.Add(equipment);
-                    db.SaveChanges();
-                    inspectedEquipment.IsOnlineApproved = true;
-                    
-                    db.Entry(inspectedEquipment).State = EntityState.Modified;
-                    db.SaveChanges();
+                        };
+                        db.Fleets.Add(equipment);
+                        db.SaveChanges();
+
+                        inspectedEquipment.IsOnlineApproved = true;
+
+                        db.Entry(inspectedEquipment).State = EntityState.Modified;
+                        db.SaveChanges();
+                        if (fleet != null && fleet.IsContractTerminated)
+                        {
+                            var entity = new RentalInspectionValidation
+                            {
+                                RentalInspectionValidationId = rentalInspectionValidation.RentalInspectionValidationId,
+                                RentalInspectionId = rentalInspectionValidation.RentalInspectionId,
+                                Status = rentalInspectionValidation.Status,
+                                Remark = rentalInspectionValidation.Remark
+                            };
+                            db.RentalInspectionValidations.Attach(entity);
+                            db.Entry(entity).State = EntityState.Modified;
+                            db.SaveChanges();
+                            #region operation log
+                            UserHelper.OperationLog(Request.UserHostAddress, "Rental inspection ", "Success", User.Identity.Name, $"updated rental inspection {entity.RentalInspectionId} ", Modules.FleetManagement);
+                            #endregion
+                        }
+
+                    }
+                }
+                else
+                {
+                    if(fleet!=null&&!fleet.IsContractTerminated)
+                    {
+                        ModelState.AddModelError("existing contract", "Existing fleet contract is not terminated");
+                    }
+                    if(fleet!=null&&fleet.IsContractTerminated)
+                    {
+                        var entity = new RentalInspectionValidation
+                        {
+                            RentalInspectionValidationId = rentalInspectionValidation.RentalInspectionValidationId,
+                            RentalInspectionId = rentalInspectionValidation.RentalInspectionId,
+                            Status = rentalInspectionValidation.Status,
+                            Remark = rentalInspectionValidation.Remark
+                        };
+                        db.RentalInspectionValidations.Attach(entity);
+                        db.Entry(entity).State = EntityState.Modified;
+                        db.SaveChanges();
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "Rental inspection ", "Success", User.Identity.Name, $"updated rental inspection {entity.RentalInspectionId} ", Modules.FleetManagement);
+                        #endregion
+                    }
+
                 }
                 #endregion
 
-                #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Rental inspection ", "Success", User.Identity.Name, $"updated rental inspection {entity.RentalInspectionId} ", Modules.FleetManagement);
-                #endregion
+               
             }
             return Json(new[] { rentalInspectionValidation }.ToDataSourceResult(request, ModelState));
         }

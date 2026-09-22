@@ -19,7 +19,7 @@ namespace ExceedERP.Core.Domain.Maintenance
     {
         public int PmSchedulerId { get; set; }
         public string EquipmentNameId { get; set; }
-        public string PlateNumber { get; set; }
+        public string FleetId { get; set; }
         public string Location { get; set; }
         public string TaskId { get; set; }
         public int PmSettingId { get; set; }

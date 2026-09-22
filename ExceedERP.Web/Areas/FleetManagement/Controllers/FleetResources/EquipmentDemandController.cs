@@ -24,6 +24,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         private readonly CacheData CacheData = new CacheData();
         IVehicleDemandService _VehicleDemandService;
         ExceedDbContext db = new ExceedDbContext();
+        //private readonly CacheData CacheData = new CacheData();
 
         public EquipmentDemandController()
         {
@@ -33,69 +34,179 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/VehicleDemand/
         public ActionResult Index()
         {
-            ViewData["Fleets"] = db.Fleets.ToList().Select(s => new {
-                Id = s.FleetsID,
-                s.OrgBranchName,
-                Name = s.EquipmentName + "-" + s.PlateNumber + "-" + s.ChasisNumber
-            }).Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+            //ViewData["Fleets"] = db.Fleets.ToList().Select(s => new
+            //{
+            //    Id = s.FleetsID,
+            //    s.OrgBranchName,
+            //    Name = s.EquipmentName + "-" + s.PlateNumber + "-" + s.ChasisNumber
+            //}).Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
 
-            ViewData["EquipmentCategories"] = db.EquipmentIdentity.ToList().Select(s => new {
-                Id = s.EquipmentIdentityID,
-                Name = s.EquipmentCategoryName
-            });
-            ViewData["EquipmentTypes"] = db.EquipmentType.ToList().Select(s => new {
-                Id = s.EquipmentTypeID,
-                Name = s.EquipmentTypeName
-            });
-            ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new {
-                Id = s.EquipmentNameID,
+
+            
+
+            
+            ViewData["Fleets"] = CacheData.GetFleetsCache().Select(s => new
+            {
+                Id = s.Id,
                 Name = s.Name
-            });
+            }).AsQueryable();
+
+
+            
+            ViewData["Employee"] = CacheData.GetEmployeeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            ViewData["EquipmentName"] = CacheData.GetEquipmentNameCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           Id = i.Id
+       }).AsQueryable();
+            ViewData["EquipmentCategories"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Name = i.Name.Trim(),
+          Id = i.Id.ToString()
+      }).AsQueryable();
+            ViewData["EquipmentTypes"] = CacheData.GetEquipmentTypeCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+
             ViewData["Operators"] = db.Operator.ToList().Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName + "-" + s.MobilePhone
             });
-            ViewData["FromBranches"] = CacheData.GetBranchCaches().Select(s => new
-            {
-                Id = s.Id,
-                Name = s.Name
-            });
-            ViewData["FromStructure"] = db.MainCompanyStructures.ToList().Select(s => new {
-                Id = s.OrgStructureId,
-                Name = s.Name
-            });
-            ViewData["Employee"] = db.Person_Employee.ToList().Select(s => new {
-                Id = s.EmployeeId,
-                Name = s.FirstNameEnglish+" "+s.MiddleNameEnglish+" "+s.LastNameEnglish
-            });
-
-            ViewData["EquipmentName"] = db.EquipmentName.Select(s => new
-            {
-                Id = s.EquipmentNameID,
-                Name = s.Name
-            });
+            
             return View();
         }
 
 
-        public ActionResult VehicleDemand_Read([DataSourceRequest] DataSourceRequest request)
+        //public ActionResult VehicleDemand_Read([DataSourceRequest] DataSourceRequest request)
+        //{
+        //    //List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
+        //    List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+        //    var VehicleDemand = _VehicleDemandService.GetAll().Where(x => mybraches.Contains(x.BranchId) || x.BranchId == 0);
+        //    if (GlobalHelper.IsMultipleBusinessUnit())
+        //    {
+        //        List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+        //        VehicleDemand = VehicleDemand.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+        //    }
+        //    return Json(VehicleDemand.ToDataSourceResult(request));
+
+        //}
+        public ActionResult VehicleDemand_Read([DataSourceRequest] DataSourceRequest request,string id)
         {
-            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
+            //List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
-                
-            var VehicleDemand = _VehicleDemandService.GetAll().Where(x => mybraches.Contains(x.BranchId) || x.BranchId==0);
+
+            //var VehicleDemand = _VehicleDemandService.GetAll().Where(x => mybraches.Contains(x.BranchId) || x.BranchId == 0);
+            //List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
+            //IQueryable<VehicleDemand> VehicleDemand = _VehicleDemandService.GetAll().AsQueryable();
+
+            IQueryable<VehicleDemand> VehicleDemand = db.VehicleDemand.Where(x => mybraches.Contains(x.BranchId) || x.BranchId == 0).AsQueryable();
+            if(id!=null)
+            {
+                VehicleDemand = VehicleDemand.Where(x => x.ServiceCenterJobId == id);
+            }
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
                 VehicleDemand = VehicleDemand.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
             }
-            return Json(VehicleDemand.ToDataSourceResult(request));
-            
+            //        var result = VehicleDemand.Join(db.Person_Employee,
+            //      vd => vd.EmployeeId,
+            //      emp => emp.EmployeeId,
+            //      (vd, emp) => new { vd, emp })
+            //.ToDataSourceResult(request, x => new
+            //{
+            //    BranchId = x.vd.BranchId,
+            //    BusinessUnitId = x.vd.BusinessUnitId,
+            //    IsOnlineApproved = x.vd.IsOnlineApproved,
+            //    IsSendForApproval = x.vd.IsSendForApproval,
+            //    IsSecondSendForApproval = x.vd.IsSecondSendForApproval,
+            //    IsSecondOnlineApproved = x.vd.IsSecondOnlineApproved,
+            //    IsVoid = x.vd.IsVoid,
+            //    Num = x.vd.Num,
+            //    FromStructureName = x.vd.FromStructureName,
+            //    FromBranchName = x.vd.FromBranchName,
+            //    phoneNumber = x.vd.phoneNumber,
+            //    PlateNumber = x.vd.PlateNumber,
+            //    ReasonForTravel = x.vd.ReasonForTravel,
+            //    Remark = x.vd.Remark,
+            //    RequestDate = x.vd.RequestDate,
+            //    RequestingBranchName = x.vd.RequestingBranchName,
+            //    RequestingStructureName = x.vd.RequestingStructureName,
+            //    RequestNumber = x.vd.RequestNumber,
+            //    RequestQuantity = x.vd.RequestQuantity,
+            //    StartingDate = x.vd.StartingDate,
+            //    Status = x.vd.Status,
+            //    ToDate = x.vd.ToDate,
+            //    VehicleDemandId = x.vd.VehicleDemandId,
+            //    CurrentApprovalStep = x.vd.CurrentApprovalStep,
+            //    IsDepartmentOnlineApproved = x.vd.IsDepartmentOnlineApproved,
+            //    DepartmentOnlineApprovedBy = x.vd.DepartmentOnlineApprovedBy,
+            //    IsDepartmentSendForApproval = x.vd.IsDepartmentSendForApproval,
+            //    EmployeeName =
+            //        (x.emp.FirstNameEnglish ?? "") + " " +
+            //        (x.emp.MiddleNameEnglish ?? "") + " " +
+            //        (x.emp.LastNameEnglish ?? ""),
+            //    IsAssigned = x.vd.IsAssigned,
+            //    OrgStructureId = x.vd.OrgStructureId
+            //});
+            var result = VehicleDemand
+            .ToDataSourceResult(request, x => new
+            {
+                BranchId = x.BranchId,
+                BusinessUnitId = x.BusinessUnitId,
+                IsOnlineApproved = x.IsOnlineApproved,
+                IsSendForApproval = x.IsSendForApproval,
+                IsSecondSendForApproval = x.IsSecondSendForApproval,
+                IsSecondOnlineApproved = x.IsSecondOnlineApproved,
+                IsVoid = x.IsVoid,
+                Num = x.Num,
+                FromStructureName = x.FromStructureName,
+                FromBranchName = x.FromBranchName,
+                phoneNumber = x.phoneNumber,
+                PlateNumber = x.PlateNumber,
+                ReasonForTravel = x.ReasonForTravel,
+                Remark = x.Remark,
+                RequestDate = x.RequestDate,
+                RequestingBranchName = x.RequestingBranchName,
+                RequestingStructureName = x.RequestingStructureName,
+                RequestNumber = x.RequestNumber,
+                RequestQuantity = x.RequestQuantity,
+                StartingDate = x.StartingDate,
+                Status = x.Status,
+                ToDate = x.ToDate,
+                VehicleDemandId = x.VehicleDemandId,
+                EmployeeId = x.EmployeeId,
+                CurrentApprovalStep = x.CurrentApprovalStep,
+                IsDepartmentOnlineApproved = x.IsDepartmentOnlineApproved,
+                DepartmentOnlineApprovedBy = x.DepartmentOnlineApprovedBy,
+                IsDepartmentSendForApproval = x.IsDepartmentSendForApproval,
+                
+                IsAssigned = x.IsAssigned,
+                OrgStructureId = x.OrgStructureId
+            });
+            return Json(result);
         }
 
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult VehicleDemand_Create([DataSourceRequest] DataSourceRequest request, VehicleDemand VehicleDemand)
+        public ActionResult VehicleDemand_Create([DataSourceRequest] DataSourceRequest request, VehicleDemand VehicleDemand, string id)
         {
             #region data 
             if (VehicleDemand.EmployeeId == 0)
@@ -134,7 +245,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             else
             {
                 int RequestNumber = 1;
-                VehicleDemand vehicleDemand = _VehicleDemandService.GetAll().OrderByDescending(x => x.RequestNumber).FirstOrDefault();
+                VehicleDemand vehicleDemand =db.VehicleDemand.OrderByDescending(x => x.RequestNumber).FirstOrDefault();
                 if (vehicleDemand != null)
                 {
                     RequestNumber = int.Parse(vehicleDemand.RequestNumber.ToString()) + 1;
@@ -142,12 +253,17 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 VehicleDemand.Status = MaintenanceConst.Pending;
                 VehicleDemand.VehicleDemandId = Guid.NewGuid();
                 VehicleDemand.RequestNumber = RequestNumber;
-
+                if(id!=null)
+                {
+                    VehicleDemand.ServiceCenterJobId = id;
+                }
                 VehicleDemand.DateCreated = DateTime.Now;
                 VehicleDemand.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
                 
                 VehicleDemand.CreatedBy = User.Identity.Name;
+                //VehicleDemand.BranchId = 3;
                 VehicleDemand.BranchId = GetBranch(VehicleDemand.EmployeeId).BranchId;
+                //VehicleDemand.BusinessUnitId = 2;
                 VehicleDemand.BusinessUnitId = GetCompStruct(VehicleDemand.EmployeeId).OrgStructureId;
                 if (VehicleDemand != null)
                 {
@@ -260,7 +376,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 vehicleDemand.IsSendForApproval = true;
                 vehicleDemand.Status = MaintenanceConst.WaitingApproval;
-                db.VehicleDemand.Attach(vehicleDemand);
+               // db.VehicleDemand.Attach(vehicleDemand);
                 db.Entry(vehicleDemand).State = EntityState.Modified;
                 db.SaveChanges();
                 var returnMessage = new
@@ -278,6 +394,32 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             };
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
+        }
+
+        public JsonResult EquipmentDemandReject(Guid id)
+        {
+            var equipmentDemand = db.VehicleDemand.FirstOrDefault(x => x.VehicleDemandId == id);
+            equipmentDemand.IsOnlineApproved = false;
+            equipmentDemand.IsDepartmentOnlineApproved = false;
+            equipmentDemand.OnlineApprovedBy = " ";
+            equipmentDemand.DepartmentOnlineApprovedBy = " ";
+            equipmentDemand.Status = "Distribution Rejected";
+            db.Entry(equipmentDemand).State = EntityState.Modified;
+            db.SaveChanges();
+            var approval = db.VehicleDemandApproval.FirstOrDefault(x => x.VehicleDemandId == id);
+            db.VehicleDemandApproval.Remove(approval);
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Vehicle Demand Rejected",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

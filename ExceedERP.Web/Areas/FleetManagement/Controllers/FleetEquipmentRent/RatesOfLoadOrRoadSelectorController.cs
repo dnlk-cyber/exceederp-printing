@@ -23,7 +23,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
         }
         public ActionResult RatesOfLoadOrRoadSelector_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
-            var haeavyOrDumpTruckSelector = db.RateOfRoadORLoads.Where(x => x.RoadOrLoadId == id).ToList();
+            var haeavyOrDumpTruckSelector = db.RateOfRoadORLoads.Where(x => x.RoadOrLoadId == id).AsQueryable();
             DataSourceResult result = haeavyOrDumpTruckSelector.ToDataSourceResult(request, haeavyOrDumpTruckSelectors => new
             {
                 RoadOrLoadId = haeavyOrDumpTruckSelectors.RoadOrLoadId,
@@ -85,6 +85,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
 
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

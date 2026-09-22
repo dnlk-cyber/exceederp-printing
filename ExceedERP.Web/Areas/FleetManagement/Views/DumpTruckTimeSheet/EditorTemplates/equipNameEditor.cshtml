@@ -1,0 +1,13 @@
+﻿
+@using Kendo.Mvc.UI;
+@(Html.Kendo().DropDownListFor(model => model)
+                     
+                      .ValuePrimitive(true)
+                     .DataTextField("Name")
+                     .DataValueField("Id")
+                     .Filter(FilterType.Contains)
+                     .OptionLabel("Select")
+                     .DataSource(d => d.Read(r => r.Action("GetEquipmentNamesNullable", "FleetManagementDataProvider").Data("sendForgery")
+                     .Data("filterEquipmentNames"))
+                    )
+)

@@ -128,11 +128,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }).ToList();
 
 
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
 
 
             ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
@@ -442,7 +443,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             FleetCostHelper fleetCostHelper = new FleetCostHelper();
             var inventoryMapping = db.InventorySparePartMapping.ToList();
 
-            var JobOrder = _JobOrderService.GetAll().Where(x => x.JobOrderID.ToString() == Id)
+            var JobOrder = db.JobOrder.Where(x => x.JobOrderID.ToString() == Id)
                .Select(j => new JobOrder
                {
                    IsPM = j.IsPM,
@@ -489,7 +490,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult ServiceCenter_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+            var JobOrder = db.JobOrder.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
                 .Where(
                     x =>
                         x.IsSecondOnlineApproved == true && x.Type == MaintenanceConst.Internal &&
@@ -523,7 +524,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult OutSource_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+            var JobOrder = db.JobOrder.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
                 .Where(
                     x =>
                         x.IsOnlineApproved == true && x.IsExternal == true)
@@ -558,7 +559,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult Request_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(j => new JobOrder
+            var JobOrder = db.JobOrder.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(j => new JobOrder
             {
                 ProjectName = j.ProjectName,
                 Status = j.Status,
@@ -581,7 +582,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult Technical_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+            var JobOrder = db.JobOrder.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
                 .Where(x => x.Status == MaintenanceConst.WaitingTechnical)
                 .Select(j => new JobOrder
                 {
@@ -605,7 +606,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult Adminstrative_Read([DataSourceRequest] DataSourceRequest request, string JobID)
         {
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+            var JobOrder = db.JobOrder.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
                 .Where(x => x.Status == MaintenanceConst.WaitingAdminstrative && x.JobOrderID == Guid.Parse(JobID))
                 .Select(j => new JobOrder
                 {
@@ -627,7 +628,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult PropertyAdmin_Read([DataSourceRequest] DataSourceRequest request, string JobID)
         {
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+            var JobOrder = db.JobOrder.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
                 .Where(
                     x =>
                         x.IsExternal == true &&
@@ -718,10 +719,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             JobOrder.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
             #endregion
 
-            var Orders = _JobOrderService.GetAll();
+            var Orders = db.JobOrder;
 
             List<JobOrder> joborders =
-                _JobOrderService.GetAll().Where(j => j.JobOrderNum == JobOrder.JobOrderNum).ToList();
+                db.JobOrder.Where(j => j.JobOrderNum == JobOrder.JobOrderNum).ToList();
             if (joborders.Any())
             {
                 ModelState.Clear();
@@ -789,7 +790,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             #endregion
             List<JobOrder> Order =
-                _JobOrderService.GetAll()
+                db.JobOrder
                     .Where(j => j.JobOrderNum == JobOrder.JobOrderNum && j.JobOrderID != JobOrder.JobOrderID)
                     .ToList();
             if (Order.Any())
@@ -1391,11 +1392,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 var Requests = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
                 if (Requests != null)
                 {
-                    RequestOrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
-                    RequestOrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
+                    RequestOrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
+                    RequestOrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
                 }
-                decimal OrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id).ToList().Count;
-                decimal OrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
+                decimal OrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Id).ToList().Count;
+                decimal OrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
                 var progress = (OrderLineFinished + RequestOrderLineFinished) / (OrderLine + RequestOrderLine);
 
                 progress = progress * 100;
@@ -1412,7 +1413,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             try
             {
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
+                var OrderLine = db.JobOrder.Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -1436,7 +1437,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
 
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id).FirstOrDefault();
+                var OrderLine = db.JobOrder.Where(x => x.JobOrderID == Id).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -1617,38 +1618,60 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             var result = db.JobOrder.ToList().Distinct(new JobOrderComparer(field));
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult Achievement_Create([DataSourceRequest] DataSourceRequest request,DescriptionOfAchievement Achievement,string id)
+        {
+            if(ModelState.IsValid)
+            {
+                Achievement.ServiceCrewWorkLogId = id;
+                db.DescriptionOfAchievement.Add(Achievement);
+                db.SaveChanges();
+                    
+            }
+            return Json(new[] { Achievement }.ToDataSourceResult( request,ModelState));
+        }
+
+        public ActionResult Achievement_Read([DataSourceRequest] DataSourceRequest request, string id)
+        {
+            var Achievement = db.DescriptionOfAchievement.Where(x => x.ServiceCrewWorkLogId.ToString() == id);
+            var result = Achievement.ToDataSourceResult(request, ach => new
+            {
+                ServiceCrewWorkLogId = ach.ServiceCrewWorkLogId,
+                DescrtiptionOfAchievementId = ach.DescrtiptionOfAchievementId,
+                CreatedBy = ach.CreatedBy,
+                DateCreated = ach.DateCreated,
+                Descrtiption = ach.Descrtiption,
+                LastModified = ach.LastModified,
+                ModifiedBy = ach.ModifiedBy,
+                Remark = ach.Remark
+            });
+            return Json(result,JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult Achievement_Update([DataSourceRequest] DataSourceRequest request,DescriptionOfAchievement ach)
+        {
+            var ExistingAchievement = db.DescriptionOfAchievement.FirstOrDefault(x => x.DescrtiptionOfAchievementId == ach.DescrtiptionOfAchievementId);
+
+            ExistingAchievement.Descrtiption = ach.Descrtiption;
+            ExistingAchievement.LastModified = DateTime.Now;
+            ExistingAchievement.ModifiedBy = User.Identity.Name;
+            ExistingAchievement.Remark = ach.Remark;
+           db.Entry(ExistingAchievement).State = EntityState.Modified;
+            db.SaveChanges();
+            return Json(new[] { ach }.ToDataSourceResult(request,ModelState));
+        }
+        public ActionResult Achievement_Destroy([DataSourceRequest] DataSourceRequest request,DescriptionOfAchievement ach)
+        {
+            var ExistingAchievement = db.DescriptionOfAchievement.FirstOrDefault(x => x.DescrtiptionOfAchievementId == ach.DescrtiptionOfAchievementId);
+            db.DescriptionOfAchievement.Remove(ExistingAchievement);
+            db.SaveChanges();
+            return Json(new[] { ach }.ToDataSourceResult(request,ModelState));
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
-    //public class JobOrderComparer : IEqualityComparer<JobOrder>
-    //{
-    //    private string field;
-
-    //    private PropertyInfo prop;
-
-    //    public JobOrderComparer(string field)
-    //    {
-    //        this.field = field;
-    //        prop = typeof(JobOrder).GetProperty(field);
-    //    }
-    //    public bool Equals(JobOrder x, JobOrder y)
-    //    {
-    //        var valueX = prop.GetValue(x, null);
-    //        var valueY = prop.GetValue(y, null);
-    //        if (valueX == null)
-    //        {
-    //            return valueY == null;
-    //        }
-    //        return valueX.Equals(valueY);
-    //    }
-
-    //    public int GetHashCode(JobOrder obj)
-    //    {
-    //        var value = prop.GetValue(obj, null);
-    //        if (value == null)
-    //        {
-    //            return 0;
-    //        }
-    //        return value.GetHashCode();
-    //    }
-    //}
+    
 }
 

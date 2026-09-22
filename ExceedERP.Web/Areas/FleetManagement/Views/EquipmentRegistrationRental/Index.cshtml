@@ -11,12 +11,14 @@
                           columns.Bound(c => c.FleetPhoto).ClientTemplate("#= renderImage(FleetPhoto, FleetsID, EquipmentName) #").Width(50);
                           columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategorys"], "Id", "Name").Width(130);
                           columns.ForeignKey(e => e.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentSubcategorys"], "Id", "Name").Width(130);
+                          columns.Bound(e => e.Status).Width(130);
                           columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").Width(130);
                           columns.Bound(e => e.UnitNum).Width(100);
                           columns.Bound(e => e.PlateNumber).Width(100);
+                          //columns.Bound(e => e.WayOfSupplyenum).Width(100);
                           columns.Bound(e => e.Model).Width(100);
                           columns.Bound(e => e.SerialNo).Title("Serial/Chasis No.").Width(100);
-                          columns.Bound(e => e.Location).Width(100);
+                          columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "Id", "Name").Width(100).Title("Branch");
                           columns.Bound(e => e.ApprovalStatus).Hidden();
                           columns.Bound(e => e.LastModified).Hidden();
                           columns.Bound(e => e.EngineNumber).Width(80);
@@ -32,7 +34,7 @@
                                 })
                          .ToolBar(toolbar =>
                          {
-                             toolbar.Template(
+                         toolbar.Template(
                 @<text>
                     <div class="toolbar row">
                         <div class="col-sm-2">
@@ -108,14 +110,7 @@
                                                     {
                                                     <option value="@statsus.Name"> @statsus.Name</option>
                                     }
-                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-
+                                                
                                                             </select>
                                                             <input type="hidden" name="FleetsID" value="#=FleetsID#" />
 

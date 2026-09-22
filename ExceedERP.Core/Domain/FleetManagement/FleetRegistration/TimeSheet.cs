@@ -40,6 +40,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string EquipmentName { get; set; }
         [DisplayName(" Downs Reason ")]
         public string ReasonType { get; set; }
+
+        public Guid? RentFromExternalID { get; set; }
+        public int? RentFromExternalEquipmentId { get; set; }
+        public Guid? RentToExternalID { get; set; }
+        public Guid? ExternalRentedEquipmentId { get; set; }
+        public ChargeMethod? ChargeMethod { get; set; }
         [DisplayName("Intial KMHr Reading ")]
         [Required]
         public decimal KMHrReading { get; set; }
@@ -71,8 +77,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [DisplayName(" Break Down Time ")]
 
         public int BreakDownTime { get; set; }
+        public decimal? CubicValue { get; set; }
         [DisplayName(" Customer Name ")]
-        [Required]
+       // [Required]
         public string CustomerName { get; set; }
         [DisplayName("Rent Type")]
 
@@ -85,5 +92,11 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public bool IsExternal { get; set; }
 
 
+    }
+    public enum ChargeMethod
+    {
+        PerKilometer,
+        PerCubicMeter,
+        PerHour
     }
 }

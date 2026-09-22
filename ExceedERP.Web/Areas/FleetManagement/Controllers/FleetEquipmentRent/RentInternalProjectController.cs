@@ -12,6 +12,8 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
    //  [AuthorizeRoles(FleetManagementRoles.RentRequestor)] 
@@ -25,6 +27,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         //
         // GET: /FleetManagement/RentInternalProject/
+        ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index()
         {
             return View();
@@ -32,7 +35,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult RentInternalProject_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var RentInternalProject = _RentInternalProjectService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+            //var RentInternalProject = _RentInternalProjectService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+            IQueryable<RentInternalProject> RentInternalProject = db.RentInternalProject.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).AsQueryable();
 
             return Json(RentInternalProject.ToDataSourceResult(request));
         }
@@ -109,7 +113,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

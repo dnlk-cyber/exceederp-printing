@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Helpers.Common;  
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers.Settings
 {
@@ -19,6 +20,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.Settings
 	{
 	   IPlannerService _PlannerService;
 		IFleetService _FleetService;
+        ExceedDbContext db = new ExceedDbContext();
 		public PlannerController()
 		{
 			_PlannerService = new PlannerService();
@@ -32,23 +34,31 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.Settings
 			return View();
 		}
 
-	   
-		public ActionResult Planner_Read([DataSourceRequest] DataSourceRequest request)
-		{
-			var Planner = _PlannerService.GetAll().Select(p => new Planner 
-			{ 
-			PlannerName=p.PlannerName,
-			PlannerID=p.PlannerID,
-			TrackByDate=p.TrackByDate,
-			TrackByMileage=p.TrackByMileage,
-			DateCrated=p.DateCrated
-			});
 
-			return Json(Planner.ToDataSourceResult(request));
-		}
-	  
+        public ActionResult Planner_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            try
+            {
+                var data = db.Planner.Select(p => new
+                {
+                    p.PlannerID,
+                    p.PlannerName,
+                    p.TrackByDate,
+                    p.TrackByMileage,
+                    p.DateCreated // corrected spelling
+                });
 
-		  [AcceptVerbs(HttpVerbs.Post)]
+                return Json(data.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the error
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+        [AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult Planner_Create([DataSourceRequest] DataSourceRequest request, Planner Planner)
 		{
 			ModelState.Remove("PlannerID");
@@ -115,8 +125,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.Settings
 			return Json(fleets, JsonRequestBehavior.AllowGet);
 		}
 
-
-	}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 	
 
 	}

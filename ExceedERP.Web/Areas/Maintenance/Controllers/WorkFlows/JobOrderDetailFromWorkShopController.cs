@@ -139,7 +139,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             var jobrequest = db.JobRequest.Where(x => x.JobRequestId.ToString() == jobOrderID).FirstOrDefault();
 
-            return Json(_JobOrderDetailService.GetAll().Where(jobOrderDetail => jobOrderDetail.JobOrderID == jobrequest.JobRequestId).Select(j => new JobOrderDetail
+            return Json(db.JobOrderDetail.Where(jobOrderDetail => jobOrderDetail.JobOrderID == jobrequest.JobRequestId).Select(j => new JobOrderDetail
                 {
 
                     ServiceID = j.ServiceID,
@@ -164,7 +164,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             var jobrequest = db.JobRequest.Where(x => x.Num == JobOrder.Referance).FirstOrDefault();
             if (jobrequest != null)
             {
-                return Json(_JobOrderDetailService.GetAll().Where(jobOrderDetail => jobOrderDetail.JobOrderID.ToString() == jobOrderID.ToString() || jobOrderDetail.JobOrderID == jobrequest.JobRequestId).Select(j => new JobOrderDetail
+                return Json(db.JobOrderDetail.Where(jobOrderDetail => jobOrderDetail.JobOrderID.ToString() == jobOrderID.ToString() || jobOrderDetail.JobOrderID == jobrequest.JobRequestId).Select(j => new JobOrderDetail
                     {
 
                         ServiceID = j.ServiceID,
@@ -180,7 +180,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 }
                 ).ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
             }
-            return Json(_JobOrderDetailService.GetAll().Where(jobOrderDetail => jobOrderDetail.JobOrderID.ToString() == jobOrderID.ToString()).Select(j => new JobOrderDetail
+            return Json(db.JobOrderDetail.Where(jobOrderDetail => jobOrderDetail.JobOrderID.ToString() == jobOrderID.ToString()).Select(j => new JobOrderDetail
                {
 
                    ServiceID = j.ServiceID,
@@ -197,45 +197,153 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                ).ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult OrderService(string jobOrderID, [DataSourceRequest] DataSourceRequest request)
-        {
+        //public JsonResult OrderService(string jobOrderID, [DataSourceRequest] DataSourceRequest request)
+        //{
 
-            _JobOrderDetailService = new JobOrderDetailService();
-            var Order = db.JobOrder.Where(x => x.JobOrderID.ToString() == jobOrderID).FirstOrDefault();
-            var Request = new JobRequest();
-            if (Order != null)
+        //    _JobOrderDetailService = new JobOrderDetailService();
+        //    var Order = db.JobOrder.Where(x => x.JobOrderID.ToString() == jobOrderID).FirstOrDefault();
+        //    var Request = new JobRequest();
+        //    if (Order != null)
+        //    {
+        //     Request = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
+        //    }
+
+        //    return Json(db.JobOrderDetail.Where(jobOrderDetail => (jobOrderDetail.JobOrderID.ToString() == jobOrderID || jobOrderDetail.JobOrderID == Request.JobRequestId)&& jobOrderDetail.IsFromWorkShop).Select(j => new JobOrderDetail
+        //        {
+
+        //            ServiceID = j.ServiceID,
+        //            JobOrderID = j.JobOrderID,
+        //            JobCausesId = j.JobCausesId,
+        //            Status = j.Status,
+        //            IsFromWorkShop = j.IsFromWorkShop,
+        //            Cause = j.JobCauses.Description,
+        //            JobOrderDetailID = j.JobOrderDetailID,
+        //            ServiceGroup = j.ServiceGroup,
+        //            SubCategoryCode =j.SubCategoryCode,
+        //            StartingDate = j.StartingDate,
+        //            ToDate = j.ToDate,
+        //            ApprovalStatus = j.ApprovalStatus,
+        //            DateCreated = j.DateCreated,
+        //            OnlineApprovedTime = j.OnlineApprovedTime,
+        //            //Section = GetSection(j.Service.SectionId),
+        //            //ServiceName = j.Service.RepairType.Code + " - "+ j.Service.ServiceName,
+        //            RepairTypeID = j.RepairTypeID,
+        //            IsOnlineTransferred = Order.IsOnlineTransferred,
+        //            Remark = Order.Remark,
+        //            ServiceCenterId = j.ServiceCenterId,
+
+
+        //        }
+        //    ).ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+        //}
+        public ActionResult OrderServiceJobOrder([DataSourceRequest] DataSourceRequest request, int num)
+
+        {
+            var serviceCenter = db.ServiceCenterJob.Where(x => x.Num == num).ToList();
+            if (!serviceCenter.Any())
             {
-             Request = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
+                return Json(new { Error = "Job Order not found" });
+            }
+            var serviceJobIds = serviceCenter.Select(x => x.ServiceCenterJobId).ToList();
+
+            
+
+         var order = db.JobOrder.FirstOrDefault(x => x.Num == num);
+            bool isOnlineTransferred = false;
+            string remark = null;
+            Guid? jobRequestId = null;
+
+            if (order != null)
+            {
+                isOnlineTransferred = order.IsOnlineTransferred;
+                remark = order.Remark;
+
+                jobRequestId = db.JobRequest
+                    .Where(x => x.Num == order.Referance)
+                    .Select(x => x.JobRequestId)
+                    .FirstOrDefault();
             }
 
-            return Json(_JobOrderDetailService.GetAll().Where(jobOrderDetail => (jobOrderDetail.JobOrderID.ToString() == jobOrderID || jobOrderDetail.JobOrderID == Request.JobRequestId)&& jobOrderDetail.IsFromWorkShop).Select(j => new JobOrderDetail
+            var result = db.JobOrderDetail
+                .Where(j =>
+                    j.JobOrderID == order.JobOrderID&&j.IsFromWorkShop)
+                    
+                .Select(j => new
                 {
-
-                    ServiceID = j.ServiceID,
-                    JobOrderID = j.JobOrderID,
-                    JobCausesId = j.JobCausesId,
-                    Status = j.Status,
-                    IsFromWorkShop = j.IsFromWorkShop,
+                    j.ServiceID,
+                    j.JobOrderID,
+                    j.JobCausesId,
+                    j.Status,
+                    j.IsFromWorkShop,
                     Cause = j.JobCauses.Description,
-                    JobOrderDetailID = j.JobOrderDetailID,
-                    ServiceGroup = j.ServiceGroup,
-                    SubCategoryCode =j.SubCategoryCode,
-                    StartingDate = j.StartingDate,
-                    ToDate = j.ToDate,
-                    ApprovalStatus = j.ApprovalStatus,
-                    DateCreated = j.DateCreated,
-                    OnlineApprovedTime = j.OnlineApprovedTime,
-                    //Section = GetSection(j.Service.SectionId),
-                    //ServiceName = j.Service.RepairType.Code + " - "+ j.Service.ServiceName,
-                    RepairTypeID = j.RepairTypeID,
-                    IsOnlineTransferred = Order.IsOnlineTransferred,
-                    Remark = Order.Remark,
-                    ServiceCenterId = j.ServiceCenterId,
-                    
-                    
-                }
-            ).ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+                    j.JobOrderDetailID,
+                    j.ServiceGroup,
+                    j.SubCategoryCode,
+                    j.StartingDate,
+                    j.ToDate,
+                    j.ApprovalStatus,
+                    j.DateCreated,
+                    j.OnlineApprovedTime,
+                    j.RepairTypeID,
+                    IsOnlineTransferred = isOnlineTransferred,
+                    Remark = remark,
+                    j.ServiceCenterId
+                })
+                .ToDataSourceResult(request);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult OrderService(Guid jobOrderID, [DataSourceRequest] DataSourceRequest request)
+        {
+
+            var order = db.JobOrder.FirstOrDefault(x => x.JobOrderID == jobOrderID);
+
+            bool isOnlineTransferred = false;
+            string remark = null;
+            Guid? jobRequestId = null;
+
+            if (order != null)
+            {
+                isOnlineTransferred = order.IsOnlineTransferred;
+                remark = order.Remark;
+
+                jobRequestId = db.JobRequest
+                    .Where(x => x.Num == order.Referance)
+                    .Select(x => x.JobRequestId)
+                    .FirstOrDefault();
+            }
+
+            var result = db.JobOrderDetail
+                .Where(j =>
+                    (j.JobOrderID == jobOrderID ||
+                     (jobRequestId.HasValue && j.JobOrderID == jobRequestId.Value))
+                    && j.IsFromWorkShop)
+                .Select(j => new
+                {
+                    j.ServiceID,
+                    j.JobOrderID,
+                    j.JobCausesId,
+                    j.Status,
+                    j.IsFromWorkShop,
+                    Cause = j.JobCauses.Description,
+                    j.JobOrderDetailID,
+                    j.ServiceGroup,
+                    j.SubCategoryCode,
+                    j.StartingDate,
+                    j.ToDate,
+                    j.ApprovalStatus,
+                    j.DateCreated,
+                    j.OnlineApprovedTime,
+                    j.RepairTypeID,
+                    IsOnlineTransferred = isOnlineTransferred,
+                    Remark = remark,
+                    j.ServiceCenterId
+                })
+                .ToDataSourceResult(request);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         private string GetSubCategoryName(string Code)
         {
             string SubCategoryCode = null;
@@ -278,7 +386,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
                 ModelState.AddModelError("No Job Request", "No Job Request");
             }
-            return Json(_JobOrderDetailService.GetAll().Where(jobOrderDetail => jobOrderDetail.JobOrderID.ToString() == jobOrderID || jobOrderDetail.JobOrderID == Request.JobRequestId).Select(j => new JobOrderDetail
+            return Json(db.JobOrderDetail.Where(jobOrderDetail => jobOrderDetail.JobOrderID.ToString() == jobOrderID || jobOrderDetail.JobOrderID == Request.JobRequestId).Select(j => new JobOrderDetail
                 {
 
                     ServiceID = j.ServiceID,
@@ -310,7 +418,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             _JobOrderDetailService = new JobOrderDetailService();
 
-            List<JobOrderDetail> JobOrderDetails = _JobOrderDetailService.GetAll().Where(f => f.RepairTypeID == JobOrderDetail.RepairTypeID && f.JobOrderID == Guid.Parse(jobDetailOrderID)).ToList();
+            List<JobOrderDetail> JobOrderDetails = db.JobOrderDetail.Where(f => f.RepairTypeID == JobOrderDetail.RepairTypeID && f.JobOrderID == Guid.Parse(jobDetailOrderID)).ToList();
             if (JobOrderDetails.Any())
             {
                 ModelState.Clear();
@@ -383,13 +491,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             //var FetchPlate = db.Fleets.FirstOrDefault(x => x.PlateNumber == FetchJobOrder.LicensePlate).EquipmentTypeID;
             //    JobOrderDetail.SubCategoryCode = FetchPlate.ToString();
 
-            try
-            {
+         
                 IServiceService mservice = new ServiceService();
                 _JobOrderService = new JobOrderService();
                 _JobOrderDetailService = new JobOrderDetailService();
 
-                var JobOrder = _JobOrderService.GetAll().Where(x => x.JobOrderID.ToString() == jobDetailOrderID).FirstOrDefault();
+                var JobOrder = db.JobOrder.Where(x => x.JobOrderID.ToString() == jobDetailOrderID).FirstOrDefault();
 
                 if (JobOrder != null)
                 {
@@ -406,7 +513,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     if (JobRequest != null)
                     {
 
-                        List<JobOrderDetail> JobDetail = _JobOrderDetailService.GetAll().Where(f => f.RepairTypeID == JobOrderDetail.RepairTypeID
+                        List<JobOrderDetail> JobDetail = db.JobOrderDetail.Where(f => f.RepairTypeID == JobOrderDetail.RepairTypeID
                                                                                 && f.JobCausesId == JobOrderDetail.JobCausesId
                                                                                 && f.ServiceGroup == JobOrderDetail.ServiceGroup
                                                                                 && f.JobOrderID.ToString() == jobDetailOrderID)
@@ -450,10 +557,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 }
 
 
-            }
-            catch (Exception e)
-            {
-            }
+            
+          
             return Json(new[] { JobOrderDetail }.ToDataSourceResult(request, ModelState), JsonRequestBehavior.AllowGet);
         }
 
@@ -465,7 +570,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             _JobOrderDetailService = new JobOrderDetailService();
 
-            List<JobOrderDetail> JobOrderDetails = _JobOrderDetailService.GetAll().Where(f => f.RepairTypeID == JobOrderDetail.RepairTypeID && f.JobCausesId == JobOrderDetail.JobCausesId && f.JobOrderDetailID != JobOrderDetail.JobOrderDetailID).ToList();
+            List<JobOrderDetail> JobOrderDetails = db.JobOrderDetail.Where(f => f.RepairTypeID == JobOrderDetail.RepairTypeID && f.JobCausesId == JobOrderDetail.JobCausesId && f.JobOrderDetailID != JobOrderDetail.JobOrderDetailID).ToList();
             if (JobOrderDetails.Any())
             {
                 ModelState.Clear();
@@ -526,7 +631,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         
         public ActionResult JobDetailDDBind(string Id)
         {
-            var Service = _JobOrderDetailService.GetAll().Where(x => x.JobOrderID.ToString() == Id).Select(s => new Service
+            var Service = db.JobOrderDetail.Where(x => x.JobOrderID.ToString() == Id).Select(s => new Service
             {
                 // ServiceName = s.Service.RepairType.Name + " - " + s.Service.RepairType.Code,
                 ServiceName = s.RepairTypeID.ToString(),
@@ -536,7 +641,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(Service, JsonRequestBehavior.AllowGet);
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

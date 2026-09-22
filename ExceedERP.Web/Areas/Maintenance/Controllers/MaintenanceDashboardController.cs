@@ -226,7 +226,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             public object datas;
 
         }
-       
 
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

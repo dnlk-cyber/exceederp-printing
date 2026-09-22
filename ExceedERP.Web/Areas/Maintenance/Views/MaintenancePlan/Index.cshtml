@@ -2,53 +2,64 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool IsMIDROC = (ViewBag.setting as string) == "MIDROC";
 }
 
 <legend>Annual Plan</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenancePlan>()
-                                                .Name("grid")
-                                                .Columns(columns =>
-                                                {
-                                                    columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Width(120).Title("Maintenance Center");
-                                                    columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
-                                                    columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
-                                                    columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120);
-                                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-                                                })
-                                                .ToolBar(commands => commands.Create())
-                                                .Editable(editable =>
-                                                {
-                                                    editable.Mode(GridEditMode.PopUp).TemplateName("MaintenancePlanPopUpTemplate");
-                                                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
-                                                })
-                                                .Filterable()
-                                                .Events(e => e.DetailExpand("DetailExpand"))
-                                                .Scrollable(e => e.Height(550))
-                                                .DataSource(dataSource => dataSource
-                                                    .Ajax()
-                                                    .Events(ev => ev
-                                                                .Error("error_handler(\"grid\")")
-                                                                .RequestStart("onRequestStart(\"grid\")")
-                                                                .RequestEnd("onRequestEnd(\"grid\")"))
-                                                    .Model(model => model.Id(p => p.MaintenancePlanId))
-                                                    .Read(read => read.Action("Read", "MaintenancePlan").Data("sendForgery"))
-                                                    .Create(create => create.Action("Create", "MaintenancePlan").Data("sendForgery"))
-                                                    .Update(update => update.Action("Update", "MaintenancePlan").Data("sendForgery"))
-                                                    .Destroy(delete => delete.Action("Delete", "MaintenancePlan").Data("sendForgery"))
-
-                                                ).ClientDetailTemplateId("tabs")
+       .Name("grid")
+       .Columns(columns =>
+       {
+           if (IsMIDROC == false)
+           {
+               columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Width(120).Title("Maintenance Center");
+               columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Value", "Text").Width(120).Title("Service Center");
+           }
+           columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+           columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+           if (IsMIDROC == true)
+           {
+               columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120);
+               columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["PlateNumber"], "Value", "Text").Width(120);
+           }
+           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120);
+           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+       })
+       .ToolBar(commands => commands.Create())
+       .Pageable()
+       .Editable(editable =>
+       {
+           editable.Mode(GridEditMode.PopUp).TemplateName("MaintenancePlanPopUpTemplate");
+           editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+       })
+       .Filterable()
+       .Events(e => e.DetailExpand("DetailExpand"))
+       .Scrollable(e => e.Height(550))
+       .DataSource(dataSource => dataSource
+           .Ajax()
+           .Events(ev => ev
+                       .Error("error_handler(\"grid\")")
+                       .RequestStart("onRequestStart(\"grid\")")
+                       .RequestEnd("onRequestEnd(\"grid\")"))
+           .Model(model => model.Id(p => p.MaintenancePlanId))
+           .Read(read => read.Action("Read", "MaintenancePlan").Data("sendForgery"))
+           .Create(create => create.Action("Create", "MaintenancePlan").Data("sendForgery"))
+           .Update(update => update.Action("Update", "MaintenancePlan").Data("sendForgery"))
+           .Destroy(delete => delete.Action("Delete", "MaintenancePlan").Data("sendForgery"))
+           .Sort(s=>s.Add(mp=>mp.MaintenancePlanId).Descending())
+       ).ClientDetailTemplateId("tabs")
 )
 
 <script id="tabs" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                                                .Name("tabstrip_grid_#=MaintenancePlanId#")
-                                                                                                .SelectedIndex(0)
-                                                                                                .Items(itemn =>
-                                                                                                {
-                                                                                                    itemn.Add().Text("Monthly Plan").Content(@<text>@Detail()</text>);
+              .Name("tabstrip_grid_#=MaintenancePlanId#")
+              .SelectedIndex(0)
+              .Items(itemn =>
+              {
+                  itemn.Add().Text("Monthly Plan").Content(@<text>@Detail()</text>);
 
-                                                                                                        }).ToClientTemplate())
+                      }).ToClientTemplate())
 </script>
 
 
@@ -57,48 +68,100 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenancePlanDetail>()
-                                                        .Name("grid_#=MaintenancePlanId#")
-                                                        .Columns(columns =>
-                                                        {
-                                                            columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["GlPeriod"], "Value", "Text").Width(120);
-                                                            columns.Bound(c => c.PMMaterialCost).Width(100);
-                                                            columns.Bound(c => c.PMLaborCost).Width(100);
-                                                            columns.Bound(c => c.CMMaterialCost).Width(100);
-                                                            columns.Bound(c => c.CMLaborCost).Width(100);
-                                                            columns.Bound(c => c.CMQuantity).Width(100);
-                                                            columns.Bound(c => c.CMCost).Width(100);
-                                                            columns.Bound(c => c.PMQuantity).Width(100);
-                                                            columns.Bound(c => c.PMCost).Width(100);
+       .Name("grid_#=MaintenancePlanId#")
+       .Columns(columns =>
+       {
+           columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["GlPeriod"], "Value", "Text").Width(120);
+           columns.Bound(c => c.PMMaterialCost).Width(100);
+           columns.Bound(c => c.PMLaborCost).Width(100);
+           columns.Bound(c => c.CMMaterialCost).Width(100);
+           columns.Bound(c => c.CMLaborCost).Width(100);
+           columns.Bound(c => c.CMQuantity).Width(100);
+           columns.Bound(c => c.CMCost).Width(100);
+           columns.Bound(c => c.PMQuantity).Width(100);
+           columns.Bound(c => c.PMCost).Width(100);
 
 
 
-                                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-                                                        })
-                                                        //.ToolBar(commands => commands.Create())
-                                                        .Editable(editable =>
-                                                        {
-                                                            editable.Mode(GridEditMode.PopUp).TemplateName("MaintenancePlanDetailPopUp");
-                                                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
-                                                        })
-                                                        .Filterable()
-                                                        .Scrollable()
-                                                        .DataSource(dataSource => dataSource
-                                                            .Ajax()
-                                                                .Events(ev => ev
-                                                                .Error("error_handler(\"grid_#=MaintenancePlanId#\")")
-                                                                .RequestStart("onRequestStart(\"grid_#=MaintenancePlanId#\")")
-                                                                .RequestEnd("onRequestEnd(\"grid_#=MaintenancePlanId#\")"))
-                                                            .Model(model => model.Id(p => p.MaintenancePlanDetailId))
-                                                            .Read(read => read.Action("Read", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }).Data("sendForgery"))
-                                                            //.Create(create => create.Action("Create", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }).Data("sendForgery"))
-                                                            .Update(update => update.Action("Update", "MaintenancePlanDetail").Data("sendForgery"))
-                                                            .Destroy(delete => delete.Action("Delete", "MaintenancePlanDetail").Data("sendForgery"))
+           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+       })
+       //.ToolBar(commands => commands.Create())
+       .Editable(editable =>
+       {
+           editable.Mode(GridEditMode.PopUp).TemplateName("MaintenancePlanDetailPopUp");
+           editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+       })
+       .Filterable()
+       .Scrollable()
+       .DataSource(dataSource => dataSource
+           .Ajax()
+               .Events(ev => ev
+               .Error("error_handler(\"grid_#=MaintenancePlanId#\")")
+               .RequestStart("onRequestStart(\"grid_#=MaintenancePlanId#\")")
+               .RequestEnd("onRequestEnd(\"grid_#=MaintenancePlanId#\")"))
+           .Model(model => model.Id(p => p.MaintenancePlanDetailId))
+           .Read(read => read.Action("Read", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }).Data("sendForgery"))
+           //.Create(create => create.Action("Create", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }).Data("sendForgery"))
+           .Update(update => update.Action("Update", "MaintenancePlanDetail").Data("sendForgery"))
+           .Destroy(delete => delete.Action("Delete", "MaintenancePlanDetail").Data("sendForgery"))
 
-                                                        ).ToClientTemplate()
+       ).ClientDetailTemplateId("dailyDetails").ToClientTemplate()
     )
 }
 
+<script id="dailyDetails" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .SelectedIndex(0)
+    .Name("dailyStrip_#=MaintenancePlanDetailId#")
+    .Items(items =>
+    {
+        items.Add().Text("Maintenance Plan Daily").Content(@<text>
+     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenanceDailyPlan>()
+     .Name("dailyDetail#=MaintenancePlanDetailId#")
+     .Columns(columns =>
+     {
+         columns.Bound(c => c.Date).Format("{0:yyyy-MM-dd}").Title("Date").Width(100);
+         columns.Bound(c => c.PMMaterialCost).Width(100);
+         columns.Bound(c => c.PMLaborCost).Width(100);
+         columns.Bound(c => c.CMMaterialCost).Width(100);
+         columns.Bound(c => c.CMLaborCost).Width(100);
+         columns.Bound(c => c.CMQuantity).Width(100);
+         columns.Bound(c => c.CMCost).Width(100);
+         columns.Bound(c => c.PMQuantity).Width(100);
+         columns.Bound(c => c.PMCost).Width(100);
 
+
+
+         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+     })
+     //.ToolBar(commands => commands.Create())
+     .Editable(editable =>
+     {
+         editable.Mode(GridEditMode.PopUp).TemplateName("MaintenancePlanDailyPopUp");
+         editable.DisplayDeleteConfirmation("Are You Sure To Remove");
+     })
+     .Filterable()
+     .Scrollable()
+     .DataSource(dataSource => dataSource
+         .Ajax()
+             .Events(ev => ev
+             .Error("error_handler(\"dailyDetail#=MaintenancePlanDetailId#\")")
+             .RequestStart("onRequestStart(\"dailyDetail#=MaintenancePlanDetailId#\")")
+             .RequestEnd("onRequestEnd(\"dailyDetail#=MaintenancePlanDetailId#\")"))
+         .Model(model => model.Id(p => p.MaintenancePlanDetailId))
+         .Read(read => read.Action("DailyRead", "MaintenancePlanDetail", new { id = "#=MaintenancePlanDetailId#" }).Data("sendForgery"))
+         //.Create(create => create.Action("Create", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }).Data("sendForgery"))
+         .Update(update => update.Action("DailyUpdate", "MaintenancePlanDetail").Data("sendForgery"))
+         .Destroy(delete => delete.Action("DailyDelete", "MaintenancePlanDetail").Data("sendForgery"))
+
+     ).ToClientTemplate()
+    )
+    </text>);
+    }).ToClientTemplate()
+
+
+    )
+</script>
 <script type="text/javascript">
     var masterRow;
     var masterGrid;
@@ -117,7 +180,11 @@
             fiscalYearId: fiscalYearId
         }
     }
-
+    function filterMaintenanceCenter() {
+        return {
+            MaintenanceCenter: $("#MaintenanceCenterId").data("kendoDropDownList").value(),
+        }
+    }
     function filterFleet() {
         return {
             text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
@@ -151,6 +218,22 @@
             search: filterInput.val()
         };
 
+    }
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+    function handleFleetId() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+
+            text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+        }
     }
 
 

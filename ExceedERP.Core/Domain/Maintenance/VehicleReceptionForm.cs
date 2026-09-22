@@ -16,6 +16,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public int? CustomerId { get; set; }
         [Display(Name = "Reception")]
         public int RecipientId { get; set; }
+        public string CustomerName { get; set; }
         public Guid? VehicleCategoryId { get; set; }
         [Display(Name = "Inspector Assigned")]
         public int ? TechnicianAssignedId { get; set; }
@@ -34,12 +35,35 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string Remark { get; set; }
         public Source Source { get; set; }
         public bool FromRequest { get; set; }
+        public string DriverTransferId { get; set; }
         public string JobRequestId { get; set; }
         public string SitesVehicleTransferID { get; set; }
         public bool IssentToBackToJobRequest { get; set; }
        
     }
-    public enum Source { External,Internal}
+
+    public class TyreSerialInfo:TrackUserSettingOperation
+    {
+        public int TyreSerialInfoId { get; set; }
+        public int VehicleReceptionFormId { get; set; }
+        public string TireSize { get; set; }
+        public string TireModel { get; set; }
+        public string TireName { get; set; }
+        public string NumberOfTire { get; set; }
+        public string SerialNumber { get; set; }
+        public string Description { get; set; }
+    }
+
+    public class AccesseryInfo:TrackUserSettingOperation
+    {
+        public int AccesseryInfoId { get; set; }
+        public int VehricleReceptionFormId { get; set; }
+        public string AccName { get; set; }
+        public string AccModel { get; set; }
+        public string Description { get; set; }
+        public int NumberOfAcc { get; set; }
+    }
+    public enum Source { External,Internal,ExternalCustomer}
     public enum FuelValue
     {
         [Display(Name = "E-empty")]
@@ -71,5 +95,16 @@ namespace ExceedERP.Core.Domain.Maintenance
         public int VehicleReceptionFormId { get; set; }
         public ApprovalStatuses Status { get; set; }
         public string Remark { get; set; }
+    }
+    public class VehicleReceptionDocument
+    {
+        public int VehicleReceptionDocumentId { get; set; }
+        public int VehicleReceptionFormId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+
     }
 }

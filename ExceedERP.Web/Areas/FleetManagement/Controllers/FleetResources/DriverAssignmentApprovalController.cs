@@ -35,7 +35,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             
             var driveVehicleTransferApprovals = db.DriverVehicleTransferApproval.Where(x => x.DriverAssignmentId == Id);
 
-            var result = driveVehicleTransferApprovals.ToDataSourceResult(request, driveVehicleTransferApproval => new DriverTransferApproval
+           DataSourceResult result = driveVehicleTransferApprovals.ToDataSourceResult(request, driveVehicleTransferApproval => new DriverTransferApproval
             {
                 DriverAssignmentId = driveVehicleTransferApproval.DriverAssignmentId,
                 CreatedBy = driveVehicleTransferApproval.CreatedBy,
@@ -48,7 +48,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Remark = driveVehicleTransferApproval.Remark,
                 Status = driveVehicleTransferApproval.Status
             });
-            return Json(result);
+            return Json(result,JsonRequestBehavior.AllowGet);
 
         }
 
@@ -125,7 +125,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(new[] { DriverVehicleTransferApproval }.ToDataSourceResult(request));
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
 
 
     }

@@ -29,8 +29,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }).ToList();
             ViewData["PlatesList"] = db.Fleets.Select(s => new
             {
-                Code = s.PlateNumber,
-                Name = s.PlateNumber
+                Code = s.FleetsID,
+                Name = s.PlateNumber+" "+s.SerialNo+" "+s.ChasisNumber
             }).ToList();
 
             return View();
@@ -54,7 +54,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 ModifiedBy = x.ModifiedBy,
                 NextPmDate = x.NextPmDate,
                 NextPmKM = x.NextPmKM,
-                PlateNumber = x.PlateNumber,
+                FleetId = x.FleetId,
                 PmSchedulerId = x.PmSchedulerId,
                 PmSettingId = x.PmSettingId,
                 TaskId = x.TaskId,
@@ -68,11 +68,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             ModelState.Remove("EquipmentNameId");
             ModelState.Remove("DateFrequency");
-            var FetchNameId = db.Fleets.FirstOrDefault(x => x.PlateNumber == pmScheduler.PlateNumber || x.SerialNo == pmScheduler.PlateNumber);
+            var FetchNameId = db.Fleets.FirstOrDefault(x => x.FleetsID.ToString() == pmScheduler.FleetId);
             if (FetchNameId == null)
                 ModelState.AddModelError("Not Found", "No Fleet Regisered With This PlateNumber");
             pmScheduler.EquipmentNameId = db.EquipmentName.FirstOrDefault(x=>x.EquipmentNameID==FetchNameId.EquipmentNameID).Name;
-            var scheduler = db.PmSchedulers.Where(x => x.PlateNumber == pmScheduler.PlateNumber&&x.TaskId==pmScheduler.TaskId).ToList();
+            var scheduler = db.PmSchedulers.Where(x => x.FleetId == pmScheduler.FleetId&&x.TaskId==pmScheduler.TaskId).ToList();
             var FetchPreviousSchedule = new PmScheduler();
             foreach(var lastObject in scheduler)
             {
@@ -106,6 +106,56 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(new[] { pmScheduler }.ToDataSourceResult(request, ModelState));
         }
+
+        public JsonResult GenerateSchedule()
+        {
+            var generatedSchedules = db.PmSchedulers
+                .GroupBy(x => new
+                {
+                    x.FleetId,
+                    x.PmSettingId,
+                    x.TaskId
+                })
+                .Select(g => g
+                    .OrderByDescending(x => x.PmSchedulerId)
+                    .FirstOrDefault())
+                .ToList();
+            foreach(var x in generatedSchedules)
+            {
+                if (x.NextPmDate >= DateTime.Now)
+                    continue;
+                var entity = new PmScheduler
+                {
+
+                    CreatedBy =User.Identity.Name,
+                    DateCreated =DateTime.Now,
+                    DateFrequency = x.DateFrequency,
+                    KMFrequency = x.KMFrequency,
+                    DelayReason = x.DelayReason,
+                    Location = x.Location,
+                    EquipmentNameId = x.EquipmentNameId,
+                    IsExpired = false,
+                    LastPmKM = x.LastPmKM,
+                    ModifiedBy = x.ModifiedBy,
+                    NextPmDate = DateTime.Now.AddYears(1),
+                    LastPmDate=x.LastPmDate.AddYears(1),
+                    NextPmKM = x.NextPmKM,
+                    FleetId = x.FleetId,                    
+                    PmSettingId = x.PmSettingId,
+                    TaskId = x.TaskId,
+                    WorkDelay = x.WorkDelay,
+                };
+                db.PmSchedulers.Add(entity);
+                
+            }
+            db.SaveChanges();
+            var formattedData = new
+            {
+                message = "Schedule generated schedule",
+                Result="ok"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
         private object GetMappedScheduler(PmScheduler x)
         {
             var entity = new PmScheduler
@@ -125,7 +175,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 ModifiedBy = x.ModifiedBy,
                 NextPmDate = x.NextPmDate,
                 NextPmKM = x.NextPmKM,
-                PlateNumber = x.PlateNumber,
+                FleetId = x.FleetId,
                 PmSchedulerId = x.PmSchedulerId,
                 PmSettingId = x.PmSettingId,
                 TaskId = x.TaskId,
@@ -154,7 +204,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
                 ModelState.AddModelError("No Record Found", "No Record Found");
             }
-            var scheduler = db.PmSchedulers.Where(x => x.PlateNumber == pmScheduler.PlateNumber && x.TaskId == pmScheduler.TaskId).ToList();
+            var scheduler = db.PmSchedulers.Where(x => x.FleetId == pmScheduler.FleetId && x.TaskId == pmScheduler.TaskId).ToList();
             var FetchPreviousSchedule = new PmScheduler();
             foreach (var lastObject in scheduler)
             {
@@ -166,7 +216,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             //    pmScheduler.LastPmDate = FetchSchedule.LastPmDate;
             //    pmScheduler.LastPmKM = FetchSchedule.LastPmKM;
             //}
-            var FetchNameId = db.Fleets.FirstOrDefault(x => x.PlateNumber == pmScheduler.PlateNumber || x.SerialNo == pmScheduler.PlateNumber);
+            var FetchNameId = db.Fleets.FirstOrDefault(x => x.FleetsID.ToString() == pmScheduler.FleetId);
             if (FetchNameId == null)
                 ModelState.AddModelError("Not Found", "No Fleet Regisered With This PlateNumber");
             pmScheduler.EquipmentNameId = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == FetchNameId.EquipmentNameID).Name;
@@ -182,7 +232,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 FetchSchedule.ModifiedBy = User.Identity.Name;
                 FetchSchedule.NextPmDate = pmScheduler.NextPmDate;
                 FetchSchedule.NextPmKM = pmScheduler.NextPmKM;
-                FetchSchedule.PlateNumber = pmScheduler.PlateNumber;
+                FetchSchedule.FleetId = pmScheduler.FleetId;
                // FetchSchedule.PmSchedulerId = pmScheduler.KMFrequency;
                 FetchSchedule.PmSettingId = pmScheduler.PmSettingId;
                 FetchSchedule.TaskId = pmScheduler.TaskId;
@@ -285,6 +335,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Status = "OK"
             };
             return Json(SuccessMessage, JsonRequestBehavior.AllowGet);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

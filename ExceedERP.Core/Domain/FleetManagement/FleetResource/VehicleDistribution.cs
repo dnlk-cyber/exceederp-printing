@@ -81,6 +81,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string EquipmentName { get; set; }
         public string Destination { get; set; }
         public decimal NumberofPersonston { get; set; }
+        public string ParentId { get; set; }
         public bool IsExternal { get; set; }
         public string Remarks { get; set; }
         public virtual RentRequest RentRequest { get; set; }

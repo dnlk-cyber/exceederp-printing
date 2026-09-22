@@ -16,45 +16,45 @@ namespace ExceedERP.Core.Domain.FleetManagement.FuelManagement
         public Guid FuelID { get; set; }
         [DisplayName(" Equipment ")]
         public Guid FleetsID { get; set; }
-    
+
         public string Project { get; set; }
         [DisplayName(" Operator Name")]
         public string OperatorName { get; set; }
         public enum FuelTypeenum { Benzene, Diesel }
         [DisplayName("Fuel Type")]
-      
+
         public string FuelType { get; set; }
         [DisplayName("Fuel Standard")]
-       
+
         public string FuelStandard { get; set; }
 
         [DisplayName(" Initial KmHr ")]
-       
+
         public int InitialKmHr { get; set; }
         [DisplayName(" Final KmHr ")]
-       
+
         public int FinalKmHr { get; set; }
         [DisplayName(" Plan KmHr ")]
-       
+
         public int PlanKmHr { get; set; }
         [DisplayName(" Fuel Filled Amount  ")]
-       
+
         public decimal FuelFilledAmount { get; set; }
         [DisplayName(" Fuel Source  ")]
-       
+
         public string FuelSource { get; set; }
-           [DisplayName("   Source Detail  ")]
+        [DisplayName("   Source Detail  ")]
         public string FuelSourceDetail { get; set; }
         public enum FuelSourceenum { Company, External }
         [DisplayName(" Unit Price ")]
-       
+
         public decimal UnitPrice { get; set; }
         [DisplayName(" Receipt No ")]
-       
+
         public string ReceiptNo { get; set; }
         [DisplayName("Total Fuel cost")]
         public decimal TotalFuelcost { get; set; }
-    
+
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
         [NotMapped]
@@ -68,5 +68,25 @@ namespace ExceedERP.Core.Domain.FleetManagement.FuelManagement
         public virtual Fleets Fleet { get; set; }
 
 
+    }
+    public class CouponFuel : Operations
+    {
+        public int CouponFuelId { get; set; }
+        public string Requestor { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime RequestDate { get; set; }
+        public string FleetId { get; set; }
+        public string IssueItem { get; set; }
+        public string UOM { get; set; }
+        public int RequestedQuantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal PreKM { get; set; }
+        public decimal CurrentKM { get; set; }
+        public decimal DiffKM { get; set; }
+        public decimal ConsumptionPerKM { get; set; }
+        public string FuelStation { get; set; }
+        public string CouponNumber { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

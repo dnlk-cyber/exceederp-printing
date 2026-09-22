@@ -18,6 +18,17 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public Guid? EquipmentNameId { get; set; }
         [DisplayName("Supplier Name")]
         public int? ProcurementSupplierID { get; set; }
+        [Display(Name = "Operator")]
+        public string ExternalOperatorName { get; set; }
+        public decimal LabourCost { get; set; }
+        public decimal TotalTime { get; set; }
+        public decimal SparePartCost { get; set; }
+        public int? RentalAgreementNum { get; set; }
+        public decimal BasicSalary { get; set; }
+        public decimal OverTime { get; set; }
+        [NotMapped]
+        public bool IsECWC { get; set; }
+        public decimal BatteryCost { get; set; }
         [Required]
         [DisplayName("Work Item")]
         public string WorkItem { get; set; }
@@ -31,6 +42,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public string DownReason { get; set; }
         [Display(Name = "Lubricant Consumption")]
         public decimal OilConsumption {get;set;}
+        public decimal OilCost { get; set; }
+        public decimal GreaseConsumption { get; set; }
+        public decimal GreaseCost { get; set; }
         [Required]
         [DisplayName("Trip Start Place")]
         public string TripStartPlace { get; set; }
@@ -52,9 +66,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         [Required]
         [DisplayName("Road Type (Asphalt(Km))")]
         public decimal Asphalt { get; set; }
+        [DisplayName("Without Load(Asphalt(rate))")]
+        public decimal? AsphaltWithOut { get; set; }
         [Required]
         [DisplayName("Road Type (Gravel(Km))")]
         public decimal Gravel { get; set; }
+        [DisplayName("WithOut Load (Gravel(rate)")]
+        public decimal? GravelWithOut { get; set; }
         [Required]
         [DisplayName("Total Km Travelled")]
         public decimal TotalKmTravelled { get; set; }
@@ -71,7 +89,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
     
         [DisplayName("Idle Rate")]
         public decimal IdleRate { get; set; }
-        [Required]
+        //[Required]
         [DisplayName("Reason For Idle")]
         public string ReasonForIdle { get; set; }
 
@@ -124,12 +142,27 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public Guid? OperatorId { get; set; }
         [Display(Name ="External Operator")]
         public string ExternalOperator { get; set; }
-        
+        public string FuelType { get; set; }
+        public string OilType { get; set; }
+        public decimal? MaintenanceFuel { get; set; }
+        public DownReasonList? ReasonForDown { get; set; }
+        public IdleReasonList? IdleReason { get; set; }
     }
     public enum FleetMesuringCategory
     {
         Trips,
         Quintals,
         Liters
+    }
+    public class ItemConsumptionVm
+    {
+        public int IssueID { get; set; }
+        //public DateTime IssueDate { get; set; }
+        public string PlateNo { get; set; }
+        public string ItemCode { get; set; }
+        public string ItemCategoryCode { get; set; }
+        public decimal IssuedQuantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal Total { get; set; }
     }
 }

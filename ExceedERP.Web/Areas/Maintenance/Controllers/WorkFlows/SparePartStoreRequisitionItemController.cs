@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -46,7 +47,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             DataSourceResult result = storerequisitionItems.ToDataSourceResult(request, storeRequisitionItem => new 
             {
                 
-                AgreementPrice = storeRequisitionItem.AgreementPrice,
+                //AgreementPrice = storeRequisitionItem.AgreementPrice,
                 StoreRequisitionItemID = storeRequisitionItem.StoreRequisitionItemID,
                 StoreRequisitionID = storeRequisitionItem.StoreRequisitionID,
                 ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
@@ -56,10 +57,17 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                 ChasisNo = storeRequisitionItem.ChasisNo,
                 SerialNo = storeRequisitionItem.SerialNo,
                 ModelNo = storeRequisitionItem.ModelNo,
+                //IsLog = storeRequisitionItem.IsLog,
+                //IsBiologicalAsset = storeRequisitionItem.IsBiologicalAsset,
+                //IsLumber = storeRequisitionItem.IsLumber,
                 RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                 ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
+                //IssuedQuantity = GetIssued(storeRequisitionItem.StoreRequisitionID,storeRequisitionItem.ItemCategoryCode,storeRequisitionItem.ItemCode),
                 IssuedQuantity = storeRequisitionItem.IssuedQuantity,
+                //AgreementPrice=GetIssuedPrice(storeRequisitionItem.StoreRequisitionID, storeRequisitionItem.ItemCategoryCode, storeRequisitionItem.ItemCode),
                 PurchaseQuantity = storeRequisitionItem.PurchaseQuantity,
+                //AgreementPrice = storeRequisitionItem.AgreementPrice,
+                //AgreementPrice = storeRequisitionItem.CurrentAPrice,
                 IsApproved = storeRequisitionItem.IsApproved,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
                 Unit= ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
@@ -70,7 +78,34 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
             return Json(result);
         }
-
+        private decimal GetIssuedPrice(int SId, string ICcode, string ICode)
+        {
+            decimal Value = 0;
+            var fetchIssue = db.Issues.FirstOrDefault(x => x.StoreRequisitionID == SId);
+            if (fetchIssue != null)
+            {
+                var fetchItem = db.IssueItems.FirstOrDefault(x => x.ItemCategoryCode == ICcode && x.ItemCode == ICode);
+                if (fetchItem != null)
+                {
+                    Value = fetchItem.IssuedQuantity*fetchItem.UnitPrice;
+                }
+            }
+            return Value;
+        }
+        private decimal GetIssued(int SId,string ICcode,string ICode)
+        {
+            decimal Value = 0;
+            var fetchIssue = db.Issues.FirstOrDefault(x => x.StoreRequisitionID == SId);
+                if(fetchIssue!=null)
+            {
+                var fetchItem = db.IssueItems.FirstOrDefault(x => x.ItemCategoryCode == ICcode && x.ItemCode == ICode);
+                  if(fetchItem!=null)
+                {
+                    Value = fetchItem.IssuedQuantity;
+                }
+            }
+            return Value;
+        }
         private decimal GetUnitPrice(string ItemCategoryCode, string ItemCode)
         {
             var GetAveragePrice = db.InventoryItems.FirstOrDefault(x => x.ItemCategoryCode == ItemCategoryCode && x.ItemCode == ItemCode).AvgPrice;
@@ -80,57 +115,204 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SparePartStoreRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem , int id)
         {
-            var sr = db.StoreRequisitions.Find(id);
-            storeRequisitionItem.IssuedQuantity = 0;
-            storeRequisitionItem.PurchaseQuantity = 0;
-            if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+
+            if (companySetting != null && companySetting.Remark == "MCG")
             {
-                ModelState.AddModelError("above","Approved quantity cannot be more than requested.");
-            }
-            var exist =
-                db.StoreRequisitionItems.Where(x => x.StoreRequisitionID == id)
-                    .Where(x => x.ItemCode == storeRequisitionItem.ItemCode)
-                    .Where(x => x.ItemSpecification == storeRequisitionItem.ItemSpecification)//added
-                    .AsQueryable();
-            if (exist.Any())
-            {
-                ModelState.AddModelError("exist", "Item " +storeRequisitionItem.ItemCode+" already exists");
-            }
-            ModelState.Remove("AgreementPrice");
-            if (ModelState.IsValid)
-            {
-                var entity = new StoreRequisitionItem
+                var fuelCategoryCodes = new HashSet<string>(db.FuelItemSettings.Select(x => x.ItemCategoryCode));
+                var storeItems = db.StoreRequisitionItems.Where(x => x.StoreRequisitionID == id).ToList();
+                if (storeItems.Any())
                 {
-                    StoreRequisitionID = id,
-                    ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
-                    ItemCode = storeRequisitionItem.ItemCode,
-                    PartNo = storeRequisitionItem.PartNo,
-                    ModelNo = storeRequisitionItem.ModelNo,
-                    SerialNo = storeRequisitionItem.SerialNo,
-                    ChasisNo = storeRequisitionItem.ChasisNo,
-                    RequestedQuantity = storeRequisitionItem.RequestedQuantity,
-                    ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
-                    IssuedQuantity = storeRequisitionItem.RequestedQuantity,
-                    PurchaseQuantity = 0,//assuming all will be given
-                    IsApproved = storeRequisitionItem.IsApproved,
-                    ItemSpecification = storeRequisitionItem.ItemSpecification,
+                    var categoryIds = storeItems.Select(x => x.ItemCategoryCode).ToList();
+                    var count = 0;
+                    foreach(var itemc in categoryIds)
+                    {
+                        if(fuelCategoryCodes.Contains(itemc))
+                        {
+                            count = count + 1;
+                        }
+                    }
+                    if(count!=0&&!fuelCategoryCodes.Contains(storeRequisitionItem.ItemCategoryCode))
+                    {
+                        ModelState.AddModelError("", "You can not request non Fuel items with Fuel items together");
+                    }
 
-                    CurrentAPrice = GetUnitPrice(storeRequisitionItem.ItemCategoryCode,storeRequisitionItem.ItemCode),
-                    CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
+                    if(count==0&&fuelCategoryCodes.Contains(storeRequisitionItem.ItemCategoryCode))
+                    {
+                        ModelState.AddModelError("", "You can not request non Fuel items with Fuel items together");
+                    }
+                }
 
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now,
+                if(fuelCategoryCodes.Contains(storeRequisitionItem.ItemCategoryCode))
+                { 
+                var sr = db.StoreRequisitions.Find(id);
+                storeRequisitionItem.IssuedQuantity = 0;
+                storeRequisitionItem.PurchaseQuantity = 0;
+                if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
+                {
+                    ModelState.AddModelError("above", "Approved quantity cannot be more than requested.");
+                }
+                var exist =
+                    db.StoreRequisitionItems.Where(x => x.StoreRequisitionID == id)
+                        .Where(x => x.ItemCode == storeRequisitionItem.ItemCode)
+                        .Where(x => x.ItemSpecification == storeRequisitionItem.ItemSpecification)//added
+                        .AsQueryable();
+                if (exist.Any())
+                {
+                    ModelState.AddModelError("exist", "Item " + storeRequisitionItem.ItemCode + " already exists");
+                }
+                ModelState.Remove("AgreementPrice");
+                    if (ModelState.IsValid)
+                    {
+                        var entity = new StoreRequisitionItem
+                        {
+                            StoreRequisitionID = id,
+                            ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
+                            ItemCode = storeRequisitionItem.ItemCode,
+                            PartNo = storeRequisitionItem.PartNo,
+                            ModelNo = storeRequisitionItem.ModelNo,
+                            SerialNo = storeRequisitionItem.SerialNo,
+                            
+                            ChasisNo = storeRequisitionItem.ChasisNo,
+                            RequestedQuantity = storeRequisitionItem.RequestedQuantity,
+                            ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
+                            IssuedQuantity = storeRequisitionItem.RequestedQuantity,
+                            PurchaseQuantity = 0,//assuming all will be given
+                            IsApproved = storeRequisitionItem.IsApproved,
+                            ItemSpecification = storeRequisitionItem.ItemSpecification,
+                            CurrentAPrice = GetUnitPrice(storeRequisitionItem.ItemCategoryCode, storeRequisitionItem.ItemCode),
+                            CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
 
-                };
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Now,
 
-                db.StoreRequisitionItems.Add(entity);
-                db.SaveChanges();
-                storeRequisitionItem.StoreRequisitionItemID = entity.StoreRequisitionItemID;
-                #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "store requisition item", "Success", User.Identity.Name, $"created store requisition item {entity.ItemCode} under record {entity.StoreRequisitionID} ", Modules.Inventory);
-                #endregion
+                        };
+
+                        db.StoreRequisitionItems.Add(entity);
+                        db.SaveChanges();
+                        sr.IsFuel = true;
+                        db.Entry(sr).State = EntityState.Modified;
+                        db.SaveChanges();
+                        storeRequisitionItem.StoreRequisitionItemID = entity.StoreRequisitionItemID;
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "store requisition item", "Success", User.Identity.Name, $"created store requisition item {entity.ItemCode} under record {entity.StoreRequisitionID} ", Modules.Inventory);
+                        #endregion
+                    }
+
+
+                }
+                if (!fuelCategoryCodes.Contains(storeRequisitionItem.ItemCategoryCode))
+                {
+                    var sr = db.StoreRequisitions.Find(id);
+                    storeRequisitionItem.IssuedQuantity = 0;
+                    storeRequisitionItem.PurchaseQuantity = 0;
+                    if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
+                    {
+                        ModelState.AddModelError("above", "Approved quantity cannot be more than requested.");
+                    }
+                    var exist =
+                        db.StoreRequisitionItems.Where(x => x.StoreRequisitionID == id)
+                            .Where(x => x.ItemCode == storeRequisitionItem.ItemCode)
+                            .Where(x => x.ItemSpecification == storeRequisitionItem.ItemSpecification)//added
+                            .AsQueryable();
+                    if (exist.Any())
+                    {
+                        ModelState.AddModelError("exist", "Item " + storeRequisitionItem.ItemCode + " already exists");
+                    }
+                    ModelState.Remove("AgreementPrice");
+                    if (ModelState.IsValid)
+                    {
+                        var entity = new StoreRequisitionItem
+                        {
+                            StoreRequisitionID = id,
+                            ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
+                            ItemCode = storeRequisitionItem.ItemCode,
+                            PartNo = storeRequisitionItem.PartNo,
+                            ModelNo = storeRequisitionItem.ModelNo,
+                            SerialNo = storeRequisitionItem.SerialNo,
+                            ChasisNo = storeRequisitionItem.ChasisNo,
+                            RequestedQuantity = storeRequisitionItem.RequestedQuantity,
+                            ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
+                            IssuedQuantity = storeRequisitionItem.RequestedQuantity,
+                            PurchaseQuantity = 0,//assuming all will be given
+                            IsApproved = storeRequisitionItem.IsApproved,
+                            ItemSpecification = storeRequisitionItem.ItemSpecification,
+                            CurrentAPrice = GetUnitPrice(storeRequisitionItem.ItemCategoryCode, storeRequisitionItem.ItemCode),
+                            CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
+
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Now,
+
+                        };
+
+                        db.StoreRequisitionItems.Add(entity);
+                        db.SaveChanges();
+                        db.Entry(sr).State = EntityState.Modified;
+                        db.SaveChanges();
+                        storeRequisitionItem.StoreRequisitionItemID = entity.StoreRequisitionItemID;
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "store requisition item", "Success", User.Identity.Name, $"created store requisition item {entity.ItemCode} under record {entity.StoreRequisitionID} ", Modules.Inventory);
+                        #endregion
+                    }
+
+
+                }
             }
+            else
+            {
+                var sr = db.StoreRequisitions.Find(id);
+                storeRequisitionItem.IssuedQuantity = 0;
+                storeRequisitionItem.PurchaseQuantity = 0;
+                if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
+                {
+                    ModelState.AddModelError("above", "Approved quantity cannot be more than requested.");
+                }
+                var exist =
+                    db.StoreRequisitionItems.Where(x => x.StoreRequisitionID == id)
+                        .Where(x => x.ItemCode == storeRequisitionItem.ItemCode)
+                        .Where(x => x.ItemSpecification == storeRequisitionItem.ItemSpecification)//added
+                        .AsQueryable();
+                if (exist.Any())
+                {
+                    ModelState.AddModelError("exist", "Item " + storeRequisitionItem.ItemCode + " already exists");
+                }
+                ModelState.Remove("AgreementPrice");
+                if (ModelState.IsValid)
+                {
+                    var entity = new StoreRequisitionItem
+                    {
+                        StoreRequisitionID = id,
+                        ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
+                        ItemCode = storeRequisitionItem.ItemCode,
+                        PartNo = storeRequisitionItem.PartNo,
+                        ModelNo = storeRequisitionItem.ModelNo,
+                        SerialNo = storeRequisitionItem.SerialNo,
+                        ChasisNo = storeRequisitionItem.ChasisNo,
+                        //IsLog = storeRequisitionItem.IsLog,
+                        //IsBiologicalAsset = storeRequisitionItem.IsBiologicalAsset,
+                        //IsLumber = storeRequisitionItem.IsLumber,
+                        RequestedQuantity = storeRequisitionItem.RequestedQuantity,
+                        ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
+                        IssuedQuantity = storeRequisitionItem.RequestedQuantity,
+                        PurchaseQuantity = 0,//assuming all will be given
+                        IsApproved = storeRequisitionItem.IsApproved,
+                        ItemSpecification = storeRequisitionItem.ItemSpecification,
+                        CurrentAPrice = GetUnitPrice(storeRequisitionItem.ItemCategoryCode, storeRequisitionItem.ItemCode),
+                        CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
 
+                        CreatedBy = User.Identity.Name,
+                        DateCreated = DateTime.Now,
+
+                    };
+
+                    db.StoreRequisitionItems.Add(entity);
+                    db.SaveChanges();
+                    storeRequisitionItem.StoreRequisitionItemID = entity.StoreRequisitionItemID;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "store requisition item", "Success", User.Identity.Name, $"created store requisition item {entity.ItemCode} under record {entity.StoreRequisitionID} ", Modules.Inventory);
+                    #endregion
+                }
+            }
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));
         }
 
@@ -177,7 +359,9 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     IssuedQuantity = storeRequisitionItem.ApprovedQuantity,//default issue is equal to approved
                     PurchaseQuantity = 0,//assuming all will be given
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
-
+                    //IsLog = storeRequisitionItem.IsLog,
+                    //IsBiologicalAsset = storeRequisitionItem.IsBiologicalAsset,
+                    //IsLumber = storeRequisitionItem.IsLumber,
                     DateCreated = storeRequisitionItem.DateCreated,
                     CreatedBy = storeRequisitionItem.CreatedBy,
                     ModifiedBy = User.Identity.Name,

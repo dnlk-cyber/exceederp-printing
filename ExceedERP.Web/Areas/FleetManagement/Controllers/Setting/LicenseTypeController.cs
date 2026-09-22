@@ -114,8 +114,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
             return this.Json(new[] { LicenseType }.ToDataSourceResult(request));
         }
-       
 
 
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -12,6 +12,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.FleetManagement;
 using System.IO;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
@@ -49,8 +50,9 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 		public ActionResult OtherCompanyMaintenance_Create([DataSourceRequest] DataSourceRequest request, OtherCompanyMaintenance OtherCompanyMaintenance)
 		{
             ModelState.Remove("OtherCompanyMaintenanceID");
-             
-			OtherCompanyMaintenance.OtherCompanyMaintenanceID = Guid.NewGuid();
+            ExceedDbContext db = new ExceedDbContext();
+
+            OtherCompanyMaintenance.OtherCompanyMaintenanceID = Guid.NewGuid();
 			if (OtherCompanyMaintenance != null )
 			{
                 OtherCompanyMaintenance.CreatedBy = User.Identity.Name;
@@ -60,7 +62,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 				
 				_OtherCompanyMaintenanceService.Insert(OtherCompanyMaintenance);
             var  Fleet = _FleetService.GetAll().Where(x=>x.IsExternal).FirstOrDefault();
-                int ordernum = _JobOrderService.GetAll().ToList().Count;
+                int ordernum =db.JobOrder.ToList().Count;
                 if (Fleet != null)
                 {
                     JobOrder jb = new JobOrder();
@@ -140,9 +142,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return RedirectToAction("Index");
         }
-
-	
-
-	}
+  
+    }
 }
 

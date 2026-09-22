@@ -21,25 +21,29 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
     public class MaintenanceHistoryJacketController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+         private readonly CacheData CacheData = new CacheData();
         // GET: FleetManagement/FleetEquipmentHistoryJacket
         public ActionResult Index()
         {
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
-
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
+           
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Text = s.PlateNumber,
@@ -336,6 +340,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
 
             return ItemNames;
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

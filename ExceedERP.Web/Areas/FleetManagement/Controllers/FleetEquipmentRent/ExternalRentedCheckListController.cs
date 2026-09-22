@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult ExternalRentedEquipmentCheckList_Read([DataSourceRequest] DataSourceRequest request , Guid Id)
         {
-            var ExternalRentedEquipmentCheckList = db.ExternalRentedEquipmentCheckList.Where(x=>x.ExternalRentedEquipmentId == Id).ToList();
+            var ExternalRentedEquipmentCheckList = db.ExternalRentedEquipmentCheckList.Where(x=>x.ExternalRentedEquipmentId == Id).AsQueryable();
 
             return Json(ExternalRentedEquipmentCheckList.ToDataSourceResult(request));
         }
@@ -89,6 +89,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

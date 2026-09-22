@@ -185,7 +185,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                       
                             TotalFuelInLiter += g.FuelConsumption;
                             TotalFuelRate = g.FuelRate;
-                            TotalLubricantCost += g.LubricantCost;
+                            //TotalLubricantCost += g.LubricantCost;
                             TotalMaintenaceCost += g.MaintenanceCost;
                             TotalTireCost += g.TireCost;
                             TotalSalary += g.Salary;
@@ -196,7 +196,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             TotalOperationNetWorkingHour += g.NetworkingHour;
                             TotalIdleRevenue += g.IdealRentalRate * g.IdleHour;
                             TotalFuelCost += g.FuelRate * g.FuelConsumption;
-                            TotalTotalCost += g.Perdium + g.Salary + g.TireCost + g.MaintenanceCost + g.LubricantCost + (g.FuelRate * g.FuelConsumption);
+                            TotalTotalCost += g.Perdium + g.Salary + g.TireCost + g.MaintenanceCost /*+ g.LubricantCost*/ + (g.FuelRate * g.FuelConsumption);
                         
                       foreach(var dumpD in dumptruckD)
                         {

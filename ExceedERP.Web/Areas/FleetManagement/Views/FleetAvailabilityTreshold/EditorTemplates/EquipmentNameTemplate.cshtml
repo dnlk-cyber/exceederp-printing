@@ -1,0 +1,10 @@
+﻿@using Kendo.Mvc.UI
+@(Html.Kendo().DropDownListFor(model => model)
+  .AutoBind(false)
+  .Enable(false)
+  .DataTextField("Name")
+  .DataValueField("Id")
+  .Filter(FilterType.Contains)
+  .OptionLabel("Select")
+  .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
+  .Data("filterEquipmentNames")).ServerFiltering(true)).CascadeFrom("TypeId"))

@@ -1,6 +1,8 @@
-﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalEquipment
+@model  ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalEquipment
 
-
+@{ 
+    bool IsMCG = (ViewBag.setting as string) == "MCG";
+}
 
 <div class="row">
     <div class="col-sm-2">
@@ -23,23 +25,23 @@
             <label>Equipment Type</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeID)
-                    .AutoBind(true)
-                                     .DataTextField("Name")
-                                     .DataValueField("Id")
-                                     .OptionLabel("Select Equipment Type")
-                                     .Filter(FilterType.Contains)
-                                     .DataSource(d =>
-                                     {
-                                         d.Read(r =>
-                                          {
-                                              r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
-                                                .Data("filterCategory");
-                                          })
-                                           .ServerFiltering(true);
-                                     })
-                                           .Enable(false)
-                                           .AutoBind(false)
-                                           .CascadeFrom("EquipmentIdentityID")
+                            .AutoBind(true)
+                                             .DataTextField("Name")
+                                             .DataValueField("Id")
+                                             .OptionLabel("Select Equipment Type")
+                                             .Filter(FilterType.Contains)
+                                             .DataSource(d =>
+                                             {
+                                                 d.Read(r =>
+                                                  {
+                                                      r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                                        .Data("filterCategory");
+                                                  })
+                                                   .ServerFiltering(true);
+                                             })
+                                                   .Enable(false)
+                                                   .AutoBind(false)
+                                                   .CascadeFrom("EquipmentIdentityID")
                 )
             </div>
         </div>
@@ -67,8 +69,8 @@
             <label>Plate/Serial</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.FleetId)
-                                                              .AutoBind(true)
-                                                              .Enable(false)
+                                                              //.AutoBind(true)
+                                                             // .Enable(false)
                                                               .DataTextField("Text")
                                                                 .DataValueField("Value")
                                                                 .Filter(FilterType.Contains)
@@ -104,6 +106,8 @@
             </div>
         </div>
     </div>
+    @if (!IsMCG)
+    {
     <div class="col-sm-2">
         <div class="form-group">
             <label>Idle Rate</label>
@@ -113,15 +117,49 @@
             </div>
         </div>
     </div>
+    }
+    @if (IsMCG)
+    {
     <div class="col-sm-2">
         <div class="form-group">
-            <label></label>
+            <label>Payable Idle HR In Percent</label>
             <div>
+                @Html.Kendo().TextBoxFor(model => model.PayableIdleHrPercent).HtmlAttributes(new { @class = "form-control", required = "required" })
 
             </div>
         </div>
     </div>
-
+    }
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            Tax
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.Vat)
+.DataValueField("Value")
+.DataTextField("Text")
+.Filter("Contains")
+.OptionLabel("Select Tax")
+.DataSource(d => d.Read(r => r.Action("getGLTaxRates", "FleetManagementDataprovider")))
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        @*<div class="form-group">
+            TOT
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.Tot)
+.DataValueField("Value")
+.DataTextField("Text")
+.Filter("Contains")
+.OptionLabel("Select TOT")
+.DataSource(d => d.Read(r => r.Action("getGLTaxRates", "FleetManagementDataprovider")))
+                )
+            </div>
+        </div>*@
+    </div>
 </div>
 
 <style>

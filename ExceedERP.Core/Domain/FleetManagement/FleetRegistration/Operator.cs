@@ -22,12 +22,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
             this.TireReturns = new HashSet<TireReturn>();
 
         }
-         
+
         [ScaffoldColumn(false)]
         public Guid OperatorID { get; set; }
         [DisplayName(" Employee ")]
         public int EmployeeId { get; set; }
         public string EmployeeCode { get; set; }
+        [NotMapped]
+        public string OperatorWithId {get;set;}
         [DisplayName(" Equipment ")]
         public Guid? FleetsID { get; set; }
         [Required]

@@ -12,6 +12,7 @@
           columns.Bound(c => c.MaintenanceRepairCost).Width(120).Title("Maintenance cost ");
           columns.Bound(c => c.TyreReplacementCost).Width(140);
           columns.Bound(c => c.TotalOperatingWeight).Width(140);
+          columns.Bound(c => c.CostDate).Width(140);
           columns.Bound(c => c.Remark).Title("Condtion").Width(100);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(160);
       })

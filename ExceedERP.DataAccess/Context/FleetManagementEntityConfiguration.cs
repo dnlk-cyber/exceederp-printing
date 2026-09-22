@@ -24,6 +24,108 @@ namespace ExceedERP.DataAccess.Context
     
     public class FleetManagementEntityConfiguration
     {
+        public class MaintenanceCostDetailEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceCostDetail>
+        {
+            public MaintenanceCostDetailEntityTypeConfiguration()
+            {
+                this.ToTable("MaintenanceCostDetail", "FleetManagement");
+                this.HasKey<int>(p => p.MaintenanceCostDetailId);
+            }
+        }
+    
+        public class RentedEquipmentDailyOperationEntityTypeConfiguration : EntityTypeConfiguration<RentedEquipmentDailyOperation>
+        {
+            public RentedEquipmentDailyOperationEntityTypeConfiguration()
+            {
+                this.ToTable("RentedEquipmentDailyOperation", "FleetManagement");
+                this.HasKey<int>(p => p.RentedEquipmentDailyOperationId);
+            }
+        }
+        public class WagonDrillDailyOperationEntityTypeConfiguration : EntityTypeConfiguration<WagonDrillDailyOperation>
+        {
+            public WagonDrillDailyOperationEntityTypeConfiguration()
+            {
+                this.ToTable("WagonDrillDailyOperation", "FleetManagement");
+                this.HasKey<int>(p => p.WagonDrillDailyOperationId);
+            }
+        } 
+        public class RentedEquipmentMonthlyPaymentSummaryEntityTypeConfiguration : EntityTypeConfiguration<RentedEquipmentMonthlyPaymentSummary>
+        {
+            public RentedEquipmentMonthlyPaymentSummaryEntityTypeConfiguration()
+            {
+                this.ToTable("RentedEquipmentMonthlyPaymentSummary", "FleetManagement");
+                this.HasKey<int>(p => p.RentedEquipmentMonthlyPaymentSummaryId);
+            }
+        }
+        public class RentalEquipmentPaymentSummaryDocumentEntityTypeConfiguration : EntityTypeConfiguration<RentalEquipmentPaymentSummaryDocument>
+        {
+            public RentalEquipmentPaymentSummaryDocumentEntityTypeConfiguration()
+            {
+                this.ToTable("RentalEquipmentPaymentSummaryDocument", "FleetManagement");
+                this.HasKey<int>(p => p.RentalEquipmentPaymentSummaryDocumentId);
+            }
+        }
+        public class RentedEquipmentMonthlyPaymentSummaryValidationEntityTypeConfiguration : EntityTypeConfiguration<RentedEquipmentMonthlyPaymentSummaryValidation>
+        {
+            public RentedEquipmentMonthlyPaymentSummaryValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentedEquipmentMonthlyPaymentSummaryValidation", "FleetManagement");
+                this.HasKey<int>(p => p.RentedEquipmentMonthlyPaymentSummaryValidationId);
+            }
+        }
+        public class FleetAvailabilityTresholdEntityTypeConfiguration : EntityTypeConfiguration<FleetAvailabilityTreshold>
+        {
+            public FleetAvailabilityTresholdEntityTypeConfiguration()
+            {
+                this.ToTable("FleetAvailabilityTreshold", "FleetManagement");
+                this.HasKey<int>(p => p.FleetAvailabilityTresholdId);
+            }
+        }public class FleetAvailabilityTresholdValidationEntityTypeConfiguration : EntityTypeConfiguration<FleetAvailabilityTresholdValidation>
+        {
+            public FleetAvailabilityTresholdValidationEntityTypeConfiguration()
+            {
+                this.ToTable("FleetAvailabilityTresholdValidation", "FleetManagement");
+                this.HasKey<int>(p => p.FleetAvailabilityTresholdValidationId);
+            }
+        }public class EquipmentOperationPlanEntityTypeConfiguration : EntityTypeConfiguration<EquipmentOperationPlan>
+        {
+            public EquipmentOperationPlanEntityTypeConfiguration()
+            {
+                this.ToTable("EquipmentOperationPlan", "FleetManagement");
+                this.HasKey<int>(p => p.EquipmentOperationPlanId);
+            }
+        }public class EquipmentOperationPlanValidationEntityTypeConfiguration : EntityTypeConfiguration<EquipmentOperationPlanValidation>
+        {
+            public EquipmentOperationPlanValidationEntityTypeConfiguration()
+            {
+                this.ToTable("EquipmentOperationPlanValidation", "FleetManagement");
+                this.HasKey<int>(p => p.EquipmentOperationPlanValidationId);
+            }
+        }
+        public class InternalRentalRateEntityTypeConfiguration : EntityTypeConfiguration<InternalRentalRate>
+        {
+            public InternalRentalRateEntityTypeConfiguration()
+            {
+                this.ToTable("InternalRentalRate", "FleetManagement");
+                this.HasKey<int>(p => p.InternalRentalRateId);
+            }
+        }
+        public class DriverTransferDetailEntityTypeConfiguration : EntityTypeConfiguration<DriverTransferDetail>
+        {
+            public DriverTransferDetailEntityTypeConfiguration()
+            {
+                this.ToTable("DriverTransferDetail", "FleetManagement");
+                this.HasKey<int>(p => p.DriverTransferDetailId);
+            }
+        }
+        public class CouponFuelEntityTypeConfiguration : EntityTypeConfiguration<CouponFuel>
+        {
+            public CouponFuelEntityTypeConfiguration()
+            {
+                this.ToTable("CouponFuel", "FleetManagement");
+                this.HasKey<int>(p => p.CouponFuelId);
+            }
+        }
         public class TimeSheetExceptionEntityTypeConfiguration : EntityTypeConfiguration<TimeSheetException>
         {
             public TimeSheetExceptionEntityTypeConfiguration()
@@ -64,6 +166,14 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(p => p.RentFromExternalEquipmentRateId);
             }
         }
+        public class RentalEquipmentAdvancePaymentEntityTypeConfiguration : EntityTypeConfiguration<RentalEquipmentAdvancePayment>
+        {
+            public RentalEquipmentAdvancePaymentEntityTypeConfiguration()
+            {
+                this.ToTable("RentalEquipmentAdvancePayment", "FleetManagement");
+                this.HasKey<int>(p => p.RentalEquipmentAdvancePaymentId);
+            }
+        }
         public class RequestToInspectionEntityTypeConfiguration : EntityTypeConfiguration<RequestToInspection>
         {
             public RequestToInspectionEntityTypeConfiguration()
@@ -78,6 +188,32 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("FleetInsuranceDocument", "FleetManagement");
                 this.HasKey<int>(p => p.FleetInsuranceDocumentId);
+            }
+        }
+        public class FleetInsuranceValidationEntityTypeConfiguration : EntityTypeConfiguration<FleetInsuranceValidation>
+        {
+            public FleetInsuranceValidationEntityTypeConfiguration()
+            {
+                this.ToTable("FleetInsuranceValidation", "FleetManagement");
+                this.HasKey<int>(p => p.FleetInsuranceValidationId);
+            }
+        }
+         
+
+        public class FleetInsurancePaymentRequestValidationEntityTypeConfiguration : EntityTypeConfiguration<FleetInsurancePaymentRequestValidation>
+        {
+            public FleetInsurancePaymentRequestValidationEntityTypeConfiguration()
+            {
+                this.ToTable("FleetInsurancePaymentRequestValidation", "FleetManagement");
+                this.HasKey<int>(p => p.FleetInsurancePaymentRequestValidationId);
+            }
+        }
+        public class FleetInsurancePaymentRequestEntityTypeConfiguration : EntityTypeConfiguration<FleetInsurancePaymentRequest>
+        {
+            public FleetInsurancePaymentRequestEntityTypeConfiguration()
+            {
+                this.ToTable("FleetInsurancePaymentRequest", "FleetManagement");
+                this.HasKey<int>(p => p.FleetInsurancePaymentRequestId);
             }
         }
         public class TireIssueDetailEntityTypeConfiguration : EntityTypeConfiguration<TireIssueDetail>
@@ -143,6 +279,14 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(p => p.FleetAnnualPlanDetailId);
             }
         }
+        public class FleetAnnualPlanDailyEntityTypeConfiguration : EntityTypeConfiguration<FleetAnnualPlanDaily>
+        {
+            public FleetAnnualPlanDailyEntityTypeConfiguration()
+            {
+                this.ToTable("FleetAnnualPlanDaily", "FleetManagement");
+                this.HasKey<int>(p => p.FleetAnnualPlanDailyId);
+            }
+        }
         public class FleetBatteryAndTireEntityTypeConfiguration : EntityTypeConfiguration<FleetBatteryAndTire>
         {
             public FleetBatteryAndTireEntityTypeConfiguration()
@@ -165,6 +309,16 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("RentFromExternalEquipment", "FleetManagement");
                 this.HasKey<int>(k => k.RentFromExternalEquipmentId);
+            }
+        }
+        public class RentFromExternalCustomerChangeEntityTypeConfiguration : EntityTypeConfiguration<RentFromExternalCustomerChange>
+        {
+
+            public RentFromExternalCustomerChangeEntityTypeConfiguration()
+            {
+                this.ToTable("RentFromExternalCustomerChange", "FleetManagement");
+                this.HasKey<int>(t => t.RentFromExternalCustomerChangeId);
+
             }
         }
         public class AssignedEquipmentAdditionalInfoEntityTypeConfiguration : EntityTypeConfiguration<AssignedEquipmentAdditionalInfo>
@@ -226,6 +380,16 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
+        public class TimeSheetConsumptionItemEntityTypeConfiguration : EntityTypeConfiguration<TimeSheetConsumptionItem>
+        {
+
+            public TimeSheetConsumptionItemEntityTypeConfiguration()
+            {
+                this.ToTable("TimeSheetConsumptionItem", "FleetManagement");
+                this.HasKey<int>(t => t.TimeSheetConsumptionItemId);
+
+            }
+        }
         public class RentalInspectionEntityTypeConfiguration : EntityTypeConfiguration<RentalInspection>
         {
 
@@ -243,6 +407,47 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("RentalPaymentRequest", "FleetManagement");
                 this.HasKey<int>(t => t.RentalPaymentRequestId);
+
+            }
+        }
+        public class RentalAdvancePaymentRequestBudgetValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalAdvancePaymentRequestBudgetValidation>
+        {
+
+            public RentalAdvancePaymentRequestBudgetValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalAdvancePaymentRequestBudgetValidation", "FleetManagement");
+                this.HasKey<int>(t => t.RentalAdvancePaymentRequestBudgetValidationId);
+
+            }
+        }
+
+        public class RentalAdvancePaymentRequestEntityTypeConfiguration : EntityTypeConfiguration<RentalAdvancePaymentRequest>
+        {
+
+            public RentalAdvancePaymentRequestEntityTypeConfiguration()
+            {
+                this.ToTable("RentalAdvancePaymentRequest", "FleetManagement");
+                this.HasKey<int>(t => t.RentalAdvancePaymentRequestId);
+
+            }
+        }
+        public class RentalAdvancePaymentRequestValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalAdvancePaymentRequestValidation>
+        {
+
+            public RentalAdvancePaymentRequestValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalAdvancePaymentRequestValidation", "FleetManagement");
+                this.HasKey<int>(t => t.RentalAdvancePaymentRequestValidationId);
+
+            }
+        }
+        public class RentalAdvancePaymentRequestDepartmentValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalAdvancePaymentRequestDepartmentValidation>
+        {
+
+            public RentalAdvancePaymentRequestDepartmentValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalAdvancePaymentRequestDepartmentValidation", "FleetManagement");
+                this.HasKey<int>(t => t.RentalAdvancePaymentRequestDepartmentValidationId);
 
             }
         }
@@ -990,6 +1195,16 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
+        public class SelfCareSatisfactionEntityTypeConfiguration : EntityTypeConfiguration<SelfCareSatisfaction>
+        {
+
+            public SelfCareSatisfactionEntityTypeConfiguration()
+            {
+                this.ToTable("SelfCareSatisfaction", "FleetManagement");
+                this.HasKey<int>(t => t.SelfCareSatisfactionId);
+
+            }
+        }
         public class AccessoriesEntityTypeConfiguration : EntityTypeConfiguration<Accessories>
         {
 
@@ -1137,6 +1352,16 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("RentFromExternal", "FleetManagement");
                 this.HasKey<Guid>(t => t.RentFromExternalID);
+
+            }
+        }
+        public class RentFromExternalDocumentEntityTypeConfiguration : EntityTypeConfiguration<RentFromExternalDocument>
+        {
+
+            public RentFromExternalDocumentEntityTypeConfiguration()
+            {
+                this.ToTable("RentFromExternalDocument", "FleetManagement");
+                this.HasKey<int>(t => t.RentFromExternalDocumentId);
 
             }
         }

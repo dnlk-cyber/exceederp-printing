@@ -1,0 +1,10 @@
+﻿@using Kendo.Mvc.UI
+@(Html.Kendo().DropDownListFor(m=>m)
+    .DataValueField("Id")
+    .DataTextField("Name")
+    .Filter("Contains")
+    .OptionLabel("Select Customer")
+    .DataSource(d=>d.Read(r=>r.Action("GetSuppliers","FleetManagementDataProvider"))
+    )
+    
+    )

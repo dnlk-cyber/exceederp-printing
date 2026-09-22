@@ -64,5 +64,38 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation
         [DataType(DataType.Date)]
         public DateTime DateTo { get; set; }
     }
+    public class FleetAnnualPlanDaily : TrackUserSettingOperation 
+    {
+        [Key]
+        public int FleetAnnualPlanDailyId { get; set; }
+        public int FleetAnnualPlanDetailId { get; set; }
+        public int NumberOfEquipmentInDay { get; set; }
+        public int WorkingHourPerDay { get; set; }
+        public int WorkingDay { get; set; } 
+        public decimal InefficiencyPercentile { get; set; }
+        public decimal EfficiencyPercentile { get; set; }
+        public decimal HourForInefficiencyPerDay { get; set; } // = WorkingHourPerMonth * InefficiencyPercentile
+        public decimal ChargingRate { get; set; }
+        public decimal ExpectedEffectiveWorkingHrPerDay { get; set; } // = WorkingHourPerMonth * EfficiencyPercentile
+        public decimal ExpectedDailyIncome { get; set; } // = ExpectedEffectiveWorkingHrPerMonth * ChargingRate
+        public decimal TyreCost { get; set; }
+        public decimal LiterPerHour { get; set; }
+        public decimal TotalLiter { get; set; } // = ExpectedEffectiveWorkingHrPerMonth * LiterPerHour
+        public decimal FuelCostPerLiter { get; set; }  
+        public decimal TotalFuelCost { get; set; } // = FuelCostPerLiter * FuelCostPerLiter
+        public decimal MaintenanceCost { get; set; } 
+        public decimal Perduim { get; set; }
+        public decimal Salary { get; set; }
+        public decimal TotalExpectedExpense { get; set; } // = TyreCost + TotalFuelCost + MaintenanceCost + Perduim + Salary
+        public decimal ExpectedTotalProfit { get; set; } // = ExpectedMonthlyIncome - TotalExpectedExpense
+
+        //Fk
+        public int FleetAnnualPlanId { get; set; }
+        [Display(Name ="Period")]
+        public int GlPeriodId { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime OperationDate { get; set; }
+       
+    }
     
 }

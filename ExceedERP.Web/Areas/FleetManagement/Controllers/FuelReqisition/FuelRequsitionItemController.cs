@@ -78,7 +78,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                     PurchaseQuantity = 0,//assuming all will be given
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
-
                     ModifiedBy = storeRequisitionItem.ModifiedBy,
                     LastModified = storeRequisitionItem.LastModified,
                     CreatedBy = User.Identity.Name,

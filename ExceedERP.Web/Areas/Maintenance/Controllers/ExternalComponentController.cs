@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             IJobOrderService _JobOrderService = new JobOrderService();
             IFleetService _FleetService = new FleetService();
 
-            var Job = _JobOrderService.GetAll().Where(x => x.JobOrderID == jobOrderID).FirstOrDefault();
+            var Job = db.JobOrder.Where(x => x.JobOrderID == jobOrderID).FirstOrDefault();
             //var Fleet = _FleetService.GetAll().Where(x => x.FleetsID == Job.FleetsID).Select(s => new Fleets
             //{
             //    UnitNum = s.UnitNum,
@@ -96,8 +96,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(new[] { ExternalComponent }.ToDataSourceResult(request));
         }
-
-
-
+   protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

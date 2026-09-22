@@ -11,7 +11,7 @@
         columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentIdentity"], "EquipmentIdentityId", "EquipmentCategoryName").EditorTemplateName("EquipmentCategoryEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
         columns.ForeignKey(c => c.FixedAssetSubCategoryId, (IEnumerable)ViewData["FixedAssetSubCategories"], "Id", "Name").EditorTemplateName("FixedAssetSubCategoryEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
         columns.Bound(e => e.EquipmentTypeName).Width(140);
-        columns.Bound(e => e.TimeSheetType).Width(120);
+        columns.Bound(e => e.TimeSheetType).EditorTemplateName("TimeSheetTypeTemplate").Width(120);
         //columns.ForeignKey(c => c.FixedAssetCategoryID, (System.Collections.IEnumerable)ViewData["AssetCategory"], "FixedAssetCategoryID", "CategoryName").EditorTemplateName("FixedAssetCategoryEditor").Width(140);
         columns.Bound(e => e.Description).Width(140);
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
@@ -52,7 +52,7 @@
             .Read(read => read.Action("EquipmentType_Read", "EquipmentType").Data("sendForgery"))
             .Update(update => update.Action("EquipmentType_Update", "EquipmentType").Data("sendForgery"))
             .Destroy(update => update.Action("EquipmentType_Destroy", "EquipmentType").Data("sendForgery"))
-                        
+
   )//.ClientDetailTemplateId("equipmentNameTemplate")
 )
 <script id="equipmentNameTemplate" type="text/kendo-tmpl">

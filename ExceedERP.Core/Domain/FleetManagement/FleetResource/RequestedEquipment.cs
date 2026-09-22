@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,10 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public Guid EquipmentTypeID { get; set; }
         [Display(Name ="Equipment Name")]
         public Guid? EquipmentNameId { get; set; } // Added
+        [NotMapped]
+        public string EquipmentTypeName { get; set; }
+        [NotMapped]
+        public string EquipmentName { get; set; }
         [Required]
         public int Quantity { get; set; }
         public string ManufacturedYear { get; set; }
@@ -39,8 +44,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public DateTime? ArrivalDate { get; set; }
         public DateTime? SentDate { get; set; }
         public string ArrivalPlace { get; set; }
-        public decimal AsphaltKm { get; set; }
-        public decimal GravelKm { get; set; }
+        public decimal? AsphaltKm { get; set; }
+        public decimal? GravelKm { get; set; }
 
         [DisplayName("Number (Hour / Km)")]
         public string NumberHourPerKm { get; set; }
@@ -59,9 +64,17 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string Remarks { get; set; }
         public enum EquipmentStatusenum { New, Good, NeverMind }
         public bool IsAssigned { get; set; }
+        [NotMapped]
+        public bool IsReturned { get; set; }
 
         public int VehicleDemandId { get; set; } // r/nship with VehicleDemand
 
 
+    }
+    public class SelfCareSatisfaction : TrackUserSettingOperation
+    {
+        public int SelfCareSatisfactionId { get; set; }
+        public Guid RequestedEquipmentId { get; set; }
+        public string SatisfactionNote { get; set; }
     }
 }

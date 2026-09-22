@@ -1,0 +1,20 @@
+﻿@using Kendo.Mvc.UI
+@(Html.Kendo().DropDownListFor(model => model)
+     .DataTextField("Name")
+     .DataValueField("Value")
+     .OptionLabel("Select Period")
+     .Filter(FilterType.Contains)
+     .DataSource(d =>
+     {
+         d.Read(r =>
+         {
+             r.Action("GetPeriodByYearr", "MaintenanceDataProvider",new { area="Maintenance"})
+              .Data("filterFiscalYears");
+         })
+         .ServerFiltering(true);
+     })
+           //.Enable(false)
+           .AutoBind(false)
+           .ValuePrimitive(true)
+           .CascadeFrom("GLFiscalYearId")
+)

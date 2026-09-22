@@ -220,7 +220,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             item.FuelInLiter = dumpTruckTimeSheet.FuelConsumption;
                             item.FuelRate = dumpTruckTimeSheet.FuelRate;
                             item.FuelCost = item.FuelRate * item.FuelInLiter;
-                            item.LubricantCost = dumpTruckTimeSheet.LubricantCost;
+                            //item.LubricantCost = dumpTruckTimeSheet.LubricantCost;
                             item.MaintenaceCost = dumpTruckTimeSheet.MaintenanceCost;
                             item.TireCost = dumpTruckTimeSheet.TireCost;
                             item.Salary = dumpTruckTimeSheet.Salary;
@@ -285,7 +285,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                                 item.FuelInLiter = dumpTruckTimeSheet.FuelConsumption;
                                 item.FuelRate = dumpTruckTimeSheet.FuelRate;
                                 item.FuelCost = item.FuelRate * item.FuelInLiter;
-                                item.LubricantCost = dumpTruckTimeSheet.LubricantCost;
+                                //item.LubricantCost = dumpTruckTimeSheet.LubricantCost;
                                 item.MaintenaceCost = dumpTruckTimeSheet.MaintenanceCost;
                                 item.TireCost = dumpTruckTimeSheet.TireCost;
                                 item.Salary = dumpTruckTimeSheet.Salary;

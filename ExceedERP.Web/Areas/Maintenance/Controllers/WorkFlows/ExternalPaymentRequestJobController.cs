@@ -119,6 +119,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             }
             return Json(new[] { PaymentRequestJob }.ToDataSourceResult(request, ModelState));
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -8,6 +8,8 @@ using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.DataAccess.Context;
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
               
@@ -15,6 +17,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 	{
 		IFleetHistoryService _FleetHistoryService;
 		IFleetService _FleetService;
+        ExceedDbContext db = new ExceedDbContext();
 		public FleetHistoryController()
 		{
 		_FleetHistoryService=new FleetHistoryService();
@@ -29,7 +32,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 		public JsonResult FleetHistory_Read([DataSourceRequest] DataSourceRequest request)
 		{
-			var accessories = _FleetHistoryService.GetAll();
+			var accessories =db.FleetHistorys.AsQueryable();
 
 			return Json(accessories.ToDataSourceResult(request));
 		}

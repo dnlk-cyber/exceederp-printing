@@ -1,92 +1,34 @@
-@using System.Collections
-@using ExceedERP.Core.Domain.Finance
-@using ExceedERP.Core.Domain.Finance.AP
-@using ExceedERP.Helpers
 @model  ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.DumpTruckTimeSheet
+@using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
 @using ExceedERP.Helpers.Common
 @Html.HiddenFor(model => model.DumpTruckTimeSheetId)
-
-
+@{
+    var checkIsECWC = (string)ViewData["IsECWC"];
+    bool isECWC = (checkIsECWC == "ECWC");
+    bool IsMCG = (ViewBag.setting as string) == "MCG";
+    bool IsMIDROC = (ViewBag.setting as string) == "MIDROC";
+}
 <div class="row">
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Equipment Category</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(model => model.EquipmentCategoryId)
-                                                                .DataTextField("Name")
-                                                                .DataValueField("Id")
-                                                                 .ValuePrimitive(true)
-                                                                .Filter(FilterType.Contains)
-                                                                .OptionLabel("Select Category")
-                                                                .HtmlAttributes(new { style = "width:100%" })
-                                                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentitiesNullable", "FleetManagementDataProvider").Data("sendForgery"))
-                                                                .ServerFiltering(false)))
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Equipment Type</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId)
-                                            .DataTextField("Name")
-                                            .DataValueField("Id")
-                                             .ValuePrimitive(true)
-                                            .OptionLabel("Select Equipment Type")
-                                            .Filter(FilterType.Contains)
-                                            .DataSource(d =>
-                                            {
-                                                d.Read(r =>
-                                                {
-                                                    r.Action("GetEquipmentTypesTimeSheet", "FleetManagementDataProvider")
-                                                    .Data("filterEquipmentType");
-                                                })
-                                                .ServerFiltering(true);
-                                            })
-                                            .Enable(false)
-                                            .AutoBind(true)
-                                            .CascadeFrom("EquipmentCategoryId")
-                )
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Equipment Name</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(model => model.EquipmentNameId)
-                                            .AutoBind(true)
-                                            .Enable(false)
-                                             .ValuePrimitive(true)
-                                            .DataTextField("Name")
-                                            .DataValueField("Id")
-                                            .Filter(FilterType.Contains)
-                                            .OptionLabel("Select")
-                                            .DataSource(d => d.Read(r => r.Action("GetEquipmentNamesNullable", "FleetManagementDataProvider").Data("sendForgery")
-                                            .Data("filterEquipmentNames"))
-                                            .ServerFiltering(true))
-                                            .CascadeFrom("EquipmentTypeId"))
-            </div>
-        </div>
-    </div>
+    
     <div class="col-sm-2">
         <div class="form-group">
             <label>Plate No</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.FleetsID)
-                                                                    .ValuePrimitive(true)
-                                                                    .OptionLabel("Select Equipment...")
-                                                                    .DataTextField("PlateNumber")
-                                                                    .DataValueField("FleetsID")
-                                                                    .Filter("contains")
-                                                                    .MinLength(2)
-                                                                    .CascadeFrom("EquipmentNameId")
-                                                                    .DataSource(dataSource =>
-                                                                    {
-                                                                        dataSource.Read(read => read.Action("GetFleetIdTimesheetNew", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery")
-                                                                        .Data("handleFleetId"))
-                                                                            .ServerFiltering(true);
-                                                                    }).HtmlAttributes(new { style = "width:100%" })
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Equipment...")
+                  .DataTextField("PlateNumber")
+                  .DataValueField("FleetsID")
+                  .Filter("contains")
+                  .MinLength(2)
+                  //.CascadeFrom("EquipmentNameId")
+                  .Events(ev => ev.Change("onFleetChange"))
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetFleetIdTimesheetNew", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery")
+                      .Data("handleFleetId"))
+                          .ServerFiltering(true);
+                  }).HtmlAttributes(new { style = "width:100%" })
                 )
 
             </div>
@@ -94,36 +36,23 @@
     </div>
 </div>
 <div class="row">
-
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.ProcurementSupplierID, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.ProcurementSupplierID)
-                                                            .ValuePrimitive(true)
-                                                            .OptionLabel("Select Supplier...")
-                                                            .DataTextField("Name")
-                                                            .DataValueField("Id")
-                                                            .Filter("contains")
-                                                            //.Events(e => e.Change("handleSupplierChange"))
-                                                            .DataSource(dataSource =>
-                                                            {
-                                                                dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
-                                                                .ServerFiltering(false);
-                                                            })
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select Supplier...")
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .Filter("contains")
+                                    //.Events(e => e.Change("handleSupplierChange"))
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                        .ServerFiltering(false);
+                                    }).Enable(false)
                 )
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="col-sm-2">
-        <div class="form-group">
-            @Html.LabelFor(model => model.FuelConsumption, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
-            <div>
-                @Html.Kendo().NumericTextBoxFor(model => model.FuelConsumption).HtmlAttributes(new { style = "width:100%" })
-
             </div>
         </div>
     </div>
@@ -138,15 +67,37 @@
         </div>
 
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            @Html.LabelFor(model => model.ReasonForIdle, "Reason For Idle", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
-            <div>
-                @Html.Kendo().TextBoxFor(model => model.ReasonForIdle).HtmlAttributes(new { style = "width:100%" })
+    @if (IsMCG == false)
+    {
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReasonForIdle, "Reason For Idle", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ReasonForIdle).HtmlAttributes(new { style = "width:100%" })
 
+                </div>
             </div>
         </div>
-    </div>
+    }
+    @if (IsMCG == true)
+    {
+        <div class="col-sm-2">
+            <div class="form-group">
+                Reason For Idle
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.IdleReason)
+                .DataValueField("Value")
+                .DataTextField("Text")
+                .Filter("Contains")
+                .OptionLabel("Select Reason")
+                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.IdleReasonList)))
+                .ValuePrimitive(true)
+                    )
+
+                </div>
+            </div>
+        </div>
+    }
 </div>
 <div class="row">
 
@@ -160,17 +111,70 @@
             </div>
         </div>
     </div>
+    @if (IsMCG == false)
+    {
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReasonForDown, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ReasonForDown).HtmlAttributes(new { style = "width:100%" })
+
+                </div>
+            </div>
+        </div>
+    }
+    @if (IsMCG == true)
+    {
+        <div class="col-sm-2">
+            <div class="form-group">
+                Reason For Down
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.DownReason)
+                                .DataValueField("Value")
+                                .DataTextField("Text")
+                                .Filter("Contains")
+                                .OptionLabel("Select Reason")
+                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.DownReasonList)))
+                                .ValuePrimitive(true)
+                    )
+
+                </div>
+            </div>
+        </div>
+    }
 
     <div class="col-sm-2">
         <div class="form-group">
-            @Html.LabelFor(model => model.ReasonForDown, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            @Html.LabelFor(model => model.Date, "Date", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
-                @Html.Kendo().TextBoxFor(model => model.ReasonForDown).HtmlAttributes(new { style = "width:100%" })
+                @Html.Kendo().DatePickerFor(model => model.Date).HtmlAttributes(new { style = "width:100%" })
 
             </div>
         </div>
     </div>
+</div>
+@if (IsMIDROC == false)
+{
+<div  class= "row">
 
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FuelConsumption, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.FuelConsumption).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FuelType, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.FuelType).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.OilConsumption, "Oil Consumption (Lit)", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -182,101 +186,256 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
-            @Html.LabelFor(model => model.Date, "Date", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            @Html.LabelFor(model => model.OilType, "Oil Type", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
-                @Html.Kendo().DatePickerFor(model => model.Date).HtmlAttributes(new { style = "width:100%" })
+                @Html.Kendo().TextBoxFor(model => model.OilType).HtmlAttributes(new { style = "width:100%" })
 
             </div>
         </div>
     </div>
 </div>
+}
+<div class="row">
+    @if (IsMIDROC == false)
+    {
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.GreaseConsumption, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.GreaseConsumption).HtmlAttributes(new { style = "width:100%" })
 
+                </div>
+            </div>
+        </div>
+    }
+        @if (IsMCG == false)
+        {
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NetworkingHour, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.NetworkingHour).HtmlAttributes(new { style = "width:100%" })
+
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-sm-2">
+            <div id="internalOperatorDiv" class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OperatorId, new { @class = "control-label col-md-8", style = "width:100%" })
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.OperatorId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Operator...")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read
+                                  .Action("Operators", "FleetManagementDataProvider", new { area = "FleetManagement" })
+                                  .Data("sendForgery")
+                                  .Data("filterOperator"))
+                                  .ServerFiltering(true);
+                          })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="externalOperatorDiv" class="col-sm-2" style="display:none;">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ExternalOperatorName)
+                    <div>
+                        @(Html.Kendo().TextBoxFor(m => m.ExternalOperatorName))
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.BranchId)
+                                                   .ValuePrimitive(true)
+                                                   .OptionLabel("Select Branch...")
+                                                   .DataTextField("Name")
+                                                   .DataValueField("Id")
+                                                   .Filter("contains")
+
+                                                   .DataSource(dataSource =>
+                                                   {
+                                                       dataSource.Read(read => read.Action("GetBranches", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                   .ServerFiltering(false);
+                                                   })
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
 
 <div class="row">
 
     <div class="col-sm-2">
         <div class="form-group">
-            @Html.LabelFor(model => model.GreaseConsumption, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
-                @Html.Kendo().NumericTextBoxFor(model => model.GreaseConsumption).HtmlAttributes(new { style = "width:100%" })
-
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            @Html.LabelFor(model => model.NetworkingHour, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
-            <div>
-                @Html.Kendo().NumericTextBoxFor(model => model.NetworkingHour).HtmlAttributes(new { style = "width:100%" })
-
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            @Html.LabelFor(model => model.OperatorId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
-            <div>
-                @(Html.Kendo().DropDownListFor(model => model.OperatorId)
-                                            .ValuePrimitive(true)
-                                            .OptionLabel("Select Operator...")
-                                            .DataTextField("Text")
-                                            .DataValueField("Value")
-                                            .Filter("contains")
-
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("Operators", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("filterOperator"))
-                                                .ServerFiltering(true);
-                                            })
-                )
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
-            <div>
-                @(Html.Kendo().DropDownListFor(model => model.BranchId)
+                @(Html.Kendo().DropDownListFor(model => model.BusinessUnitId)
                                     .ValuePrimitive(true)
-                                    .OptionLabel("Select Branch...")
+                                    .OptionLabel("Select Business Unit...")
                                     .DataTextField("Name")
                                     .DataValueField("Id")
                                     .Filter("contains")
 
                                     .DataSource(dataSource =>
                                     {
-                                        dataSource.Read(read => read.Action("GetBranches", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
-                                        .ServerFiltering(false);
-                                    })
+                        dataSource.Read(read => read.Action("GetBusinessUnits", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                        .ServerFiltering(false);
+})
                 )
             </div>
         </div>
     </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            Work Type
+            <div>
+                @(Html.Kendo().TextBoxFor(model=>model.TypeOfWorkExcuted))
+            </div>
+        </div>
+
+    </div>
+    @if (isECWC == true)
+        {
+    <div class="col-sm-2">
+        <div class="form-group">
+            Loading Status
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.LoadingStatus)
+                                                 .DataTextField("Text")
+                                                 .DataValueField("Value")
+                                                 .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(DTLoadingStatus)))
+                                                 .OptionLabel("Select Status...")
+                                                 .HtmlAttributes(new { style = "width:100%" })
+                )
+
+            </div>
+        </div>
+
+    </div>
+        }
+</div>
+@if (IsMCG)
+{
+<div class="row">
+
+
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.MorningTimeStart, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @*@Html.Kendo().TimePickerFor(model => model.MorningTimeStart).HtmlAttributes(new { style = "width:100%" })*@
+                @(Html.Kendo().TimePickerFor(m => m.MorningTimeStart)
+              .Min(new DateTime(2000, 1, 1, 0, 0, 0))
+              .Max(new DateTime(2000, 1, 1, 6, 0, 0))
+              .Interval(30))
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.MorningTimeEnd, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @*@Html.Kendo().TimePickerFor(model => model.MorningTimeEnd).HtmlAttributes(new { style = "width:100%" })*@
+                @(Html.Kendo().TimePickerFor(m => m.MorningTimeEnd)
+              .Min(new DateTime(2000, 1, 1, 0, 0, 0))
+              .Max(new DateTime(2000, 1, 1, 6, 0, 0))
+              .Interval(30))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.AfternoonTimeStart, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @*@Html.Kendo().TimePickerFor(model => model.AfternoonTimeStart).HtmlAttributes(new { style = "width:100%" })*@
+                @(Html.Kendo().TimePickerFor(m => m.AfternoonTimeStart)
+              .Min(new DateTime(2000, 1, 1, 6, 0, 0))
+              .Max(new DateTime(2000, 1, 1, 12, 0, 0))
+              .Interval(30))
+            </div>
+        </div>
+
+    </div>
+
+    @* Total working time *@
+
+
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.AfternoonTimeEnd, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().TimePickerFor(m => m.AfternoonTimeEnd)
+              .Min(new DateTime(2000, 1, 1, 6, 0, 0))
+              .Max(new DateTime(2000, 1, 1, 12, 0, 0))
+              .Interval(30))
+            </div>
+        </div>
+    </div><div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.NightTimeStart, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().TimePickerFor(m => m.NightTimeStart)
+              .Min(new DateTime(2000, 1, 1, 12, 0, 0))
+              .Max(new DateTime(2000, 1, 1, 23, 59, 0))
+              .Interval(30))
+            </div>
+        </div>
+    </div><div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.NightTimeEnd, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().TimePickerFor(m => m.NightTimeEnd)
+              .Min(new DateTime(2000, 1, 1, 12, 0, 0))
+              .Max(new DateTime(2000, 1, 1, 23, 59, 0))
+              .Interval(30))
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
 <div class="row">
-    
     <div class="col-sm-2">
         <div class="form-group">
-            @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            Initial EHR
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.BusinessUnitId)
-                            .ValuePrimitive(true)
-                            .OptionLabel("Select Business Unit...")
-                            .DataTextField("Name")
-                            .DataValueField("Id")
-                            .Filter("contains")
-
-                            .DataSource(dataSource =>
-                            {
-                                dataSource.Read(read => read.Action("GetBusinessUnits", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
-                                .ServerFiltering(false);
-                            })
-                )
+                @Html.Kendo().NumericTextBoxFor(m => m.InitialKMR)
+            </div>
+        </div>
+    </div> <div class="col-sm-2">
+        <div class="form-group">
+            Final EHR
+            <div>
+                @Html.Kendo().NumericTextBoxFor(m => m.FinalKMR)
+            </div>
+        </div>
+    </div> <div class="col-sm-2">
+        <div class="form-group">
+            Fuel KMR
+            <div>
+                @Html.Kendo().NumericTextBoxFor(m => m.FuelKMR)
             </div>
         </div>
     </div>
 </div>
+}
 
 
 

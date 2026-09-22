@@ -30,7 +30,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult BatteryIssue_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var BatteryIssue = db.BatteryIssue.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
+            IQueryable<BatteryIssue> BatteryIssue = db.BatteryIssue.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
 
             return Json(BatteryIssue.ToDataSourceResult(request));
         }
@@ -171,8 +171,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(Batterys, JsonRequestBehavior.AllowGet);
         }
 
-      
 
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
 
     }
 }

@@ -1,0 +1,342 @@
+﻿@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
+@{
+    ViewBag.Title = "InsuranceCompany";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool IsMIDROC = (ViewBag.setting as string) == "MIDROC";
+}
+
+<legend>Fleet Insurance Payment Request</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurancePaymentRequest>()
+                        .Name("grid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.FleetInsurancePaymentRequestId).Title("S.No").Width(50);
+                            columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                            columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                            columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120);
+                            columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Id", "Name").Title("Fleet Plate No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.ForeignKey(c => c.InsuranceCompanyId, (IEnumerable)ViewData["InsuranceCompany"], "InsuranceCompanyId", "InsuranceCompanyName").Title("Company").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                            columns.ForeignKey(c => c.InsuranceCoverTypeId, (IEnumerable)ViewData["InsuranceCover"], "Id", "Name").Title("Insurance Cover Type").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                            columns.Bound(c => c.InsuranceType).Width(80);
+                            columns.Bound(c => c.TotalAmount).Width(80);
+                            columns.Bound(c => c.AmountDue).Width(80);
+                            columns.Bound(c => c.DurationFrom).Title("Start Date").Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.Bound(c => c.DurationTo).Title("End Date").Width(80);
+                            columns.Bound(c => c.Status).Title("Status").Width(80);
+
+                            columns.Command(command =>
+                            {
+                                command.Custom("Approve").Click("Approve");
+                                command.Custom("Reject").Click("Reject");
+                            }).Title("Action").Width(200);
+                        })
+                         .Events(e => e.DataBound("onDataBoundMaster"))
+                          .Events(ev => ev.DetailExpand("detailExpand"))
+                         .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                         .TemplateName("FleetInsuranceTemplate")
+                         .Window(win => win.Title("Fleet Insurance Payment Request")))
+                         .Pageable()
+                         .Filterable()
+                         .Scrollable(s => s.Height(550))
+                         .DataSource(dataSource => dataSource
+                             .Ajax()
+                             .Sort(sort => sort.Add(e => e.FleetInsurancePaymentRequestId).Descending())
+                             .Model(model =>
+                             {
+                                 model.Id(p => p.FleetInsurancePaymentRequestId);
+
+                     //model.Field(p => p.AddToHistory, typeof(bool));
+
+                 })
+                             .Events(ev => ev
+                             .Error("error_handler(\"grid\")")
+                             .RequestStart("onRequestStart(\"grid\")")
+                             .RequestEnd("onRequestEnd(\"grid\")"))
+                             .Read(read => read.Action("Budget_Read", "InsurancePaymentRequest").Data("sendForgery"))
+                             .Create(create => create.Action("Create", "InsurancePaymentRequest").Data("sendForgery"))
+                             .Update(update => update.Action("Update", "InsurancePaymentRequest").Data("sendForgery"))
+                             .Destroy(destroy => destroy.Action("Destroy", "InsurancePaymentRequest").Data("sendForgery"))
+                                            )
+                        .ClientDetailTemplateId("template"))
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                .Name("tabstrip_#=FleetInsurancePaymentRequestId#")
+                                                .SelectedIndex(0)
+                                                .Items(items =>
+                                                {
+                                                    items.Add().Text("Detail").Content(@<text>
+
+                                                        
+                                                    </text>);
+                                                            items.Add().Text("Approval").Content(@<text>
+                                                                @(Html.Kendo().Grid<FleetInsurancePaymentRequestValidation>()
+                                                                         .Name("Approval#=FleetInsurancePaymentRequestId#")
+                                                                         .Columns(columns =>
+                                                                         {
+                                                                                             columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatus").Width(126);
+                                                                                             columns.Bound(c => c.Remark).Width(150);
+                                                                                             columns.Command(command => { command.Edit(); }).Width(250);
+
+                                                                                         })
+                                                                             .ToolBar(commands => commands.Create().Text("Approve Request"))
+                                                                             .Events(ev =>
+                                                                              ev.DataBound("approveonDataBound")
+                                                                                    )
+                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                        .DataSource(dataSource => dataSource
+                                                                             .Ajax()
+                                                                             .PageSize(5)
+                                                                             .Model(model =>
+                                                                             {
+                                                                                                 model.Id(p => p.FleetInsurancePaymentRequestValidationId);
+                                                                                                 model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                 model.Field(p => p.DateCreated).Editable(false);
+                                                                                             })
+                                                                                     .Events(ev => ev
+                                                                                     .Error("error_handler(\"Approval#=FleetInsurancePaymentRequestId#\")")
+                                                                                     .RequestStart("onRequestStart(\"Approval#=FleetInsurancePaymentRequestId#\")")
+                                                                                     .RequestEnd("onRequestEnd(\"Approval#=FleetInsurancePaymentRequestId#\")"))
+                                                                                     .Create(update => update.Action("Admin_Create", "InsurancePaymentRequest", new { id = "#=FleetInsurancePaymentRequestId#" }).Data("sendForgery"))
+                                                                                     .Read(read => read.Action("Admin_Read", "InsurancePaymentRequest", new { id = "#=FleetInsurancePaymentRequestId#" }).Data("sendForgery"))
+                                                                                     .Update(update => update.Action("Admin_Create", "InsurancePaymentRequest", new { id = "#=FleetInsurancePaymentRequestId#" }).Data("sendForgery"))
+
+
+                                                                                                       )
+                                                                                                     .ToClientTemplate())
+                                                            </text>
+                                                                                                                               );
+
+                                                                }).ToClientTemplate())
+</script>
+
+<script type="text/javascript">
+
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isDeptapproved;
+    var isDeptSendForApproval;
+    var isParentApproved;
+
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.FleetInsuranceId;
+        isParentSendForApproval = masterDataItem.IsSendForApproval;
+        isParentApproved = masterDataItem.IsOnlineApproved;
+        //isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        //isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+    }
+    //function onDataBoundMaster(e) {
+
+    //    //changing colors
+    //    var rows = e.sender.tbody.children();
+    //    for (var j = 0; j < rows.length; j++) {
+    //        var row = $(rows[j]);
+    //        var dataItem = e.sender.dataItem(row);
+
+    //        if (dataItem.HasExpired) {
+    //            row.css("background-color", "red");
+    //            alert("Insurance Date Expired for machine" + dataItem.PlateNumber);
+    //        }
+    //    }
+
+    //}
+    function onDataBoundMaster() {
+        var grid = $("#grid").data("kendoGrid");
+
+        grid.tbody.find("tr").each(function () {
+            var row = $(this);
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsBudgetApproved) {
+                $(this).find(".k-grid-Approve").remove();
+                $(this).find(".k-grid-Reject").remove();
+            }
+        });
+    }
+    function approveonDataBound() {
+        var grid = this;
+        if (!isParentSendForApproval) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        if (isParentApproved) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == 0 || dataItem.Status == 1) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        })
+    }
+    function handleInsuranceTypeChange() {
+        $("ThirdPartyInsurance").prop('disabled', true);
+        $("ThirdPartyInsurance").prop('disabled', true);
+        var type = $("#InsuranceType").data("kendoDropDownList");
+        if (type) {
+            if (type.value() == 0) {
+
+                $("ThirdPartyInsurance").prop('disabled', false);
+                $("ThirdPartyInsurance").prop('disabled', false);
+            } else {
+
+                $("ThirdPartyInsurance").prop('disabled', true);
+                $("ThirdPartyInsurance").prop('disabled', true);
+            }
+        }
+    }
+    function handleChange(value) {
+        let grandTotal = 0;
+        let comprehensiveInsurance = Number(value)
+        let thirdPartyInsurance = $('#ThirdPartyInsurance').data("kendoNumericTextBox").value();
+        if (thirdPartyInsurance) {
+            grandTotal = thirdPartyInsurance + comprehensiveInsurance;
+            $('#PremiumCost').data("kendoNumericTextBox").value(grandTotal);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        } else if (!thirdPartyInsurance) {
+            $('#PremiumCost').data("kendoNumericTextBox").value(comprehensiveInsurance);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        }
+
+
+    }
+    function handleThirdPartyInsuranceChange(value) {
+        let total = 0;
+        let thirdPartyInsurance = Number(value);
+        let comprehensiveInsurance = $('#ComprehensiveInsurance').data("kendoNumericTextBox").value();
+        if (comprehensiveInsurance) {
+            grandTotal = thirdPartyInsurance + comprehensiveInsurance;
+            $('#PremiumCost').data("kendoNumericTextBox").value(grandTotal);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        }
+        else {
+            $('#PremiumCost').data("kendoNumericTextBox").value(thirdPartyInsurance);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        }
+    }
+
+
+    function filterFleet() {
+        return {
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+            equipmentNameId: $("#EquipmentNameId").val()
+        };
+    }
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterPlateNumber() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentNameID: $("#EquipmentNameID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("FinanceSendForApproval", "InsurancePaymentRequest")',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+     function Approve(e) {
+    e.preventDefault();
+
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("BudgetApprove", "InsurancePaymentRequest")',
+        data: {
+            id: dataItem.FleetInsurancePaymentRequestId
+        },
+        success: function (result) {
+            alert(result.Message);
+            approvalStage = "DGM";
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+
+    function Reject(e) {
+    e.preventDefault();
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+
+    $.ajax({
+        type: "POST",
+       url: '@Url.Action("BudgetReject", "InsurancePaymentRequest")',
+        data: {
+            id: dataItem.FleetInsurancePaymentRequestId,
+            Text:approvalStage,
+        },
+        success: function (result) {
+            alert(result.Message);
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

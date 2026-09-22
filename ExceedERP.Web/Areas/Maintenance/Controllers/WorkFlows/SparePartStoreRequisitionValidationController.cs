@@ -48,24 +48,25 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         public ActionResult SparePartStoreRequisitionValidations_Create([DataSourceRequest]DataSourceRequest request, StoreRequisitionValidation storeRequisitionValidation, int id)
         {
             var storeRequisition = db.StoreRequisitions.Find(id);
-            //if (storeRequisition != null && storeRequisition.IsOnlineApproved)
-            //{
-            //    ModelState.AddModelError(String.Empty, "You Can Not Manipulate this Record: It is Already Approved");
-            //}
-            //if (storeRequisition != null && storeRequisition.StoreRequisitionItem.Count <= 0 && storeRequisitionValidation.Status == ApprovalStatuses.Approve)
-            //{
-            //    ModelState.AddModelError("no items", "Please add at least one item to the requisition.");
-            //}
-            //if (storeRequisition != null && storeRequisition.IsTransfer && storeRequisitionValidation.Status == ApprovalStatuses.Approve)
-            //{
-            //    foreach (var item in storeRequisition.StoreRequisitionItem)
-            //    {
-            //        if (item.RequestedQuantity <= 0)
-            //        {
-            //            ModelState.AddModelError("", $"Requested quantity should be positive number. Item : {item.InventoryItem.Name}, Requested quantity: {item.RequestedQuantity} is invalid.");
-            //        }
-            //    }
-            //}
+            if (storeRequisition != null && storeRequisition.IsOnlineApproved)
+            {
+                ModelState.AddModelError(String.Empty, "You Can Not Manipulate this Record: It is Already Approved");
+            }
+            if (storeRequisition != null && storeRequisition.StoreRequisitionItem.Count <= 0 && storeRequisitionValidation.Status == ApprovalStatuses.Approve)
+            {
+                ModelState.AddModelError("no items", "Please add at least one item to the requisition.");
+            }
+            if (storeRequisition != null && storeRequisition.IsTransfer && storeRequisitionValidation.Status == ApprovalStatuses.Approve)
+            {
+                foreach (var item in storeRequisition.StoreRequisitionItem)
+                {
+                    if (item.RequestedQuantity <= 0)
+                    {
+                        ModelState.AddModelError("", $"Requested quantity should be positive number. Item : {item.InventoryItem.Name}, Requested quantity: {item.RequestedQuantity} is invalid.");
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 if (storeRequisition != null)
@@ -124,7 +125,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     else if (storeRequisitionValidation.Status == ApprovalStatuses.Reject)
                     {
                         storeRequisition.IsSendForApproval = false;
-                        storeRequisition.Status = Enum.GetName(typeof(OperationStatuses), 8);
+                        storeRequisition.Status = Enum.GetName(typeof(Core.Domain.Maintenance.OperationStatuses), 8);
                         db.Entry(storeRequisition).State = EntityState.Modified;
                         db.SaveChanges();
                     }

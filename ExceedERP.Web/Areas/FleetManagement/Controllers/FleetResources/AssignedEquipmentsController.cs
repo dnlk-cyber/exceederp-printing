@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -14,21 +15,26 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetResources
     public class AssignedEquipmentsController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         // GET: FleetManagement/AssignedEquipments
-        public ActionResult Index(FleetReturnType type)
+        //public ActionResult Index(FleetReturnType type)
+        public ActionResult Index()
         {
 
-            ViewBag.Type = type == FleetReturnType.R ? "Fleet Return" : "Assigned Equipment";
-            ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new {
-                Id = s.EquipmentNameID,
-                Name = s.Name
-            });
+          //  ViewBag.Type = type == FleetReturnType.R ? "Fleet Return" : "Assigned Equipment";
+          
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+       i => new
+       {
+           Id = i.Name,
+           Name = i.Id
+       }).AsQueryable();
             ViewData["FleetsAssignedEquip"] = db.Fleets.Select(s => new
             {
                 Id = s.FleetsID,
                 Name = s.PlateNumber
             });
-            ViewData["Operators"] = db.Operator.ToList().Select(s => new {
+            ViewData["Operators"] = db.Operator.Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName
             });
@@ -38,8 +44,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetResources
         
         public ActionResult AssignedEquipment_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var assignedEquipments = db.AssignedEquipment.Where(x => x.IsAssigned);
-            var result = assignedEquipments.ToDataSourceResult(request, model => new AssignedEquipment
+            IQueryable<AssignedEquipment> assignedEquips;
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+            if (companySetting != null && companySetting.Remark == "MCG")
+            {
+                assignedEquips = db.AssignedEquipment.Where(x => x.IsAssigned || x.Returned==true);
+                //assignedEquips = db.AssignedEquipment.Where(x =>x.IsArrived);
+            }
+            else
+            {
+                assignedEquips = db.AssignedEquipment.Where(x => x.IsAssigned);
+            }
+            var result = assignedEquips.ToDataSourceResult(request, model => new AssignedEquipment
             {
                 AssignedEquipmentID = model.AssignedEquipmentID,
                 AssignedDate = model.AssignedDate,
@@ -91,6 +107,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetResources
                 
             });
             return Json(result);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

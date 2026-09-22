@@ -1,6 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -14,6 +13,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using OperationStatuses = ExceedERP.Core.Domain.Maintenance.OperationStatuses;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
@@ -242,6 +242,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             };
             return Json("Rejected Successefuly.", JsonRequestBehavior.AllowGet);
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

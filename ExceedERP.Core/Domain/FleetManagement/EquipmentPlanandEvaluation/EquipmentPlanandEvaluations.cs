@@ -49,7 +49,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation
         [DisplayName("Unit Of Measurement")]
         public string UnitOfMeasurement { get; set; }
         [Required]
-        [DataType(DataType.Currency)]
+        //[DataType(DataType.Currency)]
         [DisplayName("Plan Income")]
         public Nullable<decimal> PlanIncome { get; set; }
         [Required]

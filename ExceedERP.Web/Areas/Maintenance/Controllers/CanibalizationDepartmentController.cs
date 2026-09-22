@@ -2,7 +2,6 @@
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FleetManagement;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -184,7 +183,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 if (record != null && record.IsOnlineApproved && !record.IsSecondOnlineApproved && !record.IsSecondSendForApproval)
                 {
 
-                    record.Status = Enum.GetName(typeof(OperationStatuses), 16);
+                    record.Status = Enum.GetName(typeof(ExceedERP.Core.Domain.Maintenance.OperationStatuses), 16);
                     record.IsSecondSendForApproval = true;
                     record.SecondSendForApprovalBy = User.Identity.Name;
                     record.SecondSendForApprovalTime = DateTime.Now;
@@ -225,12 +224,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         }
 
-
-
-
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
-
-
-
 }

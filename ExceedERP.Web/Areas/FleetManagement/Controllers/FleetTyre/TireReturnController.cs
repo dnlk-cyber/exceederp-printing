@@ -115,6 +115,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { TireReturn }.ToDataSourceResult(request));
         }
-        
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+
     }
 }

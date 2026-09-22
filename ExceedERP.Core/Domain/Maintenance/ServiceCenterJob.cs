@@ -9,12 +9,12 @@ namespace ExceedERP.Core.Domain.Maintenance
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public  class ServiceCenterJob : OperationWithSecondValidation
+    public class ServiceCenterJob : OperationWithSecondValidation
     {
         public ServiceCenterJob()
         {
         }
-      
+
         public int Num { get; set; }
         public int? JobOrderNum { get; set; }
         public int? CustomerId;
@@ -114,12 +114,22 @@ namespace ExceedERP.Core.Domain.Maintenance
         //public virtual Fleets Fleets { get; set; }
 
         public bool IsExternalMaintenanceCenter { get; set; }
-        [Display(Name ="Is Insured")]
+        [Display(Name = "Is Insured")]
         public bool IsInsured { get; set; }
 
 
     }
+    public class SatisfactionNote : TrackUserSettingOperation
+    {
+        public int SatisfactionNoteId { get; set; }
+        public Guid ServiceCenterJobId { get; set; }
+        public string WorkDescription { get; set; }
+        public string Quantity { get; set; }
+        public string Unit { get; set; }
+        public string Remark { get; set; }
+        public string RefNo { get; set; }
 
+    }
     public class JobOrderServiceCenterDetail : OperationWithSecondValidation
     {
         [Key]
@@ -157,6 +167,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string MaintenanceCenter { get; set; }
         [NotMapped]
         public decimal Efficency { get; set; }
+        public string DescriptionOfJobs { get; set; }
         public decimal Odometer { get; set; }
         //public virtual Service Service { get; set; }
         public virtual JobCauses JobCauses { get; set; }
@@ -167,8 +178,29 @@ namespace ExceedERP.Core.Domain.Maintenance
         public Guid JobOrderDetailId { get; set; } // new
 
     }
+    public class ExternalServiceAttachement:TrackUserSettingOperation{
+        public int ExternalServiceAttachementId { get; set; }
+        public string ServiceCenterJobId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+    }
+    public class WorkshopFieldWorkTool:TrackUserSettingOperation
+    {
+        public int WorkshopFieldWorkToolId { get; set; }
+        public string VehicleDemandId { get; set; }
+        public string ItemCategoryCode { get; set; }
+        public string ItemCode { get; set; }
+        public int SentQuantity { get; set; }
+        public int LostQuantity { get; set; }
+        public bool IsSent { get; set; }
+        public string ReponsibleMechanic { get; set; }
+        public int ReturnedQuantity { get; set; }
+        public bool IsReturned { get; set; }
 
-    
+    }
     public class AdditionalWorkShopDetail
     {
         [Key]

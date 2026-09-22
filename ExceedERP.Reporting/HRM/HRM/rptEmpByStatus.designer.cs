@@ -521,7 +521,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6000000238418579D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox5.Style.Font.Name = "Nyala";
             this.textBox5.Style.Font.Underline = true;
-            this.textBox5.Value = "= Join(\", \", Parameters.orgStructureId.Label)";            // 
+            this.textBox5.Value = "= Join(Parameters.orgStructureId.Label, \", \")";            // 
             // textBox15
             // 
             this.textBox15.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.4999997615814209D), Telerik.Reporting.Drawing.Unit.Inch(0.29996046423912048D));

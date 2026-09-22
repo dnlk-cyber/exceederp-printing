@@ -23,7 +23,8 @@
         //columns.Bound(e => e.TireSize).Width(140);
         //columns.Bound(e => e.UnitPrice).Width(120);
         columns.Bound(e => e.Status).Width(100);
-        columns.Command(command => { command.Edit();/* command.Destroy(); */}).Width(250);
+        columns.Bound(e => e.IsCreatedOnFleet).Width(100);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
     })
       .ToolBar(commands => commands.Create())
       .Editable(editable =>
@@ -32,6 +33,7 @@
           editable.Mode(GridEditMode.PopUp).TemplateName("TireIssueEditor");
           editable.DisplayDeleteConfirmation("Are You Sure To Remove Tire Issue Information");
       })
+      //.Events(ev=>ev.DataBound("IssueDataBound"))
         .HtmlAttributes(new { style = "height: 520px;" })
                               .Pageable(pageable => pageable
                                                 .Input(true)
@@ -142,6 +144,7 @@
                         });
                     })
                     .ToolBar(toolbar => toolbar.Create())
+                    .Events(ev=>ev.DataBound("DetailDataBound"))
                      .Editable(editable => editable.Mode(GridEditMode.InLine))
                     .Scrollable()
                     .Pageable()
@@ -193,8 +196,8 @@
                                                     .Error("error_handler(\"TireIssueApproval#=TireIssueID#\")")
                                                     .RequestStart("onRequestStart(\"TireIssueApproval#=TireIssueID#\")")
                                                     .RequestEnd("onRequestEnd(\"TireIssueApproval#=TireIssueID#\")"))
-                                                                                                           .Create(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
-                                                                                             .Read(read => read.Action("TireIssueApproval_Read", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
+                                                                           .Create(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
+                                                                           .Read(read => read.Action("TireIssueApproval_Read", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
                                                                            .Update(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
 
 
@@ -214,7 +217,7 @@
 <script type="text/javascript">
 
 
-    var IsApproved;
+    var IsApproved=false;
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 
@@ -237,9 +240,30 @@
             } if (dataItem.IsOnlineApproved == true) {
                 $(this).addClass("k-state-FleetApproved");
             }
+            if (dataItem.IsCreatedOnFleet == false) {
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-delete").hide();
+            }
         });
     }
+    function DetailDataBound(e) {
+        if (IsApproved == true) {
+            // Hide the Add/Create button in the detail grid
+            e.sender.wrapper
+                .find(".k-grid-add")
+                .hide();
+        }
+        var grid = this;
 
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (IsApproved == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+        });
+    }
     function approveonDataBound(e) {
         var grid = this;
 
@@ -302,7 +326,9 @@
             Search: filterInput.val()
         };
     }
+   
 
+  
 
 
 </script>

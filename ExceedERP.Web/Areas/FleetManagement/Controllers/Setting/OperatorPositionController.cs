@@ -7,7 +7,8 @@ using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.FleetManagement; 
+using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 {
@@ -20,6 +21,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 		{
 			_OperatorPositionService = new OperatorPositionService();
 		}
+        ExceedDbContext db = new ExceedDbContext();
 		//
 		// GET: /FleetManagement/OperatorPosition/
 		public ActionResult Index()
@@ -32,7 +34,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 		public JsonResult OperatorPosition_Read([DataSourceRequest] DataSourceRequest request)
 		{
 			_OperatorPositionService = new OperatorPositionService();
-			var oper = _OperatorPositionService.GetAll();
+			//var oper = _OperatorPositionService.GetAll();
+			IQueryable<OperatorPosition> oper =db.OperatorPosition.AsQueryable();
 			var Opers = oper.Select(o => new OperatorPosition
 			{
 				OperatorPositionID = o.OperatorPositionID,
@@ -118,7 +121,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
 			return Json(fleets, JsonRequestBehavior.AllowGet);
 		}
-		
 
-	}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 }

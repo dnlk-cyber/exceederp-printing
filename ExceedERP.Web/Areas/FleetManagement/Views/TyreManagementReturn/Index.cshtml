@@ -20,9 +20,9 @@
         columns.Bound(e => e.TireSize).Width(120);
         columns.Bound(e => e.UnitPrice).Width(120);
         columns.Bound(e => e.Status).Width(100);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+        //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
     })
-           .ToolBar(toolbar => toolbar.Create())
+      //.ToolBar(toolbar => toolbar.Create())
       .Editable(editable =>
       {
           editable.Window(w => w.Title("Tyre Return"));
@@ -48,18 +48,18 @@
         .Ajax()
         .ServerOperation(true)
         .Model(model =>
-              {
-                  model.Id(p => p.TireReturnID);
-                  model.Field(p => p.TireReturnID).Editable(false);
+        {
+            model.Id(p => p.TireReturnID);
+            model.Field(p => p.TireReturnID).Editable(false);
 
-              }).Events(ev => ev
-                                                            .Error("error_handler(\"grid\")")
-                                                            .RequestStart("onRequestStart(\"grid\")")
-                                                            .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("TireReturn_Create", "TyreManagementReturn").Data("sendForgery"))
+        }).Events(ev => ev
+                                                      .Error("error_handler(\"grid\")")
+                                                      .RequestStart("onRequestStart(\"grid\")")
+                                                      .RequestEnd("onRequestEnd(\"grid\")"))
+                    //.Create(update => update.Action("TireReturn_Create", "TyreManagementReturn").Data("sendForgery"))
                     .Read(read => read.Action("TireReturn_Read", "TyreManagementReturn").Data("sendForgery"))
-                    .Update(update => update.Action("TireReturn_Update", "TyreManagementReturn").Data("sendForgery"))
-                    .Destroy(update => update.Action("TireReturn_Destroy", "TyreManagementReturn").Data("sendForgery"))
+                    //.Update(update => update.Action("TireReturn_Update", "TyreManagementReturn").Data("sendForgery"))
+                   // .Destroy(update => update.Action("TireReturn_Destroy", "TyreManagementReturn").Data("sendForgery"))
   )
 )
 
@@ -113,9 +113,6 @@
 
                             </div>
                         </div>
-
-
-
                     </text>
 
 
@@ -151,9 +148,9 @@
                                                     .Error("error_handler(\"TireReturnApproval#=TireReturnID#\")")
                                                     .RequestStart("onRequestStart(\"TireReturnApproval#=TireReturnID#\")")
                                                     .RequestEnd("onRequestEnd(\"TireReturnApproval#=TireReturnID#\")"))
-                                                                                                           .Create(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
-                                                                                             .Read(read => read.Action("TireReturnApproval_Read", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
-                                                                                           .Update(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
+                                                    .Create(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
+                                                    .Read(read => read.Action("TireReturnApproval_Read", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
+                                                    .Update(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
 
 
                                                       )

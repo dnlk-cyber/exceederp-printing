@@ -29,5 +29,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.MainTools
 
             return File(fileContents, contentType, fileName);
         }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

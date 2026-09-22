@@ -101,8 +101,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             {
                 storeRequisitions = storeRequisitions.Where(x => x.ServiceJobOrderNo == id.ToString());
             }
-
-            
             var result = storeRequisitions.ToDataSourceResult(request, storeRequisition => new
                 {
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
@@ -186,7 +184,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                 JobOrderNo = storeRequisition.JobOrderNo,
                 ServiceJobOrderNo = storeRequisition.ServiceJobOrderNo,
                 PlateNo = storeRequisition.PlateNo,
-                //CurrentAvgPrice = storeRequisition.,
 
                 Status = storeRequisition.Status,
                 Remark = storeRequisition.Remark,
@@ -317,7 +314,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         RequestDate = storeRequisition.RequestDate.Date,// DateTime.Today,
                         StoreCode = storeRequisition.StoreCode,
-                        Status = Enum.GetName(typeof(OperationStatuses), 5),
+                        Status = Enum.GetName(typeof(Core.Domain.Maintenance.OperationStatuses), 5),
                         Remark = storeRequisition.Remark,
                         GLPeriodId = storeRequisition.GLPeriodId,
                         IsVoid = storeRequisition.IsVoid,
@@ -489,6 +486,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SparePartStoreRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
         {
+            ModelState.Remove("StandardConsumption");
             if (ModelState.IsValid)
             {
                 var entity = new StoreRequisition
@@ -554,7 +552,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             var record = _db.StoreRequisitions.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.StoreRequisitionItem.Count > 0)
             {
-                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                record.Status = Enum.GetName(typeof(Core.Domain.Maintenance.OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;
@@ -673,7 +671,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     }
                 }
                 #endregion
-                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.Status = Enum.GetName(typeof(Core.Domain.Maintenance.OperationStatuses), 10);
                 record.IsVoid = true;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;
@@ -768,7 +766,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     EmployeeId = record.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     RequestDate = record.RequestDate.Date,// DateTime.Today,
                     StoreCode = record.StoreCode,
-                    Status = Enum.GetName(typeof(OperationStatuses), 5),
+                    Status = Enum.GetName(typeof(Core.Domain.Maintenance.OperationStatuses), 5),
                     Remark = record.Remark,
                     GLPeriodId = record.GLPeriodId,
                     

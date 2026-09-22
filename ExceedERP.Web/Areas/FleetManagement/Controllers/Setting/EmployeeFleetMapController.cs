@@ -111,5 +111,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
             return Json(ItemCategory, JsonRequestBehavior.AllowGet);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

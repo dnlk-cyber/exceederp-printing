@@ -4,6 +4,22 @@
 @using ExceedERP.Helpers
 @model ExceedERP.Core.Domain.Maintenance.VehicleReceptionForm
 @using ExceedERP.Helpers.Common
+@using ExceedERP.DataAccess.Context
+
+@{
+    var allSources = ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Maintenance.Source));
+    //var db = new ExceedDbContext();
+    //var setting = db.RequestToInspections.FirstOrDefault();
+    var checkIsECWC = (string)ViewData["ECWCSetting"];
+    bool isECWC = (checkIsECWC == "ECWC");
+    if (!(isECWC))
+    {
+        allSources = allSources.Where(x => x.Value == "0" || x.Value == "1").ToList();
+    }
+    ViewBag.SourceList = allSources;
+    
+
+}
 @Html.HiddenFor(model => model.VehicleReceptionFormId)
 <div class="form">
     <div class="row fullrow">
@@ -12,16 +28,25 @@
                 @Html.LabelFor(model => model.Source, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-12">
                     @(Html.Kendo().DropDownListFor(model => model.Source)
-                                  .DataTextField("Text")
-                                  .DataValueField("Value")
-                                  .BindTo(ExceedERP.Helpers.Common.EnumExtension.
-                                  EnumToSelectList(typeof(ExceedERP.Core.Domain.Maintenance.Source))
-                                  )
-                                  .Events(ev =>
-                                  {
-                                      ev.Change("SourceSelectorChanged");
-                                  })
-                    )
+      .DataTextField("Text")
+      .DataValueField("Value")
+      .BindTo((System.Collections.IEnumerable)ViewBag.SourceList)
+      .Events(ev => ev.Change("SourceSelectorChanged"))
+)
+                    @*@(Html.Kendo().DropDownListFor(model => model.Source)
+                      .DataTextField("Text")
+                      .DataValueField("Value")
+                      .BindTo(ExceedERP.Helpers.Common.EnumExtension.
+                      EnumToSelectList(typeof(ExceedERP.Core.Domain.Maintenance.Source))
+                      )
+                      .Events(ev =>
+                      {
+                          ev.Change("SourceSelectorChanged");
+                          //ev.DataBound("SourceSelectorChanged");
+                      })
+        )*@
+
+
                     @Html.ValidationMessageFor(model => model.Source, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -72,8 +97,8 @@
 
             <div class="row"></div>
 
-            <div class="form-group">                
-                @Html.LabelFor(model=>model.TechnicianAssignedId, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.TechnicianAssignedId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
 
                     @(Html.Kendo().DropDownListFor(model => model.TechnicianAssignedId)
@@ -91,10 +116,9 @@
                     @Html.ValidationMessageFor(model => model.TechnicianAssignedId, "", new { @class = "text-danger" })
                 </div>
             </div>
-                    <div class="row"></div>
+            <div class="row"></div>
 
-
-                </div>
+        </div>
         <div class="col-md-3 ro1">
             <div class="form-group">
 
@@ -119,20 +143,31 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.VehicleType, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                   @(Html.Kendo().TextBoxFor(model => model.VehicleType).Enable(false))
+                    @(Html.Kendo().TextBoxFor(model => model.VehicleType).Enable(false))
                     @Html.HiddenFor(model => model.VehicleType)
                     @Html.ValidationMessageFor(model => model.VehicleType, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
             <div class="form-group">
-              Vehicle Model
+                Vehicle Model
                 <div class="col-md-12">
                     @(Html.Kendo().TextBoxFor(model => model.VehicleModel).Enable(false))
                     @Html.ValidationMessageFor(model => model.VehicleModel, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
+            @if (isECWC)
+            {
+                <div class="form-group" id="customerName">
+                    Customer Name
+                    <div class="col-md-6">
+                        @(Html.Kendo().TextBoxFor(model => model.CustomerName))
+                    </div>
+                </div>
+                <div class="row"></div>
+            }
+
         </div>
         <div class="col-md-3 ro1">
             <div class="form-group">
@@ -157,7 +192,7 @@
                 </div>
             </div>
             <div class="row"></div>
-            
+
             <div class="form-group">
                 @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-12">

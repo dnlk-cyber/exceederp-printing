@@ -23,42 +23,74 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
     {
 
         ExceedDbContext db = new ExceedDbContext();
-
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            ViewData["RepairTypes"] = db.RepairType.Select(s => new
             {
-                Text = s.EquipmentCategoryName,
-                Value = s.EquipmentIdentityID
-            }).ToList();
-            ViewData["type"] = db.EquipmentType.Select(s => new
-            {
-                Text = s.EquipmentTypeName,
-                Value = s.EquipmentTypeID
-            }).ToList();
-            ViewData["name"] = db.EquipmentName.Select(s => new
-            {
-                Text = s.Name,
-                Value = s.EquipmentNameID
-            }).ToList();
-            ViewData["branch"] = db.Branch.Select(s => new
-            {
-                Value = s.BranchId,
-                Text = s.Name
-            }).ToList();
+                Code = s.RepairTypeID,
+                Name = s.Name
+            }).AsQueryable();
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+            string isECWC = (fetchSetting != null && fetchSetting.Remark == "ECWC") ? "ECWC" : "Not";
+
+            // Store in ViewBag (or use a strongly typed ViewModel if preferred)
+            ViewData["IsECWC"] = isECWC;
+            ViewBag.setting = (fetchSetting) != null ? fetchSetting.Remark:"";
+            //ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            //{
+            //    Text = s.EquipmentCategoryName,
+            //    Value = s.EquipmentIdentityID
+            //}).ToList();
+            //ViewData["type"] = db.EquipmentType.Select(s => new
+            //{
+            //    Text = s.EquipmentTypeName,
+            //    Value = s.EquipmentTypeID
+            //}).ToList();
+            //ViewData["name"] = db.EquipmentName.Select(s => new
+            //{
+            //    Text = s.Name,
+            //    Value = s.EquipmentNameID
+            //}).ToList();
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Text = i.Name,
+          Value = i.Id
+      }).AsQueryable();
+            ViewData["type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["operator"] = db.Operator.Select(s => new
             {
                 Value = s.OperatorID,
                 Text = s.FullName
-            }).ToList();
-            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
-            {
-                Value = s.BusinessUnitId,
-                Text = s.Name
-            }).ToList();
+            }).AsQueryable();
+            ViewData["branch"] = CacheData.GetBranchCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           BranchId = i.Id
+       }).AsQueryable();
+            ViewData["businessunit"] = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
 
-            ViewData["fleet"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).ToList();
-            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
+           // ViewData["fleet"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).AsQueryable();
+            ViewData["fleet"] = CacheData.GetFleetsSecondCache().Select(x => new { x.FleetsID, x.PlateNumber }).AsQueryable();
+            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).AsQueryable();
 
             return View();
         }
@@ -84,12 +116,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 HoleDepth= model.HoleDepth,
                 FuelConsumption= model.FuelConsumption,
                 FuelRate = model.FuelRate,
-                GreaseConsumption= model.GreaseConsumption,
                 IdleHours= model.IdleHours,
+                ExternalOperatorName = model.ExternalOperatorName,
                 IdleReason= model.IdleReason,
                 DownHours= model.DownHours,
                 DownReason= model.DownReason,
+                ReasonForDown = model.ReasonForDown,
+                ReasonForIdle = model.ReasonForIdle,
                 NetHour= model.NetHour,
+                TotalTime= model.TotalTime,
                 WorkType= model.WorkType,
                 Remark = model.Remark,
                 RentalRate = model.RentalRate,
@@ -100,14 +135,23 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 IdleAmount = model.IdleAmount,
                 TotalAmountBeforeVAT = model.TotalAmountBeforeVAT,
                 VAT = model.VAT,
-                LubricantCost = model.LubricantCost,
+
+                SparePartCost = model.SparePartCost,
+                OilCost = model.OilCost,
+                GreaseConsumption = model.GreaseConsumption,
+                GreaseCost = model.GreaseCost,
+                MaintenanceCost = model.MaintenanceCost,
+                OilConsumption = model.OilConsumption,
+
                 TotalAmount = model.TotalAmount,
                 FuelCost = model.FuelCost,
                 ServiceRecharge = model.ServiceRecharge,
-                MaintenanceCost = model.MaintenanceCost,
                 TotalCost = model.TotalCost,
                 NetAmount = model.NetAmount,
-
+                LabourCost=model.LabourCost,
+                BatteryCost = model.BatteryCost,
+                OverTime = model.OverTime,
+                BasicSalary = model.BasicSalary,
                 DownHourRate = model.DownHourRate,
                 OperationRevenue = model.OperationRevenue,
                 Perdium = model.Perdium,
@@ -133,6 +177,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 CostSheetSendForApprovalBy = model.CostSheetSendForApprovalBy,
                 CostSheetSendForApprovalTime = model.CostSheetSendForApprovalTime,
                 OperatorId = model.OperatorId,
+                IsECWC= checkIsECWC(),
                 TimeSheetSendForApprovalBy = model.TimeSheetSendForApprovalBy,
                 TimeSheetSendForApprovalTime = model.TimeSheetSendForApprovalTime,
                 EquipmentCategoryId = model.EquipmentCategoryId,
@@ -142,12 +187,64 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             });
             return Json(result);
         }
-        
+        private bool checkIsECWC()
+        {
+            bool x = false;
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+            if (fetchSetting!=null&&fetchSetting.Remark == "ECWC")
+            {
+                x = true;
+            }
+            return (x);
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LightVehicleCostSheet_Update([DataSourceRequest] DataSourceRequest request, LightVehicleTimeSheet model)
         {
-            
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+
+            decimal MCost = 0;
+            if (fetchSetting != null && fetchSetting.Remark != "ECWC")
+            {
+
+
+                var MaintenanceJob = db.JobOrder.FirstOrDefault(x => x.FleetsID == model.FleetsID && x.SecondOnlineApprovedTime == DateTime.Now && x.Status == MaintenanceConst.Delivered);
+                if (MaintenanceJob != null)
+                {
+                    var WorkShopJobs = db.ServiceCenterJob.Where(x => x.JobOrderID == MaintenanceJob.JobOrderID).ToList();
+                    foreach (var WJ in WorkShopJobs)
+                    {
+                        var StoreReq = db.StoreRequisitions.FirstOrDefault(x => x.ServiceJobOrderNo == WJ.ServiceCenterJobId.ToString());
+                        if (StoreReq != null)
+                        {
+                            var Issue = db.Issues.Where(x => x.StoreRequisitionID == StoreReq.StoreRequisitionID).ToList();
+                            foreach (var issue in Issue)
+                            {
+                                var issueItems = db.IssueItems.Where(x => x.IssueID == issue.IssueID);
+                                foreach (var item in issueItems)
+                                {
+                                    MCost += item.IssuedQuantity * item.UnitPrice;
+                                }
+                            }
+                        }
+                        var HumanCost = db.ServiceCrewWorkLogs.Where(x => x.JobId == WJ.ServiceCenterJobId).ToList();
+                        foreach (var HC in HumanCost)
+                        {
+                            MCost += HC.TotalLabourCost;
+                        }
+                    }
+
+                }
+                if (model.MaintenanceCost == 0)
+                {
+                    model.MaintenanceCost = MCost;
+                }
+            }
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+            if (companySetting != null && companySetting.Remark == "MCG")
+            {
+                model.TotalTime = model.NetHour+model.IdleHours * (model.IdealRentalRate*0.01m);
+            }
 
             if (ModelState.IsValid)
             {
@@ -167,12 +264,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     HoleDepth = model.HoleDepth,
                     FuelConsumption = model.FuelConsumption,
                     FuelRate = model.FuelRate,
-                    GreaseConsumption = model.GreaseConsumption,
                     IdleHours = model.IdleHours,
                     IdleReason = model.IdleReason,
                     DownHours = model.DownHours,
+                    ReasonForIdle = model.ReasonForIdle,
                     DownReason = model.DownReason,
+                    ReasonForDown = model.ReasonForDown,
                     NetHour = model.NetHour,
+                    TotalTime = model.TotalTime,
                     WorkType = model.WorkType,
                     Remark = model.Remark,
                     RentalRate = model.RentalRate,
@@ -186,11 +285,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     TotalAmount = model.TotalAmount,
                     FuelCost = model.FuelCost,
                     ServiceRecharge = model.ServiceRecharge,
-                    LubricantCost = model.LubricantCost,
+
+                    SparePartCost = model.SparePartCost,
+                    OilCost = model.OilCost,
+                    GreaseConsumption = model.GreaseConsumption,
+                    GreaseCost = model.GreaseCost,
                     MaintenanceCost = model.MaintenanceCost,
+                    OilConsumption = model.OilConsumption,
+
                     TotalCost = model.TotalCost,
                     NetAmount = model.NetAmount,
-
+                    LabourCost = model.LabourCost,
+                    BatteryCost = model.BatteryCost,
+                    OverTime = model.OverTime,
+                    BasicSalary = model.BasicSalary,
                     DownHourRate = model.DownHourRate,
                     OperationRevenue = model.OperationRevenue,
                     Perdium = model.Perdium,
@@ -275,7 +383,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     TotalAmount = model.TotalAmount,
                     FuelCost = model.FuelCost,
                     ServiceRecharge = model.ServiceRecharge,
-                    LubricantCost = model.LubricantCost,
                     MaintenanceCost = model.MaintenanceCost,
                     TotalCost = model.TotalCost,
                     NetAmount = model.NetAmount,

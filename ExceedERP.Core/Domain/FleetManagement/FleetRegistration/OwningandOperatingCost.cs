@@ -17,7 +17,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public int OwningandOperatingCostId { get; set; }
         [DisplayName(" Equipment ")]
         public Guid FleetsID { get; set; }
-          [DisplayName(" Equipment ")]
+          [DisplayName(" Model ")]
          public string Model { get; set; }
 
          public string Manufacture { get; set; }
@@ -54,6 +54,10 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
          public decimal PropertyTax { get; set; }
          public decimal NetTotal { get; set; }
          public decimal Fuel { get; set; }
+        [Display(Name = "Cost Date"),
+        DataType(DataType.Date),
+        DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? CostDate { get; set; }
              
          public decimal LubOil { get; set; }
          public decimal ServiceParts { get; set; }

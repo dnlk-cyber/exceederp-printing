@@ -214,7 +214,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     timeSheet.FuelRate = lightVehicleTimeSheet.FuelRate;
                     // Calculated
                     timeSheet.FuelCost = timeSheet.FuelInLiter * timeSheet.FuelRate;
-                    timeSheet.LubricantCost = lightVehicleTimeSheet.LubricantCost;
+                    //timeSheet.LubricantCost = lightVehicleTimeSheet.LubricantCost;
                     timeSheet.MaintenanceCost = lightVehicleTimeSheet.MaintenanceCost;
                     timeSheet.TireCost = lightVehicleTimeSheet.TireCost;
                     timeSheet.Perdium = lightVehicleTimeSheet.Perdium;

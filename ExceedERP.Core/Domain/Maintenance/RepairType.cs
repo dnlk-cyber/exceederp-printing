@@ -26,6 +26,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Required]
         [DisplayName("Repair Type ")]
         public string Name { get; set; }
+        public bool IsGeneric { get; set; }
         public decimal Weight { get; set; }
         [Required]
         [DisplayName("Standared Time")]
@@ -122,16 +123,46 @@ namespace ExceedERP.Core.Domain.Maintenance
         Fabrication_And_Modification,
         [Display(Name = "10000 service"), Description("10000 service")]
         Ten_Thousand_Service,
-        [Display(Name = "5000 service"), Description("5000 service")]
-        Five_Thousand_Service,
         [Display(Name = "Mechanical Maintenance"), Description("Mechanical Maintenance")]
         Mechanical_Maintenance,
         [Display(Name = "Electrical Maintenance"), Description("Electrical Maintenance")]
         Electrical_Maintenance,
-        [Display(Name = "10000 service and other"), Description("10000 service and other")]
-        Ten_Thousand_Service_and_Other,
-        [Display(Name = "5000 service and other"), Description("5000 service and other")]
-        Five_Thousand_Service_and_Other,
+        [Display(Name = "10000 KM service and other"), Description("10000 KM service and other")]
+        Ten_Thousand_KM_Service_and_Other,
+        [Display(Name = "10000 KM service"), Description("10000 KM service")]
+        Ten_Thousand_KM_Service,
+        [Display(Name = "5000 HR service and other"), Description("5000 HR service and other")]
+        Five_Thousand_HR_Service_and_Other,
+        [Display(Name = "250 hr service and other"), Description("250 hr service and other")]
+        Two_Hundred_Fifty_HR_Service_and_Other,
+        [Display(Name = "250 hr service"), Description("250 hr service")]
+        Two_Hundred_Fifty_HR_Service,
+        [Display(Name = "500 hr service and other"), Description("500 hr service and other")]
+        Five_Hundred_HR_Service_and_Other,
+        [Display(Name = "500 hr service"), Description("500 hr service")]
+        Five_Hundred_HR_Service,
+        [Display(Name = "1000 hr service and other"), Description("1000 hr service and other")]
+        One_Thousand_HR_Service_and_Other,
+        [Display(Name = "1000 hr service"), Description("1000 hr service")]
+        One_Thousand_HR_Service,
+        [Display(Name = "2000 hr service and other"), Description("2000 hr service and other")]
+        Two_Thousand_HR_Service_and_Other,
+        [Display(Name = "2000 hr service"), Description("2000 hr service")]
+        Two_Thousand_HR_Service,
+        [Display(Name = "10,000 hr service and other"), Description("10,000 hr service and other")]
+        Ten_Thousand_HR_Service_and_Other,
+        [Display(Name = "30,000 km service and other"), Description("30,000 km service and other")]
+        Thirty_Thousand_KM_Service_and_Other,
+        [Display(Name = "30,000 km service"), Description("30,000 km service")]
+        Thirty_Thousand_KM_Service,
+        [Display(Name = "60,000 km service and other"), Description("60,000 km service and other")]
+        Sixty_Thousand_KM_Service_and_Other,
+        [Display(Name = "60,000 km service"), Description("60,000 km service")]
+        Sixty_Thousand_KM_Service,
+        [Display(Name = "5000 km service and other"), Description("5000 km service and other")]
+        Five_Thousand_KM_Service_and_Other,
+        [Display(Name = "5000 km service"), Description("5000 km service")]
+        Five_Thousand_KM_Service,
         Feeder_Maintenance,
         Crusher_Blade_Maintenance,
         Conveyor_Belt_Maintenance,

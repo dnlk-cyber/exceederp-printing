@@ -112,7 +112,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
 			return Json(fleets, JsonRequestBehavior.AllowGet);
 		}
-		
 
-	}
+        }
 }

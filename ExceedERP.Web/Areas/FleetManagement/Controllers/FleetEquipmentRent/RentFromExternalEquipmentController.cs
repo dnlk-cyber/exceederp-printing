@@ -22,14 +22,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
         public JsonResult RentFromExternalEquipment_Read([DataSourceRequest] DataSourceRequest request, Guid Id)
         {
             var equipmentTypes = db.EquipmentType.AsNoTracking().ToList();
-            var model = db.RentFromExternalEquipments.Where(x => x.RentFromExternalId == Id).AsEnumerable();
+            var model = db.RentFromExternalEquipments.Where(x => x.RentFromExternalId == Id).ToList();
             foreach (var equipment in model)
             {
                 equipment.EquipmentType = equipmentTypes.Find(t => t.EquipmentTypeID == equipment.EquipmentTypeID)?.EquipmentTypeName;
+               // UpdateEquipment(equipment, Id);
+
             }
 
             return Json(model.ToDataSourceResult(request));
         }
+      
+        
         public JsonResult Rate_Read([DataSourceRequest] DataSourceRequest request, int Id)
         {
             var rates = db.RentFromExternalEquipmentRates.Where(x => x.RentFromExternalEquipmentId == Id);
@@ -41,12 +45,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
         public JsonResult RentFromExternalEquipment_Create([DataSourceRequest] DataSourceRequest request, RentFromExternalEquipment model, Guid Id)
         {
             model.RentFromExternalId = Id;
+            var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == model.FleetId);
+            if(!fleet.IsContractTerminated)
+            {
+                ModelState.AddModelError("there is contract", "Equipment has active contract");
+            }
             ModelState.Remove("RentFromExternalId");
             if (ModelState.IsValid)
             {
+               
                 UpdateFleet(model.FleetId, Id, model);
                 model.DateCreated = DateTime.Today;
                 model.CreatedBy = User.Identity.Name;
+                model.IsContractTerminated = true;
                 model.RentFromExternalId = Id;
                 db.RentFromExternalEquipments.Add(model);
                 db.SaveChanges();
@@ -93,6 +104,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
 
             if (ModelState.IsValid)
             {
+                var companySetting = db.RequestToInspections.FirstOrDefault();
+                if (companySetting != null && companySetting.Remark == "MCG")
+                {
+                    model.IdleRentalRate = model.RentalRate * (model.IdleRentalRate / 100);
+                }
                 model.LastModified = DateTime.Today;
                 model.ModifiedBy = User.Identity.Name;
                 db.Entry(model).State = EntityState.Modified;
@@ -160,6 +176,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
             
             var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == fleetId);
             fleet.RentId = rentId;
+            fleet.IsContractTerminated = true;
             fleet.RentalRate = rentEquipment.RentalRate;
             fleet.IdealRentalRate = rentEquipment.IdleRentalRate;
             fleet.RentType = rentEquipment.RentType;
@@ -197,6 +214,38 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
                 Status = "OK"
             };
             return Json(succussMessage, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult TerminateContract(int id)
+        {
+            var rentedEquipment = db.RentFromExternalEquipments.FirstOrDefault(x => x.RentFromExternalEquipmentId == id);
+            if(rentedEquipment!=null&&rentedEquipment.IsContractTerminated)
+                {
+                var FormattedData = new
+                {
+                    Message = "Equipment does not have active contract",
+                    Status = "OK"
+                };
+                return Json(FormattedData, JsonRequestBehavior.AllowGet);
+            }
+            rentedEquipment.IsContractTerminated = true;
+            db.Entry(rentedEquipment).State = EntityState.Modified;
+            db.SaveChanges();
+            var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == rentedEquipment.FleetId);
+            fleet.IsContractTerminated = true;
+            db.Entry(fleet).State = EntityState.Modified;
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Equipment contract terminated succussfully",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

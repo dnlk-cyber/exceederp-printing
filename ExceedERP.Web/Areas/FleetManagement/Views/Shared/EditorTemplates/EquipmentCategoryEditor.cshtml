@@ -1,5 +1,4 @@
-﻿
- @(Html.Kendo().DropDownListFor(model => model)
+﻿@(Html.Kendo().DropDownListFor(model => model)
     .ValuePrimitive(true)
     .DataTextField("Name")
     .DataValueField("Id")
@@ -9,3 +8,11 @@
     .ServerFiltering(true)))
 
 
+@*@model Guid?
+
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel("Select Equipment...")
+        .DataValueField("Id")
+        .DataTextField("Name")
+        .BindTo((System.Collections.IEnumerable)ViewData["EquipmentCategories"])
+)*@

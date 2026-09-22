@@ -28,6 +28,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [Required]
         [DisplayName("Plate No")]
         public Guid FleetId { get; set; }
+        [NotMapped]
+        public string OperatorFullName { get; set; }
         public string ArrivalPlace { get; set; }
         public string EquipmentName { get; set; }
         [Required]

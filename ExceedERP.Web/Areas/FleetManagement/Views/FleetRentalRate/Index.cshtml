@@ -6,7 +6,7 @@
                                                 .Columns(columns =>
                                                 {
 
-                                                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "Value", "Text").Width(120).Title("Branch");
+                                                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(120).Title("Branch");
 
                                                     //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120).Title("Fiscal Year");
                                                     columns.Bound(c => c.Year).Width(100);

@@ -110,6 +110,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(Sections, JsonRequestBehavior.AllowGet);
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

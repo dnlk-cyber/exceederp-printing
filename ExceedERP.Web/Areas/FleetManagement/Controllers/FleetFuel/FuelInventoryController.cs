@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 DateCreated = e.DateCreated,
                 Remark = e.Remark
             }
-        ).ToList();
+        );
 
             return Json(FuelInventory.ToDataSourceResult(request));
 
@@ -47,7 +47,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult FuelInventoryDistinctSite_Read([DataSourceRequest] DataSourceRequest request)
         {
 
-            var Allinventory = db.FuelInventorys.ToList();
+            var Allinventory = db.FuelInventorys;
             List<FuelInventory> Inventory = new List<FuelInventory>();
 
             string Site = string.Empty;

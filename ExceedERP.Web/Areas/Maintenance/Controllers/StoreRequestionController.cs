@@ -141,7 +141,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult ServiceCenter_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+            var JobOrder = db.JobOrder.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
                 .Where(
                     x =>
                         x.IsOnlineApproved == true && x.IsExternal == false)
@@ -457,11 +457,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 var Requests = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
                 if (Requests != null)
                 {
-                    RequestOrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
-                    RequestOrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
+                    RequestOrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
+                    RequestOrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
                 }
-                decimal OrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id).ToList().Count;
-                decimal OrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
+                decimal OrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Id).ToList().Count;
+                decimal OrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
                 var progress = (OrderLineFinished + RequestOrderLineFinished) / (OrderLine + RequestOrderLine);
 
                 progress = progress * 100;
@@ -478,7 +478,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             try
             {
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
+                var OrderLine = db.JobOrder.Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -502,7 +502,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
 
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id).FirstOrDefault();
+                var OrderLine = db.JobOrder.Where(x => x.JobOrderID == Id).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -574,7 +574,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
 
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id).FirstOrDefault();
+                var OrderLine =db.JobOrder.Where(x => x.JobOrderID == Id).FirstOrDefault();
                 if (!OrderLine.IsOnlineTransferred)
                 {
                     TimeSpan Duration = DateTime.Now - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
@@ -1045,6 +1045,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         #endregion
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -56,7 +56,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult MechanicCrew_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var MechanicCrew = _MechanicCrewService.GetAll();
+            //var MechanicCrew = _MechanicCrewService.GetAll();
+            IQueryable<MechanicCrew> MechanicCrew =db.MechanicCrew.AsQueryable();
 
             return Json(MechanicCrew.ToDataSourceResult(request));
         }
@@ -222,9 +223,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             //return Json(mapping, JsonRequestBehavior.AllowGet);
             return Json(count+" items added");
         }
-
-
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 
 }

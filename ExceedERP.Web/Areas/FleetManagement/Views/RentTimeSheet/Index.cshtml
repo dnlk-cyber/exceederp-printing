@@ -59,25 +59,6 @@
                     <div class="col-sm-3">
                     <a class="k-button k-button-icontext k-grid-add k-primary" href='#'>Add New Record</a>
                     </div>
-                    @*<div class="col-md-2  pull-right">
-
-                        @(Html.Kendo().Upload()
-
-                            .Name("file")
-                            .Async(a => a.Save("TimeSheet_Import", "RentTimeSheet"))
-                             Messages(m => m.Select("Import TimeSheet "))
-                            .Events(e =>
-                            {
-                              e.Complete("onUploadSuccess");
-                              e.Upload("checkFileType");
-                              e.Error("onUploadError");
-                              e.Success("onUploadError");
-
-                                              }))
-                    </div>*@
-                    @*<div class="col-md-2  pull-right">
-                        <a class="k-button k-button-icontext k-primary" href="~/Content/Template/Fleet/RentalTimeSheetTemplate.xls">Download Template</a>
-                    </div>*@
                 </div>
                
         </text>);})
@@ -237,8 +218,6 @@
                     $("#CustomerName").val(s[4]);
                     $("#RentalRate").val(s[2]);
                     $("#IdealRentalRate").val(s[6]);
-                   
-               
                 } else {
                     $("#CustomerName").val("UnAssigned");
                     $("#RentalRate").val(" 0 ");

@@ -22,6 +22,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [NotMapped]
         [DisplayName("Operator Name")]
         public int? OperatorId { get; set; }
+        public string ServiceCenterJobId { get; set; }
+        [NotMapped]
+        public string EmployeeName { get; set; }
         [NotMapped]
         [DisplayName("Plate Number")]
         public string PlateNumber { get; set; }

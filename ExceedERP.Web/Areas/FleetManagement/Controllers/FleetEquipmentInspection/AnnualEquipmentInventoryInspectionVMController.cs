@@ -24,26 +24,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
     public class AnnualEquipmentInventoryInspectionVMController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         ExceedDbContext db = new ExceedDbContext();
          
         public ActionResult Index()
         {
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
+           
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+  i => new
+  {
+      Text = i.Name,
+      Value = i.Id
+  }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
 
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
@@ -74,6 +79,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-      
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

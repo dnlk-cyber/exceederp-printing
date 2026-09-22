@@ -9,9 +9,12 @@
                   .Name("grid")
                   .Columns(columns =>
                   {
-                      columns.Bound(e => e.FullName).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                      //columns.Bound(e => e.FullName).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                     // columns.Bound(e => e.OperatorWithId).Width(150).Filterable(ftb => ftb.Multi(true).Search(true)).Title("Full Name With Id");
+                      columns.ForeignKey(e => e.EmployeeId,(IEnumerable)ViewData["Employee"],"Id","Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true)).Title("Full Name With Id");
                       columns.Bound(e => e.JobTitle).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.Bound(e => e.Gender).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(e => e.EmployeeCode).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.Bound(e => e.MobilePhone).Width(140).Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.Bound(e => e.Postion).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.Bound(e => e.LicenseType).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
@@ -37,7 +40,7 @@
                 </div>
 
             </text>);
-                })
+          })
                          .Editable(editable =>
                          {
                              editable.Window(w => w.Title("Operator Registration").Width(650));
@@ -63,10 +66,10 @@
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Create(update => update.Action("Operator_Create", "OperatorRegistration").Data("sendForgery"))
-                            .Read(read => read.Action("Operator_Read", "OperatorRegistration").Data("sendForgery"))
-                            .Update(update => update.Action("Operator_Update", "OperatorRegistration").Data("sendForgery"))
-                            .Destroy(update => update.Action("Operator_Destroy", "OperatorRegistration").Data("sendForgery"))
+                            .Create(update => update.Action("Operator_Create", "OperatorRegistration",new { Area="FleetManagement"}).Data("sendForgery"))
+                            .Read(read => read.Action("Operator_Read", "OperatorRegistration", new { Area = "FleetManagement" }).Data("sendForgery"))
+                            .Update(update => update.Action("Operator_Update", "OperatorRegistration", new { Area = "FleetManagement" }).Data("sendForgery"))
+                            .Destroy(update => update.Action("Operator_Destroy", "OperatorRegistration", new { Area = "FleetManagement" }).Data("sendForgery"))
                         ).Events(events => events.DataBound("dataBound")))
 <div id="customToolbar"></div>
 <script>

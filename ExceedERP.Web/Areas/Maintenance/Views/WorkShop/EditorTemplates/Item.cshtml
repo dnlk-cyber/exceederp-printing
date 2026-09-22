@@ -11,9 +11,6 @@
             .ServerFiltering(true);
         })
         .CascadeFrom("ItemCategoryCode")
-        //.Events(ev => {
-        //    ev.Change("materialChanged");
-        //})
         .MinLength(2)
         .ValuePrimitive(true)
 )

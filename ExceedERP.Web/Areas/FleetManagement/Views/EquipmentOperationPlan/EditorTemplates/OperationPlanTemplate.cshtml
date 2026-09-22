@@ -1,0 +1,7 @@
+﻿@model object
+@(Html.Kendo().DropDownListFor(x => x)
+  .DataTextField("Text")
+  .DataValueField("Value").Filter(FilterType.Contains)
+  .OptionLabel("Select Plan")
+  .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.EquipmentOperationHR)))
+  )

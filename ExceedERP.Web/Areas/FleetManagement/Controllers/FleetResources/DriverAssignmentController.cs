@@ -18,41 +18,47 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class DriverAssignmentController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         ExceedDbContext db = new ExceedDbContext();
         //
         // GET: /FleetManagement/DriverAssignment/
+       // private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Text = s.EquipmentCategoryName,
-                Value = s.EquipmentIdentityID
-            }).ToList();
-            ViewData["type"] = db.EquipmentType.Select(s => new
-            {
-                Text = s.EquipmentTypeName,
-                Value = s.EquipmentTypeID
-            }).ToList();
-            ViewData["name"] = db.EquipmentName.Select(s => new
-            {
-                Text = s.Name,
-                Value = s.EquipmentNameID
-            }).ToList();
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
+            ViewData["type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
 
-            ViewData["Branch"] = db.Branch.Select(s => new
-            {
-                Text = s.Name,
-                Value = s.BranchId
-            }).ToList();
-            ViewData["Operators"] = db.Operator.ToList().Select(s => new {
+            ViewData["Branch"] = CacheData.GetBranchCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             BranchId = i.Id
+         }).AsQueryable();
+            ViewData["Operators"] = db.Operator.Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName
             });
-            ViewData["OperatorTwo"] = db.Operator.ToList().Select(s => new {
+            ViewData["OperatorTwo"] = db.Operator.Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName
             });
-            ViewData["equipmentName"] = db.Fleets.ToList().Select(s => new {
+            ViewData["equipmentName"] = CacheData.GetFleetsSecondCache().Select(s => new {
                 Id = s.FleetsID,
                 Name = s.PlateNumber
             });
@@ -78,9 +84,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         public ActionResult DriverAssignment_Read([DataSourceRequest] DataSourceRequest request)
         {
+            // Get current branch
+            string currentBranch = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
 
-            var DriverAssignment = db.DriverAssignments.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(e => new DriverAssignment
+            // Get filtered records
+            var driverAssignmentsQuery = db.DriverAssignments
+                .Where(x => x.OrgBranchName == currentBranch);
 
+            // Project to new object
+            DataSourceResult Result = driverAssignmentsQuery.ToDataSourceResult(request, e => new DriverAssignment
             {
                 DriverAssignmentId = e.DriverAssignmentId,
                 CreatedBy = e.CreatedBy,
@@ -102,14 +114,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 EquipmentNameId = e.EquipmentNameId,
                 EquipmentTypeId = e.EquipmentTypeId,
                 OperatorId = e.OperatorId,
-                SecondOperatorId = e.SecondOperatorId,
+                SecondOperatorId = e.SecondOperatorId
+            });
                 
 
-            }
-        ).ToList();
-
-            return Json(DriverAssignment.ToDataSourceResult(request));
-
+            // Return Kendo DataSourceResult
+            return Json(Result, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult DriverAssignmentByFleet_Read([DataSourceRequest] DataSourceRequest request, string Id)
@@ -276,6 +286,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var FixedAssets = db.Fleets.Where(x => x.Status.ToString() == MaintenanceConst.ACTIVE).FirstOrDefault();
 
             return Json(FixedAssets, JsonRequestBehavior.AllowGet);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

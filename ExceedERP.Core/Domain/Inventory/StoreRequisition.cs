@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ExceedERP.Core.Domain.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -35,7 +36,12 @@ namespace ExceedERP.Core.Domain.Inventory
         public int StoreRequisitionID { get; set; }
         public virtual StoreRequisition StoreRequisition { get; set; }
     }
-
+    public class StoreRequisitionSecondValidation : VoucherValidation
+    {
+        public int StoreRequisitionSecondValidationId { get; set; }
+        public int StoreRequisitionId { get; set; }
+        public virtual StoreRequisition StoreRequisition { get; set; }
+    }
     public class StoreRequisitionValidation : StoreRequisitionValidationBase
     {
         public int StoreRequisitionValidationID { get; set; }

@@ -1,11 +1,11 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model)
-                                                                    .ValuePrimitive(true)
-                                                                    .OptionLabel("Select...")
-                                                                    .DataTextField("Name")
-                                                                    .DataValueField("VehiclePartDamageTypeId")
-                                                                    .Filter("contains")
-                                                                    .DataSource(dataSource =>
-                                                                    {
-                                                                        dataSource.Read(read => read.Action("GetVehiclePartDamageTypes", "VehiclePartDamageType").Data("sendForgery"))
-                                                                        .ServerFiltering(false);
-                                                                    }))
+  .ValuePrimitive(true)
+  .OptionLabel("Select...")
+  .DataTextField("Name")
+  .DataValueField("VehiclePartDamageTypeId")
+  .Filter("contains")
+  .DataSource(dataSource =>
+  {
+      dataSource.Read(read => read.Action("GetVehiclePartDamageTypes", "VehiclePartDamageType").Data("sendForgery"))
+      .ServerFiltering(false);
+  }))

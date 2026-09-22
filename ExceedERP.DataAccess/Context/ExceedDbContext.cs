@@ -919,7 +919,14 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region FleetManagement
-
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MaintenanceCostDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAvailabilityTresholdEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAvailabilityTresholdValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentOperationPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentOperationPlanValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.CouponFuelEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DriverTransferDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.InternalRentalRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TimeSheetExceptionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TimeSheetSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.InspectionStatusKeyEntityTypeConfiguration());
@@ -927,22 +934,39 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.HeavyORDumpTruckEntitytypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RoadORLoadEntitytypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RateOfRoadORLoadEntitytypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentedEquipmentMonthlyPaymentSummaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.WagonDrillDailyOperationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalEquipmentPaymentSummaryDocumentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentedEquipmentMonthlyPaymentSummaryValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentedEquipmentDailyOperationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalEquipmentRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalEquipmentAdvancePaymentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetInsuranceDocumentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetInsuranceValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetInsurancePaymentRequestValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetInsurancePaymentRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetRentalRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanEntitytypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanDailyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetBatteryAndTireEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetBoloRegistrationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalEquipmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalCustomerChangeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.LightVehicleEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DumpTruckTimeSheetDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TimeSheetConsumptionItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AssignedEquipmentAdditionalInfoEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.WagonDrillTimesheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DryLoadingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DumpTruckTimeSheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalAdvancePaymentRequestValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalAdvancePaymentRequestDepartmentValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalAdvancePaymentRequestBudgetValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalAdvancePaymentRequestEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestDepartmentValidationEntityTypeConfiguration());
@@ -1038,6 +1062,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentForInternalApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalDocumentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentInternalProjectEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentOtherSupplierApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentOtherSuppliersEntityTypeConfiguration());
@@ -1055,6 +1080,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireIssueDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireReturnApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireReturnEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SelfCareSatisfactionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleDemandApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleDemandEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleDistributionApprovalEntityTypeConfiguration());
@@ -1063,6 +1089,10 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnEntityTypeConfiguration());
             #endregion
             #region Maintenance
+            modelBuilder.Configurations.Add(new DescriptionOfAchievementEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new MaintenanceStageEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new TyreSerialInfoEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new AccesseryInfoEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestDepValidationEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestValidationEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new ExternalPaymentRequestJobEntityTypeConfiguration()); // 
@@ -1084,6 +1114,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestDetailEntityTypeConfiguration()); //
             modelBuilder.Configurations.Add(new MaintenancePlanEntityTypeConfiguration()); //
+            modelBuilder.Configurations.Add(new MaintenanceDailyPlanEntityTypeConfiguration()); //
             modelBuilder.Configurations.Add(new MaintenancePlanDetailEntityTypeConfiguration()); //
             modelBuilder.Configurations.Add(new AdditionalWorkShopDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalServiceCenterPaymentEntityTypeConfiguration());
@@ -1117,6 +1148,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new JobOrderDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobOrderEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ServiceCenterJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new WorkshopFieldWorkToolEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalServiceAttachementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SatisfactionNoteEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalServiceCenterDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobOrderServiceCenterDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalCrewEntityTypeConfiguration());
@@ -1138,6 +1172,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new EquipmentInformationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MaintenanceIntervalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new VehicleReceptionFormEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new VehicleReceptionDocumentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new VehiclePartDamageTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new VehiclePartManagementEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new VehiclePartEntityTypeConfiguration());
@@ -2003,6 +2038,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new InsuranceTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new InsuranceCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OtherInsuranceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsuranceCoverTypeEntityTypeConfiguration());
             #region New
             modelBuilder.Configurations.Add(new EmployeeMedicalExpenseRefundEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MedicalExpenseRefundAttachmentEntityTypeConfiguration());
@@ -3184,6 +3220,12 @@ namespace ExceedERP.DataAccess.Context
 
 
         #region 1 - Fleet Module
+        public DbSet<MaintenanceCostDetail> MaintenanceCostDetail { get; set; }
+        public DbSet<FleetAvailabilityTreshold> FleetAvailabilityTreshold { get; set; }
+        public DbSet<FleetAvailabilityTresholdValidation> FleetAvailabilityTresholdValidation { get; set; }
+        public DbSet<EquipmentOperationPlan> EquipmentOperationPlan { get; set; }
+        public DbSet<EquipmentOperationPlanValidation> EquipmentOperationPlanValidation { get; set; }
+        public DbSet<InternalRentalRate> InternalRentalRate { get; set; }
         public DbSet<TimeSheetException> TimeSheetException { get; set; }
         public DbSet<HeavyORDumpTruck> HaeavyOrDumpTruckSelectors { get; set; }
         public DbSet<RoadORLoad> RoadORLoads { get; set; }
@@ -3210,13 +3252,20 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FuelConsumptionAlertLevel> FuelConsumptionAlertLevel { get; set; }
         public DbSet<FleetHistory> FleetHistorys { get; set; }
         public DbSet<FleetInsurance> FleetInsurance { get; set; }
+        public DbSet<FleetInsuranceValidation> FleetInsuranceValidation { get; set; }
+        public DbSet<FleetInsurancePaymentRequestValidation> FleetInsurancePaymentRequestValidation { get; set; }
+        public DbSet<FleetInsurancePaymentRequest> FleetInsurancePaymentRequest { get; set; }
         public DbSet<InsuranceCompany> InsuranceCompany { get; set; }
         public DbSet<RentalCompany> RentalCompany { get; set; }
         public DbSet<RentalInspectionCriteria> RentalInspectionCriteria { get; set; }
         public DbSet<RentalInspectionCriteriaDetail> RentalInspectionCriteriaDetails { get; set; }
         public DbSet<RentalMVInspection> RentalMVInspections { get; set; }
         public DbSet<RentalInspection> RentalInspections { get; set; }
+        public DbSet<RentalAdvancePaymentRequest> RentalAdvancePaymentRequest { get; set; }
         public DbSet<RentalPaymentRequest> RentalPaymentRequests { get; set; }
+        public DbSet<RentalAdvancePaymentRequestValidation> RentalAdvancePaymentRequestValidation { get; set; }
+        public DbSet<RentalAdvancePaymentRequestDepartmentValidation> RentalAdvancePaymentRequestDepartmentValidation { get; set; }
+        public DbSet<RentalAdvancePaymentRequestBudgetValidation> RentalAdvancePaymentRequestBudgetValidation { get; set; }
         public DbSet<RentalPaymentRequestLine> RentalPaymentRequestLines { get; set; }
 
         public DbSet<RentalPaymentRequestValidation> RentalPaymentRequestValidations { get; set; }
@@ -3233,6 +3282,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<EquipmentTyre> EquipmentTyres { get; set; }
         public DbSet<EquipmentLocation> EquipmentLocations { get; set; }
         public DbSet<TimeSheetApproval> TimeSheetApprovals { get; set; }
+        public DbSet<CouponFuel> CouponFuel { get; set; }
         public DbSet<DriverAssignment> DriverAssignments { get; set; }
         public DbSet<EquipmentName> EquipmentName { get; set; }
         public DbSet<FuelInventory> FuelInventorys { get; set; }
@@ -3250,6 +3300,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FleetReturnApproval> FleetReturnApprovals { get; set; }
         public DbSet<DryLoadingTimeSheet> DryLoadingTimeSheets { get; set; }
         public DbSet<DumpTruckTimeSheet> DumpTruckTimeSheets { get; set; }
+        public DbSet<TimeSheetConsumptionItem> TimeSheetConsumptionItem { get; set; }
         public DbSet<MachineryWorkingTimeSheet> MachineryWorkingTimeSheets { get; set; }
         public DbSet<WagonDrillTimesheet> WagonDrillTimesheets { get; set; }
 
@@ -3306,6 +3357,7 @@ namespace ExceedERP.DataAccess.Context
 
         #region 6 - Rent Management
 
+        public DbSet<RentFromExternalCustomerChange> RentFromExternalCustomerChange { get; set; }
         public DbSet<RentFromExternalEquipment> RentFromExternalEquipments { get; set; }
         public DbSet<ExternalRentedEquipmentCheckList> ExternalRentedEquipmentCheckList { get; set; }
         public DbSet<RentInternalProject> RentInternalProject { get; set; }
@@ -3313,6 +3365,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<RentToExternal> RentToExternals { get; set; }
         public DbSet<RentRequest> RentRequest { get; set; }
         public DbSet<RentFromExternal> RentFromExternal { get; set; }
+        public DbSet<RentalEquipmentAdvancePayment> RentalEquipmentAdvancePayment { get; set; }
+        public DbSet<RentFromExternalDocument> RentFromExternalDocument { get; set; }
         public DbSet<RentForInternalApproval> RentForInternalApproval { get; set; }
         public DbSet<RentFromExternalApproval> RentFromExternalApproval { get; set; }
         public DbSet<RentRequestApproval> RentRequestApproval { get; set; }
@@ -3323,12 +3377,14 @@ namespace ExceedERP.DataAccess.Context
 
         #region 7 Fleet Resource
         public DbSet<SiteVechicleTransferTyreDetail> SiteVechicleTransferTyreDetailes { get; set; }
+        public DbSet<SelfCareSatisfaction> SelfCareSatisfaction { get; set; }
         public DbSet<RequestedEquipment> RequestedEquipments { get; set; }
         public DbSet<VehicleDemand> VehicleDemand { get; set; }
         public DbSet<VehicleDistribution> VehicleDistribution { get; set; }
         public DbSet<VehicleReturn> VehicleReturn { get; set; }
         public DbSet<SitesVehicleTransfer> SitesVehicleTransfer { get; set; }
         public DbSet<SiteVechicleTransferDetail> SiteVechicleTransferDetails { get; set; }
+        public DbSet<DriverTransferDetail> DriverTransferDetail { get; set; }
         public DbSet<DriverVehicleTransfer> DriverVehicleTransfer { get; set; }
         public DbSet<AssignEquipmentApproval> AssignEquipmentApproval { get; set; }
         public DbSet<DriverTransferApproval> DriverVehicleTransferApproval { get; set; }
@@ -3363,12 +3419,18 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<EquipmentRate> EquipmentRates { get; set; }
         public DbSet<FleetAnnualPlan> FleetAnnualPlans { get; set; }
         public DbSet<FleetAnnualPlanDetail> FleetAnnualPlanDetails { get; set; }
+        public DbSet<FleetAnnualPlanDaily> FleetAnnualPlanDaily { get; set; }
         public DbSet<FleetBatteryAndTire> FleetBatteryAndTires { get; set; }
         public DbSet<FleetBoloRegistration> FleetBoloRegistrations { get; set; }
         public DbSet<FleetBoloRegistrationHistory> FleetBoloRegistrationsHistorys { get; set; }
         //  public DbSet<DryLoadingTimeSheetViewModel> DryLoadingTimeSheetViewModels { get; set; }
         public DbSet<TimeSheetSetting> TimeSheetSetting { get; set; }
         public DbSet<LightVehicleTimeSheet> LightVehicleTimeSheets { get; set; }
+        public DbSet<RentedEquipmentMonthlyPaymentSummary> RentedEquipmentMonthlyPaymentSummary { get; set; }
+        public DbSet<WagonDrillDailyOperation> WagonDrillDailyOperation { get; set; }
+        public DbSet<RentalEquipmentPaymentSummaryDocument> RentalEquipmentPaymentSummaryDocument { get; set; }
+        public DbSet<RentedEquipmentMonthlyPaymentSummaryValidation> RentedEquipmentMonthlyPaymentSummaryValidation { get; set; }
+        public DbSet<RentedEquipmentDailyOperation> RentedEquipmentDailyOperation { get; set; }
         public DbSet<DumpTruckTimeSheetDetail> DumpTruckTimeSheetDetails { get; set; }
         public DbSet<TimeSheetApprovalNew> TimeSheetApprovalNew { get; set; }
         public DbSet<CostSheetApproval> CostSheetApprovals { get; set; }
@@ -3378,6 +3440,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BoloRegistrationDocument> BoloRegistrationDocuments { get; set; }
         #endregion
         #region Maintenance
+        public DbSet<DescriptionOfAchievement> DescriptionOfAchievement { get; set; }
         public DbSet<ExternalMaintenancePaymentRequestDepValidation> ExternalMaintenancePaymentRequestDepValidations { get; set; }
         public DbSet<ExternalMaintenancePaymentRequestValidation> ExternalMaintenancePaymentRequestValidations { get; set; }
         public DbSet<ExternalPaymentRequestJob> ExternalPaymentRequestJobs { get; set; }
@@ -3385,9 +3448,13 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<MaintenanceCompanyDocument> MaintenanceCompanyDocuments { get; set; }
         public DbSet<ExternalMaintenancePaymentRequest> ExternalMaintenancePaymentRequests { get; set; }
         public DbSet<ExternalMaintenancePaymentRequestDetail> ExternalMaintenancePaymentRequestDetails { get; set; }
+        public DbSet<TyreSerialInfo> TyreSerialInfo { get; set; }
+        public DbSet<AccesseryInfo> AccesseryInfo { get; set; }
         public DbSet<MaintenancePlan> MaintenancePlans { get; set; }
         public DbSet<MaintenancePlanDetail> MaintenancePlanDetails { get; set; }
+        public DbSet<MaintenanceDailyPlan> MaintenanceDailyPlan { get; set; }
         public DbSet<AdditionalWorkShopDetail> AdditionalWorkShopDetails { get; set; }
+        public DbSet<SatisfactionNote> SatisfactionNote { get; set; }
         public DbSet<ExternalServiceCenterPayment> ExternalServiceCenterPayments { get; set; }
         public DbSet<PeriodicEquipmentInspection> PeriodicEquipmentInspection { get; set; }
         public DbSet<MechanicTypeClass> MechanicTypeClasses { get; set; }
@@ -3396,6 +3463,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PMScheduleDetail> PMScheduleDetails { get; set; }
         public DbSet<ServiceCrewWorkLog> ServiceCrewWorkLogs { get; set; }
         public DbSet<JobRequest> JobRequest { get; set; }
+        public DbSet<MaintenanceStage> MaintenanceStage { get; set; }
         public DbSet<RequestToInspection> RequestToInspections { get; set; }
         public DbSet<Canibalization> Canibalizations { get; set; }
         public DbSet<CanibalizationDepartmentApproval> CanibalizationDepartmentApproval { get; set; }
@@ -3416,11 +3484,14 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<SOPDocument> SOPDocuments { get; set; }
         public DbSet<PmScheduler> PmSchedulers { get; set; }
         public DbSet<VehicleReceptionForm> VehicleReceptionForm { get; set; }
+        public DbSet<VehicleReceptionDocument> VehicleReceptionDocuments { get; set; }
         public DbSet<VehicleReceptionApproval> VehicleReceptionApprovals { get; set; }
         public DbSet<JobOrder> JobOrder { get; set; }
         public DbSet<CloseWorkShopWithRemark> CloseWorkShopWithRemarks { get; set; }
         public DbSet<ExternalServiceCenterDetail> ExternalServiceCenterDetail { get; set; }
         public DbSet<ServiceCenterJob> ServiceCenterJob { get; set; }
+        public DbSet<WorkshopFieldWorkTool> WorkshopFieldWorkTool { get; set; }
+        public DbSet<ExternalServiceAttachement> ExternalServiceAttachement { get; set; }
         public DbSet<InternalJobToExternal> InternalJobToExternal { get; set; }
         public DbSet<InternalJobToExternalValidation> InternalJobToExternalValidation { get; set; }
         public DbSet<JobOrderServiceCenterDetail> JobOrderServiceCenterDetails { get; set; }
@@ -3861,6 +3932,7 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<BranchItemAssignment> BranchItemAssignments { get; set; }
         public DbSet<FuelItemSetting> FuelItemSettings { get; set; }
+        public DbSet<NonFuelItemSetting> NonFuelItemSettings { get; set; }
         public DbSet<AveragePriceSetting> AveragePriceSettings { get; set; }
         public DbSet<ServiceReceive> ServiceReceives { get; set; }
         public DbSet<ServiceReceiveItem> ServiceReceiveItems { get; set; }
@@ -3929,6 +4001,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<StoreRequisitionItem> StoreRequisitionItems { get; set; }
         public DbSet<StoreRequisitionValidation> StoreRequisitionValidations { get; set; }
         public DbSet<StoreRequisitionPropertyValidation> StoreRequisitionPropertyValidations { get; set; }
+        public DbSet<StoreRequisitionSecondValidation> StoreRequisitionSecondValidations { get; set; }
         public DbSet<StoreRequisitionAttachment> StoreRequisitionAttachments { get; set; }
         public DbSet<StoreReturn> StoreReturns { get; set; }
         public DbSet<StoreReturnItems> StoreReturnItemss { get; set; }
@@ -4516,6 +4589,8 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<OtherInsurance> OtherInsurance { get; set; }
         public System.Data.Entity.DbSet<FixedAssetAccidentRecord> FixedAssetAccidentRecords { get; set; }
         public System.Data.Entity.DbSet<VehicleAccidentDetail> VehicleAccidentDetails { get; set; }
+        public DbSet<InsuranceCoverType> InsuranceCoverTypes { get; set; }
+
         #region new Insurance 
         public System.Data.Entity.DbSet<EmployeeMedicalExpenseRefund> EmployeeMedicalExpenseRefunds { get; set; }
         public System.Data.Entity.DbSet<MedicalExpenseRefundAttachment> MedicalExpenseRefundAttachments { get; set; }

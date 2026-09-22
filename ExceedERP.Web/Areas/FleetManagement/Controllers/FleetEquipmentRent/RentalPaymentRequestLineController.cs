@@ -41,6 +41,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 Commission = model.Commission,
                 AdvancedPayment = model.AdvancedPayment,
                 TotalAmount = model.TotalAmount,
+                VAT = model.VAT,
+                SparePartCost = model.SparePartCost,
+                OilLubCost = model.OilLubCost,
+                MaintenanceCost = model.MaintenanceCost,
+                FuelCost = model.FuelCost,
+                GrossBeforeVat = model.GrossBeforeVat,
+                WithholdingAmount = model.WithholdingAmount,
+                CostSheetSummaryId = model.CostSheetSummaryId,
                 GLTaxRateID = model.GLTaxRateID,
                 EquipmentNameId = model.EquipmentNameId,
                 EquipmnetTypeId = model.EquipmnetTypeId,
@@ -71,67 +79,33 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         }
         public ActionResult RentalPaymentRequestLine_Create([DataSourceRequest] DataSourceRequest request, RentalPaymentRequestLine rentalPaymentRequestLine, int id)
         {
-            var rentalPaymentRequest = db.RentalPaymentRequests.Find(id);
-            var durations = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == rentalPaymentRequest.GLPeriodId);
-            var result = CheckNull(id, rentalPaymentRequestLine);
-            //var fetchParent = db.RentalPaymentRequests.Where(x => x.GLFiscalYearId == rentalPaymentRequest.GLFiscalYearId && x.GLPeriodId == rentalPaymentRequest.GLPeriodId && x.ProcurementSupplierID == rentalPaymentRequest.ProcurementSupplierID&&!x.IsVoid).ToList();
-            //int LineCount = 0;
-            //foreach (var paymentRequest in fetchParent)
-            //{
-            //    var fetchPaymentLine = db.RentalPaymentRequestLines.Where(x => x.RentalPaymentRequestId == paymentRequest.RentalPaymentRequestId && x.FleetId == rentalPaymentRequestLine.FleetId).ToList();
-            //        if(fetchPaymentLine.Count>0)
-            //    {
-            //        LineCount += 1;
-            //    }
-            //}
-            //if(LineCount>0)
-            //{
-            //    ModelState.AddModelError("Duplicate Request","Payment Request has been issued for this Plate on the same Period");
-            //}
-                bool isDuplicate = db.RentalPaymentRequests
-        .Where(r => r.GLFiscalYearId == rentalPaymentRequest.GLFiscalYearId
-                 && r.GLPeriodId == rentalPaymentRequest.GLPeriodId
-                 && r.ProcurementSupplierID == rentalPaymentRequest.ProcurementSupplierID
-                 && !r.IsVoid
-                 && r.RentalPaymentRequestId != rentalPaymentRequest.RentalPaymentRequestId)
-        .SelectMany(r => db.RentalPaymentRequestLines
-            .Where(line => line.RentalPaymentRequestId == r.RentalPaymentRequestId
-                        && line.FleetId == rentalPaymentRequestLine.FleetId))
-        .Any();
-
-            if (isDuplicate)
-            {
-                ModelState.AddModelError("Duplicate Request", "Payment Request has been issued for this Plate in the same Period.");
-            }
-            if (result == RentalValidation.RentFromExternaNotFound)
-            {
-                ModelState.AddModelError(string.Empty, "No equipment was found under the supplier name in rent from external");
-            }
-            if (result == RentalValidation.FleetNotFound)
-            {
-                ModelState.AddModelError(string.Empty, "no fleet was found under rent from external fleet registration");
-            }
-            if (result == RentalValidation.DateInvalid)
-            {
-                ModelState.AddModelError(string.Empty, $"No Timesheet was found between the period {durations.DateFrom.Date} to {durations.DateTo.Date}");
-            }
-            
-
-            if(rentalPaymentRequestLine.GLTaxRateID != null)
-            {
-                var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == rentalPaymentRequestLine.GLTaxRateID);
-                if (tax == null)
-                {
-                    ModelState.AddModelError(string.Empty, "No Tax Rate was Found");
-                    return Json(new[] { rentalPaymentRequestLine }.ToDataSourceResult(request, ModelState));
-                }
-            }
-            
-            
+            var rentalPaymentRequest = db.RentalPaymentRequests.Find(id);        
             if (ModelState.IsValid)
             {
-
-                GenerateRentalPaymentRequestDetail(id, rentalPaymentRequestLine);
+                var procurementSupplier = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == rentalPaymentRequest.ProcurementSupplierID).Name;
+                var paymentSummary = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.TimeSheetIsDGMApproved && x.CustomerName == procurementSupplier && x.BranchId == rentalPaymentRequest.BranchId && x.GlPeriodId == rentalPaymentRequest.GLPeriodId && x.FleetId== rentalPaymentRequestLine.FleetId.ToString());
+                var rentalPaymentLine = new RentalPaymentRequestLine();
+                rentalPaymentLine.WithholdingAmount = paymentSummary.GrossBeforeVat * rentalPaymentRequest.WithHoldingTax;
+                rentalPaymentLine.TotalAmount = paymentSummary.TotalWithVat;
+                rentalPaymentLine.AdvancedPayment= paymentSummary.AdvancePayedWithVat;
+                rentalPaymentLine.Amount = paymentSummary.NetPayable-rentalPaymentLine.WithholdingAmount;
+                rentalPaymentLine.CostSheetSummaryId = paymentSummary.RentedEquipmentMonthlyPaymentSummaryId;
+                rentalPaymentLine.EquipmentCategoryId = rentalPaymentRequestLine.EquipmentCategoryId;
+                rentalPaymentLine.EquipmentNameId = rentalPaymentRequestLine.EquipmentNameId;
+                rentalPaymentLine.EquipmnetTypeId = rentalPaymentRequestLine.EquipmnetTypeId;
+                rentalPaymentLine.FleetId = rentalPaymentRequestLine.FleetId;
+                rentalPaymentLine.RentalPaymentRequestId =id;
+                rentalPaymentLine.GrossBeforeVat = paymentSummary.GrossBeforeVat;
+                rentalPaymentLine.VAT = paymentSummary.VAT;
+                rentalPaymentLine.SparePartCost = paymentSummary.SparePartCost;
+                rentalPaymentLine.MaintenanceCost = paymentSummary.MaintenanceCost;
+                rentalPaymentLine.OilLubCost = paymentSummary.OilLubCost;
+                rentalPaymentLine.FuelCost = paymentSummary.FuelCost;
+                rentalPaymentLine.SubTotalAmount = paymentSummary.NetPayable-rentalPaymentLine.WithholdingAmount;
+                rentalPaymentLine.TotalCost = paymentSummary.Deductable;
+                db.RentalPaymentRequestLines.Add(rentalPaymentLine);
+                db.SaveChanges();
+                
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Rental payment request line registration", "Success", User.Identity.Name, $"created rental payment request number {rentalPaymentRequestLine.RentalPaymentRequestLineId} ", Modules.FleetManagement);
                 #endregion
@@ -142,28 +116,28 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         public ActionResult RentalPaymentRequestLine_Update([DataSourceRequest] DataSourceRequest request, RentalPaymentRequestLine rentalPaymentRequestLine)
         {
             var rentalPaymentRequest = db.RentalPaymentRequests.Find(rentalPaymentRequestLine.RentalPaymentRequestId);
-            var durations = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == rentalPaymentRequest.GLPeriodId);
-            var result = CheckNull(rentalPaymentRequestLine.RentalPaymentRequestId, rentalPaymentRequestLine);
-            if (result == RentalValidation.RentFromExternaNotFound)
-            {
-                ModelState.AddModelError(string.Empty, "No equipment was found under the supplier name in rent from external");
-            }
-            if (result == RentalValidation.FleetNotFound)
-            {
-                ModelState.AddModelError(string.Empty, "no fleet was found under rent from external fleet registration");
-            }
-            if (result == RentalValidation.DateInvalid)
-            {
-                ModelState.AddModelError(string.Empty, $"No Timesheet was found between the period {durations.DateFrom.Date} to {durations.DateTo.Date}");
-            }
-
-            var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == rentalPaymentRequestLine.GLTaxRateID);
-            if (tax == null)
-            {
-                ModelState.AddModelError(string.Empty, "No Tax Rate was Found");
-                return Json(new[] { rentalPaymentRequestLine }.ToDataSourceResult(request, ModelState));
-            }
-
+            var procurementSupplier = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == rentalPaymentRequest.ProcurementSupplierID).Name;
+            var paymentSummary = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.TimeSheetIsDGMApproved && x.CustomerName == procurementSupplier && x.BranchId == rentalPaymentRequest.BranchId && x.GlPeriodId == rentalPaymentRequest.GLPeriodId && x.FleetId == rentalPaymentRequestLine.FleetId.ToString());
+            var rentalPaymentLine = db.RentalPaymentRequestLines.FirstOrDefault(x => x.RentalPaymentRequestLineId == rentalPaymentRequestLine.RentalPaymentRequestLineId);
+            rentalPaymentLine.WithholdingAmount = paymentSummary.GrossBeforeVat * rentalPaymentRequest.WithHoldingTax;
+            rentalPaymentLine.TotalAmount = paymentSummary.TotalWithVat;
+            rentalPaymentLine.AdvancedPayment = paymentSummary.AdvancePayedWithVat;
+            rentalPaymentLine.Amount = paymentSummary.NetPayable-rentalPaymentLine.WithholdingAmount;
+            rentalPaymentLine.CostSheetSummaryId = paymentSummary.RentedEquipmentMonthlyPaymentSummaryId;
+            rentalPaymentLine.EquipmentCategoryId = rentalPaymentRequestLine.EquipmentCategoryId;
+            rentalPaymentLine.EquipmentNameId = rentalPaymentRequestLine.EquipmentNameId;
+            rentalPaymentLine.EquipmnetTypeId = rentalPaymentRequestLine.EquipmnetTypeId;
+            rentalPaymentLine.FleetId = rentalPaymentRequestLine.FleetId;
+            rentalPaymentLine.GrossBeforeVat = paymentSummary.GrossBeforeVat;
+            rentalPaymentLine.VAT = paymentSummary.VAT;
+            rentalPaymentLine.SparePartCost = paymentSummary.SparePartCost;
+            rentalPaymentLine.MaintenanceCost = paymentSummary.MaintenanceCost;
+            rentalPaymentLine.OilLubCost = paymentSummary.OilLubCost;
+            rentalPaymentLine.FuelCost = paymentSummary.FuelCost;
+            rentalPaymentLine.SubTotalAmount = paymentSummary.NetPayable - rentalPaymentLine.WithholdingAmount;
+            rentalPaymentLine.TotalCost = paymentSummary.Deductable;
+            db.Entry(rentalPaymentLine).State = EntityState.Modified;
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
 
@@ -214,7 +188,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     break;
 
             }
-
             return RentalValidation.NotFound;
         }
         private void GenerateRentalPaymentRequestDetail(int rentId, RentalPaymentRequestLine detail)

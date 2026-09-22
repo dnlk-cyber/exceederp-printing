@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -14,26 +15,38 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
     public class MaintenancePlanController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+         private readonly CacheData CacheData = new CacheData();
         // GET: Maintenance/MaintenancePlan
         public ActionResult Index()
         {
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
-
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
-            ViewData["Fleet"] = db.Fleets.Select(s => new
+           
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
+            var setting = db.RequestToInspections.FirstOrDefault();
+            ViewBag.setting = setting != null ? setting.Remark : "";
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["ServiceCenter"] = db.ServiceCenters
+                .Select(x => new
+                {
+                    Value=x.ServiceCenterId,
+                    Text=x.Name
+                }).AsQueryable();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["PlateNumber"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
                 Text = s.PlateNumber + " " + s.SerialNo
@@ -49,11 +62,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Value = s.GLPeriodId,
                 Text = s.Name
             }).ToList();
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Value = s.MaintenanceCenterID,
-                Text = s.Name
-            }).ToList();
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             return View();
         }
 
@@ -68,11 +82,30 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 model.CreatedBy = User.Identity.Name;
                 model.DateCreated = DateTime.Today;
-                db.MaintenancePlans.Add(model);
-                db.SaveChanges();
+              
+                try
+                {
+                    db.MaintenancePlans.Add(model);
+                    db.SaveChanges();
+                }
+                catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                {
+                    var sqlEx = ex.InnerException;
+
+                    while (sqlEx.InnerException != null)
+                    {
+                        sqlEx = sqlEx.InnerException;
+                    }
+
+                    throw new Exception(sqlEx.Message);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.ToString());
+                    throw;
+                }
                 GenerateAnnualPlanDetail(model.MaintenancePlanId);
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
@@ -122,6 +155,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 db.MaintenancePlanDetails.Add(entity);
             }
             db.SaveChanges();
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

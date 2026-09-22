@@ -4,6 +4,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.Core.Domain.FleetManagement.FleetViewModel;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -18,26 +19,30 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     public class FleetEquipmentHistoryJacketController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         // GET: FleetManagement/FleetEquipmentHistoryJacket
         public ActionResult Index()
         {
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
+           
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
 
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Text = s.PlateNumber,
@@ -157,7 +162,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 ReasonForDown = dumpTruckTimeSheet.ReasonForDown,                
                 RentalRate = dumpTruckTimeSheet.RentalRate,
                 IdealRentalRate = dumpTruckTimeSheet.IdealRentalRate,
-                LubricantCost = dumpTruckTimeSheet.LubricantCost,
                 FuelRate = dumpTruckTimeSheet.FuelRate,
                 MaintenanceCost = dumpTruckTimeSheet.MaintenanceCost,
                 NetworkingHour = dumpTruckTimeSheet.NetworkingHour,
@@ -413,7 +417,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     Date = s.Date,
                     TireCost = s.TireCost,
                     MaintenanceCost = s.MaintenanceCost,
-                    LubricantCost = s.LubricantCost,
                     Perdium = s.Perdium,
                     Salary = s.Salary,
                     FuelRate = s.FuelRate,
@@ -688,6 +691,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                                    .Sum(ce => (decimal?)ce.Total) ?? 0;
 
             return advancePayments + Math.Max(0, claimExpenses - advancePayments);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

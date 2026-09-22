@@ -37,50 +37,66 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.Report
 
         public ActionResult DailyMaintenanceReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.DailyMaintenanceReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.DailyMaintenanceReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult MechanicPerformance()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MechanicPerformance, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MechanicPerformance, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = "Mechanic Performance Report";
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult DailyMaintenanceReports()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.DailyMaintenanceReports, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.DailyMaintenanceReports, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult MaintenanceCostSheetReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MaintenanceCostSheetReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MaintenanceCostSheetReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult MaintenancePlanVsActual()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MaintenancePlanVsActual, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MaintenancePlanVsActual, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
+            ViewBag.FormTitle = "Maintenance Plan vs Actual Report";
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult MaintenancePlanVsActualReport()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MaintenancePlanVsActual, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = "Maintenance Plan vs Actual Report";
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult ExternalMaintenancePaymentPrint(string id)
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.ExternalMaintenancePaymentPrint, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.ExternalMaintenancePaymentPrint, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }
+        //stop
         public ActionResult OutSourcedMaintenancePaymentRequest(string id)
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.OurSourcedMaintenancePaymentRequest, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.OurSourcedMaintenancePaymentRequest, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             ViewBag.id = id;
@@ -88,84 +104,115 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.Report
         }
         public ActionResult OutSourcedMaintenanceReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.OutSourcedMaintenanceReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.OutSourcedMaintenanceReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;           
             return View();
         }
         public ActionResult MachineAndVehicleMaintenanceAndRepair()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MachineAndVehicleMaintenanceAndRepairReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MachineAndVehicleMaintenanceAndRepairReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult MaintenanceCostReport()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MaintenanceCostReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult MachinaryAndVehicelMaintenanceReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MachinaryAndVehicelMaintenanceReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MachinaryAndVehicelMaintenanceReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult StandardVsActualTimeReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.StandardVsActualTimeReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.StandardVsActualTimeReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
+        //stop
         public ActionResult WeeklyCMPMPerformanceReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyCMPMPerformanceReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyCMPMPerformanceReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult WeeklyPMAndCMPerformanceReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyMaintenancePlanVsActual, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyMaintenancePlanVsActual, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult WeeklyPMCMPerfomanceReportSummary()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyPMCMPerfomanceReportSummary, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyPMCMPerfomanceReportSummary, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult GarageMaintenanceCostBreakDownReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.GarageMaintenanceCostBreakDownReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.GarageMaintenanceCostBreakDownReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
-        public ActionResult MVPmExecutionReport()
+        public ActionResult GarageMaintenanceCostBreakDownReportSummary()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MVPmExcecutionReprot, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.GarageMaintenanceCostBreakDownReportSummary, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
-        } 
-       public ActionResult DailyJobRegistration()
+        }
+      
+        public ActionResult MVPmExecutionReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.DailyJobRegistration, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MVPmExcecutionReprot, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        //stop
+        public ActionResult DailyJobRegistration()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.DailyJobRegistration, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult WeeklyCMPMPerformanceSummaryReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyCMPMPerformanceReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyCMPMPerformanceReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult InternalMaintenanceCostReport()
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.InternalMaintenanceCostReport, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.InternalMaintenanceCostReport, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();

@@ -133,7 +133,10 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [NotMapped]
         public string ManufacturedYear { get; set; }
         [Display(Name ="Driver Name")]
-        public Guid OperatorId { get; set; }
+        public Guid? OperatorId { get; set; }
+        [NotMapped]
+        public int EmployeeId { get; set; } 
+       
         [Display(Name ="Time of Accident")]
         public DateTime TimeOfAccident { get; set; }
 

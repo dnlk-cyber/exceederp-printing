@@ -18,7 +18,6 @@ using ExceedERP.Helpers.Fleet;
 using ExceedERP.Core.Domain.Maintenance;
 using System.Data.Entity;
 using ExceedERP.Web.Areas.FleetManagement.Models;
-
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
     [AuthorizeRoles(MaintenanceRoles.MaintenanceOrderUser, MaintenanceRoles.ServiceUser)]
@@ -237,6 +236,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 ApprovalStatus = j.ApprovalStatus,
                 DateCreated = j.DateCreated,
                 OnlineApprovedTime = j.OnlineApprovedTime,
+                DescriptionOfJobs = j.DescriptionOfJobs,
                 //Section = GetSection(j.Service.SectionId),
                 //ServiceName = j.Service.RepairType.Code + " - "+ j.Service.ServiceName,
                 RepairTypeID = j.RepairTypeID,
@@ -248,7 +248,35 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             ).ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult JobOrderDetail_Createe([DataSourceRequest]DataSourceRequest request, JobOrderServiceCenterDetail SSDetail,Guid JobId)
+        {
+            var fetchOne = db.JobOrderServiceCenterDetails.FirstOrDefault(x => x.ServiceCenterJobId == JobId);
+            if(fetchOne==null)
+            {
+                ModelState.AddModelError("empty", "No service center detail found");
+            }
+            ModelState.Remove("ServiceCenterId");
+            ModelState.Remove("JobOrderServiceCenterDetailId"); 
+            ModelState.Remove("ServiceCenterJobId");
+            ModelState.Remove("JobOrderDetailId"); 
 
+            SSDetail.JobOrderDetailId = fetchOne.JobOrderDetailId;
+            SSDetail.ServiceCenterJobId = JobId;
+            SSDetail.ServiceCenterId = fetchOne.ServiceCenterId;
+            SSDetail.StartingDate = DateTime.Now;
+            SSDetail.ToDate = fetchOne.ToDate;
+            SSDetail.Status = fetchOne.Status;
+            SSDetail.JobOrderDetailId = fetchOne.JobOrderDetailId;
+            SSDetail.ApprovalStatus = fetchOne.ApprovalStatus;
+            SSDetail.DateCreated =DateTime.Now;
+            SSDetail.OnlineApprovedTime = fetchOne.OnlineApprovedTime;
+            if (ModelState.IsValid)
+            {
+                db.JobOrderServiceCenterDetails.Add(SSDetail);
+                db.SaveChanges();
+            }
+            return Json(new[] { SSDetail }.ToDataSourceResult(request, ModelState));
+        }
         private string GetSection(Guid Id)
         {
             string SectionName = string.Empty;
@@ -522,7 +550,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(Service, JsonRequestBehavior.AllowGet);
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

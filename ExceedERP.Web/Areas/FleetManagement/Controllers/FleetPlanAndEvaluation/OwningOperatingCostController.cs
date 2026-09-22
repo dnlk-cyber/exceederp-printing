@@ -45,6 +45,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 OperatorDriverMonthlySalary = owningandOperatingCost.OperatorDriverMonthlySalary,
                 Depreciation = owningandOperatingCost.Depreciation,
                 Interest = owningandOperatingCost.Interest,
+                CostDate = owningandOperatingCost.CostDate,
                 Insurance = owningandOperatingCost.Insurance,
                 PropertyTax = owningandOperatingCost.PropertyTax,
                 NetTotal = owningandOperatingCost.NetTotal,
@@ -101,7 +102,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 return Json(new[] { owningandOperatingCost }.ToDataSourceResult(request, ModelState));
             }
             var CostConstants = db.OwningandOperatingCostConstants.ToList();
-
             var Resdual_Scrap = CostConstants.Where(x => x.ConstantType == Core.Domain.FleetManagement.OwningandOperatingCostConstantType.Resdual_Scrap).FirstOrDefault();
             var Interest_Rate = CostConstants.Where(x => x.ConstantType == Core.Domain.FleetManagement.OwningandOperatingCostConstantType.Interest_Rate).FirstOrDefault();
             var Insurance_Rate = CostConstants.Where(x => x.ConstantType == Core.Domain.FleetManagement.OwningandOperatingCostConstantType.Insurance_Rate).FirstOrDefault();
@@ -138,6 +138,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     Depreciation = owningandOperatingCost.Depreciation,
                     Insurance = owningandOperatingCost.Insurance,
                     PropertyTax = owningandOperatingCost.PropertyTax,
+                    CostDate = owningandOperatingCost.CostDate,
                     NetTotal = owningandOperatingCost.NetTotal,
                     Fuel = owningandOperatingCost.Fuel,
                     LubOil = owningandOperatingCost.LubOil,
@@ -264,6 +265,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 NetValue = owningandOperatingCost.NetValue,
                 FuelConsumption = owningandOperatingCost.FuelConsumption,
                 OperatorDriverMonthlySalary = owningandOperatingCost.OperatorDriverMonthlySalary,
+                CostDate = owningandOperatingCost.CostDate,
                 Depreciation = owningandOperatingCost.Depreciation,
                 Insurance = owningandOperatingCost.Insurance,
                 PropertyTax = owningandOperatingCost.PropertyTax,

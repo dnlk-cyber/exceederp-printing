@@ -1,4 +1,9 @@
 ﻿@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternal
+@{
+    var checkIsECWC = (string)ViewData["IsECWC"];
+    bool isECWC = (checkIsECWC == "ECWC");
+    bool IsMCG = (ViewBag.setting as string) == "MCG";
+}
 <script>
     function filterByEquipmentTypeDD() {
         return {
@@ -78,251 +83,532 @@
 </script>
 <legend>Rent From External</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternal>()
-                    .Name("grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(o => o.EndDate).Visible(false).Width(80);
-                        columns.Bound(o => o.Num).Width(80);
-                        columns.Bound(o => o.PlateNo).Width(90).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.Bound(o => o.ProjectLocation).Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.Bound(o => o.Quantity).Width(100);
-                        columns.Bound(o => o.StartDate).Width(80);
-                        columns.Bound(o => o.EndDate).Width(80);
-                        columns.Bound(o => o.HP_CC).Width(80);
-                        columns.Bound(o => o.Hour).Width(80);
-                        columns.Bound(o => o.AdvancePayment).Width(80);
-                        columns.Bound(e => e.RentalRateIncludingVAT).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: RentalRateIncludingVAT? checked='checked': checked='' #/>");
-                        columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.Bound(o => o.TotalCost).Width(70);
-                        columns.Bound(o => o.Operator).Width(70);
-                        columns.Bound(e => e.Status).Width(100);
-                        columns.Bound(e => e.DateDifference).Width(100);
-                        columns.Bound(e => e.IsExpired).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsExpired? checked='checked': checked='' #/>");
-                        columns.Bound(e => e.IsReplaced).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsReplaced? checked='checked': checked='' #/>");
-                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                    }).Events(ev =>
-                    {
-                        ev.DataBound("onDataBound");
-                    })
-                    .ToolBar(t => t.Create())
-                    .Editable(editable =>
-                    {
-                        editable.Window(w => w.Title("Rent From External"));
-                        editable.Mode(GridEditMode.PopUp).TemplateName("RentFromExternalEditor");
-                        editable.DisplayDeleteConfirmation("Are You Sure To Remove Rent Information");
-                    })
-                    .HtmlAttributes(new { style = "height: 520px;" })
-                    .Pageable(pageable => pageable
-                    .Input(true)
-                    .Numeric(false)
-                    .Refresh(true)
-                    .PageSizes(true)
-                    .ButtonCount(5))
-                    .Scrollable()
-                    .Sortable()
-                    .Filterable()
-                    //.Groupable()
-                    .Scrollable(h => h.Height(500))
-                    .ClientDetailTemplateId("template")
-                    .Events(ev =>
-                    {
-                        ev.DetailExpand("onDetailExpand");
-            // ev.DataBound("expiredDataBound");
-        })
-                    .DataSource(dataSource => dataSource
-                    .Ajax()
-                    .Sort(sort => sort.Add(so => so.DateCreated).Descending())
-                .Model(model =>
-                {
-                    model.Id(p => p.RentFromExternalID);
-                    model.Field(p => p.RentFromExternalID).Editable(false);
-                    model.Field(p => p.Num).Editable(false);
-                }).Events(ev => ev
-                .Error("error_handler(\"grid\")")
-                .RequestStart("onRequestStart(\"grid\")")
-                .RequestEnd("onRequestEnd(\"grid\")"))
-                .Create(create => create.Action("RentFromExternal_Create", "RentFromExternal").Data("sendForgery"))
-                .Read(read => read.Action("RentFromExternal_Read", "RentFromExternal").Data("sendForgery"))
-                .Update(read => read.Action("RentFromExternal_Update", "RentFromExternal").Data("sendForgery"))
-                .Destroy(read => read.Action("RentFromExternal_Destroy", "RentFromExternal").Data("sendForgery"))
-                )
+                        .Name("grid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.EndDate).Visible(false).Width(80);
+                            columns.Bound(o => o.Num).Width(80);
+                            columns.Bound(o => o.PlateNo).Width(90).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.ForeignKey(o => o.BranchId,(IEnumerable)ViewData["Branch"],"Value","Name").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.Bound(o => o.Quantity).Width(100);
+                            columns.Bound(o => o.StartDate).Width(80);
+                            columns.Bound(o => o.EndDate).Width(80);
+                            //columns.Bound(o => o.HP_CC).Width(80);
+                            //columns.Bound(o => o.Hour).Width(80);
+                            //columns.Bound(o => o.AdvancePayment).Width(80);
+                            // columns.Bound(e => e.RentalRateIncludingVAT).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: RentalRateIncludingVAT? checked='checked': checked='' #/>");
+                            columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.Bound(o => o.TotalCost).Width(70);
+                            columns.Bound(o => o.Operator).Width(70);
+                            columns.Bound(e => e.Status).Width(100);
+                            columns.Bound(e => e.DateDifference).Width(100);
+                            columns.Bound(e => e.IsExpired).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsExpired? checked='checked': checked='' #/>");
+                            columns.Bound(e => e.IsReplaced).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsReplaced? checked='checked': checked='' #/>");
+                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("onDataBound");
+                        })
+                        .ToolBar(t => { t.Create();
+                            t.Custom()
+                                .Text("Equipment Type")
+                                .HtmlAttributes(new
+                                {
+                                    id = "approveEquipmentType"
+                                });
+                            t.Custom()
+    .Text("Approve Rented Equipments")
+    .Name("ApproveRentedEquipments")
+    .HtmlAttributes(new
+    {
+        id = "approveRentedEquipments"
+    });
+
+                            
+                            t.Custom()
+                             .Text("Arrange Fleet Reference In TimeSheets")
+                             .Name("ArrangeFleetReferenceInTimeSheets")
+                             .HtmlAttributes(new
+                             {
+                                 id = "arrangeFleetReferenceInTimeSheets"
+                             });
+                        })
+
+                        .Editable(editable =>
+                        {
+                            editable.Window(w => w.Title("Rent From External"));
+                            editable.Mode(GridEditMode.PopUp).TemplateName("RentFromExternalEditor");
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Rent Information");
+                        })
+                        .HtmlAttributes(new { style = "height: 520px;" })
+                        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Scrollable()
+                        .Sortable()
+                        .Filterable()
+                        //.Groupable()
+                        .Scrollable(h => h.Height(500))
+                        .ClientDetailTemplateId("template")
+                        .Events(ev =>
+                        {
+                            ev.DetailExpand("onDetailExpand");
+                            //ev.DataBound("expiredDataBound");
+                        })
+                        .DataSource(dataSource => dataSource
+    .Ajax()
+    .ServerOperation(false)
+    .Sort(sort => sort.Add(so => so.DateCreated).Descending())
+    .Model(model =>
+    {
+        model.Id(p => p.RentFromExternalID);
+        model.Field(p => p.RentFromExternalID).Editable(false);
+        model.Field(p => p.Num).Editable(false);
+    })
+    .Events(ev => ev
+        .Error("error_handler(\"grid\")")
+        .RequestStart("onRequestStart(\"grid\")")
+        .RequestEnd("onRequestEnd(\"grid\")")
+    )
+    .Create(create => create.Action("RentFromExternal_Create", "RentFromExternal").Data("sendForgery"))
+    .Read(read => read.Action("RentFromExternal_Read", "RentFromExternal").Data("sendForgery"))
+    .Update(update => update.Action("RentFromExternal_Update", "RentFromExternal").Data("sendForgery"))
+    .Destroy(del => del.Action("RentFromExternal_Destroy", "RentFromExternal").Data("sendForgery"))
+)
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                            .Name("tabStrip_#=RentFromExternalID#")
-                                            .SelectedIndex(0)
-                                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                            .Items(items =>
-                                            {
-                                                items.Add().Text("Detail").Content(
-                                                    @<text>
-                                                        <div class="box">
+                     .Name("tabStrip_#=RentFromExternalID#")
+                     .SelectedIndex(0)
+                     .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                     .Items(items =>
+                     {
+                         items.Add().Text("Detail").Content(
+                            @<text>
+                                <div class="box">
 
-                                                            <div class="box-col">
+                                    <div class="box-col">
 
-                                                                # if (IsSendForApproval == false || IsSendForApproval == "false")
-                                                                {#
+                                        # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                        {#
+                                        <a href='@Url.Action("Rent_SendForOnlineApproval", "RentFromExternalApproval")/?EId=#=RentFromExternalID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                        # }#
+                                        # if (IsOnlineApproved)
+                                        {#
 
-                                                                <a href='@Url.Action("Rent_SendForOnlineApproval", "RentFromExternalApproval")/?EId=#=RentFromExternalID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                # }#
-                                                                # if (IsOnlineApproved)
-                                                                {#
-
-                                                                <a href='@Url.Action("RentFromExternalPrint", "RentFromExternal")/?id=#=RentFromExternalID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                # }#
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-1">
-                                                            </div>
-                                                            <div class="col-md-6" style="margin-top:20px;">
-                                                                <div class="form-group">
-                                                                    @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </text>
+                                        <a href='@Url.Action("RentFromExternalPrint", "RentFromExternal")/?id=#=RentFromExternalID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                        # }#
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-1">
+                                    </div>
+                                    <div class="col-md-6" style="margin-top:20px;">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                # if (IsOnlineApproved)
+                                {#
+                                <a onclick='return VoidAgreement("#=RentFromExternalID#")' href=' \#' title="Void"><i class="fa fa-bolt fa-2x"></i></a>
+                                # }#
+                            </text>
                                                                             );
-                                                        items.Add().Text("Equipments").Content(@<text>
-                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalEquipment>()
-                                                                                        .Name("Equipment#=RentFromExternalID#")
-                                                                                        .Columns(columns =>
-                                                                                        {
-                                                                                            columns.ForeignKey(e => e.EquipmentIdentityID, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
-                                                                                            columns.ForeignKey(e => e.EquipmentTypeID, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
-                                                                                            columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Width(120);
-                                                                                            columns.ForeignKey(e => e.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120);
-                                                                                            columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
-                                                                                            columns.Bound(e => e.IdleRentalRate).Width(80);
-                                                                                            columns.Bound(e => e.RentType).Width(80);
-                                                                                            columns.Bound(e => e.IsDumpTruck)
-                                                                                            .Width(80)
-                                                                                            .Title("Dump Truck");
+                                 items.Add().Text("Equipments").Content(@<text>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalEquipment>()
+                                              .Name("Equipment#=RentFromExternalID#")
+                                              .Columns(columns =>
+                                              {
+                                                                 columns.ForeignKey(e => e.EquipmentIdentityID, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                                                                 columns.ForeignKey(e => e.EquipmentTypeID, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                                                                 columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Width(120);
+                                                                 columns.ForeignKey(e => e.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Title("Plate/Serial").Width(120);
+                                                                 columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
+                                                                 if (!IsMCG)
+                                                                 {
+                                                                     columns.Bound(e => e.IdleRentalRate).Width(80);
+                                                                 }
+                                                                 if (IsMCG)
+                                                                 {
+                                                                     columns.Bound(e => e.PayableIdleHrPercent).Title("Payable Idle HR in Percent").Width(80);
+                                                                 }
+                                                                 columns.Bound(e => e.Vat).Title("Tax").Width(80).Format("{0:P0}");
+                                                                // columns.Bound(e => e.Tot).Title("TOT").Width(80).Format("{0:P0}");
 
-                                                                                            columns.Command(command =>
-                                                                                            {
-                                                                                                command.Edit(); command.Destroy();
-                                                                                                command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
-                                                                                                .Text("&nbsp;ChangeTruckType").Click("ChangeTruckType").IconClass("fa fa-check");
-                                                                                            }).Width(220);
-                                                                                        })
+                                                                 columns.Bound(e => e.RentType).Width(80);
 
-                                                                                  .ToolBar(commands => commands.Create())
-                                                                                  //.Events(ev=>ev.DetailExpand("OnEquipmentDataBound"))
-                                                                                  .Editable(editable =>
+                                                                 if (!IsMCG)
+                                                                 {
+                                                                     columns.Bound(e => e.IsDumpTruck)
+                                                         .Width(80)
+                                                     .Title("Dump Truck");
+                                                                 }
+                                                                 columns.Command(command =>
+                                                     {
+                                                                                     command.Edit(); command.Destroy();
+                                                                                     if (!IsMCG)
+                                                                                     {
+                                                                                         command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
+                                                                                         .Text("&nbsp;ChangeTruckType").Click("ChangeTruckType").IconClass("fa fa-check");
+                                                                                     }
+                                                                                     command.Custom("TerminateContract").Click("TerminateContract");
+                                                                                 }).Width(220);
+                                                             })
 
-                                                                                  {
+                                        .ToolBar(commands => commands.Create())
+                                        .Events(ev => ev.DetailExpand("OnEquipmentDetailExpand"))
+                                        .Events(ev => ev.DataBound("OnEquipmentDataBound"))
+                                        .Editable(editable =>
 
-                                                                                      editable.Window(w => w.Title("Rent Agreement Form"));
-                                                                                      editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentEditor");
-                                                                                      editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment");
-                                                                                  })
-                                                                                    .HtmlAttributes(new { style = "height: 420px;" })
-                                                                                         .Pageable(pageable => pageable
-                                                                                         .Input(true)
-                                                                                         .Numeric(false)
-                                                                                         .Refresh(true)
-                                                                                         .PageSizes(true)
-                                                                                         .ButtonCount(5))
-                                                                                    .DataSource(dataSource => dataSource
-                                                                                      .Ajax()
-                                                                                      .ServerOperation(false)
-                                                                                           .PageSize(6)
-                                                                                      .Model(model =>
-                                                                                      {
-                                                                                          model.Id(p => p.RentFromExternalEquipmentId);
+                                        {
 
-                                                                                      }
-                                                                                          ).Events(ev => ev
-                                                                                              .Error("error_handler(\"Equipment#=RentFromExternalID#\")")
-                                                                                              .RequestStart("onRequestStart(\"Equipment#=RentFromExternalID#\")")
-                                                                                              .RequestEnd("onRequestEnd(\"Equipment#=RentFromExternalID#\")"))
-                                                                                              .Create(update => update.Action("RentFromExternalEquipment_Create", "RentFromExternalEquipment", new { Id = "#=RentFromExternalID#" }).Data("sendForgery"))
-                                                                                              .Read(read => read.Action("RentFromExternalEquipment_Read", "RentFromExternalEquipment", new { Id = "#=RentFromExternalID#" }).Data("sendForgery"))
-                                                                                      .Update(update => update.Action("RentFromExternalEquipment_Update", "RentFromExternalEquipment").Data("sendForgery"))
-                                                                                      .Destroy(update => update.Action("RentFromExternalEquipment_Delete", "RentFromExternalEquipment").Data("sendForgery"))
+                                                           editable.Window(w => w.Title("Rent Agreement Form"));
+                                                           editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentEditor");
+                                                           editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment");
+                                                       })
+                                          .HtmlAttributes(new { style = "height: 420px;" })
+                                               .Pageable(pageable => pageable
+                                               .Input(true)
+                                               .Numeric(false)
+                                               .Refresh(true)
+                                               .PageSizes(true)
+                                               .ButtonCount(5))
+                                          .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .ServerOperation(false)
+                                                 .PageSize(6)
+                                            .Model(model =>
+                                            {
+                                                               model.Id(p => p.RentFromExternalEquipmentId);
 
-                                                                                  )
-                                                                                  .ClientDetailTemplateId("tabRate")
-                                                                                .ToClientTemplate())
+                                                           }
+                                                ).Events(ev => ev
+                                                    .Error("error_handler(\"Equipment#=RentFromExternalID#\")")
+                                                    .RequestStart("onRequestStart(\"Equipment#=RentFromExternalID#\")")
+                                                    .RequestEnd("onRequestEnd(\"Equipment#=RentFromExternalID#\")"))
+                                                    .Create(update => update.Action("RentFromExternalEquipment_Create", "RentFromExternalEquipment", new { Id = "#=RentFromExternalID#" }).Data("sendForgery"))
+                                                    .Read(read => read.Action("RentFromExternalEquipment_Read", "RentFromExternalEquipment", new { Id = "#=RentFromExternalID#" }).Data("sendForgery"))
+                                            .Update(update => update.Action("RentFromExternalEquipment_Update", "RentFromExternalEquipment").Data("sendForgery"))
+                                            .Destroy(update => update.Action("RentFromExternalEquipment_Delete", "RentFromExternalEquipment").Data("sendForgery"))
 
-                                                        </text>
-                                                    );
-                                                                items.Add().Text(" Approval").Content(@<text>
+                                        )
+                                        .ClientDetailTemplateId("tabRate")
+                                      .ToClientTemplate())
 
-                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalApproval>()
-                                                                                                             .Name("RentFromExternalApproval#=RentFromExternalID#")
-                                                                                                            .Columns(columns =>
-                                                                                                            {
-                                                                                                                                        columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+                                </text>
+                );
+                                        items.Add().Text("Attachment").Content(@<text>
+                                            @FileUpload();
+                                        </text>);
+                                                items.Add().Text(" Approval").Content(@<text>
 
-                                                                                                                                        columns.Bound(o => o.Remark).Width(200);
-                                                                                                                                        columns.Bound(c => c.CreatedBy).Width(150);
-                                                                                                                                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                                                                                                                        columns.Command(command => { command.Edit(); }).Width(250);
+                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalApproval>()
+                                                                                  .Name("RentFromExternalApproval#=RentFromExternalID#")
+                                                                                 .Columns(columns =>
+                                                                                 {
+                                                                                                                    columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
 
-                                                                                                                                    }).Events(ev =>
-                                                                                                {
-                                                                                                                                        ev.DataBound("approveonDataBound");
-                                                                                                                                    })
-                                                                                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                           .DataSource(dataSource => dataSource
-                                                                                                                .Ajax()
-                                                                                                                .PageSize(5)
-                                                                                                                                         .Model(model =>
-                                                                                                                          {
-                                                                                                                                                      model.Id(p => p.RentFromExternalApprovalID);
-                                                                                                                                                      model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                                      model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                                                  })
-                                                                                                                                                                    .Events(ev => ev
-                                                                                                                                        .Error("error_handler(\"RentFromExternalApproval#=RentFromExternalID#\")")
-                                                                                                                                        .RequestStart("onRequestStart(\"RentFromExternalApproval#=RentFromExternalID#\")")
-                                                                                                                                        .RequestEnd("onRequestEnd(\"RentFromExternalApproval#=RentFromExternalID#\")"))
-                                                                                                                                                        .Create(update => update.Action("Rent_Approve", "RentFromExternalApproval", new { EId = "#=RentFromExternalID#" }).Data("sendForgery"))
-                                                                                                                                                        .Read(read => read.Action("RentFromExternalApproval_Read", "RentFromExternalApproval", new { EId = "#=RentFromExternalID#" }).Data("sendForgery"))
-                                                                                                                                                        .Update(update => update.Action("Rent_Approve", "RentFromExternalApproval").Data("sendForgery"))
+                                                                                                                    columns.Bound(o => o.Remark).Width(200);
+                                                                                                                    columns.Bound(c => c.CreatedBy).Width(150);
+                                                                                                                    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                                                                    columns.Command(command => { command.Edit(); }).Width(250);
 
-
-                                                                                                                                          )
-                                                                                                                                   .ToClientTemplate())
-                                                                </text>
-                                                            );
-
-
-
-
+                                                                                                                }).Events(ev =>
+                                                                           {
+                                                                                                                   ev.DataBound("approveonDataBound");
+                                                                                                               })
+                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                      .DataSource(dataSource => dataSource
+                                                                           .Ajax()
+                                                                           .PageSize(5)
+                                                                                                    .Model(model =>
+                                                                                     {
+                                                                                                                        model.Id(p => p.RentFromExternalApprovalID);
+                                                                                                                        model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                        model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                    })
+                                                                                                                               .Events(ev => ev
+                                                                                                   .Error("error_handler(\"RentFromExternalApproval#=RentFromExternalID#\")")
+                                                                                                   .RequestStart("onRequestStart(\"RentFromExternalApproval#=RentFromExternalID#\")")
+                                                                                                   .RequestEnd("onRequestEnd(\"RentFromExternalApproval#=RentFromExternalID#\")"))
+                                                                                                                   .Create(update => update.Action("Rent_Approve", "RentFromExternalApproval", new { EId = "#=RentFromExternalID#" }).Data("sendForgery"))
+                                                                                                                   .Read(read => read.Action("RentFromExternalApproval_Read", "RentFromExternalApproval", new { EId = "#=RentFromExternalID#" }).Data("sendForgery"))
+                                                                                                                   .Update(update => update.Action("Rent_Approve", "RentFromExternalApproval").Data("sendForgery"))
 
 
-                                                                    })
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+                                                                                                     )
+                                                                                              .ToClientTemplate())
+                                                </text>
+                                );
+                                                        items.Add().Text("Chage Customer/Agent").Content(@<text>
+                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalCustomerChange>()
+                                                                                 .Name("changedCus#=RentFromExternalID#")
+                                                                                 .Columns(columns =>
+                                                                                 {
+                                                                                                                            columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").EditorTemplateName("ChangedCustomerTemplate").Width(130).Filterable(ftb => ftb.Multi(true).Search(true)).Title("Replaced Customer");
+                                                                                                                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                                                                                                                        })
+                                                                                 //.Events(ev =>
+                                                                                 //{
+                                                                                 //    ev.DataBound("approveonDataBound");
+                                                                                 //})
+                                                                                 .ToolBar(toolbar => toolbar.Create())
+                                                                                 .Sortable()
+                                                                                 .Filterable()
+                                                                           .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                     .DataSource(dataSource => dataSource
+                                                                          .Ajax()
+                                                                          .PageSize(5)
+                                                                                                   .Model(model =>
+                                                                                                   {
+                                                                                                                                              model.Id(p => p.RentFromExternalCustomerChangeId);
+                                                                                                                                              model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                              model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                          })
+                                                                                                                              .Events(ev => ev
+                                                                                                  .Error("error_handler(\"changedCus#=RentFromExternalID#\")")
+                                                                                                  .RequestStart("onRequestStart(\"changedCus#=RentFromExternalID#\")")
+                                                                                                  .RequestEnd("onRequestEnd(\"changedCus#=RentFromExternalID#\")"))
+                                                                                                                  .Read(update => update.Action("Read", "RentFromExternalCustomerChange", new { id = "#=RentFromExternalID#" }).Data("sendForgery"))
+                                                                                                                  .Create(read => read.Action("Create", "RentFromExternalCustomerChange", new { id = "#=RentFromExternalID#" }).Data("sendForgery"))
+                                                                                                                  .Update(read => read.Action("Update", "RentFromExternalCustomerChange").Data("sendForgery"))
+                                                                                                                  .Destroy(read => read.Action("Destroy", "RentFromExternalCustomerChange").Data("sendForgery"))
+
+
+                                                                                                    )
+                                                                                             .ToClientTemplate()
+                                                            )
+
+                                                        </text>);
+
+                                                            })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
 </script>
+@helper FileUpload()
+{
+    <text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalDocument>
+                        ()
+                        .Name("CompanyDocument#=RentFromExternalID#")
+
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.RentFromExternalDocumentId).Hidden(true);
+                            columns.Bound(c => c.FileName).ClientTemplate("<a href='/FleetManagement/RentFromExternal/DownloadRentFromExternalDocument?CompanyDocumentId=\\#=RentFromExternalDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(200);
+                            columns.Command(command =>
+                        {
+                //command.Edit();
+                command.Destroy();
+                        }).Width(580);
+                        })
+                      .ToolBar(t => t.Template(
+                                @<text>
+                                    @(Html.Kendo().Upload()
+                                    .Name("attachments")
+                                    .Async(a => a.Save("RentFromExternalAttachment_Create", "RentFromExternal", new { id = "#=RentFromExternalID #" }))
+                                    .Events(e => e.Complete("onUploadSuccess").Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 2 * 1024 * 1024); }")
+                                    .Error("onUploadError")
+                                    )
+                                    .ShowFileList(false)
+                                    .ToClientTemplate()
+                                    )
+                                </text>
+                                        ))
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .HtmlAttributes(new { style = "height: 350px;" })
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Scrollable()
+                                .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                                // .Events(x => x.DataBound("onDataBoundLines"))
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                    .Error("error_handler(\"CompanyDocument#=RentFromExternalID#\")")
+                                    .RequestStart("onRequestStart(\"CompanyDocument#=RentFromExternalID#\")")
+                                    .RequestEnd("onRequestEnd(\"CompanyDocument#=RentFromExternalID#\")"))
+                                    .Model(model => model.Id(p => p.RentFromExternalDocumentId))
+                                    .Read(read => read.Action("RentFromExternalDoc_Read", "RentFromExternal", new { id = "#=RentFromExternalID#", area = "FleetManagement" }).Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("RentFromExternalDoc_Delete", "RentFromExternal", new { area = "RentFromExternalID" }).Data("sendForgery"))
+                                    ).ToClientTemplate())
+    </text>
+}
 <script id="tabRate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
 
-                                                    .Name("tabStrip_#=RentFromExternalEquipmentId#")
-                                                                        .SelectedIndex(0)
-                                                                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                                                        .Items(items =>
-                                                                        {
-                                                                            items.Add().Text("Rates").Content(
-                                                                    @<text>
-                                                                        #if(IsDumpTruck){#
-                                                                        @Rates()
-                                                                        #}else{#
-                                                                        @OtherTruckRates()
-                                                                        #}#
-                                                                    </text>);
-                                                                                }).ToClientTemplate())
+           .Name("tabStrip_#=RentFromExternalEquipmentId#")
+                               .SelectedIndex(0)
+                               .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                               .Items(items =>
+                               {
+                               items.Add().Text("Advance Payment")
+                               .Content(@<text>
+ @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentalEquipmentAdvancePayment>()
+  .Name("advancePayment_#=RentFromExternalEquipmentId#")
+  .Columns(columns =>
+  {
+      columns.Bound(c => c.AdvancePayed).Title("Advance Payment").Width(150);
+      columns.Bound(c => c.VAT).Title("VAT").Width(150);
+      columns.Bound(c => c.Tot).Title("TOT").Width(150);
+      columns.Bound(c => c.AdvanceWithTax).Title("Total Payment").Width(150);
+      columns.Bound(c => c.IsFullPayment).Title("Is Full Payment").Width(150);
+      columns.Bound(c => c.CostSheetAmount).Title("Cost Sheet Amount").Width(150);
+      columns.Command(command => { command.Edit(); command.Destroy(); }).Title("Action").Width(200);
+
+
+  }).Events(ev =>
+  {
+  })
+                 .ToolBar(toolbar =>
+                 {
+                     toolbar.Create();
+                 }
+                     )
+           .Editable(editable =>
+           {
+               editable.Mode(GridEditMode.InLine);//.TemplateName("TimeSheetEditorExternal");
+           })
+                   .HtmlAttributes(new { style = "height: 520px;" })
+                     .Pageable(pageable => pageable
+                 .Input(true)
+                 .Numeric(false)
+                 .Refresh(true)
+                 .PageSizes(true)
+                 .ButtonCount(5))
+                 .Scrollable()
+                 .Sortable()
+                 .Filterable()
+                 .Scrollable(h => h.Height(500))
+               .DataSource(dataSource => dataSource
+                   .Ajax()
+                        .PageSize(6)
+                        .Model(model =>
+                        {
+                            model.Id(p =>
+           p.RentalEquipmentAdvancePaymentId);
+           model.Field(f => f.CostSheetAmount).Editable(false);
+           model.Field(f => f.AdvanceWithTax).Editable(false);
+           model.Field(f => f.VAT).Editable(false);
+           model.Field(f => f.Tot).Editable(false);
+                        }
+                                                         )
+                          .Events(ev => ev
+                                     .Error("error_handler(\"advancePayment_#=RentFromExternalEquipmentId#\")")
+                                     .RequestStart("onRequestStart(\"advancePayment_#=RentFromExternalEquipmentId#\")")
+                                     .RequestEnd("onRequestEnd(\"advancePayment_#=RentFromExternalEquipmentId#\")"))
+                                     .Read(read => read.Action("Read", "RentedEquipmentAdvancePayment", new {id= "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                     .Create(create => create.Action("Create", "RentedEquipmentAdvancePayment", new { id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                     .Update(update => update.Action("UpdateExternal", "RentedEquipmentAdvancePayment").Data("sendForgery"))
+                                     .Destroy(update => update.Action("Destroy", "RentedEquipmentAdvancePayment").Data("sendForgery"))
+                 ).ToClientTemplate()
+                                           )
+                                       </text>);
+
+
+
+    @*""
+    )
+    </text>);*@   if (!IsMCG)
+    {
+        items.Add().Text("Rates").Content(
+                           @<text>
+                               #if(IsDumpTruck){#
+                               @Rates()
+                               #}else{#
+                               @OtherTruckRates()
+                               #}#
+                           </text>);
+}
+if (isECWC == true)
+{
+items.Add().Text("TimeSheet")
+        .Content(@<text>
+ @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.TimeSheet>()
+         .Name("TimesheetExternal#=RentFromExternalEquipmentId#")
+         .Columns(columns =>
+         {
+             columns.Bound(e => e.CustomerName).Width(140);
+             columns.Bound(e => e.PlateSerialNo).Width(100);
+             columns.Bound(e => e.EquipmentName).Width(120);
+             columns.Bound(e => e.ChargeMethod).Width(120);
+             columns.Bound(e => e.KMHrReading).Width(140);
+             columns.Bound(e => e.FinalKMHrReading).Width(140);
+             columns.Bound(e => e.WorkingHoursMorningFrom).Width(140);
+             columns.Bound(e => e.WorkingHoursAfternoonTo).Width(140);
+             columns.Bound(e => e.RentalRate).Width(140);
+             columns.Bound(e => e.IdealRentalRate).Width(140);
+             columns.Bound(e => e.DownTime).Width(140);
+             columns.Bound(e => e.BreakDownTime).Width(140);
+             columns.Bound(e => e.IdleTime).Width(80);
+             columns.Bound(e => e.DownTime).Width(100);
+             columns.Bound(e => e.Status).Width(100);
+             columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+         }).Events(ev =>
+         {
+             // ev.DataBound("onDataBound");
+         })
+                   .ToolBar(toolbar =>
+                   {
+                       toolbar.Create();
+                   }
+                       )
+             .Editable(editable =>
+             {
+                 editable.Window(w => w.Title("TimeSheet"));
+                 editable.Mode(GridEditMode.PopUp).TemplateName("TimeSheetEditorExternal");
+                 editable.DisplayDeleteConfirmation("Are You Sure To Remove Time Sheet");
+             })
+                     .HtmlAttributes(new { style = "height: 520px;" })
+                                   .Pageable(pageable => pageable
+                                                     .Input(true)
+                                                     .Numeric(false)
+                                                     .Refresh(true)
+                                                     .PageSizes(true)
+                                                     .ButtonCount(5))
+                                         .Scrollable()
+                                         .Sortable()
+                                         .Filterable()
+                                         //   .Groupable()
+                                         .Scrollable(h => h.Height(500))
+                 //.ClientDetailTemplateId("template")
+                 //.Events(ev => { ev.DetailExpand("onDetailExpandUser"); })
+                 .DataSource(dataSource => dataSource
+                     .Ajax()
+                          .PageSize(6)
+                          .Model(model => model.Id(p => p.TimeSheetID)).Events(ev => ev
+                                                                     .Error("error_handler(\"TimesheetExternal#=RentFromExternalEquipmentId#\")")
+                                                                     .RequestStart("onRequestStart(\"TimesheetExternal#=RentFromExternalEquipmentId#\")")
+                                                                     .RequestEnd("onRequestEnd(\"TimesheetExternal#=RentFromExternalEquipmentId#\")"))
+                                     .Read(read => read.Action("TimeSheet_Read", "RentTimeSheet", new { dataSource = "Internal", EquipmentId = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                         .Create(create => create.Action("TimeSheet_Create", "RentTimeSheet", new { dataSource = "Internal", EquipmentId = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                         .Update(update => update.Action("TimeSheet_UpdateExternal", "RentTimeSheet").Data("sendForgery"))
+                                               .Destroy(update => update.Action("TimeSheet_Destroy", "RentTimeSheet").Data("sendForgery"))
+                 ).ToClientTemplate()
+                                           )
+                                       </text>);
+                                   }
+                               }).ToClientTemplate())
 
 </script>
 
@@ -330,180 +616,180 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalEquipmentRate>()
-                                                            .Name("rate_#=RentFromExternalEquipmentId#")
-                                                            .Columns(columns =>
-                                                            {
+                                                                    .Name("rate_#=RentFromExternalEquipmentId#")
+                                                                    .Columns(columns =>
+                                                                    {
 
-                                                                columns.Bound(e => e.DistanceFrom).EditorTemplateName("DumpTruckDistanceFromSelector").Width(80);
-                                                                columns.Bound(e => e.DistanceTo).EditorTemplateName("DumpTruckDistanceToSelector").Width(80);
-                                                                columns.Bound(e => e.DumpTruckTypeOfWork).EditorTemplateName("DumpTruckTypeSelector").Width(80);
-                                                                columns.Bound(e => e.ManufacturingYearFrom).Width(80);
-                                                                columns.Bound(e => e.ManufacturingYearTo).Width(80);
-                                                                columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
-                                                                columns.Bound(e => e.IdleRentalRate).Width(80);
-                                                                columns.Bound(e => e.RentType).Width(80);
-                                                                columns.Bound(e => e.Description).Width(80);
-                                                                columns.Command(command =>
-                                                                {
-                                                                    command.Edit(); command.Destroy();
-                                                                }).Width(180);
-                                                            })
-                                                      .ToolBar(commands => commands.Create())
-                                                      .Editable(editable =>
-                                                      {
-                                                          editable.Mode(GridEditMode.InLine);
-                                                      })
-                                                        .HtmlAttributes(new { style = "height: 420px;" })
-                                                             .Pageable(pageable => pageable
-                                                             .Input(true)
-                                                             .Numeric(false)
-                                                             .Refresh(true)
-                                                             .PageSizes(true)
-                                                             .ButtonCount(5))
-                                                        .DataSource(dataSource => dataSource
-                                                          .Ajax()
-                                                          .ServerOperation(false)
-                                                               .PageSize(6)
-                                                          .Model(model =>
-                                                          {
-                                                              model.Id(p => p.RentFromExternalEquipmentRateId);
-                                                              model.Field(f => f.IdleRentalRate).Editable(false);
-                                                              model.Field(f => f.RentalRate).Editable(false);
+                                                                        columns.Bound(e => e.DistanceFrom).EditorTemplateName("DumpTruckDistanceFromSelector").Width(80);
+                                                                        columns.Bound(e => e.DistanceTo).EditorTemplateName("DumpTruckDistanceToSelector").Width(80);
+                                                                        columns.Bound(e => e.DumpTruckTypeOfWork).EditorTemplateName("DumpTruckTypeSelector").Width(80);
+                                                                        columns.Bound(e => e.ManufacturingYearFrom).Width(80);
+                                                                        columns.Bound(e => e.ManufacturingYearTo).Width(80);
+                                                                        columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
+                                                                        columns.Bound(e => e.IdleRentalRate).Width(80);
+                                                                        columns.Bound(e => e.RentType).Width(80);
+                                                                        columns.Bound(e => e.Description).Width(80);
+                                                                        columns.Command(command =>
+                                                                        {
+                                                                            command.Edit(); command.Destroy();
+                                                                        }).Width(180);
+                                                                    })
+                                                              .ToolBar(commands => commands.Create())
+                                                              .Editable(editable =>
+                                                              {
+                                                                  editable.Mode(GridEditMode.InLine);
+                                                              })
+                                                                .HtmlAttributes(new { style = "height: 420px;" })
+                                                                     .Pageable(pageable => pageable
+                                                                     .Input(true)
+                                                                     .Numeric(false)
+                                                                     .Refresh(true)
+                                                                     .PageSizes(true)
+                                                                     .ButtonCount(5))
+                                                                .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .ServerOperation(false)
+                                                                       .PageSize(6)
+                                                                  .Model(model =>
+                                                                  {
+                                                                      model.Id(p => p.RentFromExternalEquipmentRateId);
+                                                                      model.Field(f => f.IdleRentalRate).Editable(false);
+                                                                      model.Field(f => f.RentalRate).Editable(false);
 
-                                                          }
-                                                              ).Events(ev => ev
-                                                                  .Error("error_handler(\"rate_#=RentFromExternalEquipmentId#\")")
-                                                                  .RequestStart("onRequestStart(\"rate_#=RentFromExternalEquipmentId#\")")
-                                                                  .RequestEnd("onRequestEnd(\"rate_#=RentFromExternalEquipmentId#\")"))
-                                                                  .Create(update => update.Action("Rate_Create", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
-                                                                  .Read(read => read.Action("Rate_Read", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
-                                                          .Update(update => update.Action("Rate_Update", "RentFromExternalEquipment").Data("sendForgery"))
-                                                          .Destroy(update => update.Action("Rate_Delete", "RentFromExternalEquipment").Data("sendForgery"))
+                                                                  }
+                                                                      ).Events(ev => ev
+                                                                          .Error("error_handler(\"rate_#=RentFromExternalEquipmentId#\")")
+                                                                          .RequestStart("onRequestStart(\"rate_#=RentFromExternalEquipmentId#\")")
+                                                                          .RequestEnd("onRequestEnd(\"rate_#=RentFromExternalEquipmentId#\")"))
+                                                                          .Create(update => update.Action("Rate_Create", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                                                          .Read(read => read.Action("Rate_Read", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                                                  .Update(update => update.Action("Rate_Update", "RentFromExternalEquipment").Data("sendForgery"))
+                                                                  .Destroy(update => update.Action("Rate_Delete", "RentFromExternalEquipment").Data("sendForgery"))
 
-                                                      )
+                                                              )
 
-                                                    .ToClientTemplate())
+                                                            .ToClientTemplate())
 }
 
 @helper OtherTruckRates()
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalEquipmentRate>()
-                                                            .Name("OtherTruckrate_#=RentFromExternalEquipmentId#")
-                                                            .Columns(columns =>
-                                                            {
+                                                                    .Name("OtherTruckrate_#=RentFromExternalEquipmentId#")
+                                                                    .Columns(columns =>
+                                                                    {
 
-                                                                columns.Bound(e => e.DistanceFrom).EditorTemplateName("OtherTruckDistanceFromSelector").Width(80);
-                                                                columns.Bound(e => e.DistanceTo).EditorTemplateName("OtherTruckDistanceToSelector").Width(80);
-                                                                columns.Bound(e => e.RoadType).EditorTemplateName("RoadTypeSelector").Width(80);
-                                                                columns.Bound(e => e.ManufacturingYearFrom).Width(80);
-                                                                columns.Bound(e => e.ManufacturingYearTo).Width(80);
-                                                                columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
-                                                                columns.Bound(e => e.IdleRentalRate).Width(80);
-                                                                columns.Bound(e => e.RentType).Width(80);
-                                                                columns.Bound(e => e.Description).Width(80);
-                                                                columns.Command(command =>
-                                                                {
-                                                                    command.Edit(); command.Destroy();
-                                                                }).Width(180);
-                                                            })
-                                                      .ToolBar(commands => commands.Create())
-                                                      .Editable(editable =>
-                                                      {
-                                                          editable.Mode(GridEditMode.InLine);
-                                                      })
-                                                        .HtmlAttributes(new { style = "height: 420px;" })
-                                                             .Pageable(pageable => pageable
-                                                             .Input(true)
-                                                             .Numeric(false)
-                                                             .Refresh(true)
-                                                             .PageSizes(true)
-                                                             .ButtonCount(5))
-                                                        .DataSource(dataSource => dataSource
-                                                          .Ajax()
-                                                          .ServerOperation(false)
-                                                               .PageSize(6)
-                                                          .Model(model =>
-                                                          {
-                                                              model.Id(p => p.RentFromExternalEquipmentRateId);
-                                                              model.Field(f => f.IdleRentalRate).Editable(false);
-                                                              model.Field(f => f.RentalRate).Editable(false);
+                                                                        columns.Bound(e => e.DistanceFrom).EditorTemplateName("OtherTruckDistanceFromSelector").Width(80);
+                                                                        columns.Bound(e => e.DistanceTo).EditorTemplateName("OtherTruckDistanceToSelector").Width(80);
+                                                                        columns.Bound(e => e.RoadType).EditorTemplateName("RoadTypeSelector").Width(80);
+                                                                        columns.Bound(e => e.ManufacturingYearFrom).Width(80);
+                                                                        columns.Bound(e => e.ManufacturingYearTo).Width(80);
+                                                                        columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
+                                                                        columns.Bound(e => e.IdleRentalRate).Width(80);
+                                                                        columns.Bound(e => e.RentType).Width(80);
+                                                                        columns.Bound(e => e.Description).Width(80);
+                                                                        columns.Command(command =>
+                                                                        {
+                                                                            command.Edit(); command.Destroy();
+                                                                        }).Width(180);
+                                                                    })
+                                                              .ToolBar(commands => commands.Create())
+                                                              .Editable(editable =>
+                                                              {
+                                                                  editable.Mode(GridEditMode.InLine);
+                                                              })
+                                                                .HtmlAttributes(new { style = "height: 420px;" })
+                                                                     .Pageable(pageable => pageable
+                                                                     .Input(true)
+                                                                     .Numeric(false)
+                                                                     .Refresh(true)
+                                                                     .PageSizes(true)
+                                                                     .ButtonCount(5))
+                                                                .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .ServerOperation(false)
+                                                                       .PageSize(6)
+                                                                  .Model(model =>
+                                                                  {
+                                                                      model.Id(p => p.RentFromExternalEquipmentRateId);
+                                                                      model.Field(f => f.IdleRentalRate).Editable(false);
+                                                                      model.Field(f => f.RentalRate).Editable(false);
 
-                                                          }
-                                                              ).Events(ev => ev
-                                                                  .Error("error_handler(\"OtherTruckrate_#=RentFromExternalEquipmentId#\")")
-                                                                  .RequestStart("onRequestStart(\"OtherTruckrate_#=RentFromExternalEquipmentId#\")")
-                                                                  .RequestEnd("onRequestEnd(\"OtherTruckrate_#=RentFromExternalEquipmentId#\")"))
-                                                                  .Create(update => update.Action("Rate_Create", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
-                                                                  .Read(read => read.Action("Rate_Read", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
-                                                          .Update(update => update.Action("Rate_Update", "RentFromExternalEquipment").Data("sendForgery"))
-                                                          .Destroy(update => update.Action("Rate_Delete", "RentFromExternalEquipment").Data("sendForgery"))
+                                                                  }
+                                                                      ).Events(ev => ev
+                                                                          .Error("error_handler(\"OtherTruckrate_#=RentFromExternalEquipmentId#\")")
+                                                                          .RequestStart("onRequestStart(\"OtherTruckrate_#=RentFromExternalEquipmentId#\")")
+                                                                          .RequestEnd("onRequestEnd(\"OtherTruckrate_#=RentFromExternalEquipmentId#\")"))
+                                                                          .Create(update => update.Action("Rate_Create", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                                                          .Read(read => read.Action("Rate_Read", "RentFromExternalEquipment", new { Id = "#=RentFromExternalEquipmentId#" }).Data("sendForgery"))
+                                                                  .Update(update => update.Action("Rate_Update", "RentFromExternalEquipment").Data("sendForgery"))
+                                                                  .Destroy(update => update.Action("Rate_Delete", "RentFromExternalEquipment").Data("sendForgery"))
 
-                                                      )
+                                                              )
 
-                                                    .ToClientTemplate())
+                                                            .ToClientTemplate())
 }
 
 <script id="Checklisttemplate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                        .Name("tabStrip_#=FleetsID#")
-                                        .SelectedIndex(0)
-                                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                        .Items(items =>
-                                        {
-                                            items.Add().Text(" CheckList ").Content(@<text>
-                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.ExternalRentedEquipmentCheckList>()
-                                                                                                  .Name("checklist#=FleetsID#")
-                                                                          .Columns(columns =>
-                                                                              {
-                                                                                          columns.Bound(e => e.HorsePower).Width(120);
-                                                                                          columns.Bound(e => e.EquipmentType).Width(100);
-                                                                                          columns.Bound(e => e.Manufacturer).Width(100);
-                                                                                          columns.Command(command =>
-                                                  {
-                                                                      command.Edit(); command.Destroy();
-                                                                  }).Width(150);
-                                                                                      })
-                                                                                      .Events(ev =>
-                                                                                                    {
-                                                                                                                ev.DataBound("approveonDataBound");
-                                                                                                            })
-                                                                          .ToolBar(commands => commands.Create())
-                                                                          .Editable(editable =>
-                                                                              {
-                                                                                          editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentCheckEditor");
-                                                                                          editable.DisplayDeleteConfirmation("Are You Sure To Remove CheckList");
-                                                                                      })
-                                                                                 .HtmlAttributes(new { style = "height: 420px;" })
-                                                                                                       .Pageable(pageable => pageable
-                                                                                                                        .Input(true)
-                                                                                                                        .Numeric(false)
-                                                                                                                        .Refresh(true)
-                                                                                                                        .PageSizes(true)
-                                                                                                                        .ButtonCount(5))
-                                                                     .DataSource(dataSource => dataSource
-                                                                              .Ajax()
-                                                                              .ServerOperation(false)
-                                                                                   .PageSize(6)
-                                                                              .Model(model =>
-                                                                                  {
-                                                                                              model.Id(p => p.ExternalRentedEquipmentCheckListId);
-                                                                                              model.Field(p => p.ExternalRentedEquipmentCheckListId).Editable(false);
-                                                                                          }
-                                                                                  ).Events(ev => ev
-                                                                                    .Error("error_handler(\"checklist#=FleetsID#\")")
-                                                                                    .RequestStart("onRequestStart(\"checklist#=FleetsID#\")")
-                                                                                    .RequestEnd("onRequestEnd(\"checklist#=FleetsID#\")"))
-                                                                                    .Create(update => update.Action("ExternalRentedEquipmentCheckList_Create", "ExternalRentedCheckList", new { Id = "#=FleetsID#" }).Data("sendForgery"))
-                                                                                    .Read(read => read.Action("ExternalRentedEquipmentCheckList_Read", "ExternalRentedCheckList", new { Id = "#=FleetsID#" }).Data("sendForgery"))
-                                                                                    .Update(update => update.Action("ExternalRentedEquipmentCheckList_Update", "ExternalRentedCheckList").Data("sendForgery"))
-                                                                                    .Destroy(update => update.Action("ExternalRentedEquipmentCheckList_Destroy", "ExternalRentedCheckList").Data("sendForgery"))
-                                                                          )
-                                                                        .ToClientTemplate())
-                                            </text>
-                                                                            );
-                                                })
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .ToClientTemplate())
+                                                .Name("tabStrip_#=FleetsID#")
+                                                .SelectedIndex(0)
+                                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                .Items(items =>
+                                                {
+                                                    items.Add().Text(" CheckList ").Content(@<text>
+                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.ExternalRentedEquipmentCheckList>()
+                                                                                                                  .Name("checklist#=FleetsID#")
+                                                                                          .Columns(columns =>
+                                                                                              {
+                                                                                                          columns.Bound(e => e.HorsePower).Width(120);
+                                                                                                          columns.Bound(e => e.EquipmentType).Width(100);
+                                                                                                          columns.Bound(e => e.Manufacturer).Width(100);
+                                                                                                          columns.Command(command =>
+                                                      {
+                                                                              command.Edit(); command.Destroy();
+                                                                          }).Width(150);
+                                                                                                      })
+                                                                                                      .Events(ev =>
+                                                                                                                    {
+                                                                                                                                ev.DataBound("approveonDataBound");
+                                                                                                                            })
+                                                                                          .ToolBar(commands => commands.Create())
+                                                                                          .Editable(editable =>
+                                                                                              {
+                                                                                                          editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentCheckEditor");
+                                                                                                          editable.DisplayDeleteConfirmation("Are You Sure To Remove CheckList");
+                                                                                                      })
+                                                                                                 .HtmlAttributes(new { style = "height: 420px;" })
+                                                                                                                       .Pageable(pageable => pageable
+                                                                                                                                        .Input(true)
+                                                                                                                                        .Numeric(false)
+                                                                                                                                        .Refresh(true)
+                                                                                                                                        .PageSizes(true)
+                                                                                                                                        .ButtonCount(5))
+                                                                                     .DataSource(dataSource => dataSource
+                                                                                              .Ajax()
+                                                                                              .ServerOperation(false)
+                                                                                                   .PageSize(6)
+                                                                                              .Model(model =>
+                                                                                                  {
+                                                                                                              model.Id(p => p.ExternalRentedEquipmentCheckListId);
+                                                                                                              model.Field(p => p.ExternalRentedEquipmentCheckListId).Editable(false);
+                                                                                                          }
+                                                                                                  ).Events(ev => ev
+                                                                                                    .Error("error_handler(\"checklist#=FleetsID#\")")
+                                                                                                    .RequestStart("onRequestStart(\"checklist#=FleetsID#\")")
+                                                                                                    .RequestEnd("onRequestEnd(\"checklist#=FleetsID#\")"))
+                                                                                                    .Create(update => update.Action("ExternalRentedEquipmentCheckList_Create", "ExternalRentedCheckList", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                                    .Read(read => read.Action("ExternalRentedEquipmentCheckList_Read", "ExternalRentedCheckList", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                                    .Update(update => update.Action("ExternalRentedEquipmentCheckList_Update", "ExternalRentedCheckList").Data("sendForgery"))
+                                                                                                    .Destroy(update => update.Action("ExternalRentedEquipmentCheckList_Destroy", "ExternalRentedCheckList").Data("sendForgery"))
+                                                                                          )
+                                                                                        .ToClientTemplate())
+                                                    </text>
+                                                                                            );
+                                                        })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .ToClientTemplate())
 </script>
 <style type="text/css">
     div.k-edit-form-container {
@@ -639,14 +925,13 @@
             $(".k-grid-top", Equipmentgrid).hide();
         }
     }
-    function onDataBound(e) {
+    function onDataBound() {
         var grid = this;
-
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             console.log(dataItem.IsOnlineApproved);
             if (dataItem.IsSendForApproval == true && dataItem.IsExpired == false) {
-                console.log("Approved");
+              //  console.log("Approved");
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
                 $("Equipment" + masterId).find("k-header k-grid-toolbar k-grid-top").remove();
@@ -722,19 +1007,116 @@
         }
     });
           }
-   
-}
+
+    }
+    $(document).ready(function () {
+
+        $("#approveEquipmentType").kendoDropDownList({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: [
+                { text: "Machinery", value: "m" },
+                { text: "Light Vehicle", value: "l" },
+                { text: "Dumptruck", value: "d" },
+                { text: "Wagon Drill", value: "w" },
+                { text: "Duplicated Rent IDs", value: "dup" },
+                { text: "Approve Aggrements", value: "o" }
+            ],
+            value: "m"
+        });
+
+    });
+   $(document).on("click", "#approveRentedEquipments", function (e) {
+
+    e.preventDefault();
+
+    var equipmentType = $("#approveEquipmentType")
+        .data("kendoDropDownList")
+        .value();
+
+    if (!confirm("Are you sure you want to approve all rented equipments?")) {
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("UpdateRentedEquipments", "RentFromExternal")',
+        type: 'POST',
+        data: {
+            timeSheet: equipmentType
+        },
+        success: function (response) {
+
+            if (response.Status === "OK") {
+
+                alert(response.Message);
+
+                $("#grid").data("kendoGrid").dataSource.read();
+            }
+            else {
+                alert(response.Message || "Operation failed.");
+            }
+        },
+        error: function (xhr) {
+
+            alert("An error occurred while approving rented equipments.");
+
+            console.log(xhr.responseText);
+        }
+    });
+
+});
+    $(document).on("click", "#arrangeFleetReferenceInTimeSheets", function (e) {
+    e.preventDefault();
+
+    if (!confirm("Are you sure you want to approve all rented equipments?")) {
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("ArrangeFleetReferenceInTimeSheets", "RentFromExternal")',
+        type: 'POST',
+        success: function (response) {
+
+            if (response.Status === "OK") {
+                alert(response.Message);
+
+                // Optional: refresh grid
+                $("#grid").data("kendoGrid").dataSource.read();
+            }
+            else {
+                alert(response.Message || "Operation failed.");
+            }
+        },
+        error: function (xhr) {
+            alert("An error occurred while approving rented equipments.");
+            console.log(xhr.responseText);
+        }
+    });
+});
     function approveonDataBound(e) {
         var grid = this;
-
+        grid.wrapper.find(".k-grid-add").hide();
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             if (dataItem.Status == "Approve" || IsApproved == true) {
-                console.log("Approved");
+               //console.log("Approved");
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
             }
         });
+    }
+    function TerminateContract(e) {
+        var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        equipmentId = dataItem.RentFromExternalEquipmentId;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TerminateContract","RentFromExternalEquipment")',
+            data: { id: equipmentId },
+            success: function (res) {
+                alert(res.Message);
+            }
+        })
     }
     function filterEquipments() {
         return {
@@ -765,7 +1147,63 @@
     //        }
     //    });
     //}
+    var fleetsId;
 
+    function OnEquipmentDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = e.sender;     // <--- Correct grid instance
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        fleetsId = masterDataItem.FleetId;
+    }
+    function OnEquipmentDataBound() {
+        var grid = this;
+        if (IsSendForApproved)
+        {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (IsSendForApproved) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            if (dataItem.IsContractTerminated) {
+                $(this).find(".k-grid-TerminateContract").remove();
+            }
+            
+        })
+    }
+    function FilterFleetId() {
+        return {
+            fleetsId: fleetsId
+        };
+    }
+    function BindFleetDetail() {
+
+        var Fleetsobj = $("#FleetsID").data("kendoDropDownList");
+        var fleetID = Fleetsobj.value();
+        $.ajax({
+            url: '@Url.Action("FleetsDetailDDBind", "FleetManagementDataProvider")',
+            data: { FleetsID: fleetID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    $("#CustomerName").val(s[8]);
+                    $("#RentalRate").val(s[2]);
+                    $("#IdealRentalRate").val(s[6]);
+                } else {
+                    $("#CustomerName").val("UnAssigned");
+                    $("#RentalRate").val(" 0 ");
+                    $("#IdealRentalRate").val(" 0 ");
+                }
+            }
+
+        });
+    }
     function filterSupplier() {
         return {
             text: $("#ProcurementSupplierID").data("kendoDropDownList").filterInput.val(),
@@ -791,6 +1229,57 @@
             }
         });
 
+    }
+    $(document).ready(function () {
+        var dropdown = $("#ChargeMethod").data("kendoDropDownList");
+        if (dropdown) {
+            var chargeMethod = dropdown.value();
+
+            if (chargeMethod != 1) {
+                $("#cubicValue").hide();
+            }
+        }
+    });
+    function onChargeMethodChange() {
+        var chargeMethod = $("#ChargeMethod").data("kendoDropDownList").value();
+        $("#cubicValue").hide();
+        if (chargeMethod != 1) {
+            $("#cubicValue").hide();
+            $("#initialKM").show();
+            $("#finalKM").show();
+        }
+            else {
+            $("#cubicValue").show();
+            $("#initialKM").hide();
+            $("#finalKM").hide();
+
+            }
+        }
+    function onUploadSuccess(e) {
+        var gridname = "#CompanyDocument" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+    function globalOnSelect(e) {
+
+    }
+    function onUploadError(e) {
+
+    }
+    function VoidAgreement(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VoidAgreement", "RentFromExternal", new { area = "FleetManagement" })',
+            data: { Id: id },
+            success: function (result) {
+
+                alert(result.Message)
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result.Message);
+            }
+        });
     }
 </script>
 

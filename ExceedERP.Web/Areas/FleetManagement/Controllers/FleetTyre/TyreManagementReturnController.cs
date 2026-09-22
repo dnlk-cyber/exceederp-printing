@@ -48,7 +48,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult TireReturn_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var TireReturn = _TireReturnService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(t => new TireReturn
+            var OBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            var TireReturn = _TireReturnService.GetAll().ToList().Where(x => x.OrgBranchName == OBranchName).Select(t => new TireReturn
             {
 
                 UnitPrice = t.UnitPrice,
@@ -84,31 +85,42 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult TireReturn_Create([DataSourceRequest] DataSourceRequest request, TireReturn TireReturn)
         {
             ModelState.Remove("TireReturnID");
+            ModelState.Remove("TireId");
+            ModelState.Remove("TireSize");
+            ModelState.Remove("TireType");
+            ModelState.Remove("InstalledDate");
+            ModelState.Remove("Brand");
+            ModelState.Remove("TireTube");
+            ModelState.Remove("IssueDate");
             IOperatorService _OperatorService = new OperatorService();
             IFleetService fleetService = new FleetService();
             Fleets fleet = fleetService.GetAll().Where(x => x.FleetsID == TireReturn.FleetId).FirstOrDefault();
             EquipmentTyre Tyre = db.EquipmentTyres.Where(x => x.SerialNo == TireReturn.SerialNo.ToString()).FirstOrDefault();
-
-            if (TireReturn != null && fleet != null && Tyre != null)
+            if(ModelState.IsValid)
             {
-                TireReturn.TireReturnID = Guid.NewGuid();
-                TireReturn.Brand = Tyre.Make;
-                TireReturn.FleetId = fleet.FleetsID;
-               // TireReturn.IssueDate = Tyre.IssueDate;
-                TireReturn.KMReading = fleet.CurentOdoMeter - Tyre.OdoMeter;
-                TireReturn.SerialNo = Tyre.SerialNo;
-                TireReturn.StoreCode = TireReturn.StoreCode;
-                TireReturn.TireSize = Tyre.Size;
-                TireReturn.TireTube = Tyre.Tube;
-                TireReturn.TireType = Tyre.Type;
-                TireReturn.ReturnDate = TireReturn.ReturnDate;
-                TireReturn.ReturnedKMReading = TireReturn.ReturnedKMReading;
-                TireReturn.UnitPrice = Tyre.UnitPrice;
-                TireReturn.PlateNumber = fleet.PlateNumber + " - " + fleet.UnitNum;
-                TireReturn.CreatedBy = User.Identity.Name;
-                TireReturn.DateCreated = DateTime.Now;
-                TireReturn.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-                _TireReturnService.Insert(TireReturn);
+                if (TireReturn != null && fleet != null && Tyre != null)
+                {
+                    TireReturn.TireReturnID = Guid.NewGuid();
+                    TireReturn.Brand = Tyre.Make;
+                    TireReturn.FleetId = fleet.FleetsID;
+                    // TireReturn.IssueDate = Tyre.IssueDate;
+                    TireReturn.KMReading = fleet.CurentOdoMeter - Tyre.OdoMeter;
+                    TireReturn.SerialNo = Tyre.SerialNo;
+                    TireReturn.StoreCode = TireReturn.StoreCode;
+                    TireReturn.TireSize = Tyre.Size;
+                    TireReturn.TireTube = Tyre.Tube;
+                    TireReturn.TireType = Tyre.Type;
+                    TireReturn.ReturnDate = TireReturn.ReturnDate;
+                    TireReturn.ReturnedKMReading = TireReturn.ReturnedKMReading;
+                    TireReturn.UnitPrice = Tyre.UnitPrice;
+                    TireReturn.PlateNumber = fleet.PlateNumber + " - " + fleet.UnitNum;
+                    TireReturn.CreatedBy = User.Identity.Name;
+                    TireReturn.DateCreated = DateTime.Now;
+                    TireReturn.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                    //_TireReturnService.Insert(TireReturn);
+                    db.TireReturn.Add(TireReturn);
+                    db.SaveChanges();
+                }
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Tyre management return registration", "Success", User.Identity.Name, $"created tyre management return {TireReturn.TireReturnID}", Modules.FixedAsset);
                 #endregion
@@ -154,6 +166,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

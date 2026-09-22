@@ -10,23 +10,22 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
 {
     public enum GoodCondition
     {
-        __,
-        Normal,
-        NoLeakage, 
-        Good,
-        Working
+        Normal = 0,
+        NoLeakage = 1,
+        Good = 2,
+        Working = 3
     }
-    public enum PoorCondition
+   
+public enum PoorCondition
     {
-        __,
-        Knocking,
-        Abnormal,
-        ThereIsLeakage,
-        HardStarting,
-        OverHeat,
-        Poor,
-        WornOut,
-        NotWorking
+        Knocking = 0,
+        Abnormal = 1,
+        ThereIsLeakage = 2,
+        HardStarting = 3,
+        OverHeat = 4,
+        Poor = 5,
+        WornOut = 6,
+        NotWorking = 7
     }
     public class RentalMVInspection: OperationWithThirdValidation
     {

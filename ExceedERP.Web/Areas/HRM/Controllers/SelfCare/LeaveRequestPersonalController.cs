@@ -420,9 +420,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     ModelState.AddModelError("", "Both From and To Ethiopian Date fields are mandatory.");
                     return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
-                // Convert Ethiopic → Gregorian
-                leaveRequest.From = HrHelper.ParseEthiopicDate(leaveRequest.FromAmharic);
-                leaveRequest.To = HrHelper.ParseEthiopicDate(leaveRequest.ToAmharic);
+                // Convert Ethiopic → Gregorian (guard against malformed "d/M/yyyy" strings from the picker)
+                try
+                {
+                    leaveRequest.From = HrHelper.ParseEthiopicDate(leaveRequest.FromAmharic);
+                    leaveRequest.To = HrHelper.ParseEthiopicDate(leaveRequest.ToAmharic);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", $"The selected Ethiopian date(s) '{leaveRequest.FromAmharic}' / '{leaveRequest.ToAmharic}' are invalid. Please re-select them using the calendar picker.");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                }
             }
             else
             {
@@ -947,9 +955,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     ModelState.AddModelError("", "Both From and To Date fields are mandatory.");
                     return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
-                // Convert Ethiopic → Gregorian
-                leaveRequest.From = HrHelper.ParseEthiopicDate(leaveRequest.FromAmharic);
-                leaveRequest.To = HrHelper.ParseEthiopicDate(leaveRequest.ToAmharic);
+                // Convert Ethiopic → Gregorian (guard against malformed "d/M/yyyy" strings from the picker)
+                try
+                {
+                    leaveRequest.From = HrHelper.ParseEthiopicDate(leaveRequest.FromAmharic);
+                    leaveRequest.To = HrHelper.ParseEthiopicDate(leaveRequest.ToAmharic);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", $"The selected Ethiopian date(s) '{leaveRequest.FromAmharic}' / '{leaveRequest.ToAmharic}' are invalid. Please re-select them using the calendar picker.");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                }
             }
             else
             {

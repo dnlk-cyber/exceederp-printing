@@ -1,4 +1,4 @@
-﻿
+﻿<legend>Vehicle Part</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.Settings.VehiclePart>()
           .Name("grid")
           .Columns(columns =>
@@ -7,6 +7,7 @@
               columns.Bound(c => c.Name);
               columns.ForeignKey(c => c.VehicleCategoryId, (IEnumerable)ViewData["category"], "Id", "Name").EditorTemplateName("VehicleCategoryEditor").Title("Category").Width(120);
               columns.Bound(c => c.Remark);
+              columns.Bound(c => c.ApplyForAll);
               columns.Bound(c => c.Description);
 
               columns.Command(command => { command.Edit(); /*command.Destroy();*/ }).Width(200);

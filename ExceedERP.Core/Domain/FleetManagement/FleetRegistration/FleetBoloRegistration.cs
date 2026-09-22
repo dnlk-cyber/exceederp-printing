@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public Guid EquipmentCategoryId { get; set; }
         public Guid EquipmentTypeId { get; set; }
         public Guid EquipmentNameId { get; set; }
+        [NotMapped]
+        public bool AddToHistory { get; set; }
 
         [Display(Name ="Plate Number")]
         public Guid FleetId { get; set; }
@@ -42,8 +45,6 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [DataType(DataType.Date), Display(Name = "Bolo Expiration Date")]
         public DateTime BoloExpireDate { get; set; }
         public string Remark { get; set; }
-
-
     }
     public class BoloRegistrationDocument
     {
@@ -54,6 +55,5 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string ShortPath { get; set; }
         public string FileExtension { get; set; }
         public string Description { get; set; }
-
     }
 }

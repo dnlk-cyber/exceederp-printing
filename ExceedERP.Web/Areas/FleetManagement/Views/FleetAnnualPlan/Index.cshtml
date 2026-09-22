@@ -18,7 +18,11 @@
                                         columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120);
                                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                                     })
-                                    .ToolBar(commands => commands.Create())
+                                    .ToolBar(commands => { commands.Create();
+                                        commands.Custom()
+                                              .Text("Generate Next Annual Plan")
+                                              .HtmlAttributes(new { id = "btnGenerateAnnualPlan" });
+                                    })
                                     .Editable(editable =>
                                     {
                                         editable.Mode(GridEditMode.PopUp).TemplateName("FleetAnnualPlan");
@@ -104,7 +108,7 @@
                                                 .Model(model => 
                                                 {
                                                     model.Id(p => p.FleetAnnualPlanDetailId);
-                                                    model.Field(p => p.GlPeriodId).Editable(false);
+                                                    //model.Field(p => p.GlPeriodId).Editable(false);
                                                     model.Field(p => p.DateFrom).Editable(false);
                                                     model.Field(p => p.DateTo).Editable(false);
                                                     })
@@ -113,7 +117,72 @@
                                                 .Update(update => update.Action("FleetAnnualPlanDetail_Update", "FleetAnnualPlanDetail").Data("sendForgery"))
                                                 .Destroy(delete => delete.Action("FleetAnnualPlanDetail_Delete", "FleetAnnualPlanDetail").Data("sendForgery"))
 
-                                            ).ToClientTemplate()
+                                            ).ClientDetailTemplateId("DailyPlan").ToClientTemplate()
+    )
+}<script id="DailyPlan" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                                        .Name("dailytabstrip_grid_#=FleetAnnualPlanDetailId#")
+                                                                        .SelectedIndex(0)
+                                                                        .Items(itemn =>
+                                                                        {
+                                                                            itemn.Add().Text("Daily Plan").Content(@<text>@DailyDetail()</text>);
+
+                                                                                }).ToClientTemplate())
+</script>
+
+
+@helper DailyDetail()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation.FleetAnnualPlanDaily>()
+                                            .Name("dailyPlan_#=FleetAnnualPlanDetailId#")
+                                            .Columns(columns =>
+                                            {
+                                                //columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["GlPeriod"], "Value", "Text").Width(120);
+                                                columns.Bound(c => c.NumberOfEquipmentInDay).Width(100);
+                                                columns.Bound(c => c.WorkingHourPerDay).Width(100);
+                                                columns.Bound(c => c.InefficiencyPercentile).Width(100);
+                                                columns.Bound(c => c.EfficiencyPercentile).Width(100);
+                                                columns.Bound(c => c.HourForInefficiencyPerDay).Width(100);
+                                                columns.Bound(c => c.ExpectedEffectiveWorkingHrPerDay).Width(100);
+                                                columns.Bound(c => c.ChargingRate).Width(100);
+                                                columns.Bound(c => c.ExpectedDailyIncome).Width(100);
+                                                columns.Bound(c => c.TyreCost).Width(100);
+                                                columns.Bound(c => c.LiterPerHour).Width(100);
+                                                columns.Bound(c => c.TotalLiter).Width(100);
+                                                columns.Bound(c => c.FuelCostPerLiter).Width(100);
+                                                columns.Bound(c => c.TotalFuelCost).Width(100);
+                                                columns.Bound(c => c.MaintenanceCost).Width(100);
+                                                columns.Bound(c => c.Perduim).Width(100);
+                                                columns.Bound(c => c.Salary).Width(100);
+                                                columns.Bound(c => c.TotalExpectedExpense).Width(100);
+                                                columns.Bound(c => c.ExpectedTotalProfit).Width(100);
+
+                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                            })
+                                            //.ToolBar(commands => commands.Create())
+                                            .Editable(editable =>
+                                            {
+                                                editable.Mode(GridEditMode.PopUp).TemplateName("AnnualPlanDaily");
+                                                editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                            })
+                                            .Filterable()
+                                            .Scrollable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                    .Events(ev => ev
+                                                    .Error("error_handler(\"dailyPlan_#=FleetAnnualPlanDetailId#\")")
+                                                    .RequestStart("onRequestStart(\"dailyPlan_#=FleetAnnualPlanDetailId#\")")
+                                                    .RequestEnd("onRequestEnd(\"dailyPlan_#=FleetAnnualPlanDetailId#\")"))
+                                                .Model(model => 
+                                                {
+                                                    model.Id(p => p.FleetAnnualPlanDailyId);
+                                                    })
+                                                .Read(read => read.Action("FleetAnnualPlanDaily_Read", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanDetailId#" }).Data("sendForgery"))
+                                                .Update(update => update.Action("FleetAnnualPlanDaily_Update", "FleetAnnualPlanDetailId").Data("sendForgery"))
+                                                .Destroy(delete => delete.Action("FleetAnnualPlanDaily_Delete", "FleetAnnualPlanDetail").Data("sendForgery"))
+
+                                            )
+                                            .ToClientTemplate()
     )
 }
 
@@ -184,7 +253,27 @@
     }
 
 </script>
-
+<script>
+    $(document).ready(function () {
+        $("#btnGenerateAnnualPlan").on("click", function () {
+            $.ajax({
+                url: '@Url.Action("GenerateNextAnnualPlan", "FleetAnnualPlan")',
+                type: "GET",
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message); 
+                        $("#grid").data("kendoGrid").dataSource.read(); 
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Something went wrong while generating the plan.");
+                }
+            });
+        });
+    });
+</script>
 <style>
     div.k-edit-form-container {
         width: auto;

@@ -15,6 +15,8 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 	[AuthorizeRoles(FleetManagementRoles.FleetAdmin)] 
@@ -27,8 +29,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 			_RentRequestService = new RentRequestService();
 			_VehicleDemandService = new VehicleDemandService();
 		}
-		//
-		// GET: /FleetManagement/RentRequest/
+        //
+        // GET: /FleetManagement/RentRequest/
+        ExceedDbContext db = new ExceedDbContext();
+
 		public ActionResult Index()
 		{
 			return View();
@@ -39,7 +43,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 		public ActionResult RentRequest_Read([DataSourceRequest] DataSourceRequest request)
 		{
-			var RentRequest = _RentRequestService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+			//var RentRequest = _RentRequestService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+			IQueryable<RentRequest> RentRequest = db.RentRequest.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).AsQueryable();
 
 			return Json(RentRequest.ToDataSourceResult(request));
 		}
@@ -142,7 +147,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 				else if (requestType == "Company")
 				{
 
-					var Requests = _VehicleDemandService.GetAll().Where(x => x.Status == MaintenanceConst.Approved ).Select(s => new RentRequest
+					var Requests = db.VehicleDemand.Where(x => x.Status == MaintenanceConst.Approved ).Select(s => new RentRequest
 
 					{
 						Description = s.RequestNumber + " --- " + s.FromBranchName + " --- " + s.FromStructureName,
@@ -159,17 +164,57 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 				}
 			}
 
-		public JsonResult RequestDemand()
-		{
-			var request = _VehicleDemandService.GetAll().Where(x => x.Status == MaintenanceConst.Approved).Select(s => new
-			{
-				Id = s.VehicleDemandId,
+		//public JsonResult RequestDemand(string Text)
+		//{
+		//	//var request = db.VehicleDemand.Where(x => x.Status == MaintenanceConst.Approved).Select(s => new
+		//	//{
+		//	//	Id = s.VehicleDemandId,
 			  
-				Name = s.RequestNumber + "-" + s.FromBranchName + "-" + s.FromStructureName
-			});
-			return Json(request, JsonRequestBehavior.AllowGet);
-		}
+		//	//	Name = s.RequestNumber + "-" + s.FromBranchName + "-" + s.FromStructureName
+		//	//});
+  //          var requests = db.VehicleDemand.Where(x => x.Status == MaintenanceConst.Approved&&(Text.ToLower().Contains(x.RequestNumber.ToString()))).ToList();
+  //          var distributions = db.VehicleDistribution.Select(x => x.DistrubtionNumber).ToList();
+  //          var requestsCheck = db.VehicleDemand.Where(x => x.Status == MaintenanceConst.Approved&& !distributions.Contains(x.RequestNumber)).ToList();
 
-	}
+  //          //var UndistributedRequests = requests.Where(x => !distributions.Contains(x.RequestNumber)).Select(s => new
+  //          var UndistributedRequests = requests.Select(s => new
+  //          {
+  //              Id = s.VehicleDemandId,
+
+  //              Name = s.RequestNumber + "-" + s.FromBranchName + "-" + s.FromStructureName
+  //          });
+
+		//	//return Json(request, JsonRequestBehavior.AllowGet);
+		//	return Json(UndistributedRequests, JsonRequestBehavior.AllowGet);
+		//}
+        public JsonResult RequestDemand(string Text)
+        {
+            if (string.IsNullOrWhiteSpace(Text))
+            {
+                return Json(Enumerable.Empty<object>(), JsonRequestBehavior.AllowGet);
+            }
+
+            var requests = db.VehicleDemand
+                .Where(x => x.Status == MaintenanceConst.Approved &&
+                            x.RequestNumber.ToString().Contains(Text))
+                .Select(s => new
+                {
+                    Id = s.VehicleDemandId,   // Value (RequestID)
+            Name = s.RequestNumber + " - " +
+                           s.FromBranchName + " - " +
+                           s.FromStructureName   // Text (RequestNumber display)
+        })
+                .Take(50)   // safety limit
+                .ToList();
+
+            return Json(requests, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 }
 

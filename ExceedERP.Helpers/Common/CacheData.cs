@@ -58,6 +58,8 @@ namespace ExceedERP.Helpers.Common
         private static readonly object _EquipmentIdentity = new object();
         private static readonly object _EquipmentType = new object();
         private static readonly object _EquipmentName = new object();
+        private static readonly object _Fleets = new object();
+        private static readonly object _FleetsSecond = new object();
         //maintenance
         private static readonly object _MaintenanceCenter = new object();
         public CacheData()
@@ -1303,6 +1305,66 @@ namespace ExceedERP.Helpers.Common
             }
 
             return EquipmentTypes;
+        }
+        public List<ForeginKeySelectorFleetVm> GetFleetsCache()
+        {
+            const string cacheKey = CacheKeys.Fleets;
+
+            if (!(MemoryCache.Default[cacheKey] is List<ForeginKeySelectorFleetVm> fleets))
+            {
+                lock (_Fleets)
+                {
+                    fleets = MemoryCache.Default[cacheKey] as List<ForeginKeySelectorFleetVm>;
+                    if (fleets == null)
+                    {
+                        fleets = _db.Fleets
+                            .Select(x => new ForeginKeySelectorFleetVm
+                            {
+                                Id = x.FleetsID,
+                                OrgBranchName = x.OrgBranchName,
+                                Name = x.EquipmentName + "-" + x.PlateNumber + "-" + x.ChasisNumber
+
+                            })
+                            .ToList();
+
+                        MemoryCache.Default.Add(
+                            cacheKey,
+                            fleets,
+                            DateTimeOffset.Now.AddHours(12)
+                        );
+                    }
+                }
+            }
+            return fleets;
+        }
+        public List<ForeginKeySelectorFleetSecondVm> GetFleetsSecondCache()
+        {
+            const string cacheKey = CacheKeys.FleetsSecond;
+
+            if (!(MemoryCache.Default[cacheKey] is List<ForeginKeySelectorFleetSecondVm> fleets))
+            {
+                lock (_FleetsSecond)
+                {
+                    fleets = MemoryCache.Default[cacheKey] as List<ForeginKeySelectorFleetSecondVm>;
+                    if (fleets == null)
+                    {
+                        fleets = _db.Fleets
+                            .Select(x => new ForeginKeySelectorFleetSecondVm
+                            {
+                                PlateNumber = x.PlateNumber + "--" + x.SerialNo + "--" + x.UnitNum,
+                                FleetsID = x.FleetsID,
+                            })
+                            .ToList();
+
+                        MemoryCache.Default.Add(
+                            cacheKey,
+                            fleets,
+                            DateTimeOffset.Now.AddHours(12)
+                        );
+                    }
+                }
+            }
+            return fleets;
         }
         public List<ForeginKeySelectorGuidVm> GetEquipmentNameCaches()
         {

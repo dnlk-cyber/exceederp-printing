@@ -61,7 +61,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult ExternalMaintenanceSatisfaction(string id)
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.SatisfactionNote, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.SatisfactionNote, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.Id = id;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
@@ -69,7 +70,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult JobPrintNewExternal(string id)
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.VehiclesExternalMaintenanceOrderForm, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.VehiclesExternalMaintenanceOrderForm, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             ViewBag.Id = id;
@@ -77,15 +79,38 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult OutSourcedMaintenanceRequest(string id)
         {
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.OutSourcedMaintenanceRequest, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.OutSourcedMaintenanceRequest, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }
-        public ActionResult WorkShop(string Id)
+        public ActionResult WorkshopPrintDesign(string Id)
         {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WorkshopPrintOut, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.Id = Id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult ServiceCenterPrintDesign(string Id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.ServiceCenterPrintOut, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
+            ViewBag.Id = Id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult JobOrderClosedPrintDesign(string Id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MaintenanceProcessApproveAndClose, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
+            ViewBag.Id = Id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         
@@ -94,6 +119,5 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             ViewBag.JobId = Id;
             return View();
         }
-
     }
 }

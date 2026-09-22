@@ -19,6 +19,7 @@ using Excel;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Maintenance;
+using System.Data.Entity.Validation;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 
@@ -39,6 +40,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         //
         // GET: /FleetManagement/TimeSheet/
+        ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index()
         {
             return View();
@@ -181,9 +183,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         }
 
-        public ActionResult TimeSheet_Read([DataSourceRequest] DataSourceRequest request)
+        public ActionResult TimeSheet_Read([DataSourceRequest] DataSourceRequest request,string dataSource,string EquipmentId)
         {
-            var TimeSheet = _TimeSheetService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.Type == MaintenanceConst.RentalTimeSheet).Select(t => new TimeSheet
+            // var TimeSheet = _TimeSheetService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.Type == MaintenanceConst.RentalTimeSheet).Select(t => new TimeSheet
+            var userBranch = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            IQueryable<TimeSheet> TimeSheet;
+            if (dataSource == "External")
+            {
+                TimeSheet = db.TimeSheet.Where(x => x.OrgBranchName == userBranch).Where(x => x.Type == MaintenanceConst.RentalTimeSheet && x.RentFromExternalEquipmentId == null && x.ExternalRentedEquipmentId.ToString() == EquipmentId).AsQueryable();
+            }
+            else if (dataSource == "Internal")
+            {
+                TimeSheet = db.TimeSheet.Where(x => x.OrgBranchName == userBranch).Where(x => x.Type == MaintenanceConst.RentalTimeSheet && x.ExternalRentedEquipmentId == null && x.RentFromExternalEquipmentId.ToString() == EquipmentId).AsQueryable();
+            }
+            else
+            {
+                TimeSheet = db.TimeSheet.Where(x => x.OrgBranchName == userBranch).Where(x => x.Type == MaintenanceConst.RentalTimeSheet&&x.RentFromExternalEquipmentId==null&&x.ExternalRentedEquipmentId==null).AsQueryable();
+            }
+            DataSourceResult Result=TimeSheet.ToDataSourceResult(request,t=>new
 
                 {
                     Date = t.Date,
@@ -191,17 +208,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     IdleTime = t.IdleTime,
                     DownTime = t.DownTime,
                     CustomerName = t.CustomerName,
+                    CubicValue = t.CubicValue,
                     PlateSerialNo = GetFleetName(t.FleetsID),
                     EquipmentAdministratorName = t.EquipmentAdministratorName,
                     EquipmentName = GetName(t.FleetsID),
                     FleetsID = t.FleetsID,
-                    KMHrReading = t.KMHrReading,
+                KMHrReading = t.KMHrReading,
+                FinalKMHrReading = t.FinalKMHrReading,
+                WorkingHoursMorningFrom = t.WorkingHoursMorningFrom,
+                WorkingHoursAfternoonTo = t.WorkingHoursAfternoonTo,
+                IdealRentalRate = t.IdealRentalRate,
                     TimeSheetID = t.TimeSheetID,
                     WorkingHoursAfternoonFrom = t.WorkingHoursAfternoonFrom,
-                    WorkingHoursAfternoonTo = t.WorkingHoursAfternoonTo,
-                    WorkingHoursMorningFrom = t.WorkingHoursMorningFrom,
+                    
                     WorkingHoursMorningto = t.WorkingHoursMorningto,
                     TypeofWork = t.TypeofWork,
+                    ChargeMethod = t.ChargeMethod,
                     IsOnlineApproved = t.IsOnlineApproved,
                     IsSendForApproval = t.IsSendForApproval,
                     Status = t.Status,
@@ -212,11 +234,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
                 });
 
-            return Json(TimeSheet.ToDataSourceResult(request));
+            return Json(Result,JsonRequestBehavior.AllowGet);
         }
         public ActionResult TimeSheetForExternal_Read([DataSourceRequest] DataSourceRequest request, string Id)
         {
-            var TimeSheet = _TimeSheetService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.IsExternal == true && x.FleetsID.ToString() == Id).Select(t => new TimeSheet
+            IQueryable<TimeSheet> TimeSheet = db.TimeSheet.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.IsExternal == true && x.FleetsID.ToString() == Id).Select(t => new TimeSheet
 
             {
                 Date = t.Date,
@@ -306,7 +328,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult TimeSheet_Create([DataSourceRequest] DataSourceRequest request, TimeSheet TimeSheet)
+        public ActionResult TimeSheet_Create([DataSourceRequest] DataSourceRequest request, TimeSheet TimeSheet,string dataSource,string EquipmentId)
         {
             ModelState.Remove("TimeSheetID");
             ModelState.Remove("CustomerName");
@@ -315,12 +337,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             IFleetService fleetService = new FleetService();
             Fleets fleet = fleetService.GetById(TimeSheet.FleetsID);
-
-            if (fleet.RentalRate < 1)
+             if(!ModelState.IsValid)
             {
                 ModelState.AddModelError("SetRental", "Set Proper Rental Rate");
-
             }
+            //if (fleet.RentalRate < 1)
+            //{
+            //    ModelState.AddModelError("SetRental", "Set Proper Rental Rate");
+
+            //}
 
             else if (TimeSheet.WorkingHoursAfternoonFrom > TimeSheet.WorkingHoursAfternoonTo)
             {
@@ -335,31 +360,145 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             else
             {
 
-
-                if (TimeSheet != null)
+                if (dataSource == "External")
                 {
-                    TimeSheet.TimeSheetID = Guid.NewGuid();
-                    TimeSheet.Date = DateTime.Now;
-                    TimeSheet.RentalRate = TimeSheet.RentalRate;
-                    TimeSheet.IdealRentalRate = TimeSheet.IdealRentalRate;
-                    TimeSheet.RentType = fleet.RentType;
-                    TimeSheet.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-                    TimeSheet.CustomerName = fleet.Location;
-                    TimeSheet.FleetTypeID = fleet.EquipmentIdentityID;
-                    TimeSheet.FleetCategoryID = fleet.EquipmentTypeID;
-                    TimeSheet.EquipmentName = fleet.EquipmentName;
-                    TimeSheet.PlateSerialNo = fleet.PlateNumber + "-" + fleet.SerialNo;
-                    TimeSheet.IsExternal = fleet.IsExternal;
-                    TimeSheet.Type = MaintenanceConst.RentalTimeSheet;
-                    TimeSheet.CreatedBy = User.Identity.Name;
-                    TimeSheet.DateCreated = DateTime.Now;
-                    TimeSheet.Status = MaintenanceConst.Pending;
+                    Guid Eid = new Guid();
+                   if(!string.IsNullOrWhiteSpace(EquipmentId)&&Guid.TryParse(EquipmentId, out Guid Pid)) {
+                        Eid = Pid;
+                    }
+                    if (TimeSheet != null)
+                    {
+                        TimeSheet.TimeSheetID = Guid.NewGuid();
+                        //TimeSheet.Date = DateTime.Now;
+                        TimeSheet.RentalRate = TimeSheet.RentalRate;
+                        TimeSheet.IdealRentalRate = TimeSheet.IdealRentalRate;
+                        TimeSheet.WorkingHoursMorningFrom = TimeSheet.WorkingHoursMorningFrom;
+                        TimeSheet.WorkingHoursMorningto = TimeSheet.WorkingHoursMorningto;
+                        TimeSheet.WorkingHoursAfternoonFrom = TimeSheet.WorkingHoursAfternoonFrom;
+                        TimeSheet.WorkingHoursAfternoonTo = TimeSheet.WorkingHoursAfternoonTo;
+                        TimeSheet.IdleTime = TimeSheet.IdleTime;
+                        TimeSheet.IdealRentalRate = TimeSheet.IdealRentalRate;
+                        TimeSheet.Date = TimeSheet.Date;
+                        TimeSheet.CubicValue = TimeSheet.CubicValue;
+                        TimeSheet.ExternalRentedEquipmentId =Eid;
+                        TimeSheet.BreakDownTime = TimeSheet.BreakDownTime;
+                        TimeSheet.TypeofWork = TimeSheet.TypeofWork;
+                        TimeSheet.DownTime = TimeSheet.DownTime;
+                        TimeSheet.KMHrReading = TimeSheet.KMHrReading;
+                        TimeSheet.FinalKMHrReading = TimeSheet.FinalKMHrReading;
+                        TimeSheet.FleetsID = TimeSheet.FleetsID;
+                        TimeSheet.ChargeMethod = TimeSheet.ChargeMethod;
+                        TimeSheet.RentType = fleet.RentType;
+                        TimeSheet.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                        TimeSheet.CustomerName = TimeSheet.CustomerName;
+                        TimeSheet.FleetTypeID = fleet.EquipmentIdentityID;
+                        TimeSheet.FleetCategoryID = fleet.EquipmentTypeID;
+                        TimeSheet.EquipmentName = fleet.EquipmentName;
+                        TimeSheet.PlateSerialNo = fleet.PlateNumber + "-" + fleet.SerialNo;
+                        TimeSheet.IsExternal = fleet.IsExternal;
+                        TimeSheet.Type = MaintenanceConst.RentalTimeSheet;
+                        TimeSheet.CreatedBy = User.Identity.Name;
+                        TimeSheet.DateCreated = DateTime.Now;
+                        TimeSheet.Status = MaintenanceConst.Pending;
+                        
 
-                    _TimeSheetService.Insert(TimeSheet);
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Fleet timeSheet service registration", "Success", User.Identity.Name, $"created timesheet service reg {TimeSheet.TimeSheetID}", Modules.FleetManagement);
-                    #endregion
+                        _TimeSheetService.Insert(TimeSheet);
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "Fleet timeSheet service registration", "Success", User.Identity.Name, $"created timesheet service reg {TimeSheet.TimeSheetID}", Modules.FleetManagement);
+                        #endregion
+                    }
                 }
+                else if (dataSource == "Internal")
+                {
+                    int Eid = 0;
+                     if(!string.IsNullOrWhiteSpace(EquipmentId)&&int.TryParse(EquipmentId,out int PiD))
+                    {
+                        Eid = PiD;
+                    }
+                    if (TimeSheet != null)
+                    {
+                        TimeSheet.TimeSheetID = Guid.NewGuid();
+                        //TimeSheet.Date = DateTime.Now;
+                        TimeSheet.RentFromExternalEquipmentId = Eid;
+                        TimeSheet.ChargeMethod = TimeSheet.ChargeMethod;
+                        TimeSheet.WorkingHoursMorningFrom = TimeSheet.WorkingHoursMorningFrom;
+                        TimeSheet.WorkingHoursMorningto = TimeSheet.WorkingHoursMorningto;
+                        TimeSheet.WorkingHoursAfternoonFrom = TimeSheet.WorkingHoursAfternoonFrom;
+                        TimeSheet.WorkingHoursAfternoonTo = TimeSheet.WorkingHoursAfternoonTo;
+                        TimeSheet.IdleTime = TimeSheet.IdleTime;
+                        TimeSheet.IdealRentalRate = TimeSheet.IdealRentalRate;
+                        TimeSheet.Date = TimeSheet.Date;
+                        TimeSheet.CubicValue = TimeSheet.CubicValue;
+                        TimeSheet.BreakDownTime = TimeSheet.BreakDownTime;
+                        TimeSheet.TypeofWork = TimeSheet.TypeofWork;
+                        TimeSheet.KMHrReading = TimeSheet.KMHrReading;
+                        TimeSheet.FinalKMHrReading = TimeSheet.FinalKMHrReading;
+                        TimeSheet.FleetsID = TimeSheet.FleetsID;
+                        TimeSheet.RentType = fleet.RentType;
+                        TimeSheet.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                        TimeSheet.CustomerName = fleet.SupplierCompany;
+                        TimeSheet.FleetTypeID = fleet.EquipmentIdentityID;
+                        TimeSheet.FleetCategoryID = fleet.EquipmentTypeID;
+                        TimeSheet.EquipmentName = fleet.EquipmentName;
+                        TimeSheet.PlateSerialNo = fleet.PlateNumber + "-" + fleet.SerialNo;
+                        TimeSheet.IsExternal = fleet.IsExternal;
+                        TimeSheet.Type = MaintenanceConst.RentalTimeSheet;
+                        TimeSheet.CreatedBy = User.Identity.Name;
+                        TimeSheet.DateCreated = DateTime.Now;
+                        TimeSheet.Status = MaintenanceConst.Pending;
+                        try
+                        {
+                            db.TimeSheet.Add(TimeSheet);
+                            db.SaveChanges();
+                        }
+                        catch (DbEntityValidationException ex)
+                        {
+                            foreach (var entityError in ex.EntityValidationErrors)
+                            {
+                                foreach (var validationError in entityError.ValidationErrors)
+                                {
+                                    ModelState.AddModelError(validationError.PropertyName, validationError.ErrorMessage);
+                                }
+                            }
+
+                            return Json(new[] { TimeSheet }.ToDataSourceResult(request, ModelState));
+                        }
+                        //_TimeSheetService.Insert(TimeSheet);
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "Fleet timeSheet service registration", "Success", User.Identity.Name, $"created timesheet service reg {TimeSheet.TimeSheetID}", Modules.FleetManagement);
+                        #endregion
+                    }
+                }
+                else
+                {
+                    if (TimeSheet != null)
+                    {
+                        TimeSheet.TimeSheetID = Guid.NewGuid();
+                        //TimeSheet.Date = DateTime.Now;
+                        //TimeSheet.ExternalRentedEquipmentId = Eid;
+                        TimeSheet.ChargeMethod = TimeSheet.ChargeMethod;
+                        TimeSheet.RentalRate = TimeSheet.RentalRate;
+                        TimeSheet.IdealRentalRate = TimeSheet.IdealRentalRate;
+                        TimeSheet.RentType = fleet.RentType;
+                        TimeSheet.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                        TimeSheet.CustomerName = fleet.Location;
+                        TimeSheet.FleetTypeID = fleet.EquipmentIdentityID;
+                        TimeSheet.FleetCategoryID = fleet.EquipmentTypeID;
+                        TimeSheet.EquipmentName = fleet.EquipmentName;
+                        TimeSheet.PlateSerialNo = fleet.PlateNumber + "-" + fleet.SerialNo;
+                        TimeSheet.IsExternal = fleet.IsExternal;
+                        TimeSheet.Type = MaintenanceConst.RentalTimeSheet;
+                        TimeSheet.CreatedBy = User.Identity.Name;
+                        TimeSheet.DateCreated = DateTime.Now;
+                        TimeSheet.Status = MaintenanceConst.Pending;
+
+                        _TimeSheetService.Insert(TimeSheet);
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "Fleet timeSheet service registration", "Success", User.Identity.Name, $"created timesheet service reg {TimeSheet.TimeSheetID}", Modules.FleetManagement);
+                        #endregion
+                    }
+                }
+                
             }
 
             return Json(new[] { TimeSheet }.ToDataSourceResult(request, ModelState));
@@ -416,6 +555,90 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { TimeSheet }.ToDataSourceResult(request, ModelState));
         }
+        public ActionResult TimeSheet_UpdateExternal([DataSourceRequest] DataSourceRequest request, TimeSheet TimeSheet,string dataSource)
+        {
+            IFleetService fleetService = new FleetService();
+            Fleets fleet = fleetService.GetById(TimeSheet.FleetsID);
+            string customerName = null;
+            if(dataSource=="External")
+            {
+                customerName = TimeSheet.CustomerName;
+            }
+            else
+            {
+                customerName = fleet.SupplierCompany;
+            }
+            if (TimeSheet != null)
+            {
+                if (fleet.RentalRate < 1)
+                {
+                    ModelState.AddModelError("SetRental", "Set Proper Rental Rate");
+
+                }
+
+                else if (TimeSheet.WorkingHoursAfternoonFrom > TimeSheet.WorkingHoursAfternoonTo)
+                {
+                    ModelState.AddModelError("InvalidTime", "Starting Time Is Must Be Less Than Ending Time");
+                }
+                else if (TimeSheet.WorkingHoursMorningFrom > TimeSheet.WorkingHoursMorningto)
+                {
+                    ModelState.AddModelError("InvalidTime", "Starting Time Is Must Be Less Than Ending Time");
+
+                }
+
+                else
+                {
+                    var ExistingTimeSheet = db.TimeSheet.FirstOrDefault(x => x.TimeSheetID == TimeSheet.TimeSheetID);
+                    ExistingTimeSheet.ChargeMethod = TimeSheet.ChargeMethod;
+                    ExistingTimeSheet.WorkingHoursMorningFrom = TimeSheet.WorkingHoursMorningFrom;
+                    ExistingTimeSheet.WorkingHoursMorningto = TimeSheet.WorkingHoursMorningto;
+                    ExistingTimeSheet.WorkingHoursAfternoonFrom = TimeSheet.WorkingHoursAfternoonFrom;
+                    ExistingTimeSheet.WorkingHoursAfternoonTo = TimeSheet.WorkingHoursAfternoonTo;
+                    ExistingTimeSheet.IdleTime = TimeSheet.IdleTime;
+                    ExistingTimeSheet.IdealRentalRate = TimeSheet.IdealRentalRate;
+                    ExistingTimeSheet.Date = TimeSheet.Date;
+                    ExistingTimeSheet.CubicValue = TimeSheet.CubicValue;
+                    ExistingTimeSheet.BreakDownTime = TimeSheet.BreakDownTime;
+                    ExistingTimeSheet.TypeofWork = TimeSheet.TypeofWork;
+                    ExistingTimeSheet.KMHrReading = TimeSheet.KMHrReading;
+                    ExistingTimeSheet.FinalKMHrReading = TimeSheet.FinalKMHrReading;
+                    ExistingTimeSheet.FleetsID = TimeSheet.FleetsID;
+                    ExistingTimeSheet.RentType = fleet.RentType;
+                    ExistingTimeSheet.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                    ExistingTimeSheet.CustomerName =customerName;
+                    ExistingTimeSheet.FleetTypeID = fleet.EquipmentIdentityID;
+                    ExistingTimeSheet.FleetCategoryID = fleet.EquipmentTypeID;
+                    ExistingTimeSheet.EquipmentName = fleet.EquipmentName;
+                    ExistingTimeSheet.PlateSerialNo = fleet.PlateNumber + "-" + fleet.SerialNo;
+                    ExistingTimeSheet.IsExternal = fleet.IsExternal;
+                    ExistingTimeSheet.Type = MaintenanceConst.RentalTimeSheet;
+                    db.SaveChanges();
+                    try
+                    {
+                        db.Entry(ExistingTimeSheet).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    catch (DbEntityValidationException ex)
+                    {
+                        foreach (var entityError in ex.EntityValidationErrors)
+                        {
+                            foreach (var validationError in entityError.ValidationErrors)
+                            {
+                                ModelState.AddModelError(validationError.PropertyName, validationError.ErrorMessage);
+                            }
+                        }
+
+                        return Json(new[] { TimeSheet }.ToDataSourceResult(request, ModelState));
+                    }
+                    //_TimeSheetService.Update(TimeSheet);
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "Timesheet update", "Success", User.Identity.Name, $"updated timesheet reg {TimeSheet.TimeSheetID} ", Modules.FleetManagement);
+                    #endregion
+                }
+            }
+
+            return Json(new[] { TimeSheet }.ToDataSourceResult(request, ModelState));
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TimeSheet_Destroy([DataSourceRequest] DataSourceRequest request, TimeSheet timeSheet)
@@ -431,7 +654,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

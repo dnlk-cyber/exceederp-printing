@@ -1,0 +1,19 @@
+﻿@using Kendo.Mvc.UI
+@(Html.Kendo().DropDownListFor(model => model)
+     .DataTextField("Name")
+     .DataValueField("Id")
+     .OptionLabel("Select Equipment Type")
+     .Filter(FilterType.Contains)
+     .DataSource(d =>
+     {
+         d.Read(r =>
+         {
+             r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+              .Data("filterCategory");
+         })
+         .ServerFiltering(true);
+     })
+           .Enable(false)
+           .AutoBind(false)
+           .CascadeFrom("CategoryId")
+)

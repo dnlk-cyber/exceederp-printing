@@ -1,0 +1,7 @@
+﻿@model object
+@(Html.Kendo().DropDownListFor(x => x)
+  .DataTextField("Name")
+  .DataValueField("Id").Filter(FilterType.Contains)
+  .OptionLabel("Select Equipment Category")
+  .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+  .ServerFiltering(false)))

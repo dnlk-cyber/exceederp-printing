@@ -4,7 +4,9 @@
 @using ExceedERP.Core.Domain.Finance.AP
 @using ExceedERP.Helpers
 @model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Accident
-
+@{ 
+    bool IsMIDROC = (ViewBag.setting as string) == "MIDROC";
+}
 <script>
     function onUploadSuccess(e) {
 
@@ -192,25 +194,50 @@
             </div>
         </div>
     </div>
+    @if (IsMIDROC == false)
+    {
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.OperatorId, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.OperatorId)
-                            .HtmlAttributes(new { @class = "form-control" })
-                            .AutoBind(false)
-                            .DataTextField("Text")
-                            .ValuePrimitive(true)
-                            .DataValueField("Value")
-                            .OptionLabel("Select")
-                            .Filter("contains")
-                            .DataSource(d => d.Read(r => r.Action("Operators", "FleetManagementDataProvider").Data("sendForgery")
-                            .Data("filterOperators"))
-                            ).HtmlAttributes(new { style="width:100%"}))
+                        .HtmlAttributes(new { @class = "form-control" })
+                        .AutoBind(false)
+                        .DataTextField("Text")
+                        .ValuePrimitive(true)
+                        .DataValueField("Value")
+                        .OptionLabel("Select")
+                        .Filter("contains")
+                        .DataSource(d => d.Read(r => r.Action("Operators", "FleetManagementDataProvider").Data("sendForgery")
+                        .Data("filterOperators"))
+                        ).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
-
+    }
+    @if(IsMIDROC==true)
+    {
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                              .ValuePrimitive(true)
+                              .OptionLabel("Select Employee")
+                              .DataTextField("Text")
+                              .DataValueField("Value")
+                              .Filter("contains")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("OperatorDDBindFoRAccident", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                  .ServerFiltering(false);
+                              })
+                )
+                @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    }
 
     <div class="col-sm-2">
         <div class="form-group">

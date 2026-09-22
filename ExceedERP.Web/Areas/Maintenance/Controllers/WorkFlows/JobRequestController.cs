@@ -45,11 +45,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             PopulateViewData();
             //ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
             ViewData["Customer"] = db.OrganizationCustomers.ToList();
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
             return View();
         }
         private void PopulateViewData()
@@ -101,8 +102,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         public ActionResult JobRequest_Read([DataSourceRequest] DataSourceRequest request, string JobID)
         {
 
-            var JobRequest = db.JobRequest.ToList();
-            //   System.Runtime.Caching.MemoryCache.Default["AssetList"] = db.AssetRegistrations.ToList();
+            //var JobRequest = db.JobRequest.ToList();
+            IQueryable<JobRequest> JobRequest = db.JobRequest.AsQueryable();
             var result = JobRequest.ToDataSourceResult(request, x => new
             {
                 IsSentBackToReception = x.IsSentBackToReception,
@@ -192,54 +193,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     if (model.Status == ApprovalStatuses.Approve)
                     {
                         var FetchSetting = db.RequestToInspections.FirstOrDefault();
-                        if (FetchSetting == null || !FetchSetting.GoToInspection)
-                        {
-                            var JobOrder = new JobOrder();
-
-                            JobOrder.JobOrderID = Guid.NewGuid();
-                            JobOrder.EquipmentInformationId = Request.EquipmentInformationId == null ? Guid.Empty : Request.EquipmentInformationId.Value;
-                            //JobOrder.ProjectName = Request.ProjectName;
-                            JobOrder.CurrentFuel = Request.FuelAmount;
-                            JobOrder.LicensePlate = Request.LicensePlate;
-                            JobOrder.FleetsID = fleet?.FleetsID ?? Guid.Empty;
-                            JobOrder.EquipmentName = Request.EquipmentName;
-                            JobOrder.OperatorName = Request.OperatorName;
-                            JobOrder.AssetNum = AssetNum;
-                            JobOrder.Referance = Request.Num;
-                            JobOrder.IsPM = Request.IsPM;
-                            JobOrder.Odometer = Request.Odometer;
-                            JobOrder.EquipmentType = EquipmentType;
-                            //JobOrder.EquipmentTypeId = EquipmentTypeId;
-                            JobOrder.MaintenanceCenter = maintenanceCenter.Name; // just name
-                            JobOrder.MaintenanceCenterId = maintenanceCenter.MaintenanceCenterID;
-                            //JobOrder.MaintenanceCenterId = Request.MaintenanceCenterId; // Added Field to track maintenanceCenter
-                            JobOrder.PercentCompleted = string.Empty;
-                            JobOrder.Odometer = Request.Odometer;
-                            JobOrder.InspectorComments = string.Empty;
-                            JobOrder.DateCompleted = DateTime.Now;
-                            JobOrder.DateCreated = DateTime.Now;
-                            JobOrder.LabourCost = 0;
-                            JobOrder.SpareCost = 0;
-                            JobOrder.IsExternal = Request.Source == JobRequestSource.ExternalVehicle ? true : false;
-                            JobOrder.DateIssued = DateTime.Now;
-                            JobOrder.Type = string.Empty;
-                            JobOrder.EquipmentNo = PlateNum;
-                            JobOrder.InspectedBy = Request.Requester;
-                            JobOrder.Status = MaintenanceConst.Pending;
-                            //JobOrder.Site = Request.ProjectName;
-                            JobOrder.SendForApprovalTime = DateTime.Now;
-                            JobOrder.OnlineApprovedTime = DateTime.Now;
-                            JobOrder.IsSentToWorkShop = false;
-                            JobOrder.IsSubmittedToServiceCenter = false;
-                            JobOrder.CreatedBy = User.Identity.Name;
-                            JobOrder.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-                            JobOrder.OrgStructureId = Request.OrgStructureId;
-                            JobOrder.BranchId = Request.BranchId;
-                            JobOrder.BusinessUnitId = Request.BusinessUnitId;
-                            JobOrder.RequesterId = Request.RequesterId;
-                            db.JobOrder.Add(JobOrder);
-                            db.SaveChanges();
-                        }
                         Request.IsOnlineApproved = true;
                         Request.OnlineApprovedBy = User.Identity.Name;
                         Request.KMReading = model.KMReading;
@@ -254,6 +207,20 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                         db.JobRequest.Attach(Request);
                         db.Entry(Request).State = EntityState.Modified;
                         db.SaveChanges();
+                        var maintenanceStage = new MaintenanceStage();
+                        maintenanceStage.CreatedBy = User.Identity.Name;
+                        maintenanceStage.DateCreated = DateTime.Now;
+                        if (FetchSetting == null || !FetchSetting.GoToInspection)
+                        {
+                            maintenanceStage.Description = "Maintenance request approved and go to department approval";
+                        }
+                        else
+                        {
+                            maintenanceStage.Description = "Maintenance request approved and go to department approval";
+                        }
+                        maintenanceStage.JobRequestId = Request.JobRequestId.ToString();
+                        db.MaintenanceStage.Add(maintenanceStage);
+                        db.SaveChanges();
                     }
                     if (model.Status == ApprovalStatuses.Reject)
                     {
@@ -266,6 +233,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                             Request.Status = MaintenanceConst.WaitingAdminstrative;
                             db.JobRequest.Attach(Request);
                             db.Entry(Request).State = EntityState.Modified;
+                            db.SaveChanges();
+                            var maintenanceStage = new MaintenanceStage();
+                            maintenanceStage.CreatedBy = User.Identity.Name;
+                            maintenanceStage.DateCreated = DateTime.Now;
+                            maintenanceStage.Description = "Maintenance request Rejected";
+                            maintenanceStage.JobRequestId = Request.JobRequestId.ToString();
+                            db.MaintenanceStage.Add(maintenanceStage);
                             db.SaveChanges();
                         }
                     }
@@ -734,6 +708,26 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         //    };
         //    return Json(formattedData, JsonRequestBehavior.AllowGet);
         //}
+        public ActionResult Stage_Read([DataSourceRequest] DataSourceRequest request, string Id,string Text)
+        {
+            var maintenanceStage = db.MaintenanceStage.Where(x => x.JobRequestId == Id);
+            if (Text == "FromJob")
+            {
+                maintenanceStage = db.MaintenanceStage.Where(x => x.ServiceCenterJobId == Id);
+            }
+            DataSourceResult result = maintenanceStage.ToDataSourceResult(request, stage => new
+            {
+               JobRequestId=stage.JobRequestId,
+               MaintenanceStageId=stage.MaintenanceStageId,
+               ServiceCenterJobId=stage.ServiceCenterJobId,
+               Description=stage.Description,
+               CreatedBy=stage.CreatedBy,
+               DateCreated=stage.DateCreated,
+               LastModified=stage.LastModified,
+               ModifiedBy = stage.ModifiedBy
+            });
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult ApproveJobRequest(Guid id)
         {
             var request = new DataSourceRequest();
@@ -962,7 +956,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     RequesterId = request.RequesterId,
                     IsInsured = request.HasInsurance
                 };
-                request.CreateJobOrder = false;
+                request.CreateJobOrder = true;
                 db.Entry(request).State = EntityState.Modified;                
                 db.JobOrder.Add(jobOrder);
                 db.SaveChanges();
@@ -1034,8 +1028,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return RedirectToAction("Index");
         }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
-
-
-
 }

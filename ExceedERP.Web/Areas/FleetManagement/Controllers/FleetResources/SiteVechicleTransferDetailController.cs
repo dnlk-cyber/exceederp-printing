@@ -9,13 +9,14 @@ using System.Web;
 using System.Web.Mvc;     
 using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class SiteVechicleTransferDetailController : Controller
     {
 ISiteVechicleTransferDetailService _SiteVechicleTransferDetailService;
-
+        ExceedDbContext db = new ExceedDbContext();
         public SiteVechicleTransferDetailController()
         {
             _SiteVechicleTransferDetailService = new SiteVechicleTransferDetailService();
@@ -32,7 +33,7 @@ ISiteVechicleTransferDetailService _SiteVechicleTransferDetailService;
         public JsonResult SiteVechicleTransferDetail_Read([DataSourceRequest] DataSourceRequest request, Guid Id)
         {
             _SiteVechicleTransferDetailService = new SiteVechicleTransferDetailService();
-            var oper = _SiteVechicleTransferDetailService.GetAll().Where(x=>x.SiteVechicleTransferId == Id);
+            var oper =db.SiteVechicleTransferDetails.Where(x=>x.SiteVechicleTransferId == Id);
             var Opers = oper.Select(o => new SiteVechicleTransferDetail
             {
                 SiteVechicleTransferDetailId = o.SiteVechicleTransferDetailId,
@@ -107,4 +108,5 @@ ISiteVechicleTransferDetailService _SiteVechicleTransferDetailService;
             }
             return Json(new[] { SiteVechicleTransferDetail }.ToDataSourceResult(request, ModelState));
         }
+
 }}

@@ -23,7 +23,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult Index()
         {
-            ViewData["Fleets"] = db.Fleets.ToList();
+            ViewData["Fleets"] = db.Fleets.AsQueryable();
             return View();
         }
 

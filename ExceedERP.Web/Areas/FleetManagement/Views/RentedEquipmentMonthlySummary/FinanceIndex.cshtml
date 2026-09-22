@@ -1,0 +1,726 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentMonthlyPaymentSummary
+<legend>Monthly Costsheet Summary</legend>
+@{
+    bool istimeSheetSummaryChecker = User.IsInRole("TimeSheetSummaryCreator");
+    bool istimeSheetSummaryCreator = User.IsInRole("TimeSheetSummaryChecker");
+    bool istimeSheetSummaryApprover = User.IsInRole("TimeSheetSummaryApprover");
+    bool istimeSheetSummaryAuthorizer = User.IsInRole("TimeSheetSummaryAuthorizer");
+    bool isDGMApprover = User.IsInRole("DGMTimeSheetSummaryApprover");
+
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentMonthlyPaymentSummary>()
+                                            .Name("grid")
+                                            .Columns(columns =>
+                                            {
+                                                columns.Bound(x => x.RentedEquipmentMonthlyPaymentSummaryId).Title("Row No").Width(100);
+                                                columns.ForeignKey(x => x.GlPeriodId, (IEnumerable)ViewData["Period"], "Id", "Name").Title("GL Period").Width(100);
+                                                columns.Bound(x => x.EquipmentType).Title("Equipment Type").Width(100);
+                                                columns.Bound(x => x.PlateNo).Title("Plate No").Width(100);
+                                                columns.Bound(x => x.OperatorName).Title("Operator").Width(100);
+                                                columns.Bound(x => x.BranchName).Title("Branch").Width(100);
+                                                columns.Bound(x => x.CustomerName).Title("Customer Name").Width(100);
+                                                columns.Bound(x => x.RentalRateHour)
+                                                    .Title("Rate / Hour")
+                                                    .Format("{0:n2}").Width(100);
+
+                                                columns.Bound(x => x.AgreementDate)
+                                                    .Title("Agreement Date")
+                                                    .Format("{0:yyyy-MM-dd}").Width(100);
+                                                columns.Bound(x => x.TotalWorkedHR)
+                                                    .Title("Worked HR")
+                                                    .Format("{0:n2}").Width(100);
+
+                                                columns.Bound(x => x.GrossBeforeVat)
+                                                    .Title("Gross")
+                                                    .Format("{0:n2}").Width(100);
+
+                                                columns.Bound(x => x.VAT)
+                                                    .Title("VAT")
+                                                    .Format("{0:n2}").Width(100);
+                                                columns.Bound(x => x.TotalWithVat)
+                                                    .Title("Total With VAT && TOT")
+                                                    .Format("{0:n2}").Width(100);
+
+                                                columns.Bound(x => x.AdvancePayedWithVat)
+                                                    .Title("Advance")
+                                                    .Format("{0:n2}").Width(100);
+
+                                                columns.Bound(x => x.MaintenanceCost)
+                                                    .Title("Maintenance Cost")
+                                                    .Format("{0:n2}").Width(100);
+                                                columns.Bound(x => x.SparePartCost)
+                                                    .Title("Sparepart Cost")
+                                                    .Format("{0:n2}").Width(100);
+                                                columns.Bound(x => x.OilLubCost)
+                                                    .Title("OilLub Cost")
+                                                    .Format("{0:n2}").Width(100);
+                                                columns.Bound(x => x.FuelCost)
+                                                    .Title("Fuel Cost")
+                                                    .Format("{0:n2}").Width(100);
+                                                columns.Bound(x => x.Deductable)
+                                                    .Title("Deductable")
+                                                    .Format("{0:n2}").Width(100);
+
+                                                columns.Bound(x => x.NetPayable)
+                                                    .Title("Net Payable")
+                                                    .Format("{0:n2}").Width(100);
+                                                columns.Command(command =>
+                                                {
+                                                    command.Edit();
+                                                    command.Destroy();
+                                                    if (istimeSheetSummaryCreator)
+                                                    {
+                                                        command.Custom("PrepareCostSheet").Click("PrepareTimeSheet");
+                                                    }
+                                                    if (istimeSheetSummaryChecker)
+                                                    {
+                                                        command.Custom("CheckCostSheet").Click("CheckTimeSheet");
+                                                        command.Custom("CheckerRejectCostSheet").Click("RejectTimeSheet");
+                                                    }
+                                                    if (istimeSheetSummaryApprover)
+                                                    {
+                                                        command.Custom("ApproveCostSheet").Click("ApproveTimeSheet");
+                                                        command.Custom("ApproverRejectCostSheet").Click("RejectTimeSheet");
+                                                    }
+                                                    if (istimeSheetSummaryAuthorizer)
+                                                    {
+
+                                                        command.Custom("AuthorizeCostSheet").Click("TimeSheetAuthorize");
+                                                        command.Custom("AuthorizerRejectCostSheet").Click("RejectTimeSheet");
+                                                    }
+                                                    if (isDGMApprover)
+                                                    {
+
+                                                        command.Custom("DGM_Approve").Click("DGM_Approve");
+                                                        command.Custom("RejectCostSheet").Click("RejectTimeSheet");
+                                                    }
+                                                }
+                                                    ).Title("Action").Width(300);
+
+                                            })
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            .Sortable()
+                            .Events(ev =>
+                            {
+                                ev.DataBound("summaryDataBound");
+                                ev.DetailExpand("summaryDetailExpand");
+                            }).HtmlAttributes(new { style = "height: 600px;" })
+                                            .Filterable()
+                                            .Pageable(page => page.Refresh(true).PageSizes(true))
+                                            .Scrollable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .PageSize(20)
+                                                .Model(model =>
+                                                {
+                                                    model.Id(p => p.RentedEquipmentMonthlyPaymentSummaryId);
+                                                    model.Field(p => p.PlateNo).Editable(false);
+                                                    model.Field(p => p.GlPeriodId).Editable(false);
+                                                    model.Field(p => p.BranchName).Editable(false);
+                                                    model.Field(p => p.EquipmentType).Editable(false);
+                                                    model.Field(p => p.AgreementDate).Editable(false);
+                                                    model.Field(p => p.GrossBeforeVat).Editable(false);
+                                                    model.Field(p => p.VAT).Editable(false);
+                                                    model.Field(p => p.Deductable).Editable(false);
+                                                    model.Field(p => p.TotalWorkedHR).Editable(false);
+                                                    model.Field(p => p.TotalWithVat).Editable(false);
+                                                    model.Field(p => p.NetPayable).Editable(false);
+                                                })
+                                                .Events(ev => ev
+                                                 .Error("error_handler(\"grid\")")
+                                                 .RequestStart("onRequestStart(\"grid\")")
+                                                 .RequestEnd("onRequestEnd(\"grid\")"))
+                                                .Read(read => read.Action("Finance_Read", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" }))
+                                             .Create(create => create.Action("RentedEquipmentMonthlyPaymentSummary_Create", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" }))
+                                             .Update(update => update.Action("Update", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" }))
+                                             .Destroy(delete => delete.Action("TimeSheetSummaryDestroy", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" }))
+
+                                            ).ClientDetailTemplateId("PaimentDetail")
+)
+
+<script id="PaimentDetail" type="text/kendo-tmpl">
+
+    @(Html.Kendo().TabStrip()
+                           .Name("detailStrip_#=RentedEquipmentMonthlyPaymentSummaryId#")
+                           .SelectedIndex(0)
+                           .Items(items =>
+                           {
+                               items.Add().Text("Detail").Content(@<text>
+                                #if(TimeSheetIsDGMApproved){#
+                                <a href='@Url.Action("RentedEquipmentMonthlyCostsheetPaymentSummary","FleetPrint")/?id=#=RentedEquipmentMonthlyPaymentSummaryId#' title="Print CostSheet Summary"><i class="fa fa-print fa-2x"></i></a>
+                                #}#
+                                #if(TimeSheetIsDGMApproved){#
+                                <a href='@Url.Action("RentedEquipmentMonthlyTimesheetPaymentSummary","FleetPrint")/?id=#=RentedEquipmentMonthlyPaymentSummaryId#' title="Print TimeSheet Summary"><i class="fa fa-print fa-2x"></i></a>
+                                #}#
+                                #if(!IsFinanceApproved&&!IsFinanceSendForApproval)
+                                {#
+                                <a onclick='return sendForApproval("#=RentedEquipmentMonthlyPaymentSummaryId#")' href=' \#' title="Send for Finance Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                #}#
+
+
+                            </text>); items.Add().Text("Timesheet Detail")
+.Content(
+@<text>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentDailyOperation>()
+                                                         .Name("detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#")
+                                                         .Columns(columns =>
+                                                         {
+                                                                     columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
+                                                                     columns.Bound(x => x.MorningTimeStart).Title("Mornning Time Start").Width(100);
+                                                                     columns.Bound(x => x.MorningTimeEnd).Title("Mornning Time End").Width(100);
+                                                                     columns.Bound(x => x.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
+                                                                     columns.Bound(x => x.AfternoonTimeEnd).Title("Afternoon Time end").Width(100);
+                                                                     columns.Bound(x => x.NightTimeStart).Title("Night Time Start").Width(100);
+                                                                     columns.Bound(x => x.NightTimeEnd).Title("Night Time End").Width(100);
+                                                                     columns.Bound(x => x.PayedIdleHR).Title("Down Hour").Width(100);
+                                                                     columns.Bound(x => x.TotalPayedHR)
+                                                         .Title("Total Paid Hour")
+                                                         .Width(120);
+                                                         // .ClientTemplate("#= (WorkingHour || 0) + (PayedIdleHour || 0) #");
+                                                         columns.Bound(x => x.InitialEngineHour).Title("Initial KM/EH").Width(100);
+                                                                     columns.Bound(x => x.FinalEngineHour).Title("Final KM/EH").Width(100);
+                                                                     columns.Bound(x => x.DifferenceEngineHour).Title("Difference KM/EH").Width(100);
+                                                                     columns.Bound(x => x.FuelInLiter).Title("Fuel In Litre").Width(100);
+                                                                     columns.Bound(x => x.FuelKMReading).Title("Fuel KM Reading").Width(100);
+                                                                     columns.Bound(x => x.DownHour).Title("Down Hour").Width(100);
+                                                                     columns.Bound(x => x.IdleReasonList).Title("Idle Reason").Width(150);
+                                                                     columns.Bound(x => x.OperatorName).Title("Operator Name").Width(100);
+                                                                     columns.Bound(x => x.SiteFormanName).Title("Site Forman").Width(100);
+                                                                 }
+                                                         )
+                                             .Sortable()
+                                             .Filterable()
+                                             .Pageable(page => page.Refresh(true).PageSizes(true))
+                                             .Scrollable()
+                                             .HtmlAttributes(new { style = "Width:1500px" })
+                                             //.HtmlAttributes(new { style = "height: 1000px;" })
+                                             .DataSource(dataSource => dataSource
+                                                 .Ajax()
+                                                 .PageSize(20)
+                                                 .Model(model =>
+                                                 {
+                                                             model.Id(p => p.RentedEquipmentDailyOperationId);
+                                                         })
+                                             .Events(ev => ev
+                                                  .Error("error_handler(\"detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                                                  .RequestStart("onRequestStart(\"detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                                                  .RequestEnd("onRequestEnd(\"detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")"))
+                                                 .Read(read => read.Action("Detail_Read", "RentedEquipmentMonthlySummary", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#", area = "FleetManagement" }))
+                                             ).ToClientTemplate()
+    )
+</text>);
+                               items.Add().Text("CostSheet Detail")
+        .Content(
+        @<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentDailyOperation>()
+                                                                                                           .Name("costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#")
+                                                                                                           .Columns(columns =>
+                                                                                                           {
+                                                                                                                       columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
+                                                                                                                       columns.Bound(x => x.MorningTimeStart).Title("Mornning Time Start").Width(100);
+                                                                                                                       columns.Bound(x => x.MorningTimeEnd).Title("Mornning Time End").Width(100);
+                                                                                                                       columns.Bound(x => x.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
+                                                                                                                       columns.Bound(x => x.AfternoonTimeEnd).Title("Afternoon Time end").Width(100);
+                                                                                                                       columns.Bound(x => x.NightTimeStart).Title("Night Time Start").Width(100);
+                                                                                                                       columns.Bound(x => x.NightTimeEnd).Title("Night Time End").Width(100);
+                                                                                                           // columns.Bound(x => x.WorkedHR).Title("Total Time").Width(150);
+                                                                                                           columns.Bound(x => x.PayedIdleHR).Title("Payed Idle HR").Width(100);
+                                                                                                                       columns.Bound(x => x.TotalPayedHR).Title("Total Time").Width(100);
+                                                                                                                   }
+                                                                                                           )
+                                                                                               .Sortable()
+                                                                                               .Filterable()
+                                                                                               .Pageable(page => page.Refresh(true).PageSizes(true))
+                                                                                               .Scrollable()
+                                                                                               .HtmlAttributes(new { style = "Width:800px" })
+                                                                                               //.HtmlAttributes(new { style = "height: 1000px;" })
+                                                                                               .DataSource(dataSource => dataSource
+                                                                                                   .Ajax()
+                                                                                                   .PageSize(20)
+                                                                                                   .Model(model =>
+                                                                                                   {
+                                                                                                               model.Id(p => p.RentedEquipmentDailyOperationId);
+                                                                                                           })
+                                                                                               .Events(ev => ev
+                                                                                                    .Error("error_handler(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                                                                                                    .RequestStart("onRequestStart(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                                                                                                    .RequestEnd("onRequestEnd(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")"))
+                                                                                                   .Read(read => read.Action("Detail_Read", "RentedEquipmentMonthlySummary", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#", area = "FleetManagement" }))
+                                                                                               ).ToClientTemplate()
+            )
+        </text>);
+                                       items.Add().Text("Validation").Content(
+        @<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentMonthlyPaymentSummaryValidation>()
+                               .Name("RentalPaymentRequestDepartmentValidation#=RentedEquipmentMonthlyPaymentSummaryId#")
+                               .Columns(columns =>
+                               {
+                                           columns.Bound(c => c.RentedEquipmentMonthlyPaymentSummaryValidationId).Hidden(true);
+                                           columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                           columns.Bound(c => c.Remark).Width(200);
+                                           columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                           columns.Bound(c => c.LastModified).Hidden(true);
+                                           columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                           columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                           columns.Command(command =>
+{
+                            command.Edit();
+                        });
+                                       })
+                            .ToolBar(toolbar =>
+                            {
+                                        toolbar.Create();
+                                    })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Events(x => x.DataBound("onDataBoundValidationDepartment"))
+                            .Sortable(sortable =>
+                            {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                            .Filterable()
+                            .Scrollable()
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                    .Error("error_handler(\"RentalPaymentRequestDepartmentValidation#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                                    .RequestStart("onRequestStart(\"RentalPaymentRequestDepartmentValidation#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                                    .RequestEnd("onRequestEnd(\"RentalPaymentRequestDepartmentValidation#=RentedEquipmentMonthlyPaymentSummaryId#\")"))
+                                .Model(
+                                    model =>
+                                    {
+                                                model.Id(p => p.RentedEquipmentMonthlyPaymentSummaryValidationId);
+                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                model.Field(p => p.LastModified).Editable(false);
+                                                model.Field(p => p.DateCreated).Editable(false);
+                                            })
+                                .Read(read => read.Action("RentalPaymentRequestFinanceValidations_Read", "RentedEquipmentMonthlyPaymentSummaryValidation", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#", area = "Finance" }).Data("sendForgery"))
+                                .Create(create => create.Action("RentalPaymentRequestFinanceValidations_Create", "RentedEquipmentMonthlyPaymentSummaryValidation", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#", area = "Finance" }).Data("sendForgery"))
+                                .Update(update => update.Action("RentalPaymentRequestFinanceValidations_Update", "RentedEquipmentMonthlyPaymentSummaryValidation", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#", area = "Finance" }).Data("sendForgery"))
+                            )
+                            .ToClientTemplate())
+        </text>);
+                                       items.Add().Text("Attachment").Content(@<text>
+                                        @FileUpload()
+                                    </text>);
+
+                                        }).ToClientTemplate())
+</script>
+@helper FileUpload()
+{
+    <text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentalEquipmentPaymentSummaryDocument>()
+                    .Name("CompanyDocument#=RentedEquipmentMonthlyPaymentSummaryId#")
+
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.RentedEquipmentMonthlyPaymentSummaryId)
+                            .Hidden(true);
+
+                        columns.Bound(c => c.FileName)
+                            .Title("Attachment")
+                            .ClientTemplate(
+                                "<a href='/FleetManagement/RentedEquipmentMonthlySummary/DownloadSummaryDocument?CompanyDocumentId=\\#=RentalEquipmentPaymentSummaryDocumentId\\#' target='_blank'>" +
+                                "<i class='fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\#" +
+                                "</a>"
+                            )
+                            .Width(30);
+
+                        columns.Bound(c => c.FileExtension)
+    .Title("Preview")
+    .ClientTemplate(
+        "\\# if (FileExtension && FileExtension.toLowerCase() === '.pdf') { \\#" +
+            "<a href='/FleetManagement/RentedEquipmentMonthlySummary/DownloadSummaryDocument?CompanyDocumentId=\\#=RentalEquipmentPaymentSummaryDocumentId\\#' target='_blank'>" +
+                "<i class='fa fa-file-pdf-o' style='font-size:30px;'></i>" +
+            "</a>" +
+        "\\# } else if (FileExtension && " +
+            "(FileExtension.toLowerCase() === '.jpg' || " +
+             "FileExtension.toLowerCase() === '.jpeg' || " +
+             "FileExtension.toLowerCase() === '.png') ) { \\#" +
+            "<img src='/FleetManagement/RentedEquipmentMonthlySummary/DownloadSummaryDocument?CompanyDocumentId=\\#=RentalEquipmentPaymentSummaryDocumentId\\#' " +
+                 "style='max-width:100px; max-height:80px;' />" +
+        "\\# } else { \\#" +
+            "<span>\\#=FileName\\#</span>" +
+        "\\# } \\#"
+    )
+    .Width(200);
+                    })
+
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                    .HtmlAttributes(new { style = "height: 350px;" })
+
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+
+                    .Scrollable()
+
+                    .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5)
+                    )
+
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+
+                        .Events(ev => ev
+                            .Error("error_handler(\"CompanyDocument#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                            .RequestStart("onRequestStart(\"CompanyDocument#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                            .RequestEnd("onRequestEnd(\"CompanyDocument#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                        )
+
+                        .Model(model => model.Id(p => p.RentalEquipmentPaymentSummaryDocumentId))
+
+                        .Read(read => read
+                            .Action(
+                                "SummaryDoc_Read",
+                                "RentedEquipmentMonthlySummary",
+                                new
+                                {
+                                    id = "#=RentedEquipmentMonthlyPaymentSummaryId#",
+                                    area = "FleetManagement"
+                                }
+                            )
+                            .Data("sendForgery")
+                        )
+                    )
+
+                    .ToClientTemplate()
+        )
+    </text>
+}
+<script>
+    var approvalStage;
+    var isFinanceApproved
+    var isFinaneSendForApproval
+    function summaryDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = this;
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        isFinanceApproved = masterDataItem.IsFinanceApproved;
+        isFinaneSendForApproval = masterDataItem.IsFinanceSendForApproval;
+    }
+    function summaryDataBound() {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.TimeSheetIsPrepared) {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            if (!dataItem.TimeSheetIsEquipmentAdminChecked) {
+                $(this).find(".k-grid-OfficeEngineerCheck").remove();
+                $(this).find(".k-grid-RejectTimeSheet").remove();
+                $(this).find(".k-grid-OfficeEngRejectTimeSheet").remove();
+                $(this).find(".k-grid-ConstRejectTimeSheet").remove();
+                $(this).find(".k-grid-ConstructionEngineerApprove").remove();
+                $(this).find(".k-grid-ProjectManagerApprove").remove();
+            }
+            if (dataItem.TimeSheetIsEquipmentAdminChecked && !dataItem.TimeSheetIsOfficeEngineerChecked) {
+                $(this).find(".k-grid-EquipmentAdminCheck").remove();
+                $(this).find(".k-grid-ConstructionEngineerApprove").remove();
+                $(this).find(".k-grid-RejectTimeSheet").remove();
+                $(this).find(".k-grid-ConstRejectTimeSheet").remove();
+                $(this).find(".k-grid-ProjectManagerApprove").remove();
+            }
+            if (dataItem.TimeSheetIsOfficeEngineerChecked && !dataItem.TimeSheetIsConstructionEngineerApproved) {
+                $(this).find(".k-grid-ProjectManagerApprove").remove();
+                $(this).find(".k-grid-OfficeEngineerCheck").remove();
+                $(this).find(".k-grid-EquipmentAdminCheck").remove();
+                $(this).find(".k-grid-RejectTimeSheet").remove();
+                $(this).find(".k-grid-OfficeEngRejectTimeSheet").remove();
+            }
+            if (dataItem.TimeSheetIsConstructionEngineerApproved && !dataItem.TimeSheetIsDepartmentManagerApproved) {
+                $(this).find(".k-grid-ConstructionEngineerApprove").remove();
+                $(this).find(".k-grid-OfficeEngineerCheck").remove();
+                $(this).find(".k-grid-EquipmentAdminCheck").remove();
+                $(this).find(".k-grid-OfficeEngRejectTimeSheet").remove();
+                $(this).find(".k-grid-ConstRejectTimeSheet").remove();
+            }
+            if (dataItem.TimeSheetIsDepartmentManagerApproved) {
+                $(this).find(".k-grid-OfficeEngineerCheck").remove();
+                $(this).find(".k-grid-RejectTimeSheet").remove();
+                $(this).find(".k-grid-ConstructionEngineerApprove").remove();
+                $(this).find(".k-grid-ProjectManagerApprove").remove();
+                $(this).find(".k-grid-EquipmentAdminCheck").remove();
+                $(this).find(".k-grid-OfficeEngRejectTimeSheet").remove();
+                $(this).find(".k-grid-ConstRejectTimeSheet").remove();
+            }
+
+            // PrepareCostSheet CheckerRejectCostSheet
+            if (!dataItem.TimeSheetIsPrepared) {
+                $(this).find(".k-grid-ApproveCostSheet").remove();
+                $(this).find(".k-grid-CheckerRejectCostSheet").remove();
+                $(this).find(".k-grid-RejectCostSheet").remove();
+                $(this).find(".k-grid-ApprovalRejectCostSheet").remove();
+                $(this).find(".k-grid-AuthorizerRejectCostSheet").remove();
+                $(this).find(".k-grid-DGM_Approve").remove();
+                $(this).find(".k-grid-CheckCostSheet").remove();
+                $(this).find(".k-grid-ApproverRejectCostSheet").remove();
+                $(this).find(".k-grid-AuthorizeCostSheet").remove();
+            }
+            if (dataItem.TimeSheetIsPrepared && !dataItem.TimeSheetIsChecked) {
+                $(this).find(".k-grid-PrepareCostSheet").remove();
+                $(this).find(".k-grid-ApproveCostSheet").remove();
+                $(this).find(".k-grid-RejectCostSheet").remove();
+                $(this).find(".k-grid-ApprovalRejectCostSheet").remove();
+                $(this).find(".k-grid-AuthorizerRejectCostSheet").remove();
+                $(this).find(".k-grid-DGM_Approve").remove();
+                $(this).find(".k-grid-ApproverRejectCostSheet").remove();
+                $(this).find(".k-grid-AuthorizeCostSheet").remove();
+            }
+            if (dataItem.TimeSheetIsChecked && !dataItem.TimeSheetIsApproved) {
+                $(this).find(".k-grid-PrepareCostSheet").remove();
+                $(this).find(".k-grid-CheckerRejectCostSheet").remove();
+                $(this).find(".k-grid-DGM_Approve").remove();
+                $(this).find(".k-grid-CheckCostSheet").remove();
+                $(this).find(".k-grid-AuthorizeCostSheet").remove();
+                $(this).find(".k-grid-RejectCostSheet").remove();
+                $(this).find(".k-grid-AuthorizerRejectCostSheet").remove();
+            }
+            if (dataItem.TimeSheetIsApproved && !dataItem.TimeSheetIsAuthorized) {
+                $(this).find(".k-grid-DGM_Approve").remove();
+                $(this).find(".k-grid-PrepareCostSheet").remove();
+                $(this).find(".k-grid-CheckerRejectCostSheet").remove();
+                $(this).find(".k-grid-CheckCostSheet").remove();
+                $(this).find(".k-grid-ApproveCostSheet").remove();
+                $(this).find(".k-grid-RejectCostSheet").remove();
+                $(this).find(".k-grid-ApproverRejectCostSheet").remove();
+            }
+            if (dataItem.TimeSheetIsAuthorized && !dataItem.TimeSheetIsDGMApproved) {
+                $(this).find(".k-grid-AuthorizeCostSheet").remove();
+                $(this).find(".k-grid-PrepareCostSheet").remove();
+                $(this).find(".k-grid-CheckerRejectCostSheet").remove();
+                $(this).find(".k-grid-CheckCostSheet").remove();
+                $(this).find(".k-grid-ApproveCostSheet").remove();
+                $(this).find(".k-grid-ApproverRejectCostSheet").remove();
+                $(this).find(".k-grid-AuthorizerRejectCostSheet").remove();
+            }
+            if (dataItem.TimeSheetIsDGMApproved) {
+                $(this).find(".k-grid-CheckCostSheet").remove();
+                $(this).find(".k-grid-ApproveCostSheet").remove();
+                $(this).find(".k-grid-PrepareCostSheet").remove();
+                $(this).find(".k-grid-CheckerRejectCostSheet").remove();
+                $(this).find(".k-grid-ApproverRejectCostSheet").remove();
+                $(this).find(".k-grid-RejectCostSheet").remove();
+                $(this).find(".k-grid-DGM_Approve").remove();
+                $(this).find(".k-grid-AuthorizeCostSheet").remove();
+                $(this).find(".k-grid-AuthorizerRejectCostSheet").remove();
+
+            }
+
+        });
+    }
+
+</script>
+
+<script>
+     function PrepareTimeSheet(e) {
+    e.preventDefault();
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("PrepareTimeSheetSummery", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" })',
+        data: {
+            id: dataItem.RentedEquipmentMonthlyPaymentSummaryId
+        },
+        success: function (result) {
+            alert(result.Message);
+            approvalStage = "Approver";
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+    function CheckTimeSheet(e) {
+    e.preventDefault();
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("CheckTimeSheetSummery", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" })',
+        data: {
+            id: dataItem.RentedEquipmentMonthlyPaymentSummaryId
+        },
+        success: function (result) {
+            alert(result.Message);
+            approvalStage = "Approver";
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+
+</script>
+<script>
+
+    function filterPeriod() {
+        return {
+            id: $("#GlPeriodId").data("kendoDropDownList").value(),
+            Text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+</script>
+<script>
+    function ApproveTimeSheet(e) {
+    e.preventDefault();
+
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("ApproveTimeSheetSummery", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" })',
+        data: {
+            id: dataItem.RentedEquipmentMonthlyPaymentSummaryId
+        },
+        success: function (result) {
+            alert(result.Message);
+            approvalStage = "Authorizer";
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+</script>
+<script>
+    function TimeSheetAuthorize(e) {
+    e.preventDefault();
+
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("AuthorizeTimeSheetSummery", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" })',
+        data: {
+            id: dataItem.RentedEquipmentMonthlyPaymentSummaryId
+        },
+        success: function (result) {
+            alert(result.Message);
+            approvalStage = "DGM";
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }</script>
+<script>
+    function DGM_Approve(e) {
+    e.preventDefault();
+
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("DGMApproveTimeSheetSummery", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" })',
+        data: {
+            id: dataItem.RentedEquipmentMonthlyPaymentSummaryId
+        },
+        success: function (result) {
+            alert(result.Message);
+            approvalStage = "DGM";
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+</script>
+<script>
+    function RejectTimeSheet(e) {
+    e.preventDefault();
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+
+    $.ajax({
+        type: "POST",
+       url: '@Url.Action("TimeSheetSummaryReject", "RentedEquipmentMonthlySummary", new { area = "FleetManagement" })',
+        data: {
+            id: dataItem.RentedEquipmentMonthlyPaymentSummaryId,
+            Text:approvalStage,
+        },
+        success: function (result) {
+            alert(result.Message);
+            approvalStage = result.Text;
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+    function onDataBoundValidationDepartment(e) {
+        var grid = this;
+        if (isFinanceApproved) {
+            grid.wrapper.find(".k-grid-add").hide();
+        } if (!isFinaneSendForApproval) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isFinanceApproved) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        })
+    }
+     function sendForApproval(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforFinanceApproval", "RentedEquipmentMonthlyPaymentSummaryValidation", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                var recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>
+
+
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+
+    .row .col-md-3 {
+        width: 200px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

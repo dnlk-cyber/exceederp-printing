@@ -11,6 +11,8 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class DistributionTimeSheetController : Controller
@@ -18,6 +20,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         ITimeSheetService _TimeSheetService;
         IFleetService _FleetService;
+        ExceedDbContext db = new ExceedDbContext();
         public DistributionTimeSheetController()
         {
             _TimeSheetService = new TimeSheetService();
@@ -43,7 +46,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult TimeSheet_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var TimeSheet = _TimeSheetService.GetAll().Where(x => x.Type == MaintenanceConst.DistributionTimeSheet && x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(t => new TimeSheet
+            var TimeSheet = db.TimeSheet.Where(x => x.Type == MaintenanceConst.DistributionTimeSheet && x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(t => new TimeSheet
 
                 {
                     Date = t.Date,
@@ -184,6 +187,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { TimeSheet }.ToDataSourceResult(request));
         }
+        
     }
 }
 

@@ -25,6 +25,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult JobRequest(string Id)
         {
+            ViewBag.FormTitle = "Job Request Print";
+            ViewBag.FormNumber = "1";
             ViewBag.Id = Id;
             return View();
         }
@@ -55,6 +57,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             ViewBag.JobId = Id;
             return View();
         }
+
 
     }
 }

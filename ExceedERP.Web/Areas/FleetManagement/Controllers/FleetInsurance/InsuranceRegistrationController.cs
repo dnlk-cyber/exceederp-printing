@@ -16,40 +16,54 @@ using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Global;
 using System.IO;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 {
     //[AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
     public class InsuranceRegistrationController : Controller
     {
-
+        private readonly CacheData CacheData = new CacheData();
         ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
+           
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Text = i.Name,
+          Value = i.Id
+      }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
 
-            ViewData["Name"] = db.EquipmentName.Select(s => new
+            var setting = db.RequestToInspections.FirstOrDefault();
+            ViewBag.setting = setting != null ? setting.Remark : " ";
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["InsuranceCover"] = db.InsuranceCoverTypes.Select(p => new
             {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
+                Id = p.InsuranceCoverTypeId,
+                Name = p.Code + "-" + p.Name + " " + p.Description
+            }
+
+                ).AsQueryable();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
                 Text = s.PlateNumber + " " + s.SerialNo
-            }).ToList();
-            ViewData["fleet"] = db.Fleets.Select(x => new { Id = x.FleetsID, Name = x.PlateNumber }).ToList();
-            ViewData["InsuranceCompany"] = db.InsuranceCompany.Select(x => new { x.InsuranceCompanyId, x.InsuranceCompanyName }).ToList();
+            });
+            ViewData["fleet"] = CacheData.GetFleetsSecondCache().Select(x => new { Id = x.FleetsID, Name = x.PlateNumber }).ToList();
+            ViewData["InsuranceCompany"] = db.InsuranceCompany.Select(x => new { x.InsuranceCompanyId, x.InsuranceCompanyName });
             return View();
         }
 
@@ -82,40 +96,118 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             }
             return false;
         }
-
-
-        public ActionResult FleetInsurances_Read([DataSourceRequest] DataSourceRequest request)
+        private StatusEnum IsExpire(DateTime? expireDate)
         {
-            var fleetInsurances = db.FleetInsurance;
-
-            DataSourceResult result = fleetInsurances.ToDataSourceResult(request, fleetsInsurance => new FleetInsurance
+            DateTime currentDate = DateTime.Now;
+            TimeSpan timeDifference = (DateTime)expireDate - currentDate;
+            int daysRemaining = timeDifference.Days;
+            if(daysRemaining <= 15)
             {
-                FleetInsuranceId = fleetsInsurance.FleetInsuranceId,
-                FleetsID = fleetsInsurance.FleetsID,
-                InsuranceCompanyId = fleetsInsurance.InsuranceCompanyId,
-                PremiumCost = fleetsInsurance.PremiumCost,
-                DueDate = fleetsInsurance.DueDate,
-                ExpireDate = fleetsInsurance.ExpireDate,
-                
-                HasExpired = IsExpired(fleetsInsurance.DueDate),
-                Attachment = fleetsInsurance.Attachment,
-                Description = fleetsInsurance.Description,
-                PolicyNo = fleetsInsurance.PolicyNo,
-                ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance,
-                ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance,
-                InsuranceType = fleetsInsurance.InsuranceType,
-                CreatedBy = fleetsInsurance.CreatedBy,
-                DateCreated = fleetsInsurance.DateCreated,
-                EquipmentCategoryId = fleetsInsurance.EquipmentCategoryId,
-                EquipmentTypeId = fleetsInsurance.EquipmentTypeId,
-                EquipmentNameId = fleetsInsurance.EquipmentNameId
-
-            });
-
-            return Json(result);
+               return StatusEnum.Expired;
+            }
+            return StatusEnum.Active;
         }
 
 
+        //public ActionResult FleetInsurances_Read([DataSourceRequest] DataSourceRequest request)
+        //{
+        //    var fleetInsurances = db.FleetInsurance;
+
+        //    DataSourceResult result = fleetInsurances.ToDataSourceResult(request, fleetsInsurance => new FleetInsurance
+        //    {
+        //        FleetInsuranceId = fleetsInsurance.FleetInsuranceId,
+        //        FleetsID = fleetsInsurance.FleetsID,
+        //        InsuranceCompanyId = fleetsInsurance.InsuranceCompanyId,
+        //        PremiumCost = fleetsInsurance.PremiumCost,
+        //        DueDate = fleetsInsurance.DueDate,
+        //        ExpireDate = fleetsInsurance.ExpireDate,
+        //        AddToHistory=fleetsInsurance.AddToHistory,
+        //        HasExpired = IsExpired(fleetsInsurance.DueDate),
+        //        Attachment = fleetsInsurance.Attachment,
+        //        Description = fleetsInsurance.Description,
+        //        PolicyNo = fleetsInsurance.PolicyNo,
+        //        ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance,
+        //        ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance,
+        //        InsuranceType = fleetsInsurance.InsuranceType,
+        //        CreatedBy = fleetsInsurance.CreatedBy,
+        //        DateCreated = fleetsInsurance.DateCreated,
+        //        EquipmentCategoryId = fleetsInsurance.EquipmentCategoryId,
+        //        EquipmentTypeId = fleetsInsurance.EquipmentTypeId,
+        //        EquipmentNameId = fleetsInsurance.EquipmentNameId
+
+        //    });
+
+        //    return Json(result);
+        //}
+
+        public ActionResult FleetInsurances_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            var fleetInsurancesQuery = from FI in db.FleetInsurance
+                                       join F in db.Fleets on FI.FleetsID equals F.FleetsID
+                                       select new
+                                       {
+                                           FI.FleetInsuranceId,
+                                           FI.FleetsID,
+                                           FI.InsuranceCompanyId,
+                                           FI.PremiumCost,
+                                           FI.DueDate,
+                                           FI.InsuranceCoverTypeId,
+                                           FI.ExpireDate,
+                                           FI.Attachment,
+                                           FI.Payment,
+                                           FI.Description,
+                                           FI.PolicyNo,
+                                           FI.ThirdPartyInsurance,
+                                           FI.ComprehensiveInsurance,
+                                           FI.InsuranceType,
+                                           FI.CreatedBy,
+                                           FI.DateCreated,
+                                           FI.EquipmentCategoryId,
+                                           FI.EquipmentTypeId,
+                                           FI.EquipmentNameId,
+                                           FI.IsOnlineApproved,
+                                           FI.IsSendForApproval,
+                                           FI.IsPaymentRequestGenerated,
+                                           PlateNumber = F.PlateNumber
+                                       };
+
+            // Execute query in memory
+            var fleetInsurances = fleetInsurancesQuery
+                                  .AsEnumerable()   // EF executes SQL here
+                                  .Select(f => new
+                                  {
+                                      f.FleetInsuranceId,
+                                      f.FleetsID,
+                                      f.InsuranceCompanyId,
+                                      f.PremiumCost,
+                                      f.DueDate,
+                                      f.ExpireDate,
+                                      f.InsuranceCoverTypeId,
+                                      f.Attachment,
+                                      f.Description,
+                                      f.PolicyNo,
+                                      f.Payment,
+                                      f.ThirdPartyInsurance,
+                                      f.ComprehensiveInsurance,
+                                      f.InsuranceType,
+                                      f.CreatedBy,
+                                      f.DateCreated,
+                                      f.EquipmentCategoryId,
+                                      f.EquipmentTypeId,
+                                      f.EquipmentNameId,
+                                      f.PlateNumber,
+                                      f.IsOnlineApproved,
+                                      f.IsSendForApproval,
+                                      f.IsPaymentRequestGenerated,
+                                      HasExpired = IsExpired(f.ExpireDate),  // now safe
+                                      StatusEnum=IsExpire(f.ExpireDate),
+                              AddToHistory = false // if needed
+                          });
+
+            var result = fleetInsurances.ToDataSourceResult(request);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult FleetInsurances_Create([DataSourceRequest] DataSourceRequest request, FleetInsurance fleetsInsurance)
         {
@@ -138,8 +230,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     PremiumCost= fleetsInsurance.PremiumCost,
                     DueDate= fleetsInsurance.DueDate,
                     ExpireDate= fleetsInsurance.ExpireDate,
+                    Payment=fleetsInsurance.Payment,
                     Attachment= fleetsInsurance.Attachment,
-                    Description= fleetsInsurance.Description,
+                    InsuranceCoverTypeId= fleetsInsurance.InsuranceCoverTypeId,
+                    Description = fleetsInsurance.Description,
                     PolicyNo = fleetsInsurance.PolicyNo,
                     ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance,
                     ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance,
@@ -175,7 +269,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     DueDate = fleetsInsurance.DueDate,
                     ExpireDate = fleetsInsurance.ExpireDate,
                     Attachment = fleetsInsurance.Attachment,
+                    Payment = fleetsInsurance.Payment,
                     Description = fleetsInsurance.Description,
+                    InsuranceCoverTypeId= fleetsInsurance.InsuranceCoverTypeId,
                     PolicyNo = fleetsInsurance.PolicyNo,
                     ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance,
                     ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance,
@@ -188,7 +284,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 db.FleetInsurance.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-                if(fleetsInsurance.ExpireDate<=DateTime.Now||fleetsInsurance.HasExpired)
+                if(fleetsInsurance.AddToHistory==true)
                 {
                     var fleetInsuranceHistory = new FleetInsuranceHistory();
                     fleetInsuranceHistory.FleetInsuranceHistoryId = fleetInsuranceHistory.FleetInsuranceHistoryId;
@@ -198,6 +294,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     fleetInsuranceHistory.ExpireDate = fleetsInsurance.ExpireDate;
                     fleetInsuranceHistory.FleetInsuranceId = fleetsInsurance.FleetInsuranceId;
                     fleetInsuranceHistory.FleetsID = fleetsInsurance.FleetsID;
+                    fleetInsuranceHistory.Payment = fleetsInsurance.Payment;
+                    fleetInsuranceHistory.InsuranceCoverTypeId = fleetsInsurance.InsuranceCoverTypeId;
                     fleetInsuranceHistory.HazardOfExpiryDate = fleetsInsurance.HazardOfExpiryDate;
                     fleetInsuranceHistory.InsuranceCompanyId= fleetsInsurance.InsuranceCompanyId;
                     fleetInsuranceHistory.InsuranceType = fleetsInsurance.InsuranceType;
@@ -234,6 +332,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     ExpireDate = fleetsInsurance.ExpireDate,
                     Attachment = fleetsInsurance.Attachment,
                     Description = fleetsInsurance.Description,
+                    InsuranceCoverTypeId = fleetsInsurance.InsuranceCoverTypeId,
                     ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance,
                     ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance,
                     InsuranceType = fleetsInsurance.InsuranceType,
@@ -247,29 +346,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 db.FleetInsurance.Attach(entity);
                 db.FleetInsurance.Remove(entity);
                 db.SaveChanges();
-                if (fleetsInsurance.ExpireDate <= DateTime.Now || fleetsInsurance.HasExpired)
-                {
-                    var fleetInsuranceHistory = new FleetInsuranceHistory();
-                    fleetInsuranceHistory.FleetInsuranceHistoryId = fleetInsuranceHistory.FleetInsuranceHistoryId;
-                    fleetInsuranceHistory.EquipmentCategoryId = fleetsInsurance.EquipmentCategoryId;
-                    fleetInsuranceHistory.EquipmentCategoryId = fleetsInsurance.EquipmentNameId;
-                    fleetInsuranceHistory.EquipmentTypeId = fleetsInsurance.EquipmentTypeId;
-                    fleetInsuranceHistory.ExpireDate = fleetsInsurance.ExpireDate;
-                    fleetInsuranceHistory.FleetInsuranceId = fleetsInsurance.FleetInsuranceId;
-                    fleetInsuranceHistory.FleetsID = fleetsInsurance.FleetsID;
-                    fleetInsuranceHistory.HazardOfExpiryDate = fleetsInsurance.HazardOfExpiryDate;
-                    fleetInsuranceHistory.InsuranceCompanyId = fleetsInsurance.InsuranceCompanyId;
-                    fleetInsuranceHistory.InsuranceType = fleetsInsurance.InsuranceType;
-                    fleetInsuranceHistory.PolicyNo = fleetsInsurance.PolicyNo;
-                    fleetInsuranceHistory.Remark = fleetsInsurance.Remark;
-                    fleetInsuranceHistory.ThirdParty = fleetsInsurance.ThirdParty;
-                    fleetInsuranceHistory.ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance;
-                    fleetInsuranceHistory.ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance;
-                    fleetInsuranceHistory.Description = fleetsInsurance.Description;
-                    db.FleetInsuranceHistorys.Add(fleetInsuranceHistory);
-                    db.SaveChanges();
-
-                }
+               
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted insurance registration number {entity.FleetInsuranceId }");
                 #endregion
@@ -291,10 +368,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         }
         public ActionResult DownloadCompanyDocument(int CompanyDocumentId)
         {
-            var record = db.MaintenanceCompanyDocuments.Find(CompanyDocumentId);
+            var record = db.FleetInsuranceDocuments.Find(CompanyDocumentId);
 
             return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
         }
+        
         #region Docs
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -393,6 +471,99 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return Json("Successfull");
         }
         #endregion
+        public JsonResult GetCoverType()
+        {
+
+            return Json(db.InsuranceCoverTypes.Where(x => x.IsActive).Select(p => new
+            {
+                Id = p.InsuranceCoverTypeId,
+                Name = p.Code + "-" + p.Name + " " + p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult SendForApproval(int id)
+        {
+            var record = db.FleetInsurance.FirstOrDefault(x => x.FleetInsuranceId == id);
+            record.IsSendForApproval = true;
+            record.SendForApprovalBy = User.Identity.Name;
+            record.SendForApprovalTime = DateTime.Now;
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Send For Approval Success",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult Admin_Read([DataSourceRequest] DataSourceRequest request, int Id)
+        {
+            var Admin = new List<FleetInsuranceValidation>();
+            var Request = db.FleetInsuranceValidation.Where(x => x.FleetInsuranceId == Id).FirstOrDefault();
+            if (Request != null)
+            {
+
+                Admin =
+                    db.FleetInsuranceValidation
+                        .Where(x => x.FleetInsuranceId == Id)
+                        .ToList();
+            }
+            return Json(Admin.ToDataSourceResult(request));
+        }
+
+        public ActionResult Admin_Create(int id, [DataSourceRequest]DataSourceRequest request, FleetInsuranceValidation Validation)
+        {
+            var record = db.FleetInsurance.FirstOrDefault(x => x.FleetInsuranceId == id);
+            
+            var hasApproved = db.FleetInsuranceValidation
+                    .Where(x => x.FleetInsuranceId == id)
+                .Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
+            if (hasApproved.Any())
+                ModelState.AddModelError("hasapproved", "You can't approve again.You have already approved.");
+            if (ModelState.IsValid)
+            {
+                if (record != null)
+                {
+                    if (Validation.Status == ApprovalStatuses.Approve)
+                    {
+                        record.IsOnlineApproved = true;
+                        record.OnlineApprovedBy = User.Identity.Name;
+                        record.OnlineApprovedTime= DateTime.Now;
+
+                        //var subCompartments = db.HarvestedSubCompartment.Where(x => x.PlantationHarvestingYearId == inventoryYear.PlantationHarvestingYearId).ToList();
+
+                        db.Entry(record).State = EntityState.Modified;
+                        db.SaveChanges();
+                        
+                    }
+
+                    if (Validation.Status == ApprovalStatuses.Reject)
+                    {
+                        record.IsSendForApproval = false;
+                        record.SendForApprovalTime = DateTime.Now;
+                        record.SendForApprovalBy = " ";
+                        db.Entry(record).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                    }
+
+                    var entity = new FleetInsuranceValidation
+                    {
+                        FleetInsuranceId = id,
+                        Status = Validation.Status,
+                        Remark = Validation.Remark,                       
+                        DateCreated = DateTime.Now,
+                        LastModified = Validation.LastModified,
+                        CreatedBy = User.Identity.Name,
+                        ModifiedBy = Validation.ModifiedBy
+                    };
+
+                    db.FleetInsuranceValidation.Add(entity);
+                    db.SaveChanges();
+                }
+            }
+
+            return Json(new[] { Validation }.ToDataSourceResult(request, ModelState));
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

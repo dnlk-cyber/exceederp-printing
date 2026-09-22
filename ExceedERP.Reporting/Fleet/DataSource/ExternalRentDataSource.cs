@@ -133,7 +133,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             ExternalRentViewModel.EquipmentType = Equipment.EquipmentType.EquipmentTypeName;
                             ExternalRentViewModel.Equipment = Equipment.EquipmentName + " - " + Equipment.PlateNumber + " - " + Equipment.UnitNum;
                             ExternalRentViewModel.TotalCost = FleetCostHelper.GetExternalRentTotalCost(a);
-                            ExternalRentViewModel.EquipmentCost = FleetCostHelper.GetSingleEquipmentExternalRentCost(a,Equipment.RentId);
+                            //ExternalRentViewModel.EquipmentCost = FleetCostHelper.GetSingleEquipmentExternalRentCost(a,Equipment.RentId);
                             ExternalRentViewModel.RentNo = a.Num;
                             ExternalRentViewModel.AdvancePayment = a.AdvancePayment;
                             ExternalRentViewModel.BankFullAddress = a.BankFullAddress;
@@ -145,7 +145,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             ExternalRentViewModel.RentalRateIncludingVAT = a.RentalRateIncludingVAT;
                             ExternalRentViewModel.Status = a.Status;
                             ExternalRentViewModel.UnitOfWorkMeasurement = a.UnitOfWorkMeasurement;
-                            ExternalRentViewModel.WorkingCapacity = a.WorkingCapacity;
+                            //ExternalRentViewModel.WorkingCapacity = a.WorkingCapacity;
 
                             ExternalRentViewModel.AmharicName = AmharicName;
                             ExternalRentViewModel.Name = Name;

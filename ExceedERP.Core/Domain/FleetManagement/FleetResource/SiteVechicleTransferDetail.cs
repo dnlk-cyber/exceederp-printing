@@ -29,5 +29,26 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string MissingParts { get; set; }
 
 
+    }public partial class DriverTransferDetail : Operations
+    {
+
+        public int DriverTransferDetailId { get; set; }
+
+        public string DriverTransferId { get; set; }
+
+        
+        public string Type { get; set; }
+        public string SerialNo { get; set; }
+        public decimal Quantity { get; set; }
+
+        public string Description { get; set; }
+
+        public string DamagedParts { get; set; }
+         
+        public string MissingParts { get; set; }
+
+
     }
+
+    
 }

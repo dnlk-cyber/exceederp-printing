@@ -33,7 +33,7 @@ userCanEdit = false;
     columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(200);
     if (GlobalHelper.IsMultipleBusinessUnit())
     {
-        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "Id", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
     }
     columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
     columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
@@ -175,43 +175,43 @@ userCanEdit = false;
 
                                     items.Add().Text("Department Approval").Content(@<text>
                                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.AdministrativeJobDepartmentApproval>()
-                                                                        .Name("JobOrderAdmingrid_#=JobRequestId#")
-                                                                        .Columns(columns =>
-                                                                        {
-                                                                                                    columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
-                                                                                                    columns.Bound(o => o.Remark).Width(160);
-                                                                                                    columns.Bound(o => o.CreatedBy).Width(120);
-                                                                                                    columns.Bound(o => o.DateCreated).Format("{0:d}").Width(120);
-                                                                                                    columns.Command(command =>
-                                                                            {
-                                                                                                            command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
-                                                                                    .Text("&nbsp;Approve").Click("approveJobRequest").IconClass("fa fa-check");
-                                                                                                            command.Custom("cmd-reject-request").HtmlAttributes(new { @class = "kendoDanger" })
-                                                                                    .Text("&nbsp;Reject").Click("rejectJobRequest").IconClass("fa fa-close");
-                                                                                                // command.Custom().Text("Approve");
-                                                                                            }).Width(250);
-                                                                                                }).Events(ev =>
-                                                                                    {
-                                                                                                                    ev.DataBound("approveonDataBound");
-                                                                                                                })
-                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                        .DataSource(dataSource => dataSource
-                                                                        .Ajax()
-                                                                        .PageSize(20)
-                                                                        .Model(model =>
-                                                                        {
-                                                                                                    model.Id(p => p.AdministrativeJobDepartmentApprovalID);
-                                                                                                    model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                    model.Field(p => p.DateCreated).Editable(false);
-                                                                                                }).Events(ev => ev
-                                                                                    .Error("error_handler(\"JobOrderAdmingrid_#=JobRequestId#\")")
-                                                                                    .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=JobRequestId#\")")
-                                                                                    .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=JobRequestId#\")"))
-                                                                        .Create(create => create.Action("Admin_Approve", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
-                                                                        .Read(read => read.Action("Admin_Read", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
-                                                                        // .Update(update => update.Action("Admin_Approve", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
-                                                                        )
-                                                                        .ToClientTemplate())
+                       .Name("JobOrderAdmingrid_#=JobRequestId#")
+                       .Columns(columns =>
+                       {
+                                                   columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
+                                                   columns.Bound(o => o.Remark).Width(160);
+                                                   columns.Bound(o => o.CreatedBy).Width(120);
+                                                   columns.Bound(o => o.DateCreated).Format("{0:d}").Width(120);
+                                                   columns.Command(command =>
+                           {
+                                                           command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
+                                   .Text("&nbsp;Approve").Click("approveJobRequest").IconClass("fa fa-check");
+                                                           command.Custom("cmd-reject-request").HtmlAttributes(new { @class = "kendoDanger" })
+                                   .Text("&nbsp;Reject").Click("rejectJobRequest").IconClass("fa fa-close");
+                                               // command.Custom().Text("Approve");
+                                           }).Width(250);
+                                               }).Events(ev =>
+                                   {
+                                                                   ev.DataBound("approveonDataBound");
+                                                               })
+                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                       .DataSource(dataSource => dataSource
+                       .Ajax()
+                       .PageSize(20)
+                       .Model(model =>
+                       {
+                                                   model.Id(p => p.AdministrativeJobDepartmentApprovalID);
+                                                   model.Field(p => p.CreatedBy).Editable(false);
+                                                   model.Field(p => p.DateCreated).Editable(false);
+                                               }).Events(ev => ev
+                                   .Error("error_handler(\"JobOrderAdmingrid_#=JobRequestId#\")")
+                                   .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=JobRequestId#\")")
+                                   .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=JobRequestId#\")"))
+                       .Create(create => create.Action("Admin_Approve", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                       .Read(read => read.Action("Admin_Read", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                       // .Update(update => update.Action("Admin_Approve", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                       )
+                       .ToClientTemplate())
                                     </text>
 );
                                         })
@@ -239,11 +239,11 @@ type: "POST",
 url: '@Url.Action("ApproveJobRequest", "JobRequestDepartment", new { area = "Maintenance" })',
 data: { id: masterId },
     success: function (result) {
-        alert(result);
+        alert(result.Message);
     location.reload(true);
 },
-error: function (result) {
-alert(result);
+    error: function (result) {
+        alert(result.Message);
 }
 });
 }

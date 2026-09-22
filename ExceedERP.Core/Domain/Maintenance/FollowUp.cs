@@ -13,4 +13,11 @@ namespace ExceedERP.Core.Domain.Maintenance
 
          
               }
+    public class DescriptionOfAchievement:TrackUserSettingOperation
+    {
+        public int DescrtiptionOfAchievementId { get; set; }
+        public string ServiceCrewWorkLogId { get; set; }
+        public string Descrtiption { get; set; }
+        public string Remark { get; set; }
+    }
 }

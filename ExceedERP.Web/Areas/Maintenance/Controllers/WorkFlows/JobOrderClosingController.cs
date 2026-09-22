@@ -67,11 +67,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             }).ToList();
 
 
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
 
 
             ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
@@ -104,7 +105,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
          i => new
          {
              Name = i.Name,
-             Code = i.Id
+             BranchId = i.Id
          }).AsQueryable();
             var structure = db.MainCompanyStructures;
 
@@ -132,7 +133,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             IQueryable<JobOrder> jobOrders =
                 db.JobOrder
                 .AsNoTracking()
-                .ToList()
+                //.ToList()
                 .Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
                 .Where(x => x.Status != "Closed")
                 .Where(x => x.IsSubmittedToServiceCenter)
@@ -295,6 +296,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
             }
 
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

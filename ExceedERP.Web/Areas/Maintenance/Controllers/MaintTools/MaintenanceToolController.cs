@@ -11,6 +11,7 @@ using System.Web.Mvc;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers.MainTools
 {
@@ -19,6 +20,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.MainTools
     {
         IMaintenanceToolService _MaintenanceToolService;
         IFleetService _FleetService;
+        ExceedDbContext db = new ExceedDbContext();
         public MaintenanceToolController()
         {
             _MaintenanceToolService = new MaintenanceToolService();
@@ -32,7 +34,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.MainTools
 
         public ActionResult MaintenanceTool_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var MaintenanceTool = _MaintenanceToolService.GetAll();
+            //var MaintenanceTool = _MaintenanceToolService.GetAll();
+            IQueryable<MaintenanceTool> MaintenanceTool = db.MaintenanceTool.AsQueryable();
 
             return Json(MaintenanceTool.ToDataSourceResult(request));
         }
@@ -101,7 +104,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.MainTools
             return Json(fleets, JsonRequestBehavior.AllowGet);
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

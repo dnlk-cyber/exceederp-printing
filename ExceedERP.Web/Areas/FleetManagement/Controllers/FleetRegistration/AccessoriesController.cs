@@ -17,6 +17,8 @@ using ExceedERP.Helpers.Fleet;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 	
@@ -25,10 +27,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 	{
 	   IAccessoriesService _AccessoriesService;
 	   IFleetService _FleetService;
-	   public AccessoriesController()
+        ExceedDbContext db = new ExceedDbContext();
+        public AccessoriesController()
 	   {
 		   _AccessoriesService = new AccessoriesService();
 		   _FleetService = new FleetService();
+          
 	   }
 		public ActionResult Index()
 		{
@@ -37,7 +41,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		}
 		 public JsonResult Accessories_Read([DataSourceRequest] DataSourceRequest request)
 		{
-			var Accessories = _AccessoriesService.GetAll().Where(x=>x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
+			var Accessories = db.FleetAccessories.Where(x=>x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).AsQueryable();
 
 			return Json(Accessories.ToDataSourceResult(request));
 		}

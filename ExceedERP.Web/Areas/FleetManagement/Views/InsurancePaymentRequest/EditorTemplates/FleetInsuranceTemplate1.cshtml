@@ -1,0 +1,120 @@
+@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance
+@using ExceedERP.Helpers.Common
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+        <div class="k-label">
+            @Html.Label("Fleet Name")
+        </div>
+        <div>
+            @(Html.Kendo().DropDownListFor(m => m.FleetsID)
+                          .OptionLabel("Select Fleet")
+                          .DataTextField("EquipmentName")
+                          .DataValueField("FleetsID")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { Area = "FleetManagement" }).Data("sendForgery"))
+                                  .ServerFiltering(false);
+                          })
+                          .Filter("contains")
+                          .MinLength(2)
+                          .ValuePrimitive(true)
+            )
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.Label("Company Name")
+        </div>
+
+        <div>
+            @(Html.Kendo().DropDownListFor(m => m.InsuranceCompanyId)
+                          .OptionLabel("Select Insurance")
+                          .DataTextField("InsuranceCompanyName")
+                          .DataValueField("InsuranceCompanyId")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetInsuranceCompany", "FleetManagementDataProvider", new { Area = "FleetManagement" }).Data("sendForgery"))
+                                  .ServerFiltering(false);
+                          })
+                          .Filter("contains")
+                          .MinLength(2)
+                          .ValuePrimitive(true)
+            )
+
+        </div>
+    </div>
+    
+</div>
+
+
+
+
+
+
+
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.PremiumCost)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.PremiumCost)
+        </div>
+    </div>
+
+    
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.ExpireDate)
+        </div>
+        <div>
+            @Html.Kendo().DatePickerFor(model=>model.ExpireDate)
+        </div>
+
+    </div>
+    
+
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.DueDate)
+        </div>
+        <div>
+            @Html.Kendo().DatePickerFor(model=>model.DueDate)
+        </div>
+    </div>
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.Attachment)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Attachment)
+        </div>
+
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-1">
+    </div>
+
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Description)
+        </div>
+    </div>
+</div>

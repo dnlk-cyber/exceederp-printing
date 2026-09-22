@@ -20,6 +20,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     {
         IVehicleReturnService _VehicleReturnService;
 
+        private readonly CacheData CacheData = new CacheData();
         ExceedDbContext db = new ExceedDbContext();
 
 
@@ -37,17 +38,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 s.OrgBranchName,
                 Name = s.EquipmentName + "-" + s.PlateNumber + "-" + s.ChasisNumber
             });
-            ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new {
-                Id = s.EquipmentNameID,
-                Name = s.Name
-            });
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           Id = i.Id
+       }).AsQueryable();
             return View();
         }
 
 
         public ActionResult VehicleReturn_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var VehicleReturn = _VehicleReturnService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(v => new VehicleReturn
+            var VehicleReturn = db.VehicleReturn.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(v => new VehicleReturn
                 {
                     FleetsID = v.FleetsID,
                     Description = v.Description,
@@ -123,7 +126,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

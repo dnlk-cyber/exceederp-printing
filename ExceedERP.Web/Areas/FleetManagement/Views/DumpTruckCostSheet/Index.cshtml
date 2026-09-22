@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "DumpTruckTimeSheets";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool IsMCG = (ViewBag.setting as string) == "MCG";
+    bool IsMIDROC = (ViewBag.setting as string) == "MIDROC";
 }
 
 <legend>Dump Truck Cost Sheet</legend>
@@ -10,36 +12,60 @@
                     .Name("grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(c => c.DumpTruckTimeSheetId).Title("#").Filterable(false).Width(30);
+                        columns.Bound(c => c.DumpTruckTimeSheetId).Title("#").Filterable(false).Width(150);
                         columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
                         columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
                         columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
-
                         columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Fleets"], "FleetsID", "PlateNumber").Title("Plate No").Width(110).Filterable(ftb => ftb.Multi(true).Search(true));
                         columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(110);
-                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
-                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Value", "Text").Title("Business unit").Width(100);
+                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "BranchId", "Name").Title("Branch Name").Width(100);
+                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Id", "Name").Title("Business unit").Width(100);
                         columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
-                        columns.Bound(c => c.FuelConsumption).Title("Fuel Consumption").Width(100);
-                        columns.Bound(c => c.FuelRate).Title("Fuel Rate").Width(100);
+                        if (IsMIDROC == false)
+                        {
+                            columns.Bound(c => c.FuelConsumption).Title("Fuel Consumption").Width(100);
+                            columns.Bound(c => c.FuelRate).Title("Fuel Rate").Width(100);
+                        }
                         columns.Bound(c => c.IdleHour).Title("Idle Houre").Width(100);
+                        columns.Bound(c => c.RentalRate).Title("Rental Rate").Width(100);
                         columns.Bound(c => c.IdealRentalRate).Title("Idle Rental Rate").Width(100);
+                        if (IsMCG == true)
+                        {
+                            columns.Bound(c => c.IdleReason).Title("Idle reason").Width(120);
+                            columns.Bound(c => c.DownReason).Title("Down reason").Width(120);
+                            columns.Bound(c => c.TotalTime).Title("Total Payable HR").Width(120);
+                        }
+                        if (IsMCG == false)
+                        {
+                            columns.Bound(c => c.ReasonForIdle).Title("Idle reason").Width(120);
+                            columns.Bound(c => c.ReasonForDown).Title("Down reason").Width(120);
+                        }
                         columns.Bound(c => c.MaintenanceCost).Title("Maintenance Cost").Width(100);
                         columns.Bound(c => c.Salary).Title("Salary").Width(100);
+                        columns.Bound(c => c.LabourCost).Title("Labour Cost").Width(120);
+                        if (IsMIDROC == false)
+                        {
+                            columns.Bound(c => c.SparePartCost).Title("Spare Part Cost").Width(120);
+                            columns.Bound(c => c.BatteryCost).Title("Battery Cost").Width(120);
+                        }
+                        columns.Bound(c => c.BasicSalary).Title("Basic Salary").Width(120);
+                        columns.Bound(c => c.OverTime).Title("Over Time").Width(120);
                         columns.Bound(c => c.Perdium).Title("Perdium").Width(100);
                         columns.Bound(c => c.Date).Width(70);
                         columns.Bound(c => c.TypeOfWorkExcuted).Title("Work Excuted").Width(100);
-                        columns.Bound(c => c.CostSheetStatus).Width(120);
-                        columns.Bound(c => c.LubricantCost).Width(120);
-                        columns.Bound(c => c.MaintenanceCost).Width(120);
+                        //columns.Bound(c => c.CostSheetStatus).Width(120);
+                        //columns.Bound(c => c.MaintenanceCost).Width(120);
                         columns.Bound(c => c.OilConsumption).Width(120);
+                        columns.Bound(c => c.OilCost).Width(120);
                         columns.Bound(c => c.TireCost).Width(120);
-                        columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); }).Title("Action").Width(200);
+                        columns.Bound(c => c.CostSheetStatus).Width(120);
+                        columns.Command(command => { command.Edit(); }).Title("Action").Width(200);
                     })
 
                     .Editable(editable => editable.Mode(GridEditMode.PopUp)
                     .TemplateName("DumpTruckCostSheetTemplate")
-                    .Window(win => win.Title("Dump Truck Cost Sheet").Width(800)))
+                    .Window(win => win.Title("Dump Truck Cost Sheet"))
+                    )
                     .Pageable()
                     .Events(e => e.DataBound("dataBound"))
                     .Events(e => e.DetailExpand("onDetailExpand"))
@@ -141,7 +167,57 @@
                                     ).ToClientTemplate()
                                 )
                             </text>);
-                                    items.Add().Text("Approval").Content(@<text>
+                if (IsMCG == false)
+                {
+                    items.Add().Text("Maintenance Cost Detail")
+                                                                                   .Content(@<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.MaintenanceCostDetail>()
+                                                                                                             .Name("MaintenanceCD#=DumpTruckTimeSheetId#")
+                                                                                                             .Columns(columns =>
+                                                                                                             {
+                                                                                                                 columns.ForeignKey(c => c.RepairTypeId, (IEnumerable)ViewData["RepairTypes"], "Code", "Name").Title("Repair Type").Width(50);
+                                                                                                                 columns.Bound(c => c.Cost).Title("Cost").Width(50);
+                                                                                                                 columns.Command(command =>
+                                                                                                                 {
+                                                                                                                     command.Edit();
+                                                                                                                     command.Destroy();
+                                                                                                                 }).Title("Action").Width(50);
+
+                                                                                                             })
+                                                                                                             .ToolBar(commands => commands.Create())
+                                                                                                        .Events(ev =>
+                                                                                                        {
+                                                                                                            //ev.DataBound("approvalDataBound");
+                                                                                                        })
+                                                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                            .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                                            .DataSource(dataSource => dataSource
+                                                                                                                .Ajax()
+                                                                                                                .PageSize(5)
+                                                                                                                .Model(model =>
+                                                                                                                {
+                                                                                                                    model.Id(p => p.MaintenanceCostDetailId);
+                                                                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                })
+                                                                                                                .Events(ev => ev
+                                                                                                                    .Error("error_handler(\"MaintenanceCD#=DumpTruckTimeSheetId#\")")
+                                                                                                                    .RequestStart("onRequestStart(\"MaintenanceCD#=DumpTruckTimeSheetId#\")")
+                                                                                                                    .RequestEnd("onRequestEnd(\"MaintenanceCD#=DumpTruckTimeSheetId#\")"))
+
+                                                                                                                    .Create(create => create.Action("RepairType_Create", "MaintenanceCostDetail", new { id = "#=DumpTruckTimeSheetId#", Text = "DumpTruck" }).Data("sendForgery"))
+                                                                                                                    .Read(read => read.Action("DumpTruck_Read", "MaintenanceCostDetail", new { id = "#=DumpTruckTimeSheetId#", Text = "DumpTruck" }).Data("sendForgery"))
+                                                                                                                    .Update(update => update.Action("RepairType_Update", "MaintenanceCostDetail", new { Text = "DumpTruck" }).Data("sendForgery"))
+                                                                                                                    .Destroy(update => update.Action("RepairType_Destroy", "MaintenanceCostDetail", new { Text = "DumpTruck" }).Data("sendForgery"))
+
+
+                                                                                                                )
+                                                                                                                .ToClientTemplate())
+
+                                
+                                                                                    </text>);
+                }
+                items.Add().Text("Approval").Content(@<text>
 
                                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
                                                                 .Name("TimeSheetApproval#=DumpTruckTimeSheetId#")
@@ -188,11 +264,6 @@
 
 
 </script>
-
-
-
-
-
 <script>
     var timeSheetApproved;
     var timeSheetSendForAproval;
@@ -210,26 +281,37 @@
         timeSheetSendForAproval = masterDataItem.CostSheetSendForAproval;
 
         dumpTruckTimeSheetId = masterDataItem.DumpTruckTimeSheetId;
-
-
         var firstValidationgridName = "#TimeSheetApproval" + dumpTruckTimeSheetId;
-
-
-
         if (timeSheetApproved == true || timeSheetSendForAproval == false) {
-
             $(".k-grid-top", firstValidationgridName).hide();
-
         }
     }
 
     function dataBound() {
-
-
         var grid = this;
-
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
+            if (dataItem.IsECWC == true) {
+                // Hide columns for this row
+                grid.showColumn("BasicSalary");
+                grid.showColumn("OverTime");
+                grid.showColumn("BatteryCost");
+                grid.showColumn("LabourCost");
+                grid.showColumn("SparePartCost");
+                grid.hideColumn("Salary");
+                grid.hideColumn("MaintenanceCost");
+
+            } else {
+                // Show them back if IsECWC is false
+                grid.showColumn("Salary");
+                grid.showColumn("MaintenanceCost");
+                grid.hideColumn("BasicSalary");
+                grid.hideColumn("OverTime");
+                grid.hideColumn("BatteryCost");
+                grid.hideColumn("LabourCost");
+                grid.hideColumn("SparePartCost");
+
+            }
             if (dataItem.CostSheetApproved == true) {
                 $(this).addClass("k-state-FleetApproved");
             }
@@ -242,10 +324,7 @@
             }
         });
     }
-
-
     function sendForApproval(id) {
-        
         $.ajax({
             type: "POST",
             url: '@Url.Action("CostSheetSendForApproval", "DumpTruckCostSheet", new { area = "FleetManagement" })',
@@ -262,7 +341,6 @@
         });
     }
     function VoidCostSheet(id) {
-        
         $.ajax({
             type: "POST",
             url: '@Url.Action("VoidCostSheet", "DumpTruckCostSheet", new { area = "FleetManagement" })',
@@ -298,7 +376,7 @@
         }
     }
 </script>
-<script type="text/javascript">
+<script>
     function filterEquipmentType() {
         var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
         var filterInput = dropdownlist.filterInput;
@@ -309,11 +387,36 @@
         };
 
     }
+    function onFleetChange(e){
+    var fleetId = this.value();
+    if (!fleetId) return;
+    $.ajax({
+        url: '@Url.Action("GetFleetIsExternal", "FleetManagementDataProvider")',
+        type: 'GET',
+        data: { fleetId: fleetId },
+        success: function (res) {
 
+            if (res.isExternal === true) {
+                $("#internalOperatorDiv").show();
+                $("#externalOperatorDiv").show();
+            } else {
+                $("#internalOperatorDiv").show();
+                $("#externalOperatorDiv").hide();
+            }
+
+
+            //$('#EquipmentCategoryId').data("kendoDropDownList").value(res.EquipmentCategory);
+            //$('#EquipmentTypeId').data("kendoDropDownList").value(res.EquipmentType);
+            //$('#EquipmentNameId').data("kendoDropDownList").value(res.EquipmentName);
+            //$('#EquipmentCategoryId').data("kendoDropDownList").trigger("change");
+            //$('#EquipmentTypeId').data("kendoDropDownList").trigger("change");
+            //$('#EquipmentNameId').data("kendoDropDownList").trigger("change");
+        }
+    });
+}
     function filterEquipmentNames() {
         var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
         var filterInput = dropdownlist.filterInput;
-
         return {
             equipmentTypeId: $("#EquipmentTypeId").val(),
             search: filterInput.val()

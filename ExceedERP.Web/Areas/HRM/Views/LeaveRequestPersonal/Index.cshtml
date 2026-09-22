@@ -8,13 +8,36 @@
 }
 
 <style>
+    .lr-page {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .lr-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+        .lr-page-header legend {
+            border: 0;
+            margin: 0;
+            padding: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
     .lr-status-pill {
         display: inline-block;
-        padding: 3px 8px;
+        padding: 3px 10px;
         border-radius: 12px;
         font-size: 11px;
         font-weight: 600;
         text-align: center;
+        letter-spacing: .2px;
     }
 
     .status-approved {
@@ -46,122 +69,401 @@
         color: #991b1b;
         border: 1px solid #fecaca;
     }
+
+    /* Status Legend Bar */
+    .lr-legend-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
+    }
+
+    .lr-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #4b5563;
+        background: #f9fafb;
+        border: 1px solid #eef0f2;
+        border-radius: 20px;
+        padding: 4px 10px;
+    }
+
+        .lr-legend-item .fa-circle {
+            font-size: 9px;
+        }
+
+    /* Grid card shell */
+    .lr-grid-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 4px;
+        box-shadow: 0 1px 3px rgba(16, 24, 40, .06), 0 1px 2px rgba(16, 24, 40, .04);
+    }
+
+        .lr-grid-card .k-grid {
+            border-radius: 8px;
+            border-color: #eef0f2;
+        }
+
+        .lr-grid-card .k-grid-header {
+            background-color: #f8fafc;
+        }
+
+            .lr-grid-card .k-grid-header th.k-header {
+                font-weight: 700;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: .3px;
+                color: #4b5563;
+            }
+
+        .lr-grid-card .k-grid-toolbar {
+            background: #fff;
+            border-bottom: 1px solid #eef0f2;
+            padding: 10px 12px;
+        }
+
+            .lr-grid-card .k-grid-toolbar .k-button {
+                border-radius: 6px;
+                font-weight: 600;
+                background-color: #2563eb;
+                border-color: #2563eb;
+                color: #fff;
+                padding: 6px 14px;
+            }
+
+                .lr-grid-card .k-grid-toolbar .k-button:hover {
+                    background-color: #1d4ed8;
+                    border-color: #1d4ed8;
+                }
+
+        .lr-grid-card .k-grid-content tr:hover {
+            background-color: #f5f8ff;
+        }
+
+        .lr-grid-card .k-grid-content .k-button {
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .lr-grid-card .k-pager-wrap {
+            background: #f8fafc;
+            border-top: 1px solid #eef0f2;
+        }
+
+    /* kept as classes (not inline hex) because '#' inside the kendo-tmpl script block below breaks Kendo's template parser */
+    .lr-detail-actions {
+        padding: 16px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: #fafbfc;
+    }
+
+    .lr-detail-btn {
+        border-radius: 6px;
+        font-weight: 600;
+    }
+</style>
+<style>
+    .lr-modal-container {
+        padding: 14px 18px 18px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Mobile-first: one full-width row per section; fields inside a row auto-fit into columns
+       as space allows (container-based, not viewport-breakpoint based like Bootstrap's col-md-4). */
+    .lr-section-card {
+        background: #fff;
+        border: 1px solid #eef0f2;
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+    }
+
+        .lr-section-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .lr-section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        color: #374151;
+        border-bottom: 2px solid #eef0f2;
+        padding-bottom: 10px;
+        margin-bottom: 16px;
+    }
+
+        .lr-section-title .lr-section-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 12px;
+        }
+
+    .lr-field-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px 20px;
+    }
+
+        .lr-field-grid.lr-cols-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .lr-field-grid .lr-span-all {
+            grid-column: 1 / -1;
+        }
+
+    .lr-form-group {
+        margin-bottom: 0;
+    }
+
+        .lr-form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .lr-form-group .form-control,
+        .lr-form-group input.k-textbox,
+        .lr-form-group .k-dropdown,
+        .lr-form-group .k-picker-wrap {
+            border-radius: 6px !important;
+        }
+
+    .lr-subordinate-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 8px 12px;
+    }
+
+        .lr-subordinate-toggle label {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e40af;
+            cursor: pointer;
+        }
+
+    .eth-input-group {
+        display: flex;
+        align-items: center;
+    }
+
+        .eth-input-group input {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+            cursor: pointer;
+            background-color: #fff !important;
+        }
+
+        .eth-input-group .input-group-addon {
+            background-color: #eff6ff;
+            border: 1px solid #d1d5db;
+            border-left: 0;
+            border-top-right-radius: 6px;
+            border-bottom-right-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: background-color .15s ease-in-out;
+        }
+
+            .eth-input-group .input-group-addon:hover {
+                background-color: #dbeafe;
+            }
+
+    .lr-balance-card {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px;
+    }
+
+        .lr-balance-card.lr-cols-3 {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
 </style>
 
-<legend>@Resources.NavigatorLeave_LeaveRequest</legend>
+<div class="lr-page">
+    <div class="lr-page-header">
+        <legend>@Resources.NavigatorLeave_LeaveRequest</legend>
+    </div>
 
-<!-- Status Legend Bar -->
-<div class="well well-sm" style="background:#fff; border-radius:6px; margin-bottom:15px;">
-    <span class="fa fa-circle" style="color:#059669;"></span> Final Approved &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color:#10b981;"></span> Department Approved &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color:#0284c7;"></span> Waiting for Approval &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color:#d97706;"></span> Pending &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color:#dc2626;"></span> Rejected
-</div>
+    <!-- Status Legend Bar -->
+    <div class="lr-legend-bar">
+        <span class="lr-legend-item"><i class="fa fa-circle" style="color:#059669;"></i> Final Approved</span>
+        <span class="lr-legend-item"><i class="fa fa-circle" style="color:#10b981;"></i> Department Approved</span>
+        <span class="lr-legend-item"><i class="fa fa-circle" style="color:#0284c7;"></i> Waiting for Approval</span>
+        <span class="lr-legend-item"><i class="fa fa-circle" style="color:#d97706;"></i> Pending</span>
+        <span class="lr-legend-item"><i class="fa fa-circle" style="color:#dc2626;"></i> Rejected</span>
+    </div>
 
-@(Html.Kendo().Grid<LeaveRequest>()
-        .Name("LeaveRequestgrid")
-        .Columns(columns =>
-        {
-            columns.Bound(c => c.LeaveRequestId).Title("#").Width(70);
-            columns.Bound(c => c.EmployeeCode).Title("Code").Width(110);
-            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Title("Employee").Width(160);
-            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Title("Branch").Width(120);
+    <div class="lr-grid-card">
+        @(Html.Kendo().Grid<LeaveRequest>()
+                    .Name("LeaveRequestgrid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.LeaveRequestId).Title("#").Width(70);
+                        columns.Bound(c => c.EmployeeCode).Title("Code").Width(110);
+                        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Title("Employee").Width(160);
+                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Title("Branch").Width(120);
             //columns.ForeignKey(c => c.or, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Title("Department").Width(140);
             columns.Bound(c => c.Type).Title("Type").Width(110);
-            columns.Bound(c => c.Day).Title("Day").Width(90);
+                        columns.Bound(c => c.Day).Title("Day").Width(90);
 
-            if (useEthiopian)
-            {
-                columns.Bound(c => c.FromAmharic).Title("From (Eth)").Width(100);
-                columns.Bound(c => c.ToAmharic).Title("To (Eth)").Width(100);
-            }
-            else
-            {
-                columns.Bound(c => c.From).Format("{0:dd/MM/yyyy}").Title("From").Width(100);
-                columns.Bound(c => c.To).Format("{0:dd/MM/yyyy}").Title("To").Width(100);
-            }
+                        if (useEthiopian)
+                        {
+                            columns.Bound(c => c.FromAmharic).Title("From (Eth)").Width(100);
+                            columns.Bound(c => c.ToAmharic).Title("To (Eth)").Width(100);
+                        }
+                        else
+                        {
+                            columns.Bound(c => c.From).Format("{0:dd/MM/yyyy}").Title("From").Width(100);
+                            columns.Bound(c => c.To).Format("{0:dd/MM/yyyy}").Title("To").Width(100);
+                        }
 
-            columns.Bound(c => c.LeaveDays).Title("Days").Width(80);
-            columns.Bound(c => c.Status).Title("Status").ClientTemplate(
-                "# if (IsApproved) { #" +
-                    "<span class='lr-status-pill status-approved'>Approved</span>" +
-                "# } else if (Status === 'DEPARTMENT_APPROVAL') { #" +
-                    "<span class='lr-status-pill status-dept'>Dept Approved</span>" +
-                "# } else if (IsSendForApproval || Status === 'WAITING_FOR_APPROVAL') { #" +
-                    "<span class='lr-status-pill status-waiting'>Waiting</span>" +
-                "# } else if (IsRejected) { #" +
-                    "<span class='lr-status-pill status-rejected'>Rejected</span>" +
-                "# } else { #" +
-                    "<span class='lr-status-pill status-pending'>Pending</span>" +
-                "# } #"
-            ).Width(120);
+                        columns.Bound(c => c.LeaveDays).Title("Days").Width(80);
+                        columns.Bound(c => c.Status).Title("Status").ClientTemplate(
+                            "# if (IsApproved) { #" +
+                                "<span class='lr-status-pill status-approved'>Approved</span>" +
+                            "# } else if (Status === 'DEPARTMENT_APPROVAL') { #" +
+                                "<span class='lr-status-pill status-dept'>Dept Approved</span>" +
+                            "# } else if (IsSendForApproval || Status === 'WAITING_FOR_APPROVAL') { #" +
+                                "<span class='lr-status-pill status-waiting'>Waiting</span>" +
+                            "# } else if (IsRejected) { #" +
+                                "<span class='lr-status-pill status-rejected'>Rejected</span>" +
+                            "# } else { #" +
+                                "<span class='lr-status-pill status-pending'>Pending</span>" +
+                            "# } #"
+                        ).Width(120);
 
-            columns.Bound(c => c.Reason).Title("Reason").Width(140);
+                        columns.Bound(c => c.Reason).Title("Reason").Width(140);
 
-            columns.Command(command =>
-            {
-                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                command.Destroy().Text(Resources.ActionButton_Cancel);
-            }).Width(200);
-        })
-        .ToolBar(toolbar => toolbar.Create().Text(Resources.ActionButton_AddNewRecord))
-        .Editable(editable => editable.Mode(GridEditMode.PopUp)
-            .TemplateName("LeaveRequest")
-            .Window(w =>
-            {
-                w.Title("Employee Leave Application");
-                w.Width(880);
-                w.Scrollable(false);
-            })
+                        columns.Command(command =>
+                        {
+                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                        }).Width(200);
+                    })
+                    .ToolBar(toolbar => toolbar.Create().Text(Resources.ActionButton_AddNewRecord))
+                    .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                        .TemplateName("LeaveRequest")
+                        .Window(window =>
+                        {
+                            window.Title(Resources.NavigatorPlacment_EmployeePlacment);
+                            window.Scrollable(false);
+                            window.Events(ev => ev.Open("centerKendoWindow"));
+                        })
+                    )
+                    .Scrollable(h => h.Height("auto"))
+                    .Sortable()
+                    .Filterable()
+                    .Pageable(p => p.Refresh(true).PageSizes(new[] { 10, 20, 50 }))
+                    .Events(e =>
+                    {
+                        e.Edit("onGridPopupEdit");
+                        e.DetailExpand("onDetailExpandUser");
+                        e.DataBound("onDataBound");
+                    })
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(s => s.Add(x => x.LeaveRequestId).Descending())
+                        .Model(m => m.Id(p => p.LeaveRequestId))
+                        .Read(r => r.Action("LeaveRequestPersonal_Read", "LeaveRequestPersonal").Data("sendForgery"))
+                        .Create(c => c.Action("LeaveRequestPersonal_Create", "LeaveRequestPersonal").Data("sendForgery"))
+                        .Update(u => u.Action("LeaveRequestPersonal_Update", "LeaveRequestPersonal").Data("sendForgery"))
+                        .Destroy(d => d.Action("LeaveRequestPersonal_Destroy", "LeaveRequestPersonal").Data("sendForgery"))
+                        .Events(e => e.Error("onGridError"))
+                    )
+                    .ClientDetailTemplateId("template")
         )
-        .Scrollable(h=>h.Height("auto"))
-        .Sortable()
-        .Filterable()
-        .Pageable(p => p.Refresh(true).PageSizes(new[] { 10, 20, 50 }))
-        .Events(e =>
-        {
-            e.Edit("onGridPopupEdit");
-            e.DetailExpand("onDetailExpandUser");
-            e.DataBound("onDataBound");
-        })
-        .DataSource(dataSource => dataSource
-            .Ajax()
-            .Sort(s => s.Add(x=>x.LeaveRequestId).Descending())
-            .Model(m => m.Id(p => p.LeaveRequestId))
-            .Read(r => r.Action("LeaveRequestPersonal_Read", "LeaveRequestPersonal").Data("sendForgery"))
-            .Create(c => c.Action("LeaveRequestPersonal_Create", "LeaveRequestPersonal").Data("sendForgery"))
-            .Update(u => u.Action("LeaveRequestPersonal_Update", "LeaveRequestPersonal").Data("sendForgery"))
-            .Destroy(d => d.Action("LeaveRequestPersonal_Destroy", "LeaveRequestPersonal").Data("sendForgery"))
-        )
-        .ClientDetailTemplateId("template")
-)
+    </div>
+</div>
 
 <!-- Master Detail Strip -->
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                .Name("tabstrip_#=LeaveRequestId#")
-                .SelectedIndex(0)
-                .Items(items =>
-                {
-                    items.Add().Text("Actions & Print").Content(
-                        @<text>
-                            <div style="padding: 12px;">
-                                # if (!IsSendForApproval && !IsApproved){ #
-                                <button class="btn btn-sm btn-primary" onclick="sendForApproval('#=LeaveRequestId#')">
-                                    <i class="fa fa-paper-plane"></i> Send for Approval
-                                </button>
-                                # } #
-                                <a href="@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#" target="_blank" class="btn btn-sm btn-default">
-                                    <i class="fa fa-print"></i> Print Letter
-                                </a>
-                            </div>
-                        </text>
-                            );
-                        }).ToClientTemplate())
+            .Name("tabstrip_#=LeaveRequestId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Actions & Print").Content(
+                    @<text>
+                        <div class="lr-detail-actions">
+                            # if (!IsSendForApproval && !IsApproved){ #
+                            <button class="btn btn-sm btn-primary lr-detail-btn" onclick="sendForApproval('#=LeaveRequestId#')">
+                                <i class="fa fa-paper-plane"></i> Send for Approval
+                            </button>
+                            # } #
+                            <a href="@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#" target="_blank" class="btn btn-sm btn-default lr-detail-btn">
+                                <i class="fa fa-print"></i> Print Letter
+                            </a>
+                        </div>
+                    </text>);
+
+
+            }).ToClientTemplate())
 </script>
 
+<script type="text/javascript">
+    function centerKendoWindow(e) {
+        var win = e.sender;
+        var screenWidth = $(window).width();
+
+        if (screenWidth < 768) {
+            win.setOptions({
+                width: "95%",
+                maxHeight: "92vh"
+            });
+        } else if (screenWidth < 1100) {
+            win.setOptions({
+                width: "740px",
+                maxHeight: "90vh"
+            });
+        } else {
+            win.setOptions({
+                width: "850px",
+                maxHeight: "88vh"
+            });
+        }
+        win.center();
+    }
+
+
+
+</script>
 <script>
+
+
     // --- Ethiopic Popup Picker Integration ---
     function triggerEthDate(elem, targetField) {
         if (typeof SelectDate === "function") {
@@ -182,6 +484,21 @@
         // Toggle time pickers on edit load
         GetRequestedAmount();
         GetTotalBalance();
+    }
+
+    // Surface validation/server errors instead of failing silently (e.g. invalid Ethiopian date conversion)
+    function onGridError(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if (value.errors) {
+                    message += value.errors.join("\n") + "\n";
+                }
+            });
+            alert(message || "An error occurred while saving the leave request.");
+        } else if (e.xhr && e.xhr.responseText) {
+            alert("An unexpected error occurred while saving the leave request.");
+        }
     }
 
     // --- Subordinate Request Toggle ---
@@ -391,902 +708,5 @@
         });
     }
 </script>
-@*@using System.Collections
-    @using ExceedERP.Core.Domain.HRM.SelfCare
-    @using ExceedERP.Core.Localization
-    @using ExceedERP.Core.Domain.HRM.LeaveManagment
-    @{
-        Layout = "~/Views/Shared/_Layout.cshtml";
-        bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? false;
-        //bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
-    }
-    <legend>@Resources.NavigatorLeave_LeaveRequest</legend>
-    <div class="row">
-        <p>
-            <span class="fa fa-circle" style="color:darkgrey;"></span>&nbsp;&nbsp;Final Approved &nbsp;&nbsp;
-            <span class="fa fa-circle" style="color:limegreen;"></span>&nbsp;&nbsp;Department Aproved &nbsp;&nbsp;
-            <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp;Waiting for approval,&nbsp;&nbsp;
-            <span class="fa fa-circle" style="color:Orange;"></span>&nbsp;&nbsp;Pending &nbsp;&nbsp;
-            <span class="fa fa-circle" style="color:LightGray;"></span>&nbsp;&nbsp;Rejected &nbsp;&nbsp;
-        </p>
-    </div>
-
-    @(Html.Kendo().Grid<LeaveRequest>()
-          .Name("LeaveRequestgrid")
-          .Columns(columns =>
-          {
-              columns.Bound(c => c.LeaveRequestId).Title("#").Width(80);
-              columns.Bound(c => c.IsApproved).Visible(false);
-              columns.Bound(c => c.EmployeeCode).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-              columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
-              columns.Bound(c => c.Type).EditorTemplateName("LeaveType").Width(100);
-              columns.Bound(c => c.Day).Width(80);
-              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
-              if (useEthiopian)
-              {
-                  columns.Bound(c => c.FromAmharic).Width(100);
-                  columns.Bound(c => c.ToAmharic).Width(100);
-              }
-              else
-              {
-                  columns.Bound(c => c.From).Width(100);
-                  columns.Bound(c => c.To).Width(100);
-              }
-
-
-              columns.Bound(c => c.LeaveBalance).Width(110);
-              columns.Bound(c => c.LeaveDays).Width(100);
-              columns.Bound(c => c.Status).Width(100);
-              columns.Bound(c => c.Reason).Width(150);
-              columns.Bound(c => c.Type).Width(100);
-              columns.Bound(c => c.LeaveActionTypes).Width(100).Visible(false);
-              columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
-                            "<input type='checkbox' disabled = 'true' value='#=IsOnlineApproved#' " +
-                            "# if (IsOnlineApproved) { #" +
-                            "checked='checked'" +
-                            "# } #" +
-                            "/>").Width(120);
-              columns.Bound(c => c.IsVoid).ClientTemplate(
-                   "<input type='checkbox' disabled = 'true' value='#=IsVoid#' " +
-                   "# if (IsVoid) { #" +
-                   "checked='checked'" +
-                   "# } #" +
-                   "/>").Width(120);
-              columns.Command(command =>
-              {
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-
-              }).Width(250);
-
-
-
-
-          })
-          .ToolBar(toolbar =>
-          {
-
-              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-          })
-
-          .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                    .TemplateName("LeaveRequest")
-                                    .Window(window =>
-                                    {
-                                        window.Title(Resources.NavigatorLeave_LeaveRequest);
-                                        window.Scrollable(false);
-                                    }))
-
-                .Scrollable(h => h.Height(500))
-                .Sortable(sortable =>
-                {
-                    sortable.SortMode(GridSortMode.SingleColumn);
-
-                })
-                .Filterable()
-                .Events(e =>
-                {
-                    e.DetailExpand("onDetailExpandUser");
-                    e.DataBound("onDataBound");
-                    e.Edit("onEdit");
-
-
-                })
-                .Pageable(pageable => pageable
-                                .Input(true)
-                                .Numeric(false)
-                                .Refresh(true)
-                                .PageSizes(true)
-                                .ButtonCount(5))
-                .DataSource(dataSource => dataSource
-                    .Ajax()
-                    .Sort(sort => sort.Add("LeaveRequestId").Descending())
-                    .Events(events =>
-                    {
-                        events.Error("error_handler(\"LeaveRequestgrid\")");
-                        events.RequestStart("onRequestStart(\"LeaveRequestgrid\")");
-                        events.RequestEnd("onRequestEnd(\"LeaveRequestgrid\")");
-
-                    })
-
-                    .Model(model => {
-                        model.Id(p => p.LeaveRequestId);
-                        model.Field(p => p.LeaveRequestId).Editable(false);
-                    })
-                    .Read(read => read.Action("LeaveRequestPersonal_Read", "LeaveRequestPersonal").Data("sendForgery"))
-                    .Create(create => create.Action("LeaveRequestPersonal_Create", "LeaveRequestPersonal").Data("sendForgery"))
-                    .Update(update => update.Action("LeaveRequestPersonal_Update", "LeaveRequestPersonal").Data("sendForgery"))
-                    .Destroy(destroy => destroy.Action("LeaveRequestPersonal_Destroy", "LeaveRequestPersonal").Data("sendForgery"))
-                    ).ClientDetailTemplateId("template")
-    )
-
-
-    <script id="template" type="text/kendo-tmpl">
-        @(Html.Kendo().TabStrip()
-            .Name("tabstrip_#=LeaveRequestId#")
-            .SelectedIndex(0)
-            .Items(items =>
-            {
-                items.Add().Text(Resources.HR_RequestStatus).Content(
-                @<text>
-                    @(Html.Kendo().Grid<RequestesStatus>()
-                        .Name("RequestesStatusgrid_#=LeaveRequestId#")
-                        .Columns(columns =>
-                        {
-
-                            columns.Bound(c => c.DateReqStatAm).Width(120);
-                            columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(200);
-                            columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                            columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                            columns.Bound(c => c.Remark).Width(100);
-                            columns.Command(command =>
-                            {
-                                // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                // command.Destroy().Text(Resources.ActionButton_Cancel);
-
-                            }).Width(400);
-
-
-
-
-
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                            // toolbar.Custom().Action("SendForApproval", "LeaveRequestPersonal").Text(Resources.HR_Send_For_Approval);
-                            //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
-
-
-
-                        })
-                        .Editable(editable => editable.Mode(GridEditMode.InLine))
-                        .Scrollable()
-                        .Events(ev => ev.DataBound("onRequestesStatusDataBound"))
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                            .Events(events =>
-                            {
-                                events.Error("error_handler(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-
-                            })
-                            .Model(model =>
-                            {
-                                model.Id(p => p.RequestStatusId);
-                                model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                model.Field(p => p.ApproverId).Editable(false);
-                                model.Field(p => p.ApproverDepartment).Editable(false);
-
-
-                            })
-                            .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType = "Leave" }).Data("sendForgery"))
-                            .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType2 = "Leave" }).Data("sendForgery"))
-                            .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
-                            .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
-                        ).ToClientTemplate()
-                )
-                            # if (!IsSendForApproval){#
-                            <a onclick='return sendForApproval("#=LeaveRequestId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
-                            #}#
-                            <a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-
-                        </text>);
-
-
-
-                    //*****************************************************************************************************//
-
-
-                    items.Add().Text("Leave Return").Content(
-                @<text>
-                    @(Html.Kendo().Grid<LeaveReturn>()
-                                .Name("LeaveReturngrid#=LeaveRequestId#")
-                                .Columns(columns =>
-                                {
-                                    if (useEthiopian)
-                                    {
-                                        columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(80);
-                                        columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(80);
-                                    }
-                                    else
-                                    {
-                                        columns.Bound(c => c.From).Width(80);
-                                        columns.Bound(c => c.To).Width(80);
-                                    }
-                                    columns.Bound(c => c.Amount).Width(90);
-
-                                    columns.Command(command =>
-                                    {
-                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                        command.Destroy().Text(Resources.ActionButton_Cancel);
-                                    }).Width(250);
-
-
-
-                                })
-                                .ToolBar(toolbar =>
-                                {
-
-                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-                                })
-
-                                .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("LeaveReturn").Window(window => { window.Title("Leave Void"); window.Scrollable(false); }))
-
-                                .Scrollable(h => h.Height(500))
-                                .Sortable(sortable =>
-                                {
-                                    sortable.SortMode(GridSortMode.SingleColumn);
-
-                                })
-                                .Filterable()
-                            //.Events(e =>
-                            //{
-                            //    e.Save("GetDateForVoid");
-                            //    e.Edit("GetDateForVoid");
-                            //})
-
-                            .Pageable(pageable => pageable
-                                                        .Input(true)
-                                                        .Numeric(false)
-                                                        .Refresh(true)
-                                                        .PageSizes(true)
-                                                        .ButtonCount(5))
-                            .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Sort(sort => sort.Add(x => x.LeaveReturnId).Descending())
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"LeaveReturngrid#=LeaveRequestId#\")");
-                                    events.RequestStart("onRequestStart(\"LeaveReturngrid#=LeaveRequestId#\")");
-                                    events.RequestEnd("onRequestEnd(\"LeaveReturngrid#=LeaveRequestId#\")");
-
-
-                                })
-                                .Model(model =>
-                                {
-                                    model.Id(p => p.LeaveReturnId);
-                                    model.Field(p => p.Amount).Editable(false);
-
-                                })
-                                .Read(read => read.Action("LeaveReturnPersonal_Read", "LeaveReturnPersonal", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
-                                .Create(create => create.Action("LeaveReturnPersonal_Create", "LeaveReturnPersonal", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
-                                .Update(update => update.Action("LeaveReturnPersonal_Update", "LeaveReturnPersonal").Data("sendForgery"))
-                                .Destroy(destroy => destroy.Action("LeaveReturnPersonal_Destroy", "LeaveReturnPersonal").Data("sendForgery"))
-
-                                ).ToClientTemplate()
-
-                    )
-
-                </text>);
-
-                    items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
-                    @<text>
-                         @documentAttachment()
-
-                    </text>);
-            items.Add().Text(Resources.Details).Content(
-            @<text>
-                @(Html.Kendo().PanelBar()
-                  .Name("panelbar_#=LeaveRequestId#")
-                  .ExpandMode(PanelBarExpandMode.Single)
-                  .Items(panelbar =>
-                  {
-
-                      panelbar.Add().Text("Status")
-                      .Expanded(true)
-                      .Content(
-
-                           "<div>" +
-                    "<table class='table'>" +
-                    "<tr>" +
-                    "<td>" + "<div class='employee-details'>" +
-                          "<ul>" +
-
-                          "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                          // "<li><label>Title:  </label>#=Title #</li>" +
-                          "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                          "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                          "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
-
-                          "</ul>" +
-                          "</div>" + "<th>" +
-                    // "<td>" + EmployeeChartsResult() + "<th>" +
-
-                    "</table>" +
-                    "</div>"
-                      );
-
-
-                  }).ToClientTemplate() )
-
-               </text>);
-
-
-
-    }).ToClientTemplate())
-    </script>
-
-
-    @(Html.Kendo().Window()
-          .Name("UploadDoc")
-          .Title(Resources.HR_ActionButton_Upload)
-          .Visible(false)
-          .Modal(true)
-          .Draggable(true)
-          .Width(400).Content(@<text><div class="form-group">
-                            <form action="@Url.Action("UploadDocument", "LeaveRequestPersonal", new { })" method="post" , new { enctype="multipart/form-data" }>
-                                <input type="hidden" name="leaveRequestId" id="leaveRequestId">
-                                <div class="row">
-                                    <div class="col-md-10">
-                                        @Html.TextBox("file", "", new { type = "file", required = "true" })
-                                        <br />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-10">
-                                        @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
-                                        <br />
-                                    </div>
-                                </div>
-                                <div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-7"></div>
-                                    <input type="@Resources.Button_Submit" class="btn-primary k-button" value="@Resources.Button_Submit " />
-                                </div>
-                            </form>
-                            <div class="pull-right"></div>
-                        </div>
-                    </text>)
-    )
-
-    @helper documentAttachment()
-    {
-         @(Html.Kendo().Grid<LeaveRequestAttachement>()
-                .Name("LeaveRequestAttachementGrid#=LeaveRequestId#")
-                .Columns(columns =>
-                {
-                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
-                    columns.Bound(c => c.Description).Width(100);
-
-                    columns.Template(e => { }).ClientTemplate("<a href='/HRM/LeaveRequestAttachements/DownloadAttachment?attachmentId=\\#=LeaveRequestAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
-                    columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
-
-                    columns.Command(command =>
-                    {
-                        command.Destroy().Text("Delete");
-                    }).Width(300);
-
-                })
-                .ToolBar(toolbar =>
-                {
-                toolbar.Template(@<text>
-                    @Html.Kendo().Upload().Name("file").Async(a => a.Save("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new {area="HRM", id = "#=LeaveRequestId#" })).Events(e => e.Complete("onUploadSuccess")
-                                                                                                                .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 50 * 1024 * 1024); }")
-                                                                    .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
-                </text>);
-                })
-
-                .Scrollable(h => h.Height("auto"))
-                .DataSource(dataSource => dataSource
-                .Ajax()
-                .Events(events =>
-                {
-                    events.Error("error_handler(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
-                    events.RequestStart("onRequestStart(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
-                    events.RequestEnd("onRequestEnd(\"LeaveRequestAttachementGrid#=LeaveRequestId#\")");
-
-                })
-                .Model(model => model.Id(p => p.LeaveRequestAttachementId))
-                .Read(read => read.Action("LeaveRequestAttachements_Read", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
-                .Create(create => create.Action("LeaveRequestAttachements_Create", "LeaveRequestAttachements", new { id = "#=LeaveRequestId#" }).Data("sendForgery"))
-                .Update(update => update.Action("LeaveRequestAttachements_Update", "LeaveRequestAttachements").Data("sendForgery"))
-                .Destroy(destroy => destroy.Action("LeaveRequestAttachements_Destroy", "LeaveRequestAttachements").Data("sendForgery"))
-                ).ToClientTemplate())
-    }
-
-    <style type="text/css">
-        div.k-edit-form-container {
-            width: 850px;
-        }
-
-        .Employee-photo {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-size: 32px 35px;
-            background-position: center center;
-            vertical-align: middle;
-            line-height: 32px;
-            box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
-            margin-left: 5px;
-        }
-
-        .Employee-name {
-            display: inline-block;
-            vertical-align: middle;
-            line-height: 32px;
-            padding-left: 3px;
-        }
-    </style>
-
-    <script>
-        function uploadFile(id) {
-            $("#leaveRequestId").val(id);
-            var wnd = $("#UploadDoc").data("kendoWindow");
-            wnd.center().open();
-        }
-
-
-        function sync_handler(e) {
-            this.read();
-
-        }
-    </script>
-    <script>
-
-    </script>
-    <script>
-        function AssignDate() {
-            var list = AssignDates();
-            return list;
-        }
-
-    </script>
-
-    <script>
-
-        var masterId = 0;
-        function onDetailExpandUser(e)
-        {
-            var masterRow = e.masterRow;
-            var masterGrid = $("#LeaveRequestgrid").data("kendoGrid");
-            var masterDataItem = masterGrid.dataItem(masterRow);
-            masterId = masterDataItem.LeaveRequestId;
-            var gridName = "#RequestesStatusgrid_" + masterId;
-            $.ajax({
-                url: '@Url.Action("CheckStatus", "LeaveRequestStatus")',
-                data: { masterId: masterId },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                    if (r == "true") {
-                        $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                        $(".k-grid-top", gridName).hide();
-                    }
-                    else if (r == "approved") {
-                        $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                        $(".k-grid-top", gridName).hide();
-                        $(".k-grid-edit", gridName).hide();
-                        $(".k-grid-delete", gridName).hide();
-                    }
-                    else if (r == "Dapproved") {
-                        $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                        $(".k-grid-top", gridName).hide();
-                        $(".k-grid-edit", gridName).hide();
-                        $(".k-grid-delete", gridName).hide();
-                    }
-                    else {
-                        $(gridName).find(".k-toolbar").show(); //hide toolbar
-                        $(".k-grid-top", gridName).show();
-                        $(".k-grid-edit", gridName).show();
-                        $(".k-grid-delete", gridName).hide();
-                    }
-
-                }
-
-            });
-
-        }
-
-        function onUploadSuccess(e) {
-            // Force the rebinding of the Grid on successful upload
-            $("#LeaveRequestAttachementGrid" + masterId).data("kendoGrid").dataSource.read();
-        }
-
-        function valueMapper(options) {
-            $.ajax({
-                url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
-                data: {
-                    value: options.value || 0,
-                    status: 1,
-                    excludeId: -1
-                },
-                success: function (data) {
-                    options.success(data);
-                }
-            });
-        }
-
-        function convertValues(value) {
-            var data = {};
-
-            value = $.isArray(value) ? value : [value];
-
-            for (var idx = 0; idx < value.length; idx++) {
-                data["values[" + idx + "]"] = value[idx];
-            }
-
-            return data;
-        }
-        function IsforOthers() {
-            return {
-                IsForOther: $("#IsForOther").val()
-            };
-        }
-
-    </script>
-
-
-    <script>
-
-
-        // ✅ Toggle subordinate request (server-side validation)
-        function SetEmployee(e) {
-            var isChecked = e.checked;
-            var dropDown = $("#EmployeeId").data("kendoDropDownList");
-
-            if (isChecked) {
-                dropDown.enable(true);
-                $("#LeaveBalance").val(0).trigger("change");
-            } else {
-                dropDown.value(0);
-                dropDown.enable(false);
-            }
-
-            $.ajax({
-                url: '@Url.Action("SetEmployee", "LeaveRequestPersonal")',
-                type: 'POST',
-                data: { isForOther: isChecked },
-                success: function (result) {
-                    if (isChecked && result === 0) {
-                        e.checked = false;
-                        dropDown.value(0);
-                        dropDown.enable(false);
-                        alert("You cannot request for other employees!\nNo subordinates under your position.");
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error in SetEmployee:", error);
-                }
-            });
-        }
-        function onEdit(e) {
-            GetTotalBalance();
-        }
-        // ✅ Get total balance based on employee and date range
-        function GetTotalBalance() {
-            $("#LeaveBalance").val(0);
-            $("#LeaveDays").val(0);
-            $("#ExactDeserveLeaveDays").val(0);
-
-            var employee = $("#EmployeeId").data("kendoDropDownList");
-            var empId = employee ? employee.value() : 0;
-            var morningOrAfternoon = $("#MorningOrAfternoon").data("kendoDropDownList").value(); // 👈 FIXED
-            var fromAm =  $("#FromAmharic").val();
-            var toAm =  $("#ToAmharic").val() ;
-            var from = $("#From").val();
-            var to = $("#To").val();
-            //if (!empId || empId === "0" || !from || !to) return;
-            if (!empId) {
-                empId = 0;
-                from =from?? null;
-                to = to??null;
-            }
-            $.ajax({
-                url: '@Url.Action("GetTotalLeaveAmount", "LeaveRequestPersonal")',
-                type: 'POST',
-                data: {
-                    empId: empId,
-                    from: from,
-                    to: to,
-                    fromAm: fromAm,
-                    toAm: toAm,
-                    morningOrAfternoon: morningOrAfternoon
-                },
-                cache: false,
-                success: function (result) {
-                    if (!result) return;
-
-                    var parts = result.split('-');
-                    var totalBalance = parts[0] || "0";
-                    var exactDays = parts[1] || "0";
-                    var leaveDays = parts[2] || "0";
-
-                    $("#LeaveBalance").val(totalBalance).trigger("change");
-                    $("#ExactDeserveLeaveDays").val(exactDays).trigger("change");
-                    $("#LeaveDays").val(leaveDays).trigger("change");
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error fetching leave balance:", error);
-                }
-            });
-        }
-        // ✅ Get total balance based on employee and date range goergorian
-        function GetTotalBalanceGord() {
-            $("#LeaveBalance").val(0);
-            $("#ExactDeserveLeaveDays").val(0);
-            $("#LeaveDays").val(0);
-
-            var employee = $("#EmployeeId").data("kendoDropDownList");
-            var empId = employee ? employee.value() : 0;
-           // var useEthiopian = $(".et-popup-picker").length > 0;
-            var morningOrAfternoon = $("#MorningOrAfternoon").data("kendoDropDownList").value(); // 👈 FIXED
-            var from = $("#From").val();
-            var to =  $("#To").val();
-
-            //if (!empId || empId === "0" || !from || !to) return;
-            if (!empId) {
-                empId = 0;
-                from =from?? null;
-                to = to??null;
-            }
-            $.ajax({
-                url: '@Url.Action("GetTotalLeaveAmountGorg", "LeaveRequestPersonal")',
-                type: 'POST',
-                data: { empId: empId, from: from, to: to, morningOrAfternoon: morningOrAfternoon  },
-                cache: false,
-                success: function (result) {
-                    if (!result) return;
-
-                    var parts = result.split('-');
-                    var totalBalance = parts[0] || "0";
-                    var exactDays = parts[1] || "0";
-                    var leaveDays = parts[2] || "0";
-
-                    $("#LeaveBalance").val(totalBalance).trigger("change");
-                    $("#ExactDeserveLeaveDays").val(exactDays).trigger("change");
-                    $("#LeaveDays").val(leaveDays).trigger("change");
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error fetching leave balance:", error);
-                }
-            });
-        }
-        function GetExactDerevedLeavedays()
-        {
-
-                //$("#LeaveBalance").val(0);
-                var employee = $("#EmployeeId").data("kendoDropDownList");
-                var empId = employee.value();
-                var from = $('#FromAmharic').val();
-                var to = $('#ToAmharic').val();
-                if (empId.length !== 0 )
-                {
-
-                    $.ajax({
-                        url: '@Url.Action("GetDservedExactLeaveAmount", "LeaveRequestPersonal")',
-
-                        data: { empId: empId, from: from, to: to },
-                        type: 'POST',
-                        cache: false,
-                        success: function (result) {
-                            var s = result.split('-');;
-
-                            //$("#LeaveBalance").val(s[0]);
-                            //$("#LeaveBalance").trigger("change");
-
-                            $("#ExactDeserveLeaveDays").val(s[1]);
-                            $("#ExactDeserveLeaveDays").trigger("change");
-                        }
-
-                    });
-
-                }
-
-        }
-
-    </script>
-
-    <script>
-
-
-
-        function onDataBound(e) {
-            var grid = this;
-            grid.tbody.find("tr[role='row']").each(function (e) {
-                var model = grid.dataItem(this);
-                if (model.IsApproved === true) {
-
-                    $(this).css("background-color", "darkgrey");
-                    $(this).find(".k-grid-edit").remove();
-                    $(this).find(".k-grid-delete").remove();
-                }
-                else if (model.Status === "DEPARTMENT_APPROVAL" && !model.IsApproved) {
-                    $(this).css("background-color", "limegreen");
-                    $(this).find(".k-grid-edit").remove();
-                    $(this).find(".k-grid-delete").remove();
-                }
-                else if (model.IsPending === true) {
-
-                    $(this).css("background-color", "Orange");
-                    $(this).find(".k-grid-edit").show();
-                    $(this).find(".k-grid-delete").show();
-                }
-                else if (model.IsRejected === true) {
-
-                    $(this).css("background-color", "LightGray");
-                    $(this).find(".k-grid-edit").show();
-                    $(this).find(".k-grid-delete").show();
-                }
-                else if (model.IsSendForApproval === true) {
-
-                    $(this).css("background-color", "lightblue");
-                    $(this).find(".k-grid-edit").remove();
-                    $(this).find(".k-grid-delete").remove();
-                }
-                else if (model.IsWaiting === true || model.Status =="WAITING_FOR_APPROVAL") {
-
-                    $(this).css("background-color", "lightblue");
-                    $(this).find(".k-grid-edit").remove();
-                    $(this).find(".k-grid-delete").remove();
-                }
-
-            });
-        }
-        function onRequestesStatusDataBound() {
-            var grid = this;
-            grid.tbody.find("tr[role='row']").each(function (e) {
-                var model = grid.dataItem(this);
-                if (model.Status == 0 || model.Status == 1 || model.Status == 2 || model.Status == 3 || model.Status == 4) {
-                    $(this).css("background-color", "#darkgrey");
-                    $(this).find(".k-grid-edit").remove();
-                    $(this).find(".k-grid-delete").remove();
-                }
-                else {
-
-                    row.css("background-color", "lightgreen");
-                }
-            });
-
-
-
-        }
-    </script>
-
-    <script>
-        function Print() {
-
-
-            var id = $("#LeaveRequestId").val;
-
-                $.ajax({
-                    url: '@Url.Action("LeaveRequestLetter", "PrintableLetter")',
-
-                    data: { id: id },
-                    type: 'POST',
-                    cache: false,
-                    success: function (result) {
-                        r = result;
-                    }
-
-                });
-            }
-
-
-    </script>
-
-
-    <script>
-        function GetRequestedAmount() {
-
-            $("#LeaveDays").val(0);
-            $("#ExactDeserveLeaveDays").val(0);
-            var employee = $("#EmployeeId").data("kendoDropDownList");
-            var empId = employee.value();
-            var morningOrAfternoon = $("#MorningOrAfternoon").data("kendoDropDownList").value(); // 👈 FIXED
-            var fromAm = $('#FromAmharic').val();
-            var toAm = $('#ToAmharic').val();
-            var from = $("#From").val();
-            var to = $("#To").val();
-            var dayT = $("#Day").data("kendoDropDownList");
-            var half = dayT.value();
-            if (half == 1) {
-                var showField = document.querySelector('.showTime');
-                var showField1 = document.querySelector('.showTime2');
-                showField.style.display = 'block';
-                showField1.style.display = 'block';
-            }
-            else {
-                var showField = document.querySelector('.showTime');
-                showField.style.display = 'none';
-                var showField1 = document.querySelector('.showTime2');
-                showField1.style.display = 'none';
-            }
-            var hour = $('#Hours').val();
-
-
-                $.ajax({
-                    url: '@Url.Action("GetLeaveDaysToPulate", "LeaveRequestPersonal")',
-
-                    data: { empId: empId, from: from, to: to, fromAm: fromAm, toAm: toAm, half: half, hour: hour, morningOrAfternoon: morningOrAfternoon  },
-                    type: 'POST',
-                    cache: false,
-                    success: function (result) {
-                        var s = result.split('-');
-                        $("#LeaveDays").val(s[0]);
-                        $("#ExactDeserveLeaveDays").val(s[1]);
-                        $("#LeaveDays").trigger("change");
-                        $("#ExactDeserveLeaveDays").trigger("change");
-
-                    }
-
-                });
-
-        }
-
-    </script>
-
-    <script>
-
-
-        function sendForApproval(id) {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("SendForApproval", "LeaveRequestPersonal", new { area = "HRM" })',
-                data: { id: id },
-                success: function(result) {
-                    // toastr.warnning(result.Message);
-                    alert(result.Message);
-                    recordStatus = result.Status;
-                    location.reload(true);
-                }, //end succ
-                error: function(result) {
-                    alert(result);
-                }
-            });
-        }
-         function onGridEdit(e) {
-            e.container.find(".k-button.k-grid-edit").hide();
-            e.container.find(".k-button.k-grid-cancel").hide();
-
-        }
-        function onChange(e) {
-            var grid = e.sender;
-            var selectedRows = this.select();
-            var rowData = this.dataItem(selectedRows[0]);
-            var id = rowData.AttachmentId;
-            $.ajax({
-                contentType: "application/json; charset=utf-8",
-                url: '@Url.Action("Download", "EmployeeProfile")',
-                data: { 'id': id },
-                type: 'GET',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                }
-
-            });
-
-        }
-    </script>*@
 
 

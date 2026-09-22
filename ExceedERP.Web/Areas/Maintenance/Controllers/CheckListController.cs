@@ -21,12 +21,25 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
     public class CheckListController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+         private readonly CacheData CacheData = new CacheData();
         //
         // GET: /FleetManagement/CheckList/
         public ActionResult Index()
         {
             ViewData["EquipmentIdentity"] = db.EquipmentIdentity.ToList();
             ViewData["EquipmentType"] = db.EquipmentType.ToList();
+//            ViewData["EquipmentIdentity"] = CacheData.GetEquipmentIdentityCaches().Select(
+//i => new
+//{
+//    Text = i.Name,
+//    Value = i.Id
+//}).AsQueryable();
+//            ViewData["EquipmentType"] = CacheData.GetEquipmentTypeCaches().Select(
+//        i => new
+//        {
+//            Text = i.Name,
+//            Value = i.Id
+//        }).AsQueryable();
             return View();
         }
 
@@ -213,6 +226,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
 
         #endregion
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

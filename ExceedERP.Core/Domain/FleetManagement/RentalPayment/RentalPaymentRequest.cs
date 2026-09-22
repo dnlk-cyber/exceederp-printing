@@ -43,15 +43,17 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime RequestDate { get; set; }
-        [DisplayName("Refference")]
-        public string Refference { get; set; }
-        public bool Paid { get; set; }
-        public decimal TotalAmount { get; set; }
-        public decimal AmountDue { get; set; }
+        
 
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
+        [DisplayName("Refference")]
+        public string Refference { get; set; }
+        public bool Paid { get; set; }
+        public decimal WithHoldingTax { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal AmountDue { get; set; }
         // Finace 
         public bool IsFinanceSendForApproval { get; set; }
         public string FinanceSendForApprovalBy { get; set; }
@@ -59,6 +61,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
         public bool IsFinanceApproved { get; set; }
         public string FinanceApprovedBy { get; set; }
         public DateTime? FinanceApprovedTime { get; set; }
+        public bool IsAuthorized { get; set; }
+        public string AuthorizedBy { get; set; }
+        public DateTime? AuthorizedTime { get; set; }
        
     }
     public class RequestEmployeeVM

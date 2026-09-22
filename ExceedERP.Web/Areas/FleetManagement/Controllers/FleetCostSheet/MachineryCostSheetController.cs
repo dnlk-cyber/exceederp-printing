@@ -23,46 +23,76 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
     {
 
         ExceedDbContext db = new ExceedDbContext();
-
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            ViewData["RepairTypes"] = db.RepairType.Select(s => new
             {
-                Text = s.EquipmentCategoryName,
-                Value = s.EquipmentIdentityID
-            }).ToList();
-            ViewData["type"] = db.EquipmentType.Select(s => new
-            {
-                Text = s.EquipmentTypeName,
-                Value = s.EquipmentTypeID
-            }).ToList();
-            ViewData["name"] = db.EquipmentName.Select(s => new
-            {
-                Text = s.Name,
-                Value = s.EquipmentNameID
-            }).ToList();
+                Code = s.RepairTypeID,
+                Name = s.Name
+            }).AsQueryable();
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+            string isECWC = (fetchSetting != null && fetchSetting.Remark == "ECWC") ? "ECWC" : "Not";
+            ViewBag.setting = (fetchSetting != null) ? fetchSetting.Remark : "";
+            // Store in ViewBag (or use a strongly typed ViewModel if preferred)
+            ViewData["IsECWC"] = isECWC;
+            //ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            //{
+            //    Text = s.EquipmentCategoryName,
+            //    Value = s.EquipmentIdentityID
+            //}).ToList();
+            //ViewData["type"] = db.EquipmentType.Select(s => new
+            //{
+            //    Text = s.EquipmentTypeName,
+            //    Value = s.EquipmentTypeID
+            //}).ToList();
+            //ViewData["name"] = db.EquipmentName.Select(s => new
+            //{
+            //    Text = s.Name,
+            //    Value = s.EquipmentNameID
+            //}).ToList();
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Text = i.Name,
+          Value = i.Id
+      }).AsQueryable();
+            ViewData["type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["fleet"] = db.Fleets.Select(x => new
             {
                 Value = x.FleetsID,
-                Text = x.SerialNo
-            }).ToList();
-            ViewData["branch"] = db.Branch.Select(s => new
-            {
-                Value = s.BranchId,
-                Text = s.Name
-            }).ToList();
+                Text = x.PlateNumber+" "+x.SerialNo+" "+x.Model
+            }).AsQueryable();
             ViewData["operator"] = db.Operator.Select(s => new
             {
                 Value = s.OperatorID,
                 Text = s.FullName
-            }).ToList();
-            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
-            {
-                Value = s.BusinessUnitId,
-                Text = s.Name
-            }).ToList();
+            }).AsQueryable();
+            ViewData["branch"] = CacheData.GetBranchCaches().Select(
+     i => new
+     {
+         Name = i.Name,
+         BranchId = i.Id
+     }).AsQueryable();
+            ViewData["businessunit"] = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
 
-            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
+            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).AsQueryable();
 
             return View();
         }
@@ -88,13 +118,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 HoleDepth= machineryWorkingTimeSheet.HoleDepth,
                 FuelConsumption= machineryWorkingTimeSheet.FuelConsumption,
                 FuelRate = machineryWorkingTimeSheet.FuelRate,
-                GreaseConsumption= machineryWorkingTimeSheet.GreaseConsumption,
                 IdleHours= machineryWorkingTimeSheet.IdleHours,
                 IdleReason= machineryWorkingTimeSheet.IdleReason,
                 DownHours= machineryWorkingTimeSheet.DownHours,
                 DownReason= machineryWorkingTimeSheet.DownReason,
                 NetHour= machineryWorkingTimeSheet.NetHour,
+                ExternalOperatorName = machineryWorkingTimeSheet.ExternalOperatorName,
                 WorkType= machineryWorkingTimeSheet.WorkType,
+                TotalTime = machineryWorkingTimeSheet.TotalTime,
                 Remark = machineryWorkingTimeSheet.Remark,
                 RentalRate = machineryWorkingTimeSheet.RentalRate,
                 IdealRentalRate = machineryWorkingTimeSheet.IdealRentalRate,
@@ -104,19 +135,36 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 IdleAmount = machineryWorkingTimeSheet.IdleAmount,
                 TotalAmountBeforeVAT = machineryWorkingTimeSheet.TotalAmountBeforeVAT,
                 VAT = machineryWorkingTimeSheet.VAT,
+                InitialEHR = machineryWorkingTimeSheet.InitialEHR,
+                FinalEHR = machineryWorkingTimeSheet.FinalEHR,
+                DifferenceEHR = machineryWorkingTimeSheet.DifferenceEHR,
+                FuelType = machineryWorkingTimeSheet.FuelType,
+                OilType = machineryWorkingTimeSheet.OilType,
+                ReasonForDown = machineryWorkingTimeSheet.ReasonForDown,
+                ReasonForIdle = machineryWorkingTimeSheet.ReasonForIdle,
                 TotalAmount = machineryWorkingTimeSheet.TotalAmount,
                 FuelCost = machineryWorkingTimeSheet.FuelCost,
                 ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
-                LubricantCost = machineryWorkingTimeSheet.LubricantCost,
+
+
+                SparePartCost = machineryWorkingTimeSheet.SparePartCost,
+                OilCost = machineryWorkingTimeSheet.OilCost,
+                GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
+                GreaseCost = machineryWorkingTimeSheet.GreaseCost,
                 MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
+                OilConsumption = machineryWorkingTimeSheet.OilConsumption,
+
                 TotalCost = machineryWorkingTimeSheet.TotalCost,
                 NetAmount = machineryWorkingTimeSheet.NetAmount,
-
+                LabourCost = machineryWorkingTimeSheet.LabourCost,
+                BatteryCost = machineryWorkingTimeSheet.BatteryCost,
+                OverTime = machineryWorkingTimeSheet.OverTime,
+                BasicSalary = machineryWorkingTimeSheet.BasicSalary,
                 DownHourRate = machineryWorkingTimeSheet.DownHourRate,
                 OperationRevenue = machineryWorkingTimeSheet.OperationRevenue,
                 Perdium = machineryWorkingTimeSheet.Perdium,
                 Salary = machineryWorkingTimeSheet.Salary,
-                TireCost = machineryWorkingTimeSheet.TireCost,
+                TireCost = machineryWorkingTimeSheet.TireCost,  
                 BranchId = machineryWorkingTimeSheet.BranchId,
                 BusinessUnitId = machineryWorkingTimeSheet.BusinessUnitId,
                 CostSheetApproved = machineryWorkingTimeSheet.CostSheetApproved,
@@ -126,6 +174,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 CreatedBy = machineryWorkingTimeSheet.CreatedBy,
                 DateCreated = machineryWorkingTimeSheet.DateCreated,
                 LastModified = machineryWorkingTimeSheet.LastModified,
+               
                 ModifiedBy = machineryWorkingTimeSheet.ModifiedBy,
                 TimeSheetApproved = machineryWorkingTimeSheet.TimeSheetApproved,
                 TimeSheetApprovedBy = machineryWorkingTimeSheet.TimeSheetApprovedBy,
@@ -142,18 +191,71 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 GreaseRate = machineryWorkingTimeSheet.GreaseRate,
                 ExternalOperator = machineryWorkingTimeSheet.ExternalOperator,
                 CostSheetSendForApprovalBy = machineryWorkingTimeSheet.CostSheetSendForApprovalBy,
-                CostSheetSendForApprovalTime = machineryWorkingTimeSheet.CostSheetSendForApprovalTime
+                CostSheetSendForApprovalTime = machineryWorkingTimeSheet.CostSheetSendForApprovalTime,
+                IsECWC=checkIsECWC()
 
             });
-            return Json(result);
+            return Json(result,JsonRequestBehavior.AllowGet);
         }
-        
+        private bool checkIsECWC()
+        {
+            bool x = false;
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+            if (fetchSetting!=null&&fetchSetting.Remark == "ECWC")
+            {
+                x = true;
+            }
+            return (x);
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult MachineryCostSheet_Update([DataSourceRequest] DataSourceRequest request, MachineryWorkingTimeSheet machineryWorkingTimeSheet)
         {
-            
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
 
+            decimal MCost = 0;
+            if (fetchSetting != null && fetchSetting.Remark != "ECWC")
+            {
+
+
+                var MaintenanceJob = db.JobOrder.FirstOrDefault(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID && x.SecondOnlineApprovedTime == DateTime.Now && x.Status == MaintenanceConst.Delivered);
+                if (MaintenanceJob != null)
+                {
+                    var WorkShopJobs = db.ServiceCenterJob.Where(x => x.JobOrderID == MaintenanceJob.JobOrderID).ToList();
+                    foreach (var WJ in WorkShopJobs)
+                    {
+                        var StoreReq = db.StoreRequisitions.FirstOrDefault(x => x.ServiceJobOrderNo == WJ.ServiceCenterJobId.ToString());
+                        if (StoreReq != null)
+                        {
+                            var Issue = db.Issues.Where(x => x.StoreRequisitionID == StoreReq.StoreRequisitionID).ToList();
+                            foreach (var issue in Issue)
+                            {
+                                var issueItems = db.IssueItems.Where(x => x.IssueID == issue.IssueID);
+                                foreach (var item in issueItems)
+                                {
+                                    MCost += item.IssuedQuantity * item.UnitPrice;
+                                }
+                            }
+                        }
+                        var HumanCost = db.ServiceCrewWorkLogs.Where(x => x.JobId == WJ.ServiceCenterJobId).ToList();
+                        foreach (var HC in HumanCost)
+                        {
+                            MCost += HC.TotalLabourCost;
+                        }
+                    }
+
+                }
+                if (machineryWorkingTimeSheet.MaintenanceCost == 0)
+                {
+                    machineryWorkingTimeSheet.MaintenanceCost = MCost;
+                }
+            }
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+            if (companySetting != null && companySetting.Remark == "MCG")
+            {
+                machineryWorkingTimeSheet.TotalTime = machineryWorkingTimeSheet.NetHour+machineryWorkingTimeSheet.IdleHours * (machineryWorkingTimeSheet.IdealRentalRate*0.01m);
+                machineryWorkingTimeSheet.IdealRentalRate = machineryWorkingTimeSheet.IdleHours * (machineryWorkingTimeSheet.IdealRentalRate*0.01m);
+            }
             if (ModelState.IsValid)
             {
                 var entity = new MachineryWorkingTimeSheet
@@ -172,12 +274,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     HoleDepth = machineryWorkingTimeSheet.HoleDepth,
                     FuelConsumption = machineryWorkingTimeSheet.FuelConsumption,
                     FuelRate = machineryWorkingTimeSheet.FuelRate,
-                    GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
                     IdleHours = machineryWorkingTimeSheet.IdleHours,
                     IdleReason = machineryWorkingTimeSheet.IdleReason,
                     DownHours = machineryWorkingTimeSheet.DownHours,
                     DownReason = machineryWorkingTimeSheet.DownReason,
                     NetHour = machineryWorkingTimeSheet.NetHour,
+                    TotalTime = machineryWorkingTimeSheet.TotalTime,
                     WorkType = machineryWorkingTimeSheet.WorkType,
                     Remark = machineryWorkingTimeSheet.Remark,
                     RentalRate = machineryWorkingTimeSheet.RentalRate,
@@ -191,13 +293,26 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     TotalAmount = machineryWorkingTimeSheet.TotalAmount,
                     FuelCost = machineryWorkingTimeSheet.FuelCost,
                     ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
-                    LubricantCost = machineryWorkingTimeSheet.LubricantCost,
+
+                    SparePartCost = machineryWorkingTimeSheet.SparePartCost,
+                    OilCost = machineryWorkingTimeSheet.OilCost,
+                    GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
+                    GreaseCost = machineryWorkingTimeSheet.GreaseCost,
                     MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
+                    OilConsumption = machineryWorkingTimeSheet.OilConsumption,
+
                     TotalCost = machineryWorkingTimeSheet.TotalCost,
                     NetAmount = machineryWorkingTimeSheet.NetAmount,
-
+                  
                     DownHourRate = machineryWorkingTimeSheet.DownHourRate,
                     OperationRevenue = machineryWorkingTimeSheet.OperationRevenue,
+                    InitialEHR = machineryWorkingTimeSheet.InitialEHR,
+                    FinalEHR = machineryWorkingTimeSheet.FinalEHR,
+                    DifferenceEHR = machineryWorkingTimeSheet.DifferenceEHR,
+                    FuelType = machineryWorkingTimeSheet.FuelType,
+                    OilType = machineryWorkingTimeSheet.OilType,
+                    ReasonForDown = machineryWorkingTimeSheet.ReasonForDown,
+                    ReasonForIdle = machineryWorkingTimeSheet.ReasonForIdle,
                     Perdium = machineryWorkingTimeSheet.Perdium,
                     Salary = machineryWorkingTimeSheet.Salary,
                     TireCost = machineryWorkingTimeSheet.TireCost,
@@ -225,12 +340,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     ExternalOperator = machineryWorkingTimeSheet.ExternalOperator,
                     GreaseRate = machineryWorkingTimeSheet.GreaseRate,
                     OperatorId = machineryWorkingTimeSheet.OperatorId,
+                    LabourCost = machineryWorkingTimeSheet.LabourCost,
+                    BatteryCost = machineryWorkingTimeSheet.BatteryCost,
+                    OverTime = machineryWorkingTimeSheet.OverTime,
+                    BasicSalary = machineryWorkingTimeSheet.BasicSalary,
                     TimeSheetSendForApprovalBy = machineryWorkingTimeSheet.TimeSheetSendForApprovalBy,
                     TimeSheetSendForApprovalTime = machineryWorkingTimeSheet.TimeSheetSendForApprovalTime
                 };
 
                 
-                db.MachineryWorkingTimeSheets.Attach(entity);
+                //db.MachineryWorkingTimeSheets.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
@@ -280,7 +399,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     TotalAmount = machineryWorkingTimeSheet.TotalAmount,
                     FuelCost = machineryWorkingTimeSheet.FuelCost,
                     ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
-                    LubricantCost = machineryWorkingTimeSheet.LubricantCost,
                     MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
                     TotalCost = machineryWorkingTimeSheet.TotalCost,
                     NetAmount = machineryWorkingTimeSheet.NetAmount,

@@ -1,8 +1,8 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -18,46 +18,73 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
     public class ExternalMaintenancePaymentRequestController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         // GET: Maintenance/ExternalMaintenancePaymentRequest
         public ActionResult Index()
+        {           
+            ViewDataProvider();
+           
+            return View();
+        }
+        public ActionResult BudgetIndex()
         {
-            ViewData["MaintenanceCenters"] = db.MaintenanceCenter.Select(x => new
-            {
-                Value = x.MaintenanceCenterID,
-                Text = x.Name
-            });
+            ViewDataProvider();
+            return View();
+        }
+        public ActionResult FinanceIndex()
+        {
+            ViewDataProvider();
+            return View();
+        }
+        private void ViewDataProvider()
+        {
+            ViewData["MaintenanceCenters"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+
             ViewData["ServiceCenterJobs"] = db.ServiceCenterJob.Select(x => new
             {
                 Value = x.ServiceCenterJobId,
                 Text = x.Num
             }).ToList();
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
                 Text = s.PlateNumber + " " + s.SerialNo
             }).ToList();
-            ViewData["Branch"] = db.Branch.Select(s => new
-            {
-                Value = s.BranchId,
-                Text = s.Name
-            }).ToList();
+            ViewData["Branch"] = CacheData.GetBranchCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            BranchId = i.Id
+        }).AsQueryable();
 
-
+            ViewData["BusinessUnit"] = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
             ViewData["GlTaxRate"] = db.GLTaxRates.Select(s => new
             {
                 Value = s.GLTaxRateID,
                 Text = s.TaxName
             }).ToList();
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Value = s.MaintenanceCenterID,
-                Text = s.Name 
-            }).ToList();
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
 
 
             ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
@@ -65,14 +92,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                 Value = s.ServiceCenterId,
                 Text = s.Name
             }).ToList();
-            ViewData["BusinessUnit"] = db.BusinessUnits.Select(s => new
-            {
-                Value = s.BusinessUnitId,
-                Text = s.Name
-            }).ToList();
-            return View();
         }
-
         public ActionResult Read([DataSourceRequest] DataSourceRequest request)
         {
             var model = db.ExternalMaintenancePaymentRequests;
@@ -223,7 +243,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved)
             {
-                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                record.Status = Enum.GetName(typeof(ExceedERP.Core.Domain.Maintenance.OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;
@@ -363,5 +383,107 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
         }
         #endregion
+        public ActionResult Budget_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            var model = db.ExternalMaintenancePaymentRequests.Where(x => x.IsBudgetApproved == false && x.IsFinalApproval == true && x.IsOnlineApproved == true && x.IsVoid == false&&x.IsFinanceApproved==false);
+
+            return Json(model.OrderBy(x => x.ExternalMaintenancePaymenntrequestId).ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult Finance_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            //var model = db.ExternalMaintenancePaymentRequests.Where(x => x.IsBudgetApproved == true && x.IsFinalApproval == true && x.IsOnlineApproved == true && x.IsVoid == false&&x.IsFinanceApproved==false);
+            var model = db.ExternalMaintenancePaymentRequests.Where(x => x.IsFinalApproval == true && x.IsOnlineApproved == true && x.IsVoid == false);
+
+            return Json(model.OrderBy(x => x.ExternalMaintenancePaymenntrequestId).ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult BudgetApproval(int id)
+        {
+            var record = db.ExternalMaintenancePaymentRequests.FirstOrDefault(x => x.ExternalMaintenancePaymenntrequestId == id);
+            record.IsBudgetApproved = true;
+            record.BudgetApprovedBy = User.Identity.Name;
+            record.BudgetApprovedTime = DateTime.Now;
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Budget Approval Successfull",
+                Status = "OK"
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult BudgetRejection(int id)
+        {
+            var record = db.ExternalMaintenancePaymentRequests.FirstOrDefault(x => x.ExternalMaintenancePaymenntrequestId == id);
+            record.Status = "Rejected";
+            record.IsVoid = true;
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Budget Rejected successfully",
+                Status = "OK"
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult SendForFinanceApproval(int id)
+        {
+            var record = db.ExternalMaintenancePaymentRequests.FirstOrDefault(x => x.ExternalMaintenancePaymenntrequestId == id);
+            record.IsFinanceSendForApproval = true;
+            record.FinanceSendForApprovalBy = User.Identity.Name;
+            record.FinanceSendForApprovalTime = DateTime.Now;
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message="Send For Finance Approval Success",
+                Status = "Ok"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult FinanceApproval(int id)
+        {
+            var record = db.ExternalMaintenancePaymentRequests.FirstOrDefault(x => x.ExternalMaintenancePaymenntrequestId == id);
+            record.IsFinalApproval = true;
+            record.IsFinanceApproved = true;
+            record.FinanceApprovedBy = User.Identity.Name;
+            record.FinanceApprovedTime = DateTime.Now;
+            record.Paid = true;
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Finance Approval Successfull",
+                Status = "OK"
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult FinanceRejection(int id)
+        {
+            var record = db.ExternalMaintenancePaymentRequests.FirstOrDefault(x => x.ExternalMaintenancePaymenntrequestId == id);
+            record.Status = "Rejected";
+            record.IsBudgetApproved = false;
+            record.BudgetApprovedTime = DateTime.Now;
+            record.BudgetApprovedBy = User.Identity.Name;
+            record.IsVoid = true;
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
+            var formattedData = new
+            {
+                Message = "Finance Rejected successfully",
+                Status = "OK"
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

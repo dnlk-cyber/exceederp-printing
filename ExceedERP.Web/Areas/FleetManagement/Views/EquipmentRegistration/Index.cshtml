@@ -1,6 +1,7 @@
 ﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Fleets
 @{
     ViewBag.Title = " Equipment ";
+    bool IsMCG = (ViewBag.setting as string) == "MCG";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>Equipment Registration</legend>
@@ -15,13 +16,23 @@
                       columns.Bound(e => e.UnitNum).Width(100);
                       columns.Bound(e => e.PlateNumber).Filterable(ftb=>ftb.Search(true)).Width(100);
                       columns.Bound(e => e.Model).Width(100);
-                      columns.Bound(e => e.SerialNo).Title("Serial/Chasis No.").Width(100);
+                      columns.Bound(e => e.SerialNo).Title("Serial No.").Width(100);
+                      columns.Bound(e => e.ChasisNumber).Title("Chasis No.").Width(100);
                       // columns.Bound(e => e.Location).Title("Location").Width(100);
                       columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "Id", "Name").Width(100).Title("Branch");
                       columns.Bound(e => e.ApprovalStatus).Hidden();
                       columns.Bound(e => e.LastModified).Hidden();
                       columns.Bound(e => e.EngineNumber).Width(80);
                       columns.ForeignKey(e => e.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Width(120);
+                      columns.Bound(e => e.IsReserved).Title("Is Reserved").Width(120);
+                      if (IsMCG)
+                      {
+                          columns.Bound(e => e.Unit).Title("Unit").Width(120);
+                          columns.Bound(e => e.Volume).Title("Volume/Capacity").Width(120);
+                      }
+                      columns.Bound(e => e.Remark).Title("Remark").Width(120);
+                      columns.Bound(e => e.Status).Title("Status").Width(120);
+                      // columns.Bound(e => e.StatusReason).Title("Status Reason").Width(120);
                       columns.Command(command =>
                       {
                           command.Edit(); command.Destroy();
@@ -117,7 +128,7 @@
 
                                                                             </select>
                                                                             <input type="hidden" name="FleetsID" value="#=FleetsID#" />
-
+                                                                            <input type="text" name="StatusReason" placeholder="Status Reason" />
                                                                             <input type="submit" value="Update Status " class="k-button k-button-icontext k-primary" />
                                                                         </form>
                                                                         #}#

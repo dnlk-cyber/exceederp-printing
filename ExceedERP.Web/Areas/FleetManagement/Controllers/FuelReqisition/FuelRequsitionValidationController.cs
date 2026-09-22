@@ -9,6 +9,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain.FleetManagement;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
@@ -120,7 +121,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                     else if (storeRequisitionValidation.Status == ApprovalStatuses.Reject)
                     {
                         storeRequisition.IsSendForApproval = false;
-                        storeRequisition.Status = Enum.GetName(typeof(OperationStatuses), 8);
+                        storeRequisition.Status = Enum.GetName(typeof(Core.Domain.FleetManagement.FleetOperationStatuses), 8);
                         db.Entry(storeRequisition).State = EntityState.Modified;
                         db.SaveChanges();
                     }

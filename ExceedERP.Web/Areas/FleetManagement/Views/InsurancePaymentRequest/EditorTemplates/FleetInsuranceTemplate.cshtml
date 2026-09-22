@@ -1,0 +1,171 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurancePaymentRequest
+@using ExceedERP.Helpers.Common
+@{ 
+    bool IsMIDROC = (ViewBag.setting as string) == "MIDROC";
+}
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentCategoryId)
+                    .ValuePrimitive(true)
+                                                .DataTextField("Name")
+                                                .DataValueField("Id")
+                                                .Filter(FilterType.Contains)
+                                                .OptionLabel("Select Category")
+                                                .HtmlAttributes(new { style = "width:100%" })
+                                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+                                                .ServerFiltering(false)))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId)
+                    .ValuePrimitive(true)
+                            .DataTextField("Name")
+                            .AutoBind(true)
+                            .DataValueField("Id")
+                            .OptionLabel("Select Equipment Type")
+                            .Filter(FilterType.Contains)
+                            .DataSource(d =>
+                            {
+                                d.Read(r =>
+                                {
+                                    r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                    .Data("filterCategory");
+                                })
+                                .ServerFiltering(true);
+                            })
+                            .Enable(false)
+                            .AutoBind(false)
+                            .CascadeFrom("EquipmentCategoryId")
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentNameId)
+                    .ValuePrimitive(true)
+                            .AutoBind(true)
+                            .Enable(false)
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
+                            .Data("filterEquipmentNames"))
+                            .ServerFiltering(true))
+                            .CascadeFrom("EquipmentTypeId"))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Plate/Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                    .ValuePrimitive(true)
+                            .AutoBind(true)
+                            .Enable(false)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("GetFleetForPlanAndEvaluation", "FleetManagementDataProvider").Data("sendForgery")
+                            .Data("filterFleet"))
+                            .ServerFiltering(true))
+                            .CascadeFrom("EquipmentNameId"))
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.InsuranceCompanyId, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.InsuranceCompanyId)
+                                                        .OptionLabel("Select Insurance")
+                                                        .DataTextField("InsuranceCompanyName")
+                                                        .DataValueField("InsuranceCompanyId")
+                                                        .DataSource(dataSource =>
+                                                        {
+                                                            dataSource.Read(read => read.Action("GetInsuranceCompany", "FleetManagementDataProvider", new { Area = "FleetManagement" }).Data("sendForgery"))
+                                                            .ServerFiltering(false);
+                                                        })
+                                                        .Filter("contains")
+                                                        .MinLength(2)
+                                                        .ValuePrimitive(true).HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.InsuranceType, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+
+                @(Html.Kendo().DropDownListFor(m => m.InsuranceType)
+                                                 .OptionLabel("Task Type...")
+                                                 .DataTextField("Text")
+                                                 .DataValueField("Value")
+                                                 .AutoBind(true)
+                                                 .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsuranceTypeEnum))
+                                                 )
+                )
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            Start Date
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.DurationFrom).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            End Date
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.DurationTo).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>
+
+   
+
+<div class="row">
+   
+   
+    <div class="col-sm-2">
+        <div class="form-group">
+        @(Html.Kendo().DropDownListFor(model => model.InsuranceCoverTypeId)
+        .DataTextField("Name")
+        .DataValueField("Id").Filter(FilterType.Contains)
+        .MinLength(2)
+        .OptionLabel("Select Insurance Cover Type")
+        .HtmlAttributes(new { style = "width:100%" })
+        .DataSource(d => d.Read(r => r.Action("GetCoverType", "InsuranceRegistration"))
+        .ServerFiltering(false)
+        ).ValuePrimitive(true)
+        )
+
+        </div>
+    </div>
+</div>

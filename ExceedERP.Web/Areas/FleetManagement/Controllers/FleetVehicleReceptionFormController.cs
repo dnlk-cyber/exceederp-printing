@@ -23,7 +23,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     public class FleetVehicleReceptionFormController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
-       
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
             ViewData["Customer"] = db.OrganizationCustomers.ToList();
@@ -35,17 +35,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 }).ToList();
             ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.ToList();
             ViewData["VehicleParts"] = db.VehiclePart.ToList();
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new {
-                Id = s.EquipmentIdentityID,
-                Name = s.EquipmentCategoryName
-            }).ToList();
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           Id = i.Id
+       }).AsQueryable();
+            
             return View();
         }
 
         public ActionResult Print(string id)
         {
           
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MVInspectionAndHandingOverCheckList, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MVInspectionAndHandingOverCheckList, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             ViewBag.id = id;

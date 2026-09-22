@@ -1,0 +1,68 @@
+﻿@using System.Collections
+@{
+    ViewBag.Title = "Equipment Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Internal Equipment Rental Rate </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.InternalRentalRate>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CategoryId, (IEnumerable)ViewData["category"], "Value", "Text").EditorTemplateName("InternalRateCategoryTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+          columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["EquipmentType"], "Value", "Text").EditorTemplateName("InternalRateTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+          columns.Bound(e => e.RentType).EditorTemplateName("RentalRate").Title("Rent Type").Width(140);
+          columns.Bound(e => e.Rate).Width(140);
+          columns.Bound(e => e.MarketPrice).Title("Market Price").Width(140);
+          columns.Bound(e => e.Description).Width(140);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+      })
+      .ToolBar(commands => commands.Create())
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.InLine);
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Category");
+      })
+            .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.InternalRentalRateId);
+
+          })
+          .Sort(so=>so.Add(s=>s.InternalRentalRateId).Descending())
+                       .Events(ev => ev
+                                        .Error("error_handler(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Create(update => update.Action("Rate_Create", "InternalRentalRate").Data("sendForgery"))
+          .Read(read => read.Action("Rate_Read", "InternalRentalRate").Data("sendForgery"))
+          .Update(update => update.Action("Rate_Update", "InternalRentalRate").Data("sendForgery"))
+          .Destroy(update => update.Action("Rate_Destroy", "InternalRentalRate").Data("sendForgery"))
+      ))
+
+
+<script>
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#CategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+</script>

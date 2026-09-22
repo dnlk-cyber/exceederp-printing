@@ -7,6 +7,7 @@ namespace ExceedERP.Core.Domain.Maintenance
     public  class JobCauses : TrackUserSettingOperation
     {
             public Guid JobCausesId { get; set; }
+            //public string JobOrderId { get; set; }
             public Guid OrderId { get; set; }
                 [Required]
             public string Name { get; set; }

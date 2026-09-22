@@ -145,7 +145,7 @@
             </div>
             <div class="row"></div>
             <div class="form-group">
-                @Html.LabelFor(model => model.DescriptionReason, "Withholding Type", htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.DescriptionReason, "Withholding", htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @Html.Kendo().TextBoxFor(model => model.DescriptionReason)
                     @Html.ValidationMessageFor(model => model.DescriptionReason, "", new { @class = "text-danger" })

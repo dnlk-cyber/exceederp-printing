@@ -104,6 +104,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     db.RentFromExternal.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
+                    var rentedEquipments = db.RentFromExternalEquipments.Where(x => x.RentFromExternalId == entity.RentFromExternalID).ToList();
+                       foreach(var equipment in rentedEquipments)
+                    {
+                        equipment.IsOnlineApproved = true;
+                        db.Entry(equipment).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
                     UpdateFleet(entity.RentFromExternalID);
 
                 }
@@ -148,6 +155,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetId);
                 fleet.RentFromExternalNum = rentFromExternal.Num;
+                fleet.IsContractTerminated = false;
                 fleet.RentId = rentFromExternal.RentFromExternalID;
                 db.Entry(fleet).State = EntityState.Modified;
             }

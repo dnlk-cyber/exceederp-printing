@@ -18,6 +18,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         [DisplayName(" Customer")]
         public int? CustomerId { get; set; }
         public bool IsPM { get; set; }
+        public string CustomerName { get; set; }
         public JobRequestSource Source { get; set; }
         //[Required]
         [DisplayName(" Equipment (License Plate)")]
@@ -76,6 +77,15 @@ namespace ExceedERP.Core.Domain.Maintenance
         public bool IsSentBackToReception { get; set; }
         public bool CreateJobOrder { get; set; }
     }
+
+    public class MaintenanceStage : TrackUserSettingOperation
+    {
+        public int MaintenanceStageId { get; set; }
+        public string JobRequestId { get; set; }
+        public string ServiceCenterJobId { get; set; }
+        public string Description { get; set; }
+        public string Complain { get; set; }
+    }
     public class JobRequestVM
     {
         
@@ -125,6 +135,7 @@ namespace ExceedERP.Core.Domain.Maintenance
     public enum JobRequestSource
     {
         CompanyVehicle,
-        ExternalVehicle
+        ExternalVehicle,
+        ExternalCustomer
     }
 }

@@ -13,22 +13,22 @@
                    @Html.LabelFor(model => model.RequestID)
                </div>
                @(Html.Kendo().DropDownListFor(model => model.RequestID)
-                   .Name("RequestID")
+                   //.Name("RequestID")
                    .HtmlAttributes(new { style = "width: 100%" })
                    .DataTextField("Name")
                    .DataValueField("Id")
-                   .OptionLabel(" Select ")
                    .Filter(FilterType.Contains)
+                    .MinLength(2) // 🔥 only search after typing 2 chars
+                       .AutoBind(false) // 🔥 do NOT load on page load
                    .DataSource(d =>
                    {
                        d.Read(r =>
                        {
-                           r.Action("RequestDemand", "RentRequest");
+                           r.Action("RequestDemand", "RentRequest").Data("filterRequestNumber");
                        })
-                   .ServerFiltering(false);
+                   .ServerFiltering(true);
                    })
-                   .Enable(true)
-                   .AutoBind(true))
+                   )
            </div>
        </div>
    </div>

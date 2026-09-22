@@ -8,6 +8,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
 {
     public class FleetConst
     {
+        public const string FleetOIDStatus = "Fleet OID Status";
         public const string MachineryTimesheet = "Machinery Timesheet Report";
         public const string LightVehicleTimesheet = "LightVehicle Timesheet Report";
         public const string DumpTruckTimesheet = "Dump Truck Timesheet Report";
@@ -15,6 +16,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
         
 
         public const string WagondrillTimesheet = "Wagon Drill Timesheet Report";
+        public const string DumpTruckTimesheetDailyEvaluation = "DumpTruck Timesheet Daily Evaluation Report";
 
         public const string MachineryCostsheet = "Machinery Costsheet Report";
         public const string MachineryCostsheetSummary = "Machinery Costsheet Summary Report";
@@ -34,6 +36,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string ExternalWagondrillTimesheet = "External Wagon Drill Timesheet Report";
 
         public const string MachineryAndVehicleStatus = "Machinery And Vehicle Status Report";
+        public const string MachineTimeSheetDailyEvaluation = "Machine TimeSheet Daily Evaluation Report";
 
         public const string HeadOfficeSummary = "Head Office Summary Report";
         public const string ProjectSummaryReport = "Project Summary Report";
@@ -45,8 +48,35 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string EquipmentMaintenaceSummary = "Equipment Maintenance Summary Report";
         public const string EquipmentMechanicSummary = "Equipment Mechanic Summary Report";
         public const string FuelConsumptionReport = "Fuel Consumption Report";
+        public const string OilLubricantConsumption = "Oil and Lubricant Consumption Report";
         public const string EquipmentUtilizationReport = "Equipment utilization Report";
         public const string EquipmentDistrubtionReport = "Equipment Distribution Report";
+
+        public const string TimeSheetAvailability = "TimeSheet Availability Report";
+        public const string TimeSheetAvailabilityByCategory = "TimeSheet Availability By Category Report";
+        public const string TimeSheetAvailabilityByBranch = "TimeSheet Availability By Branch Report";
+        public const string TimeSheetOwnRent = "TimeSheet OwnRent Report";
+        public const string TimeSheetProfitLoose = "TimeSheet Profit Loose Report";
+        public const string AvailabilityBasedEquipmentStatus = "Equipment Status Report";
+        public const string EquipmentPerformanceDesign = "Equipment Performance Report";
+        public const string EquipmentFuelConsumptionDesign = "Equipment Fuel Consumption Report";
+        public const string SparePartConsumption = "Sparepart Consumption Report";
+
+        public const string LightVehicleAvailabilityReport = "Light Vehicle Availability Report";
+        public const string WagonDrillAvailabilityReport = "Wagon Drill Availability Report";
+        public const string MachineryAvailabilityReport = "Machinery Availability Report";
+        public const string DumpTruckAvailabilityReport = "Dump Truck Availability Report";
+        public const string DryLoadingAvailabilityReport = "Dry Loading Availability Report";
+        public const string LightVehicleOwnRent = "LightVehicle Own Rent Report";
+        public const string MachineryOwnRent = "Machinery Own Rent Report";
+        public const string WagonDrillOwnRent = "Wagon Drill Own Rent Report";
+        public const string DumpTruckOwnRent = "Dump Truck Own Rent Report";
+        public const string DryLoadingOwnRent = "DryLoading Own Rent Report";
+        public const string LightVehicleProfitLoose = "Light Vehicle Profit Loose Report";
+        public const string MachineryProfitLoose = "Machinery Profit Loose Report";
+        public const string WagonDrillProfitLoose = "Wagon Drill Profit Loose Report";
+        public const string DumpTruckProfitLoose = "Dump Turck Profit Loose Report";
+        public const string DryLoadingProfitLoose = "DryLoading Profit Loose Report";
 
         public const string TimeSheetReport = "Project Performance Report";
         public const string EquipmentSiteTransferReport = "Equipmenty Site Transfer Report";

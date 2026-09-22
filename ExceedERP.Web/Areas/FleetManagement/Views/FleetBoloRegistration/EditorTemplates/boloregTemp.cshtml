@@ -117,6 +117,15 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
+            <label>Add to tistory</label>
+            <div>
+                @Html.Kendo().CheckBoxFor(model => model.AddToHistory).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
             <label>Remark</label>
             <div>
                 @Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" })

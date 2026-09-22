@@ -9,14 +9,15 @@ using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class RentCustomerFeedBackController : Controller
     {
         IRentCustomerFeedBackService _RentCustomerFeedBackService;
-        
-        
+
+        ExceedDbContext db = new ExceedDbContext();
         public RentCustomerFeedBackController()
         {
             _RentCustomerFeedBackService = new RentCustomerFeedBackService();
@@ -31,6 +32,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult RentCustomerFeedBack_Read([DataSourceRequest] DataSourceRequest request)
         {
             var RentCustomerFeedBack = _RentCustomerFeedBackService.GetAll();
+            //IQueryable<RentCustomerFeedBack> RentCustomerFeedBack = db.RentCustomerFeedBack.AsQueryable();
 
             return Json(RentCustomerFeedBack.ToDataSourceResult(request));
         }
@@ -87,7 +89,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

@@ -10,12 +10,16 @@ namespace ExceedERP.Core.Domain.Maintenance
     {
         public const string ExternalMaintenancePaymentPrint = "Vehicle Maintenance Payment Request ";
         public const string OutSourcedMaintenanceRequest = "Out Sourced Maintenance Request Form (For Internal) Machine/Vehicel data ";
+        public const string MaintenanceProcessApproveAndClose = "Maintenance Process Approve And Close ";
+        public const string WorkshopPrintOut = "Workshop Print Out ";
+        public const string ServiceCenterPrintOut = "Service Center Print Out ";
         public const string VehiclesExternalMaintenanceOrderForm = "Vehicles External Maintenance Order Form";
         public const string WeeklyPMCMPerfomanceReportSummary = "Weekly PM & CM Perfomance Report Summary";
         public const string DailyJobRegistration = "Daily Job Registration Report";
         public const string GarageMaintenanceCostBreakDownReport = "Maintenance Cost-Break Down Report";
+        public const string GarageMaintenanceCostBreakDownReportSummary = "Maintenance Cost-Break Down Report Summary";
         public const string MVPmExcecutionReprot = "MV PM Excecution Report";
-        public const string WeeklyMaintenancePlanVsActual = "Weekly PM and CM Performance Report";
+        public const string WeeklyMaintenancePlanVsActual = "PM and CM Performance Report";
         public const string OutSourcedMaintenanceReport = "OutSourced Maintenance Report";
         public const string MaintenanceCostSheetReport = "Maintenance Cost Sheet Report";
         public const string StandardVsActualTimeReport = "Maintenance Standard vs Actual Time Report";
@@ -32,6 +36,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public const string InternalMaintenanceCostReport = "Internal Maintenace Cost Report";
         public const string MachineAndVehicleMaintenanceAndRepairReport = "Machine And Vehicle Maintenance And Repair Report";
         public const string DailyMaintenanceReports = "Daily Maintenance Report";
+        public const string MaintenanceCostReport = "Maintenance Cost Report";
 
     }
 }

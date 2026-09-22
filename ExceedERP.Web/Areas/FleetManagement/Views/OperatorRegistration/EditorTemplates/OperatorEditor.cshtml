@@ -80,7 +80,7 @@
                 <div class="col-md-6">
                     @( Html.Kendo().DropDownListFor(m => m.Genderenum)
                                            .Name("Gender")
-                                           .Enable(false)
+                                           //.Enable(false)
                                            .DataTextField("Text")
                                            .DataValueField("Text").OptionLabel(" Select  ")
                                            .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Genderenum))))

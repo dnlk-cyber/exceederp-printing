@@ -26,52 +26,94 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return View();
         }
 
+        //public ActionResult ServiceCrewWorkLog_Read([DataSourceRequest] DataSourceRequest request, string Id)
+        //{
+        //    var ServiceCrewWorkLog = db.ServiceCrewWorkLogs.Where(x => x.JobId.ToString() == Id).Select(
+        //         s => new
+        //         {
+        //             ServiceCrewWorkLogId = s.ServiceCrewWorkLogId,
+        //             JobId = s.JobId,
+        //             JobOrderDetailId = s.JobOrderDetailId,
+        //             MecanicId = s.MecanicId,
+        //             StandaredHour = getStandardTime(s.JobId),
+        //             StandaredHours = s.StandaredHours,
+        //             ServiceGroup = s.ServiceGroup,
+        //             SubCategoryCode = s.SubCategoryCode,
+        //             WorkShopType = s.WorkShopType,
+        //             WorkingHoursAfternoonFrom = s.WorkingHoursAfternoonFrom,
+        //             AdditionalWork = s.AdditionalWork,
+        //             TotalLabourHours = s.TotalLabourHours,
+        //             WorkingHoursAfternoonTo = s.WorkingHoursAfternoonTo,
+        //             WorkingHoursMorningFrom = s.WorkingHoursMorningFrom,
+        //             WorkingHoursMorningto = s.WorkingHoursMorningto,
+        //             CreatedBy = s.CreatedBy,
+        //             DateCreated = s.DateCreated,
+        //             RecordedDate = s.RecordedDate,
+        //             Status = s.Status
+
+        //         }
+        //        ).ToList();
+
+        //    return Json(ServiceCrewWorkLog.ToDataSourceResult(request));
+        //}
         public ActionResult ServiceCrewWorkLog_Read([DataSourceRequest] DataSourceRequest request, string Id)
         {
-            var ServiceCrewWorkLog = db.ServiceCrewWorkLogs.Where(x => x.JobId.ToString() == Id).Select(
-                 s => new
-                 {
-                     ServiceCrewWorkLogId = s.ServiceCrewWorkLogId,
-                     JobId = s.JobId,
-                     JobOrderDetailId = s.JobOrderDetailId,
-                     MecanicId = s.MecanicId,
-                     StandaredHours = s.StandaredHours,
-                     ServiceGroup = s.ServiceGroup,
-                     SubCategoryCode = s.SubCategoryCode,
-                     WorkShopType = s.WorkShopType,
-                     WorkingHoursAfternoonFrom = s.WorkingHoursAfternoonFrom,
-                     AdditionalWork = s.AdditionalWork,
-                     TotalLabourHours = s.TotalLabourHours,
-                     WorkingHoursAfternoonTo = s.WorkingHoursAfternoonTo,
-                     WorkingHoursMorningFrom = s.WorkingHoursMorningFrom,
-                     WorkingHoursMorningto = s.WorkingHoursMorningto,
-                     CreatedBy = s.CreatedBy,
-                     DateCreated = s.DateCreated,
-                     RecordedDate = s.RecordedDate,
-                     Status = s.Status
+            var ServiceCrewWorkLog = db.ServiceCrewWorkLogs.Where(x => x.JobId.ToString() == Id).ToList();
+            DataSourceResult Result = ServiceCrewWorkLog.ToDataSourceResult(request, s => new
+            {
+                ServiceCrewWorkLogId = s.ServiceCrewWorkLogId,
+                JobId = s.JobId,
+                JobOrderDetailId = s.JobOrderDetailId,
+                MecanicId = s.MecanicId,
+                StandardHour = s.StandardHour,
+                StandaredHours = s.StandaredHours,
+                ServiceGroup = s.ServiceGroup,
+                SubCategoryCode = s.SubCategoryCode,
+                WorkShopType = s.WorkShopType,
+                WorkingHoursAfternoonFrom = s.WorkingHoursAfternoonFrom,
+                AdditionalWork = s.AdditionalWork,
+                TotalLabourHours = s.TotalLabourHours,
+                WorkingHoursAfternoonTo = s.WorkingHoursAfternoonTo,
+                WorkingHoursMorningFrom = s.WorkingHoursMorningFrom,
+                WorkingHoursMorningto = s.WorkingHoursMorningto,
+                CreatedBy = s.CreatedBy,
+                DateCreated = s.DateCreated,
+                RecordedDate = s.RecordedDate,
+                Status = s.Status
 
-                 }
-                ).ToList();
+            });
+               
 
-            return Json(ServiceCrewWorkLog.ToDataSourceResult(request));
+            return Json(Result);
         }
 
-        public ActionResult ServiceCrewWorkLog_ReadJobOrder([DataSourceRequest] DataSourceRequest request, int num)
-
+        private decimal getStandardTime(Guid JobId)
         {
-            var serviceCenter = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
-            if (serviceCenter == null)
+            var fetchServiceType = db.JobOrderDetail.FirstOrDefault(x => x.JobOrderDetailID == JobId);
+            decimal LabourCost = 0;
+            if (fetchServiceType != null)
+            {
+                LabourCost = db.RepairType.FirstOrDefault(x => x.RepairTypeID == fetchServiceType.RepairTypeID)?.StandaredTime ?? 0;
+            }
+            return LabourCost;
+        }
+        public ActionResult ServiceCrewWorkLog_ReadJobOrder([DataSourceRequest] DataSourceRequest request, int num)
+        {
+            var serviceCenter = db.ServiceCenterJob.Where(x => x.Num == num).ToList();
+            if (!serviceCenter.Any())
             {
                 return Json(new { Error = "Job Order not found" });
             }
+            var serviceJobIds = serviceCenter.Select(x => x.ServiceCenterJobId).ToList();
 
-            var ServiceCrewWorkLog = db.ServiceCrewWorkLogs.Where(x => x.JobId == serviceCenter.ServiceCenterJobId).Select(
+            var ServiceCrewWorkLog = db.ServiceCrewWorkLogs.Where(x => serviceJobIds.Contains(x.JobId)).Select(
                      s => new
                      {
                          ServiceCrewWorkLogId = s.ServiceCrewWorkLogId,
                          JobId = s.JobId,
                          JobOrderDetailId = s.JobOrderDetailId,
                          MecanicId = s.MecanicId,
+                         AdditionalWork = s.AdditionalWork,
                          StandaredHours = s.StandaredHours,
                          ServiceGroup = s.ServiceGroup,
                          SubCategoryCode = s.SubCategoryCode,
@@ -104,6 +146,16 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
                 ModelState.AddModelError("Maintenance started", "You can not close workshop with remark it is getting maintained");
 
+            }
+            var ServiceType = db.JobOrderServiceCenterDetails.FirstOrDefault(x => x.JobOrderServiceCenterDetailId == model.JobOrderDetailId);
+            if(ServiceType!=null)
+            {
+                
+                var fetchRepairType = db.RepairType.FirstOrDefault(x => x.RepairTypeID == ServiceType.RepairTypeID);
+                if(fetchRepairType!=null)
+                {
+                    model.StandardHour = fetchRepairType.StandaredTime;
+                }
             }
             ModelState.Remove("ServiceCrewWorkLogId");
             ModelState.Remove("JobId");
@@ -264,6 +316,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 db.SaveChanges();
             }
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

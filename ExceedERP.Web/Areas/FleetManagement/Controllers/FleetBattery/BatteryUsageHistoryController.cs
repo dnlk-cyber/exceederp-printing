@@ -52,6 +52,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return string.Empty;
         }
-
-	}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 }

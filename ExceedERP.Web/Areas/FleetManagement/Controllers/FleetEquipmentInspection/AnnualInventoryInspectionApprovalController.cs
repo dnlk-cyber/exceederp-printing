@@ -40,7 +40,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		public ActionResult AnnualInventoryInspectionApproval_Create([DataSourceRequest] DataSourceRequest request, AnnualInventoryInspectionApproval AnnualInventoryInspectionApproval)
 		{
 			ModelState.Remove("AnnualInventoryInspectionApprovalID");
-			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionsService.GetAll().Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionID).FirstOrDefault();
+			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = db.AnnualEquipmentInventoryInspection.Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionID).FirstOrDefault();
 			if (AnnualInventoryInspectionApproval != null)
 			{
 				AnnualInventoryInspectionApproval.DateCreated = DateTime.Now;
@@ -73,7 +73,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult AnnualInventoryInspectionApproval_Update([DataSourceRequest] DataSourceRequest request, AnnualInventoryInspectionApproval AnnualInventoryInspectionApproval)
 		{
-			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionsService.GetAll().Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionID).FirstOrDefault();
+			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = db.AnnualEquipmentInventoryInspection.Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionID).FirstOrDefault();
 		 
 			if (AnnualInventoryInspectionApproval != null)
 			{
@@ -205,7 +205,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 			return Json(new[] { InspectionApproval }.ToDataSourceResult(request));
 		}
 
-	  
-	
-	}
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 }

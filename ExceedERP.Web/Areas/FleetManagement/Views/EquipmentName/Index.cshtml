@@ -9,8 +9,8 @@
     .Columns(columns =>
     {
 
-        //columns.ForeignKey(e => e.EquipmentTypeId, (System.Collections.IEnumerable)ViewData["EquipmentTypes"], "Id", "Name").Width(140);//.EditorTemplateName("EquipmentTypeEditor").Width(140);
-        columns.ForeignKey(c => c.EquipmentTypeId, (System.Collections.IEnumerable)ViewData["EquipmentTypes"], "Id", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+        //columns.ForeignKey(e => e.EquipmentTypeId, (System.Collections.IEnumerable)ViewData["EquipmentTypes"], "Id", "Name").EditorTemplateName("EquipmentTypeEditor").Width(140);
+        columns.ForeignKey(c => c.EquipmentTypeId, (System.Collections.IEnumerable)ViewData["EquipmentTypes"], "Id", "Name").EditorTemplateName("EquipmentTypesForName").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
         columns.ForeignKey(e => e.FixedAssetSubCategoryNameId, (System.Collections.IEnumerable)ViewData["FixedAssetSubCategoryNames"], "Id", "Name").EditorTemplateName("FixedAssetSubCategoryNameEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
         columns.Bound(e => e.Name).Width(140);
         columns.Bound(e => e.Description).Width(140);
@@ -65,18 +65,25 @@
       }
       function filterFixedAssetSubCategroryNames() {
           return {
-              equipmentTypeId: $("#EquipmentTypeId").val()
+              equipmentTypeId: $("#EquipmentTypeId").val(),
           };
       }
+      function filterEquipmentType() {
+          var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+          var filterInput = dropdownlist.filterInput.val();
+          return { text: filterInput };
+      }
       function onChangeSubCategoryName(e) {
-
+          //var delivery = $("#assetSubCategoryNameId").data("kendoDropDownList").value();
         $.ajax({
             url: '@Url.Action("GetFixedAssetSubCategoryNameById", "FleetManagementDataProvider")',
             data: { assetSubCategoryNameId: this.value() },
+            //data: { assetSubCategoryNameId: delivery },
             type: 'GET',
             cache: false,
             success: function (result) {
-                $("#Name").val(result.Name).trigger("change");
+                 $("#Name").val(result.Name).trigger("change");
+                //$("#Name").val("yibrah").trigger("change");
                 $("#Description").val(result.Description).trigger("change");
 
 

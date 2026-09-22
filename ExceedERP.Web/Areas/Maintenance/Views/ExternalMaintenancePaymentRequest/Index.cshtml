@@ -16,8 +16,8 @@
                     columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120).Title("Plate No");
             //columns.ForeignKey(c => c.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Title("maintenance Center");
             columns.ForeignKey(c => c.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").EditorTemplateName("MaintenanceCenterSelector").Title("Maintenance Center").Width(120);
-                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "Value", "Text").Width(120).Title("Branch");
-                    columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Value", "Text").Width(120).Title("Business Unit");
+                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(120).Title("Branch");
+                    columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Id", "Name").Width(120).Title("Business Unit");
                     columns.Bound(c => c.EquipmentName).Width(100);
                     columns.Bound(c => c.EnteranceDate).Width(100);
                     columns.Bound(c => c.ExitDate).Width(100);
@@ -68,50 +68,50 @@
 
 <script id="tabs" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                                .Name("tabstrip_grid_#=ExternalMaintenancePaymenntrequestId#")
+            .Name("tabstrip_grid_#=ExternalMaintenancePaymenntrequestId#")
 
-                                                                                .Items(itemn =>
-                                                                                {
-                                                                                    itemn.Add().Text("Detail")
-                                                                        .Content(@<text>
-                                                                            <legend>Detail</legend>
-                                                                            <div class="box">
-                                                                                #if(IsOnlineApproved)
-                                                                                {#
-                                                                                <a href='@Url.Action("ExternalMaintenancePaymentPrint", "MaintenanceReport")/?id=#=ExternalMaintenancePaymenntrequestId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-                                                                                #}#
-                                                                                <div class="box-col">
+            .Items(itemn =>
+            {
+                itemn.Add().Text("Detail")
+    .Content(@<text>
+        <legend>Detail</legend>
+        <div class="box">
+            #if(IsOnlineApproved)
+            {#
+            <a href='@Url.Action("ExternalMaintenancePaymentPrint", "MaintenanceReport")/?id=#=ExternalMaintenancePaymenntrequestId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+            #}#
+            <div class="box-col">
 
-                                                                                    # if (!IsSendForApproval)
-                                                                                    {#
-                                                                                    <a onclick='return sendForApproval("#=ExternalMaintenancePaymenntrequestId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                                    # }#
-                                                                                </div>
-                                                                                # if (!IsOnlineApproved)
-                                                                                {#
-                                                                                <dl class="h6">
-                                                                                    <dt>
-                                                                                        Next Approver
-                                                                                    </dt>
-                                                                                    <dd>
-                                                                                        #= ForwardedTo # <snap id="user_name_display"></snap>
-                                                                                        <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
-                                                                                        <a onclick='SelectNextApprover(this,"#=ExternalMaintenancePaymenntrequestId#","ExternalMaintenanceRequestPayment")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
-                                                                                        <snap id="new_user_name_display"></snap>
-                                                                                    </dd>
-                                                                                </dl>
-                                                                                # } #
-                                                                            </div>
-                                                                        </text>);
+                # if (!IsSendForApproval)
+                {#
+                <a onclick='return sendForApproval("#=ExternalMaintenancePaymenntrequestId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                # }#
+            </div>
+            # if (!IsOnlineApproved)
+            {#
+            <dl class="h6">
+                <dt>
+                    Next Approver
+                </dt>
+                <dd>
+                    #= ForwardedTo # <snap id="user_name_display"></snap>
+                    <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                    <a onclick='SelectNextApprover(this,"#=ExternalMaintenancePaymenntrequestId#","ExternalMaintenanceRequestPayment")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                    <snap id="new_user_name_display"></snap>
+                </dd>
+            </dl>
+            # } #
+        </div>
+    </text>);
 
-                                                                                        itemn.Add().Text("Payment Detail")
-                    .Content(@<text>@Detail()</text>);
-                                                                            itemn.Add().Text("Service Center Jobs")
-                        .Content(@<text>@ExternalRequestJob()</text>);
-                                                                            itemn.Add().Text("Validation").Content(@<text>
-                                                                                @ExteranalRequestValidation()
-                                                                            </text>);
-                                                                            }).ToClientTemplate())
+                    itemn.Add().Text("Payment Detail")
+                         .Content(@<text>@Detail()</text>);
+                    itemn.Add().Text("Service Center Jobs")
+                         .Content(@<text>@ExternalRequestJob()</text>);
+          itemn.Add().Text("Validation").Content(@<text>
+              @ExteranalRequestValidation()
+          </text>);
+          }).ToClientTemplate())
 </script>
 @helper ExteranalRequestValidation()
 {
@@ -156,65 +156,65 @@
 @helper ExternalRequestJob()
 {
     @(Html.Kendo().Grid<ExternalPaymentRequestJob>()
-                                                    .Name("ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#")
-                                                    .Columns(columns =>
-                                                    {
-                                                        columns.ForeignKey(c => c.ServiceCenterJobId, (IEnumerable)ViewData["ServiceCenterJobs"], "Value", "Text").EditorTemplateName("ServiceCenterJobSelector").Title("Num");
-                                                        columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120).Title("Plate No");
-                                                        columns.Bound(c => c.EquipmentName).Width(100);
-                                                        columns.Bound(c => c.EnteranceDate).Width(100);
-                                                        columns.Bound(c => c.ExitDate).Width(100);
-                                                        columns.Bound(c => c.Desctiption).Title("Description");
+        .Name("ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.ServiceCenterJobId, (IEnumerable)ViewData["ServiceCenterJobs"], "Value", "Text").EditorTemplateName("ServiceCenterJobSelector").Title("Num");
+            columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120).Title("Plate No");
+            columns.Bound(c => c.EquipmentName).Width(100);
+            columns.Bound(c => c.EnteranceDate).Width(100);
+            columns.Bound(c => c.ExitDate).Width(100);
+            columns.Bound(c => c.Desctiption).Title("Description");
 
-                                                        columns.Command(command =>
-                                                        {
-                                                            command.Edit();
-                                                            command.Destroy();
-                                                        }
-                                                                             ).Title("Action");
-                                                    })
+            columns.Command(command =>
+            {
+                command.Edit();
+                command.Destroy();
+            }
+                                 ).Title("Action");
+        })
 
-                                                            .Sortable()
-                                                            .ToolBar(toolbar => toolbar.Create())
-                                                            .Editable(ed => ed.Mode(GridEditMode.InLine))
-                                                            .Pageable()
-                                                            .Scrollable()
-                                                            .DataSource(datasource =>
-                                                            datasource.Ajax()
-                                                            .Model(m =>
-                                                            {
-                                                                m.Id(model => model.ExternalPaymentRequestJobId);
-                                                    // m.Field(f => f.BranchId).Editable(false);
-                                                    // m.Field(f => f.BusinessUnitId).Editable(false);
-                                                    m.Field(f => f.FleetId).Editable(false);
-                                                                m.Field(f => f.EnteranceDate).Editable(false);
-                                                                m.Field(f => f.ExitDate).Editable(false);
-                                                                m.Field(f => f.EquipmentName).Editable(false);
-                                                            })
-                                                            .Events(ev => ev
-                                                                .Error("error_handler(\"ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#\")")
-                                                                .RequestStart("onRequestStart(\"ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#\")")
-                                                                .RequestEnd("onRequestEnd(\"ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#\")"))
-                                                               .Create(create => create.Action("ExternalPaymentRequestJob_Create", "ExternalPaymentRequestJob", new { area = "Maintenance", Id = "#=ExternalMaintenancePaymenntrequestId#" }).Data("sendForgery"))
-                                                               .Read(read => read.Action("ExternalPaymentRequestJob_Read", "ExternalPaymentRequestJob", new { area = "Maintenance", Id = "#=ExternalMaintenancePaymenntrequestId#" }).Data("sendForgery"))
-                                                               .Update(update => update.Action("ExternalPaymentRequestJob_Update", "ExternalPaymentRequestJob").Data("sendForgery"))
-                                                               .Destroy(destroy => destroy.Action("ExternalPaymentRequestJob_Destroy", "ExternalPaymentRequestJob").Data("sendForgery"))
-                                                            )
+                .Sortable()
+                .ToolBar(toolbar => toolbar.Create())
+                .Editable(ed => ed.Mode(GridEditMode.InLine))
+                .Pageable()
+                .Scrollable()
+                .DataSource(datasource =>
+                datasource.Ajax()
+                .Model(m =>
+                {
+                    m.Id(model => model.ExternalPaymentRequestJobId);
+        // m.Field(f => f.BranchId).Editable(false);
+        // m.Field(f => f.BusinessUnitId).Editable(false);
+        m.Field(f => f.FleetId).Editable(false);
+                    m.Field(f => f.EnteranceDate).Editable(false);
+                    m.Field(f => f.ExitDate).Editable(false);
+                    m.Field(f => f.EquipmentName).Editable(false);
+                })
+                .Events(ev => ev
+                    .Error("error_handler(\"ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#\")")
+                    .RequestStart("onRequestStart(\"ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#\")")
+                    .RequestEnd("onRequestEnd(\"ExternalPaymentRequestJob#=ExternalMaintenancePaymenntrequestId#\")"))
+                   .Create(create => create.Action("ExternalPaymentRequestJob_Create", "ExternalPaymentRequestJob", new { area = "Maintenance", Id = "#=ExternalMaintenancePaymenntrequestId#" }).Data("sendForgery"))
+                   .Read(read => read.Action("ExternalPaymentRequestJob_Read", "ExternalPaymentRequestJob", new { area = "Maintenance", Id = "#=ExternalMaintenancePaymenntrequestId#" }).Data("sendForgery"))
+                   .Update(update => update.Action("ExternalPaymentRequestJob_Update", "ExternalPaymentRequestJob").Data("sendForgery"))
+                   .Destroy(destroy => destroy.Action("ExternalPaymentRequestJob_Destroy", "ExternalPaymentRequestJob").Data("sendForgery"))
+                )
                                     .ClientDetailTemplateId("JobDetails")
                                     .ToClientTemplate()
     )
 }
 <script id="JobDetails" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                                .Name("tabstrip_grid_#=ExternalPaymentRequestJobId#")
+              .Name("tabstrip_grid_#=ExternalPaymentRequestJobId#")
 
-                                                                                .Items(itemn =>
-                                                                                {
-                                                                                    itemn.Add().Text("Detail")
-                                                                        .Content(@<text>
-                                                                            @JobDetails()
-                                                                        </text>);
-                                                                                    }).ToClientTemplate()
+              .Items(itemn =>
+              {
+                  itemn.Add().Text("Detail")
+      .Content(@<text>
+          @JobDetails()
+      </text>);
+                  }).ToClientTemplate()
     )
 </script>
 @helper JobDetails()
@@ -224,35 +224,35 @@
             <i class="fa fa-print fa-2x"></i>
         </a>*@
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalMaintenancePaymentRequestDetail>()
-                                                                                        .Name("grid_#=ExternalPaymentRequestJobId#")
-                                                                                        .Columns(columns =>
-                                                                                        {
-                                                                                            columns.Bound(c => c.CostType).Width(100);
-                                                                                            columns.Bound(c => c.Date).Width(100);
-                                                                                            columns.Bound(c => c.Quantity).Width(100);
-                                                                                            columns.Bound(c => c.UnitPrice).Width(100);
-                                                                                            columns.Bound(c => c.SubTotal).Width(100);
-                                                                                            columns.ForeignKey(c => c.GlTaxRateId, (IEnumerable)ViewData["GlTaxRate"], "Value", "Text").Width(120);
-                                                                                            columns.Bound(c => c.Total).Width(100);
-                                                                                //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-                                                                            })
-                                                                                        //.ToolBar(commands => commands.Create())
-                                                                                        //.Editable(editable =>
-                                                                                        //{
-                                                                                        //    editable.Mode(GridEditMode.PopUp).TemplateName("AnnualPlanDetail");
-                                                                                        //    editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
-                                                                                        //})
-                                                                                        .Filterable()
-                                                                                        .Scrollable()
-                                                                                        .DataSource(dataSource => dataSource
-                                                                                            .Ajax()
-                                                                                                .Events(ev => ev
-                                                                                                .Error("error_handler(\"grid_#=ExternalPaymentRequestJobId#\")")
-                                                                                                .RequestStart("onRequestStart(\"grid_#=ExternalPaymentRequestJobId#\")")
-                                                                                                .RequestEnd("onRequestEnd(\"grid_#=ExternalPaymentRequestJobId#\")"))
-                                                                                            .Model(model => model.Id(p => p.ExternalMaintenancePaymentRequestDetailId))
-                                                                                            .Read(read => read.Action("Read_Details", "ExternalMaintenancePaymentRequest", new { id = "#=ExternalPaymentRequestJobId#" }).Data("sendForgery"))
-                                                                                        ).ToClientTemplate()
+                       .Name("grid_#=ExternalPaymentRequestJobId#")
+                       .Columns(columns =>
+                       {
+                           columns.Bound(c => c.CostType).Width(100);
+                           columns.Bound(c => c.Date).Width(100);
+                           columns.Bound(c => c.Quantity).Width(100);
+                           columns.Bound(c => c.UnitPrice).Width(100);
+                           columns.Bound(c => c.SubTotal).Width(100);
+                           columns.ForeignKey(c => c.GlTaxRateId, (IEnumerable)ViewData["GlTaxRate"], "Value", "Text").Width(120);
+                           columns.Bound(c => c.Total).Width(100);
+               //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+           })
+                       //.ToolBar(commands => commands.Create())
+                       //.Editable(editable =>
+                       //{
+                       //    editable.Mode(GridEditMode.PopUp).TemplateName("AnnualPlanDetail");
+                       //    editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                       //})
+                       .Filterable()
+                       .Scrollable()
+                       .DataSource(dataSource => dataSource
+                           .Ajax()
+                               .Events(ev => ev
+                               .Error("error_handler(\"grid_#=ExternalPaymentRequestJobId#\")")
+                               .RequestStart("onRequestStart(\"grid_#=ExternalPaymentRequestJobId#\")")
+                               .RequestEnd("onRequestEnd(\"grid_#=ExternalPaymentRequestJobId#\")"))
+                           .Model(model => model.Id(p => p.ExternalMaintenancePaymentRequestDetailId))
+                           .Read(read => read.Action("Read_Details", "ExternalMaintenancePaymentRequest", new { id = "#=ExternalPaymentRequestJobId#" }).Data("sendForgery"))
+                       ).ToClientTemplate()
     )
 }
 @helper Detail()

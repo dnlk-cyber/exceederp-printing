@@ -1,47 +1,59 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Helpers.Common
 {
     public static class IsoDocumentHelper
     {
+       
         public static void AddUpdateDocumentInfo(IsoDocument document)
         {
-            var db = new ExceedDbContext();
-            var existingDoc = db.IsoDocuments.FirstOrDefault(d => d.Module == document.Module && d.DocumentType == document.DocumentType);
-            if(existingDoc != null)
+            using (ExceedDbContext db = new ExceedDbContext())
             {
-                existingDoc.URL = document.URL;
+                var existingDoc = db.IsoDocuments.FirstOrDefault(d => d.Module == document.Module && d.DocumentType == document.DocumentType);
+                if (existingDoc != null)
+                {
+                    existingDoc.URL = document.URL;
 
 
-                db.IsoDocuments.Attach(existingDoc);
-                db.Entry(existingDoc).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
-            }
-            else
-            {
-                db.IsoDocuments.Add(document);
-                db.SaveChanges();
+                    db.IsoDocuments.Attach(existingDoc);
+                    db.Entry(existingDoc).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    db.IsoDocuments.Add(document);
+                    db.SaveChanges();
+                }
             }
         }
-		public static void GetIsoDocumentInfo(Modules module, string reportType, out string documentTitle, out string documentNumber)
+		public static void GetIsoDocumentInfo(Modules module, string reportType, out string documentTitle, out string documentNumber,out string issueNumber)
 		{
 			//documentTitle = reportType.ToString().Replace('_', ' ');
 			documentTitle = reportType;
-			var db = new ExceedDbContext();
-
-			var isoDoc = db.IsoDocuments.FirstOrDefault(d => d.Module == module && d.DocumentType == reportType.ToString());
-			documentNumber = isoDoc?.FormNumber;
-			if (isoDoc != null && !string.IsNullOrEmpty(isoDoc.FormTitle))
-			{
-				documentTitle = isoDoc.FormTitle;
-			}
+            issueNumber = "1";
+            //var db = new ExceedDbContext();
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                var isoDoc = db.IsoDocuments.FirstOrDefault(d => d.Module == module && d.DocumentType == reportType.ToString());
+                documentNumber = isoDoc?.FormNumber;
+                if (isoDoc != null && !string.IsNullOrEmpty(isoDoc.FormTitle))
+                {
+                    documentTitle = isoDoc.FormTitle;
+                }
+                if(isoDoc!=null&&!string.IsNullOrEmpty(isoDoc.FormNumber))
+                {
+                    issueNumber = isoDoc.FormNumber;
+                }
+            }
 		}
-	}
+
+        public static void GetIsoDocumentInfo(Modules fleetManagement, object totalFleetFuelConsumption, out string title, out string number)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -1,405 +1,427 @@
 ﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
-
-<legend> Sites Vehicle Transfer</legend>
-
-<style>
-    .lbl {
-        position: relative;
-        display: block;
-        height: 40px;
-        width: 64px;
-        background: #898989;
-        border-radius: 100px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+@{
+    var IsMCG = (ViewBag.Setting as string) == "MCG";
     }
+    <legend> Sites Vehicle Transfer</legend>
 
-        .lbl:after {
-            position: absolute;
-            left: -2px;
-            top: -3px;
+    <style>
+        .lbl {
+            position: relative;
             display: block;
             height: 40px;
-            width: 54px;
+            width: 64px;
+            background: #898989;
             border-radius: 100px;
-            background: #fff;
-            box-shadow: 0px 3px 3px rgba(243, 245, 247, 0.05);
-            content: '';
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .lbl:active:after {
-            transform: scale(1.15, 0.85);
+            .lbl:after {
+                position: absolute;
+                left: -2px;
+                top: -3px;
+                display: block;
+                height: 40px;
+                width: 54px;
+                border-radius: 100px;
+                background: #fff;
+                box-shadow: 0px 3px 3px rgba(243, 245, 247, 0.05);
+                content: '';
+                transition: all 0.3s ease;
+            }
+
+            .lbl:active:after {
+                transform: scale(1.15, 0.85);
+            }
+
+        .cbx:checked ~ label {
+            background: #32a6f3;
         }
 
-    .cbx:checked ~ label {
-        background: #32a6f3;
-    }
+            .cbx:checked ~ label:after {
+                left: 20px;
+                background: #5a666e;
+            }
 
-        .cbx:checked ~ label:after {
-            left: 20px;
-            background: #5a666e;
+        .cbx:disabled ~ label {
+            background: #d5d5d5;
+            pointer-events: none;
         }
 
-    .cbx:disabled ~ label {
-        background: #d5d5d5;
-        pointer-events: none;
-    }
+            .cbx:disabled ~ label:after {
+                background: #bcbdbc;
+            }
 
-        .cbx:disabled ~ label:after {
-            background: #bcbdbc;
+        .container {
+            position: absolute;
+            top: 250px;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
-    .container {
-        position: absolute;
-        top: 250px;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
+        .demo {
+            margin-bottom: 40px;
+        }
 
-    .demo {
-        margin-bottom: 40px;
-    }
+        .hidden {
+            display: none;
+        }
+    </style>
 
-    .hidden {
-        display: none;
-    }
-</style>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer>()
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        //columns.ForeignKey(e => e.EquipmentIdentityID, (IEnumerable)ViewData["EquipmentCategory"], "Value", "Text").Title("Category").Width(140);
+                        //columns.ForeignKey(e => e.EquipmentTypeID, (IEnumerable)ViewData["EquipmentType"], "Value", "Text").Title("Type").Width(140);
+                        //columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Title("Name").Width(140);
+                        columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategory"], "Value", "Text").EditorTemplateName("EquipmentIdentity").Width(130);
+                        columns.ForeignKey(e => e.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentType"], "Value", "Text").EditorTemplateName("EquipmentType").Width(130);
+                        columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentName"], "Value", "Text").EditorTemplateName("EquipmentName").Width(130);
+                        columns.ForeignKey(e => e.FleetsID, (IEnumerable)ViewData["Fleets"], "Value", "Text").Title("Plate No").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+                        columns.Bound(e => e.InitialSite).Width(120);
+                        columns.ForeignKey(e => e.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Title("Branch").Width(140);
+                        columns.ForeignKey(e => e.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Title("Tranfered Operator One").Width(140);
+                        columns.ForeignKey(e => e.SecondOperatorId, (IEnumerable)ViewData["OperatorTwo"], "Value", "Text").Title("Tranfered Operator Two").Width(140);
+                        //columns.Bound(e => e.InitialSite).Width(120);
+                        //columns.Bound(e => e.DestinationSite).Width(120);
+                        columns.Bound(e => e.StartingDate).Width(120);
+                        columns.Bound(e => e.ToDate).Format(("{0:d}")).Width(120);
+                        //columns.Bound(e => e.Status).Width(100);
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer>()
-            .Name("grid")
-            .Columns(columns =>
+                        columns.Command(command =>
+                        {
+                            if (!IsMCG)
+                            {
+                                command.Edit(); command.Destroy();
+                            }
+                            if (IsMCG) { command.Custom("AcceptTransfer").Click("AcceptTransfer"); }
+
+                        }).Width(250);
+                    })
+        .ToolBar(toolbar =>
+        {
+            if (!IsMCG)
             {
-    //columns.ForeignKey(e => e.EquipmentIdentityID, (IEnumerable)ViewData["EquipmentCategory"], "Value", "Text").Title("Category").Width(140);
-    //columns.ForeignKey(e => e.EquipmentTypeID, (IEnumerable)ViewData["EquipmentType"], "Value", "Text").Title("Type").Width(140);
-    //columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Title("Name").Width(140);
-    columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategory"], "Value", "Text").EditorTemplateName("EquipmentIdentity").Width(130);
-                columns.ForeignKey(e => e.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentType"], "Value", "Text").EditorTemplateName("EquipmentType").Width(130);
-                columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentName"], "Value", "Text").EditorTemplateName("EquipmentName").Width(130);
+                toolbar.Create();
+            }
+        }).Editable(editable =>
+        {
+            editable.Window(w => w.Title("Site Transfer"));
+            editable.Mode(GridEditMode.PopUp).TemplateName("SitesVehicleTransferEditor");
+            editable.DisplayDeleteConfirmation("Are You Sure To Remove Sites Vehicle Transfer ");
+        })
+                    .HtmlAttributes(new { style = "height: 520px;" })
+                    .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
 
-                columns.ForeignKey(e => e.FleetsID, (IEnumerable)ViewData["Fleets"], "Value", "Text").Title("Plate No").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
-                columns.Bound(e => e.InitialSite).Width(120);
-                columns.ForeignKey(e => e.BranchId, (IEnumerable)ViewData["Branch"], "Value", "Text").Title("Branch").Width(140);
-                columns.ForeignKey(e => e.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Title("Tranfered Operator One").Width(140);
-                columns.ForeignKey(e => e.SecondOperatorId, (IEnumerable)ViewData["OperatorTwo"], "Value", "Text").Title("Tranfered Operator Two").Width(140);
-    //columns.Bound(e => e.InitialSite).Width(120);
-    //columns.Bound(e => e.DestinationSite).Width(120);
-    columns.Bound(e => e.StartingDate).Width(120);
-                columns.Bound(e => e.ToDate).Format(("{0:d}")).Width(120);
-    //columns.Bound(e => e.Status).Width(100);
+                    .Scrollable()
+                    .Sortable()
+                    .Filterable()
+                    .Scrollable(h => h.Height(500))
+                    .ClientDetailTemplateId("template")
+                    .Events(ev => ev.DetailExpand("RejectPopUp"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(sort => sort.Add(f => f.DateCreated).Descending())
+                        .Model(model =>
+                        {
+                            model.Id(p => p.SitesVehicleTransferID);
 
-    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                        }).Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Create(update => update.Action("SitesVehicleTransfer_Create", "SitesVehicleTransfer", new { area = "FleetManagement" }).Data("sendForgery"))
+                        .Read(read => read.Action("SitesVehicleTransfer_Read", "SitesVehicleTransfer", new { area = "FleetManagement" }).Data("sendForgery"))
+                        .Update(update => update.Action("SitesVehicleTransfer_Update", "SitesVehicleTransfer").Data("sendForgery"))
+                        .Destroy(update => update.Action("SitesVehicleTransfer_Destroy", "SitesVehicleTransfer").Data("sendForgery"))
+                  )
+                     .Events(events => events.DataBound("onDataBound"))
+    )
 
 
-            })
-            .ToolBar(commands => commands.Create())
-            .Editable(editable =>
-            {
-                editable.Window(w => w.Title("Site Transfer"));
-                editable.Mode(GridEditMode.PopUp).TemplateName("SitesVehicleTransferEditor");
-                editable.DisplayDeleteConfirmation("Are You Sure To Remove Sites Vehicle Transfer ");
-            })
-            .HtmlAttributes(new { style = "height: 520px;" })
-            .Pageable(pageable => pageable
-            .Input(true)
-            .Numeric(false)
-            .Refresh(true)
-            .PageSizes(true)
-            .ButtonCount(5))
+    <script id="template" type="text/kendo-tmpl">
+        @(Html.Kendo().TabStrip()
+                                                                                .Name("tabStrip_#=SitesVehicleTransferID#")
+                                                .SelectedIndex(0)
+                                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                .Items(items =>
+                                                {
 
-            .Scrollable()
-            .Sortable()
-            .Filterable()
-            .Scrollable(h => h.Height(500))
-            .ClientDetailTemplateId("template")
-            .Events(ev => ev.DetailExpand("RejectPopUp"))
-            .DataSource(dataSource => dataSource
-                .Ajax()
-                .Sort(sort => sort.Add(f => f.DateCreated).Descending())
-                .Model(model =>
+                                                    items.Add().Text("Detail").Content(
+                                            @<text>
+                                                <legend>Detail</legend>
+
+                                                <div class="box">
+
+                                                    <div class="box-col">
+                                                        <a href='@Url.Action("SiteVehicleTransfer", "FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                       
+                                                        # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                                        {#
+
+                                                        <a href='@Url.Action("SiteVehicle_SendForOnlineApproval", "SiteVehicleApproval")/?EId=#=SitesVehicleTransferID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                        #}#
+                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-1">
+                                                    </div>
+                                                    <div class="col-md-6" style="margin-top:20px;">
+
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
+
+                                                        </div>
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+
+                                                        </div>
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
+
+                                                        </div>
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
+
+                                                        </div>
+
+
+
+                                                    </div>
+                                                </div>
+
+
+
+                                            </text>
+
+
+                                                    );
+                                                @*items.Add().Text(" Check List ").Content(@<text>
+
+
+                                                              </text>
+
+
+                                                    );*@
+
+                                                            items.Add().Text("Inspection").Content(@<text>
+                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.VehicleReceptionForm>()
+                .Name("Inspection_grid_#=SitesVehicleTransferID#")
+                .Columns(columns =>
                 {
-                    model.Id(p => p.SitesVehicleTransferID);
+                    columns.Bound(x => x.Source);
+                    columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customer"], "OrganizationCustomerID", "TradeName").Width(150);
+                    columns.ForeignKey(e => e.TechnicianAssignedId, (IEnumerable)ViewData["Employee"], "Code", "Name").Title("Inspector").Width(150);
+                    columns.Bound(c => c.DateCreated).Title("Date").Format("{0:yyyy-MM-dd}").Width(80);
+                    columns.Bound(c => c.PlateNo).Width(80);
+                    columns.Bound(c => c.VehicleType).Width(80);
+                    columns.Bound(c => c.VehicleModel).Title("Vehicle Model").Width(80);
+                    columns.Bound(c => c.Mileage).Width(100);
+                    columns.Bound(c => c.Fuel).Width(100);
+                    columns.Bound(c => c.Remark).Width(150);
+                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
-                }).Events(ev => ev
-                .Error("error_handler(\"grid\")")
-                .RequestStart("onRequestStart(\"grid\")")
-                .RequestEnd("onRequestEnd(\"grid\")"))
-                .Create(update => update.Action("SitesVehicleTransfer_Create", "SitesVehicleTransfer", new { area = "FleetManagement" }).Data("sendForgery"))
-                .Read(read => read.Action("SitesVehicleTransfer_Read", "SitesVehicleTransfer", new { area = "FleetManagement" }).Data("sendForgery"))
-                .Update(update => update.Action("SitesVehicleTransfer_Update", "SitesVehicleTransfer").Data("sendForgery"))
-                .Destroy(update => update.Action("SitesVehicleTransfer_Destroy", "SitesVehicleTransfer").Data("sendForgery"))
-          )
-             .Events(events => events.DataBound("onDataBound"))
-)
+                })
+              .ToolBar(toolbar =>
+              {
 
+                  if (!IsMCG)
+                  {
+                      toolbar.Create();
+                  }
 
-<script id="template" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-                                                                    .Name("tabStrip_#=SitesVehicleTransferID#")
-                                    .SelectedIndex(0)
-                                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                    .Items(items =>
-                                    {
+              })
+              //.Events(ev => ev.DataBound("dataBound"))
+              .Scrollable(s => s.Height(600))
+              .Sortable()
+              .Filterable()
+              .Editable(editable => editable.Mode(GridEditMode.PopUp)
+              .Window(w => w.Width(600).Title("Vehicle Reception Form"))
+              .TemplateName("VehicleReceptionForm"))
+              .Events(ev => ev.DataBound("ReceptionDataBound"))
+              .Pageable(pageable => pageable
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev.Error("error_handler(\"Inspection_grid_#=SitesVehicleTransferID#\")")
+              .RequestStart("onRequestStart(\"Inspection_grid_#=SitesVehicleTransferID#\")")
+              .RequestEnd("onRequestEnd(\"Inspection_grid_#=SitesVehicleTransferID#\")"))
 
-                                        items.Add().Text("Detail").Content(
-                                @<text>
-                                    <legend>Detail</legend>
-
-                                    <div class="box">
-
-                                        <div class="box-col">
-                                            <a href='@Url.Action("SiteVehicleTransfer", "FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-
-                                            # if (IsSendForApproval == false || IsSendForApproval == "false")
-                                            {#
-
-                                            <a href='@Url.Action("SiteVehicle_SendForOnlineApproval", "SiteVehicleApproval")/?EId=#=SitesVehicleTransferID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                            # }#
-
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-1">
-                                        </div>
-                                        <div class="col-md-6" style="margin-top:20px;">
-
-                                            <div class="form-group">
-                                                @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
-
-                                            </div>
-                                            <div class="form-group">
-                                                @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
-
-                                            </div>
-                                            <div class="form-group">
-                                                @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
-
-                                            </div>
-                                            <div class="form-group">
-                                                @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
-
-                                            </div>
+              .Model(model =>
+              {
+                  model.Id(p => p.VehicleReceptionFormId);
+                  // model.Field(p => p.VehicleModel).Editable(false);
+                  // model.Field(p => p.VehicleType).Editable(false);
+              })
+              .Read(read => read.Action("VehicleReceptionForm_Read", "FleetVehicleReceptionForm", new { id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+              .Create(create => create.Action("VehicleReceptionForm_Create", "FleetVehicleReceptionForm", new { id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+              .Update(update => update.Action("VehicleReceptionForm_Update", "FleetVehicleReceptionForm").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("VehicleReceptionForm_Destroy", "FleetVehicleReceptionForm").Data("sendForgery"))
+              .Sort(sort =>
+              {
+                  sort.Add(m => m.VehicleReceptionFormId).Descending();
+              }).PageSize(10))
+            //.ClientDetailTemplateId("detailTemplate")
+            .ToClientTemplate() )
+          </text>);
 
 
 
-                                        </div>
-                                    </div>
+                  items.Add().Text(" Parts ").Content(@<text>
+
+                      @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferDetail>()
+                        .Name("PartsGrid_#=SitesVehicleTransferID#")
+                        .Columns(columns =>
+                        {
+
+                            columns.Bound(o => o.Type).EditorTemplateName("RequiredEditor").Width(126);
+                            columns.Bound(o => o.SerialNo).Width(126);
+                            columns.Bound(o => o.Quantity).EditorTemplateName("OptionalNumEditor").Width(126);
+                            columns.Bound(o => o.Description).Width(120);
+                            columns.Bound(o => o.MissingParts).Width(120);
+                            columns.Bound(o => o.DamagedParts).Width(120);
+                            columns.Bound(c => c.CreatedBy).Width(120);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        })
+                        .ToolBar(
+                      t => t.Create()
+                        
+                        )
 
 
-
-                                </text>
-
-
-                                );
-                                    @*items.Add().Text(" Check List ").Content(@<text>
-
-
-                                                  </text>
-
-
-                                        );*@
-
-                                                items.Add().Text("Inspection").Content(@<text>
-                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.VehicleReceptionForm>()
-                                                                                  .Name("Inspection_grid_#=SitesVehicleTransferID#")
-                                                                                  //  .Name("Inspection_grid_#=SitesVehicleTransferID\\#")
-                                                                                  .Columns(columns =>
-                                                                                  {
-                                                                                      columns.Bound(x => x.Source);
-                                                                                        columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customer"], "OrganizationCustomerID", "TradeName").Width(150);
-                                                                                       columns.ForeignKey(e => e.TechnicianAssignedId, (IEnumerable)ViewData["Employee"], "Code", "Name").Title("Inspector").Width(150);
-                                                                                      // columns.ForeignKey(c => c.VehicleCategoryId, (IEnumerable)ViewData["category"], "Id", "Name").Title("Category").Width(120);
-                                                                                      columns.Bound(c => c.DateCreated).Title("Date").Format("{0:yyyy-MM-dd}").Width(80);
-                                                                                      columns.Bound(c => c.PlateNo).Width(80);
-                                                                                      columns.Bound(c => c.VehicleType).Width(80);
-                                                                                      columns.Bound(c => c.VehicleModel).Title("Vehicle Model").Width(80);
-                                                                                      columns.Bound(c => c.Mileage).Width(100);
-                                                                                      columns.Bound(c => c.Fuel).Width(100);
-                                                                                      columns.Bound(c => c.Remark).Width(150);
-                                                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-
-                                                                                  })
-                                                                                .ToolBar(toolbar =>
-                                                                                {
-                                                                                    toolbar.Create();
-                                                                                    toolbar.Excel();
-                                                                                })
-                                                                                 .Events(ev => ev.DataBound("dataBound"))
-                                                                                .Scrollable(s => s.Height(600))
-                                                                                .Sortable()
-                                                                                .Filterable()
-                                                                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                                                                .Window(w => w.Width(600).Title("Vehicle Reception Form"))
-                                                                                .TemplateName("VehicleReceptionForm"))
-                                                                                .Events(ev => ev.DataBound("ReceptionDataBound"))
-                                                                                .Pageable(pageable => pageable
-                                                                                .Refresh(true)
-                                                                                .PageSizes(true)
-                                                                                .ButtonCount(5))
-                                                                                .DataSource(dataSource => dataSource
-                                                                                .Ajax()
-                                                                                .Events(ev => ev.Error("error_handler(\"Inspection_grid_#=SitesVehicleTransferID#\")")
-                                                                                .RequestStart("onRequestStart(\"Inspection_grid_#=SitesVehicleTransferID#\")")
-                                                                                .RequestEnd("onRequestEnd(\"Inspection_grid_#=SitesVehicleTransferID#\")"))
-
-                                                                                .Model(model =>
-                                                                                {
-                                                                                    model.Id(p => p.VehicleReceptionFormId);
-                                                                                   // model.Field(p => p.VehicleModel).Editable(false);
-                                                                                   // model.Field(p => p.VehicleType).Editable(false);
-                                                                                })
-                                                                                .Read(read => read.Action("VehicleReceptionForm_Read", "FleetVehicleReceptionForm", new { id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                .Create(create => create.Action("VehicleReceptionForm_Create", "FleetVehicleReceptionForm", new { id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                .Update(update => update.Action("VehicleReceptionForm_Update", "FleetVehicleReceptionForm").Data("sendForgery"))
-                                                                                .Destroy(destroy => destroy.Action("VehicleReceptionForm_Destroy", "FleetVehicleReceptionForm").Data("sendForgery"))
-                                                                                .Sort(sort =>
-                                                                                {
-                                                                                    sort.Add(m => m.VehicleReceptionFormId).Descending();
-                                                                                }).PageSize(10))
-                                                                              //.ClientDetailTemplateId("detailTemplate")
-                                                                              .ToClientTemplate() )
-                                                </text>);
+            
+                                .Events(ev =>
+                                 {
+                                     ev.DataBound("lineonDataBound");
+                                 })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                      .Model(model =>
+                                                      {
+                                                          model.Id(p => p.SiteVechicleTransferDetailId);
+                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                      })
+                                //    .Events(ev => ev
+                                //.Error("error_handler(\"PartsGrid_#=SitesVehicleTransferID#\")")
+                                //        .RequestStart("onRequestStart(\"PartsGrid_#=SitesVehicleTransferID#\")")
+                                //        .RequestEnd("onRequestEnd(\"PartsGrid_#=SitesVehicleTransferID#\")"))
+                                .Create(update => update.Action("SiteVechicleTransferDetail_Create", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                            .Read(read => read.Action("SiteVechicleTransferDetail_Read", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                        .Update(update => update.Action("SiteVechicleTransferDetail_Update", "SiteVechicleTransferDetail").Data("sendForgery"))
 
 
-
-    items.Add().Text(" Parts ").Content(@<text>
-
-                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferDetail>()
-                                                                                                        .Name("PartsGrid_#=SitesVehicleTransferID#")
-                                                                                                        .Columns(columns =>
-                                                                                                        {
-
-                                                                                                            columns.Bound(o => o.Type).EditorTemplateName("RequiredEditor").Width(126);
-                                                                                                            columns.Bound(o => o.SerialNo).Width(126);
-                                                                                                            columns.Bound(o => o.Quantity).EditorTemplateName("OptionalNumEditor").Width(126);
-                                                                                                            columns.Bound(o => o.Description).Width(120);
-                                                                                                            columns.Bound(o => o.MissingParts).Width(120);
-                                                                                                            columns.Bound(o => o.DamagedParts).Width(120);
-                                                                                                            columns.Bound(c => c.CreatedBy).Width(120);
-                                                                                                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                                                                                            columns.Command(command => { command.Edit(); }).Width(250);
-
-                                                                                                        })
-                                                                                                        .ToolBar(t => t.Create())
-                                                                                                                .Events(ev =>
-                                                                                                                {
-                                                                                                                    ev.DataBound("lineonDataBound");
-                                                                                                                })
-                                                                                                             .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                       .DataSource(dataSource => dataSource
-                                                                                                            .Ajax()
-                                                                                                            .PageSize(5)
-                                                                                                                                      .Model(model =>
-                                                                                                              {
-                                                                                                                  model.Id(p => p.SiteVechicleTransferDetailId);
-                                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                  model.Field(p => p.DateCreated).Editable(false);
-                                                                                                              })
-                                                                                                                //    .Events(ev => ev
-                                                                                                                //.Error("error_handler(\"PartsGrid_#=SitesVehicleTransferID#\")")
-                                                                                                                //        .RequestStart("onRequestStart(\"PartsGrid_#=SitesVehicleTransferID#\")")
-                                                                                                                //        .RequestEnd("onRequestEnd(\"PartsGrid_#=SitesVehicleTransferID#\")"))
-                                                                                                                .Create(update => update.Action("SiteVechicleTransferDetail_Create", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                                            .Read(read => read.Action("SiteVechicleTransferDetail_Read", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                                        .Update(update => update.Action("SiteVechicleTransferDetail_Update", "SiteVechicleTransferDetail").Data("sendForgery"))
+                                                      )
+                                               .ToClientTemplate())
+                  </text>
+                           );
 
 
-                                                                                                                                      )
-                                                                                                                               .ToClientTemplate())
-                                                        </text>
-                                                              );
+                          items.Add().Text(" Tyre ").Content(@<text>
+
+                              @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferTyreDetail>()
+                                                                                                                                                                                          .Name("TyresGrid_#=SitesVehicleTransferID#")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                         columns.Bound(o => o.Type).Width(120);
+                                                         columns.Bound(o => o.SerialNo).Width(120);
+                                                         columns.Bound(o => o.Description).Width(126);
+                                                         columns.Bound(c => c.CreatedBy).Width(150);
+                                                         columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+
+                                                     })
+                                                                           .Events(ev =>
+                                                                          {
+                                                                 ev.DataBound("lineonDataBound");
+                                                             })
+                                                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                 .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .PageSize(5)
+                                                                                                .Model(model =>
+                                                                        {
+                                                               model.Id(p => p.SiteVechicleTransferTyreDetailId);
+                                                               model.Field(p => p.CreatedBy).Editable(false);
+                                                               model.Field(p => p.DateCreated).Editable(false);
+                                                           })
+                                                                                                 .Events(ev => ev
+                                                                                                     .Error("error_handler(\"TyresGrid_#=SitesVehicleTransferID#\")")
+                                                                                                             .RequestStart("onRequestStart(\"TyresGrid_#=SitesVehicleTransferID#\")")
+                                                                                                             .RequestEnd("onRequestEnd(\"TyresGrid_#=SitesVehicleTransferID#\")"))
+                                                                                                                                                                                     .Create(update => update.Action("SiteVechicleTransferDetail_Create", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                                                                                                                                                                                               .Read(read => read.Action("SiteVechicleTransferTyre_Read", "SiteVechicleTransferTyre", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                                                                                                                                                                                     .Update(update => update.Action("SiteVechicleTransferDetail_Update", "SiteVechicleTransferTyre").Data("sendForgery"))
 
 
-                                                                items.Add().Text(" Tyre ").Content(@<text>
+                                                                                                )
+                                                                                         .ToClientTemplate())
+                          </text>
+        ); if (!IsMCG)
+                                                {
+                                                    items.Add().Text(" Approval").Content(@<text>
 
-                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferTyreDetail>()
-                                                                                                                                                                                                                        .Name("TyresGrid_#=SitesVehicleTransferID#")
-                                                                                                .Columns(columns =>
-                                                                                                {
-                                                                                                                        columns.Bound(o => o.Type).Width(120);
-                                                                                                                        columns.Bound(o => o.SerialNo).Width(120);
-                                                                                                                        columns.Bound(o => o.Description).Width(126);
-                                                                                                                        columns.Bound(c => c.CreatedBy).Width(150);
-                                                                                                                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                      @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVehicleApproval>()
+                                                                                                                                                                                                                                 .Name("SitesVehicleTransfer#=SitesVehicleTransferID#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
 
-                                                                                                                    })
-                                                                                                         .Events(ev =>
-                                                                                                        {
-                                                                                                                                ev.DataBound("lineonDataBound");
-                                                                                                                            })
-                                                                                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                               .DataSource(dataSource => dataSource
-                                                                                                    .Ajax()
-                                                                                                    .PageSize(5)
-                                                                                                                              .Model(model =>
-                                                                                                      {
-                                                                                                                              model.Id(p => p.SiteVechicleTransferTyreDetailId);
-                                                                                                                              model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                              model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                          })
-                                                                                                                               .Events(ev => ev
-                                                                                                                                   .Error("error_handler(\"TyresGrid_#=SitesVehicleTransferID#\")")
-                                                                                                                                           .RequestStart("onRequestStart(\"TyresGrid_#=SitesVehicleTransferID#\")")
-                                                                                                                                           .RequestEnd("onRequestEnd(\"TyresGrid_#=SitesVehicleTransferID#\")"))
-                                                                                                                                                                                                                   .Create(update => update.Action("SiteVechicleTransferDetail_Create", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                                                                                                                                                             .Read(read => read.Action("SiteVechicleTransferTyre_Read", "SiteVechicleTransferTyre", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                                                                                                                                                   .Update(update => update.Action("SiteVechicleTransferDetail_Update", "SiteVechicleTransferTyre").Data("sendForgery"))
+                                                            columns.Bound(o => o.Remark).Width(200);
+                                                            columns.Bound(c => c.CreatedBy).Width(150);
+                                                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                            columns.Command(command => { command.Edit(); }).Width(250);
 
-
-                                                                                                                              )
-                                                                                                                       .ToClientTemplate())
-                                                                </text>
-                                                  );
-                                                                        items.Add().Text(" Approval").Content(@<text>
-
-                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVehicleApproval>()
-                                                                                                                                                                                        .Name("SitesVehicleTransfer#=SitesVehicleTransferID#")
-                                                                                                        .Columns(columns =>
-                                                                                                        {
-                                                                                                                                        columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
-
-                                                                                                                                        columns.Bound(o => o.Remark).Width(200);
-                                                                                                                                        columns.Bound(c => c.CreatedBy).Width(150);
-                                                                                                                                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                                                                                                                        columns.Command(command => { command.Edit(); }).Width(250);
-
-                                                                                                                                    }).Events(ev =>
-                                                                                                            {
-                                                                                                                                                    ev.DataBound("approveonDataBound");
-                                                                                                                                                })
-                                                                                                             .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                       .DataSource(dataSource => dataSource
-                                                                                                            .Ajax()
-                                                                                                            .PageSize(5)
-                                                                                                                                      .Model(model =>
-                                                                                                              {
-                                                                                                                                              model.Id(p => p.SiteVehicleApprovalID);
-                                                                                                                                              model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                              model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                                          })
-                                                                                                                                                                .Events(ev => ev
-                                                                                                                                            .Error("error_handler(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")")
-                                                                                                                                            .RequestStart("onRequestStart(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")")
-                                                                                                                                            .RequestEnd("onRequestEnd(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")"))
-                                                                                                                                                                                                           .Create(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                                                                                                                                     .Read(read => read.Action("SiteVehicleApproval_Read", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
-                                                                                                                                                                                                   .Update(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval").Data("sendForgery"))
+                                                        }).Events(ev =>
+                                                        {
+                                                            ev.DataBound("approveonDataBound");
+                                                        })
+                                                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                       .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .PageSize(5)
+                                                                                      .Model(model =>
+                                                                                      {
+                                                                                          model.Id(p => p.SiteVehicleApprovalID);
+                                                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                                      })
+                                                                                                                .Events(ev => ev
+                                                                                            .Error("error_handler(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")")
+                                                                                            .RequestStart("onRequestStart(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")"))
+                                                                                             .Create(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                                                                                       .Read(read => read.Action("SiteVehicleApproval_Read", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                                                                                     .Update(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval").Data("sendForgery"))
 
 
-                                                                                                                                      )
-                                                                                                                               .ToClientTemplate())
-                                                                        </text>
-                                                          );
-                                                                            })
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .ToClientTemplate())
-</script>
+                                                                                      )
+                                                                               .ToClientTemplate())
+                                  </text>
+                                                                     );
+                                                    }
+                                                })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  .ToClientTemplate())
+    </script>
 
-<style type="text/css">
-    div.k-edit-form-container {
-        width: 700px;
-    }
-</style>
-<script type="text/javascript">
+    <style type="text/css">
+        div.k-edit-form-container {
+            width: 700px;
+        }
+    </style>
+    <script type="text/javascript">
     var masterId;
     var fleetPlate;
     var IsApproved;
@@ -555,6 +577,12 @@
             if (dataItem.IsOnlineApproved == true) {
                 $(this).addClass("k-state-FleetApproved");
             }
+            if (dataItem.IsSendForApproval == false) {
+                $(this).find(".k-grid-AcceptTransfer").remove();
+            }
+            if (dataItem.IsOnlineApproved == true) {
+                $(this).find(".k-grid-AcceptTransfer").remove();
+            }
         });
     }
 
@@ -587,7 +615,7 @@
 
         return {
             searchKey: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
-            equipmentNameID: $("#EquipmentNameID").val(),
+           // equipmentNameID: 1,
         }
     }
     function filterBranch() {
@@ -625,8 +653,8 @@
             search: filterInput.val()
         };
     }
-</script>
-<script>
+    </script>
+    <script>
     var CheckIfIsRequest = false; // GLOBAL scope
 
     function ReceptionDataBound(e) {
@@ -824,18 +852,66 @@
         }
         });
         }
-        </script>
-        <style>
-            div.k-edit-form-container {
-                width: auto;
-                height: auto;
-            }
+    </script>
+    <script>
+    function onPlateNumberChange() {
+        var ddl = $("#FleetsID").data("kendoDropDownList");
+        var plateNumber = ddl.value(); // Gets the PlateNumber text (not ID)
 
-            .row .col-sm-2 {
-                width: 150px;
-            }
+        if (plateNumber && plateNumber !== "Select") {
+            $.ajax({
+                url: '@Url.Action("GetLocation", "FleetManagementDataProvider")',
+                type: 'GET',
+                data: { PlateNumber: plateNumber },
+                success: function (result) {
+                    if (result && result.From) {
+                        $("#FromLocation").val(result.From);
+                    } else {
+                        $("#FromLocation").val("");
+                    }
+                },
+                error: function () {
+                    $("#FromLocation").val("");
+                }
+            });
+        } else {
+            $("#FromLocation").val("");
+        }
+        }
+        function AcceptTransfer(e) {
+    e.preventDefault();
 
-            .row {
-                margin: auto;
-            }
-        </style>
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("AcceptTransfer", "SitesVehicleTransfer")',
+        data: {
+            id: dataItem.SitesVehicleTransferID
+        },
+        success: function (result) {
+            alert(result.Message);
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
+    </script>
+    <style>
+        div.k-edit-form-container {
+            width: auto;
+            height: auto;
+        }
+
+        .row .col-sm-2 {
+            width: 150px;
+        }
+
+        .row {
+            margin: auto;
+        }
+    </style>

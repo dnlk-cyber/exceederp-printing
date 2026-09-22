@@ -53,6 +53,15 @@
         </div>
 
     </div>
+    <div class="col-sm-2" id="CustomerName">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().TextBoxFor(model=>model.CustomerName).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+
+    </div>
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.LicensePlate,"Plate No/Serial No", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -139,7 +148,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.RequesterId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
-                @(Html.Kendo().DropDownListFor(m => m.RequesterId)
+                @*@(Html.Kendo().DropDownListFor(m => m.RequesterId)
 
                                       .OptionLabel("Select Employee")
                                           //.Name("Requester")
@@ -150,6 +159,21 @@
                                           .DataSource(dataSource =>
                                           {
                                        dataSource.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
+                                                            .ServerFiltering(true);
+                                          }).HtmlAttributes(new { style = "width:100%" })
+
+                )*@   
+                @(Html.Kendo().DropDownListFor(m => m.RequesterId)
+
+                                      .OptionLabel("Select Employee")
+                                          //.Name("Requester")
+                                          .DataTextField("FullNameaEnglish")
+                                          .DataValueField("EmployeeId")                                          
+                                          .Filter("contains")
+                                          .OptionLabel("Select...")
+                                          .DataSource(dataSource =>
+                                          {
+                                       dataSource.Read(read => read.Action("GetAllEmployeesForPlacementt", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery").Data("filterEmployees"))
                                                             .ServerFiltering(true);
                                           }).HtmlAttributes(new { style = "width:100%" })
 
@@ -178,24 +202,6 @@
         </div>
 
     </div>
-    @*<div class="col-sm-2">
-            <div class="form-group">
-                @Html.LabelFor(model => model.KMReading, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
-                <div>
-                    @(Html.Kendo().TextBoxFor(x => x.KMReading).HtmlAttributes(new { style = "width:100%" }))
-                </div>
-            </div>
-
-        </div>
-        <div class="col-sm-2">
-            <div class="form-group">
-                @Html.LabelFor(model => model.GPSInfo, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
-                <div>
-                    @(Html.Kendo().TextBoxFor(x => x.GPSInfo).HtmlAttributes(new { style = "width:100%" }))
-                </div>
-            </div>
-
-        </div>*@
    
     <div class="col-sm-2">
         <div class="form-group">

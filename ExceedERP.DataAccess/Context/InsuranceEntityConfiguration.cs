@@ -341,6 +341,14 @@ namespace ExceedERP.DataAccess
                 this.HasKey<int>(o => o.OtherInsuranceId);
             }
         }
+       public class InsuranceCoverTypeEntityTypeConfiguration : EntityTypeConfiguration<InsuranceCoverType>
+        {
+            public InsuranceCoverTypeEntityTypeConfiguration()
+            {
+                this.ToTable("InsuranceCoverTypes", "Insurance");
+                this.HasKey<int>(o => o.InsuranceCoverTypeId);
+            }
+        }
 
         public class VehicleAccidentDetailEntityTypeConfiguration : EntityTypeConfiguration<VehicleAccidentDetail>
         {

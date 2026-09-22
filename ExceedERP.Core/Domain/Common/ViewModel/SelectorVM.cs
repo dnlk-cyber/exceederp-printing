@@ -46,5 +46,16 @@ namespace ExceedERP.Core.Domain.Common.ViewModel
         public int GLSegmentSetupId { get; set; }
 
     }
+    public class ForeginKeySelectorFleetSecondVm
+    {
 
+        public System.Guid FleetsID { get; set; }
+        public string PlateNumber { get; set; }
+    }
+    public class ForeginKeySelectorFleetVm
+    {
+        public string Name { get; set; }
+        public System.Guid Id { get; set; }
+        public string OrgBranchName { get; set; }
+    }
 }

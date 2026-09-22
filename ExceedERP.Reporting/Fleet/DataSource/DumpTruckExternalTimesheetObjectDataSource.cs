@@ -142,7 +142,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         item.FuelRate = dumpTruckTimeSheet.FuelRate;
                         item.FuelCost = item.FuelRate * item.FuelInLiter;
                         item.ServiceCharge = dumpTruckTimeSheet.Salary;//??
-                        item.LubricantCost = dumpTruckTimeSheet.LubricantCost;
+                        //item.LubricantCost = dumpTruckTimeSheet.LubricantCost;
                         item.MaintenaceCost = dumpTruckTimeSheet.MaintenanceCost;
                         item.TotalCost = item.MaintenaceCost + item.LubricantCost + item.FuelCost + item.ServiceCharge;
                         item.NetIncome = item.TotalAmount - item.TotalCost;

@@ -30,6 +30,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         public const string Pending = "Pending";
         public const string Active = "Active";
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
+
         public JobRequestSelfCareController()
         {
 
@@ -55,25 +57,43 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         private void PopulateViewData()
         {
-            var employee = db.Person_Employee;
-            var selectedEmployee = employee.Select(
-                i => new
-                {
-                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                    Code = i.EmployeeId
-                }).AsQueryable();
-            ViewData["personEmployees"] = selectedEmployee;
-            var branches = db.Branch;
+            //var employee = db.Person_Employee;
+            //var selectedEmployee = employee.Select(
+            //    i => new
+            //    {
+            //        Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+            //        Code = i.EmployeeId
+            //    }).AsQueryable();
+            //ViewData["personEmployees"] = selectedEmployee;
+            ViewData["personEmployees"] = CacheData.GetEmployeeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Code = i.Id
+        }).AsQueryable();
+            //var branches = db.Branch;
             var structure = db.MainCompanyStructures;
 
 
             ViewData["Structure"] = structure;
 
-            ViewData["Branches"] = branches;
+            //ViewData["Branches"] = branches;
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            BranchId = i.Id
+        }).AsQueryable();
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                var businessUnits = db.BusinessUnits.ToList();
+                var businessUnits = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
+
                 ViewData["BusinessUnits"] = businessUnits;
             }
 
@@ -737,7 +757,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
 
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 
 

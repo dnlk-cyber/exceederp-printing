@@ -5,6 +5,7 @@ using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OperationStatuses = ExceedERP.Core.Domain.Maintenance.OperationStatuses;
 
 namespace ExceedERP.Helpers.CRM
 {

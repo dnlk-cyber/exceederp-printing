@@ -25,6 +25,8 @@ namespace ExceedERP.Core.Domain.Maintenance
         public int Date { get; set; }
         [DataType(DataType.Date)]
         public DateTime? RecordedDate { get; set; }
+        [NotMapped]
+        public decimal StandardHour { get; set; }
         public string RepiarTypeId { get; set; }
         [DisplayName("  Morning From")]
         //[Required]
@@ -35,6 +37,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         //[Required]
         [DisplayFormat(DataFormatString = "{0:hh-mm}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Time)]
+        
         public Nullable<DateTime> WorkingHoursMorningto { get; set; }
         [DisplayName("  Afternoon From ")]
         //[Required]

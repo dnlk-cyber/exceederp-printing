@@ -25,6 +25,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         IOperatorService _OperatorService;
         IFleetService fleetService = new FleetService();
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         public OperatorRegistrationController()
         {
             _OperatorService = new OperatorService();
@@ -34,16 +35,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult Index()
         {
             ExceedDbContext db = new ExceedDbContext();
-            ViewData["Employee"] = db.Person_Employee.ToList();
+            ViewData["Employee"] = CacheData.GetEmployeeCaches();
             return View();
         }
         public ActionResult Operator_Read([DataSourceRequest] DataSourceRequest request)
         {
             _OperatorService = new OperatorService();
-            var oper = _OperatorService.GetAll().ToList();
-            var Opers = oper.Select(o => new Operator
+            IQueryable<Operator> oper = db.Operator.AsQueryable();
+            DataSourceResult Result = oper.ToDataSourceResult(request, o => new
             {
+
                 OperatorID = o.OperatorID,
+                OperatorWithId = GetOperatorId(o.EmployeeId),
                 FullName = o.FullName,
                 JobTitle = GetPlacmentCategory(o.EmployeeId),
                 MobilePhone = o.MobilePhone,
@@ -67,7 +70,61 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 EmployeeId = o.EmployeeId,
                 EducationLevel = o.EducationLevel
             });
-            return this.Json(Opers.ToDataSourceResult(request, ModelState));
+            return Json(Result, JsonRequestBehavior.AllowGet);
+        }
+        //public ActionResult Operator_Read([DataSourceRequest] DataSourceRequest request)
+        //{
+        //    var result = (from o in db.Operator
+        //                  join e in db.Person_Employee on o.EmployeeId equals e.EmployeeId
+        //                  join p in db.Placements on e.EmployeeId equals p.EmployeeId into ep
+        //                  from p in ep.DefaultIfEmpty() // left join Placements (in case none exist)
+        //                  join l in db.Lookups on p.LookupId equals l.LookupId into pl
+        //                  from l in pl.DefaultIfEmpty() // left join Lookups (in case none exist)
+        //                  select new
+        //                  {
+        //                      o.OperatorID,
+        //                      OperatorWithId = e.EmployeeCode + " " + e.FirstNameEnglish + " " +
+        //                                       e.MiddleNameEnglish + " " + e.LastNameEnglish,
+        //                      o.FullName,
+        //                      JobTitle = l.Description ?? "", // from Lookups.Description
+        //                      o.MobilePhone,
+        //                      o.GuaranteePhoneNumber,
+        //                      o.GuaranteeName,
+        //                      o.GuaranteeAddress,
+        //                      o.SalaryIncentive,
+        //                      o.Gender,
+        //                      o.Email,
+        //                      o.Postion,
+        //                      o.NameOfTraningCenter,
+        //                      o.LicenseNo,
+        //                      o.LicenseCity,
+        //                      o.LicenseExpireDate,
+        //                      o.LicenseIssuedDate,
+        //                      o.LicenseLevel,
+        //                      o.LicenseRenewalDate,
+        //                      o.LicenseType,
+        //                      o.HireDate,
+        //                      o.FleetsID,
+        //                      o.EmployeeId,
+        //                      o.EducationLevel
+        //                  })
+        //                  .ToDataSourceResult(request);
+
+        //    return Json(result, JsonRequestBehavior.AllowGet);
+        //}
+        private string GetOperatorId(int employeeId)
+        {
+            var fetchOperator = db.Person_Employee
+                .FirstOrDefault(x => x.EmployeeId == employeeId);
+            if (fetchOperator == null)
+                return string.Empty;
+            // Handle potential null name parts too, just in case
+            var empCode = fetchOperator.EmployeeCode ?? "";
+            var first = fetchOperator.FirstNameEnglish ?? "";
+            var middle = fetchOperator.MiddleNameEnglish ?? "";
+            var last = fetchOperator.LastNameEnglish ?? "";
+
+            return $"{empCode} {first} {middle} {last}".Trim();
         }
         public ActionResult UploadPic(ExceedERP.Web.Areas.FleetManagement.Models.UploadBindingModel model, IEnumerable<HttpPostedFileBase> AttachmentFile)
         {
@@ -180,21 +237,60 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             //    ModelState.Clear();
             //    ModelState.AddModelError("ExistingEquipment", " Equipment Already Assigned ! ");
             //}
-            else if (Operator != null)
+            ModelState.Remove("SalaryIncentiveenum");
+            ModelState.Remove("LicenseTypeenum");
+            ModelState.Remove("LicenseLevelenum");
+            ModelState.Remove("Genderenum"); 
+            ModelState.Remove("Postionenum"); 
+            ModelState.Remove("TypeofEmploymentenum"); 
+            ModelState.Remove("COCResult"); 
+
+           
+             if (Operator != null)
             {
                 var Employee = db.Person_Employee.Where(x => x.EmployeeId == Operator.EmployeeId).FirstOrDefault();
-                if (Employee != null)
+                var existingOperator = db.Operator.Find(Operator.OperatorID); // 👈 Load from DB
+                if (existingOperator != null)
                 {
-                    Operator.FullName = Employee.EmployeeId+" "+Employee.FirstName + " " + Employee.MiddleName + " " + Employee.LastName;
-             
-                    Operator.ModifiedBy = User.Identity.Name;
-                    Operator.LastModified = DateTime.Now;
-                    Operator.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);               
-                    _OperatorService = new OperatorService();
-                    _OperatorService.Update(Operator);
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Operator registration", "Success", User.Identity.Name, $"updated operator {Operator.OperatorID}", Modules.FleetManagement);
-                    #endregion
+                    var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == Operator.EmployeeId);
+                    if (employee != null)
+                    {
+                        Operator.FullName = Employee.EmployeeId + " " + Employee.FirstName + " " + Employee.MiddleName + " " + Employee.LastName;
+
+                        Operator.ModifiedBy = User.Identity.Name;
+                        Operator.LastModified = DateTime.Now;
+                        Operator.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                        //_OperatorService = new OperatorService();
+                        //_OperatorService.Update(Operator);
+
+                        // Update fields
+                        existingOperator.FullName = employee.EmployeeId + " " + employee.FirstName + " " + employee.MiddleName + " " + employee.LastName;
+                        existingOperator.ModifiedBy = User.Identity.Name;
+                        existingOperator.LastModified = DateTime.Now;
+                        existingOperator.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                        existingOperator.EmployeeId = Operator.EmployeeId; // ensure you copy any edited fields
+                        existingOperator.LicenseType = Operator.LicenseType;
+                        existingOperator.MobilePhone = Operator.MobilePhone;
+                        existingOperator.LicenseRenewalDate = Operator.LicenseRenewalDate;
+                        existingOperator.JobTitle = Operator.JobTitle;
+                        existingOperator.Email = Operator.Email;
+                        existingOperator.Gender = Operator.Gender;
+                        existingOperator.LicenseIssuedDate = Operator.LicenseIssuedDate;
+                        existingOperator.LicenseExpireDate = Operator.LicenseExpireDate;
+                        existingOperator.EducationLevel = Operator.EducationLevel;
+                        existingOperator.GuaranteeAddress = Operator.GuaranteeAddress;
+                        existingOperator.GuaranteeName = Operator.GuaranteeName;
+                        existingOperator.GuaranteePhoneNumber = Operator.GuaranteePhoneNumber;
+                        existingOperator.LicenseCity = Operator.LicenseCity;
+                        existingOperator.Postion = Operator.Postion;
+                        existingOperator.SalaryIncentive = Operator.SalaryIncentive;
+
+                        db.Entry(existingOperator).State = EntityState.Modified;
+                        db.SaveChanges();
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "Operator registration", "Success", User.Identity.Name, $"updated operator {Operator.OperatorID}", Modules.FleetManagement);
+                        #endregion
+                    }
                 }
             }
             return this.Json(new[] { Operator }.ToDataSourceResult(request,ModelState));

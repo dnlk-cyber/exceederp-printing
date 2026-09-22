@@ -140,17 +140,31 @@
             <label>Branch Name</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.BranchId)
-                                         .ValuePrimitive(true)
-                                         .OptionLabel("Select Branch...")
-                                         .DataTextField("Name")
-                                         .DataValueField("BranchId")
-                                         .Filter("contains")
-                                         .MinLength(2)
-                                         .DataSource(dataSource =>
-                                         {
-                                             dataSource.Read(read => read.Action("GetBranch", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
-                                             .ServerFiltering(false);
-                                         })
+                                                 .ValuePrimitive(true)
+                                                 .OptionLabel("Select Branch...")
+                                                 .DataTextField("Name")
+                                                 .DataValueField("BranchId")
+                                                 .Filter("contains")
+                                                 .MinLength(2)
+                                                 .DataSource(dataSource =>
+                                                 {
+                                                     dataSource.Read(read => read.Action("GetBranch", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                     .ServerFiltering(false);
+                                                 })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            Withhoding Tax
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.WithHoldingTax)
+                  .DataValueField("Value")
+                  .DataTextField("Text")
+                  .Filter("Contains")
+                  .OptionLabel("Select Witholding Tax")
+                  .DataSource(d => d.Read(r => r.Action("getGLTaxRates", "FleetManagementDataprovider")))
                 )
             </div>
         </div>

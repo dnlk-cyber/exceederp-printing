@@ -65,9 +65,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
      
         [DisplayName(" Bank Slip No")]
         public string BankSlipNo { get; set; }
-        [DataType(DataType.Currency)]
+        //[DataType(DataType.Currency)]
 
-        [DisplayName(" Advance Payment")]
+        //[DisplayName(" Advance Payment")]
         public Nullable<int> AdvancePayment { get; set; }
 
         [DataType(DataType.Date)]

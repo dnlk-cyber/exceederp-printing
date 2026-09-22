@@ -34,7 +34,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.Id = Id;
             return View();
         }
-        [AuthorizeRoles(FleetManagementRoles.ResourceRequestor)]
+        //[AuthorizeRoles(FleetManagementRoles.ResourceRequestor)]
 
         public ActionResult EquipmentDemand(string Id)
         {
@@ -87,23 +87,73 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.SendForFinanceApproverId = rentalPaymentSendForFinanceById;
             return View();
         }
+        public ActionResult RentedEquipmentMonthlyTimesheetPaymentSummary(string id)
+        {
+            ViewBag.Id = id;
+            ViewBag.FormTitle = "Rental Timesheet Summary";
+            ViewBag.FormNumber = 1;
+            ViewBag.IssueNumber = 1;
+            return View();
+        }
+        public ActionResult RentedEquipmentMonthlyCostsheetPaymentSummary(string id)
+        {
+            ViewBag.Id = id;
+            ViewBag.FormTitle = "Rental Payment Evaluation Sheet";
+            ViewBag.FormNumber = 1;
+            ViewBag.IssueNumber = 1;
+            return View();
+        }
+        public ActionResult RentalEquipmentPaymentRequest(int id)
+        {
+            ViewBag.Id = id;
+            ViewBag.FormTitle = "Rental Payment Request";
+            ViewBag.FormNumber = 1;
+            ViewBag.IssueNumber = 1;
+            return View();
+        }
+        public ActionResult RentalEquipmentAdvancePayment(string id)
+        {
+            ViewBag.Id = id;
+            ViewBag.FormTitle = "Rental Equipment Advance Payment";
+            ViewBag.FormNumber = 1;
+            ViewBag.IssueNumber = 1;
+            return View();
+        }
         [AuthorizeRoles(FleetManagementRoles.ResourceDistributor)]
         public ActionResult EquipmentDistribution(string Id)
         {
 
             ViewBag.Id = Id;
-            var equipmentApprover = db.VehicleDistributionApproval.Where(x => x.VehicleDistributionId.ToString() == Id).FirstOrDefault();
-            var employeeId = UserInformationHelper.GetEmployeeId(equipmentApprover.CreatedBy);
-            ViewBag.EmployeeId = employeeId;
+            //var equipmentApprover = db.VehicleDistributionApproval.Where(x => x.VehicleDistributionId.ToString() == Id).FirstOrDefault();
+            //var employeeId = UserInformationHelper.GetEmployeeId(equipmentApprover.CreatedBy);
+            //ViewBag.EmployeeId = employeeId;
+            var equipmentApprover = db.VehicleDistributionApproval
+              .FirstOrDefault(x => x.VehicleDistributionId.ToString() == Id);
+
+            if (equipmentApprover != null && !string.IsNullOrEmpty(equipmentApprover.CreatedBy))
+            {
+                var employeeId = UserInformationHelper.GetEmployeeId(equipmentApprover.CreatedBy);
+                ViewBag.EmployeeId = employeeId;
+            }
+            else
+            {
+                ViewBag.EmployeeId = 0; // or 0 or whatever default makes sense
+            }
             var equipmentChecker = db.VehicleDistribution.Where(x => x.VehicleDistributionID.ToString() == Id).FirstOrDefault();
-            var checkerEmployeeId = UserInformationHelper.GetEmployeeId(equipmentChecker.CreatedBy);
-            ViewBag.CheckerEmployeeId = checkerEmployeeId;
+            if (equipmentChecker != null && !string.IsNullOrEmpty(equipmentChecker.CreatedBy))
+            {
+                var checkerEmployeeId = UserInformationHelper.GetEmployeeId(equipmentChecker.CreatedBy);
+                ViewBag.CheckerEmployeeId = checkerEmployeeId;
+            }
             return View();
         }
         public ActionResult RentalInspectionPrint(string id)
         {
             ViewBag.Id = id;
-            return View();
+            ViewBag.FormTitle = "Rental Inspection";
+            ViewBag.FormNumber = 1;
+            ViewBag.IssueNumber = 1;
+                return View();
         }
     }
 }

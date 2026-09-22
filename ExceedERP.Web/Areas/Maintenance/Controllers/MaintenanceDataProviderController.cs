@@ -21,7 +21,6 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Inventory;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
@@ -73,8 +72,31 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Text = x.Name
             }).ToList();
             return Json(FetchServiceCenters, JsonRequestBehavior.AllowGet);
-                
         }
+        public JsonResult GetAllEmployeesForPlacementt(string text)
+        {
+            var query = db.Person_Employee.Where(x => x.IsActive);
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                text = text.ToUpper();
+                query = query.Where(x =>
+                    x.EmployeeCode.ToUpper().Contains(text) ||
+                    x.FirstNameEnglish.ToUpper().Contains(text) ||
+                    x.MiddleNameEnglish.ToUpper().Contains(text) ||
+                    x.LastNameEnglish.ToUpper().Contains(text) ||
+                    (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text) ||
+                    (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text)
+                );
+            }
+            var employees = query.Select(x => new
+            {
+                EmployeeId = x.EmployeeId,
+                FullNameaEnglish = x.EmployeeCode + " - " + x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish,
+                FullNameAmharic = x.EmployeeCode + " - " + x.FirstName + " " + x.MiddleName + " " + x.LastName
+            }).ToList();
+            return Json(employees, JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetAllEmployeesForPlacement(string Text)
         {
             var FetchEmployees = db.Person_Employee.ToList();
@@ -136,7 +158,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             var FetchJobs = db.ServiceCenterJob.Where(x=>x.MaintenanceCenterId.ToString() == MaintenanceCenter&&x.IsSecondOnlineApproved== true&&(x.IsExternal||x.IsExternalMaintenanceCenter==true)).ToList();
             //var FetchJobs = db.ServiceCenterJob.Where(x=>x.MaintenanceCenterId.ToString() == MaintenanceCenter&&x.IsSecondOnlineApproved==true).ToList();
-            var FetchPaidOrInProgressHeadIds = db.ExternalMaintenancePaymentRequests.Where(x => x.MaintenanceCenterId.ToString() == MaintenanceCenter && (x.Paid == true || (x.Paid == false && x.IsVoid == false&&x.Status!= OperationStatuses.Rejected.ToString()))).Select(x=>x.ExternalMaintenancePaymenntrequestId).ToList();
+            var FetchPaidOrInProgressHeadIds = db.ExternalMaintenancePaymentRequests.Where(x => x.MaintenanceCenterId.ToString() == MaintenanceCenter && (x.Paid == true || (x.Paid == false && x.IsVoid == false&&x.Status!= ExceedERP.Core.Domain.Maintenance.OperationStatuses.Rejected.ToString()))).Select(x=>x.ExternalMaintenancePaymenntrequestId).ToList();
             var FetchJobsUnderHeadIds = db.ExternalPaymentRequestJobs.Where(x => FetchPaidOrInProgressHeadIds.Contains(x.ExternalMaintenancePaymenntrequestId)).Select(x=>x.ServiceCenterJobId).ToList();
             FetchJobs = FetchJobs.Where(x => !FetchJobsUnderHeadIds.Contains(x.ServiceCenterJobId.ToString())).ToList();
             if(!string.IsNullOrWhiteSpace(Text))
@@ -153,8 +175,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public JsonResult GetAllMechaniCrew(string text)
         {
-            List<EmployeeVm> list = new List<EmployeeVm>();
-
+            List<EmployeeVm> list = new List<EmployeeVm>();                
             if (!String.IsNullOrWhiteSpace(text))
             {
                 var employees = db.Person_Employee
@@ -327,42 +348,60 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(serviceSubcategories, JsonRequestBehavior.AllowGet);
 
         }
-        public JsonResult GetServiceCategoryEnums(string subCategoryCode, Guid? jobOrderId,string filterText)
+        public JsonResult GetServiceCategoryEnums(string filterText)
         {
-           
-            var enumCategories = db.RepairType.Where(q=>q.SubCategoryCode == subCategoryCode)
-                .Select(s => new {
-                    Code =  s.ServiceGroup,
-                    Name = s.ServiceGroup.ToString()
-                } ).Distinct().ToList();
-            if (jobOrderId != null)
-            {
-                var repairTypes = db.JobOrderServiceCenterDetails.Where(q => q.ServiceCenterJobId == jobOrderId).Select(s => s.ServiceGroup);
-                enumCategories = enumCategories.Where(q => repairTypes.Contains(q.Code)).Distinct().ToList();
 
-            }
+            var enumCategories = db.RepairType
+                .Select(s => new
+                {
+                    Code = s.ServiceGroup,
+                    Name = s.ServiceGroup.ToString()
+                }).Distinct().ToList();
+           
             if (!string.IsNullOrEmpty(filterText))
             {
                 enumCategories = enumCategories.Where(l => l.Name.ToLower().Contains(filterText.ToLower()) || l.Code.ToString().Contains(filterText)).ToList();
             }
             return Json(enumCategories, JsonRequestBehavior.AllowGet);
-
         }
-        public JsonResult GetServices(string subCategoryCode , ServiceGroup ServiceGroup, Guid? jobOrderId,string filterText)
+        //public JsonResult GetServiceCategoryEnums(string subCategoryCode, Guid? jobOrderId,string filterText)
+        //{
+
+        //    var enumCategories = db.RepairType.Where(q=>q.SubCategoryCode == subCategoryCode)
+        //        .Select(s => new {
+        //            Code =  s.ServiceGroup,
+        //            Name = s.ServiceGroup.ToString()
+        //        } ).Distinct().ToList();
+        //    if (jobOrderId != null)
+        //    {
+        //        var repairTypes = db.JobOrderServiceCenterDetails.Where(q => q.ServiceCenterJobId == jobOrderId).Select(s => s.ServiceGroup);
+        //        enumCategories = enumCategories.Where(q => repairTypes.Contains(q.Code)).Distinct().ToList();
+
+        //    }
+        //    if (!string.IsNullOrEmpty(filterText))
+        //    {
+        //        enumCategories = enumCategories.Where(l => l.Name.ToLower().Contains(filterText.ToLower()) || l.Code.ToString().Contains(filterText)).ToList();
+        //    }
+        //    return Json(enumCategories, JsonRequestBehavior.AllowGet);
+
+        //}
+        public JsonResult GetServices(ServiceGroup ServiceGroup, Guid? jobOrderId, string filterText)
         {
-            var repairTypes = db.RepairType.Where(q=>q.SubCategoryCode == subCategoryCode&&q.ServiceGroup == ServiceGroup)
-                .Select(s => new {
+            var repairTypes = db.RepairType.Where(q => q.ServiceGroup == ServiceGroup)
+                .Select(s => new
+                {
                     Code = s.RepairTypeID,
-                    Name = s.Code +"-"+s.Name
+                    Name = s.Code + "-" + s.Name
 
                 })
                 .ToList();
             if (jobOrderId != null)
             {
                 var jobOrderDetails = db.JobOrderServiceCenterDetails.Where(q => q.ServiceCenterJobId == jobOrderId)
-                    .Select(s=>new{
-                        Code= s.JobOrderServiceCenterDetailId,
-                        Name= s.RepairType.Code+"-"+ s.RepairType.Name
+                    .Select(s => new
+                    {
+                        Code = s.JobOrderServiceCenterDetailId,
+                        Name = s.RepairType.Code + "-" + s.RepairType.Name
                     }).ToList();
 
                 if (!string.IsNullOrEmpty(filterText))
@@ -378,8 +417,39 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 repairTypes = repairTypes.Where(l => l.Name.ToLower().Contains(filterText.ToLower()) || l.Code.ToString().Contains(filterText)).ToList();
             }
             return Json(repairTypes, JsonRequestBehavior.AllowGet);
-
         }
+        //public JsonResult GetServices(string subCategoryCode , ServiceGroup ServiceGroup, Guid? jobOrderId,string filterText)
+        //{
+        //    var repairTypes = db.RepairType.Where(q=>q.SubCategoryCode == subCategoryCode&&q.ServiceGroup == ServiceGroup)
+        //        .Select(s => new {
+        //            Code = s.RepairTypeID,
+        //            Name = s.Code +"-"+s.Name
+
+        //        })
+        //        .ToList();
+        //    if (jobOrderId != null)
+        //    {
+        //        var jobOrderDetails = db.JobOrderServiceCenterDetails.Where(q => q.ServiceCenterJobId == jobOrderId)
+        //            .Select(s=>new{
+        //                Code= s.JobOrderServiceCenterDetailId,
+        //                Name= s.RepairType.Code+"-"+ s.RepairType.Name
+        //            }).ToList();
+
+        //        if (!string.IsNullOrEmpty(filterText))
+        //        {
+        //            jobOrderDetails = jobOrderDetails.Where(l => l.Name.ToLower().Contains(filterText.ToLower()) || l.Code.ToString().Contains(filterText)).ToList();
+        //        }
+        //        return Json(jobOrderDetails, JsonRequestBehavior.AllowGet);
+
+        //    }
+
+        //    if (!string.IsNullOrEmpty(filterText))
+        //    {
+        //        repairTypes = repairTypes.Where(l => l.Name.ToLower().Contains(filterText.ToLower()) || l.Code.ToString().Contains(filterText)).ToList();
+        //    }
+        //    return Json(repairTypes, JsonRequestBehavior.AllowGet);
+
+        //}
         public JsonResult GetPmSetting()
         {
             var PmSettings = db.PmSettings.Select(x => new {
@@ -392,20 +462,28 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public JsonResult GetPlatesForPm(string filter)
         {
-            var PlatesList = db.Fleets.Select(x => new
-            {
-                Code = x.PlateNumber,
-                Name = x.PlateNumber
-            }).Distinct().ToList();
+            var query = db.Fleets.AsQueryable();
 
-            if (!string.IsNullOrEmpty(filter))
+            if (!string.IsNullOrWhiteSpace(filter))
             {
-                PlatesList = PlatesList.Where(x => x.Name.Contains(filter)).ToList();
+                query = query.Where(x =>
+                    x.PlateNumber.Contains(filter) ||
+                    x.SerialNo.Contains(filter) ||
+                    x.ChasisNumber.Contains(filter));
             }
 
-            return Json(PlatesList, JsonRequestBehavior.AllowGet);
+            var platesList = query
+                .Select(x => new
+                {
+                    Code = x.FleetsID,
+                    Name = x.PlateNumber + " " + x.SerialNo + " " + x.ChasisNumber
+                })
+                .Distinct()
+                .ToList();
+
+            return Json(platesList, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetServicesForPmSchedules()
+        public JsonResult GetServicesForPmSchedules(string RepiarTypeName)
         {
             var repairTypes = db.RepairType
                 .Select(s => new {
@@ -414,6 +492,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
                 })
                 .ToList();
+            if(!string.IsNullOrWhiteSpace(RepiarTypeName))
+            {
+                repairTypes = repairTypes.Where(x => x.Name.Contains(RepiarTypeName)).ToList();
+            }
            
             return Json(repairTypes, JsonRequestBehavior.AllowGet);
 
@@ -728,10 +810,20 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
 
             var fleets = db.Fleets.AsQueryable();
-            if (!string.IsNullOrEmpty(text))
-                fleets = fleets.Where(x => x.PlateNumber.Contains(text)||x.SerialNo.Contains(text));
 
-            var plates = fleets.ToList().Select(s => new
+            if (!string.IsNullOrEmpty(text))
+                fleets = fleets.Where(x => x.PlateNumber.Contains(text)||x.SerialNo.Contains(text)||x.Model.Contains(text));
+            if (source == JobRequestSource.ExternalCustomer)
+            {
+                var platess = fleets.Where(x=>x.IsExternalCustomer==true).ToList().Select(s => new
+                {
+                    //Name = s?.PlateNumber + "-" + db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == s.EquipmentNameID)?.Name ?? s?.SerialNo + "-" + db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == s.EquipmentNameID)?.Name,
+                    Name = s.PlateNumber + "-" + s.SerialNo,
+                    PlateNumber = s.PlateNumber == "Not Assigned" || string.IsNullOrWhiteSpace(s.PlateNumber) ? s.SerialNo : s.PlateNumber /*s?.PlateNumber ?? s?.SerialNo*/
+                }).ToList();
+                return Json(platess, JsonRequestBehavior.AllowGet);
+            }
+                var plates = fleets.Where(x=>x.IsExternalCustomer==false).ToList().Select(s => new
             {
                 //Name = s?.PlateNumber + "-" + db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == s.EquipmentNameID)?.Name ?? s?.SerialNo + "-" + db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == s.EquipmentNameID)?.Name,
                 Name = s.PlateNumber + "-" + s.SerialNo,
@@ -1226,33 +1318,33 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return Json(Placment, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetMappedInventoryItem()
-        {
+        //public JsonResult GetMappedInventoryItem()
+        //{
 
-            var InventoryItems = new List<FleetBindingHelper.HelperObject>();
-            var mapping = db.InventoryCateoryMaps.ToList();
-            foreach (var map in mapping)
-            {
+        //    var InventoryItems = new List<FleetBindingHelper.HelperObject>();
+        //    var mapping = db.InventoryCateoryMaps.ToList();
+        //    foreach (var map in mapping)
+        //    {
 
-                var Items = db.InventoryItems.Where(x => x.ItemCategory.ItemCategoryCode == map.InventoryCategoryId).Select(s => new FleetBindingHelper.HelperObject
-                {
-                    Value = s.ItemCode.ToString(),
-                    Name = s.Name,
-                }).ToList();
-                InventoryItems.AddRange(Items);
-            }
-            if (!InventoryItems.Any())
-            {
+        //        var Items = db.InventoryItems.Where(x => x.ItemCategory.ItemCategoryCode == map.InventoryCategoryId).Select(s => new FleetBindingHelper.HelperObject
+        //        {
+        //            Value = s.ItemCode.ToString(),
+        //            Name = s.Name,
+        //        }).ToList();
+        //        InventoryItems.AddRange(Items);
+        //    }
+        //    if (!InventoryItems.Any())
+        //    {
 
-                var Items = db.InventoryItems.Take(100).Select(s => new FleetBindingHelper.HelperObject
-                {
-                    Value = s.ItemCode.ToString(),
-                    Name = s.Name,
-                }).ToList();
-                InventoryItems.AddRange(Items);
-            }
-            return Json(InventoryItems, JsonRequestBehavior.AllowGet);
-        }        
+        //        var Items = db.InventoryItems.Take(100).Select(s => new FleetBindingHelper.HelperObject
+        //        {
+        //            Value = s.ItemCode.ToString(),
+        //            Name = s.Name,
+        //        }).ToList();
+        //        InventoryItems.AddRange(Items);
+        //    }
+        //    return Json(InventoryItems, JsonRequestBehavior.AllowGet);
+        //}        
         public JsonResult DailyCareDDBind(string Category)
         {
 
@@ -1481,6 +1573,16 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(Periods, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult GetPeriodByYearr(string Year)
+        {
+            var Periods = db.GLPeriods.Where(x => x.GlFiscalYearId.ToString() == Year).Select(s => new
+            {
+                Name = s.Name,
+                Value = s.GLPeriodId,
+            }).ToList();
+            return Json(Periods, JsonRequestBehavior.AllowGet);
+
+        }
         public JsonResult GetModelByType(string Type)
         {
             var Models = db.Fleets.Where(x => x.EquipmentTypeID.ToString() == Type).Select(s => new FleetBindingHelper.HelperObject
@@ -1571,7 +1673,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     {
                         var FuelConsumptions =
                        fleetReportHelper.GetInventoryIssueItem(x => x.Issue.IsFuel == true && x.Issue.PlateNo == Asset.PlateNo && x.DateCreated >= FromDate && x.DateCreated <= ToDate).ToList();
-                        var Sheet = _TimeSheetService.GetAll().Where(x => x.FleetsID == Fleet.FleetsID && x.DateCreated >= FromDate && x.DateCreated <= ToDate);
+                        var Sheet = db.TimeSheet.Where(x => x.FleetsID == Fleet.FleetsID && x.DateCreated >= FromDate && x.DateCreated <= ToDate);
                         if (Fleet.ReadingType == ReadingType.HR)
                         {
                             foreach (var Work in Sheet)
@@ -1843,6 +1945,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         //    FollowUPTypes.Add(FollowUPType);
         //    return Json(FollowUPTypes, JsonRequestBehavior.AllowGet);
         //}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

@@ -1,0 +1,1243 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Fleets
+@{
+    ViewBag.Title = " Equipment ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Equipment Registration</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Fleets>()
+                          .Name("grid")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.FleetPhoto).ClientTemplate("#= renderImage(FleetPhoto, FleetsID, EquipmentName) #").Width(50);
+                              columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategorys"], "Id", "Name").Width(130);
+                              columns.ForeignKey(e => e.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentSubcategorys"], "Id", "Name").Width(130);
+                              columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").Width(130);
+                              columns.Bound(e => e.UnitNum).Width(100);
+                              columns.Bound(e => e.PlateNumber).Width(100);
+                              columns.Bound(e => e.Model).Width(100);
+                              columns.Bound(e => e.SerialNo).Title("Serial/Chasis No.").Width(100);
+                              columns.Bound(e => e.Location).Width(100);
+                              columns.Bound(e => e.ApprovalStatus).Hidden();
+                              columns.Bound(e => e.LastModified).Hidden();
+                              columns.Bound(e => e.EngineNumber).Width(80);
+                              columns.Bound(e => e.RentFromExternalNum).Width(80);
+                              columns.Command(command =>
+                              {
+                                  command.Edit(); command.Destroy();
+                              }).Width(200);
+                          })
+                                    .Events(ev =>
+                                    {
+                                        ev.DetailExpand("onDetailExpand");
+                                    })
+                             .ToolBar(toolbar =>
+                             {
+                                 toolbar.Template(
+                    @<text>
+                        <div class="toolbar row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <a class="k-button k-button-icontext k-grid-add" href='#'>
+                                        <span class="k-icon k-i-add"></span>Add New Record
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </text>);
+                                     })
+                                     .Editable(editable =>
+                                     {
+                                         editable.Mode(GridEditMode.PopUp).TemplateName("FleetEditor1")
+                             .Window(x =>
+                                          {
+                                              x.Title("Equipment Registration ").Width(650);
+                                              x.Events(ev => ev.Open("onOpenPopUpEditor"));
+                                          });
+                                         editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment");
+                                     })
+                                         .HtmlAttributes(new { style = "height: 500px;" })
+                                         .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+                                            .Scrollable()
+                                            .Sortable()
+                                            .Filterable()
+                                            .Scrollable(h => h.Height(500))
+                                      .ClientDetailTemplateId("template")
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Sort(x => { x.Add(s => s.FleetsID).Descending(); })
+                                      .PageSize(6)
+                                      .Model(model =>
+                                        {
+                                            model.Id(p => p.FleetsID);
+                                            model.Field(p => p.FleetsID).Editable(false);
+                                        }
+                                            ).Events(ev => ev
+                                                  .Error("error_handler(\"grid\")")
+                                                  .RequestStart("onRequestStart(\"grid\")")
+                                                  .RequestEnd("onRequestEnd(\"grid\")"))
+                                                  .Create(update => update.Action("Fleets_Create", "EquipmentRegistrationExternalCustomer").Data("sendForgery"))
+                                                  .Read(read => read.Action("RentalFleets_Read", "EquipmentRegistrationExternalCustomer").Data("sendForgery")/*.Data("FilterFleets")*/)
+                                                  .Update(update => update.Action("Fleets_Update", "EquipmentRegistrationExternalCustomer").Data("sendForgery"))
+                                                  .Destroy(update => update.Action("Fleets_Destroy", "EquipmentRegistrationExternalCustomer").Data("sendForgery"))
+                                    )
+                                    .Events(events => events.DataBound("dataBound"))
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                              .Name("tabStrip_#=FleetsID#")
+                                              .SelectedIndex(0)
+                                              .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                              .Items(items =>
+                                              {
+                                                  items.Add().Text("Detail").Content(
+                                                @<text>
+                                                    <div class="row ">
+                                                        <div class="col-sm-7">
+                                                            <div class="form-group" style="margin-top:5px">
+                                                                # if ( Status != "Under_Maintenace" )
+                                                                {#
+                                                                <form action="@Url.Action("UpdateStatus", "EquipmentRegistration")" method="post">
+                                                                    <a href='@Url.Action("EquipmentPrint", "FleetPrint")/?Id=#=FleetsID#' title="Print"><i class="fa fa-print fa-2x alignright"></i></a>
+                                                                    <select name="Status" style="border-radius:5px;height:20px">
+                                                                        @foreach (var statsus in ViewBag.EquipmentStatus as List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject>)
+                                                                                    {
+                                                                            <option value="@statsus.Name"> @statsus.Name</option>
+                                                                                    }
+                                                                        /**/
+                                                                        /**/
+                                                                        /**/
+                                                                        /**/
+                                                                        /**/
+                                                                        /**/
+                                                                        /**/
+                                                                        /**/
+
+                                                                    </select>
+                                                                    <input type="hidden" name="FleetsID" value="#=FleetsID#" />
+
+                                                                    <input type="submit" value="Update Status " class="k-button k-button-icontext k-primary" />
+                                                                </form>
+                                                                #}#
+                                                            </div>
+                                                            <div class="col-sm-6" style="margin-top:0px;border-top:solid 1px rgb(238, 238, 238)">
+                                                                <ul style="margin-top:10px;">
+                                                                    <li>
+                                                                        <label>@Html.LabelFor(model => model.UnitNum):</label><span>
+                                                                            # if (IsSendForApproval == false && IsOnlineApproved == false)
+                                                                            {#
+                                                                            <span>  Editing</span>
+                                                                            # }
+
+                                                                            else if (IsSendForApproval == true && IsOnlineApproved == false)
+                                                                            {#
+
+                                                                            <span>Waiting For Approval</span>
+                                                                            # }
+
+                                                                            else if (IsOnlineApproved == true)
+                                                                            {#
+
+                                                                            <span>  Approved </span>
+                                                                            # }#
+                                                                        </span>
+                                                                    </li>
+                                                                    <li> <label> @Html.LabelFor(model => model.UnitNum):</label><span> #=UnitNum#</span></li>
+                                                                    <li> <label> @Html.LabelFor(model => model.EngineNumber):</label><span>#=EngineNumber#</span></li>
+                                                                    <li> <label> @Html.LabelFor(model => model.ChasisNumber):</label><span>#=ChasisNumber#</span></li>
+                                                                    <li> <label> @Html.LabelFor(model => model.Manufacturer):</label><span>#=Manufacturer#</span></li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="form-group col-sm-5" style="margin-top:17px;border-top:solid 1px rgb(238, 238, 238)">
+                                                                <ul style="margin-top:10px;">
+                                                                    <li> <label> @Html.LabelFor(model => model.ManufacturerYear):</label><span>#=ManufacturerYear#</span></li>
+                                                                    <li><label>@Html.LabelFor(model => model.WayOfSupply)</label>:<span>#=WayOfSupply#</span></li>
+                                                                    <li> <label>@Html.LabelFor(model => model.OperatorName)</label>:<span>#=OperatorName#</span></li>
+                                                                    <li> <label>@Html.LabelFor(model => model.Location)</label>:<span>#=Location#</span></li>
+                                                                    <li> <label>@Html.LabelFor(model => model.Status)</label>:<span>#=Status#</span></li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="col-sm-4" style="margin-top:5px;border-top:solid 1px rgb(238, 238, 238)">
+                                                                <div class="form-group" style="margin-top:5px;">
+                                                                    <label>Start Date:</label>
+                                                                    <span>
+                                                                        @(Html.Kendo().DatePicker().Name("From#=FleetsID#")
+                                                                                                                                             .Value(DateTime.Now)
+                                                                                                                                                                  .Events(ev => ev.Change("CalculateConsuption")).ToClientTemplate())
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4" style="margin-top:5px;border-top:solid 1px rgb(238, 238, 238)">
+                                                                <div class="form-group" style="margin-top:5px;">
+                                                                    <label>End Date:</label>
+                                                                    <span>
+                                                                        @(Html.Kendo().DatePicker().Name("To#=FleetsID#")
+                                                                                                                        .Value(DateTime.Now)
+                                                                                                                                                                          .Events(ev => ev.Change("CalculateConsuption")).ToClientTemplate())
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="" style="margin-left:30px;">
+                                                                <input name="FuelConsumptionLevel#=FleetsID#" id="FuelConsumptionLevel#=FleetsID#" value="#=FuelConsumptionLevel#" class="form-control" style="color:white;border-radius:10px;height:20px" />
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="card" style="border-left:solid 1px rgb(242, 242, 242);border-right:solid 1px rgb(242, 242, 242)">
+                                                                <div class="card-header modal-header">
+                                                                    <h5>Image</h5>
+                                                                </div>
+                                                                <div class="card-body modal-body">
+                                                                    <img src="~/Content/Images/Fleet/Equipment/#=FleetsID#.jpg?t=@DateTime.Now " width="150" height="120" class="img-responsive img-rounded" />
+                                                                </div>
+                                                                <div class="card-footer text-right modal-footer">
+                                                                    <input type="submit" onclick="RejectPopUp('#=FleetsID#')" name='btn_#=FleetsID#' value="Update Image" class="k-button k-button-icontext k-primary" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </text>
+                );
+                                                          items.Add().Text(" Check List  ").Content(@<text>
+                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentCheckList>()
+                                                                                .Name("linechecklistgrid_#=FleetsID#")
+                                                                       .Columns(columns =>
+                                                                       {
+                                                                 columns.Bound(o => o.Code).Width(120);
+                                                                 columns.Bound(o => o.Name).Width(120);
+                                                                 columns.Bound(o => o.Quantity).Width(120);
+                                                                 columns.Bound(o => o.Description).Width(120);
+                                                             })
+                                                                             .ToolBar(toolbar => { toolbar.Save(); })
+                                                                             .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                                                             .HtmlAttributes(new { style = "height: 520px;" })
+                                                                             .Pageable(pageable => pageable
+                                                                             .Input(true)
+                                                                             .Numeric(false)
+                                                                             .Refresh(true)
+                                                                             .PageSizes(true)
+                                                                             .ButtonCount(5))
+                                                                             .Scrollable()
+                                                                             .Sortable()
+                                                                             .Filterable()
+                                                                             .Scrollable(h => h.Height(500))
+                                                                             .DataSource(dataSource => dataSource
+                                                                             .Ajax()
+                                                                             .Batch(false)
+                                                                             .PageSize(5)
+                                                                             .Model(model =>
+                                                                             {
+                                                                       model.Id(p => p.EquipmentCheckListId);
+                                                                       model.Field(p => p.Code).Editable(false);
+                                                                   })
+                                                                                         .Events(ev => ev
+                                                                                         .Error("error_handler(\"linechecklistgrid_#=FleetsID#\")")
+                                                                                         .RequestStart("onRequestStart(\"linechecklistgrid_#=FleetsID#\")")
+                                                                                         .RequestEnd("onRequestEnd(\"linechecklistgrid_#=FleetsID#\")"))
+                                                                                         .Read(read => read.Action("EquipmentCheckList_Read", "EquipmentRegistration", new { id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                         .Update(update => update.Action("EquipmentCheckList_Update", "EquipmentRegistration").Data("sendForgery"))
+                                                                                         .Destroy(destroy => destroy.Action("EquipmentCheckList_Destroy", "EquipmentRegistration").Data("sendForgery"))
+                                                                                         )
+                                                                                        .ToClientTemplate())
+                                                        </text>
+                                                           );
+                                                    @*items.Add().Text(" Photo ").Content(@<text>
+                                                        <button class="  k-primary" >Upload Picture</button>
+
+                                                        <img src="~/Content/Images/Fleet/Equipment/#=FleetsID#.jpg?t=" @DateTime.Now.Millisecond width="700" height="340" />
+                                                                                                </text>
+                                                                                                                                            );*@
+
+
+
+                                                            })
+                      .ToClientTemplate())
+</script>
+<script>
+    function dataBound() {
+        //  this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            //var dataItem = grid.dataItem(this);
+            //console.log(dataItem.IsOnlineApproved);
+            //if (dataItem.IsOnlineApproved == true || dataItem.IsSendForApproval == true) {
+            //    console.log("Approved");
+            //    $(this).find(".k-grid-edit").remove();
+            //    $(this).find(".k-grid-delete").remove();
+            //    $(this).addClass("k-state-FleetApproved");
+
+            //}
+        });
+    }
+</script>
+<script type="text/javascript">
+
+    var masterId;
+
+
+    function GetFleetId() {
+        return { fleetId: masterId }
+
+    }
+</script>
+
+
+@(Html.Kendo().Window().Name("Details")
+                            .Title(" Upload Picture ")
+                            .Visible(false)
+                            .Modal(true)
+                            .Draggable(true)
+                            .Width(500).Content(@<text><div class="form-group">
+
+                                    <form action="@Url.Action("UploadPhoto","EquipmentRegistration")" method="post" enctype="multipart/form-data">
+
+                                        <input type="hidden" name="Id" id="UploadId">
+                                        <input type="file" class="form-control  " name="AttachmentFile" multiple />
+
+                                        <input type="submit" class="k-button k-button-icontext k-primary" value=" Upload " />
+
+                                    </form>
+                                </div></text>))
+
+<script type="text/x-kendo-template" id="Rejectemplate">
+    <div id="details-container">
+        <div class="form-group">
+
+
+        </div>
+    </div>
+
+</script>
+<script>
+
+     function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "EquipmentRegistration", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+    function LineonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.IsOnlineApproved == true || dataItem.IsSendForApproval == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+    function approveonDataBound(e) {
+        var grid = this;
+
+        //  $(grid).find(".k-toolbar").hide(); //hide toolbar
+        //   $(".k-grid-top", grid).hide();
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (IsApproved == "true" || IsApproved == true) {
+
+                       $(this).find(".k-grid-edit").remove();
+                        $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+</script>
+<script>
+    var masterId;
+    var IsApproved;
+    var EquipmentIdentity;
+    function CalculateConsuption() {
+
+
+        $.ajax({
+            url: '@Url.Action("GetEquipmentFuelEfficency", "FleetDataProvider")',
+            data: { Id: masterId, From: $("#From" + masterId).val(), To: $("#To" + masterId).val() },
+            type: 'POST',
+            cache: false,
+            success: function (r) {
+                var s = r.split(/_/);
+                $("#FuelConsumptionLevel" + masterId).val(s[1]);
+                //  $("#kmh" + masterId).data("kendoRadialGauge").value(s[1]);
+
+                if (s[0] >= 0 && s[0] < 110) {
+                    $("#FuelConsumptionLevel" + masterId).css("background-color", "green");
+                }
+                if (s[0] >= 110 && s[0] < 150) {
+                    $("#FuelConsumptionLevel" + masterId).css("background-color", "yellow");
+                }
+                if (s[0] > 150) {
+                    $("#FuelConsumptionLevel" + masterId).css("background-color", "red");
+                }
+            }
+        });
+    }
+
+    @*function PopulateByChasis() {
+
+        var UnitNumObject = $("#PlateNumber").data("kendoDropDownList");
+        var UnitNumID = UnitNumObject.value();
+        $("#SelectedChasis").val(UnitNumObject.text());
+
+        $.ajax({
+            url: '@Url.Action("FixedAssetById", "EquipmentRegistration")',
+            data: { Id: UnitNumID },
+            type: 'POST',
+            cache: false,
+            success: function (r) {
+
+                if (r != null || r != "") {
+
+
+
+                    if (r.IsRegistered == true) {
+                        alert(r.Tag + " Asset No Already Registered");
+                    }
+                    $("#AssetCode").val(r.Tag);
+                    $("#UnitNum").val(r.Tag);
+
+                    $("#HistoricalCost").val(r.BookValue);
+                    $("#Manufacturer").val(r.Manufacturer);
+                    $("#SerialNo").val(r.SerialNo);
+                    $("#SerialNo").data("kendoDropDownList").value(r.SerialNo);
+                    $("#ChasisNo").data("kendoDropDownList").value(r.ChasisNo);
+                    //$("#PlateNumber").val(r.Tag);
+                    $("#EngineNumber").val(r.EngineNo);
+                    $("#Location").val(r.Location);
+                    $("#Model").val(r.ModelNo);
+                    $("#EngineModel").val(r.MotorNo);
+                    $("#Tyre").val(r.Tyre);
+                    $("#SupplierCompany").val(r.Supplier);
+                    $("#Condition").val(r.Condition);
+                    $("#ManufacturerYear").val(r.ManufacturDate);
+                    $("#Manufacturer").val(r.Manufacturer);
+                    $("#Battery").val(r.Battery);
+                    $("#Capacity").val(r.LoadCapacity);
+                    $("#TypeOfFuel").val(r.FuelType);
+                    $("#ChasisNumber").val(r.ChassisNo);
+                    $("#EquipmentName").val(r.Name);
+                    $("#PurchasingCost").val(r.OriginalValue);
+                    $("#AnnualDepreciationCost").val(r.PurchasePrice);
+                    $("#BookValue").val(r.BookValue);
+                    $("#PurchasedDate").val(kendo.toString(kendo.parseDate(r.PurchaseDate), 'dd/MM/yyyy'));
+                }
+                else {
+                    $("#Manufacturer").val("");
+                    $("#SerialNo").val("");
+                    $("#PlateNumber").val("");
+                    $("#EngineNumber").val("");
+                    $("#Location").val("");
+                    $("#Model").val("");
+                    $("#TyreSize").val("");
+                    $("#SupplierCompany").val("");
+                    $("#Condition").val("");
+                    $("#EquipmentName").val("");
+
+                    $("#Battery").val("");
+                    $("#Capacity").val("");
+                    $("#TypeOfFuel").val("");
+                    $("#ChasisNumber").val("");
+                    $("#PurchasingCost").val("");
+                }
+            }
+
+        });
+    }*@
+    function PopulateByPlate() {
+
+        var UnitNumObject = $("#PlateNumber").data("kendoDropDownList");
+        var UnitNumID = UnitNumObject.value();
+
+
+        $.ajax({
+            url: '@Url.Action("FixedAssetById", "EquipmentRegistration")',
+            data: { Id: UnitNumID },
+            type: 'POST',
+            cache: false,
+            success: function (r) {
+
+                if (r != null || r != "") {
+
+
+                    if (r.IsRegistered == true) {
+                        alert(r.Tag + " Asset No Already Registered");
+                    }
+                    $("#AssetCode").val(r.Tag);
+                    $("#SelectedPlate").val(r.PlateNo);
+                    $("#SelectedChasis").val(r.ChasisNo);
+                    $("#SelectedSerial").val(r.SerialNo);
+                    $("#UnitNum").val(r.Tag);
+                    $("#HistoricalCost").val(r.BookValue);
+                    $("#Manufacturer").val(r.Manufacturer);
+                    $("#SerialNo").val(r.Tag);
+                    $("#PlateNumber").val(r.Tag);
+                    $("#EngineNumber").val(r.EngineNo);
+                    $("#Location").val(r.Location);
+                    $("#Model").val(r.ModelNo);
+                    $("#EngineModel").val(r.MotorNo);
+                    $("#Tyre").val(r.Tyre);
+                    $("#SupplierCompany").val(r.Supplier);
+                    $("#Condition").val(r.Condition);
+                    $("#ManufacturerYear").val(r.ManufacturDate);
+
+                    $("#Battery").val(r.Battery);
+                    $("#Capacity").val(r.LoadCapacity);
+                    $("#TypeOfFuel").val(r.FuelType);
+                    $("#ChasisNumber").val(r.ChassisNo);
+                    $("#EquipmentName").val(r.Name);
+                    $("#PurchasingCost").val(r.OriginalValue);
+                    $("#AnnualDepreciationCost").val(r.PurchasePrice);
+                    $("#BookValue").val(r.BookValue);
+                    $("#PurchasedDate").val(kendo.toString(kendo.parseDate(r.PurchaseDate), 'dd/MM/yyyy'));
+                }
+                else {
+                    $("#Manufacturer").val("");
+                    $("#SerialNo").val("");
+                    $("#PlateNumber").val("");
+                    $("#EngineNumber").val("");
+                    $("#Location").val("");
+                    $("#Model").val("");
+                    $("#TyreSize").val("");
+                    $("#SupplierCompany").val("");
+                    $("#Condition").val("");
+                    $("#EquipmentName").val("");
+
+                    $("#Battery").val("");
+                    $("#Capacity").val("");
+                    $("#TypeOfFuel").val("");
+                    $("#ChasisNumber").val("");
+                    $("#PurchasingCost").val("");
+                }
+            }
+
+        });
+    }
+    function PopulateBySerial() {
+
+        var UnitNumObject = $("#SerialNo").data("kendoDropDownList");
+        var UnitNumID = UnitNumObject.value();
+        $("#SelectedSerial").val(UnitNumObject.text());
+
+        $.ajax({
+            url: '@Url.Action("FixedAssetById", "EquipmentRegistration")',
+            data: { Id: UnitNumID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r != null || r != "") {
+
+
+                    if (r.IsRegistered == true) {
+                        alert(r.Tag+" Asset No Already Registered" );
+                    }
+                    $("#AssetCode").val(r.Tag);
+                    $("#SelectedPlate").val(r.PlateNo);
+                    $("#SelectedSerial").val(r.SerialNo);
+                    $("#SelectedChasis").val(r.ChasisNo);
+                    $("#UnitNum").val(r.Tag);
+                    $("#HistoricalCost").val(r.BookValue);
+                    $("#Manufacturer").val(r.Manufacturer);
+                    $("#SerialNo").val(r.Tag);
+                    $("#PlateNumber").val(r.Tag);
+                    $("#EngineNumber").val(r.EngineNo);
+                    $("#Location").val(r.Location);
+                    $("#Model").val(r.ModelNo);
+                    $("#EngineModel").val(r.MotorNo);
+                    $("#Tyre").val(r.Tyre);
+                    $("#SupplierCompany").val(r.Supplier);
+                    $("#Condition").val(r.ModelNo);
+                    $("#ManufacturerYear").val(r.ManufacturDate);
+                    $("#Manufacturer").val(r.Manufacturer);
+                    $("#Battery").val(r.Battery);
+                    $("#Capacity").val(r.LoadCapacity);
+                    $("#TypeOfFuel").val(r.FuelType);
+                    $("#ChasisNumber").val(r.ChassisNo);
+                    $("#EquipmentName").val(r.Name);
+                    $("#PurchasingCost").val(r.OriginalValue);
+                    $("#AnnualDepreciationCost").val(r.PurchasePrice);
+                    $("#BookValue").val(r.BookValue);
+                    $("#PurchasedDate").val(kendo.toString(kendo.parseDate(r.PurchaseDate), 'dd/MM/yyyy'));
+                }
+                else {
+                    $("#Manufacturer").val("");
+                    $("#SerialNo").val("");
+                    $("#PlateNumber").val("");
+                    $("#EngineNumber").val("");
+                    $("#Location").val("");
+                    $("#Model").val("");
+                    $("#TyreSize").val("");
+                    $("#SupplierCompany").val("");
+                    $("#Condition").val("");
+                    $("#EquipmentName").val("");
+
+                    $("#Battery").val("");
+                    $("#Capacity").val("");
+                    $("#TypeOfFuel").val("");
+                    $("#ChasisNumber").val("");
+                    $("#PurchasingCost").val("");
+                }
+            }
+
+        });
+    }
+
+    function PopulateFixedAsset() {
+
+        var UnitNumObject = $("#AssetId").data("kendoDropDownList");
+        var UnitNumID = UnitNumObject.value();
+        $("#AssetCode").val(UnitNumObject.text());
+
+        $.ajax({
+            url: '@Url.Action("FixedAssetById", "FleetManagementDataProvider")',
+            data: { Id: UnitNumID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r != null || r != "") {
+
+                    //if (r.IsRegistered == true) {
+                    //    alert(r.Tag + " Asset No Already Registered");
+                    //}
+                    $("#AssetCode").val(r.Tag);
+
+                    $("#SelectedPlate").val(r.PlateNo);
+                    $("#SelectedSerial").val(r.SerialNo);
+                    $("#SelectedChasis").val(r.ChasisNo);
+                    $("#HistoricalCost").val(r.BookValue);
+                    $("#Manufacturer").val(r.Manufacturer);
+                    $("#SerialNo").val(r.SerialNo);
+                    $("#PlateNumber").val(r.PlateNo);
+                    $("#EngineNumber").val(r.EngineNo);
+                    $("#Location").val(r.Location);
+                    $("#Model").val(r.ModelNo);
+                    $("#EngineModel").val(r.MotorNo);
+                    $("#Tyre").val(r.Tyre);
+                    $("#SupplierCompany").val(r.Supplier);
+                    $("#Condition").val(r.ModelNo);
+                    $("#ManufacturerYear").val(r.ManufacturDate);
+                    $("#Manufacturer").val(r.Manufacturer);
+                    $("#Battery").val(r.Battery);
+                    $("#Capacity").val(r.LoadCapacity);
+                    $("#TypeOfFuel").val(r.FuelType);
+                    $("#ChasisNumber").val(r.ChassisNo);
+                    $("#EquipmentName").val(r.Name);
+                    $("#PurchasingCost").val(r.OriginalValue);
+                    $("#AnnualDepreciationCost").val(r.PurchasePrice);
+                    $("#BookValue").val(r.BookValue);
+                    $("#PurchasedDate").val(kendo.toString(kendo.parseDate(r.PurchaseDate), 'dd/MM/yyyy'));
+                }
+                else {
+                    $("#Manufacturer").val("");
+                    $("#SerialNo").val("");
+                    $("#PlateNumber").val("");
+                    $("#EngineNumber").val("");
+                    $("#Location").val("");
+                    $("#Model").val("");
+                    $("#TyreSize").val("");
+                    $("#SupplierCompany").val("");
+                    $("#Condition").val("");
+                    $("#EquipmentName").val("");
+
+                    $("#Battery").val("");
+                    $("#Capacity").val("");
+                    $("#TypeOfFuel").val("");
+                    $("#ChasisNumber").val("");
+                    $("#PurchasingCost").val("");
+                }
+            }
+
+        });
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".jpg") {
+
+            } else {
+                alert("Only .jpg files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem.IsOnlineApproved);
+            if (dataItem.IsOnlineApproved == true || dataItem.IsSendForApproval == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+    var EquipmentTypeId;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.FleetsID;
+        fleetPlate = masterDataItem.PlateNumber;
+        IsApproved = masterDataItem.IsOnlineApproved;
+        EquipmentIdentity = masterDataItem.EquipmentIdentityID;
+        EquipmentTypeId = masterDataItem.EquipmentTypeID;
+        var Batterygrid = "#EquipmentBatterygrid_" + masterId;
+        var Tyregrid = "#EquipmentTyregrid_" + masterId;
+        var Accessorygrid = "#Accessoriesgrid_" + masterId;
+
+        $("#fleetID").val(masterId);
+        var lineitem = "";
+        var index = 0;
+        var category = "";
+        if (masterDataItem.IsSendForApproval == true) {
+
+            var Accessorieslineitem;
+            $.ajax({
+                url: '@Url.Action("GetCheckListByEquipmentDDBind", "FleetDataProvider")',
+
+                data: { Type: EquipmentTypeId },
+                type: 'POST',
+                cache: false,
+                success: function (list) {
+
+                    var Category = "";
+
+                    for (var i = 0; i < list.length; i++) {
+
+                        Accessorieslineitem += "    <div class='col-sm-4' >";
+                        if (list[i].CategoryName != Category) {
+                            Category = list[i].CategoryName;
+                            Accessorieslineitem += "    <p class='  k-primary' style='color: white;padding: 5px;' > " + list[i].CategoryName + " </p>";
+                            Accessorieslineitem += "    <hr/>  ";
+                            Accessorieslineitem += "    <br/>   ";
+                        }
+
+                        Accessorieslineitem += "<div   style='padding: 5px;' >  <input type='hidden' name=model.CheckListViewModel[" + i + "].LineId  value=" + list[i].LineId + "> ";
+                        Accessorieslineitem += "<input type='hidden' name=model.CheckListViewModel[" + i + "].LineName  value=" + list[i].LineName + " >";
+                        Accessorieslineitem += "<input type='hidden' name=model.CheckListViewModel[" + i + "].CategoryName  value=" + list[i].CategoryName + " >";
+                        Accessorieslineitem += " <label>" + list[i].LineCode + " - " + list[i].LineName + " </label>";
+                        Accessorieslineitem += "     <input type='checkbox' id='checked" + i + "' class='cbx hidden' checked    name='model.CheckListViewModel[" + i + "].IsActive'   >   <label for='checked" + i + "' class='lbl'></label>       ";
+
+
+                        Accessorieslineitem += "  <input type='text' name='model.CheckListViewModel[" + i + "].Remark' value='' class=' form-control '   style='padding: 5px;'> ";
+                        Accessorieslineitem += "   </div>  </div>";
+                        index++;
+
+                    }
+                    try {
+                        document.getElementById("checkListArea" + masterId).innerHTML = Accessorieslineitem;
+                    } catch (err) {
+
+                    }
+                }
+
+            });
+
+            $.ajax({
+                url: '@Url.Action("EquipmentCheckListLog_Read", "CheckListLog")',
+
+                data: { Id: masterId, PlateNumber: fleetPlate },
+                type: 'POST',
+                cache: false,
+                success: function (list) {
+                    for (var i = 0; i < list.length; i++) {
+
+
+                        lineitem += "    <div class='col-sm-12'>";
+                        if (category != list[i].CategoryName) {
+
+                            lineitem += "       <div class='col-sm-12'><h2 style='background-color:greenyellow'>" + list[i].CategoryName + " </h2></div>";
+                            category = list[i].CategoryName;
+                        }
+                        lineitem += "<div class='row form-control' ><label   >  * " + list[i].LineName + "   </label> <p>" + list[i].Remark + " </p>   </div>";
+                        index++;
+
+                        lineitem += " </div>";
+                    }
+                    try {
+
+                        document.getElementById("lines" + masterId).innerHTML = lineitem;
+
+
+
+                    }
+                    catch (err) { }
+                }
+
+            });
+
+            $.ajax({
+                url: '@Url.Action("FleetCost", "EquipmentRegistration")',
+
+                data: { Id: masterId },
+                type: 'GET',
+                cache: false,
+                success: function (list) {
+                    for (var i = 0; i < list.length; i++) {
+
+                        $("#CostChart" + masterId).kendoChart({
+                            title: {
+                                text: " Equipment Cost Summary "
+                            },
+                            legend: {
+                                position: "right"
+                            }, theme: "material",
+                            seriesDefaults: {
+                                labels: {
+                                    template: " ",
+                                    position: "outsideEnd",
+                                    visible: true,
+                                    background: "transparent"
+                                }
+                            },
+                            series: [{
+                                type: "pie",
+                                data: [{
+                                    category: "Spare Part : " + list[i].SpareRepairCost,
+                                    value: list[i].SpareRepairCost
+                                }, {
+                                    category: "Tyre : " + list[i].TyreRepairCost,
+                                    value: list[i].TyreRepairCost
+                                }, {
+                                    category: "Battery : " + list[i].BatteryRepairCost,
+                                    value: list[i].BatteryRepairCost
+                                }, {
+                                    category: "Salvage : " + list[i].SalvageCost,
+                                    value: list[i].SalvageCost
+                                }, {
+                                    category: "Oil & Lubricant : " + list[i].OilRepairCost,
+                                    value: list[i].OilRepairCost
+                                }, {
+                                    category: "Fuel Issue : " + list[i].FuelIssue,
+                                    value: list[i].FuelIssue
+                                },
+                                {
+                                    category: "ManPower Cost : " + list[i].ManPowerCost,
+                                    value: list[i].ManPowerCost
+                                }, {
+                                    category: "Other : " + list[i].OtherRepairCost,
+                                    value: list[i].OtherRepairCost
+                                }]
+                            }],
+                            tooltip: {
+                                visible: true,
+                                template: "#= category # - #= kendo.format('{0:P}', sum) #"
+                            }
+                        });
+                    }
+                }
+            });
+
+
+
+            $.ajax({
+                url: '@Url.Action("GetEquipmentFuelEfficency", "FleetDataProvider")',
+                data: { Id: masterId, From: "1/1/1900", To: "1/1/2200" },
+                type: 'POST',
+                cache: false,
+                success: function (r) {
+                    var s = r.split(/_/);
+                    //    $("#kmh" + masterId).data("kendoRadialGauge").value(s[1]);
+                    $("#FuelConsumptionLevel" + masterId).val(s[1]);
+                    if (s[0] >= 0 && s[0] < 110) {
+                        $("#FuelConsumptionLevel" + masterId).css("background-color", "green");
+
+                    }
+                    if (s[0] >= 110 && s[0] < 150) {
+                        $("#FuelConsumptionLevel" + masterId).css("background-color", "yellow");
+                    }
+                    if (s[0] > 150) {
+                        $("#FuelConsumptionLevel" + masterId).css("background-color", "red");
+                    }
+                }
+            });
+        }
+    }
+    function RejectPopUp(e) {
+
+
+        var wnd = $("#Details").data("kendoWindow");
+
+        $("#UploadId").val(e);
+        wnd.center().open();
+    }
+
+
+    function EquipmentTypeFuelConsumption(e) {
+
+        var FuelEquipmentTypeId = $("#EquipmentTypeID").data("kendoDropDownList").value();
+        $.ajax({
+            url: '@Url.Action("EquipmentTypeFuelStandard", "FleetDataProvider")',
+            data: { Id: FuelEquipmentTypeId },
+            type: 'POST',
+            cache: false,
+            success: function (r) {
+                var s = r.split(/_/);
+                $("#MinFuelStandard").val(s[0]);
+                $("#MaxFuelStandard").val(s[1]);
+
+                $("#MinFuelStandard").focus();
+                $("#MaxFuelStandard").focus();
+
+            }
+        });
+    }
+    function filterEquipmentIdentity() {
+        return {
+            equipmentIdentityId: $("#EquipmentIdentityID").val()
+        };
+    }
+    function filterEquipmentNames()
+    {
+        var dropdownlist = $("#EquipmentNameID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentIdentityID").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+
+    function filterByType() {
+
+        var dropdownlist = $("#EquipmentNameID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentTypeId: $("#EquipmentTypeID").val(),
+            Search: filterInput.val()
+        };
+
+    }
+
+    function searchFleet() {
+        var FleetSearchObj = $("#FleetSearch");
+        var FleetSearchResult = FleetSearchObj.val();
+        var grid = $('#grid').data('kendoGrid');
+
+
+        if (FleetSearchResult != "") {
+            grid.dataSource.filter({ field: "UnitNum", operator: "eq", value: FleetSearchResult });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+    function FiltEquipmentByType() {
+        var FleetSearchObj = $("#Status");
+        var FleetSearchResult = FleetSearchObj.val();
+        var grid = $('#grid').data('kendoGrid');
+
+
+        if (FleetSearchResult != "") {
+            grid.dataSource.filter({ field: "ApprovalStatus", operator: "eq", value: FleetSearchResult });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+    function FilterFleets() {
+        var FleetSearchObj = $("#FleetSearch");
+        var FleetSearchResult = FleetSearchObj.val();
+           var grid = $('#grid').data('kendoGrid');
+
+           if (grid.dataSource.total() > 0) {
+               if (FleetSearchResult != "") {
+                   grid.dataSource.filter({ field: "UnitNum", operator: "contains", value: FleetSearchResult });
+               } else {
+                   grid.dataSource.filter({});
+               }
+           }
+    }
+
+
+    function FilterEquipment(e) {
+        //event.preventDefault();
+        //var grid = $('#grid').data('kendoGrid');
+        //var SubCategory = $("#EquipmentIdentityId").data("kendoDropDownList").text();
+        //var EquipmentName = $("#EquipmentNameId").data("kendoDropDownList").text();
+
+
+
+        //if (SubCategory != "") {
+        //    grid.dataSource.filter({ field: "SubCategory", operator: "eq", value: SubCategory });
+        //}
+        //if (EquipmentName != "" && EquipmentName != "Select Equipment Name") {
+        //    grid.dataSource.filter({ field: "EquipmentName", operator: "eq", value: EquipmentName });
+        //}
+        //if (SubCategory == "" || EquipmentName == "") {
+        //    grid.dataSource.filter({});
+        //}
+    }
+    function HandelImageNotFound(e)
+    {
+   //  e.src = ~'/Content/Images/Fleet/Asset/default.png';
+    }
+</script>
+<script>
+
+    var progress,
+        tabsssss,
+        currentIndex = 0;
+    function onOpenPopUpEditor() {
+        progress = $("#profileCompleteness").data("kendoProgressBar");
+        tabsssss = $("#tabstrip").data("kendoTabStrip");
+        $(".k-edit-buttons").remove();
+    }
+
+
+</script>
+<script>
+    function onShow(e) {
+       progress.value(currentIndex + 1);
+    }
+    function onSelect(e) {
+        var selectedIndex = tabIndexOfElement(e.item),
+
+            isMovingBack = selectedIndex < currentIndex;
+
+        if (isMovingBack || isTabValidAt(currentIndex)) {
+            console.log("tab passed validation")
+            currentIndex = selectedIndex;
+            tabsssss.enable(getTabAtIndex(currentIndex), true);
+        }
+        else {
+            e.preventDefault();
+        }
+    }
+
+    function tabIndexOfElement(element) {
+        return tabsssss.element.find(element).index();
+    }
+
+    function isTabValidAt(tabIndex) {
+        var el = tabsssss.contentElement(tabIndex),
+            val = $(el).kendoValidator().data("kendoValidator");
+        return val.validate();
+    }
+
+    function getTabAtIndex(index) {
+        return tabsssss.tabGroup.children().eq(index);
+    }
+    $("#tabstrip").on("click", ".k-button k-button-icontext k-grid-back", function (e) {
+        e.preventDefault();
+        tabsssss.select(tabsssss.select().prev());    })
+    function onPreviousClick(e) {
+            //e.preventDefault();
+        tabsssss.select(tabsssss.select().prev());
+    }
+
+    function onNextClick(e) {
+            //e.preventDefault();
+        tabsssss.select(getTabAtIndex(currentIndex + 1));
+    }
+</script>
+
+<style>
+
+    .lbl {
+        position: relative;
+        display: block;
+        height: 40px;
+        width: 64px;
+        background: #898989;
+        border-radius: 100px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .lbl:after {
+            position: absolute;
+            left: -2px;
+            top: -3px;
+            display: block;
+            height: 40px;
+            width: 54px;
+            border-radius: 100px;
+            background: #fff;
+            box-shadow: 0px 3px 3px rgba(243, 245, 247, 0.05);
+            content: '';
+            transition: all 0.3s ease;
+        }
+
+        .lbl:active:after {
+            transform: scale(1.15, 0.85);
+        }
+
+    .cbx:checked ~ label {
+        background: #32a6f3;
+    }
+
+        .cbx:checked ~ label:after {
+            left: 20px;
+            background: #5a666e;
+        }
+
+    .cbx:disabled ~ label {
+        background: #d5d5d5;
+        pointer-events: none;
+    }
+
+        .cbx:disabled ~ label:after {
+            background: #bcbdbc;
+        }
+
+    .container {
+        position: absolute;
+        top: 250px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .demo {
+        margin-bottom: 40px;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+<style>
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+        .employee-details ul li {
+            margin: 0;
+            line-height: 1.7em;
+        }
+
+    .employee-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 650px;
+    }
+</style>
+<style>
+    #gauge-container {
+        margin: 0 auto;
+        overflow: hidden;
+        width: 614px;
+        height: 324px;
+        background: transparent url('../../../../Content/Images/Fleet/Asset/car-dashboard.png') no-repeat 50% 50%;
+    }
+
+    .k-gauge {
+        float: left;
+    }
+
+    .EfficencyGauge {
+        width: 142px;
+        height: 147px;
+        margin: 85px 0 0 38px;
+    }
+
+    .row .col-sm-2 {
+        width: 15%;
+        max-width: 20%;
+        margin: 2px;
+    }
+
+    .kmh {
+        width: 216px;
+        height: 216px;
+        margin: 57px 0 0 20px;
+    }
+
+    .fuel {
+        width: 77px;
+        height: 84px;
+        margin: 90px 0 0 68px;
+    }
+
+    .water-temprature {
+        width: 84px;
+        height: 80px;
+        margin: -7px 0 0 62px;
+    }
+</style>
+<script>
+    function renderImage(fleetPhoto, fleetsID, equipmentName) {
+        if (fleetPhoto) {
+            return '<img class="img-circle" src="@Url.Content("~/Content/Images/Fleet/Equipment/")' + fleetsID + '.jpg?q=' + new Date() + '" alt="' + equipmentName + '" title="' + equipmentName + '" height="30" width="30" />';
+        }
+        else {
+            return '<img class="img-circle" src="@Url.Content("~/Content/Images/Fleet/Equipment/fleet.png")" alt="Default Image" title="Default Image" height="30" width="30" />';
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

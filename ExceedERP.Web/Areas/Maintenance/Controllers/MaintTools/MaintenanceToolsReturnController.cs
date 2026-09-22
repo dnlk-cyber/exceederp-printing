@@ -21,5 +21,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.MainTools
             ViewData["MeaintenanceTools"] = db.MaintenanceTool.Select( mc => new { mc.MaintenanceToolID, mc.ToolsName}).ToList();
             return View();
         }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

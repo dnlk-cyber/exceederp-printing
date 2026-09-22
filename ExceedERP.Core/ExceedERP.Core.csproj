@@ -29,6 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +38,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -657,6 +659,7 @@
     <Compile Include="Domain\FleetManagement\BatteryManagement\BatteryApproval.cs" />
     <Compile Include="Domain\FleetManagement\BatteryManagement\BatteryIssue.cs" />
     <Compile Include="Domain\FleetManagement\BatteryManagement\BatteryReturn.cs" />
+    <Compile Include="Domain\FleetManagement\Enum.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentInspection\AnnualEquipmentInventoryInspection.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentInspection\AnnualInventoryInspectionApproval.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentInspection\CheckList.cs" />
@@ -668,10 +671,12 @@
     <Compile Include="Domain\FleetManagement\EquipmentInspection\InspectionLog.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentInspection\LineCheckList.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentInspection\RentalMVInspection.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentOperationPlan.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\EquipmentPlanandEvaluations.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\EquipmentPlanEvaluationApproval.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\FleetAnnualPlan.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\PlanAndEvaluationApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetAvailabilityTreshold.cs" />
     <Compile Include="Domain\FleetManagement\FleetConst.cs" />
     <Compile Include="Domain\FleetManagement\FleetEquipmentRent\ExternalRentedEquipment.cs" />
     <Compile Include="Domain\FleetManagement\FleetEquipmentRent\ExternalRentedEquipmentCheckList.cs" />
@@ -762,6 +767,7 @@
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\LightVehicleTimeSheet.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\MachineryWorkingTimeSheet.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\OperationsCostTimeSheet.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTimeSheet\RentedEquipmentMonthyPaymentSummary.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\TimeSheetException.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\TimeSheetSetting.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\WagonDrillTimesheet.cs" />
@@ -778,6 +784,10 @@
     <Compile Include="Domain\FleetManagement\FuelManagement\FuelIssueApproval.cs" />
     <Compile Include="Domain\FleetManagement\FuelManagement\FuelType.cs" />
     <Compile Include="Domain\FleetManagement\GlobalENUM.cs" />
+    <Compile Include="Domain\FleetManagement\InternalRentalRate.cs" />
+    <Compile Include="Domain\FleetManagement\RentalPayment\PaymentCirtificate.cs" />
+    <Compile Include="Domain\FleetManagement\RentalPayment\RentalAdvancePaymentRequest.cs" />
+    <Compile Include="Domain\FleetManagement\RentalPayment\RentalAdvancePaymentRequestValidation.cs" />
     <Compile Include="Domain\FleetManagement\RentalPayment\RentalPaymentRequest.cs" />
     <Compile Include="Domain\FleetManagement\RentalPayment\RentalPaymentRequestLine.cs" />
     <Compile Include="Domain\FleetManagement\RentalPayment\RentalPaymentRequestValidation.cs" />
@@ -1085,6 +1095,7 @@
     <Compile Include="Domain\Insurance\InsuranceType.cs" />
     <Compile Include="Domain\Insurance\OtherInsurance.cs" />
     <Compile Include="Domain\Insurance\Restitution.cs" />
+    <Compile Include="Domain\Insurance\Setting\InsuranceCoverType.cs" />
     <Compile Include="Domain\Insurance\Setting\InsurancePaymentSetting.cs" />
     <Compile Include="Domain\Insurance\Setting\InsurancePremiumSetting.cs" />
     <Compile Include="Domain\Insurance\VehicleAccidentDetail.cs" />
@@ -1144,6 +1155,7 @@
     <Compile Include="Domain\Maintenance\DailyCareDetailItem.cs" />
     <Compile Include="Domain\Maintenance\DailyCareDetailLog.cs" />
     <Compile Include="Domain\Maintenance\DailyCareLog.cs" />
+    <Compile Include="Domain\Maintenance\Enum.cs" />
     <Compile Include="Domain\Maintenance\ExternalComponent.cs" />
     <Compile Include="Domain\Maintenance\ExternalComponentDetail.cs" />
     <Compile Include="Domain\Maintenance\ExternalCrew.cs" />

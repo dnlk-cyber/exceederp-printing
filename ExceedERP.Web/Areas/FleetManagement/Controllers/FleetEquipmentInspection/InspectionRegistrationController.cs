@@ -33,14 +33,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/Service/
         public ActionResult Index()
         {
-            ViewData["Sections"] = db.WorkUnitSection.ToList();
+            ViewData["Sections"] = db.WorkUnitSection.AsEnumerable();
             return View();
         }
 
 
         public ActionResult Service_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var Service = _ServiceService.GetAll().Select(s => new
+            var Service = db.Service.Select(s => new
                 {
                     RepairTypeID = s.RepairTypeID,
                     ApprovedBy = s.ApprovedBy,
@@ -154,7 +154,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
 
     }
 }

@@ -9,20 +9,24 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Maintenance.Settings;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers.VehicleReception
 {
     public class VehiclePartController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
-
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new {
-                Id = s.EquipmentIdentityID,
-                Name = s.EquipmentCategoryName
-            }).ToList();
-
+           
+        
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           Id = i.Id
+       }).AsQueryable();
             return View();
         }
 
@@ -39,6 +43,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.VehicleReception
                 DateCreated = vehiclePart.DateCreated,
                 LastModified = vehiclePart.LastModified,
                 CreatedBy = vehiclePart.CreatedBy,
+                ApplyForAll = vehiclePart.ApplyForAll,
                 ModifiedBy = vehiclePart.ModifiedBy
             });
 
@@ -50,6 +55,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.VehicleReception
             if (ModelState.IsValid)
             {
                 var entity = (VehiclePart)this.GetObject(VehiclePart);
+                entity.ApplyForAll = VehiclePart.ApplyForAll;
                 db.VehiclePart.Add(entity);
                 db.SaveChanges();
                 VehiclePart.VehiclePartId = entity.VehiclePartId;
@@ -64,7 +70,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.VehicleReception
             if (ModelState.IsValid)
             {
                 var entity = (VehiclePart)this.GetObject(VehiclePart);
-
+                entity.ApplyForAll = VehiclePart.ApplyForAll;
                 db.VehiclePart.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();

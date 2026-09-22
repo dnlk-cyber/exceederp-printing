@@ -80,12 +80,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
 
                     entity.IsOnlineApproved = true;
+                    entity.IsDepartmentOnlineApproved = true;
                     entity.OnlineApprovedBy = User.Identity.Name;
                     entity.Status = MaintenanceConst.Approved;
                     entity.OnlineApprovedTime = DateTime.Now;
-                    entity.Status = MaintenanceConst.Approved;
 
-                    db.VehicleDemand.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
                 }
@@ -93,8 +92,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
                     entity.IsSendForApproval = false;
-
-                    db.VehicleDemand.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
 
@@ -124,7 +121,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
 
     }
 }

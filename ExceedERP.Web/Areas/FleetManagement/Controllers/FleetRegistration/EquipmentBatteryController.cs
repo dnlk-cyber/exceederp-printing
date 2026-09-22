@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult BatteryByFleet_Read([DataSourceRequest] DataSourceRequest request, string Id)
         {
             List<EquipmentBattery> tires = new List<EquipmentBattery>();
-            var Batterys = db.EquipmentBattery.Where(x => x.fleetId.ToString() == Id && x.Isattached == true).ToList();
+            var Batterys = db.EquipmentBattery.Where(x => x.fleetId.ToString() == Id && x.Isattached == true).AsQueryable();
             foreach (var e in Batterys)
             {
                 string Duration = GetDuration(e.DateCreated);

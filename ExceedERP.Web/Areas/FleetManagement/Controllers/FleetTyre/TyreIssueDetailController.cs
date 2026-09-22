@@ -41,7 +41,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             IQueryable<TireIssueDetail> TireIssueDetail = db.TireIssueDetails.Where(x=>x.TireIssueId.ToString()==id);
             DataSourceResult result = TireIssueDetail.ToDataSourceResult(request, t => new
             {
-
+                TireIssueDetailId=t.TireIssueDetailId,
                 UnitPrice = t.UnitPrice,
                 Brand = t.Brand,
                 IssueType = t.IssueType,
@@ -138,6 +138,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(Response, JsonRequestBehavior.AllowGet);
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -101,5 +101,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         public ActionResult SparePart_Read([DataSourceRequest] DataSourceRequest request)
         {
             var SparePart = _SparePartService.GetAll().Select(sp => new
+            //IQueryable<SparePart> SparePart = db.SparePart.AsQueryable().Select(sp => new
             {
                 SparePartID = sp.SparePartID,
                 Category = sp.SpareMaterialCategory.Description,
@@ -200,7 +201,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             return Json(spareParts, JsonRequestBehavior.AllowGet);
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

@@ -28,6 +28,17 @@ namespace ExceedERP.Core.Domain.Maintenance
         public decimal TotalAmount { get; set; }
         public decimal AmountDue { get; set; }
 
+        public bool IsBudgetApproved { get; set; }
+        public string BudgetApprovedBy { get; set; }
+        public DateTime? BudgetApprovedTime { get; set; }
+        // Finace 
+        public bool IsFinanceSendForApproval { get; set; }
+        public string FinanceSendForApprovalBy { get; set; }
+        public DateTime? FinanceSendForApprovalTime { get; set; }
+        public bool IsFinanceApproved { get; set; }
+        public string FinanceApprovedBy { get; set; }
+        public DateTime? FinanceApprovedTime { get; set; }
+
 
     }
     public class ExternalMaintenancePaymentRequestValidation : TrackUserOperation

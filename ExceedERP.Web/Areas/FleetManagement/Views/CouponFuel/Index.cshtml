@@ -1,0 +1,104 @@
+﻿@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Coupon Fuel </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FuelManagement.CouponFuel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+
+          columns.ForeignKey(e => e.Requestor, (IEnumerable)ViewData["Employee"], "Code", "Name").EditorTemplateName("EmployeeTemplate").Filterable(f=> f.Multi(true).Search(true)).Title("Requestor").Width(140);
+          columns.Bound(e => e.RequestDate).Title("Request Date").Title("Request Date").Width(140);
+          columns.ForeignKey(e => e.FleetId,(IEnumerable)ViewData["fleet"],"Value","Text").Title("Plate Number").EditorTemplateName("FleetTemplate").Filterable(f=> f.Multi(true).Search(true)).Width(140);
+          columns.Bound(e=>e.IssueItem).Title("Issue Item").Width(140);
+          columns.Bound(e=>e.UOM).Title("UOM").Width(140);
+          columns.Bound(e=>e.RequestedQuantity).Title("Requested Quantity").Width(140);
+          columns.Bound(e=>e.UnitPrice).Title("Unit Price").Width(140);
+          columns.Bound(e=>e.TotalPrice).Title("Total Price").Width(140);
+          columns.Bound(e=>e.CurrentKM).Title("Current KM").Width(140);
+          columns.Bound(e=>e.PreKM).Title("Previous KM").Width(140);
+          columns.Bound(e=>e.DiffKM).Title("Difference in KM").Width(140);
+          columns.Bound(e=>e.ConsumptionPerKM).Title("Standard Consumption").Width(140);
+          columns.Bound(e=>e.FuelStation).Title("Fuel Station").Width(140);
+          columns.Bound(e=>e.CouponNumber).Title("Cupon Number").Width(140);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+      })
+      .ToolBar(commands => { commands.Create();
+          commands.Excel();
+      })
+      .Excel(e=>e.AllPages(true)
+      .FileName("Coupon Fuel"))
+      .Events(ev=>ev.DataBound("CuponFuelDBBound"))
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.InLine);
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Fuel Consumption");
+      })
+            .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.CouponFuelId);
+
+              model.Field(p => p.DiffKM).Editable(false);
+              model.Field(p => p.TotalPrice).Editable(false);
+              model.Field(p => p.ConsumptionPerKM).Editable(false);
+              model.Field(p => p.PreKM).Editable(false);
+
+          })
+          .Sort(so=>so.Add(s=>s.CouponFuelId).Descending())
+                       .Events(ev => ev
+                                        .Error("error_handler(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Create(update => update.Action("_Create", "CouponFuel").Data("sendForgery"))
+          .Read(read => read.Action("_Read", "CouponFuel").Data("sendForgery"))
+          .Update(update => update.Action("_Update", "CouponFuel").Data("sendForgery"))
+          .Destroy(update => update.Action("_Destroy", "CouponFuel").Data("sendForgery"))
+      ))
+
+<script>
+    function CuponFuelDBBound() {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.IsApproved == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+    function filterFleets() {
+        
+        var fleet = $("#FleetId").data("kendoDropDownList");
+        var filterInput = fleet.filterInput;
+
+        return {
+            Text: filterInput.val()
+        };
+    }
+    function filterEmployee() {
+        var fleet = $("#Requestor").data("kendoDropDownList");
+        var filterInput = fleet.filterInput;
+        return {
+            Text: filterInput.val()
+        };
+    }
+
+</script>

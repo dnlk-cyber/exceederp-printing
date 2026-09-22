@@ -10,8 +10,8 @@
         .Columns(columns =>
         {
             columns.ForeignKey(e => e.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("MechanicSelector").Width(150);
-            columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("MaintenanceCenterSelector").Width(150);
-            columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenters"], "Value", "Text").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("ServiceCenterSelector").Width(150);
+            columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("MaintenanceCenterSelector").Title("Maintenance Center").Width(150);
+            columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenters"], "Value", "Text").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("ServiceCenterSelector").Title("Service Center").Width(150);
             columns.Bound(e => e.MechanicType).EditorTemplateName("MechanicTypeMapping").Width(120);
             columns.Bound(e => e.HourlyWage).Width(120);
             columns.Bound(e => e.Status).Title("Status").Width(120);
@@ -75,6 +75,7 @@
                           .Read(read => read.Action("MechanicCrew_Read", "MechanicCrew").Data("sendForgery"))
                           .Update(update => update.Action("MechanicCrew_Update", "MechanicCrew").Data("sendForgery"))
                           .Destroy(update => update.Action("MechanicCrew_Destroy", "MechanicCrew").Data("sendForgery"))
+                          .Sort(sort=>sort.Add(s=>s.MechanicCrewID).Descending())
             )
 )
 

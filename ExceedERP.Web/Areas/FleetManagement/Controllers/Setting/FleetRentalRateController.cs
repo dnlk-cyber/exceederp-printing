@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -13,6 +14,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
     public class FleetRentalRateController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         // GET: FleetManagement/FleetRentalRate
         public ActionResult Index()
         {
@@ -26,11 +28,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 Value = s.EquipmentTypeID,
                 Text = s.EquipmentTypeName
             }).ToList();
-            ViewData["Branch"] = db.Branch.Select(s => new
-            {
-                Value = s.BranchId,
-                Text = s.Name
-            }).ToList();
+            ViewData["Branch"] = ViewData["branch"] = CacheData.GetBranchCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           BranchId = i.Id
+       }).AsQueryable();
             ViewData["GlFiscalYear"] = db.GLFiscalYears.Select(s => new
             {
                 Value = s.GlFiscalYearId,
@@ -75,6 +78,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
-        //public JsonResult 
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

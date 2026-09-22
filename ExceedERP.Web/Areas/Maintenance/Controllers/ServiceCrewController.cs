@@ -110,7 +110,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             ModelState.Remove("MechanicCrewID");
             ModelState.Remove("ServiceID");
             IMechanicCrewService CrewService = new MechanicCrewService();
-            
             //Guid IdentityID = CrewService.GetAll().Where(x => x.FullName == serviceCrew.ServiceName).Select(x => x.MechanicCrewID).FirstOrDefault();
             List<ServiceCrew> Services = _ServiceCrewService.GetAll().Where(f => f.MechanicCrewID == serviceCrew.MechanicCrewID && f.ServiceID == Guid.Parse(cserviceID)).ToList();
             if (Services.Any())
@@ -532,6 +531,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

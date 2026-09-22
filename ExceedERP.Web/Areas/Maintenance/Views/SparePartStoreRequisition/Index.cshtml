@@ -1,370 +1,391 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Helpers.Inventory
 @using Kendo.Mvc.UI
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link href="~/Scripts/Exceed/dist/css/style.css" rel="stylesheet" />
+<script src="~/Scripts/Exceed/exceed.js"></script>
 <legend>Store Requisition</legend>
 
 @(Html.Kendo().Grid<StoreRequisition>()
-      .Name("grid")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
-          columns.Bound(c => c.Reference).Title("Reference").Width(120);
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
-          columns.Bound(c => c.RequestDate).Width(110);
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
-          columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(100);
-          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120);//.ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+      columns.Bound(c => c.Reference).Title("Reference").Width(120);
+                  columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                  columns.Bound(c => c.RequestDate).Width(110);
+                  columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
+                  columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+                  columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
+                  columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
 
-          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
-          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
-          columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
-              "<input type='checkbox' disabled = 'true' value='#= IsForOther #' " +
-              "# if (IsForOther) { #" +
-              "checked='checked'" +
-              "# } #" +
-              "/>"
-              );
-          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
-          columns.Bound(c => c.PlateNo).Width(100);
-          columns.Bound(c => c.Remark).Width(120);
-          columns.Bound(c => c.Status).Width(100);
+                  columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+                  columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+                  columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
+                      "<input type='checkbox' disabled = 'true' value='#= IsForOther #' " +
+                      "# if (IsForOther) { #" +
+                      "checked='checked'" +
+                      "# } #" +
+                      "/>"
+                      );
+                  columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+                  columns.Bound(c => c.PlateNo).Width(100);
+                  columns.Bound(c => c.Remark).Width(120);
+                  columns.Bound(c => c.Status).Width(100);
 
-          columns.Command(command =>
-          {
-              command.Edit();
-              command.Destroy();
-          }).Width(280);
+                  columns.Command(command =>
+                  {
+                      command.Edit();
+                      command.Destroy();
+                  }).Width(280);
 
-      }).Filterable()
-      .Pageable(pageable => pageable
-          .Input(true)
-          .Numeric(false)
-          .Refresh(true)
-          .PageSizes(true)
-          .ButtonCount(5))
+              }).Filterable()
+              .Pageable(pageable => pageable
+                  .Input(true)
+                  .Numeric(false)
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(5))
 
-      .ToolBar(toolbar =>
-      {
-         // toolbar.Create();
+              .ToolBar(toolbar =>
+              {
+      // toolbar.Create();
 
-          /*toolbar.Template(@<text>
-                        <div class="toolbar row">
-                            <div class="col-md-1">
-                                <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
-                            </div>
-                            <div class="col-md-2 pull-right">
-                                @(Html.Kendo().Upload()
-                                            .Name("file")
-                                            .Async(a => a.Save("StoreRequistion_Import", "StoreRequisition"))
-                                            .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                                            .ShowFileList(false)
-                                )
-                            </div>
-
+      /*toolbar.Template(@<text>
+                    <div class="toolbar row">
+                        <div class="col-md-1">
+                            <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                        </div>
+                        <div class="col-md-2 pull-right">
+                            @(Html.Kendo().Upload()
+                                        .Name("file")
+                                        .Async(a => a.Save("StoreRequistion_Import", "StoreRequisition"))
+                                        .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                        .ShowFileList(false)
+                            )
                         </div>
 
-                    </text>);*/
-      })
-      .Events(ev => ev.Edit("onMasterEdit"))
+                    </div>
 
-      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreRequisition").Window(w => w.Title("Store Requisition")))
-      .HtmlAttributes(new { style = "height: 550px;" })
-      .Pageable(pageable => pageable
-          .Input(true)
-          .Numeric(false)
-          .Refresh(true)
-          .PageSizes(true)
-          .ButtonCount(20))
-      .Scrollable()
+                </text>);*/
+              })
+              .Events(ev => ev.Edit("onMasterEdit"))
 
-      .Filterable()
-      .Selectable(selectable =>
-      {
-          selectable.Mode(GridSelectionMode.Single);
-          selectable.Type(GridSelectionType.Row);
-      })
-      .Sortable(sortable =>
-      {
-          sortable.SortMode(GridSortMode.SingleColumn);
-      })
-      .Events(ev => ev.DetailExpand("detailExpand"))
-      .Scrollable(h => h.Height(500))
-      .Events(x => x.DataBound("onDataBoundMaster"))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Sort(sort => sort.Add("StoreRequisitionID").Descending())
-          .Events(ev => ev
-              .Error("error_handler(\"grid\")")
-              .RequestStart("onRequestStart(\"grid\")")
-              .RequestEnd("onRequestEnd(\"grid\")"))
-          .PageSize(20)
-          .Model(model =>
-          {
-              model.Id(p => p.StoreRequisitionID);
-              model.Field(p => p.StoreRequisitionID).Editable(false);
-              model.Field(p => p.BranchId).Editable(false);
-              // model.Field(p => p.GLPeriodId).Editable(false);
-              model.Field(p => p.OrgStructureId).Editable(false);
-              // model.Field(p => p.EmployeeId).Editable(false);
-              model.Field(p => p.Status).Editable(false);
-              //model.Field(p => p.RequestDate).Editable(false);
-              model.Field(p => p.CreatedBy).Editable(false);
-              model.Field(p => p.DateCreated).Editable(false);
-              model.Field(p => p.ModifiedBy).Editable(false);
-              model.Field(p => p.LastModified).Editable(false);
-          })
-          .Read(read => read.Action("SparePartStoreRequisitions_Read", "SparePartStoreRequisition").Data("sendForgery"))
-          .Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition").Data("sendForgery"))
-          .Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition").Data("sendForgery"))
-          .Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition").Data("sendForgery"))
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreRequisition").Window(w => w.Title("Store Requisition")))
+              .HtmlAttributes(new { style = "height: 550px;" })
+              .Pageable(pageable => pageable
+                  .Input(true)
+                  .Numeric(false)
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(20))
+              .Scrollable()
 
-      ).Resizable(resize => resize.Columns(true))
-      .ClientDetailTemplateId("storerequisitions"))
+              .Filterable()
+              .Selectable(selectable =>
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Row);
+              })
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Events(ev => ev.DetailExpand("detailExpand"))
+              .Scrollable(h => h.Height(500))
+              .Events(x => x.DataBound("onDataBoundMaster"))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Sort(sort => sort.Add("StoreRequisitionID").Descending())
+                  .Events(ev => ev
+                      .Error("error_handler(\"grid\")")
+                      .RequestStart("onRequestStart(\"grid\")")
+                      .RequestEnd("onRequestEnd(\"grid\")"))
+                  .PageSize(20)
+                  .Model(model =>
+                  {
+                      model.Id(p => p.StoreRequisitionID);
+                      model.Field(p => p.StoreRequisitionID).Editable(false);
+                      model.Field(p => p.BranchId).Editable(false);
+          // model.Field(p => p.GLPeriodId).Editable(false);
+          model.Field(p => p.OrgStructureId).Editable(false);
+          // model.Field(p => p.EmployeeId).Editable(false);
+          model.Field(p => p.Status).Editable(false);
+          //model.Field(p => p.RequestDate).Editable(false);
+          model.Field(p => p.CreatedBy).Editable(false);
+                      model.Field(p => p.DateCreated).Editable(false);
+                      model.Field(p => p.ModifiedBy).Editable(false);
+                      model.Field(p => p.LastModified).Editable(false);
+                  })
+                  .Read(read => read.Action("SparePartStoreRequisitions_Read", "SparePartStoreRequisition").Data("sendForgery"))
+                  .Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition").Data("sendForgery"))
+                  .Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition").Data("sendForgery"))
+
+              ).Resizable(resize => resize.Columns(true))
+              .ClientDetailTemplateId("storerequisitions"))
 
 <script id="storerequisitions" type="text/Kendo-tmpl">
-    @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
-      {
-          items.Add().Text("Detail").Content(
-
-              @<text>
-                # if (!IsSendForApproval&&!IsSendForApproval)
-                {#
-                
-                <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                <br />
-                # } #
-
-                # if (IsOnlineApproved)
-                {#
-                <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint",new { area="Inventory"})/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                <br />
-                # } #
-                <div>
-                    <hr>
-                    <dl class="dl-horizontal">
-
-                        <dt>
-                            Request Date
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
-                        </dd>
-                        <dt>
-                            Status
-                        </dt>
-                        <dd>
-                            #= Status #
-                        </dd>
-                        <dt>
-                            Is Transfer
-                        </dt>
-                        <dd>
-                            #= IsTransfer #
-                        </dd>
-                        <dt>
-                            Receiver Store
-                        </dt>
-                        <dd>
-                            #= ToStoreCode #
-                        </dd>
-                        <dt>
-                            CreatedOn
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                        </dd>
-                        <dt>
-                            CreatedBy
-                        </dt>
-                        <dd>
-                            #= CreatedBy #
-                        </dd>
-                        <dt>
-                            Modified By
-                        </dt>
-                        <dd>
-                            #= ModifiedBy #s
-                        </dd>
-                        <dt>
-                            Modified Date
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                        </dd>
-                        <dt>
-                           Approved By
-                        </dt>
-                        <dd>
-                            #= OnlineApprovedBy #s
-                        </dd>
-                        <dt>
-                            Approval Time
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
-                        </dd>
-                    </dl>
-                </div>
-    
-                <hr>
-    
-                # if (IsOnlineApproved&&!IsVoid)
-                {#
-                @*@if (HttpContext.Current.User.IsInRole("Property_Void"))
-                {*@
-                    <a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                # } #               
-
-            </text>
-              );
-
-          items.Add().Text("Items").Content(
-            @<text>
-                @(Html.Kendo().Grid<StoreRequisitionItem>()
-                      .Name("StoreRequisitionItem_#=StoreRequisitionID#")
-                      .Columns(columns =>
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#")
+                .SelectedIndex(0)
+                .Items(items =>
                       {
-                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
-                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(300);
-                          columns.Bound(c => c.Unit).Width(120);
-                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
-                          columns.Bound(c => c.ModelNo).Width(120);
-                          columns.Bound(c => c.SerialNo).Width(120);
-                          columns.Bound(c => c.ChasisNo).Width(120);
-                          columns.Bound(c => c.RequestedQuantity).Width(120);
-                          columns.Bound(c => c.ApprovedQuantity).Width(120);
-                          columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
-                          columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
-                          columns.Bound(c => c.ItemSpecification).Width(120);
-                          columns.Bound(c => c.CurrentBalance).Hidden();
-                          columns.Command(command =>
-                          {
-                              command.Edit();
-                              command.Destroy();
-                          });
+                          items.Add().Text("Detail").Content(@<text>
+                            #if(!IsSendForApproval&&!IsSendForApproval)
+                            {#
 
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                      }).Events(ev => ev.Edit("onItemEdit"))
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Scrollable()
-                      .Events(x => x.DataBound("onDataBoundLines"))
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(ev => ev
-                              .Error("error_handler(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
-                              .RequestStart("onRequestStart(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
-                              .RequestEnd("onRequestEnd(\"StoreRequisitionItem_#=StoreRequisitionID#\")"))
-                          .Model(model =>
-                          {
-                              model.Id(p => p.StoreRequisitionItemID);
-                              model.Field(p => p.IssuedQuantity).Editable(false);
-                              model.Field(p => p.PurchaseQuantity).Editable(false);
-                              model.Field(p => p.PartNo).Editable(false);
-                              model.Field(p => p.Unit).Editable(false);
-                              model.Field(p => p.CreatedBy).Editable(false);
-                              model.Field(p => p.DateCreated).Editable(false);
-                              model.Field(p => p.ModifiedBy).Editable(false);
-                              model.Field(p => p.LastModified).Editable(false);
+                            <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            <br />
+                            #}#
+                            #if(IsOnlineApproved&&!IsMiddleSendForApproval)
+                            {#
+                            @if(InventoryConfigurationHelper.IsSRSecondApprovalEnabled())
+                                {
 
-                          })
-                          .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-                          .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-                          .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem").Data("sendForgery"))
-                          .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem").Data("sendForgery"))
-                      ).ToClientTemplate())
-            </text>
-              );
+                            <div class="popupwrapper">
+                                <input type="text" disabled="disabled" id="NextApprover" />
+                                <img src="~/Content/Images/search.png" onclick="SelectApprover(this)" />
+                            </div>
+                            <a onclick='return sendForSecondApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Second Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            <br />
+                            }
 
+                            #}#
+                            #if(IsOnlineApproved)
+                            {#
+                            <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint",new { area="Inventory"})/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                            <br />
+                            #}#
+                            <div>
+                                <hr>
+                                <dl class="dl-horizontal">
 
+                                    <dt>
+                                        Request Date
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                    </dd>
+                                    <dt>
+                                        Status
+                                    </dt>
+                                    <dd>
+                                        #= Status #
+                                    </dd>
+                                    <dt>
+                                        Is Transfer
+                                    </dt>
+                                    <dd>
+                                        #= IsTransfer #
+                                    </dd>
+                                    <dt>
+                                        Receiver Store
+                                    </dt>
+                                    <dd>
+                                        #= ToStoreCode #
+                                    </dd>
+                                    <dt>
+                                        CreatedOn
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
 
-          items.Add().Text("Validation").Content(
-            @<text>
+                                    </dd>
+                                    <dt>
+                                        CreatedBy
+                                    </dt>
+                                    <dd>
+                                        #= CreatedBy #
+                                    </dd>
+                                    <dt>
+                                        Modified By
+                                    </dt>
+                                    <dd>
+                                        #= ModifiedBy #s
+                                    </dd>
+                                    <dt>
+                                        Modified Date
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    </dd>
+                                    <dt>
+                                        Approved By
+                                    </dt>
+                                    <dd>
+                                        #= OnlineApprovedBy #s
+                                    </dd>
+                                    <dt>
+                                        Approval Time
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                    </dd>
+                                </dl>
+                            </div>
 
-                @(Html.Kendo().Grid<StoreRequisitionValidation>()
-                      .Name("StoreRequisitionValidation_#=StoreRequisitionID#")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                          columns.Bound(c => c.Remark).Width(170);
-                          columns.Command(command =>
-                          {
-                              command.Edit();
-                              //command.Destroy();
-                          });
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                      })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Scrollable()
-                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(ev => ev
-                              .Error("error_handler(\"StoreRequisitionValidation_#=StoreRequisitionID#\")")
-                              .RequestStart("onRequestStart(\"StoreRequisitionValidation_#=StoreRequisitionID#\")")
-                              .RequestEnd("onRequestEnd(\"StoreRequisitionValidation_#=StoreRequisitionID#\")"))
-                          .Model(model =>
-                          {
-                              model.Id(p => p.StoreRequisitionValidationID);
-                          })
-                          .Read(read => read.Action("SparePartStoreRequisitionValidations_Read", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-                          .Create(create => create.Action("SparePartStoreRequisitionValidations_Create", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-                          .Update(update => update.Action("SparePartStoreRequisitionValidations_Update", "SparePartStoreRequisitionValidation").Data("sendForgery"))
-                          .Destroy(destroy => destroy.Action("SparePartStoreRequisitionValidations_Destroy", "SparePartStoreRequisitionValidation").Data("sendForgery"))
+                            <hr>
 
-                      ).ToClientTemplate())
+                            # if (IsOnlineApproved&&!IsVoid)
+                            {#
+                            <a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                            # } #
 
-            </text>
-              );
-            @*items.Add().Text("Property Validation").Content(@<text>
-                @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
-                  .Name("StoreRequisitionPropertyValidation_#=StoreRequisitionID#")
-                  .Columns(columns =>
+                        </text>
+                 );
+
+                                items.Add().Text("Items").Content(
+@<text>
+    @(Html.Kendo().Grid<StoreRequisitionItem>()
+                                          .Name("StoreRequisitionItem_#=StoreRequisitionID#")
+                                          .Columns(columns =>
+                                          {
+                                                      columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+                                                      columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(300);
+                                                      columns.Bound(c => c.Unit).Width(120);
+                                                      columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                                      columns.Bound(c => c.ModelNo).Width(120);
+                                                      columns.Bound(c => c.SerialNo).Width(120);
+                                                      columns.Bound(c => c.ChasisNo).Width(120);
+                                                      columns.Bound(c => c.RequestedQuantity).Width(120);
+                                                      columns.Bound(c => c.ApprovedQuantity).Width(120);
+                                                      columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
+                                                      columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+                                                      columns.Bound(c => c.ItemSpecification).Width(120);
+                                                      columns.Bound(c => c.CurrentBalance).Hidden();
+                                                      columns.Command(command =>
                   {
-                      columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                      columns.Bound(c => c.Remark).Width(170);
-                      columns.Command(command =>
-                      {
-                         // command.Edit();
-                          //command.Destroy();
-                      });
-                  })
-                  .ToolBar(toolbar =>
-                  {
-                     // toolbar.Create();
-                  })
-                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                  .Scrollable()
-                                   .Events(x => x.DataBound("onDataBoundSecondValidation"))
-                  .DataSource(dataSource => dataSource
-                      .Ajax()
-                      .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
-                      .Model(model =>
-                      {
-                          model.Id(p => p.StoreRequisitionPropertyValidationID);
-                          model.Field(p => p.Approver).Editable(false);
-                      } )
-                      .Read(read => read.Action("StoreRequisitionPropertyValidations_Read", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-                      .Create(create => create.Action("StoreRequisitionPropertyValidations_Create", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-                      .Update(update => update.Action("StoreRequisitionPropertyValidations_Update", "StoreRequisitionPropertyValidation").Data("sendForgery"))
-                      .Destroy(destroy => destroy.Action("StoreRequisitionPropertyValidations_Destroy", "StoreRequisitionPropertyValidation").Data("sendForgery"))
-                  ).ToClientTemplate()
-                )
-                                                                                  </text>);*@
+                                          command.Edit();
+                                          command.Destroy();
+                                      });
 
-      }).ToClientTemplate())
-    @*============================================================ Store Requisition Property Validation ===============================================================================*@
+                                                  })
+                                          .ToolBar(toolbar =>
+                                          {
+                                                      toolbar.Create();
+                                                  }).Events(ev => ev.Edit("onItemEdit"))
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable()
+                                          .Events(x => x.DataBound("onDataBoundLines"))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
+                                                  .RequestStart("onRequestStart(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
+                                                  .RequestEnd("onRequestEnd(\"StoreRequisitionItem_#=StoreRequisitionID#\")"))
+                                              .Model(model =>
+                                              {
+                                                          model.Id(p => p.StoreRequisitionItemID);
+                                                          model.Field(p => p.IssuedQuantity).Editable(false);
+                                                          model.Field(p => p.PurchaseQuantity).Editable(false);
+                                                          model.Field(p => p.PartNo).Editable(false);
+                                                          model.Field(p => p.Unit).Editable(false);
+                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                          model.Field(p => p.LastModified).Editable(false);
 
+                                                      })
+                                              .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                              .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                              .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem").Data("sendForgery"))
+                                              .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem").Data("sendForgery"))
+                                          ).ToClientTemplate())
+</text>
+);
+
+
+
+                  items.Add().Text("Validation").Content(
+@<text>
+
+    @(Html.Kendo().Grid<StoreRequisitionValidation>()
+                                          .Name("StoreRequisitionValidation_#=StoreRequisitionID#")
+                                          .Columns(columns =>
+                                          {
+                                                      columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                      columns.Bound(c => c.Remark).Width(170);
+                                                      columns.Command(command =>
+                                        {
+                                                                command.Edit();
+                                                    //command.Destroy();
+                                                });
+                                                  })
+                                          .ToolBar(toolbar =>
+                                          {
+                                                      toolbar.Create();
+                                                  })
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable()
+                                          .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"StoreRequisitionValidation_#=StoreRequisitionID#\")")
+                                                  .RequestStart("onRequestStart(\"StoreRequisitionValidation_#=StoreRequisitionID#\")")
+                                                  .RequestEnd("onRequestEnd(\"StoreRequisitionValidation_#=StoreRequisitionID#\")"))
+                                              .Model(model =>
+                                              {
+                                                          model.Id(p => p.StoreRequisitionValidationID);
+                                                      })
+                                              .Read(read => read.Action("SparePartStoreRequisitionValidations_Read", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                              .Create(create => create.Action("SparePartStoreRequisitionValidations_Create", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                              .Update(update => update.Action("SparePartStoreRequisitionValidations_Update", "SparePartStoreRequisitionValidation").Data("sendForgery"))
+                                              .Destroy(destroy => destroy.Action("SparePartStoreRequisitionValidations_Destroy", "SparePartStoreRequisitionValidation").Data("sendForgery"))
+
+                                          ).ToClientTemplate())
+
+</text>
+);
+                      if (!InventoryConfigurationHelper.IsSRSecondApprovalEnabled())
+                      {
+                          items.Add().Text("Second Validation").Content(
+@<text>
+
+    @(Html.Kendo().Grid<StoreRequisitionSecondValidation>()
+                                          .Name("StoreRequisitionSecondValidation_#=StoreRequisitionID#")
+                                          .Columns(columns =>
+                                          {
+                                                      columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                      columns.Bound(c => c.Remark).Width(170);
+                                                      columns.Command(command =>
+                                          {
+                                                                  command.Edit();
+                                                      //command.Destroy();
+                                                  });
+                                                  })
+                                          .ToolBar(toolbar =>
+                                          {
+
+                                                      toolbar.Create();
+                                                  })
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable()
+                                          .Events(x => x.DataBound("onDataBoundSecondValidationStoreRequisition")/*.Save("onSave")*/)
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"StoreRequisitionSecondValidation_#=StoreRequisitionID#\")")
+                                                  .RequestStart("onRequestStart(\"StoreRequisitionSecondValidation_#=StoreRequisitionID#\")")
+                                                  .RequestEnd("onRequestEnd(\"StoreRequisitionSecondValidation_#=StoreRequisitionID#\")"))
+                                              .Model(model =>
+                                              {
+                                                          model.Id(p => p.StoreRequisitionSecondValidationId);
+                                                      })
+                                              .Read(read => read.Action("StoreRequisitionSecondValidations_Read", "StoreRequisitionSecondSelfCareValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                              .Create(create => create.Action("StoreRequisitionSecondValidations_Create", "StoreRequisitionSecondSelfCareValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                              .Update(update => update.Action("StoreRequisitionSecondValidations_Create", "StoreRequisitionSecondSelfCareValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+
+                                          ).ToClientTemplate())
+
+</text>
+    );
+                          }
+
+                      }).ToClientTemplate())
 
 
 </script>
@@ -385,7 +406,7 @@
     }
 
     function isForOther(obj) {
-        
+
         if ($(obj).is(":checked")) {
             $("#forbranchDiv").show();
 
@@ -483,11 +504,11 @@
             }
         });
 
-      
+
 
     }
 
-    
+
 
 
     var storeCode;
@@ -526,67 +547,94 @@
         }
 
     }
-    //var masterDataItem;
-    //var masterRow;
-    //var masterGrid;
-    //function detailExpand(e) {
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var isStoreApproved;
+    var isMiddleSendForApproval;
+    var isSendForApproval;
+    var isSecondApproved;
+    function detailExpand(e) {
 
-    //    masterRow = e.masterRow;
-    //    masterGrid = $("#grid").data("kendoGrid");
-    //    masterDataItem = masterGrid.dataItem(masterRow);
-    //    codeid = masterDataItem.StoreRequisitionID;
-    //    isapproved = masterDataItem.IsOnlineApproved;
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isStoreSecondApproved = masterGrid.IsSecondOnlineApproved;
+        codeid = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.isSendForApproval;
+        isStoreApproved = masterDataItem.IsOnlineApproved;
+        isMiddleOnlineApproved = masterDataItem.IsMiddleOnlineApproved;
+        isMiddleSendForApproval = masterDataItem.IsMiddleSendForApproval;
+        isSecondApproved = masterDataItem.IsMiddleOnlineApproved;
+    }
+    function onDataBoundMaster() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
 
-    //}
-    //function onDataBoundMaster() {
-    //    this.expandRow(this.tbody.find("tr.k-master-row").first());
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
 
-    //    //approved
-    //    var grid = $("#grid").data("kendoGrid");
-    //    var gridData = grid.dataSource.view();
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+    function onDataBoundLines() {
 
-    //    for (var i = 0; i < gridData.length; i++) {
-    //        var currentUid = gridData[i].uid;
-    //        if (gridData[i].IsOnlineApproved) {
-    //            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
-    //            var editButton = $(currenRow).find(".k-grid-edit");
-    //            var deleteButton = $(currenRow).find(".k-grid-delete");
-    //            editButton.hide();
-    //            deleteButton.hide();
-    //        }
-    //    }
-    //}
-    //function onDataBoundLines(e) {
+        var grid = this;// "#StoreRequisitionValidation_" + codeid;
+       
+        if (isSendForApproval) {
+            $(".k-grid-add").remove();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isSendForApproval) {
+                $(".k-grid-delete").remove();
+                $(".k-grid-edit").remove();
+            }
+        })
 
-    //    var detailGrid = "#"+e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
-    //    if (isapproved) {
+    }
+    
+    function onDataBoundFisrtValidation() {
 
-    //        $(".k-grid-add", detailGrid).hide();
-    //        $(".k-grid-delete", detailGrid).hide();
-    //        $(".k-grid-edit", detailGrid).hide();
-    //    }
-    //}
-    //function onDataBoundFisrtValidation(e) {
-
-    //    var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionValidation_" + codeid;
-
-    //    if (isapproved) {
-
-    //        $(".k-grid-add", detailGrid).hide();
-    //        $(".k-grid-delete", detailGrid).hide();
-    //        $(".k-grid-edit", detailGrid).hide();
-    //    }
-    //}
-    //function onDataBoundSecondValidation(e) {
-    //    var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionPropertyValidation_" + codeid;
-
-    //    if (isapproved) {
-
-    //        $(".k-grid-add", detailGrid).hide();
-    //        $(".k-grid-delete", detailGrid).hide();
-    //        $(".k-grid-edit", detailGrid).hide();
-    //    }
-    //}
+        var grid = this;// "#StoreRequisitionValidation_" + codeid;
+        if (isapproved) {
+            $(".k-grid-add").remove();
+        }
+        if (!isSendForApproval) {
+            $(".k-grid-add").remove();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isapproved) {
+                $(".k-grid-delete").remove();
+                $(".k-grid-edit").remove();
+            }
+        })
+        
+    }
+    function onDataBoundSecondValidation() {
+        var grid = this;// "#StoreRequisitionValidation_" + codeid;
+        if (isSecondApproved) {
+            $(".k-grid-add").remove();
+        }
+        if (!isMiddleSendForApproval) {
+            $(".k-grid-add").remove();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isSecondApproved) {
+                $(".k-grid-delete").remove();
+                $(".k-grid-edit").remove();
+            }
+        })
+        
+    }
 
     function OnIndexCall(elem) {
 
@@ -594,6 +642,16 @@
         $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
 
 
+    }
+    var supplierTextBox;
+    var popup;
+    var slectedUser;
+    function SelectApprover(e) {
+
+        supplierTextBox = $(e).prev('input').attr('id');
+        popup = window.open('/Common/GlobalDataProvider/GetInventorySecondApproverSelector', 'WindowPopup', 'top=100, left=400, width=400, height=220,resizable=no,');
+        popup.focus();
+        return false;
     }
 </script>
 <script>
@@ -629,7 +687,7 @@
         });
     }
 
-    
+
     function checkboxClicked(e) {
 
         var isChecked = e.checked;
@@ -656,10 +714,54 @@
 
         //}
     }
+    function sendForSecondApproval(id) {
+      var recordStatus = "";
+      var user = $("#NextApprover").val();
+      if (user.length === 0)
+          alert("Please select approver");
+      else {
+      $.ajax({
+          type: "POST",
+          url: '@Url.Action("SendForSecondApproval", "StoreRequisitionSelfCare", new { area = "Inventory" })',
+          data: {
+              id: id,
+              user: user
+          },
+          success: function (result) {
+              // toastr.warnning(result.Message);
+              alert(result.Message);
+              recordStatus = result.Status;
+              location.reload(true);
+          }, //end succ
+          error: function (result) {
+              alert(result);
+          }
+          });
+      }
+  }
 
 
-   
-   
+
 </script>
+<script>
+    function onDataBoundSecondValidationStoreRequisition() {
+        var grid = this;
+        if (!isStoreApproved) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        if (!isMiddleSendForApproval) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        if (isMiddleOnlineApproved) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isMiddleOnlineApproved) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        })
 
+    }
+</script>
 

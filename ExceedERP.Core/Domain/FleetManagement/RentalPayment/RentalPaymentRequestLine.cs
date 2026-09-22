@@ -40,6 +40,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
         public decimal AdvancedPayment { get; set; }
         [DisplayName("Total Amount")]
         public decimal TotalAmount { get; set; }
+        public int CostSheetSummaryId { get; set; }
+        public decimal GrossBeforeVat { get; set; }
+        public decimal SparePartCost { get; set; }
+        public decimal OilLubCost { get; set; }
+        public decimal MaintenanceCost { get; set; }
+        public decimal FuelCost { get; set; }
+        public decimal VAT { get; set; }
+        public decimal WithholdingAmount { get; set; }
         public virtual RentalPaymentRequest RentalPaymentRequest { get; set; }
         
 

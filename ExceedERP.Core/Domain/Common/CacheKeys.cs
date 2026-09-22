@@ -61,6 +61,8 @@ namespace ExceedERP.Core.Domain.Common
         public const string EquipmentIdentity = "EquipmentIdentity";
         public const string EquipmentType = "EquipmentType";
         public const string EquipmentName = "EquipmentName";
+        public const string Fleets = "Fleets";
+        public const string FleetsSecond = "FleetsSecond";
         //maintenance
         public const string MaintenanceCenters = "MaintenanceCenters";
     }

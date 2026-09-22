@@ -28,14 +28,43 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
         public ActionResult ReadJobOrder([DataSourceRequest] DataSourceRequest request, int num)
         {
-            var serviceCenter = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
-            if (serviceCenter == null)
+            // Get only required jobs
+            var serviceCenterIds = db.ServiceCenterJob
+                .Where(x => x.Num == num)
+                .Select(x => x.ServiceCenterJobId)
+                .ToList();
+
+            // Check if no jobs found
+            if (!serviceCenterIds.Any())
             {
                 return Json(new { Error = "Job Order not found" });
             }
 
-            var additionalInfo = db.AdditionalWorkShopDetails.Where(x => x.ServiceCenterJobId == serviceCenter.ServiceCenterJobId);
-            return Json(additionalInfo.ToDataSourceResult(request));
+            // Get all additional works in one query
+            var additionWorks = db.AdditionalWorkShopDetails
+                .Where(x => serviceCenterIds.Contains(x.ServiceCenterJobId))
+                .ToList();
+
+            return Json(additionWorks.ToDataSourceResult(request));
+        }
+        public ActionResult ReadClosedWithRemark([DataSourceRequest] DataSourceRequest request, int num)
+        {
+            // Get only required jobs
+            var serviceCenterIds = db.ServiceCenterJob
+                .Where(x => x.Num == num)
+                .Select(x => x.ServiceCenterJobId.ToString())
+                .ToList();
+
+            if (!serviceCenterIds.Any())
+            {
+                return Json(new { Error = "Job Order not found" });
+            }
+
+            var closedWithRemarks = db.CloseWorkShopWithRemarks
+                .Where(x => serviceCenterIds.Contains(x.JobId))
+                .ToList();
+
+            return Json(closedWithRemarks.ToDataSourceResult(request));
         }
 
         public ActionResult Create([DataSourceRequest] DataSourceRequest request, AdditionalWorkShopDetail model, Guid Id)
@@ -70,6 +99,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
 
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

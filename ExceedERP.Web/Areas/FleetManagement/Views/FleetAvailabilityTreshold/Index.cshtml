@@ -1,0 +1,209 @@
+﻿@using System.Collections
+@{
+    ViewBag.Title = "Equipment Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Availability Treshold </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetAvailabilityTreshold>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.GLFiscalYearId, (IEnumerable)ViewData["FiscalYear"], "Value", "Text").EditorTemplateName("FiscalYrTemplate").Width(140).Title("Fiscal Year");
+          //columns.ForeignKey(c => c.CategoryId, (IEnumerable)ViewData["category"], "Value", "Text").EditorTemplateName("InternalRateCategoryTemplate").Width(140).Title("Equipment Category");
+         // columns.ForeignKey(c => c.TypeId, (IEnumerable)ViewData["EquipmentType"], "Value", "Text").EditorTemplateName("InternalRateTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Equipment Type").Width(140);
+          //columns.ForeignKey(c => c.NameId, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").EditorTemplateName("EquipmentNameTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Equipment Name").Width(140);
+          //columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["PlateNumber"], "Value", "Text").EditorTemplateName("FleetFilterTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140).Title("Plate Number");
+          columns.Bound(e => e.AvailabilityTreshold).Title("Availability Treshold").Width(140);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+      })
+      .ToolBar(commands => commands.Create())
+      .Events(ev=>ev.DataBound("parentDataBound"))
+      .Events(ev=>ev.DetailExpand("parentDetailExpand"))
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.InLine);
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Threshold");
+      })
+            .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.FleetAvailabilityTresholdId);
+
+          })
+          .Sort(so=>so.Add(s=>s.FleetAvailabilityTresholdId).Descending())
+                       .Events(ev => ev
+                                        .Error("error_handler(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Create(update => update.Action("_Create", "FleetAvailabilityTreshold").Data("sendForgery"))
+          .Read(read => read.Action("_Read", "FleetAvailabilityTreshold").Data("sendForgery"))
+          .Update(update => update.Action("_Update", "FleetAvailabilityTreshold").Data("sendForgery"))
+          .Destroy(update => update.Action("_Destroy", "FleetAvailabilityTreshold").Data("sendForgery"))
+      ).ClientDetailTemplateId("template")
+      
+      )
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                      .Name("tabStrip_#=FleetAvailabilityTresholdId#")
+                                      .SelectedIndex(0)
+                                      .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                      .Items(items =>
+                                      {
+                                          items.Add().Text("Detail").Content(
+                                        @<text>
+                                            #if(IsSendForApproval==false){#
+                    <a onclick='return sendForApproval("#=FleetAvailabilityTresholdId#")' href='\#' title="Send For Approval"><i class="fa fa-2x fa-share-square"></i></a>
+
+    #}#
+                                        </text>
+);
+                                          items.Add().Text("Validation")
+                                          .Content(
+                                              @<text>
+      @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetAvailabilityTresholdValidation>()
+            .Name("ValidationGrid#=FleetAvailabilityTresholdId#")
+            .Columns(columns =>
+                  {
+                              columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatus").Width(126);
+                              columns.Bound(o => o.Remark).Width(200);
+                              columns.Bound(c => c.CreatedBy).Width(150);
+                              columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                              columns.Command(command => { command.Edit(); }).Width(250);
+
+                          })
+                          .ToolBar(toolbar=>toolbar.Create())
+                  .Events(ev =>
+                  {
+                              ev.DataBound("approvalDataBound");
+                          })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                                      model.Id(p => p.FleetAvailabilityTresholdValidationId);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                          .Events(ev => ev
+                          .Error("error_handler(\"ValidationGrid#=FleetAvailabilityTresholdId#\")")
+                          .RequestStart("onRequestStart(\"ValidationGrid#=FleetAvailabilityTresholdId#\")")
+                          .RequestEnd("onRequestEnd(\"ValidationGrid#=FleetAvailabilityTresholdId#\")"))
+
+                          .Create(update => update.Action("_Create", "FleetAvailabilityTresholdValidation", new { id = "#=FleetAvailabilityTresholdId#" }).Data("sendForgery"))
+                          .Read(read => read.Action("_Read", "FleetAvailabilityTresholdValidation", new { id = "#=FleetAvailabilityTresholdId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("_Create", "FleetAvailabilityTresholdValidation").Data("sendForgery"))
+
+
+                      )
+                                                                                                                              .ToClientTemplate())
+              </text>
+                                                                                                                                                  );
+                 }).ToClientTemplate())
+    </script>
+    <script>
+        function sendForApproval(id) {
+            $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "FleetAvailabilityTresholdValidation", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+               
+                alert(result.message);
+               
+               // location.reload(true);
+            }, 
+                error: function (result) {
+                    alert(result.message);
+            }
+        });
+        }
+        isApproved = false;
+        function parentDetailExpand(e) {
+            var masterRow = e.masterRow;
+            var masterGrid = $("#grid").data("kendoGrid");
+            var masterDataItem = masterGrid.dataItem(masterRow);
+            if (masterDataItem.IsOnlineApproved) {
+                isapproved = true;
+            }
+
+
+        }
+        function approvalDataBound() {
+            var grid = this;
+            // ➕ Hide/Show Add button
+            if (isApproved) {
+                grid.wrapper.find(".k-grid-add").remove();
+            } else {
+                grid.wrapper.find(".k-grid-add").show();
+            }
+            grid.tbody.find("tr[role='row']").each(function () {
+                var dataItem = grid.dataItem(this);
+                if (dataItem.Status == 1 || dataItem.Status == 0) {
+                    $(this).find(".k-grid-edit").remove();
+                    $(this).find(".k-grid-delete").remove();
+                }
+
+            });
+        }
+        function filterCategory() {
+            var dropdownlist = $("#TypeId").data("kendoDropDownList");
+            var filterInput = dropdownlist.filterInput;
+
+            return {
+                equipmentIdentityId: $("#CategoryId").val(),
+                search: filterInput.val()
+            };
+
+        }
+        function filterEquipmentNames() {
+            var dropdownlist = $("#NameId").data("kendoDropDownList");
+            var filterInput = dropdownlist.filterInput;
+
+            return {
+                equipmentTypeId: $("#TypeId").val(),
+                search: filterInput.val()
+            };
+        }
+        function filterFleets() {
+            var dropdownlist = $("#FleetId").data("kendoDropDownList");
+            var filterInput = dropdownlist.filterInput;
+
+            return {
+                equipmentNameId: $("#NameId").val(),
+                Text: filterInput.val()
+            };
+        }
+        
+        function parentDataBound() {
+            var grid = this;
+            parentApproved = false;
+            grid.tbody.find("tr[role='row']").each(function () {
+                var dataItem = grid.dataItem(this);
+                if (dataItem.IsSendForApproval == true) {
+                    parentApproved = true;
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                }
+                
+            });
+            if (parentApproved == true) {
+                $(this).find(".k-grid-add").hide();
+            }
+        }
+    </script>

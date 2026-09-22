@@ -24,6 +24,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
     // [AuthorizeRoles(MaintenanceRoles.ServiceUser)]
     public class ServiceCenterController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         public async Task<ActionResult> Index()
         {
             ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
@@ -31,6 +32,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         
             var employee = db.Person_Employee;
             var mechanic = db.MechanicCrew;
+            string ECWCSetting = "";
+            var ECWCStatus= db.RequestToInspections.FirstOrDefault();
+            if (ECWCStatus!=null&&ECWCStatus.Remark == "ECWC")
+            {
+                ECWCSetting = "ECWC";
+            }
+            ViewData["ECWCSetting"] = ECWCSetting;
             ViewData["Mechanic"] = mechanic.Select(s => new
             {
                 Code = s.MechanicCrewID,
@@ -62,7 +70,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             var selecteditems = items.Select(
                 i => new
                 {
-                    Name = i.ItemCode + "_" + i.Name,
+                    Name = i.ItemCode + "_"+i.PartNo+ "_" + i.Name,
                     ItemCode = i.ItemCode
                 }).ToList();
             ViewData["Items"] = selecteditems;
@@ -113,6 +121,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Code = s.ItemCategoryCode,
                 Name = s.Name
             }).ToList();
+            ViewData["SubCategory"] = db.RepairType.Select(s => new
+            {
+                Name = s.Name,
+                Code = s.RepairTypeID
+            });
             ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new
             {
                 Code = s.JobCausesId,
@@ -121,11 +134,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
            
 
 
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
 
 
             ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
@@ -209,13 +223,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         public ActionResult EquipmentServiceHistory_Read([DataSourceRequest] DataSourceRequest request, string plateNumber, Guid JId)
         {
             var ServiceList = new List<JobOrderDetail>();
-            var JobOrder = _JobOrderService.GetAll()
+            var JobOrder = db.JobOrder
                 .Where(
                     x =>
                         x.IsOnlineApproved == true && x.LicensePlate == plateNumber).ToList();
             foreach (var job in JobOrder)
             {
-                var Service = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == job.JobOrderID && x.JobOrderID != JId).ToList();
+                var Service =db.JobOrderDetail.Where(x => x.JobOrderID == job.JobOrderID && x.JobOrderID != JId).ToList();
                 ServiceList.AddRange(Service.Select(s => new JobOrderDetail
                 {
                     RepairTypeID = s.RepairTypeID,
@@ -234,7 +248,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult ServiceCenter_Read([DataSourceRequest] DataSourceRequest request)
         {
-             IQueryable<ServiceCenterJob> jobOrders = db.ServiceCenterJob.Where(x => !x.IsExternalMaintenanceCenter);
+            IQueryable<ServiceCenterJob> jobOrders = db.ServiceCenterJob;//.Where(x => !x.IsExternalMaintenanceCenter);
             //List<ServiceCenterJob> job = new List<ServiceCenterJob>();
             //IQueryable<ServiceCenterJob> jobOrders = Enumerable.Empty<ServiceCenterJob>().AsQueryable();
             //var FetchUserId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -294,7 +308,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             FleetCostHelper fleetCostHelper = new FleetCostHelper();
             var inventoryMapping = db.InventorySparePartMapping.ToList();
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.IsOnlineApproved == true && x.IsExternal == false)
+            var JobOrder = db.JobOrder.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.IsOnlineApproved == true && x.IsExternal == false)
                 .Select(j => new JobOrder
                 {
                     ProjectName = j.ProjectName,
@@ -512,12 +526,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }
             if (erviceJob != null)
             {
-                // check if there are any job-services that are not completed or that are completed
-                // but not approved.
                 var storeRequis = db.StoreRequisitions.Where(q => q.ServiceJobOrderNo == erviceJob.ServiceCenterJobId.ToString()).FirstOrDefault();
                 var unCompletedJobs = db.JobOrderServiceCenterDetails.Where(jd => jd.ServiceCenterJobId == erviceJob.ServiceCenterJobId && jd.ApprovalStatus == ApprovalStatuses.Approve).Count();
                 var unApprovedWorkSheet = db.ServiceCrewWorkLogs.Where(s => s.JobId == erviceJob.ServiceCenterJobId && s.Status == "Approved").Count();
-                if (unCompletedJobs == 0 || unApprovedWorkSheet == 0)
+                if (unCompletedJobs == 0 && unApprovedWorkSheet == 0)
                 {
                     var dt = new
                     {
@@ -542,7 +554,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     erviceJob.OnlineTransferredTime = DateTime.Now;
 
                     _ServiceCenterJobService.Update(erviceJob);
-
+                    var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == erviceJob.JobOrderID);
+                    var Jobrequest = db.JobRequest.FirstOrDefault(x => x.Num == jobOrder.Referance);
+                    var maintenanceStage = db.MaintenanceStage.FirstOrDefault(x => x.JobRequestId == Jobrequest.JobRequestId.ToString());
+                    maintenanceStage.ModifiedBy = User.Identity.Name;
+                    maintenanceStage.LastModified = DateTime.Now;
+                    maintenanceStage.Description = "Vehicle is repaired and delivered to garage head for closing";
+                    db.Entry(maintenanceStage).State = EntityState.Modified;
+                    db.SaveChanges();
                     return Json(new { Message = "Job order transfered for closing successfully!", Status = "Success" }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -586,7 +605,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                         }
 
                     }
-
+                    var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == fetchService.JobOrderID);
+                    var Jobrequest = db.JobRequest.FirstOrDefault(x => x.Num == jobOrder.Referance);
+                    var maintenanceStage = db.MaintenanceStage.FirstOrDefault(x => x.JobRequestId == Jobrequest.JobRequestId.ToString());
+                    maintenanceStage.ModifiedBy = User.Identity.Name;
+                    maintenanceStage.LastModified = DateTime.Now;
+                    maintenanceStage.Description = "Vehicle is in garage";
+                    db.Entry(maintenanceStage).State = EntityState.Modified;
+                    db.SaveChanges();
                     return Json(new { Message = "Job order has assigned to workshop Successfully!", Status = "Success" }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -920,11 +946,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 var Requests = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
                 if (Requests != null)
                 {
-                    RequestOrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
-                    RequestOrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
+                    RequestOrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
+                    RequestOrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
                 }
-                decimal OrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id).ToList().Count;
-                decimal OrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
+                decimal OrderLine =db.JobOrderDetail.Where(x => x.JobOrderID == Id).ToList().Count;
+                decimal OrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
                 var progress = (OrderLineFinished + RequestOrderLineFinished) / (OrderLine + RequestOrderLine);
 
                 progress = progress * 100;
@@ -941,7 +967,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             try
             {
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
+                var OrderLine = db.JobOrder.Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -965,7 +991,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
 
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id).FirstOrDefault();
+                var OrderLine =db.JobOrder.Where(x => x.JobOrderID == Id).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -1095,6 +1121,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         #endregion
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -25,60 +25,86 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
     {
 
         ExceedDbContext db = new ExceedDbContext();
-
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index(TimeSheetType machinery)
         {
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            ViewData["RepairTypes"] = db.RepairType.Select(s => new
             {
-                Text = s.EquipmentCategoryName,
-                Value = s.EquipmentIdentityID
-            }).ToList();
-            ViewData["type"] = db.EquipmentType.Select(s => new
-            {
-                Text = s.EquipmentTypeName,
-                Value = s.EquipmentTypeID
-            }).ToList();
-            ViewData["name"] = db.EquipmentName.Select(s => new
-            {
-                Text = s.Name,
-                Value = s.EquipmentNameID
-            }).ToList();
+                Code = s.RepairTypeID,
+                Name = s.Name
+            }).AsQueryable();
+            ViewBag.setting = db.RequestToInspections
+                  .FirstOrDefault()?.Remark ?? " ";
+            ViewBag.TimesheetType = TimeSheetType.Machinery;
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+    i => new
+    {
+        Text = i.Name,
+        Value = i.Id
+    }).AsQueryable();
+            ViewData["type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewBag.machineryType = machinery;
             ViewData["fleet"] = db.Fleets.Select(x => new
             {
                 Value = x.FleetsID,
-                Text = x.SerialNo
+                Text = x.PlateNumber+" "+x.SerialNo + " " + x.UnitNum
             }).ToList();
-            ViewData["branch"] = db.Branch.Select(s => new
+            ViewData["branchh"] = db.Branch
+     .Select(x => new SelectListItem
+     {
+         Text = x.Name,
+         Value = x.BranchId.ToString()
+     }).ToList();
+            ViewData["branch"] = CacheData.GetBranchCaches().Select(
+    i => new
+    {
+        Name = i.Name,
+        BranchId = i.Id
+    }).AsQueryable();
+            var fetchSettingg = db.RequestToInspections.FirstOrDefault();
+            string isECWCC = "Not";
+            if (fetchSettingg != null)
             {
-                Value = s.BranchId,
-                Text = s.Name
-            }).ToList();
+
+                isECWCC = fetchSettingg.Remark;
+            }
+            ViewBag.IsMIDROC = isECWCC;
             ViewData["operator"] = db.Operator.Select(s => new
             {
                 Value = s.OperatorID,
                 Text = s.FullName
-            }).ToList();
-            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
+            });
+            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name });
             
             return View();
         }
-        public JsonResult RepopulateTimeSheet()
-        {
-            var timesheets = db.MachineryWorkingTimeSheets.ToList();
-            if (timesheets.Any())
-            {
-                foreach (var item in timesheets)
-                {
-                    item.EquipmentCategoryId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentIdentityID;
-                    item.EquipmentTypeId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentTypeID;
-                    item.EquipmentNameId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentNameID;
-                    db.Entry(item).State = EntityState.Modified;
-                }
-                db.SaveChanges();
-            }
-            return Json("success", JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult RepopulateTimeSheet()
+        //{
+        //    var timesheets = db.MachineryWorkingTimeSheets.ToList();
+        //    if (timesheets.Any())
+        //    {
+        //        foreach (var item in timesheets)
+        //        {
+        //            item.EquipmentCategoryId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentIdentityID;
+        //            item.EquipmentTypeId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentTypeID;
+        //            item.EquipmentNameId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentNameID;
+        //            db.Entry(item).State = EntityState.Modified;
+        //        }
+        //        db.SaveChanges();
+        //    }
+        //    return Json("success", JsonRequestBehavior.AllowGet);
+        //}
         public ActionResult MachineryWorkingTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
@@ -96,10 +122,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 NightTimeStart= machineryWorkingTimeSheet.NightTimeStart,
                 NightTimeEnd= machineryWorkingTimeSheet.NightTimeEnd,
                 NumberOfHoles= machineryWorkingTimeSheet.NumberOfHoles,
+                Unit = machineryWorkingTimeSheet.Unit,
+                Volume = machineryWorkingTimeSheet.Volume,
                 HoleDepth= machineryWorkingTimeSheet.HoleDepth,
                 FuelConsumption= machineryWorkingTimeSheet.FuelConsumption,
                 FuelRate = machineryWorkingTimeSheet.FuelRate,
-                GreaseConsumption= machineryWorkingTimeSheet.GreaseConsumption,
                 IdleHours= machineryWorkingTimeSheet.IdleHours,
                 IdleReason= machineryWorkingTimeSheet.IdleReason,
                 DownHours= machineryWorkingTimeSheet.DownHours,
@@ -107,6 +134,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 NetHour= machineryWorkingTimeSheet.NetHour,
                 WorkType= machineryWorkingTimeSheet.WorkType,
                 Remark = machineryWorkingTimeSheet.Remark,
+                BatteryCost = machineryWorkingTimeSheet.BatteryCost,
+
+                FuelType = machineryWorkingTimeSheet.FuelType,
+                OilType = machineryWorkingTimeSheet.OilType,
+                ExternalOperatorName = machineryWorkingTimeSheet.ExternalOperatorName,
                 RentalRate = machineryWorkingTimeSheet.RentalRate,
                 IdealRentalRate = machineryWorkingTimeSheet.IdealRentalRate,
                 ProcurementSupplierID = machineryWorkingTimeSheet.ProcurementSupplierID,
@@ -115,12 +147,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 IdleAmount = machineryWorkingTimeSheet.IdleAmount,
                 TotalAmountBeforeVAT = machineryWorkingTimeSheet.TotalAmountBeforeVAT,
                 VAT = machineryWorkingTimeSheet.VAT,
+               
                 TotalAmount = machineryWorkingTimeSheet.TotalAmount,
-                OilConsumption = machineryWorkingTimeSheet.OilConsumption,
                 FuelCost = machineryWorkingTimeSheet.FuelCost,
                 ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
-                LubricantCost = machineryWorkingTimeSheet.LubricantCost,
+                SparePartCost = machineryWorkingTimeSheet.SparePartCost,
+                OilCost = machineryWorkingTimeSheet.OilCost,
+                GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
+                GreaseCost = machineryWorkingTimeSheet.GreaseCost,
                 MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
+                OilConsumption = machineryWorkingTimeSheet.OilConsumption,
                 TotalCost = machineryWorkingTimeSheet.TotalCost,
                 NetAmount = machineryWorkingTimeSheet.NetAmount,
                 DownHourRate = machineryWorkingTimeSheet.DownHourRate,
@@ -128,6 +164,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 Perdium = machineryWorkingTimeSheet.Perdium,
                 Salary = machineryWorkingTimeSheet.Salary,
                 TireCost = machineryWorkingTimeSheet.TireCost,
+                ReasonForDown = machineryWorkingTimeSheet.ReasonForDown,
+                ReasonForIdle = machineryWorkingTimeSheet.ReasonForIdle,
                 BranchId = machineryWorkingTimeSheet.BranchId,
                 BusinessUnitId = machineryWorkingTimeSheet.BusinessUnitId,
                 TimeSheetStatus = machineryWorkingTimeSheet.TimeSheetStatus,
@@ -150,25 +188,196 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
                 EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
                 EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId,
-                
+                FuelKMR = machineryWorkingTimeSheet.FuelKMR,
+                DifferenceEHR = machineryWorkingTimeSheet.DifferenceEHR,
+                FinalEHR = machineryWorkingTimeSheet.FinalEHR,
+                TotalTime = machineryWorkingTimeSheet.TotalTime,
+                InitialEHR = machineryWorkingTimeSheet.InitialEHR
+
 
             });
             return Json(result);
         }
+        private TimeSpan GetTotalTime(DateTime a, DateTime b,
+                              DateTime c, DateTime d,
+                              DateTime e, DateTime f)
+        {
+            return (b - a) + (d - c) + (f - e);
+        }
         public ActionResult MachineryWorkingTimeSheets_Create([DataSourceRequest] DataSourceRequest request, MachineryWorkingTimeSheet machineryWorkingTimeSheet)
         {
+            var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID);
+            machineryWorkingTimeSheet.EquipmentCategoryId = fleet.EquipmentIdentityID;
+            machineryWorkingTimeSheet.EquipmentTypeId = fleet.EquipmentTypeID;
+            machineryWorkingTimeSheet.EquipmentNameId = fleet.EquipmentNameID;
             #region valiadtion
             #endregion
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+            if (companySetting != null)
+            {
+                var allNonFuelItems = db.NonFuelItemSettings.ToList();
+                var allInventoryItems = db.InventoryItems.ToList();
+                var OilLubCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsLubricant == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var OilLubItems = allInventoryItems.Any() ? allInventoryItems.Where(x => OilLubCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var allSparePartCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsSparePart == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var allSparePartItems = allInventoryItems.Any() ? allInventoryItems.Where(x => allSparePartCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var allBatteryCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsBattery == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var allBatteryItems = allInventoryItems.Any() ? allInventoryItems.Where(x => allBatteryCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var allTyreCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsTire == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var allTyreItems = allInventoryItems.Any() ? allInventoryItems.Where(x => allTyreCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var OilCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsOil == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var oilItems = allInventoryItems.Any() ? allInventoryItems.Where(x => OilCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+
+                var plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.PlateNumber)
+                    .FirstOrDefault();
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                                    .Where(x => x.FleetsID == fleet.FleetsID)
+                                    .Select(x => x.SerialNo)
+                                    .FirstOrDefault();
+                }
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.ChasisNumber)
+                    .FirstOrDefault();
+                }
+                var lubItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && OilLubItems.Contains(ii.ItemCode)).ToList();
+                machineryWorkingTimeSheet.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
+                machineryWorkingTimeSheet.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
+                plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.PlateNumber)
+                    .FirstOrDefault();
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                                    .Where(x => x.FleetsID == fleet.FleetsID)
+                                    .Select(x => x.SerialNo)
+                                    .FirstOrDefault();
+                }
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.ChasisNumber)
+                    .FirstOrDefault();
+                }
+                var issuedOilItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && oilItems.Contains(ii.ItemCode)).ToList();
+                machineryWorkingTimeSheet.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
+                machineryWorkingTimeSheet.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
+               plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.PlateNumber)
+                    .FirstOrDefault();
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                                    .Where(x => x.FleetsID == fleet.FleetsID)
+                                    .Select(x => x.SerialNo)
+                                    .FirstOrDefault();
+                }
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.ChasisNumber)
+                    .FirstOrDefault();
+                }
+                var issuedSpareItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && allSparePartItems.Contains(ii.ItemCode)).ToList();
+                var issuedBatteryItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && allBatteryItems.Contains(ii.ItemCode)).ToList();
+                var issuedTyreItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && allTyreItems.Contains(ii.ItemCode)).ToList();
+                machineryWorkingTimeSheet.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
+                machineryWorkingTimeSheet.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;
+                machineryWorkingTimeSheet.TireCost = issuedTyreItems.Sum(x => (decimal?)x.Total) ?? 0;
+                var jobOrder = db.JobOrder.FirstOrDefault(x => x.FleetsID == fleet.FleetsID && x.Status == "Delivered" && DbFunctions.TruncateTime(x.SecondOnlineApprovedTime) == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date));
+                decimal maintenancePayment = 0;
+
+                if (jobOrder != null)
+                {
+                    string maintenanceCenterId = jobOrder.MaintenanceCenterId.ToString();
+                    var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID.ToString() == maintenanceCenterId);
+                    var ServiceCenterJobs = db.ServiceCenterJob.Where(x => x.JobOrderID == jobOrder.JobOrderID).ToList();
+                    foreach (var ServiceCenterJob in ServiceCenterJobs)
+                    {
+                        if (maintenanceCenter != null && maintenanceCenter.IsExternal)
+                        {
+                            var externalServicePayment = db.ExternalServiceCenterPayments.Where(x => x.ServiceCenterJobId == ServiceCenterJob.ServiceCenterJobId).ToList();
+                            maintenancePayment += externalServicePayment.Sum(x => (decimal?)x.Total) ?? 0;
+
+                        }
+                        else
+                        {
+                            var StoreRequests = db.StoreRequisitions.Where(x => x.ServiceJobOrderNo == ServiceCenterJob.ServiceCenterJobId.ToString()).Select(x => x.StoreRequisitionID).ToList();
+                            if (StoreRequests.Any())
+                            {
+                                var IssuedIds = db.Issues.Where(x => StoreRequests.Contains(x.StoreRequisitionID)).Select(x => x.IssueID).ToList();
+                                if (IssuedIds.Any())
+                                {
+                                    var IssuedItems = db.IssueItems.Where(x => IssuedIds.Contains(x.IssueID)).ToList();
+                                    foreach (var Item in IssuedItems)
+                                    {
+                                        maintenancePayment += Item.UnitPrice * Item.IssuedQuantity;
+                                    }
+                                }
+
+                            }
+                        }
+                        var crewIds = db.ServiceCrewWorkLogs.Where(x => x.JobId == ServiceCenterJob.ServiceCenterJobId).ToList();
+                        foreach (var crew in crewIds)
+                        {
+                            decimal companyCost = db.RepairType.FirstOrDefault(x => x.RepairTypeID.ToString() == crew.RepiarTypeId)?.TotalAmountCompany ?? 0;
+                            maintenancePayment += companyCost;
+                        }
+                    }
+
+                }
+                machineryWorkingTimeSheet.MaintenanceCost += maintenancePayment;
+            }
             #region data
             var operationAmount = machineryWorkingTimeSheet.RentalRate * machineryWorkingTimeSheet.NetHour;
             var idleAmount = machineryWorkingTimeSheet.IdleRate * machineryWorkingTimeSheet.IdleHours;
             var totalAmountBeforeVAT = operationAmount + idleAmount;
             var totalAmount = totalAmountBeforeVAT * machineryWorkingTimeSheet.VAT;
             var fuelCost = machineryWorkingTimeSheet.FuelConsumption * machineryWorkingTimeSheet.FuelRate;
-            var totalCost = fuelCost + machineryWorkingTimeSheet.MaintenanceCost + machineryWorkingTimeSheet.LubricantCost + machineryWorkingTimeSheet.ServiceRecharge;
+            var totalCost = fuelCost + machineryWorkingTimeSheet.MaintenanceCost + machineryWorkingTimeSheet.GreaseCost + machineryWorkingTimeSheet.ServiceRecharge;
 
             #endregion
             
+            var timeSheets = db.MachineryWorkingTimeSheets.FirstOrDefault(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID && DbFunctions.TruncateTime(x.Date) == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date));
+            if (timeSheets != null)
+            {
+                ModelState.AddModelError("duplicate", "Timesheet for this Plate On the selected day is already added");
+            }
             var fetchSettings = db.TimeSheetSetting.ToList();
 
             if (fetchSettings.Any())
@@ -188,6 +397,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     }
                 }
             }
+            machineryWorkingTimeSheet.NetHour =
+                    (decimal)GetTotalTime(
+                        machineryWorkingTimeSheet.MorningTimeStart,
+                        machineryWorkingTimeSheet.MorningTimeEnd,
+                        machineryWorkingTimeSheet.AfternoonTimeStart,
+                        machineryWorkingTimeSheet.AfternoonTimeEnd,
+                        machineryWorkingTimeSheet.NightTimeStart,
+                        machineryWorkingTimeSheet.NightTimeEnd
+                    ).TotalHours;
+            machineryWorkingTimeSheet.TotalTime = machineryWorkingTimeSheet.NetHour;
+            var requestToInspection = db.RequestToInspections.FirstOrDefault();
+            var lastTimesheet = db.WagonDrillTimesheets.Where(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID).OrderByDescending(x => x.WagonDrillTimesheetId).FirstOrDefault();
+            if (requestToInspection != null && requestToInspection.Remark == "MCG")
+            {
+
+                if (machineryWorkingTimeSheet.InitialEHR < 0 || machineryWorkingTimeSheet.FinalEHR < 0 || (machineryWorkingTimeSheet.FinalEHR - machineryWorkingTimeSheet.InitialEHR) < 0 || machineryWorkingTimeSheet.FuelKMR < 0)
+                {
+                    ModelState.AddModelError("invalid", "Invalid EHR entry");
+                }
+                machineryWorkingTimeSheet.DownReason = machineryWorkingTimeSheet.ReasonForDown.ToString();
+                machineryWorkingTimeSheet.IdleReason = machineryWorkingTimeSheet.ReasonForIdle.ToString();
+            }
+            fleet.BranchId = machineryWorkingTimeSheet.BranchId;
+            db.Entry(fleet).State = EntityState.Modified;
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
                 var entity = new MachineryWorkingTimeSheet
@@ -202,12 +436,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     NightTimeStart = machineryWorkingTimeSheet.NightTimeStart,
                     NightTimeEnd = machineryWorkingTimeSheet.NightTimeEnd,
                     NumberOfHoles = machineryWorkingTimeSheet.NumberOfHoles,
+                    Unit = fleet.Unit,
+                    Volume = fleet.Volume,
+
+                    TotalTime = machineryWorkingTimeSheet.TotalTime,
+                    SparePartCost = machineryWorkingTimeSheet.SparePartCost,
+                    OilCost = machineryWorkingTimeSheet.OilCost,
+                    GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
+                    GreaseCost = machineryWorkingTimeSheet.GreaseCost,
+                    MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
+                    OilConsumption = machineryWorkingTimeSheet.OilConsumption,
+
                     HoleDepth = machineryWorkingTimeSheet.HoleDepth,
                     FuelConsumption = machineryWorkingTimeSheet.FuelConsumption,
                     FuelRate = machineryWorkingTimeSheet.FuelRate,
-                    GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
                     IdleHours = machineryWorkingTimeSheet.IdleHours,
                     IdleReason = machineryWorkingTimeSheet.IdleReason,
+                    FuelType = machineryWorkingTimeSheet.FuelType,
+                    RentalAgreementNum = fleet.RentFromExternalNum,
+                    ReasonForDown = machineryWorkingTimeSheet.ReasonForDown,
+                    ReasonForIdle = machineryWorkingTimeSheet.ReasonForIdle,
+                    OilType = machineryWorkingTimeSheet.OilType,
                     DownHours = machineryWorkingTimeSheet.DownHours,
                     DownReason = machineryWorkingTimeSheet.DownReason,
                     NetHour = machineryWorkingTimeSheet.NetHour,
@@ -219,16 +468,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     OperationAmount = operationAmount,
                     IdleRate = machineryWorkingTimeSheet.IdleRate,
                     IdleAmount = idleAmount,
+                    ExternalOperatorName = machineryWorkingTimeSheet.ExternalOperatorName,
                     TotalAmountBeforeVAT = totalAmountBeforeVAT,
                     VAT = machineryWorkingTimeSheet.VAT,
                     TotalAmount = totalAmount,
                     FuelCost = fuelCost,
                     ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
-                    LubricantCost = machineryWorkingTimeSheet.LubricantCost,
-                    MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
                     TotalCost = totalCost,
                     NetAmount = totalAmount-totalCost,
-                    OilConsumption = machineryWorkingTimeSheet.OilConsumption,
                     DownHourRate = machineryWorkingTimeSheet.DownHourRate,
                     OperationRevenue = machineryWorkingTimeSheet.OperationRevenue,
                     Perdium = machineryWorkingTimeSheet.Perdium,
@@ -245,9 +492,93 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
                     EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId
                 };
-
+                entity.InitialEHR = machineryWorkingTimeSheet.InitialEHR;
+                entity.FinalEHR = machineryWorkingTimeSheet.FinalEHR;
+                entity.DifferenceEHR = machineryWorkingTimeSheet.FinalEHR - machineryWorkingTimeSheet.InitialEHR;
+                entity.FuelKMR = machineryWorkingTimeSheet.FuelKMR;
+                
                 db.MachineryWorkingTimeSheets.Add(entity);
                 db.SaveChanges();
+
+                //var fleetSetting = db.RequestToInspections.FirstOrDefault(x => x.Remark != null);
+
+                //if (fleetSetting != null && fleetSetting.Remark == "MIDROC")
+                //{
+                //    List<MachineryWorkingTimeSheet> timeSheet = db.MachineryWorkingTimeSheets
+                //        .Where(x => x.BranchId == entity.BranchId &&
+                //                    x.EquipmentCategoryId == entity.EquipmentCategoryId && x.FleetsID != entity.FleetsID)
+                //        .GroupBy(x => x.FleetsID)
+                //        .Select(g => g.OrderByDescending(x => x.MachineryWorkingTimeSheetId).FirstOrDefault())
+                //        .ToList();
+                //    var firstObject = timeSheet.First();
+                //    var checkDuplicatee = db.MachineryWorkingTimeSheets.FirstOrDefault(x => x.FleetsID == firstObject.FleetsID && x.Date == firstObject.Date);
+                //    if (checkDuplicatee == null)
+                //    {
+                //        foreach (var timesht in timeSheet)
+                //        {
+                //            var newTimeSheet = new MachineryWorkingTimeSheet
+                //            {
+                //                FleetsID = timesht.FleetsID,
+                //                Date = timesht.Date,
+                //                MorningTimeStart = timesht.MorningTimeStart,
+                //                MorningTimeEnd = timesht.MorningTimeEnd,
+                //                AfternoonTimeStart = timesht.AfternoonTimeStart,
+                //                AfternoonTimeEnd = timesht.AfternoonTimeEnd,
+                //                NightTimeStart = timesht.NightTimeStart,
+                //                NightTimeEnd = timesht.NightTimeEnd,
+                //                NumberOfHoles = timesht.NumberOfHoles,
+                //                HoleDepth = timesht.HoleDepth,
+                //                FuelConsumption = timesht.FuelConsumption,
+                //                FuelRate = timesht.FuelRate,
+                //                GreaseConsumption = timesht.GreaseConsumption,
+                //                IdleHours = timesht.IdleHours,
+                //                IdleReason = timesht.IdleReason,
+                //                FuelType = timesht.FuelType,
+                //                OilType = timesht.OilType,
+                //                DownHours = timesht.DownHours,
+                //                DownReason = timesht.DownReason,
+                //                NetHour = timesht.NetHour,
+                //                WorkType = timesht.WorkType,
+                //                Remark = timesht.Remark,
+                //                RentalRate = timesht.RentalRate,
+                //                IdealRentalRate = timesht.IdealRentalRate,
+                //                ProcurementSupplierID = timesht.ProcurementSupplierID,
+                //                OperationAmount = timesht.OperationAmount,
+                //                IdleRate = timesht.IdleRate,
+                //                IdleAmount = timesht.IdleAmount,
+                //                TotalAmountBeforeVAT = timesht.TotalAmountBeforeVAT,
+                //                VAT = timesht.VAT,
+                //                TotalAmount = timesht.TotalAmount,
+                //                FuelCost = timesht.FuelCost,
+                //                ServiceRecharge = timesht.ServiceRecharge,
+                //                LubricantCost = timesht.LubricantCost,
+                //                MaintenanceCost = timesht.MaintenanceCost,
+                //                TotalCost = timesht.TotalCost,
+                //                NetAmount = timesht.TotalAmount - timesht.TotalCost,
+                //                OilConsumption = timesht.OilConsumption,
+                //                DownHourRate = timesht.DownHourRate,
+                //                OperationRevenue = timesht.OperationRevenue,
+                //                Perdium = timesht.Perdium,
+                //                Salary = timesht.Salary,
+                //                TireCost = timesht.TireCost,
+                //                BranchId = timesht.BranchId,
+                //                BusinessUnitId = timesht.BusinessUnitId,
+                //                OperatorId = timesht.OperatorId,
+                //                TimeSheetStatus = MaintenanceConst.Pending,
+                //                CreatedBy = User.Identity.Name,
+                //                DateCreated = DateTime.Today,
+                //                GreaseRate = timesht.GreaseRate,
+                //                EquipmentCategoryId = timesht.EquipmentCategoryId,
+                //                EquipmentTypeId = timesht.EquipmentTypeId,
+                //                EquipmentNameId = timesht.EquipmentNameId
+                //            };
+
+                //            db.MachineryWorkingTimeSheets.Add(newTimeSheet);
+                //            db.SaveChanges();
+                //        }
+                //    }
+                //}
+
                 machineryWorkingTimeSheet.MachineryWorkingTimeSheetId = entity.MachineryWorkingTimeSheetId;
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Machinery working timesheet", "Success", User.Identity.Name, $"created machinery working timesheet {entity.MachineryWorkingTimeSheetId}", Modules.FleetManagement);
@@ -260,13 +591,168 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult MachineryWorkingTimeSheets_Update([DataSourceRequest] DataSourceRequest request, MachineryWorkingTimeSheet machineryWorkingTimeSheet)
         {
+            var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID);
+            machineryWorkingTimeSheet.EquipmentCategoryId = fleet.EquipmentIdentityID;
+            machineryWorkingTimeSheet.EquipmentTypeId = fleet.EquipmentTypeID;
+            machineryWorkingTimeSheet.EquipmentNameId = fleet.EquipmentNameID;
+
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+            if (companySetting != null)
+            {
+                var allNonFuelItems = db.NonFuelItemSettings.ToList();
+                var allInventoryItems = db.InventoryItems.ToList();
+                var OilLubCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsLubricant == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var OilLubItems = allInventoryItems.Any() ? allInventoryItems.Where(x => OilLubCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var allSparePartCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsSparePart == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var allSparePartItems = allInventoryItems.Any() ? allInventoryItems.Where(x => allSparePartCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var allBatteryCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsBattery == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var allBatteryItems = allInventoryItems.Any() ? allInventoryItems.Where(x => allBatteryCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var allTyreCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsTire == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var allTyreItems = allInventoryItems.Any() ? allInventoryItems.Where(x => allTyreCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var OilCategories = allNonFuelItems.Any() ? allNonFuelItems.Where(x => x.IsOil == true).Select(x => x.ItemCategoryCode).ToList() : new List<string>();
+                var oilItems = allInventoryItems.Any() ? allInventoryItems.Where(x => OilCategories.Contains(x.ItemCategoryCode)).Select(x => x.ItemCode).ToList() : new List<string>();
+                var plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.PlateNumber)
+                    .FirstOrDefault();
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                                    .Where(x => x.FleetsID == fleet.FleetsID)
+                                    .Select(x => x.SerialNo)
+                                    .FirstOrDefault();
+                }
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.ChasisNumber)
+                    .FirstOrDefault();
+                }
+                var lubItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && OilLubItems.Contains(ii.ItemCode)).ToList();
+                machineryWorkingTimeSheet.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
+                machineryWorkingTimeSheet.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
+                plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.PlateNumber)
+                    .FirstOrDefault();
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                                    .Where(x => x.FleetsID == fleet.FleetsID)
+                                    .Select(x => x.SerialNo)
+                                    .FirstOrDefault();
+                }
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.ChasisNumber)
+                    .FirstOrDefault();
+                }
+                var issuedOilItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && oilItems.Contains(ii.ItemCode)).ToList();
+                machineryWorkingTimeSheet.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
+                machineryWorkingTimeSheet.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
+                plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.PlateNumber)
+                    .FirstOrDefault();
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                                    .Where(x => x.FleetsID == fleet.FleetsID)
+                                    .Select(x => x.SerialNo)
+                                    .FirstOrDefault();
+                }
+                if (plateNo == null)
+                {
+                    plateNo = db.Fleets
+                    .Where(x => x.FleetsID == fleet.FleetsID)
+                    .Select(x => x.ChasisNumber)
+                    .FirstOrDefault();
+                }
+                var issuedSpareItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && allSparePartItems.Contains(ii.ItemCode)).ToList();
+                var issuedBatteryItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && allBatteryItems.Contains(ii.ItemCode)).ToList();
+                var issuedTyreItems = db.IssueItems
+                .Where(ii =>
+                        ii.Issue.PlateNo == plateNo
+                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && allTyreItems.Contains(ii.ItemCode)).ToList();
+                machineryWorkingTimeSheet.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
+                machineryWorkingTimeSheet.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;
+                machineryWorkingTimeSheet.TireCost = issuedTyreItems.Sum(x => (decimal?)x.Total) ?? 0;
+                var jobOrder = db.JobOrder.FirstOrDefault(x => x.FleetsID == fleet.FleetsID && x.Status == "Delivered" && DbFunctions.TruncateTime(x.SecondOnlineApprovedTime) == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date));
+                decimal maintenancePayment = 0;
+
+                if (jobOrder != null)
+                {
+                    string maintenanceCenterId = jobOrder.MaintenanceCenterId.ToString();
+                    var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID.ToString() == maintenanceCenterId);
+                    var ServiceCenterJobs = db.ServiceCenterJob.Where(x => x.JobOrderID == jobOrder.JobOrderID).ToList();
+                    foreach (var ServiceCenterJob in ServiceCenterJobs)
+                    {
+                        if (maintenanceCenter != null && maintenanceCenter.IsExternal)
+                        {
+                            var externalServicePayment = db.ExternalServiceCenterPayments.Where(x => x.ServiceCenterJobId == ServiceCenterJob.ServiceCenterJobId).ToList();
+                            maintenancePayment += externalServicePayment.Sum(x => (decimal?)x.Total) ?? 0;
+
+                        }
+                        else
+                        {
+                            var StoreRequests = db.StoreRequisitions.Where(x => x.ServiceJobOrderNo == ServiceCenterJob.ServiceCenterJobId.ToString()).Select(x => x.StoreRequisitionID).ToList();
+                            if (StoreRequests.Any())
+                            {
+                                var IssuedIds = db.Issues.Where(x => StoreRequests.Contains(x.StoreRequisitionID)).Select(x => x.IssueID).ToList();
+                                if (IssuedIds.Any())
+                                {
+                                    var IssuedItems = db.IssueItems.Where(x => IssuedIds.Contains(x.IssueID)).ToList();
+                                    foreach (var Item in IssuedItems)
+                                    {
+                                        maintenancePayment += Item.UnitPrice * Item.IssuedQuantity;
+                                    }
+                                }
+
+                            }
+                        }
+                        var crewIds = db.ServiceCrewWorkLogs.Where(x => x.JobId == ServiceCenterJob.ServiceCenterJobId).ToList();
+                        foreach (var crew in crewIds)
+                        {
+                            decimal companyCost = db.RepairType.FirstOrDefault(x => x.RepairTypeID.ToString() == crew.RepiarTypeId)?.TotalAmountCompany ?? 0;
+                            maintenancePayment += companyCost;
+                        }
+                    }
+
+                }
+                machineryWorkingTimeSheet.MaintenanceCost += maintenancePayment;
+            }
             #region data
             var operationAmount = machineryWorkingTimeSheet.RentalRate * machineryWorkingTimeSheet.NetHour;
             var idleAmount = machineryWorkingTimeSheet.IdleRate * machineryWorkingTimeSheet.IdleHours;
             var totalAmountBeforeVAT = operationAmount + idleAmount;
             var totalAmount = totalAmountBeforeVAT * machineryWorkingTimeSheet.VAT;
             var fuelCost = machineryWorkingTimeSheet.FuelConsumption * machineryWorkingTimeSheet.FuelRate;
-            var totalCost = fuelCost + machineryWorkingTimeSheet.MaintenanceCost + machineryWorkingTimeSheet.LubricantCost + machineryWorkingTimeSheet.ServiceRecharge;
+            var totalCost = fuelCost + machineryWorkingTimeSheet.MaintenanceCost + machineryWorkingTimeSheet.GreaseCost + machineryWorkingTimeSheet.ServiceRecharge;
 
 
             TimeSpan morningTime = machineryWorkingTimeSheet.MorningTimeEnd - machineryWorkingTimeSheet.MorningTimeStart;
@@ -286,7 +772,34 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             }
 
             #endregion
+            var timeSheets = db.MachineryWorkingTimeSheets.FirstOrDefault(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID&&x.MachineryWorkingTimeSheetId!=machineryWorkingTimeSheet.MachineryWorkingTimeSheetId && DbFunctions.TruncateTime(x.Date) == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date));
+            if (timeSheets != null)
+            {
+                ModelState.AddModelError("duplicate", "Timesheet for this Plate On the selected day is already added");
+            }
+            var requestToInspection = db.RequestToInspections.FirstOrDefault();
+            var lastTimesheet = db.WagonDrillTimesheets.Where(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID).OrderByDescending(x => x.WagonDrillTimesheetId).FirstOrDefault();
+            if (requestToInspection != null && requestToInspection.Remark == "MCG")
+            {
 
+                if (machineryWorkingTimeSheet.InitialEHR < 0 || machineryWorkingTimeSheet.FinalEHR < 0 || (machineryWorkingTimeSheet.FinalEHR - machineryWorkingTimeSheet.InitialEHR) < 0 || machineryWorkingTimeSheet.FuelKMR < 0)
+                {
+                    ModelState.AddModelError("invalid", "Invalid EHR entry");
+                }
+                machineryWorkingTimeSheet.DownReason = machineryWorkingTimeSheet.ReasonForDown.ToString();
+                machineryWorkingTimeSheet.IdleReason = machineryWorkingTimeSheet.ReasonForIdle.ToString();
+                machineryWorkingTimeSheet.DifferenceEHR = machineryWorkingTimeSheet.FinalEHR - machineryWorkingTimeSheet.InitialEHR;
+            }
+            machineryWorkingTimeSheet.NetHour =
+                    (decimal)GetTotalTime(
+                        machineryWorkingTimeSheet.MorningTimeStart,
+                        machineryWorkingTimeSheet.MorningTimeEnd,
+                        machineryWorkingTimeSheet.AfternoonTimeStart,
+                        machineryWorkingTimeSheet.AfternoonTimeEnd,
+                        machineryWorkingTimeSheet.NightTimeStart,
+                        machineryWorkingTimeSheet.NightTimeEnd
+                    ).TotalHours;
+            machineryWorkingTimeSheet.TotalTime = machineryWorkingTimeSheet.NetHour;
             if (ModelState.IsValid)
             {
                 var entity = new MachineryWorkingTimeSheet
@@ -305,11 +818,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     HoleDepth = machineryWorkingTimeSheet.HoleDepth,
                     FuelConsumption = machineryWorkingTimeSheet.FuelConsumption,
                     FuelRate = machineryWorkingTimeSheet.FuelRate,
-                    GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
                     IdleHours = machineryWorkingTimeSheet.IdleHours,
                     IdleReason = machineryWorkingTimeSheet.IdleReason,
                     DownHours = machineryWorkingTimeSheet.DownHours,
                     DownReason = machineryWorkingTimeSheet.DownReason,
+                    ReasonForDown = machineryWorkingTimeSheet.ReasonForDown,
+                    ReasonForIdle = machineryWorkingTimeSheet.ReasonForIdle,
                     NetHour = machineryWorkingTimeSheet.NetHour,
                     WorkType = machineryWorkingTimeSheet.WorkType,
                     Remark = machineryWorkingTimeSheet.Remark,
@@ -317,15 +831,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     IdealRentalRate = machineryWorkingTimeSheet.IdealRentalRate,
                     ProcurementSupplierID = machineryWorkingTimeSheet.ProcurementSupplierID,
                     OperationAmount = operationAmount,
+
+                    SparePartCost = machineryWorkingTimeSheet.SparePartCost,
+                    OilCost = machineryWorkingTimeSheet.OilCost,
+                    GreaseConsumption = machineryWorkingTimeSheet.GreaseConsumption,
+                    GreaseCost = machineryWorkingTimeSheet.GreaseCost,
+                    MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
+                    OilConsumption = machineryWorkingTimeSheet.OilConsumption,
+                    RentalAgreementNum = fleet.RentFromExternalNum,
                     IdleRate = machineryWorkingTimeSheet.IdleRate,
+                    FuelType = machineryWorkingTimeSheet.FuelType,
+                    OilType = machineryWorkingTimeSheet.OilType,
+                    ExternalOperatorName = machineryWorkingTimeSheet.ExternalOperatorName,
                     IdleAmount = idleAmount,
                     TotalAmountBeforeVAT = totalAmountBeforeVAT,
                     VAT = machineryWorkingTimeSheet.VAT,
                     TotalAmount = totalAmount,
                     FuelCost = fuelCost,
                     ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
-                    LubricantCost = machineryWorkingTimeSheet.LubricantCost,
-                    MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
                     TotalCost = totalCost,
                     NetAmount = totalAmount - totalCost,
 
@@ -340,11 +863,17 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     GreaseRate = machineryWorkingTimeSheet.GreaseRate,
                     EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
                     EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
-                    EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId
+                    EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId,
+                    FuelKMR = machineryWorkingTimeSheet.FuelKMR,
+                    DifferenceEHR = machineryWorkingTimeSheet.DifferenceEHR,
+                    FinalEHR = machineryWorkingTimeSheet.FinalEHR,
+                    InitialEHR = machineryWorkingTimeSheet.InitialEHR
                 };
-
-                
-                db.MachineryWorkingTimeSheets.Attach(entity);
+                entity.InitialEHR = machineryWorkingTimeSheet.InitialEHR;
+                entity.FinalEHR = machineryWorkingTimeSheet.FinalEHR;
+                entity.DifferenceEHR = machineryWorkingTimeSheet.FinalEHR - machineryWorkingTimeSheet.InitialEHR;
+                entity.FuelKMR = machineryWorkingTimeSheet.FuelKMR;
+                //db.MachineryWorkingTimeSheets.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
@@ -358,6 +887,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 
         public ActionResult InsuranceCompanies_Destroy([DataSourceRequest] DataSourceRequest request, MachineryWorkingTimeSheet machineryWorkingTimeSheet)
         {
+
             if (ModelState.IsValid)
             {
                 var entity = new MachineryWorkingTimeSheet
@@ -384,6 +914,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     WorkType = machineryWorkingTimeSheet.WorkType,
                     Remark = machineryWorkingTimeSheet.Remark,
                     RentalRate = machineryWorkingTimeSheet.RentalRate,
+                    FuelType = machineryWorkingTimeSheet.FuelType,
+                    OilType = machineryWorkingTimeSheet.OilType,
                     IdealRentalRate = machineryWorkingTimeSheet.IdealRentalRate,
                     ProcurementSupplierID = machineryWorkingTimeSheet.ProcurementSupplierID,
                     OperationAmount = machineryWorkingTimeSheet.OperationAmount,
@@ -394,7 +926,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     TotalAmount = machineryWorkingTimeSheet.TotalAmount,
                     FuelCost = machineryWorkingTimeSheet.FuelCost,
                     ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
-                    LubricantCost = machineryWorkingTimeSheet.LubricantCost,
                     MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
                     TotalCost = machineryWorkingTimeSheet.TotalCost,
                     NetAmount = machineryWorkingTimeSheet.NetAmount,
@@ -567,6 +1098,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             if (machineryTimeSheet != null)
             {
                 machineryTimeSheet.TimeSheetApproved = false;
+                machineryTimeSheet.TimeSheetSendForAproval = false;
                 machineryTimeSheet.TimeSheetStatus = MaintenanceConst.Rejected;
                 machineryTimeSheet.TimeSheetApprovedBy = User.Identity.Name;
                 machineryTimeSheet.TimeSheetApprovedDate = DateTime.Now;
@@ -577,9 +1109,131 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
         }
 
         #endregion
+        [HttpPost]
+        public ActionResult ApproveSelected(List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "No records selected."
+                });
+            }
+
+            var records = db.MachineryWorkingTimeSheets
+                            .Where(x => ids.Contains(x.MachineryWorkingTimeSheetId) && x.TimeSheetSendForAproval == true)
+                            .ToList();
+            if (!records.Any())
+            {
+                var formattedData = new
+                {
+                    Message = "Send The Records For approval First",
+                    Status = "NOTOK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            foreach (var item in records)
+            {
+                item.TimeSheetApproved = true;
+                item.TimeSheetStatus = MaintenanceConst.Approved;
+                item.TimeSheetApprovedBy = User.Identity.Name;
+                item.TimeSheetApprovedDate = DateTime.Now;
+
+                db.Entry(item).State = EntityState.Modified;
+                db.SaveChanges();
+                var model = new TimeSheetApprovalNew();
+                model.CreatedBy = User.Identity.Name;
+                model.DateCreated = DateTime.Now;
+                model.Status = "Approved";
+                model.Remark = "Approved By Multi Approval";
+                model.TimeSheetId = item.MachineryWorkingTimeSheetId;
+                model.TimeSheetType = TimeSheetType.Machinery;
+                db.TimeSheetApprovalNew.Add(model);
+                db.SaveChanges();
+            }
 
 
+            return Json(new
+            {
+                Message = " record(s) approved successfully.",
+                Status = "OK"
+            });
+        }
+        public ActionResult RejectSelected(List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "No records selected."
+                });
+            }
 
+            var records = db.MachineryWorkingTimeSheets
+                            .Where(x => ids.Contains(x.MachineryWorkingTimeSheetId) && x.TimeSheetApproved == true)
+                            .ToList();
+            if (!records.Any())
+            {
+                var formattedData = new
+                {
+                    Message = "Approve the records First",
+                    Status = "NOTOK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            foreach (var item in records)
+            {
+                item.TimeSheetApproved = false;
+                item.TimeSheetSendForAproval = false;
+                item.TimeSheetStatus = MaintenanceConst.Rejected;
+                item.TimeSheetApprovedBy = User.Identity.Name;
+                item.TimeSheetApprovedDate = DateTime.Now;
+                db.Entry(item).State = EntityState.Modified;
+            }
+
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Message = " record(s) Rejected successfully.",
+                Status = "OK"
+            });
+        }
+        public ActionResult SendForApprovalSelected(List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "No records selected."
+                });
+            }
+
+            var records = db.MachineryWorkingTimeSheets
+                            .Where(x => ids.Contains(x.MachineryWorkingTimeSheetId))
+                            .ToList();
+
+            foreach (var item in records)
+            {
+                item.TimeSheetSendForAproval = true;
+                item.TimeSheetStatus = MaintenanceConst.WaitingApproval;
+                item.TimeSheetSendForApprovalBy = User.Identity.Name;
+                item.TimeSheetSendForApprovalTime = DateTime.Now;
+                db.Entry(item).State = EntityState.Modified;
+            }
+
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Message = " record(s) send for approval successfully.",
+                Status = "OK"
+            });
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

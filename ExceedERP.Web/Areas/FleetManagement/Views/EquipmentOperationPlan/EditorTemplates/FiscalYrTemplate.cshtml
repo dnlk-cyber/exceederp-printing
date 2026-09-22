@@ -1,0 +1,7 @@
+﻿@model object
+@(Html.Kendo().DropDownListFor(x => x)
+  .DataTextField("Name")
+  .DataValueField("Value").Filter(FilterType.Contains)
+  .OptionLabel("Select Fiscal Year")
+  .DataSource(d => d.Read(r => r.Action("FiscalYearDDBind", "MaintenanceDataProvider",new { area = "Maintenance" }).Data("sendForgery"))
+  .ServerFiltering(false)))

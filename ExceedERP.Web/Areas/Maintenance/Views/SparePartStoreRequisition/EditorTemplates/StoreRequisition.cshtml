@@ -240,7 +240,7 @@
                           .Filter(FilterType.Contains)
                           .OptionLabel("Select Job Order ")
                           .HtmlAttributes(new { style = "width:100%" })
-                          .DataSource(d => d.Read(r => r.Action("JobOrderDDBind", "FleetDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                          .DataSource(d => d.Read(r => r.Action("JobOrderDDBind", "FleetMaintenanceDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                               .ServerFiltering(false)))
                     @Html.ValidationMessageFor(model => model.JobOrderNo, "", new { @class = "text-danger" })
                 </div>

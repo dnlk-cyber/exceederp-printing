@@ -169,7 +169,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     FuelInLiter = sheet.FuelConsumption,
                     FuelRate = sheet.FuelRate,
                     FuelCost = sheet.FuelConsumption * sheet.FuelRate,
-                    LubricantCost = sheet.LubricantCost,
+                    //LubricantCost = sheet.LubricantCost,
                     MaintenanceCost = sheet.MaintenanceCost,
                     TireCost = sheet.TireCost,
                     Perdium = sheet.Perdium,

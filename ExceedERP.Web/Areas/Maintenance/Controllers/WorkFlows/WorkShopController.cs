@@ -31,460 +31,216 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult IndexForFleet()
         {
-            //PopulateViewData();
-
-            ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
-            ViewData["VehicleParts"] = db.VehiclePart.Select(x => new
-            {
-                Name = x.Name,
-                VehiclePartId = x.VehiclePartId
-            }).ToList();
-            ViewData["CanibalizePlates"] = db.Fleets.Select(x => new
-            {
-                Name = x.PlateNumber,
-                PlateNumber = x.PlateNumber
-            }).ToList();
-            var mechanic = db.MechanicCrew;
-            ViewData["Mechanic"] = mechanic.Select(s => new {
-                Code = s.MechanicCrewID,
-                Name = s.Person_Employee.FirstName + " " + s.Person_Employee.MiddleName + " " + s.Person_Employee.LastName
-            }).AsQueryable();
-            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new {
-                Code = s.ItemCategoryCode,
-                Name = s.Name
-            }).ToList();
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
-                Code = s.OrganizationCustomerID,
-                Name = s.TradeName
-            }).ToList();
-            var jobOrderDetail = db.JobOrderServiceCenterDetails;
-
-            ViewData["JobOrderDetail"] = jobOrderDetail.Select(s => new {
-                Code = s.JobOrderServiceCenterDetailId,
-                Name = s.RepairType.Name + "-" + s.JobCauses.Name
-
-            }).AsQueryable();
-            ViewData["Service"] = db.RepairType.Select(s => new
-            {
-                Code = s.RepairTypeID,
-                Name = s.Code + "-" + s.Name
-            }).ToList();
-            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
-            {
-                Code = s.ItemCategoryCode,
-                Name = s.Name
-            }).ToList();
-            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new
-            {
-                Code = s.JobCausesId,
-                Name = XAPI.Common.RemoveSpecialChars(s.Description)
-            }).ToList();
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new
-            {
-                Code = s.OrganizationCustomerID,
-                Name = s.TradeName
-            }).ToList();
-
-
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
-
-
-            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
-            {
-                Name = s.Name,
-                Id = s.ServiceCenterId
-            }).ToList();
-            ViewBag.FailureReason = db.FailureReasons.ToList();
-            var categories = db.ItemCategorys;
-            var items = db.InventoryItems;
-            var costCenter = db.BranchCostCenter;
-            var branches = CacheData.GetBranchCaches().Select(
-         i => new
-         {
-             Name = i.Name,
-             Id = i.Id
-         }).AsQueryable();
-
-            var inventoryPeriods = db.InventoryPeriods;
-            var selectedinventoryPeriods = inventoryPeriods.Select(
-             i => new
-             {
-                 Name = i.Name,
-                 GLPeriodId = i.InventoryPeriodId
-             }).AsQueryable();
-            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
-
-            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
-         i => new
-         {
-             Name = i.Name,
-             Id = i.Id
-         }).AsQueryable();
-
-            var selecteditems = items.Select(
-                i => new
-                {
-                    Name = i.ItemCode + "_" + i.Name,
-                    ItemCode = i.ItemCode
-                }).ToList();
-            ViewData["Items"] = selecteditems;
-            ViewData["Category"] = categories;
-            ViewData["defaultCategory"] = categories.FirstOrDefault();
-
-            var store = db.InventoryStores.AsQueryable();
-            ViewData["storesInCompany"] = store;
-
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
-
-
-            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
-            {
-                Name = s.Name,
-                Id = s.ServiceCenterId
-            }).ToList();
-
-            var employee = db.Person_Employee;
-            var selectedEmployee = employee.Select(
-                i => new
-                {
-                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                    Code = i.EmployeeId
-                }).AsQueryable();
-            ViewData["personEmployees"] = selectedEmployee;
-
-            var selectedcostCenter = costCenter.Select(
-                i => new
-                {
-                    Name = i.MainCompanyStructure.Name,
-                    Code = i.OrgStructureId
-                }).AsQueryable();
-
-            ViewData["costCenters"] = selectedcostCenter;
-            ViewData["Service"] = db.RepairType.Select(s => new {
-                Code = s.RepairTypeID,
-                Name = s.Code + "-" + s.Name
-            }).ToList();
-            SetInitials();
-
-            ViewData["ServiceGroup"] = db.ServiceGroupSettings.Select(s => new
-            {
-                Code = s.ServiceGroupSettingId,
-                Name = s.ServiceGroupName
-            }).ToList();
-            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
-            {
-                Code = s.ItemCategoryCode,
-                Name = s.Name
-            }).ToList();
-            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new
-            {
-                Code = s.JobCausesId,
-                Name = XAPI.Common.RemoveSpecialChars(s.Description)
-            }).ToList();
-
-
-
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
-
-
-            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
-            {
-                Name = s.Name,
-                Id = s.ServiceCenterId
-            }).ToList();
-
-
-            //ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
-            //await GetMaintainaceDue();
-            ViewBag.ServiceType = db.MaintenanceType.ToList();
-
-            if (GlobalHelper.IsMultipleBusinessUnit())
-            {
-                var businessUnits = CacheData.GetBusinessUnitCaches().Select(
-         i => new
-         {
-             Name = i.Name,
-             Id = i.Id
-         }).AsQueryable();
-                ViewData["BusinessUnits"] = businessUnits;
-            }
-
-            //UpdateJobOrderStatus();
             PopulateViewData();
+            SetInitials();
             return View();
         }
         public ActionResult Index()
         {
-            //PopulateViewData();
+            PopulateViewData();
 
-            ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
-            ViewData["VehicleParts"] = db.VehiclePart.Select(x => new
+            var selectedCostCenter = CacheData.GetWorkUnitCaches().Select(i => new {
+                Name = i.Name,
+                Code = i.Id
+            }).AsQueryable();
+            ViewData["costCenters"] = selectedCostCenter;
+
+            SetInitials();
+            return View();
+        }
+
+        private void PopulateViewData()
+        {
+            ViewData["EquipmentCategories"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Name = i.Name.Trim(),
+          Id = i.Id.ToString()
+      }).AsQueryable();
+            ViewData["Fleets"] = CacheData.GetFleetsCache().Select(s => new
             {
-                Name = x.Name,
-                VehiclePartId = x.VehiclePartId
-            }).ToList();
-            ViewData["CanibalizePlates"] = db.Fleets.Select(x => new
-            {
-                Name = x.PlateNumber,
-                PlateNumber = x.PlateNumber
-            }).ToList();
+                Id = s.Id,
+                Name = s.Name
+            }).AsQueryable();
+
+
+            ViewData["EquipmentTypes"] = CacheData.GetEquipmentTypeCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
+            ViewData["Employee"] = CacheData.GetEmployeeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            ViewData["EquipmentName"] = CacheData.GetEquipmentNameCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           Id = i.Id
+       }).AsQueryable();
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+
+            ViewData["Operators"] = db.Operator.ToList().Select(s => new {
+                Id = s.OperatorID,
+                Name = s.FullName + "-" + s.MobilePhone
+            });
             var mechanic = db.MechanicCrew;
             ViewData["Mechanic"] = mechanic.Select(s => new {
                 Code = s.MechanicCrewID,
                 Name = s.Person_Employee.FirstName + " " + s.Person_Employee.MiddleName + " " + s.Person_Employee.LastName
             }).AsQueryable();
+
             ViewData["SubCategories"] = db.ItemCategorys.Select(s => new {
                 Code = s.ItemCategoryCode,
                 Name = s.Name
             }).ToList();
+
             ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
                 Code = s.OrganizationCustomerID,
                 Name = s.TradeName
             }).ToList();
-            var jobOrderDetail = db.JobOrderServiceCenterDetails;
 
-            ViewData["JobOrderDetail"] = jobOrderDetail.Select(s => new {
+            ViewData["JobOrderDetail"] = db.JobOrderServiceCenterDetails.Select(s => new {
                 Code = s.JobOrderServiceCenterDetailId,
                 Name = s.RepairType.Name + "-" + s.JobCauses.Name
-
             }).AsQueryable();
-            ViewData["Service"] = db.RepairType.Select(s => new
-            {
-                Code = s.RepairTypeID,
-                Name = s.Code + "-" + s.Name
-            }).ToList();
-            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
-            {
-                Code = s.ItemCategoryCode,
-                Name = s.Name
-            }).ToList();
-            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new
-            {
-                Code = s.JobCausesId,
-                Name = XAPI.Common.RemoveSpecialChars(s.Description)
-            }).ToList();
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new
-            {
-                Code = s.OrganizationCustomerID,
-                Name = s.TradeName
-            }).ToList();
 
-
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
-
-
-            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
-            {
-                Name = s.Name,
-                Id = s.ServiceCenterId
-            }).ToList();
-            ViewBag.FailureReason = db.FailureReasons.ToList();
-            var categories = db.ItemCategorys;
-            var items = db.InventoryItems;
-            var costCenter = db.BranchCostCenter;
-            var branches = CacheData.GetBranchCaches().Select(
-         i => new
-         {
-             Name = i.Name,
-             Id = i.Id
-         }).AsQueryable();
-
-            var inventoryPeriods = db.InventoryPeriods;
-            var selectedinventoryPeriods = inventoryPeriods.Select(
-             i => new
-             {
-                 Name = i.Name,
-                 GLPeriodId = i.InventoryPeriodId
-             }).AsQueryable();
-            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
-
-            ViewData["Branches"] = branches;
-
-            var selecteditems = items.Select(
-                i => new
-                {
-                    Name = i.ItemCode + "_" + i.Name,
-                    ItemCode = i.ItemCode
-                }).ToList();
-            ViewData["Items"] = selecteditems;
-            ViewData["Category"] = categories;
-            ViewData["defaultCategory"] = categories.FirstOrDefault();
-
-            var store = db.InventoryStores.AsQueryable();
-            ViewData["storesInCompany"] = store;
-
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
-
-
-            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
-            {
-                Name = s.Name,
-                Id = s.ServiceCenterId
-            }).ToList();
-
-            var employee = db.Person_Employee;
-            var selectedEmployee = employee.Select(
-                i => new
-                {
-                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                    Code = i.EmployeeId
-                }).AsQueryable();
-            ViewData["personEmployees"] = selectedEmployee;
-
-            var selectedcostCenter = costCenter.Select(
-                i => new
-                {
-                    Name = i.MainCompanyStructure.Name,
-                    Code = i.OrgStructureId
-                }).AsQueryable();
-
-            ViewData["costCenters"] = selectedcostCenter;
             ViewData["Service"] = db.RepairType.Select(s => new {
                 Code = s.RepairTypeID,
                 Name = s.Code + "-" + s.Name
             }).ToList();
-            SetInitials();
 
-            ViewData["ServiceGroup"] = db.ServiceGroupSettings.Select(s => new
-            {
-                Code = s.ServiceGroupSettingId,
-                Name = s.ServiceGroupName
-            }).ToList();
-            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
-            {
-                Code = s.ItemCategoryCode,
-                Name = s.Name
-            }).ToList();
-            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new
-            {
+            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new {
                 Code = s.JobCausesId,
                 Name = XAPI.Common.RemoveSpecialChars(s.Description)
             }).ToList();
 
-
-
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
-
-
-            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
-            {
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            ViewData["EquipmentCategories"] = CacheData.GetEquipmentIdentityCaches().Select(
+     i => new
+     {
+         Name = i.Name.Trim(),
+         Id = i.Id.ToString()
+     }).AsQueryable();
+            ViewData["EquipmentTypes"] = CacheData.GetEquipmentTypeCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new {
                 Name = s.Name,
                 Id = s.ServiceCenterId
             }).ToList();
 
+            ViewBag.FailureReason = db.FailureReasons.ToList();
 
-            //ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
-            //await GetMaintainaceDue();
+            
+            
+            var inventoryPeriods = db.InventoryPeriods;
+
+            ViewData["inventoryPeriods"] = inventoryPeriods.Select(i => new {
+                Name = i.Name,
+                GLPeriodId = i.InventoryPeriodId
+            }).AsQueryable();
+            var items = db.InventoryItems;
+            ViewData["Items"] = items.Select(i => new {
+                Name = i.ItemCode + "_"+i.PartNo+"_" + i.Name,
+                ItemCode = i.ItemCode
+            }).ToList();
+            var categories = db.ItemCategorys.Select(x=>new
+            {
+                Category=x.ItemCategoryCode,
+                Name=x.Name
+            }).AsQueryable();
+            ViewData["Category"] = categories;
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+            ViewData["storesInCompany"] = db.InventoryStores.AsQueryable();
+
+            ViewData["personEmployees"]=CacheData.GetEmployeeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Code = i.Id
+        }).AsQueryable();
+            ViewData["ServiceGroup"] = db.ServiceGroupSettings.Select(s => new {
+                Code = s.ServiceGroupSettingId,
+                Name = s.ServiceGroupName
+            }).ToList();
+
             ViewBag.ServiceType = db.MaintenanceType.ToList();
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                var businessUnits = CacheData.GetBusinessUnitCaches().Select(
-         i => new
-         {
-             Name = i.Name,
-             Id = i.Id
-         }).AsQueryable();
+                var businessUnits = CacheData.GetBusinessUnitCaches().Select(i => new {
+                    Name = i.Name,
+                    Id = i.Id
+                }).AsQueryable();
+
                 ViewData["BusinessUnits"] = businessUnits;
             }
 
-            //UpdateJobOrderStatus();
-            PopulateViewData();
-            return View();
-        }
-        private void PopulateViewData()
-        {
-            var categories = db.ItemCategorys;
-            var items = db.InventoryItems;
-            var stores = db.InventoryStores;
-            var branches = CacheData.GetBranchCaches().Select(
-         i => new
-         {
-             Name = i.Name,
-             Id = i.Id
-         }).AsQueryable();
-            var costCenter = db.BranchCostCenter;
-            var selectedcostCenter = costCenter.Select(
-              i => new
-              {
-                  Name = i.MainCompanyStructure.Name,
-                  Code = i.OrgStructureId
-              }).AsQueryable();
+            // Additional common data (already in your previous PopulateViewData)
+            ViewData["CanibalizePlates"] = db.Fleets.Select(x => new {
+                Name = x.PlateNumber,
+                PlateNumber = x.PlateNumber
+            }).AsQueryable();
 
-            var inventoryPeriods = db.InventoryPeriods;
-            var selectedinventoryPeriods = inventoryPeriods.Select(
-             i => new
-             {
-                 Name = i.Name,
-                 GLPeriodId = i.InventoryPeriodId
-             }).AsQueryable();
-            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+            ViewData["VehicleParts"] = db.VehiclePart.Select(x => new {
+                Name = x.Name,
+                VehiclePartId = x.VehiclePartId
+            }).AsQueryable();
 
+            ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new {
+                e.EquipmentInformationId,
+                e.LicensePlate,
+                e.DeviceNumber
+            }).ToList();
 
-            ViewData["costCenters"] = selectedcostCenter;
-            ViewData["stores"] = stores;
-            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
-         i => new
-         {
-             Name = i.Name,
-             Id = i.Id
-         }).AsQueryable();
-            var selecteditems = items.Select(
-                i => new
-                {
-                    Name = i.ItemCode + "_" + i.Name,
-                    ItemCode = i.ItemCode
-                }).ToList();
-            ViewData["Items"] = selecteditems;
-            ViewData["Category"] = categories;
-            // var branches = db.Branch;
-            var structure = db.MainCompanyStructures;
+            ViewData["stores"] = db.InventoryStores;
 
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(i => new {
+                Name = i.Name,
+                Id = i.Id
+            }).AsQueryable();
 
-            ViewData["Structure"] = structure;
-
-            // ViewData["Branches"] = branches;
-
-            ViewData["defaultCategory"] = categories.FirstOrDefault();
+            ViewData["Structure"] = db.MainCompanyStructures;
         }
         public void SetInitials()
         {
-            ViewData["Tax"] = db.GLTaxRates.ToList();
-            ViewData["SalesStore"] = db.SalesStores.Select(s => new { s.SalesStoreId, s.Description }).ToList();
-            ViewData["VoucherExtension"] = db.VoucherExtensions.AsQueryable();
+            ViewData["Tax"] = db.GLTaxRates.AsQueryable();
+            ViewData["SalesStore"] = db.SalesStores.Select(s => new { s.SalesStoreId, s.Description }).AsQueryable();
+           // ViewData["VoucherExtension"] = db.VoucherExtensions.AsQueryable();
             ViewData["Thing"] = db.Products.AsQueryable();
             ViewData["SalesStore"] = db.SalesStores;
             ViewData["OrganizationCustomers"] = db.OrganizationCustomers;
 
-            ViewData["OrganizationCust"] = db.OrganizationCustomers.ToList();
+            ViewData["OrganizationCust"] = db.OrganizationCustomers.AsQueryable();
 
             ViewData["VoucherList"] = db.SalesQuoteVouchers.AsQueryable();
-            ViewData["CartList"] = db.Carts.AsQueryable();
-            var termList = db.Terms;
+            //ViewData["CartList"] = db.Carts.AsQueryable();
+            //var termList = db.Terms;
             //var lookUpList = db.Lookups.ToList();
             //foreach (Term term in termList)
             //{
@@ -495,18 +251,18 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             //    }
             //}
 
-            ViewData["TermList"] = termList.ToList();
-            ViewData["SerialDefinitionList"] = db.SerialDefinitions.AsQueryable();
+            //ViewData["TermList"] = termList.AsQueryable();
+            //ViewData["SerialDefinitionList"] = db.SerialDefinitions.AsQueryable();
             ViewData["VoucherReferenceList"] = db.SalesQuoteVouchers.AsQueryable();
-            ViewData["StoreList"] = db.Stores.AsQueryable();
-            ViewData["VoucherExtensionList"] = db.VoucherExtensions.AsQueryable();
-            ViewData["Branches"] = db.Branch.Select(b => new { b.BranchId, b.Name, b.Abbreviation }).ToList();
-            ViewData["CRMPeriods"] = db.CRMPeriods.Select(b => new { b.CRMPeriodId, b.Name }).ToList();
+           // ViewData["StoreList"] = db.Stores.AsQueryable();
+            //ViewData["VoucherExtensionList"] = db.VoucherExtensions.AsQueryable();
+            //ViewData["Branches"] = db.Branch.Select(b => new { b.BranchId, b.Name, b.Abbreviation }).ToList();
+            ViewData["CRMPeriods"] = db.CRMPeriods.Select(b => new { b.CRMPeriodId, b.Name }).AsQueryable();
 
-            ViewData["AddtionalCostTypes"] = db.AdditionalCosts.Select(a => new { a.AdditionalCostId, a.Name }).ToList();
-            ViewData["QuotationTerms"] = db.QuotationTerms.Select(a => new { a.QuotationTermId, a.QuotationInDays, a.Desription }).ToList();
+            ViewData["AddtionalCostTypes"] = db.AdditionalCosts.Select(a => new { a.AdditionalCostId, a.Name }).AsQueryable();
+            ViewData["QuotationTerms"] = db.QuotationTerms.Select(a => new { a.QuotationTermId, a.QuotationInDays, a.Desription }).AsQueryable();
 
-            ViewData["RepairTypes"] = db.RepairType.Select(r => new { RepairTypeId = r.RepairTypeID.ToString(), r.Name });
+            ViewData["RepairTypes"] = db.RepairType.Select(r => new { RepairTypeId = r.RepairTypeID.ToString(), r.Name }).AsQueryable();
         }
         public WorkShopController()
         {
@@ -553,12 +309,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 {
                     SalesQuoteVoucherID = vou.SalesQuoteVoucherID,
                     Source = vou.Source,
-                    Period = vou.Period,
+                    //Period = vou.Period,
                     OrganizationCustomerId = vou.OrganizationCustomerId,
                     Date = vou.Date,
                     GrandTotal = totgrand,
-                    IsIssued = vou.IsIssued,
-                    IssuedDate = vou.IssuedDate,
+                    //IsIssued = vou.IsIssued,
+                    //IssuedDate = vou.IssuedDate,
                     DueDate = vou.DueDate,
                     QuotationTermId = vou.QuotationTermId,
                     IsVoid = vou.IsVoid,
@@ -614,21 +370,30 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         #endregion
 
-        public ActionResult WorkShops_Read([DataSourceRequest] DataSourceRequest request)
+        public ActionResult WorkShops_Read([DataSourceRequest] DataSourceRequest request,string Id)
         {
+            //Guid OrderId = Guid.TryParseExact(Id);
             List<ServiceCenterJob> job = new List<ServiceCenterJob>();
             IQueryable<ServiceCenterJob> jobOrders = Enumerable.Empty<ServiceCenterJob>().AsQueryable();
-            //var FetchUserId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            //if (FetchUserId != null)
+            var FetchUserId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            //if (Id == "FromWorkShop")
             //{
-            //    var FetchMechanicCrews = db.MechanicCrew.FirstOrDefault(x => x.EmployeeId == FetchUserId && x.IsActive == true);
-            //    if (FetchMechanicCrews != null)
+            //    //jobOrders = db.ServiceCenterJob.Where(x=> x.IsSentToWorkShop);
+            //    if (FetchUserId != null)
             //    {
-            //        jobOrders = db.ServiceCenterJob.Where(x => x.IsOnlineApproved == true && x.IsSentToWorkShop && x.ServiceCenterId.ToString() == FetchMechanicCrews.ServiceCenterId);
-            //    }
+            //        var FetchMechanicCrews = db.MechanicCrew.FirstOrDefault(x => x.EmployeeId == FetchUserId && x.IsActive == true);
+            //        if (FetchMechanicCrews != null)
+            //        {
+            //            jobOrders = db.ServiceCenterJob.Where(x => x.IsOnlineApproved == true && x.IsSentToWorkShop && x.ServiceCenterId.ToString() == FetchMechanicCrews.ServiceCenterId);
+            //        }
 
+            //    }
             //}
-            jobOrders = db.ServiceCenterJob;
+            //else
+            //{
+            //    jobOrders = db.ServiceCenterJob.Where(x=>x.JobOrderID.ToString()==Id);
+            //}
+            jobOrders = db.ServiceCenterJob.Where(x=>x.IsSentToWorkShop);
 
             DataSourceResult result = jobOrders.ToDataSourceResult(request, j => new {
                     ProjectName = j.ProjectName,
@@ -651,7 +416,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     EquipmentInformationId = j.EquipmentInformationId,
                     FailureReason = j.FailureReason,
                     AdvanceMeasure = j.AdvanceMeasure,
-                    InspectorComments = GetMaintenaceDuration(j.JobOrderID),
+                    InspectorComments = GetMaintenaceDuration(j.ServiceCenterJobId),
                     IsSentToExternal=j.IsSentToExternal,
                     IsOnlineApproved = j.IsOnlineApproved,
                     IsSendForApproval = j.IsSendForApproval,
@@ -703,7 +468,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 EquipmentInformationId = j.EquipmentInformationId,
                 FailureReason = j.FailureReason,
                 AdvanceMeasure = j.AdvanceMeasure,
-                InspectorComments = GetMaintenaceDuration(j.JobOrderID),
+                InspectorComments = GetMaintenaceDuration(j.ServiceCenterJobId),
                 IsSentToExternal = j.IsSentToExternal,
                 IsOnlineApproved = j.IsOnlineApproved,
                 IsSendForApproval = j.IsSendForApproval,
@@ -728,14 +493,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             try
             {
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
+                var OrderLine = db.ServiceCenterJob.Where(x => x.ServiceCenterJobId== Id).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
                     TimeSpan Duration = DateTime.Now - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
                     return Duration.Days + " Days and " + Duration.Hours + " Hours";
                 }
-
                 TimeSpan FinishedDuration = DateTime.Parse(OrderLine.OnlineTransferredTime.ToString()) - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
                 return FinishedDuration.Days + " Days and " + FinishedDuration.Hours + " Hours";
             }
@@ -752,7 +516,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
 
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id).FirstOrDefault();
+                var OrderLine = db.JobOrder.Where(x => x.JobOrderID == Id).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -780,11 +544,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 var Requests = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
                 if (Requests != null)
                 {
-                    RequestOrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
-                    RequestOrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
+                    RequestOrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
+                    RequestOrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
                 }
-                decimal OrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id).ToList().Count;
-                decimal OrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
+                decimal OrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Id).ToList().Count;
+                decimal OrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
                 var progress = (OrderLineFinished + RequestOrderLineFinished) / (OrderLine + RequestOrderLine);
 
                 progress = progress * 100;
@@ -821,7 +585,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 serviceJobOrder.OnlineSubmittedTime = DateTime.Now;
                 serviceJobOrder.Status = MaintenanceConst.ClosedWithRemark;
                 _ServiceCenterJobService.Update(serviceJobOrder);
-
+                var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == serviceJobOrder.JobOrderID);
+                var Jobrequest = db.JobRequest.FirstOrDefault(x => x.Num == jobOrder.Referance);
+                var maintenanceStage = db.MaintenanceStage.FirstOrDefault(x => x.JobRequestId == Jobrequest.JobRequestId.ToString());
+                maintenanceStage.ModifiedBy = User.Identity.Name;
+                maintenanceStage.LastModified = DateTime.Now;
+                maintenanceStage.Description = "Vehicle Sent from garage to service center for clossing";
+                db.Entry(maintenanceStage).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
                 return Json(new { Message = "Workshop  sent to service center Successfully!", Status = "Success" }, JsonRequestBehavior.AllowGet);
             }
             
@@ -845,7 +616,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     serviceJobOrder.OnlineSubmittedTime = DateTime.Now;
 
                     _ServiceCenterJobService.Update(serviceJobOrder);
-
+                    var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == serviceJobOrder.JobOrderID);
+                    var Jobrequest = db.JobRequest.FirstOrDefault(x => x.Num == jobOrder.Referance);
+                    var maintenanceStage = db.MaintenanceStage.FirstOrDefault(x => x.JobRequestId == Jobrequest.JobRequestId.ToString());
+                    maintenanceStage.ModifiedBy = User.Identity.Name;
+                    maintenanceStage.LastModified = DateTime.Now;
+                    maintenanceStage.Description = "Vehicle is sent to service center from garage for closing";
+                    db.Entry(maintenanceStage).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
                     return Json(new { Message = "Workshop  sent to service center Successfully!", Status = "Success" }, JsonRequestBehavior.AllowGet);
                 }
             }

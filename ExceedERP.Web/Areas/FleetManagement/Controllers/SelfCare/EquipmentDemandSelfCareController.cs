@@ -2,14 +2,15 @@ using ExceedERP.ApplicationServices.FleetManagement.FleetResource;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
-using System; using ExceedERP.Web.Helpers;
+using System;
+using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
 using ExceedERP.Core.Domain.Maintenance;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;     
+using System.Web.Mvc;
 using ExceedERP.Web.Areas.FleetManagement.Models;
-using ExceedERP.Helpers.Common;  
+using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Global;
@@ -18,12 +19,13 @@ using System.Data.Entity;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
-    
+
     [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class EquipmentDemandSelfCareController : Controller
     {
         IVehicleDemandService _VehicleDemandService;
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         public EquipmentDemandSelfCareController()
         {
             _VehicleDemandService = new VehicleDemandService();
@@ -32,51 +34,95 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/VehicleDemand/
         public ActionResult Index()
         {
-            ViewData["Fleets"] = db.Fleets.ToList().Select(s => new {
-                Id = s.FleetsID,
-                s.OrgBranchName,
-                Name = s.EquipmentName + "-" + s.PlateNumber + "-" + s.ChasisNumber
-            }).Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+            //ViewData["Fleets"] = db.Fleets.ToList().Select(s => new {
+            //    Id = s.FleetsID,
+            //    s.OrgBranchName,
+            //    Name = s.EquipmentName + "-" + s.PlateNumber + "-" + s.ChasisNumber
+            //}).Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
 
-            ViewData["EquipmentCategories"] = db.EquipmentIdentity.ToList().Select(s => new {
-                Id = s.EquipmentIdentityID,
-                Name = s.EquipmentCategoryName
-            });
-            ViewData["EquipmentTypes"] = db.EquipmentType.ToList().Select(s => new {
-                Id = s.EquipmentTypeID,
-                Name = s.EquipmentTypeName
-            });
-            ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new {
-                Id = s.EquipmentNameID,
-                Name = s.Name
-            });
+
+            ViewData["Fleets"] = CacheData.GetFleetsCache().Select(
+   i => new
+   {
+       Id = i.Id,
+       i.OrgBranchName,
+       Name = i.Name
+   }).AsQueryable();
+
+            ViewData["EquipmentCategories"] = CacheData.GetEquipmentIdentityCaches().Select(
+            i => new
+            {
+                Id = i.Id,
+                Name = i.Name
+            }).AsQueryable();
+            ViewData["EquipmentTypes"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+
+            //ViewData["EquipmentCategories"] = db.EquipmentIdentity.ToList().Select(s => new
+            //{
+            //    Id = s.EquipmentIdentityID,
+            //    Name = s.EquipmentCategoryName
+            //});
+            //ViewData["EquipmentTypes"] = db.EquipmentType.ToList().Select(s => new
+            //{
+            //    Id = s.EquipmentTypeID,
+            //    Name = s.EquipmentTypeName
+            //});
+            //ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new
+            //{
+            //    Id = s.EquipmentNameID,
+            //    Name = s.Name
+            //});
             ViewData["Operators"] = db.Operator.ToList().Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName + "-" + s.MobilePhone
             });
-            ViewData["FromBranches"] = db.Branch.ToList().Select(s => new {
-                Id = s.BranchId,
-                Name = s.Name
-            });
+            //ViewData["FromBranches"] = db.Branch.ToList().Select(s => new {
+            //    Id = s.BranchId,
+            //    Name = s.Name
+            //});
+            ViewData["FromBranches"] = CacheData.GetBranchCaches().Select(i => new {
+                Name = i.Name,
+                Id = i.Id
+            }).AsQueryable();
             ViewData["FromStructure"] = db.MainCompanyStructures.ToList().Select(s => new {
                 Id = s.OrgStructureId,
                 Name = s.Name
             });
-            ViewData["Employee"] = db.Person_Employee.ToList().Select(s => new {
-                Id = s.EmployeeId,
-                Name = s.FirstNameEnglish + " " + s.MiddleNameEnglish + " " + s.LastNameEnglish
-            });
-            ViewData["EquipmentName"] = db.EquipmentName.Select(s => new
-            {
-                Id = s.EquipmentNameID,
-                Name = s.Name
-            });
+            //ViewData["Employee"] = db.Person_Employee.ToList().Select(s => new {
+            //    Id = s.EmployeeId,
+            //    Name = s.FirstNameEnglish + " " + s.MiddleNameEnglish + " " + s.LastNameEnglish
+            //});
+            ViewData["Employee"] = CacheData.GetEmployeeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            ViewData["EquipmentName"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+
             return View();
         }
         public ActionResult VehicleDemandSelfCare_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
-            IQueryable<VehicleDemand> VehicleDemand = _VehicleDemandService.GetAll().AsQueryable();
+            //IQueryable<VehicleDemand> VehicleDemand = _VehicleDemandService.GetAll().AsQueryable();
+            IQueryable<VehicleDemand> VehicleDemand = db.VehicleDemand.AsQueryable();
             if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
                  && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
@@ -92,6 +138,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 VehicleDemand = VehicleDemand.Where(x => x.CreatedBy == User.Identity.Name);
             }
+
             return Json(VehicleDemand.ToDataSourceResult(request));
 
 
@@ -101,7 +148,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult VehicleDemandSelfCare_Create([DataSourceRequest] DataSourceRequest request, VehicleDemand VehicleDemand)
         {
-            
+
             #region data 
             if (VehicleDemand.EmployeeId == 0)
             {
@@ -134,7 +181,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             else
             {
                 int RequestNumber = 1;
-                VehicleDemand vehicleDemand = _VehicleDemandService.GetAll().OrderByDescending(x => x.RequestNumber).FirstOrDefault();
+                VehicleDemand vehicleDemand = db.VehicleDemand.OrderByDescending(x => x.RequestNumber).FirstOrDefault();
                 if (vehicleDemand != null)
                 {
                     RequestNumber = int.Parse(vehicleDemand.RequestNumber.ToString()) + 1;
@@ -160,9 +207,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 VehicleDemand.VoidBy = VehicleDemand.VoidBy;
                 VehicleDemand.VoidTime = VehicleDemand.VoidTime;
                 VehicleDemand.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-                
+
                 VehicleDemand.CreatedBy = User.Identity.Name;
-                
+
                 if (VehicleDemand != null)
                 {
                     _VehicleDemandService.Insert(VehicleDemand);
@@ -171,7 +218,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     #endregion
                 }
             }
-            return Json(new[] { VehicleDemand }.ToDataSourceResult(request,ModelState));
+            return Json(new[] { VehicleDemand }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -236,7 +283,73 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return Json(new[] { VehicleDemand }.ToDataSourceResult(request, ModelState));
         }
+        public JsonResult Void(Guid id)
+        {
+            var record = db.VehicleDemand.FirstOrDefault(x => x.VehicleDemandId == id);
+            var distributionRecord = db.VehicleDistribution.FirstOrDefault(x => x.RequestID == id);
+            if (record != null && (record.IsOnlineApproved || record.IsDepartmentOnlineApproved) && !record.IsVoid && distributionRecord == null)
+            {
+                record.Status = Enum.GetName(typeof(Core.Domain.Maintenance.OperationStatuses), 10);
+                record.IsVoid = true;
+                record.IsOnlineApproved = false;
+                record.IsSecondOnlineApproved = false;
+                record.IsSendForApproval = false;
+                record.IsSecondSendForApproval = false;
+                record.IsDepartmentOnlineApproved = false;
+                record.IsDepartmentSendForApproval = false;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
 
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (distributionRecord != null)
+            {
+                var formattedData = new
+                {
+                    Message = "The demand request is being distributed.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (!record.IsOnlineApproved || !record.IsDepartmentOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult VehicleDemandSelfCare_Destroy([DataSourceRequest] DataSourceRequest request, VehicleDemand vehicleDemand)
         {
@@ -268,8 +381,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             if (vehicleDemand != null)
             {
                 vehicleDemand.IsDepartmentSendForApproval = true;
+                vehicleDemand.IsSendForApproval = true;
                 vehicleDemand.Status = MaintenanceConst.WaitingApproval;
-                db.VehicleDemand.Attach(vehicleDemand);
+                //db.VehicleDemand.Attach(vehicleDemand);
                 db.Entry(vehicleDemand).State = EntityState.Modified;
                 db.SaveChanges();
                 var returnMessage = new
@@ -310,7 +424,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 VehicleDemandId = model.VehicleDemandId
             });
             return Json(dsResult);
-                
+
         }
 
 
@@ -336,9 +450,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 if (VehicleDemandApproval.Status == MaintenanceConst.Approved)
                 {
-                   // var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
-                     
+                    // var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
+
                     record.IsDepartmentOnlineApproved = true;
+                    record.IsOnlineApproved = true;
                     record.DepartmentOnlineApprovedBy = User.Identity.Name;
                     record.Status = MaintenanceConst.Approved;
                     record.DepartmentOnlineApprovedTime = DateTime.Now;
@@ -352,6 +467,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     //var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
                     record.IsDepartmentSendForApproval = false;
+                    record.IsOnlineApproved = false;
                     record.Status = MaintenanceConst.Rejected;
                     db.VehicleDemand.Attach(record);
                     db.Entry(record).State = EntityState.Modified;
@@ -377,6 +493,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { VehicleDemandApproval }.ToDataSourceResult(request));
         }
-}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
-    
+    }
+}

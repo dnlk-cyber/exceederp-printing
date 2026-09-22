@@ -23,45 +23,78 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
     public class WagonDrillCostSheetController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            ViewData["RepairTypes"] = db.RepairType.Select(s => new
             {
-                Text = s.EquipmentCategoryName,
-                Value = s.EquipmentIdentityID
-            }).ToList();
-            ViewData["type"] = db.EquipmentType.Select(s => new
-            {
-                Text = s.EquipmentTypeName,
-                Value = s.EquipmentTypeID
-            }).ToList();
-            ViewData["name"] = db.EquipmentName.Select(s => new
-            {
-                Text = s.Name,
-                Value = s.EquipmentNameID
-            }).ToList();
+                Code = s.RepairTypeID,
+                Name = s.Name
+            }).AsQueryable();
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+            string isECWC = (fetchSetting != null && fetchSetting.Remark == "ECWC") ? "ECWC" : "Not";
+
+            // Store in ViewBag (or use a strongly typed ViewModel if preferred)
+            ViewData["IsECWC"] = isECWC;
+            ViewBag.setting = fetchSetting != null ? fetchSetting.Remark : "";
+            //ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            //{
+            //    Text = s.EquipmentCategoryName,
+            //    Value = s.EquipmentIdentityID
+            //}).ToList();
+            //ViewData["type"] = db.EquipmentType.Select(s => new
+            //{
+            //    Text = s.EquipmentTypeName,
+            //    Value = s.EquipmentTypeID
+            //}).ToList();
+            //ViewData["name"] = db.EquipmentName.Select(s => new
+            //{
+            //    Text = s.Name,
+            //    Value = s.EquipmentNameID
+            //}).ToList();
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Text = i.Name,
+          Value = i.Id
+      }).AsQueryable();
+            ViewData["type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+           
             ViewData["fleet"] = db.Fleets.Select(x => new
             {
-                Text = x.FleetsID,
-                Value = x.EquipmentName
-            }).ToList();
-            ViewData["branch"] = db.Branch.Select(s => new
-            {
-                Value = s.BranchId,
-                Text = s.Name
-            }).ToList();
+                Value = x.FleetsID,
+                Text = x.PlateNumber + " " + x.SerialNo + " " + x.Model,
+            });
             ViewData["operator"] = db.Operator.Select(s => new
             {
                 Value = s.OperatorID,
                 Text = s.FullName
-            }).ToList();
-            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
-            {
-                Value = s.BusinessUnitId,
-                Text = s.Name
-            }).ToList();
+            }).AsQueryable();
+            ViewData["branch"] = CacheData.GetBranchCaches().Select(
+      i => new
+      {
+          Name = i.Name,
+          BranchId = i.Id
+      }).AsQueryable();
+            ViewData["businessunit"] = CacheData.GetBusinessUnitCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
 
-            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
+            ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).AsQueryable();
             return View();
         }
         public ActionResult WagonDrillCostSheet_Read([DataSourceRequest] DataSourceRequest request)
@@ -81,20 +114,43 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 OperationRateForMeter = wagonDrillTimesheet.OperationRateForMeter,
                 OperationAmount = wagonDrillTimesheet.OperationAmount,
                 IdleAmount = wagonDrillTimesheet.IdleAmount,
+                TotalTime = wagonDrillTimesheet.TotalTime,
+                DownReason = wagonDrillTimesheet.DownReason,
+                IdleReason = wagonDrillTimesheet.IdleReason,
                 TotalAmountBeforeVAT = wagonDrillTimesheet.TotalAmountBeforeVAT,
                 TotalAmount = wagonDrillTimesheet.TotalAmount,
                 FuelCost = wagonDrillTimesheet.FuelCost,
                 TotalCost = wagonDrillTimesheet.TotalCost,
                 NetAmount = wagonDrillTimesheet.NetAmount,
+                MorningTimeStart = wagonDrillTimesheet.MorningTimeStart,
+                MorningTimeEnd = wagonDrillTimesheet.MorningTimeEnd,
+                AfternoonTimeStart = wagonDrillTimesheet.AfternoonTimeStart,
+                AfternoonTimeEnd = wagonDrillTimesheet.AfternoonTimeEnd,
+                NightTimeStart = wagonDrillTimesheet.NightTimeStart,
+                NightTimeEnd = wagonDrillTimesheet.NightTimeEnd,
+                InitialEHR = wagonDrillTimesheet.InitialEHR,
+                FinalEHR = wagonDrillTimesheet.FinalEHR,
+                DifferenceEHR = wagonDrillTimesheet.DifferenceEHR,
+                FuelType = wagonDrillTimesheet.FuelType,
+                OilType = wagonDrillTimesheet.OilType,
+                ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
                 IdleHour = wagonDrillTimesheet.IdleHour,
                 IdleRateHour = wagonDrillTimesheet.IdleRateHour,
                 DownTime = wagonDrillTimesheet.DownTime,
+                ExternalOperatorName = wagonDrillTimesheet.ExternalOperatorName,
                 VAT = wagonDrillTimesheet.VAT,
                 FuelInLiter = wagonDrillTimesheet.FuelInLiter,
                 FuelRate = wagonDrillTimesheet.FuelRate,
+                //ServiceCharge = wagonDrillTimesheet.pla,
                 ServiceCharge = wagonDrillTimesheet.ServiceCharge,
-                LubricantCost = wagonDrillTimesheet.LubricantCost,
+
+                SparePartCost = wagonDrillTimesheet.SparePartCost,
+                OilCost = wagonDrillTimesheet.OilCost,
+                GreaseConsumption = wagonDrillTimesheet.GreaseConsumption,
+                GreaseCost = wagonDrillTimesheet.GreaseCost,
                 MaintenanceCost = wagonDrillTimesheet.MaintenanceCost,
+                OilConsumption = wagonDrillTimesheet.OilConsumption,
+
                 TireCost = wagonDrillTimesheet.TireCost,
                 DateCreated = wagonDrillTimesheet.DateCreated,
                 CreatedBy = wagonDrillTimesheet.CreatedBy,
@@ -122,20 +178,76 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 ExternalOperator = wagonDrillTimesheet.ExternalOperator,
                 RateInMeter = wagonDrillTimesheet.RateInMeter,
                 ReasonForDown = wagonDrillTimesheet.ReasonForDown,
-                ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
                 EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
                 EquipmentNameId = wagonDrillTimesheet.EquipmentNameId,
                 EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
                 OperatorId = wagonDrillTimesheet.OperatorId,
-                
+                LabourCost = wagonDrillTimesheet.LabourCost,
+                BatteryCost = wagonDrillTimesheet.BatteryCost,
+                OverTime = wagonDrillTimesheet.OverTime,
+                BasicSalary = wagonDrillTimesheet.BasicSalary,
+                IsECWC =checkIsECWC()
 
             });
             return Json(result);
         }
-
+        private bool checkIsECWC()
+        {
+            bool x = false;
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+            if (fetchSetting!=null&&fetchSetting.Remark == "ECWC")
+            {
+                x = true;
+            }
+            return (x);
+        }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult WagonDrillCostSheet_Update([DataSourceRequest] DataSourceRequest request, WagonDrillTimesheet model)
         {
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+
+            decimal MCost = 0;
+            if (fetchSetting != null && fetchSetting.Remark != "ECWC")
+            {
+
+
+                var MaintenanceJob = db.JobOrder.FirstOrDefault(x => x.FleetsID == model.FleetsID && x.SecondOnlineApprovedTime == DateTime.Now && x.Status == MaintenanceConst.Delivered);
+                if (MaintenanceJob != null)
+                {
+                    var WorkShopJobs = db.ServiceCenterJob.Where(x => x.JobOrderID == MaintenanceJob.JobOrderID).ToList();
+                    foreach (var WJ in WorkShopJobs)
+                    {
+                        var StoreReq = db.StoreRequisitions.FirstOrDefault(x => x.ServiceJobOrderNo == WJ.ServiceCenterJobId.ToString());
+                        if (StoreReq != null)
+                        {
+                            var Issue = db.Issues.Where(x => x.StoreRequisitionID == StoreReq.StoreRequisitionID).ToList();
+                            foreach (var issue in Issue)
+                            {
+                                var issueItems = db.IssueItems.Where(x => x.IssueID == issue.IssueID);
+                                foreach (var item in issueItems)
+                                {
+                                    MCost += item.IssuedQuantity * item.UnitPrice;
+                                }
+                            }
+                        }
+                        var HumanCost = db.ServiceCrewWorkLogs.Where(x => x.JobId == WJ.ServiceCenterJobId).ToList();
+                        foreach (var HC in HumanCost)
+                        {
+                            MCost += HC.TotalLabourCost;
+                        }
+                    }
+
+                }
+                if (model.MaintenanceCost == 0)
+                {
+                    model.MaintenanceCost = MCost;
+                }
+            }
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+            if (companySetting != null && companySetting.Remark == "MCG")
+            {
+                model.TotalTime = model.OperationNetWorkingHour + model.IdleHour * (model.IdleRateHour * 0.01m);
+            }
             if (ModelState.IsValid)
             {
                 var entity = new WagonDrillTimesheet
@@ -160,14 +272,35 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     FleetsID = model.FleetsID,
                     FuelCost = model.FuelCost,
                     FuelInLiter = model.FuelInLiter,
+                    MorningTimeStart = model.MorningTimeStart,
+                    MorningTimeEnd = model.MorningTimeEnd,
+                    AfternoonTimeStart = model.AfternoonTimeStart,
+                    AfternoonTimeEnd = model.AfternoonTimeEnd,
+                    NightTimeStart = model.NightTimeStart,
+                    NightTimeEnd = model.NightTimeEnd,
+                    InitialEHR = model.InitialEHR,
+                    FinalEHR = model.FinalEHR,
+                    DifferenceEHR = model.DifferenceEHR,
+                    FuelType = model.FuelType,
+                    OilType = model.OilType,
+
+                    SparePartCost = model.SparePartCost,
+                    OilCost = model.OilCost,
+                    GreaseConsumption = model.GreaseConsumption,
+                    GreaseCost = model.GreaseCost,
+                    MaintenanceCost = model.MaintenanceCost,
+                    OilConsumption = model.OilConsumption,
+
                     FuelRate = model.FuelRate,
-                    
+                    LabourCost = model.LabourCost,
+                    BatteryCost = model.BatteryCost,
+                    OverTime = model.OverTime,
+                    TotalTime = model.TotalTime,
+                    BasicSalary = model.BasicSalary,
                     IdleAmount = model.IdleAmount,
                     IdleHour = model.IdleHour,
                     IdleRateHour = model.IdleRateHour,
                     LastModified = model.LastModified,
-                    LubricantCost = model.LubricantCost,
-                    MaintenanceCost = model.MaintenanceCost,
                     ModifiedBy = model.ModifiedBy,
                     NetAmount = model.NetAmount,
                     NumberOfHolesDrilled = model.NumberOfHolesDrilled,
@@ -199,7 +332,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     WorkItem = model.WorkItem,
                     
                 };
-                db.WagonDrillTimesheets.Attach(model);
+                //db.WagonDrillTimesheets.Attach(model);
                 db.Entry(model).State = EntityState.Modified;
 
                 db.SaveChanges();
@@ -245,7 +378,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
-        public JsonResult VoidTimeSheet(int id)
+        public JsonResult VoidCostSheet(int id)
         {
 
             var wagonDrillCostSheet = db.WagonDrillTimesheets.Find(id);

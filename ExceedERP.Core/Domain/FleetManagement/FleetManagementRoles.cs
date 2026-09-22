@@ -54,7 +54,8 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string SalvageStoreIssueApprover = "Salvage_Store_Issue_Approver";
         public const string StoreGoodReceivingUser = "Store_Good_Receiving_User";
         public const string SalvageGoodReceivingApprover = "Store_Good_Receiving_Approver";
-
+    
+       
         // Plan and Evaluation roles
         public const string FleetAnnualPlanner = "Fleet_Annual_Planner";
         public const string FleetAnnualPlanApprover = "Fleet_Annual_Plan_Approver";

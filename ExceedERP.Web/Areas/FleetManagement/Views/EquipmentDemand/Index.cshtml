@@ -17,6 +17,7 @@
       {
           columns.Bound(e => e.RequestNumber).Width(120);
           columns.ForeignKey(e => e.EmployeeId, (System.Collections.IEnumerable)ViewData["Employee"], "Id", "Name").EditorTemplateName("EmployeeDemandEditor").Width(130).Filterable(true);
+          //columns.Bound(e => e.EmployeeName).EditorTemplateName("EmployeeDemandEditor").Width(130).Filterable(true);
           columns.Bound(e => e.FromBranchName).Width(150)/*.EditorTemplateName("FromBranchEditor")*/;
           columns.Bound(e => e.FromStructureName).Width(120)/*.EditorTemplateName("FromStructureEditor")*/;
           columns.Bound(e => e.ReasonForTravel).Width(120);
@@ -24,7 +25,13 @@
           columns.Bound(e => e.IsAssigned).Width(100);
           columns.Bound(e => e.Status).Width(100);
           columns.Bound(e => e.Num).Visible(false);
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+          columns.Command(command => { command.Edit(); command.Destroy();
+
+              if(HttpContext.Current.User.IsInRole("Resource_Approver")){
+                  command.Custom("Reject").Click("Reject");
+              }
+          }).Width(200);
       })
           .ToolBar(commands =>
           {
@@ -56,7 +63,7 @@
       .HtmlAttributes(new { style = "height:520px;" })
       .DataSource(dataSource => dataSource
           .Ajax()
-   
+
            .Model(model =>
            {
                model.Id(p => p.VehicleDemandId);
@@ -66,7 +73,6 @@
                model.Field(p => p.OrgStructureId).Editable(false);
                model.Field(p => p.BranchId).Editable(false);
                model.Field(p => p.BusinessUnitId).Editable(false);
-               
            })
                .Events(ev => ev
                .Error("error_handler(\"grid\")")
@@ -76,8 +82,10 @@
           .Read(read => read.Action("VehicleDemand_Read", "EquipmentDemand").Data("sendForgery"))
           .Update(update => update.Action("VehicleDemand_Update", "EquipmentDemand").Data("sendForgery"))
           .Destroy(update => update.Action("VehicleDemand_Destroy", "EquipmentDemand").Data("sendForgery"))
+          .Sort(sort=>sort.Add(s=>s.Num).Descending())
       )
-      .Events(events => events.DataBound("dataBound")))
+      //.Events(events => events.DataBound("dataBound"))
+      )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
             .Name("tabStrip_#=VehicleDemandId#")
@@ -96,7 +104,7 @@
                                     <a href='@Url.Action("EquipmentDemand", "FleetPrint")/?Id=#=VehicleDemandId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
                                     # }#
 
-                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    # if (!IsSendForApproval&&!IsDepartmentSendForApproval)
                                     {#
                                     @*<a href='@Url.Action("VehicleDemand_SendForOnlineApproval", "VehicleDemandApproval")/?EId=#=VehicleDemandId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>*@
                                     <a onclick='return sendForApproval("#=VehicleDemandId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
@@ -129,9 +137,15 @@
                         .Columns(columns =>
                         {
 
-                            columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategories"], "Id", "Name").EditorTemplateName("EquipmentCategoryEditor").Title("Equipment Category").Width(140);
+                            //columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategories"], "Id", "Name").EditorTemplateName("EquipmentCategoryEditor").Title("Equipment Category").Width(140);
+                            columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategories"], "Id", "Name")
+                           .EditorTemplateName("EquipmentCategoryEditor")
+                           .Title("Equipment Category")
+                           .Width(140);
                             columns.ForeignKey(e => e.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentTypes"], "Id", "Name").EditorTemplateName("EquipmentTypeEditor").Title("Equipment Type").Width(140);
-                            columns.ForeignKey(e => e.EquipmentNameId, (System.Collections.IEnumerable)ViewData["EquipmentName"], "Id", "Name").EditorTemplateName("EquipmentNameEditorTemplate").Title("Equipment Name").Width(140);
+                             //columns.Bound(e => e.EquipmentTypeName).EditorTemplateName("EquipmentTypeEditor").Title("Equipment Type").Width(140);
+                            columns.ForeignKey(e => e.EquipmentNameId, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").EditorTemplateName("EquipmentNameEditorTemplate").Title("Equipment Name").Width(140);
+                            //columns.Bound(e => e.EquipmentName).EditorTemplateName("EquipmentNameEditorTemplate").Title("Equipment Name").Width(140);
                             //columns.Bound(o => o.ManufacturedYear).EditorTemplateName("ManfacturedYearEditor").Width(100);
                             columns.Bound(o => o.Quantity).EditorTemplateName("Integer").Width(80);
                             columns.Bound(o => o.StartDate).Width(100);
@@ -167,7 +181,7 @@
                                 .Read(read => read.Action("RequestedViewEquipment", "AssignedEquipment", new { readRequestNumber = "#=VehicleDemandId#", readType = "NORMAL" }).Data("sendForgery"))
                                 .Update(update => update.Action("AssignedEquipment_Update", "AssignedEquipment").Data("sendForgery"))
                                 .Destroy(destroy => destroy.Action("AssignedEquipment_Destroy", "AssignedEquipment").Data("sendForgery"))
-                                                                 
+
                         )
                         .Sortable()
                         .ToClientTemplate())
@@ -178,9 +192,11 @@
                         .Name("AssignedConfirmedEquipmentgrid_#=VehicleDemandId#")
                         .Columns(columns =>
                         {
-                            columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").EditorTemplateName("EquipmentNameEditor").Title("Equipment Name").Width(140);
+                            //columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").EditorTemplateName("EquipmentNameEditor").Title("Equipment Name").Width(140);
+                            columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentName"], "Id", "Name").EditorTemplateName("EquipmentNameEditor").Title("Equipment Name").Width(140);
                             columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["Fleets"], "Id", "Name").EditorTemplateName("FleetEditor").Title("Plate No").Width(140);
                             columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").EditorTemplateName("OperatorNameEditor").Title("Operator Name").Width(140);
+                            //columns.Bound(e => e.OperatorFullName).EditorTemplateName("OperatorNameEditor").Title("Operator Name").Width(140);
                         }).Events(ev =>
                         {
                             ev.DataBound("lineonDataBound");
@@ -223,19 +239,19 @@
                                        .DataSource(dataSource => dataSource
                             .Ajax()
                             .PageSize(5)
-                                                      .Model(model =>
+                                .Model(model =>
                               {
                                   model.Id(p => p.VehicleDemandApprovalID);
                                   model.Field(p => p.CreatedBy).Editable(false);
                                   model.Field(p => p.DateCreated).Editable(false);
                               })
-                                                            .Events(ev => ev
-                                                            .Error("error_handler(\"VehicleDemandApproval#=VehicleDemandId#\")")
-                                                            .RequestStart("onRequestStart(\"VehicleDemandApproval#=VehicleDemandId#\")")
-                                                            .RequestEnd("onRequestEnd(\"VehicleDemandApproval#=VehicleDemandId#\")"))
-                                                            .Create(update => update.Action("VehicleDemand_Approve", "VehicleDemandApproval", new { EId = "#=VehicleDemandId#" }).Data("sendForgery"))
-                                                            .Read(read => read.Action("VehicleDemandApproval_Read", "VehicleDemandApproval", new { EId = "#=VehicleDemandId#" }).Data("sendForgery"))
-                                                            .Update(update => update.Action("VehicleDemand_Approve", "VehicleDemandApproval", new { EId = "#=VehicleDemandId#" }).Data("sendForgery"))
+                                .Events(ev => ev
+                                .Error("error_handler(\"VehicleDemandApproval#=VehicleDemandId#\")")
+                                .RequestStart("onRequestStart(\"VehicleDemandApproval#=VehicleDemandId#\")")
+                                .RequestEnd("onRequestEnd(\"VehicleDemandApproval#=VehicleDemandId#\")"))
+                                .Create(update => update.Action("VehicleDemand_Approve", "VehicleDemandApproval", new { EId = "#=VehicleDemandId#" }).Data("sendForgery"))
+                                .Read(read => read.Action("VehicleDemandApproval_Read", "VehicleDemandApproval", new { EId = "#=VehicleDemandId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("VehicleDemand_Approve", "VehicleDemandApproval", new { EId = "#=VehicleDemandId#" }).Data("sendForgery"))
 
 
                                                       )
@@ -251,22 +267,37 @@
 
 
     function dataBound() {
-        
-
         var grid = this;
 
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
+         
             if (dataItem.IsOnlineApproved == true)
             {
                 $(this).addClass("k-state-FleetApproved");
             }
+            if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                $(this).addClass("k-state-FleetSendForApproval");
+            }
+            if (!dataItem.IsSendForApproval) {
+                $(this).addClass("k-state-FleetPending");
+            }
             if (dataItem.IsOnlineApproved == true || dataItem.IsSendForApproval == true) {
           
                 $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove(); 
+                $(this).find(".k-grid-delete").remove();
                   
-                
+            }
+            if (dataItem.IsDepartmentOnlineApproved == true || dataItem.IsDepartmentSendForApproval == true) {
+          
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove(); 
+            }
+            if (!dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-Reject").remove();
+            }
+            if (dataItem.IsAssigned) {
+                $(this).find(".k-grid-Reject").remove();
             }
         });
     }
@@ -416,7 +447,27 @@
             }
         });
     }
+    function Reject(e) {
+    e.preventDefault();
+    var grid = this;
+    var row = $(e.currentTarget).closest("tr");
+    var dataItem = grid.dataItem(row);
 
+    $.ajax({
+        type: "POST",
+       url: '@Url.Action("EquipmentDemandReject", "EquipmentDemand")',
+        data: {
+            id: dataItem.VehicleDemandId,
+        },
+        success: function (result) {
+            alert(result.Message);
+            location.reload(true);
+        },
+        error: function (xhr) {
+            alert("Error occurred ");
+        }
+    });
+    }
 </script>
 
 <script type="text/javascript">
@@ -433,8 +484,19 @@
          
     }
 </script>
-<style type="text/css">
+<style>
     div.k-edit-form-container {
         width: 700px;
+    }
+    .k-state-FleetPending {
+        background-color: #87CEFA !important;
+    }
+
+    .k-state-FleetSendForApproval {
+        background-color: #90EE90 !important;
+    }
+
+    .k-state-FleetApproved {
+        background-color: #e6e6fa !important;
     }
 </style>    

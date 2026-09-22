@@ -1,188 +1,531 @@
 ﻿
-                @{
-                ViewBag.Title = "MachineryWorkingTimesheet";
-                Layout = "~/Views/Shared/_Layout.cshtml";
-                }
-                <legend>Machinery Timesheet</legend>
-                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.MachineryWorkingTimeSheet>()
-                .Name("grid")
-                .Columns(columns =>
-                {
+@{
+    ViewBag.Title = "MachineryWorkingTimesheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool isMIDROC = (ViewBag.setting as string) == "MIDROC";
+    bool IsMCG = (ViewBag.setting as string) == "MCG";
 
-                    columns.Bound(c => c.MachineryWorkingTimeSheetId).Title("S.No").Width(50);
-                    columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
-                    columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
-                    columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
-                    columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Value", "Text").Title("Serial No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
-                    columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
-                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
-                    columns.Bound(c => c.Date).Width(100);
-                    columns.Bound(c => c.MorningTimeStart).Title("Morning Time Start").Width(100);
-                    columns.Bound(c => c.MorningTimeEnd).Title("Morning Time End").Width(100);
-                    columns.Bound(c => c.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
-                    columns.Bound(c => c.AfternoonTimeEnd).Title("Afternoon Time End").Width(100);
-                    columns.Bound(c => c.NightTimeStart).Title("Night Time Start").Width(100);
-                    columns.Bound(c => c.NightTimeEnd).Title("Night Time End").Width(100);
-                    columns.Bound(c => c.OilConsumption ).Title("Oil Consumption").Width(100);
-                    columns.Bound(c => c.LubricantCost ).Title("Lubricant Cost").Width(100);
-                    columns.Bound(c => c.DownHours).Title("Down Hour").Width(100);
-                    columns.Bound(c => c.DownHourRate).Title("Down Hour").Width(100);
-                    columns.Bound(c => c.DownReason).Title("Down Reason").Width(100);
-                    columns.Bound(c => c.IdleHours).Title("Idle Hours").Width(100);
-                   // columns.Bound(c => c.IdleRate).Title("Idle Rate").Width(100);
-                    columns.Bound(c => c.IdleReason).Title("Idle Reason").Width(100);
-                   // columns.Bound(c => c.NumberOfHoles).Title("Number of holes").Width(100);
-                    //columns.Bound(c => c.HoleDepth).Title("Hole depth").Width(100);
-                    columns.Bound(c => c.FuelConsumption).Title("Fuel consumption").Width(100);
-                   // columns.Bound(c => c.FuelRate).Title("Fuel rate").Width(100);
-                    columns.Bound(c => c.GreaseConsumption).Title("Grease consumption").Width(100);
-                   // columns.Bound(c => c.NetHour).Title("Net houre").Width(100);
-                    columns.Bound(c => c.WorkType).Title("Worek type").Width(100);                   
-                    columns.ForeignKey(c => c.OperatorId,(IEnumerable)ViewData["operator"],"Value","Text").Title("Operator Name").Width(100);
-                    // columns.Bound(c => c.GreaseRate).Title("Grease rate").Width(100);
-                    columns.Bound(c => c.Remark).Title("Remark").Width(100);
+}
 
-                    columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
-                })
-                .ToolBar(toolbar =>
-                {
-                    toolbar.Create();
+<legend>Machinery Timesheet</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.MachineryWorkingTimeSheet>()
+                            .Name("grid")
+                            .Columns(columns =>
+                            {
 
-                })
-                .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                .TemplateName("MachineryTimesheetTemplate")
-                .Window(win => win.Title("Machinery Timesheet").Width(820)))
-                .Pageable()
-                .Filterable()
+                                columns.Bound(c => c.MachineryWorkingTimeSheetId).Title("S.No").Width(50);
+                                columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                                columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                                columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+                                columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Value", "Text").Title("Plate/Serial No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                                columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "BranchId", "Name").Title("Branch Name").Width(100);
+                                columns.Bound(c => c.Date).Width(100);
+                                if (IsMCG)
+                                {
+                                    columns.Bound(c => c.ReasonForDown).Title("Reason For Down").Width(100);
+                                    columns.Bound(c => c.ReasonForIdle).Title("Reason For Idle").Width(100);
+                                    columns.Bound(c => c.MorningTimeStart).Title("Morning Time Start").Width(100);
+                                    columns.Bound(c => c.MorningTimeEnd).Title("Morning Time End").Width(100);
+                                    columns.Bound(c => c.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
+                                    columns.Bound(c => c.AfternoonTimeEnd).Title("Afternoon Time End").Width(100);
+                                    columns.Bound(c => c.NightTimeStart).Title("Night Time Start").Width(100);
+                                    columns.Bound(c => c.NightTimeEnd).Title("Night Time End").Width(100);
+                                    columns.Bound(c => c.TotalTime).Title("Total Time").Width(100);
+                                }
+                                if (!IsMCG)
+                                { 
+                                columns.Bound(c => c.NetHour).Title("Net Working HR").Width(120);
+                            }
+                            columns.Bound(c => c.OilConsumption).Title("Oil Consumption").Width(100);
+    columns.Bound(c => c.DownHours).Title("Down Hour").Width(100);
+    columns.Bound(c => c.DownHourRate).Title("Down Rate").Width(100);
+    if (!IsMCG)
+    {
+        columns.Bound(c => c.DownReason).Title("Down Reason").Width(100);
+        columns.Bound(c => c.IdleReason).Title("Idle Reason").Width(100);
+    }
+    columns.Bound(c => c.IdleHours).Title("Idle Hours").Width(100);
+    if (isMIDROC == false)
+    {
+        columns.Bound(c => c.FuelConsumption).Title("Fuel consumption").Width(100);
+    }
+    if (IsMCG == true)
+    {
+        columns.Bound(c => c.FuelKMR).Title("Fuel KMR").Width(100);
+        columns.Bound(c => c.InitialEHR).Title("Initial EHR").Width(100);
+        columns.Bound(c => c.FinalEHR).Title("Final EHR").Width(100);
+        columns.Bound(c => c.DifferenceEHR).Title("EHR Difference").Width(100);
+    }
+    if (isMIDROC == false)
+    {
+        columns.Bound(c => c.FuelType).Title("Fuel Type").Width(100);
+        columns.Bound(c => c.GreaseConsumption).Title("Grease consumption").Width(100);
+        columns.Bound(c => c.OilType).Title("Oil Type").Width(100);
+    }
+    columns.Bound(c => c.WorkType).Title("Worek type").Width(100);
+    columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator Name").Width(100);
+    columns.Bound(c => c.ExternalOperatorName).Title("External Operator").Width(100);
+    // columns.Bound(c => c.GreaseRate).Title("Grease rate").Width(100);
+    // columns.Bound(c => c.GreaseRate).Title("Grease rate").Width(100);
+    columns.Bound(c => c.TimeSheetStatus).Width(150);
+    columns.Bound(c => c.Remark).Title("Remark").Width(100);
 
-                .Events(e => e.DataBound("dataBound"))
-                .Events(e => e.DetailExpand("onDetailExpand"))
-                .Scrollable(s => s.Height(550))
-                .DataSource(dataSource => dataSource
-                .Ajax()
-                .Model(model => model.Id(p => p.MachineryWorkingTimeSheetId))
-                .Events(ev => ev
-                .Error("error_handler(\"grid\")")
-                .RequestStart("onRequestStart(\"grid\")")
-                .RequestEnd("onRequestEnd(\"grid\")"))
-                .Read(read => read.Action("MachineryWorkingTimeSheets_Read", "MachineryWorkingTimeSheet").Data("sendForgery"))
-                .Create(create => create.Action("MachineryWorkingTimeSheets_Create", "MachineryWorkingTimeSheet").Data("sendForgery"))
-                .Update(update => update.Action("MachineryWorkingTimeSheets_Update", "MachineryWorkingTimeSheet").Data("sendForgery"))
-                .Destroy(destroy => destroy.Action("InsuranceCompanies_Destroy", "MachineryWorkingTimeSheet").Data("sendForgery"))
-                .Sort(e => e.Add(a => a.MachineryWorkingTimeSheetId).Descending())
-                ).ClientDetailTemplateId("template")
-                )
+    columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
+    if (IsMCG || isMIDROC)
+    {
+        columns.Template(@<text></text>)
+                                                        .ClientTemplate(
+                                                        "# if (!TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
+                                                            "<input type='checkbox' class='approveCheckbox' />" +
+                                                        "# } else { #" +
+                                                            "<input type='checkbox' disabled='disabled' />" +
+                                                        "# } #")
+                                                        .Title("Request Approval")
+                                                        .Width(60);
+                                columns.Template(@<text></text>)
+                                                        .ClientTemplate(
+                                                        "# if (TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
+                                                            "<input type='checkbox' class='approveCheckbox' />" +
+                                                        "# } else { #" +
+                                                            "<input type='checkbox' disabled='disabled' />" +
+                                                        "# } #")
+                                                        .Title("Approve")
+                                                        .Width(60);
+                                columns.Template(@<text></text>)
+                                                        .ClientTemplate(
+                                                        "# if (TimeSheetSendForAproval&& TimeSheetApproved&&!CostSheetApproved) { #" +
+                                                            "<input type='checkbox' class='approveCheckbox' />" +
+                                                        "# } else { #" +
+                                                            "<input type='checkbox' disabled='disabled' />" +
+                                                        "# } #")
+                                                        .Title("Reject")
+                                                        .Width(60);
+                                }
+                            })
+                                            .ToolBar(toolbar =>
+                                            {
+                                            toolbar.Template(@<text>
+                                                    <!-- Always visible -->
+                                                    <a class="k-button k-button-icontext k-grid-add" href="#">
+                                                        <span class="k-icon k-i-plus"></span>
+                                                        Add New Record
+                                                    </a>
+                                                    <!-- Conditional content -->
+                                                    @if (isMIDROC||IsMCG)
+                                                                {
+                                                        <label style="margin-left:20px;">Branch:</label>
+                                                        @(Html.Kendo().DropDownList()
+                                                                                            .Name("branchDropdown")
+                                                                                            .DataTextField("Text")
+                                                                                            .DataValueField("Value")
+                                                                                            .BindTo((IEnumerable<SelectListItem>)ViewData["branchh"])
+                                                                                            .OptionLabel("Select Branch")
+                                                                                            .HtmlAttributes(new { style = "width:200px;margin-right:10px;" })
+                                                        )
 
-                <script id="template" type="text/kendo-tmpl">
+                                                        <label style="margin-left:10px;">Date:</label>
+                                                        @(Html.Kendo().DatePicker()
+                                                                                            .Name("datePicker")
+                                                                                            .Format("yyyy-MM-dd")
+                                                                                            .Value(DateTime.Now)
+                                                                                            .HtmlAttributes(new { style = "width:180px;margin-right:10px;" })
+                                                        )
 
-                @(Html.Kendo().TabStrip()
-                .Name("tabStrip_#=MachineryWorkingTimeSheetId#")
-                .SelectedIndex(0)
-                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                .Items(items =>
-                {
+                                                        <button class="k-button k-primary" onclick="generateTimesheet()">
+                                                            Auto Generate Timesheet
+                                                        </button>
+                                                        <button type="button"
+                                                                class="k-button k-primary"
+                                                                onclick="SendForApprovalSelected()">
+                                                           Request Approval
+                                                        </button><button type="button"
+                                                                class="k-button k-primary"
+                                                                onclick="ApproveSelected()">
+                                                            Approve Selected
+                                                        </button><button type="button"
+                                                                class="k-button k-primary"
+                                                                onclick="RejectSelected()">
+                                                            Reject Selected
+                                                        </button>
+                                                                }
+                                                    /**/
+                                                    /**/
+                                                    /**/
 
-                items.Add().Text("Detail").Content(
+                                                </text>);
+                                                    })
+                                                                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                                                .TemplateName("MachineryTimesheetTemplate")
+                                                                                .Window(win => win.Title("Machinery Timesheet").Width(820)))
+                                                                                .Pageable()
+                                                                                .Filterable()
+
+                                                                                .Events(e => e.DataBound("dataBound"))
+                                                                                .Events(e => e.DetailExpand("onDetailExpand"))
+                                                                                .Scrollable(s => s.Height(550))
+                                                                                .DataSource(dataSource => dataSource
+                                                                                .Ajax()
+                                                                                .Model(model => model.Id(p => p.MachineryWorkingTimeSheetId))
+                                                                                .Events(ev => ev
+                                                                                .Error("error_handler(\"grid\")")
+                                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+                                                                                .Read(read => read.Action("MachineryWorkingTimeSheets_Read", "MachineryWorkingTimeSheet").Data("sendForgery"))
+                                                                                .Create(create => create.Action("MachineryWorkingTimeSheets_Create", "MachineryWorkingTimeSheet").Data("sendForgery"))
+                                                                                .Update(update => update.Action("MachineryWorkingTimeSheets_Update", "MachineryWorkingTimeSheet").Data("sendForgery"))
+                                                                                .Destroy(destroy => destroy.Action("InsuranceCompanies_Destroy", "MachineryWorkingTimeSheet").Data("sendForgery"))
+                                                                                .Sort(e => e.Add(a => a.MachineryWorkingTimeSheetId).Descending())
+                                                                                ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+
+    @(Html.Kendo().TabStrip()
+               .Name("tabStrip_#=MachineryWorkingTimeSheetId#")
+               .SelectedIndex(0)
+               .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+               .Items(items =>
+               {
+
+                   items.Add().Text("Detail").Content(
                 @<text>
-                <legend>Detail</legend>
-                <div class="box">
-                <div class="box-col">
-                # if (TimeSheetSendForAproval == false)
-                {#
+                    <legend>Detail</legend>
+                    <div class="box">
+                        <div class="box-col">
+                            # if (TimeSheetSendForAproval == false)
+                            {#
 
-                <a onclick='return sendForApproval("#=MachineryWorkingTimeSheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                # }#
-                # if (TimeSheetSendForAproval == true&&TimeSheetApproved==true)
-                {#
+                            <a onclick='return sendForApproval("#=MachineryWorkingTimeSheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            # }#
+                            # if (TimeSheetSendForAproval == true&&TimeSheetApproved==true&&!CostSheetSendForAproval)
+                            {#
 
-                <a onclick='return voidRecord("#=MachineryWorkingTimeSheetId#")' href=' \#' title="Void Record"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                # }#
-                </div>
-                </div>
-                <div class="row">
-                <div class="col-md-1">
-                </div>
-                <div class="col-md-6" style="margin-top:20px;">
-                <div class="form-group">
-                <label>Status</label>: <span>#=TimeSheetStatus#</span>
-                </div>
-                <div class="form-group">
-                <label>Created By</label>: <span>#=CreatedBy#</span>
-                </div>
-                <div class="form-group">
-                <label>Date Created</label>: <span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
-                </div>
-                <div class="form-group">
-                <label>Approved By</label>: <span>#=TimeSheetApprovedBy#</span>
-                </div>
-                <div class="form-group">
-                <label>Approved Date</label>: <span>#=kendo.toString(kendo.parseDate(TimeSheetApprovedDate), 'dd/MM/yyyy')#</span>
-                </div>
-                </div>
-                </div>
+                            <a onclick='return voidRecord("#=MachineryWorkingTimeSheetId#")' href=' \#' title="Void Record"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                            # }#
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-6" style="margin-top:20px;">
+                            <div class="form-group">
+                                <label>Status</label>: <span>#=TimeSheetStatus#</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Created By</label>: <span>#=CreatedBy#</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Date Created</label>: <span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Approved By</label>: <span>#=TimeSheetApprovedBy#</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Approved Date</label>: <span>#=kendo.toString(kendo.parseDate(TimeSheetApprovedDate), 'dd/MM/yyyy')#</span>
+                            </div>
+                        </div>
+                    </div>
                 </text>
-                ); items.Add().Text("Approval").Content(@<text>
-
-                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
-                .Name("TimeSheetApproval#=MachineryWorkingTimeSheetId#")
-                .Columns(columns =>
-                {
-                columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
-
-                columns.Bound(o => o.Remark).Width(200);
-                columns.Bound(c => c.CreatedBy).Width(150);
-                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                columns.Command(command => { command.Edit(); }).Width(250);
-
-                })
-                .ToolBar(commands => commands.Create().Text("Approve Request"))
-                .Events(ev =>
-                {
-                ev.DataBound("approvalDataBound");
-                })
-                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                .DataSource(dataSource => dataSource
-                .Ajax()
-                .PageSize(5)
-                .Model(model =>
-                {
-                model.Id(p => p.TimeSheetApprovalNewId);
-                model.Field(p => p.CreatedBy).Editable(false);
-                model.Field(p => p.DateCreated).Editable(false);
-                })
-                .Events(ev => ev
-                .Error("error_handler(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")")
-                .RequestStart("onRequestStart(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")")
-                .RequestEnd("onRequestEnd(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")"))
-
-                .Create(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheet", new { Id = "#=MachineryWorkingTimeSheetId#" }).Data("sendForgery"))
-                .Read(read => read.Action("MachineryTimeSheetApproval_Read", "MachineryWorkingTimeSheet", new { Id = "#=MachineryWorkingTimeSheetId#" }).Data("sendForgery"))
-                .Update(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheet").Data("sendForgery"))
+                                );
 
 
-                )
-                .ToClientTemplate())
-                </text>
-                );
-                }).ToClientTemplate())    
+
+                           if (isMIDROC == true)
+                           {
+                               items.Add().Text("Fuel Consumption")
+                                               .Content(@<text>
+                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.ItemConsumptionVm>()
+                                                                                        .Name("FuelCD#=MachineryWorkingTimeSheetId#")
+                                                                                        .Columns(columns =>
+                                                                                        {
+                                                                 //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").Title("Item Category Name").Width(50);
+                                                                 // columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemCode"], "Value", "Text").Title("Item Name").Width(50);
+                                                                 columns.Bound(c => c.ItemCategoryCode).Title("Item Category Name").Width(50);
+                                                                             columns.Bound(c => c.ItemCode).Title("Item Name").Width(50);
+                                                                             columns.Bound(c => c.UnitPrice).Title("Unit Price").Width(50);
+                                                                             columns.Bound(c => c.IssuedQuantity).Title("Quantity").Width(50);
+                                                                             columns.Bound(c => c.Total).Title("Total Cost").Width(50);
+                                                                         })
+                                                                                           .Events(ev =>
+                                                                                           {
+                                                                    //ev.DataBound("approvalDataBound");
+                                                                })
+                                                                                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                               .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                                                                               .DataSource(dataSource => dataSource
+                                                                                                                       .Ajax()
+                                                                                                                       .PageSize(5)
+                                                                                                                       .Model(model =>
+                                                                                                                       {
+                                                                                                            model.Id(p => p.PlateNo);
+                                                                                                        })
+                                                                                                .Events(ev => ev
+                                                                                                    .Error("error_handler(\"FuelCD#=MachineryWorkingTimeSheetId#\")")
+                                                                                                    .RequestStart("onRequestStart(\"FuelCD#=MachineryWorkingTimeSheetId#\")")
+                                                                                                    .RequestEnd("onRequestEnd(\"FuelCD#=MachineryWorkingTimeSheetId#\")"))
+                                                                                                    .Read(read => read.Action("GetFuelConsumption", "DryLoadingTimeSheets").Data("getSparePartData")
+                                                                                                    )
+                                                                                                )
+                                                                                                .ToClientTemplate())
 
 
-                </script>
+                                            </text>);
 
 
-                <script type="text/javascript">
-                function filterEquipmentType() {
+                                    items.Add().Text("Spare Part Consumption")
+                                                     .Content(@<text>
+                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.ItemConsumptionVm>()
+                                                                                        .Name("SparePartCD#=MachineryWorkingTimeSheetId#")
+                                                                                        .Columns(columns =>
+                                                                                        {
+                                                    //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").Title("Item Category Name").Width(50);
+                                                    // columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemCode"], "Value", "Text").Title("Item Name").Width(50);
+                                                    columns.Bound(c => c.ItemCategoryCode).Title("Item Category Name").Width(50);
+                                                                columns.Bound(c => c.ItemCode).Title("Item Name").Width(50); columns.Bound(c => c.UnitPrice).Title("Unit Price").Width(50);
+                                                                columns.Bound(c => c.IssuedQuantity).Title("Quantity").Width(50);
+                                                                columns.Bound(c => c.Total).Title("Total Cost").Width(50);
+
+                                                            })
+                                                                                           .Events(ev =>
+                                                                                           {
+                                                               })
+                                                                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                               .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                                                                               .DataSource(dataSource => dataSource
+                                                                                               .Ajax()
+                                                                                               .PageSize(5)
+                                                                                               .Model(model =>
+                                                                                               {
+                                                                       model.Id(p => p.PlateNo);
+                                                                   })
+                                                                                                .Events(ev => ev
+                                                                                                    .Error("error_handler(\"SparePartCD#=MachineryWorkingTimeSheetId#\")")
+                                                                                                    .RequestStart("onRequestStart(\"SparePartCD#=MachineryWorkingTimeSheetId#\")")
+                                                                                                    .RequestEnd("onRequestEnd(\"SparePartCD#=MachineryWorkingTimeSheetId#\")"))
+
+                                                                                                    .Read(read => read.Action("GetSparePartConsumption", "DryLoadingTimeSheets").Data("getSparePartData"))
+                                                                                                )
+                                                                                                .ToClientTemplate())
+
+
+                                                    </text>);
+                                   items.Add().Text("Oil and Lub Consumption")
+                             .Content(@<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.ItemConsumptionVm>()
+                                                                .Name("OilLubCD#=MachineryWorkingTimeSheetId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").Title("Item Category Name").Width(50);
+                                                // columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemCode"], "Value", "Text").Title("Item Name").Width(50);
+                                                columns.Bound(c => c.ItemCategoryCode).Title("Item Category Name").Width(50);
+                                                            columns.Bound(c => c.ItemCode).Title("Item Name").Width(50); columns.Bound(c => c.UnitPrice).Title("Unit Price").Width(50);
+                                                            columns.Bound(c => c.IssuedQuantity).Title("Quantity").Width(50);
+                                                            columns.Bound(c => c.Total).Title("Total Cost").Width(50);
+
+                                                        })
+                                                                   .Events(ev =>
+                                                                   {
+                                                           })
+                                                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                       .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                                                       .DataSource(dataSource => dataSource
+                                                                       .Ajax()
+                                                                       .PageSize(5)
+                                                                       .Model(model =>
+                                                                       {
+                                                                   model.Id(p => p.PlateNo);
+                                                               })
+                                                                        .Events(ev => ev
+                                                                            .Error("error_handler(\"OilLubCD#=MachineryWorkingTimeSheetId#\")")
+                                                                            .RequestStart("onRequestStart(\"OilLubCD#=MachineryWorkingTimeSheetId#\")")
+                                                                            .RequestEnd("onRequestEnd(\"OilLubCD#=MachineryWorkingTimeSheetId#\")"))
+
+                                                                            .Read(read => read.Action("GetOilConsumption", "DryLoadingTimeSheets").Data("getSparePartData"))
+                                                                        )
+                                                                        .ToClientTemplate())
+
+
+                            </text>);
+
+       }
+       if (IsMCG)
+       {
+           items.Add().Text("Consmption Detail").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetConsumptionItem>()
+                                        .Name("Consumption_#=MachineryWorkingTimeSheetId#")
+                                         .Columns(columns =>
+                                         {
+                                             columns.Bound(c => c.OilConsumption).Width(100);
+                                             columns.Bound(c => c.OilType).Width(100);
+                                             columns.Command(command => { command.Edit(); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
+                                         })
+                                               .ToolBar(toolbar =>
+                                               {
+                                                   toolbar.Create();
+
+                                               })
+                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                               .HtmlAttributes(new { Style = "Width:850px" })
+                                        .Pageable()
+                                        .Events(e => e.DataBound("detailDataBound"))
+                                        //.Events(e => e.DetailExpand("onDetailExpand"))
+                                        .Filterable()
+                                        .Scrollable(s => s.Height(550))
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Sort(s => s.Add(e => e.TimeSheetConsumptionItemId).Descending())
+                                            .Model(model => model.Id(p => p.TimeSheetConsumptionItemId))
+                                            .Events(ev => ev
+                                                         .Error("error_handler(\"Consumption_#=MachineryWorkingTimeSheetId#\")")
+                                                         .RequestStart("onRequestStart(\"Consumption_#=MachineryWorkingTimeSheetId#\")")
+                                                         .RequestEnd("onRequestEnd(\"Consumption_#=MachineryWorkingTimeSheetId#\")"))
+                                            .Read(read => read.Action("Read", "ConsumptionItem", new { id = "#=MachineryWorkingTimeSheetId#", TimeSheetType = "Machinery" }).Data("sendForgery"))
+                                            .Create(create => create.Action("Create", "ConsumptionItem", new { id = "#=MachineryWorkingTimeSheetId#", TimeSheetType = "Machinery" }).Data("sendForgery"))
+                                            .Update(update => update.Action("Update", "ConsumptionItem", new { TimeSheetType = "Machinery" }).Data("sendForgery"))
+                                            .Destroy(destroy => destroy.Action("Destroy", "ConsumptionItem", new { TimeSheetType = "Machinery" }).Data("sendForgery"))
+                                        ).ToClientTemplate()
+            )
+        </text>);
+                items.Add().Text("Maintenance Cost Detail")
+            .Content(@<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.MaintenanceCostDetail>()
+                                     .Name("MaintenanceCD#=MachineryWorkingTimeSheetId#")
+                                     .Columns(columns =>
+                                     {
+                                         columns.ForeignKey(c => c.RepairTypeId, (IEnumerable)ViewData["RepairTypes"], "Code", "Name").Title("Repair Type").Width(50);
+                                         columns.Bound(c => c.SparePartCost).Width(50);
+                                         columns.Bound(c => c.GreaseConsumption).Width(50);
+                                         columns.Bound(c => c.GreaseCost).Width(50);
+                                         columns.Bound(c => c.LabourCost).Width(50);
+                                         columns.Bound(c => c.ServiceCost).Width(50);
+                                         columns.Bound(c => c.OtherCost).Width(50);
+                                         columns.Bound(c => c.MiscellaneousCost).Width(50);
+                                         columns.Bound(c => c.Cost).Title("Total Cost").Width(50);
+                                         columns.Bound(c => c.MechanicName).Title("Mechanic Name").Width(50);
+                                         columns.Bound(c => c.TimeTaken).Title("Total Time Taken").Width(50);
+                                         columns.Command(command =>
+                                         {
+                                             command.Edit();
+                                             command.Destroy();
+                                         }).Title("Action").Width(50);
+
+                                     })
+                                     .ToolBar(commands => commands.Create())
+                                .Events(ev =>
+                                {
+                                    //ev.DataBound("approvalDataBound");
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+.HtmlAttributes(new { style = " width:1200px" }).DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .PageSize(5)
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.MaintenanceCostDetailId);
+                                            model.Field(p => p.CreatedBy).Editable(false);
+                                            model.Field(p => p.DateCreated).Editable(false);
+                                        })
+                    .Events(ev => ev
+                    .Error("error_handler(\"MaintenanceCD#=MachineryWorkingTimeSheetId#\")")
+                    .RequestStart("onRequestStart(\"MaintenanceCD#=MachineryWorkingTimeSheetId#\")")
+                    .RequestEnd("onRequestEnd(\"MaintenanceCD#=MachineryWorkingTimeSheetId#\")"))
+
+                    .Create(create => create.Action("RepairType_Create", "MaintenanceCostDetail", new { id = "#=MachineryWorkingTimeSheetId#", Text = "Machinery" }).Data("sendForgery"))
+                    .Read(read => read.Action("LightVehicle_Read", "MaintenanceCostDetail", new { id = "#=MachineryWorkingTimeSheetId#", Text = "Machinery" }).Data("sendForgery"))
+                    .Update(update => update.Action("RepairType_Update", "MaintenanceCostDetail", new { Text = "Machinery" }).Data("sendForgery"))
+                    .Destroy(update => update.Action("RepairType_Destroy", "MaintenanceCostDetail", new { Text = "Machinery" }).Data("sendForgery"))
+
+
+                    )
+                    .ToClientTemplate())
+
+
+            </text>);
+}
+items.Add().Text("Approval").Content(@<text>
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
+       .Name("TimeSheetApproval#=MachineryWorkingTimeSheetId#")
+       .Columns(columns =>
+       {
+                                        columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                                        columns.Bound(o => o.Remark).Width(200);
+                                        columns.Bound(c => c.CreatedBy).Width(150);
+                                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                        columns.Command(command => { command.Edit(); }).Width(250);
+
+                                    })
+       .ToolBar(commands => commands.Create().Text("Approve Request"))
+       .Events(ev =>
+       {
+                                        ev.DataBound("approvalDataBound");
+                                    })
+       .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .DataSource(dataSource => dataSource
+       .Ajax()
+       .PageSize(5)
+       .Model(model =>
+       {
+                                        model.Id(p => p.TimeSheetApprovalNewId);
+                                        model.Field(p => p.CreatedBy).Editable(false);
+                                        model.Field(p => p.DateCreated).Editable(false);
+                                    })
+       .Events(ev => ev
+                                                      .Error("error_handler(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")")
+                                                      .RequestStart("onRequestStart(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")")
+                                                      .RequestEnd("onRequestEnd(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")"))
+
+                                                      .Create(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheet", new { Id = "#=MachineryWorkingTimeSheetId#" }).Data("sendForgery"))
+                                                      .Read(read => read.Action("MachineryTimeSheetApproval_Read", "MachineryWorkingTimeSheet", new { Id = "#=MachineryWorkingTimeSheetId#" }).Data("sendForgery"))
+                                                      .Update(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheet").Data("sendForgery"))
+
+
+                                                      )
+                                                      .ToClientTemplate())
+</text>
+                                                       );
+
+    }).ToClientTemplate())
+
+
+</script>
+
+
+<script type="text/javascript">
+                @*function filterEquipmentType() {
                 var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
                 var filterInput = dropdownlist.filterInput;
-        
+
                 return {
                 timeSheetEquipmentType: "@ViewBag.machineryType",
                 equipmentIdentityId: $("#EquipmentCategoryId").val(),
                 search: filterInput.val()
                 };
 
-                }
+                }*@
+    function getSparePartData() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = $(".k-detail-row:visible").prev();
+        var dataItem = grid.dataItem(row);
 
+        return {
+            fleetId: dataItem.FleetsID,
+            date: kendo.toString(dataItem.Date, "yyyy-MM-dd")
+        };
+    }
+
+    function filterEquipmentType() {
+    var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+    var filterInput = dropdownlist.filterInput;
+
+    return {
+        timeSheetEquipmentType: @((int)ViewBag.TimesheetType),
+        equipmentIdentityId: $("#EquipmentCategoryId").val(),
+        search: filterInput.val()
+    };
+}
                 function filterEquipmentNames() {
                 var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
                 var filterInput = dropdownlist.filterInput;
@@ -192,15 +535,15 @@
                 search: filterInput.val()
                 };
                 }
- 
+
                 function filterPlateNumber() {
                 return {
                 equipmentNameId: $("#EquipmentNameId").val(),
                 text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
                 }
                 }
-                </script>
-                <script type = "text/javascript" >
+</script>
+<script type="text/javascript">
                 var timeSheetApproved;
                 var timeSheetSendForAproval;
                 var machineryWorkingTimeSheetId;
@@ -234,6 +577,7 @@
                 {
                 var grid = this;
                 grid.tbody.find("tr[role='row']")
+
                 .each(
                 function() {
                 var dataItem = grid.dataItem(this);
@@ -241,7 +585,9 @@
                 {
                 $(this).addClass("k-state-FleetApproved");
                 }
-
+                    if (dataItem.TimeSheetSendForAproval == true && dataItem.TimeSheetApproved == false) {
+                        $(this).addClass("k-state-FleetSendForApproval");
+                    }
                 if (dataItem.TimeSheetApproved == true || dataItem.TimeSheetSendForAproval == true)
                 {
                 $(this).find(".k-grid-edit").remove();
@@ -250,7 +596,7 @@
                 }
                 );
                 }
-                                       
+
                 function approvalDataBound(e) {
                 var grid = this;
 
@@ -269,7 +615,7 @@
                 $.ajax({
                 type: "GET",
                 url: '@Url.Action("GetFleetValues", "MachineryWorkingTimeSheet", new { area = "FleetManagement" })',
-                dataType: "json",   
+                dataType: "json",
                 data: { fleetId: id },
                 success: function (result) {
                 console.log(result);
@@ -292,7 +638,7 @@
 
 
                 function voidRecord(id) {
-        
+
                 $.ajax({
                 type: "POST",
                 url: '@Url.Action("voidRecord", "MachineryWorkingTimeSheet", new { area = "FleetManagement" })',
@@ -302,7 +648,7 @@
                 alert(result);
 
                 location.reload(true);
-                }, 
+                },
                 error: function (result) {
                 alert(result);
                 }
@@ -310,7 +656,7 @@
                 }
 
                 function sendForApproval(id) {
-        
+
                 $.ajax({
                 type: "POST",
                 url: '@Url.Action("TimeSheetSendForApproval", "MachineryWorkingTimeSheet", new { area = "FleetManagement" })',
@@ -320,21 +666,21 @@
                 alert(result);
 
                 location.reload(true);
-                }, 
+                },
                 error: function (result) {
                 alert(result);
                 }
                 });
                 }
 
-                </script>
+</script>
 
-                <script>
-        
+<script>
+
 
                 function calculateNetHour() {
                 //let mts = kendo.parseDate($("#mts").val(), "HH:mm");
-                //let mte = kendo.parseDate($("mte").val(), "HH:mm"); 
+                //let mte = kendo.parseDate($("mte").val(), "HH:mm");
                 //var result = new Date(mte.getTime() - mts.getTime());
                 //$("#result").val(kendo.toString(result, "HH:mm"));
                 //let mts = $("#NightTimeStart").data("kendoTimePicker").value();
@@ -368,9 +714,9 @@
                 }
                 function handleFleetId() {
                 return {
-                equipmentNameId: $("#EquipmentNameId").val(),
-                @*timeSheetEquipmentType: "@ViewBag.machineryType",*@
-                text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+                //equipmentNameId: $("#EquipmentNameId").val(),
+                    text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+                    timeSheetType: "Machinery",
                 }
                 }
 
@@ -379,20 +725,208 @@
                 text: $("#OperatorId").data("kendoDropDownList").filterInput.val()
                 }
                 }
-    
-                </script>
 
-                <style>
-                div.k-edit-form-container {
-                width: auto;
-                height: auto;
+</script>
+<script>
+
+function generateTimesheet() {
+
+    var branchId = $("#branchDropdown").data("kendoDropDownList").value();
+    var selectedDate = $("#datePicker").data("kendoDatePicker").value();
+
+    if (!branchId) {
+        alert("Please select a branch");
+        return;
+    }
+
+    if (!selectedDate) {
+        alert("Please select a date");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("AutoGenerateTimeSheet", "GenerateTimeSheet")',
+        type: "POST",
+        data: {
+            id: branchId,
+            date: kendo.toString(selectedDate, "yyyy-MM-dd")
+        },
+        success: function (response) {
+
+            if (response.Result == "OK") {
+                alert(response.Message);
+                $("#grid").data("kendoGrid").dataSource.read();
+            }
+        },
+        error: function () {
+            alert("Error generating timesheets");
+        }
+    });
+}
+$(document).ready(function () {
+        var fleetDropdown = $("#FleetsID").data("kendoDropDownList");
+
+        if (fleetDropdown && fleetDropdown.value()) {
+            fleetDropdown.trigger("change");
+        }
+    });
+    function detailDataBound() {
+        var grid = this;
+        if (timeSheetSendForAproval == true) {
+            grid.wrapper.find('.k-grid-add').remove();
+        }
+        grid.tbody.find("tr[role='row']")
+            .each(
+            function () {
+                if (timeSheetSendForAproval == true) {
+                    $(this).find(".k-grid-edit").remove();
+                    $(this).find(".k-grid-delete").remove();
                 }
 
-                .row .col-sm-2 {
-                width: 150px;
-                }
+                });
+    }
+    function onFleetChange(e) {
+    var fleetId = this.value();
 
-                .row {
-                margin: auto;
-                }
-                </style>
+    if (!fleetId) return;
+
+    $.ajax({
+        url: '@Url.Action("GetFleetIsExternal", "FleetManagementDataProvider")',
+        type: 'GET',
+        data: { fleetId: fleetId },
+        success: function (res) {
+
+            if (res.isExternal === true) {
+                $('#ProcurementSupplierID').data("kendoDropDownList").value(res.SupplierId);
+                $('#ProcurementSupplierID').data("kendoDropDownList").trigger("change");
+                $("#internalOperatorDiv").show();
+                $("#externalOperatorDiv").show();
+            } else {
+                $("#internalOperatorDiv").show();
+                $("#externalOperatorDiv").hide();
+            }
+
+        }
+    });
+}
+
+</script>
+<script>
+    function SendForApprovalSelected() {
+
+    var grid = $("#grid").data("kendoGrid");
+    var ids = [];
+
+    $("#grid tbody tr").each(function () {
+
+        var checkbox = $(this).find(".approveCheckbox");
+
+        if (checkbox.is(":checked")) {
+
+            var dataItem = grid.dataItem(this);
+
+            ids.push(dataItem.MachineryWorkingTimeSheetId);
+        }
+    });
+
+    if (ids.length === 0) {
+        alert("Please select at least one record.");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("SendForApprovalSelected", "MachineryWorkingTimeSheet")',
+        type: "POST",
+        traditional: true,
+        data: { ids: ids },
+        success: function (result) {
+            $("#grid").data("kendoGrid").dataSource.read();
+            alert(result.Message);
+        }
+    });
+    }
+    function ApproveSelected() {
+
+    var grid = $("#grid").data("kendoGrid");
+    var ids = [];
+
+    $("#grid tbody tr").each(function () {
+
+        var checkbox = $(this).find(".approveCheckbox");
+
+        if (checkbox.is(":checked")) {
+
+            var dataItem = grid.dataItem(this);
+
+            ids.push(dataItem.MachineryWorkingTimeSheetId);
+        }
+    });
+
+    if (ids.length === 0) {
+        alert("Please select at least one record.");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("ApproveSelected", "MachineryWorkingTimeSheet")',
+        type: "POST",
+        traditional: true,
+        data: { ids: ids },
+        success: function (result) {
+            $("#grid").data("kendoGrid").dataSource.read();
+            alert(result.Message);
+        }
+    });
+    }
+    function RejectSelected() {
+
+    var grid = $("#grid").data("kendoGrid");
+    var ids = [];
+
+    $("#grid tbody tr").each(function () {
+
+        var checkbox = $(this).find(".approveCheckbox");
+
+        if (checkbox.is(":checked")) {
+
+            var dataItem = grid.dataItem(this);
+
+            ids.push(dataItem.MachineryWorkingTimeSheetId);
+        }
+    });
+
+    if (ids.length === 0) {
+        alert("Please select at least one record.");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("RejectSelected", "MachineryWorkingTimeSheet")',
+        type: "POST",
+        traditional: true,
+        data: { ids: ids },
+        success: function (result) {
+            $("#grid").data("kendoGrid").dataSource.read();
+            alert(result.Message);
+        }
+    });
+}
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .k-state-FleetSendForApproval {
+        background-color: burlywood !important;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

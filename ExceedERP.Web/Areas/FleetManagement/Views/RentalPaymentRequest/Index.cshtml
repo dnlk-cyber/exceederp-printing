@@ -14,7 +14,7 @@
 
                         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullName").Title("Employee Name").Width(130);
                         columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(130);
-                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Value", "Text").Title("Business Unit").Width(120);
+                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Id", "Name").Title("Business Unit").Width(120);
                         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Title("Branch").Width(110);
                         columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GLPeriod"], "GLPeriodId", "Name").Title("Period").Width(110);
                         columns.ForeignKey(c => c.GLFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "GlFiscalYearId", "Name").Title("FiscalYear").Width(110);
@@ -23,8 +23,11 @@
                         columns.Bound(c => c.ReasonofPayment).Title("Reason of Payment").Width(120);
                         columns.Bound(c => c.RequestDate).Title("Request Date").Width(100);
                         columns.Bound(c => c.Refference).Title("Refference").Width(100);
+                        columns.Bound(c => c.WithHoldingTax).Format("{0:P0}").Title("Witholding Tax").Width(100);
                         columns.Bound(c => c.Remark).Title("Remark").Width(75);
-                        columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
+                        columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); command.Custom("Authorize").Click("AuthorizePaymentRequest");
+                            command.Custom("Reject").Click("RejectAuthorization");
+                        }).Title("Action").Width(300);
                     })
                     .ToolBar(toolbar =>
                     {
@@ -58,250 +61,265 @@
 )
 <script type="text/kendo-template" id="rentalPaymentRequestDetailTemplate">
     @(Html.Kendo().TabStrip()
-                                                        .Name("tab_Strip_#=RentalPaymentRequestId#")
-                                                        .SelectedIndex(0)
-                                                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                                        .Items(items =>
-                                                        {
-                                                            items.Add().Text("Detail").Content(
-                                                                    @<text>
-                                                                        <p><b>Record Status :#= Status #</b></p>
-                                                                        <a href='@Url.Action("RentalPaymentRequest", "FleetPrint")/#=RentalPaymentRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                        # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
-                                                                        {#
-                                                                        <a onclick='return sendForApproval("#=RentalPaymentRequestId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                        <br />
-                                                                        # } #
-                                                                        <hr>
-                                                                        <dl class="dl-horizontal">
-                                                                            <dt>
-                                                                                PR No.
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #= RentalPaymentRequestId #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Request Date
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Status
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #= Status #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                CreatedOn
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                CreatedBy
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #= CreatedBy #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Modified By
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #= ModifiedBy #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Modified Date
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Department Approved On
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Approved By
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=DepartmentOnlineApprovedBy #
+                      .Name("tab_Strip_#=RentalPaymentRequestId#")
+                      .SelectedIndex(0)
+                      .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                      .Items(items =>
+                      {
+                          items.Add().Text("Detail").Content(
+                                @<text>
+                                    <p><b>Record Status :#= Status #</b></p>
+                                    @*<a href='@Url.Action("RentalPaymentRequest", "FleetPrint")/#=RentalPaymentRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                                    # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
+                                    {#
+                                    <a onclick='return sendForApproval("#=RentalPaymentRequestId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    <br />
+                                    # } # 
+                                  # if (IsDepartmentOnlineApproved)
+                                    {#
+                                    <a onclick='return VoidRequest("#=RentalPaymentRequestId#")' href=' \#' title="Void"><i class="fa fa-bolt fa-2x"></i></a>
+                                    <br />
+                                    # } #
+                                    #if(IsDepartmentOnlineApproved){#
+                                    <a href='@Url.Action("RentalEquipmentPaymentRequest","FleetPrint")/?id=#=RentalPaymentRequestId#' title="Print Summary"><i class="fa fa-print fa-2x"></i></a>                                    #}#
+                                    <hr>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            PR No.
+                                        </dt>
+                                        <dd>
+                                            #= RentalPaymentRequestId #
+                                        </dd>
+                                        <dt>
+                                            Request Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Status
+                                        </dt>
+                                        <dd>
+                                            #= Status #
+                                        </dd>
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified By
+                                        </dt>
+                                        <dd>
+                                            #= ModifiedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Department Approved On
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Approved By
+                                        </dt>
+                                        <dd>
+                                            #=DepartmentOnlineApprovedBy #
 
-                                                                            </dd>
+                                        </dd>
 
-                                                                            <dt>
-                                                                                Budget Approved On
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Approved By
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=BudgetApprovedBy#
+                                        <dt>
+                                            Budget Approved On
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Approved By
+                                        </dt>
+                                        <dd>
+                                            #=BudgetApprovedBy#
 
-                                                                            </dd>
+                                        </dd>
 
-                                                                            <dt>
-                                                                                Finance Approved On
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                        <dt>
+                                            Finance Approved On
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
 
 
-                                                                            </dd>
-                                                                            <dt>
-                                                                                Approved By
-                                                                            </dt>
-                                                                            <dd>
-                                                                                #=OnlineApprovedBy #
+                                        </dd>
+                                        <dt>
+                                            Approved By
+                                        </dt>
+                                        <dd>
+                                            #=OnlineApprovedBy #
 
-                                                                            </dd>
-                                                                        </dl>
-                                                                        # if (!IsDepartmentOnlineApproved)
-                                                                        {#
-                                                                        <dl class="h6">
-                                                                                <dt>
-                                                                                    Next Approver
-                                                                                </dt>
-                                                                                <dd>
-                                                                                    #= ForwardedTo # <snap id="user_name_display"></snap>
-                                                                                    <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
-                                                                                    <a onclick='SelectNextApprover(this,"#=RentalPaymentRequestId#","FleetRentalPaymentRequest")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
-                                                                                    <snap id="new_user_name_display"></snap>
-                                                                                </dd> 
-                                                                            </dl>
-                                                                        # } #
-                                                                        <hr>
-                                                                    </text>);
-                                                                    items.Add().Text("Equipment").Content(@<text>
-                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequestLine>()
-                                                                                            .Name("RentalPaymentRequestLine_grid#=RentalPaymentRequestId#")
-                                                                                            .Columns(columns =>
-                                                                                            {
-                                                        //columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
-                                                        columns.ForeignKey(c => c.EquipmnetTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
-                                                                    columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120);
-                                                                    columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120);
-                                                                    columns.Bound(o => o.Amount).Title("Amount").Width(120);
-                                                                    columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120).EditorTemplateName("GlTaxRateTemplate");
-                                                                    columns.Bound(o => o.SubTotalAmount).Title("Sub Total Amount").Width(120);
-                                                                    columns.Bound(o => o.AdvancedPayment).Title("Advanced Payment").Width(120);
-                                                                    columns.Bound(o => o.TotalAmount).Title("Total Amount").Width(120);
-                                                                    columns.Command(command =>
-                                                                    {
-                                                                        command.Edit();
-                                                                        command.Destroy();
-                                                                    }).Width(180);
-                                                                })
-                                                                                            .ToolBar(e => e.Create())
-                                                                                            .Editable(editable =>
-                                                                                            {
-                                                                    editable.Mode(GridEditMode.PopUp).TemplateName("RentalRequestLine");
-                                                                })
-                                                                                            .DataSource(dataSource => dataSource
-                                                                                                .Ajax()
-                                                                                                .ServerOperation(false)
-                                                                                                .Model(model =>
-                                                                                                {
-                                                                        model.Id(p => p.RentalPaymentRequestLineId);
-                                                                        model.Field(p => p.Amount).Editable(false);
-                                                                        model.Field(p => p.SubTotalAmount).Editable(false);
-                                                                        model.Field(p => p.TotalAmount).Editable(false);
-                                                                    })
-                                                                                                .PageSize(5)
-                                                                                                .Events(ev => ev
-                                                                                                    .Error("error_handler(\"RentalPaymentRequestLine_grid#=RentalPaymentRequestId#\")")
-                                                                                                    .RequestStart("onRequestStart(\"RentalPaymentRequestLine_grid#=RentalPaymentRequestId#\")")
-                                                                                                    .RequestEnd("onRequestEnd(\"RentalPaymentRequestLine_grid#=RentalPaymentRequestId#\")")
-                                                                                                )
-                                                                                                .Read(read => read.Action("RentalPaymentRequestLine_Read", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
-                                                                                                .Create(create => create.Action("RentalPaymentRequestLine_Create", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
-                                                                                                .Update(update => update.Action("RentalPaymentRequestLine_Update", "RentalPaymentRequestLine").Data("sendForgery"))
-                                                                                                .Destroy(destroy => destroy.Action("RentalPaymentRequestLine_Destroy", "RentalPaymentRequestLine").Data("sendForgery"))
-                                                                                            )
-                                                                                            .Pageable()
-                                                                                            .Sortable()
-                                                                                            .ToClientTemplate()
-                                                                        )
-                                                                    </text>);
-
-                                                                            items.Add().Text("Validation").Content(
-                                                    @<text>
-                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequestDepartmentValidation>()
-                                                                        .Name("RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#")
+                                        </dd>
+                                    </dl>
+                                    # if (!IsDepartmentOnlineApproved)
+                                    {#
+                                    <dl class="h6">
+                                        <dt>
+                                            Next Approver
+                                        </dt>
+                                        <dd>
+                                            #= ForwardedTo # <snap id="user_name_display"></snap>
+                                            <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                            <a onclick='SelectNextApprover(this,"#=RentalPaymentRequestId#","FleetRentalPaymentRequest")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                            <snap id="new_user_name_display"></snap>
+                                        </dd>
+                                    </dl>
+                                    # } #
+                                    <hr>
+                                </text>);
+                                  items.Add().Text("Equipment").Content(@<text>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequestLine>()
+                                                                        .Name("RentalPaymentRequestLine_grid#=RentalPaymentRequestId#")
                                                                         .Columns(columns =>
                                                                         {
-                                                                                    columns.Bound(c => c.RentalPaymentRequestDepartmentValidationId).Hidden(true);
-                                                                                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
-                                                                                    columns.Bound(c => c.Remark).Width(200);
-                                                                                    columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
-                                                                                    columns.Bound(c => c.LastModified).Hidden(true);
-                                                                                    columns.Bound(c => c.CreatedBy).Width(200).Title("User");
-                                                                                    columns.Bound(c => c.ModifiedBy).Hidden(true);
-                                                                                    columns.Command(command =>
+                                                                                          columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                                                                                          columns.ForeignKey(c => c.EquipmnetTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                                                                                          columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120);
+                                                                                          columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120);
+                                                                                          columns.Bound(o => o.GrossBeforeVat).Title("Gross Before Vat").Width(120);
+                                                                                          columns.Bound(o => o.VAT).Title("Vat").Width(120);
+                                                                                          columns.Bound(o => o.WithholdingAmount).Title("Witholding").Width(120);
+                                                                                          columns.Bound(o => o.TotalAmount).Title("Total Amount").Width(120);
+                                                                                          columns.Bound(o => o.SparePartCost).Title("Spare Part Cost").Width(120);
+                                                                                          columns.Bound(o => o.MaintenanceCost).Title("Maintenance Cost").Width(120);
+                                                                                          columns.Bound(o => o.OilLubCost).Title("OilLub Cost").Width(120);
+                                                                                          columns.Bound(o => o.FuelCost).Title("Fuel Cost").Width(120);
+                                                                                          columns.Bound(o => o.TotalCost).Title("Dedactable").Width(120);
+                                                                                          columns.Bound(o => o.AdvancedPayment).Title("Advanced Payment").Width(120);
+                                                                                          columns.Bound(o => o.SubTotalAmount).Title("Net Payable").Width(120);
+                                                                                          columns.Command(command =>
+                                                                              {
+                                                                                                              command.Edit();
+                                                                                                              command.Destroy();
+                                                                                                          }).Width(180);
+                                                                                      })
+                                                                        .ToolBar(e => e.Create())
+                                                                        .Editable(editable =>
                                                                         {
-                                                                                            command.Edit();
-                                                                                        });
-                                                                                })
-                                                                     .ToolBar(toolbar =>
-                                                                     {
-                                                                                 toolbar.Create();
-                                                                             })
-                                                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                     .Events(x => x.DataBound("onDataBoundValidationDepartment"))
-                                                                     .Sortable(sortable =>
-                                                                     {
-                                                                                 sortable.SortMode(GridSortMode.SingleColumn);
-                                                                             })
-                                                                     .Filterable()
-                                                                     .Scrollable()
-                                                                     .DataSource(dataSource => dataSource
-                                                                         .Ajax()
-                                                                         .Events(ev => ev
-                                                                             .Error("error_handler(\"RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#\")")
-                                                                             .RequestStart("onRequestStart(\"RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#\")")
-                                                                             .RequestEnd("onRequestEnd(\"RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#\")"))
-                                                                         .Model(
-                                                                             model =>
-                                                                             {
-                                                                                         model.Id(p => p.RentalPaymentRequestDepartmentValidationId);
-                                                                                         model.Field(p => p.OrgBranchName).Editable(false);
-                                                                                         model.Field(p => p.CreatedBy).Editable(false);
-                                                                                         model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                         model.Field(p => p.LastModified).Editable(false);
-                                                                                         model.Field(p => p.DateCreated).Editable(false);
-                                                                                     })
-                                                                         .Read(read => read.Action("RentalPaymentRequestDepartmentValidations_Read", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
-                                                                         .Create(create => create.Action("RentalPaymentRequestDepartmentValidations_Create", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
-                                                                         .Update(update => update.Action("RentalPaymentRequestDepartmentValidations_Update", "PaymentRequestDepartmentValidation", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
-                                                                     )
-                                                                     .ToClientTemplate())
-                                                    </text>);
+                                                                                          editable.Mode(GridEditMode.PopUp).TemplateName("RentalRequestLine");
+                                                                                      })
+                                                                                      .Events(ev=>ev.DataBound("EquipmentBound"))
+                                                                        .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                            .ServerOperation(false)
+                                                                            .Model(model =>
+                                                                            {
+                                                                                              model.Id(p => p.RentalPaymentRequestLineId);
+                                                                                              model.Field(p => p.Amount).Editable(false);
+                                                                                              model.Field(p => p.SubTotalAmount).Editable(false);
+                                                                                              model.Field(p => p.TotalAmount).Editable(false);
+                                                                                          })
+                                                                            .PageSize(5)
+                                                                            .Events(ev => ev
+                                                                                .Error("error_handler(\"RentalPaymentRequestLine_grid#=RentalPaymentRequestId#\")")
+                                                                                .RequestStart("onRequestStart(\"RentalPaymentRequestLine_grid#=RentalPaymentRequestId#\")")
+                                                                                .RequestEnd("onRequestEnd(\"RentalPaymentRequestLine_grid#=RentalPaymentRequestId#\")")
+                                                                            )
+                                                                            .Read(read => read.Action("RentalPaymentRequestLine_Read", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
+                                                                            .Create(create => create.Action("RentalPaymentRequestLine_Create", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
+                                                                            .Update(update => update.Action("RentalPaymentRequestLine_Update", "RentalPaymentRequestLine").Data("sendForgery"))
+                                                                            .Destroy(destroy => destroy.Action("RentalPaymentRequestLine_Destroy", "RentalPaymentRequestLine").Data("sendForgery"))
+                                                                        )
+                                                                        .Pageable()
+                                                                        .Sortable()
+                                                                        .ToClientTemplate()
+                                    )
+                                </text>);
+
+                                        items.Add().Text("Validation").Content(
+        @<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequestDepartmentValidation>()
+                                            .Name("RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#")
+                                            .Columns(columns =>
+                                            {
+                                                        columns.Bound(c => c.RentalPaymentRequestDepartmentValidationId).Hidden(true);
+                                                        columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                        columns.Bound(c => c.Remark).Width(200);
+                                                        columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                        columns.Bound(c => c.LastModified).Hidden(true);
+                                                        columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                        columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                        columns.Command(command =>
+                    {
+                                            command.Edit();
+                                        });
                                                     })
-                                                       .ToClientTemplate())
+                                         .ToolBar(toolbar =>
+                                         {
+                                                     toolbar.Create();
+                                                 })
+                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                         //.Events(x => x.DataBound("onDataBoundValidationDepartment"))
+                                         .Sortable(sortable =>
+                                         {
+                                                     sortable.SortMode(GridSortMode.SingleColumn);
+                                                 })
+                                         .Filterable()
+                                         .Scrollable()
+                                         .DataSource(dataSource => dataSource
+                                             .Ajax()
+                                             .Events(ev => ev
+                                                 .Error("error_handler(\"RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#\")")
+                                                 .RequestStart("onRequestStart(\"RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#\")")
+                                                 .RequestEnd("onRequestEnd(\"RentalPaymentRequestDepartmentValidation#=RentalPaymentRequestId#\")"))
+                                             .Model(
+                                                 model =>
+                                                 {
+                                                             model.Id(p => p.RentalPaymentRequestDepartmentValidationId);
+                                                             model.Field(p => p.OrgBranchName).Editable(false);
+                                                             model.Field(p => p.CreatedBy).Editable(false);
+                                                             model.Field(p => p.ModifiedBy).Editable(false);
+                                                             model.Field(p => p.LastModified).Editable(false);
+                                                             model.Field(p => p.DateCreated).Editable(false);
+                                                         })
+                                             .Read(read => read.Action("RentalPaymentRequestDepartmentValidations_Read", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
+                                             .Create(create => create.Action("RentalPaymentRequestDepartmentValidations_Create", "RentalPaymentRequestLine", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
+                                             .Update(update => update.Action("RentalPaymentRequestDepartmentValidations_Update", "PaymentRequestDepartmentValidation", new { id = "#=RentalPaymentRequestId#" }).Data("sendForgery"))
+                                         )
+                                         .ToClientTemplate())
+        </text>);
+                      })
+                           .ToClientTemplate())
 </script>
 <script>
     var supplierId;
     var branchId;
-
+    var PeriodId;
+    var isDeptSendForApproval;
     function onDetailExpand(e) {
         var masterRow = e.masterRow;
-
         var masterGrid = this;
-
         var masterDataItem = masterGrid.dataItem(masterRow);
+        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
         supplierId = masterDataItem.ProcurementSupplierID;
         branchId = masterDataItem.BranchId;
+        PeriodId = masterDataItem.GLPeriodId;
 
     }
     function getSupplierAndBranchId() {
 
         return {
             supplierId: supplierId,/*$("#ProcurementSupplierID").val(),*/
-            branchId: branchId/* $("#BranchId").val()*/
+            branchId: branchId,/* $("#BranchId").val()*/
         };
     }
     function getProcurementSupplierID() {
@@ -353,7 +371,6 @@
     var masterGrid;
     var codeid;
     var isDeptapproved;
-    var isDeptSendForApproval;
     var supplierId;
     var branchId;
     function detailExpandMasterDepartment(e) {
@@ -365,32 +382,29 @@
         branchId = masterDataItem.BranchId;
         codeid = masterDataItem.PaymentRequestId;
         isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
-        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
     }
     function onDataBoundExternalPayment() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
-            var dataItem = grid.dataItem(this);
             var masterDataItem = grid.dataItem(this);
-            $(this).find(".k-grid-reject").hide();
-            if (masterDataItem.IsOnlineApproved == true || masterDataItem.IsSendForApproval==true) {
+            if (masterDataItem.IsDepartmentOnlineApproved == true || masterDataItem.IsDepartmentSendForApproval == true) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-delete").hide();
             }
-            if (masterDataItem.IsSendForApproval == true && masterDataItem.IsOnlineApproved == false) {
+            if (masterDataItem.IsDepartmentSendForApproval == true && masterDataItem.IsDepartmentOnlineApproved == false) {
                 $(this).addClass("k-state-waiting-approval");
             }
-            if (masterDataItem.IsOnlineApproved == false && masterDataItem.IsSendForApproval == false) {
+            if (masterDataItem.IsDepartmentOnlineApproved == false && masterDataItem.IsDepartmentSendForApproval == false) {
                 $(this).addClass("k-state-Rejected");
             }
-            if (dataItem.IsOnlineApproved) {
+            if (masterDataItem.IsDepartmentOnlineApproved) {
 
                 $(this).find(".k-grid-approve").hide();
                 //$(this).find(".k-grid-reject").hide();
 
             }
-            else if (dataItem.IsSendForApproval) {
+            else if (masterDataItem.IsDepartmentSendForApproval) {
 
                 $(this).find(".k-grid-approve").show();
             }
@@ -398,7 +412,28 @@
                 $(this).find(".k-grid-approve").hide();
             }
 
+            if (!masterDataItem.IsDepartmentOnlineApproved) {
+                $(this).find(".k-grid-Authorize").remove();
+                $(this).find(".k-grid-Reject").remove();
+            }
+            if (masterDataItem.IsDepartmentOnlineApproved && masterDataItem.IsAuthorized) {
+                $(this).find(".k-grid-Authorize").remove();
+                $(this).find(".k-grid-Reject").remove();
+            }
+
         });
+    }
+    function EquipmentBound() {
+        var grid = this;
+        if (isDeptSendForApproval) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+            grid.tbody.find("tr[role='row']").each(function () {
+                if (isDeptSendForApproval) {
+                    $(this).find(".k-grid-edit").remove();
+                    $(this).find(".k-grid-delete").remove();
+                }
+            })
     }
     function onDataBoundMasterDepartment(e) {
         //this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -456,24 +491,26 @@
             $(".k-grid-edit", detailGrid).hide();
         }
     }
-    function onDataBoundValidationDepartment(e) {
-        var detailGrid = "#" + e.sender.element[0].id;
+    //function onDataBoundValidationDepartment(e) {
+    //    var detailGrid = "#" + e.sender.element[0].id;
 
-        if (isDeptapproved || isDeptSendForApproval) {
+    //    if (isDeptapproved || isDeptSendForApproval) {
 
-            $(".k-grid-add", detailGrid).hide();
-            $(".k-grid-delete", detailGrid).hide();
-            $(".k-grid-edit", detailGrid).hide();
-        }
-        this.table.find(".k-grid-edit").hide();
-    }
+    //        $(".k-grid-add", detailGrid).hide();
+    //        $(".k-grid-delete", detailGrid).hide();
+    //        $(".k-grid-edit", detailGrid).hide();
+    //    }
+    //    this.table.find(".k-grid-edit").hide();
+    //}
 
 
     function filterFleet() {
         return {
             supplierId: supplierId,
             branchId: branchId,
-            equipmentNameId: $("#EquipmentNameId").val()
+            glPeriodId: PeriodId,
+            equipmentNameId: $("#EquipmentNameId").data("kendoDropDownList").value(),
+            Text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
         };
     }
     function filterEquipmentNames() {
@@ -482,7 +519,7 @@
 
         return {
             equipmentTypeId: $("#EquipmnetTypeId").val(),
-            search: filterInput.val()
+            text: filterInput.val()
         };
     }
     function filterPlateNumber() {
@@ -503,6 +540,66 @@
             search: filterInput.val()
         };
 
+    }
+    function AuthorizePaymentRequest(e) {
+    e.preventDefault();
+
+    var grid = $("#grid").data("kendoGrid");
+    var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+    var prId =dataItem.RentalPaymentRequestId;
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("AuthorizePaymentRequest", "RentalPaymentRequest")',
+        data: {
+            id: prId
+        },
+        success: function (res) {
+            alert(res.Message);
+            location.reload(true);
+        },
+        error: function (xhr) {
+            console.log(xhr.responseText);
+            alert("An error occurred while authorizing the request.");
+        }
+    });
+}
+    function VoidRequest(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VoidPRequest", "RentalPaymentRequest", new { area = "FleetManagement" })',
+            data: { Id: id },
+            success: function (result) {
+
+                alert(result.Message)
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result.Message);
+            }
+        });
+    }
+function RejectAuthorization(e) {
+    e.preventDefault();
+
+    var grid = $("#grid").data("kendoGrid");
+    var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+    var prId =dataItem.RentalPaymentRequestId;
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("RejectAuthorization", "RentalPaymentRequest")',
+        data: {
+            id: prId
+        },
+        success: function (res) {
+            alert(res.Message);
+            location.reload(true);
+        },
+        error: function (xhr) {
+            console.log(xhr.responseText);
+            alert("An error occurred while rejecting.");
+        }
+    });
     }
 </script>
 

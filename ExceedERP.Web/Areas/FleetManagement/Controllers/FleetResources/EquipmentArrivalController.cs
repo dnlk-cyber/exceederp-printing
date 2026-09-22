@@ -22,6 +22,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     public class EquipmentArrivalController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         // GET: FleetManagement/AlertLevel
         public ActionResult Index()
         {
@@ -33,11 +34,25 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             //                        });
             //ViewData["AssignedEquipment"] = assignedEquipment;
 
-            ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new {
-                Value = s.EquipmentNameID,
-                Name = s.Name
-            });
-
+           
+            ViewData["EquipmentCat"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
+            ViewData["EquipmentType"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["FleetsAssignedEquip"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
@@ -48,27 +63,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Value = s.OperatorID,
                 Text = s.FullName
             });
-            ViewData["EquipmentType"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            });
+            
             ViewData["EquipmentName"] = db.EquipmentName.Select(s => new
             {
                 Value = s.EquipmentNameID,
                 Text = s.Name
             });
-            ViewData["EquipmentCat"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            });
+           
             return View();
         }
 
         public ActionResult EquipmentArrival_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var EquipmentArrival = db.EquipmentArrival.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(s => new EquipmentArrival
+            var EquipmentArrival = db.EquipmentArrival.Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(s => new EquipmentArrival
             {
                            EquipmentArrivalId = s.EquipmentArrivalId,
                            AssignmentId = s.AssignmentId,
@@ -202,7 +209,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             var Fleet = _FleetService.GetAll();
 
-            List<VehicleDistribution> Distrubtions = _DistrubtionService.GetAll().Where(x => x.Status == "Approved").ToList();
+            List<VehicleDistribution> Distrubtions =db.VehicleDistribution.Where(x => x.Status == "Approved").ToList();
 
            foreach(var Distrubtion in Distrubtions)
            {
@@ -227,6 +234,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -15,17 +15,17 @@
                 @Html.LabelFor(model => model.FleetsID, "Equipment Name", htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.FleetsID)
-                                                                          .ValuePrimitive(true)
-                                                                          .OptionLabel("Select Equipment...")
-                                                                          .DataTextField("EquipmentName")
-                                                                          .DataValueField("FleetsID")
-                                                                          .Filter("contains")
-                                                                          .MinLength(2)
-                                                                          .DataSource(dataSource =>
-                                                                          {
-                                                                              dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
-                                                                                  .ServerFiltering(false);
-                                                                          })
+                         .ValuePrimitive(true)
+                         .OptionLabel("Select Equipment...")
+                         .DataTextField("EquipmentName")
+                         .DataValueField("FleetsID")
+                         .Filter("contains")
+                         .MinLength(2)
+                         .DataSource(dataSource =>
+                         {
+                             dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                 .ServerFiltering(false);
+                         })
                     )
                     @Html.ValidationMessageFor(model => model.FleetsID, "", new { @class = "text-danger" })
                 </div>

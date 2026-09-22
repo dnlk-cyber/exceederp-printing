@@ -31,7 +31,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             IServiceSpareService _ServiceSpareService = new ServiceSpareService();
             IJobOrderDetailService _JobOrderDetailService = new JobOrderDetailService();
             var Services = new List<ServiceSpare>();
-            var Jobs = _JobOrderDetailService.GetAll().Where(x => x.JobOrderID.ToString() == Id).ToList();
+            var Jobs =db.JobOrderDetail.Where(x => x.JobOrderID.ToString() == Id).ToList();
             foreach(var Job in Jobs)
             {
                var Service = _ServiceSpareService.GetAll().Where(s => s.ServiceID == Job.JobOrderID).ToList();
@@ -55,5 +55,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 DateCreated = f.DateCreated
             }).ToDataSourceResult(request));
         }
-	}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 }

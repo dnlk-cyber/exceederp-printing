@@ -17,13 +17,15 @@ using ExceedERP.Web.Models;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Common;
+using System.IO;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
     public class VehicleReceptionFormController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
-       
+        private readonly CacheData CacheData = new CacheData();
+
         public ActionResult Index()
         {
             ViewData["Customer"] = db.OrganizationCustomers.ToList();
@@ -35,17 +37,64 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 }).ToList();
             ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.ToList();
             ViewData["VehicleParts"] = db.VehiclePart.ToList();
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new {
-                Id = s.EquipmentIdentityID,
-                Name = s.EquipmentCategoryName
-            }).ToList();
+            string ECWCSetting = "";
+            var ECWCStatus = db.RequestToInspections.FirstOrDefault();
+            if (ECWCStatus != null && ECWCStatus.Remark == "ECWC")
+            {
+                ECWCSetting = "ECWC";
+            }
+            ViewData["ECWCSetting"] = ECWCSetting;
+
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+ i => new
+ {
+     Name = i.Name,
+     Id = i.Id
+ }).AsQueryable();
+            var equitsCats = CacheData.GetEquipmentIdentityCaches().Select(
+     i => new
+     {
+         Name = i.Name,
+         Id = i.Id
+     }).AsQueryable();
+            var equipSubCats = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            var equipSubCatNames = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            var assets = db.AssetRegistrations.Select(s => new
+            {
+                Id = s.AssetRegistrationId,
+                Name = s.Name
+            }).AsQueryable();
+
+            var branch = CacheData.GetBranchCaches().Select(s => new
+            {
+                Id = s.Id,
+                Name = s.Name
+            }).AsQueryable();
+            ViewData["EquipmentCategorys"] = equitsCats;
+            ViewData["EquipmentSubCategorys"] = equipSubCats;
+            ViewData["EquipmentNames"] = equipSubCatNames;
+            ViewData["FixedAssets"] = assets;
+            ViewData["VehicleParts"] = db.VehiclePart.AsQueryable();
+            ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.AsQueryable();
+            ViewData["Branch"] = branch;
             return View();
         }
 
         public ActionResult Print(string id)
         {
           
-            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MVInspectionAndHandingOverCheckList, out string title, out string number);
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MVInspectionAndHandingOverCheckList, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             ViewBag.id = id;
@@ -53,7 +102,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult VehicleReceptionForm_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<VehicleReceptionForm> vehiclereceptionform = db.VehicleReceptionForm.Where(x=>x.SitesVehicleTransferID==null);
+            IQueryable<VehicleReceptionForm> vehiclereceptionform = db.VehicleReceptionForm.Where(x=>x.SitesVehicleTransferID==null&&x.DriverTransferId==null);
             DataSourceResult result = vehiclereceptionform.ToDataSourceResult(request, vehicleReceptionForm => new {
                 VehicleReceptionFormId = vehicleReceptionForm.VehicleReceptionFormId,
                 Source= vehicleReceptionForm.Source,
@@ -99,6 +148,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 {
                     VehicleReceptionFormId = vehicleReceptionForm.VehicleReceptionFormId,
                     Source = vehicleReceptionForm.Source,
+                    CustomerName= vehicleReceptionForm.CustomerName,
                     CustomerId = vehicleReceptionForm.CustomerId,
                     VehicleCategoryId = vehicleReceptionForm.VehicleCategoryId,
                     Mileage = vehicleReceptionForm.Mileage,
@@ -146,27 +196,21 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 }
                 if (vehicleReceptionForm.Source==Source.External && vehicleReceptionForm.CustomerId == null)
                     ModelState.AddModelError("CustomerNull", "Please select customer !");
-                var entity = new VehicleReceptionForm
-                {
+                var existingReception = db.VehicleReceptionForm.FirstOrDefault(x => x.VehicleReceptionFormId == vehicleReceptionForm.VehicleReceptionFormId);
 
-                    VehicleReceptionFormId = vehicleReceptionForm.VehicleReceptionFormId,
-                    Source = vehicleReceptionForm.Source,
-                    CustomerId = vehicleReceptionForm.CustomerId,
-                    VehicleCategoryId = vehicleReceptionForm.VehicleCategoryId,
-                    Mileage = vehicleReceptionForm.Mileage,
-                    PlateNo = vehicleReceptionForm.PlateNo,
-                    VehicleType = vehicleReceptionForm.VehicleType,
-                    Fuel = vehicleReceptionForm.Fuel,
-                    TechnicianAssignedId = vehicleReceptionForm.TechnicianAssignedId,
-                    VehicleModel = vehicleReceptionForm.VehicleModel,
-                    Remark = vehicleReceptionForm.Remark,
-                    DateCreated = DateTime.Now,
-                    CreatedBy = User.Identity.Name
-
-
-                };
-                db.VehicleReceptionForm.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                existingReception.Source = vehicleReceptionForm.Source;
+                existingReception.CustomerId = vehicleReceptionForm.CustomerId;
+                existingReception.VehicleCategoryId = vehicleReceptionForm.VehicleCategoryId;
+                existingReception.Mileage = vehicleReceptionForm.Mileage;
+                existingReception.PlateNo = vehicleReceptionForm.PlateNo;
+                existingReception.VehicleType = vehicleReceptionForm.VehicleType;
+                existingReception.Fuel = vehicleReceptionForm.Fuel;
+                existingReception.TechnicianAssignedId = vehicleReceptionForm.TechnicianAssignedId;
+                existingReception.VehicleModel = vehicleReceptionForm.VehicleModel;
+                existingReception.Remark = vehicleReceptionForm.Remark;
+                existingReception.LastModified = DateTime.Now;
+                existingReception.ModifiedBy = User.Identity.Name;
+                db.Entry(existingReception).State = EntityState.Modified;
                 db.SaveChanges();
             }
 
@@ -304,8 +348,9 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             Reception.OnlineApprovedBy = User.Identity.Name;
             Reception.OnlineApprovedTime = DateTime.Now;
             Reception.Status = ApprovalStatuses.Approve.ToString();
-                db.VehicleReceptionForm.Attach(Reception);
-                db.Entry(Request).State = EntityState.Modified;
+                //db.VehicleReceptionForm.Attach(Reception);
+                db.Entry(Reception).State = EntityState.Modified;
+                //db.Entry(Request).State = EntityState.Modified;
                 db.SaveChanges();
                 FetchApproval.Status = ApprovalStatuses.Approve;
                 FetchApproval.LastModified = DateTime.Now;
@@ -395,12 +440,19 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     db.JobRequest.Attach(Request);
                     db.Entry(Request).State = EntityState.Modified;
                     db.SaveChanges();
+
+                    var maintenanceStage = db.MaintenanceStage.FirstOrDefault(x => x.JobRequestId == Request.JobRequestId.ToString());
+                    maintenanceStage.ModifiedBy = User.Identity.Name;
+                    maintenanceStage.LastModified = DateTime.Now;
+                    maintenanceStage.Description = "Vehicle recieved by reception and go to inspection";
+                    
+                    db.Entry(maintenanceStage).State = EntityState.Modified;
+                    db.SaveChanges();
                 }  
             }
             else
             {
                 var FetchRequest = db.JobRequest.FirstOrDefault(x => x.JobRequestId.ToString() == Reception.JobRequestId);
-
                 FetchRequest.CreateJobOrder = true;
                 db.Entry(FetchRequest).State = EntityState.Modified;
                 db.SaveChanges();
@@ -441,7 +493,80 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
+        public ActionResult VehicleReceptionDoc_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            var receptionDoc = db.VehicleReceptionDocuments.Where(x => x.VehicleReceptionFormId == id);
+            return Json(receptionDoc.ToDataSourceResult(request));
+        }
+        public ActionResult VehicleReceptionDoc_Delete([DataSourceRequest]DataSourceRequest request, VehicleReceptionDocument model)
+        {
+            var receptionDoc = db.VehicleReceptionDocuments.FirstOrDefault(x => x.VehicleReceptionFormId == model.VehicleReceptionFormId);
+            db.VehicleReceptionDocuments.Remove(receptionDoc);
+            db.SaveChanges();
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult VehicleReceptionAttachment_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> attachments, int id)
+        {
+            if (attachments != null)
+            {
+                string[] AllowedExtensions = { ".jpg", ".png", ".pdf" };
+                int MaxFileSize = 2 * 1024 * 1024;
 
+                string subPath = "~/App_Data/VehicleReception/";
+                string shortPath = "/App_Data/VehicleReception/";
+
+                bool exists = Directory.Exists(Server.MapPath(subPath));
+
+                if (!exists)
+                    Directory.CreateDirectory(Server.MapPath(subPath));
+
+                foreach (var file in attachments)
+                {
+                    if (file != null)
+                    {
+                        #region file validation
+                        var fileExtension = Path.GetExtension(file.FileName).ToLower();
+                        if (!AllowedExtensions.Contains(fileExtension))
+                        {
+                            ModelState.AddModelError("File", "Invalid file type.");
+                        }
+                        if (file.ContentLength > MaxFileSize)
+                        {
+                            ModelState.AddModelError("File", $"File size exceeds the {MaxFileSize / (1024 * 1024)} MB limit.");
+                        }
+                        #endregion
+                        if (ModelState.IsValid)
+                        {
+                            string fileName = Path.GetFileName(file.FileName);
+                            string physicalPath = Server.MapPath(subPath + fileName);
+                            //   string physicalPath = Server.MapPath("~/Content/Memberimage/" + FileName);
+                            file.SaveAs(physicalPath);
+                            db.VehicleReceptionDocuments.Add(new VehicleReceptionDocument()
+                            {
+                                FileName = Path.GetFileName(file.FileName),
+                                VehicleReceptionFormId = id,
+                                ShortPath = shortPath,
+                                FilePath = physicalPath
+
+                            });
+                            db.SaveChanges();
+                        }
+                    }
+                }
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Vehicle Reception attachment", "Success", User.Identity.Name, $"created attachement under vehicle reception {id} ", Modules.Maintenance);
+                #endregion
+            }
+
+            return Json(new[] { attachments }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult DownloadReceptionDocument(int CompanyDocumentId)
+        {
+            var record = db.VehicleReceptionDocuments.Find(CompanyDocumentId);
+
+            return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

@@ -4,735 +4,824 @@
 @using ExceedERP.Helpers.Common;
 @using ExceedERP.Core.Domain.Inventory
 @using ExceedERP.Core.Domain.Maintenance;
-
+@{ 
+    bool IsMIDROC = (ViewBag.setting as string) == "MIDROC";
+}
 <script>
-function filterMaintenanceCenter() {
-return {
-Type: $("#Type").val()
-};
-}
-function filterCause() {
-return {
-Id: Referance
-};
-}
-function filterSerivce() {
-return {
-IsPm: IsPm
-};
-}
+    function filterMaintenanceCenter() {
+        return {
+            Type: $("#Type").val()
+        };
+    }
+    function filterCause() {
+        return {
+            Id: Referance
+        };
+    }
+    function filterSerivce() {
+        return {
+            IsPm: IsPm
+        };
+    }
 </script>
 
 
 <legend>Job Orders</legend>
 @(Html.Kendo().Window()
-.Name("window")
-.Width(400)
-.Height(200)
-.Visible(false)
-.Modal(true)
-.Draggable(true)
-.Content(@<text>
-<form action="@Url.Action("RejectJobOrderClosing", "ServiceCenter", new { area = "Maintenance" })" method="post" , new { enctype="multipart/form-data" }>
-<input type="hidden" name="id" id="id">
-<div class="row">
-<div class="col-md-3">
+                    .Name("window")
+                    .Width(400)
+                    .Height(200)
+                    .Visible(false)
+                    .Modal(true)
+                    .Draggable(true)
+                    .Content(@<text>
+                        <form action="@Url.Action("RejectJobOrderClosing", "ServiceCenter", new { area = "Maintenance" })" method="post" , new { enctype="multipart/form-data" }>
+                            <input type="hidden" name="id" id="id">
+                            <div class="row">
+                                <div class="col-md-3">
 
-@Html.Label("Reason:")
+                                    @Html.Label("Reason:")
 
-@Html.TextArea("RejectionReason", "", new { type = "text" })
-</div>
+                                    @Html.TextArea("RejectionReason", "", new { type = "text" })
+                                </div>
 
-</div>
-<button type="submit" onclick="getJobOrderId()" class="btn btn-info"><i class="glyphicon glyphicon-ok" aria-hidden="true"></i> Submit</button>
+                            </div>
+                            <button type="submit" onclick="getJobOrderId()" class="btn btn-info"><i class="glyphicon glyphicon-ok" aria-hidden="true"></i> Submit</button>
 
-</form>
-</text>)
-.Modal(true)
-.Title("Reason For Reject")
-.Actions(actions => actions.Close())
+                        </form>
+                    </text>)
+                                                        .Modal(true)
+                                                        .Title("Reason For Reject")
+                                                        .Actions(actions => actions.Close())
 
 )
 @(Html.Kendo().Grid<JobOrder>()
-.Name("grid")
-.Columns(columns =>
-{
-    columns.Bound(e => e.Num).Width(80);
-    columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150);
-    columns.Bound(e => e.LicensePlate).Width(100);
-    columns.Bound(e => e.EquipmentName).Width(100);
-    columns.Bound(e => e.IsRework).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsRework? checked='checked': checked='' #/>");
-    columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(120);
-    if (GlobalHelper.IsMultipleBusinessUnit())
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(e => e.Num).Width(80);
+                        columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150);
+                        columns.Bound(e => e.LicensePlate).Width(100);
+                        columns.Bound(e => e.EquipmentName).Width(100);
+                        columns.Bound(e => e.IsRework).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsRework? checked='checked': checked='' #/>");
+                        columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(120);
+                        if (GlobalHelper.IsMultipleBusinessUnit())
+                        {
+                            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "Id", "Name").Width(120).EditorTemplateName("BusinessUnitSelector");
+                        }
+                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "Id", "Name").Width(120).EditorTemplateName("AllBranchSelector");
+                        columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(120).EditorTemplateName("WorkUnitCostCenterSelector");
+
+                        columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(120);
+                        columns.Bound(e => e.DateCreated).Title("Date Created").Format("{0:yyyy-MM-dd}").Width(100);
+                        columns.Bound(e => e.OnlineApprovedTime).Title("Date Approved").Format("{0:yyyy-MM-dd}").Width(100);
+                        columns.Bound(e => e.SecondOnlineApprovedTime).Title("Date Closed").Format("{0:yyyy-MM-dd}").Width(100); columns.Bound(e => e.Status).Width(100);
+                        columns.Bound(e => e.Status).Width(100);
+                        columns.Bound(e => e.Referance).Width(100);
+                        columns.Bound(e => e.RemarkAfterDelivery).Width(130);
+
+
+                        columns.Command(command =>
+                        {
+
+                            command.Custom("cmd-rework-request").Text("&nbsp;Rework").Click("reworkJobOrder").IconClass("fa fa-repeat");
+                            if (HttpContext.Current.User.IsInRole(MaintenanceRoles.GarageHead))
+                            {
+                                command.Custom("cmd-deliver-request").Text("&nbsp;Authorize And Deliver").Click("deliverJobOrder").IconClass("fa fa-truck");
+                            }
+                            command.Destroy().Text(" Approve & Close").IconClass("fa fa-check");
+                            command.Custom("cmd-reject-request").Text("&nbsp; Reject").Click("rejectJobOrderClosingRequest").IconClass("fa fa-close");
+                            command.Custom("cmd-open-request").Text("&nbsp; Open").Click("openJobOrder").IconClass("fa fa-open");
+                        }).Width(250);
+
+
+                    })
+
+                    .Editable(editable =>
+                    {
+                        editable.Mode(GridEditMode.PopUp).TemplateName("JobOrderEditor").Window(x => x.Title("Job Order "));
+                        editable.Window(w => w.Title(" Job Order"));
+                        editable.DisplayDeleteConfirmation("Are You Sure To Close Job Order");
+                    })
+                    .HtmlAttributes(new { style = "height: 500px;" })
+                    .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                    .Scrollable()
+                    .Sortable()
+                    .Filterable()
+                    .Scrollable(h => h.Height(500))
+                    .ClientDetailTemplateId("template")
+                    .Events(ev => ev.DetailExpand("onDetailExpandUser"))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(true)
+
+                    .Sort(x => x.Add(s => s.Num).Descending())
+
+                    .PageSize(10)
+                    .Model(model =>
+                    {
+                        model.Id(p => p.JobOrderID);
+                        model.Field(p => p.JobOrderID).Editable(false);
+                        model.Field(p => p.BranchId).Editable(false);
+                        model.Field(p => p.OrgStructureId).Editable(false);
+                        model.Field(p => p.BusinessUnitId).Editable(false);
+                    }
+                    ).Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Create(update => update.Action("JobOrder_Create", "JobOrderClosed").Data("sendForgery"))
+                    .Read(read => read.Action("JobOrderClosed_Read", "JobOrderClosed").Data("sendForgery"))
+                    .Update(update => update.Action("JobOrder_Update", "JobOrderClosed").Data("sendForgery"))
+                    .Destroy(update => update.Action("JobOrder_Destroy", "JobOrderClosed").Data("sendForgery"))
+                    )
+                    .Events(events => events.DataBound("dataBound"))
+)
+
+                        <script id="template" type="text/kendo-tmpl">
+                            @(Html.Kendo().TabStrip()
+                                                  .Name("tabStrip_#=JobOrderID#")
+                                                  .SelectedIndex(0)
+                                                  .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                  .Items(items =>
+                                                  {
+                                                      items.Add().Text("Job Summary").Content(@<text>
+
+
+                                                        # if (IsSendForApproval == false)
+                                                        {#
+
+                                                        <a href='@Url.Action("Technical_SendForApproval", "JobOrder")/?Id=#=JobOrderID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                        # }#
+                                                        @if (!IsMIDROC)
+                                            {
+                                            <text>
+                                                <a href='@Url.Action("JobPrintNew", "MaintenancePrint")/?id=#=JobOrderID#'
+                                                   title="Print">
+                                                    <i class="fa fa-print fa-2x"></i>
+                                                </a>
+                                            </text>
+                            }
+                                                        @if (IsMIDROC)
+                                            {
+                                            <text>
+                                              <a href='@Url.Action("JobOrderClosedPrintDesign", "MaintenancePrint")/?Id=#=JobOrderID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                            </text>
+                            }
+                                        /**/
+                                                        # if (Status == "Rejected"  )
+                                                        {#
+                                                        <br />
+
+                                                        <label>Reject Reason: </label>
+                                                        #=RejectionReason#
+                                                        <br />
+                                                        # }#
+
+
+                                                        # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                                        {#
+
+                                                        <form action=@Url.Action("UpdateType","JobOrder") method="post">
+                                                            <select name="JobType" multiple style="height : 50px; width : 250px;" required>
+                                                                @foreach (var Type in ViewBag.ServiceType as List<MaintenanceType>)
+                                                    {
+                                                    <option value="@Type.Name">@Type.Name</option>
+                                    }
+                                                /**/
+                                                                /**/
+                                                                /**/
+                                                                /**/
+                                                            </select>
+                                                            <input type="hidden" name="Id" value="#=JobOrderID#">
+                                                            <input type="submit" class="k-primary  form-control " value=" Update " />
+
+                                                        </form>
+
+                                                        # }#
+
+
+
+
+
+
+                                                    </text>
+                                                                      );
+                                    items.Add().Text("Job Services").Content(@<text>
+                                        @ServiceCenterJobs()
+                                    </text>);
+
+                    items.Add().Text(" Causes  ").Content(@<text>
+
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobCauses>()
+                                                                                                .Name("JobCauses_#=JobOrderID#")
+                                                                                                .Columns(columns =>
+                                                                                                {
+                                                                                                  columns.Bound(o => o.Name).Width(120);
+                                                                                                  columns.Bound(o => o.Description).EditorTemplateName("JobReasonDescEditor").Width(200);
+                                                                                                  columns.Command(command =>
+                                                  {
+
+                                                              }).Width(100);
+
+                                                                                              })
+
+                                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                .DataSource(dataSource => dataSource
+                                                                                                .Ajax()
+                                                                                                .PageSize(20)
+                                                                                                .Model(model => model.Id(p => p.JobCausesId)).Events(ev => ev
+                                                                                                .Error("error_handler(\"JobCauses_#=JobOrderID#\")")
+                                                                                                .RequestStart("onRequestStart(\"JobCauses_#=JobOrderID#\")")
+                                                                                                .RequestEnd("onRequestEnd(\"JobCauses_#=JobOrderID#\")"))
+                                                                                                .Read(read => read.Action("JobCausesOrder_Read", "JobCauses", new { Id = "#=Referance#" }).Data("sendForgery"))
+
+
+                                                                                                )
+                                                                                                .Pageable(p => p.Refresh(true))
+
+                                                                                                .ToClientTemplate())
+
+                        </text>
+);
+                        @*items.Add().Text("Service Center Jobs").Content(@<text>
+        @ServiceCenterJobs()
+    </text>);*@
+                        @*items.Add().Text("Technical Approval").Content(@<text>
+    @(Html.Kendo().Grid<ExceedERP.Web.Areas.Maintenance.Models.TechnicalApprovalViewModel>()
+    .Name("Technicalgrid_#=JobOrderID#")
+    .Columns(columns =>
     {
-        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(120).EditorTemplateName("BusinessUnitSelector");
-    }
-    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120).EditorTemplateName("AllBranchSelector");
-    columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(120).EditorTemplateName("WorkUnitCostCenterSelector");
 
-    columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(120);
-    columns.Bound(e => e.DateCreated).Title("Date Created").Format("{0:yyyy-MM-dd}").Width(100);
-    columns.Bound(e => e.OnlineApprovedTime).Title("Date Approved").Format("{0:yyyy-MM-dd}").Width(100);
-    columns.Bound(e => e.SecondOnlineApprovedTime).Title("Date Closed").Format("{0:yyyy-MM-dd}").Width(100); columns.Bound(e => e.Status).Width(100);
-    columns.Bound(e => e.Status).Width(100);
-    columns.Bound(e => e.Referance).Width(100);
+    columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").EditorTemplateName("MCByTypeBind").Width(120);
+    columns.Bound(o => o.ApproveStatus).EditorTemplateName("ApprovalStatusBind").Width(126);
+    columns.Bound(c => c.Remark).Width(120);
+    columns.Bound(c => c.CreatedBy).Width(120);
+    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+    columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
 
-
-
-    columns.Command(command =>
+    })
+    .Events(e => e.DataBound("approveonDataBound"))
+    .Editable(editable =>
     {
 
-        command.Custom("cmd-rework-request").Text("&nbsp;Rework").Click("reworkJobOrder").IconClass("fa fa-repeat");
-        if (HttpContext.Current.User.IsInRole(MaintenanceRoles.GarageHead))
-        {
-            command.Custom("cmd-deliver-request").Text("&nbsp;Authorize And Deliver").Click("deliverJobOrder").IconClass("fa fa-truck");
-        }
-        command.Destroy().Text(" Approve & Close").IconClass("fa fa-check");
-        command.Custom("cmd-reject-request").Text("&nbsp; Reject").Click("rejectJobOrderClosingRequest").IconClass("fa fa-close");
-        command.Custom("cmd-open-request").Text("&nbsp; Open").Click("openJobOrder").IconClass("fa fa-open");
-    }).Width(250);
+    editable.DisplayDeleteConfirmation("Approve");
+    })
+    .DataSource(dataSource => dataSource
+    .Ajax()
 
-
-})
-
-.Editable(editable =>
-{
-    editable.Mode(GridEditMode.PopUp).TemplateName("JobOrderEditor").Window(x => x.Title("Job Order "));
-    editable.Window(w => w.Title(" Job Order"));
-    editable.DisplayDeleteConfirmation("Are You Sure To Close Job Order");
-})
-.HtmlAttributes(new { style = "height: 500px;" })
-.Pageable(pageable => pageable
-.Input(true)
-.Numeric(false)
-.Refresh(true)
-.PageSizes(true)
-.ButtonCount(5))
-.Scrollable()
-.Sortable()
-.Filterable()
-.Scrollable(h => h.Height(500))
-.ClientDetailTemplateId("template")
-.Events(ev => ev.DetailExpand("onDetailExpandUser"))
-.DataSource(dataSource => dataSource
-.Ajax()
-.ServerOperation(true)
-
-.Sort(x => x.Add(s => s.Num).Descending())
-
-.PageSize(10)
-.Model(model =>
-{
+    .PageSize(6)
+    .Model(model =>
+    {
     model.Id(p => p.JobOrderID);
-    model.Field(p => p.JobOrderID).Editable(false);
-    model.Field(p => p.BranchId).Editable(false);
-    model.Field(p => p.OrgStructureId).Editable(false);
-    model.Field(p => p.BusinessUnitId).Editable(false);
+    model.Field(p => p.CreatedBy).Editable(false);
+    model.Field(p => p.DateCreated).Editable(false);
+    }
+
+    ).Events(ev => ev
+    .Error("error_handler(\"Technicalgrid_#=JobOrderID#\")")
+    .RequestStart("onRequestStart(\"Technicalgrid_#=JobOrderID#\")")
+    .RequestEnd("onRequestEnd(\"Technicalgrid_#=JobOrderID#\")"))
+    .Create(update => update.Action("Technical_Approval", "TechnicalJobApproval").Data("sendForgery"))
+    .Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+    .Update(update => update.Action("Technical_Approval", "TechnicalJobApproval").Data("sendForgery"))
+
+    )
+
+    .ToClientTemplate())
+    </text>
+    );*@
+            items.Add().Text("Mechanic").Content(@<text>@Mechanic()</text>);
+        items.Add().Text("Spare Part").Content(@<text>@SparePart()</text>);
+        items.Add().Text("Work Sheet").Content(@<text>@Workshop()</text>);
+                    //items.Add().Text("Additional Service").Content(@<text>AdditionalService</text>);
+                    items.Add().Text("Additional Info").Content(@<text>@AdditionalInfo()</text>);
+        items.Add().Text("Closed With Remark").Content(@<text>@ClosedWithRemark()</text>);
+    })
+
+
+
+                                                                                                                                                                                                                                                                                      .ToClientTemplate())
+                        </script>
+@helper ServiceCenterJobs()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobOrderDetail>()
+                                                                                       .Name("JobServicegrid_#=JobOrderID#")
+                                                                                       .Columns(columns =>
+                                                                                       {
+                                                                           //columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
+                                                                           columns.ForeignKey(e => e.JobCausesId, (IEnumerable)ViewData["JobCauses"], "Code", "Name").EditorTemplateName("JobCause").Width(120);
+                                                                                           columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                                                                                           columns.ForeignKey(e => e.RepairTypeID, (IEnumerable)ViewData["Service"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(150);
+                                                                                           columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").EditorTemplateName("ServiceCenter").Width(150);
+                                                                                           columns.Bound(o => o.DescriptionOfJobs).Width(100);
+                                                                                           columns.Bound(o => o.Status).Width(100);
+                                                                                           columns.Bound(o => o.ApprovalStatus).Width(100);
+                                                                                           columns.Bound(o => o.Remark).Width(100).Title("Failure");
+                                                                           //columns.Command(command =>
+                                                                           //{
+                                                                           //    command.Edit();
+                                                                           //}).Width(250);
+                                                                           //                                    columns.Command(command =>
+                                                                           //                         {
+                                                                           //    command.Custom("NewJobApprove").Text("Approve").Click("CreateJobService");
+                                                                           //    command.Custom("NewJobReject").Text("Reject").Click("RejectJobCreation");
+                                                                           //});
+                                                                       })//.Events(e => e.DataBound("approveonDataBoundJobDetail"))
+                                                                         // .ToolBar(t => t.Create())
+                                                                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                       .Pageable(p => p.Refresh(true))
+                                                                                       .DataSource(dataSource => dataSource
+                                                                                       .Ajax()
+                                                                                       .PageSize(20)
+                                                                                       .Model(model =>
+                                                                                       {
+                                                                                           model.Id(p => p.JobOrderDetailID);
+                                                                                           model.Field(p => p.MaintenanceCenter).Editable(false);
+                                                                                           model.Field(p => p.Remark).Editable(true);
+                                                                                           model.Field(p => p.ApprovalStatus).Editable(false);
+                                                                                           model.Field(p => p.Status).Editable(false);
+                                                                                       }).Events(ev => ev
+                                            .Error("error_handler(\"JobServicegrid_#=JobOrderID#\")")
+                                            .RequestStart("onRequestStart(\"JobServicegrid_#=JobOrderID#\")")
+                                            .RequestEnd("onRequestEnd(\"JobServicegrid_#=JobOrderID#\")"))
+                                                                                       //.Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                       .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                       //.Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail").Data("sendForgery"))
+
+                                                                                       )
+
+                                                                                       //.ClientDetailTemplateId("WorkShopSendForApproval")
+                                                                                       .ToClientTemplate())
+
+
 }
-).Events(ev => ev
-.Error("error_handler(\"grid\")")
-.RequestStart("onRequestStart(\"grid\")")
-.RequestEnd("onRequestEnd(\"grid\")"))
-.Create(update => update.Action("JobOrder_Create", "JobOrderClosed").Data("sendForgery"))
-.Read(read => read.Action("JobOrderClosed_Read", "JobOrderClosed").Data("sendForgery"))
-.Update(update => update.Action("JobOrder_Update", "JobOrderClosed").Data("sendForgery"))
-.Destroy(update => update.Action("JobOrder_Destroy", "JobOrderClosed").Data("sendForgery"))
-)
-.Events(events => events.DataBound("dataBound"))
-)
-
-<script id="template" type="text/kendo-tmpl">
-@(Html.Kendo().TabStrip()
-.Name("tabStrip_#=JobOrderID#")
-.SelectedIndex(0)
-.Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-.Items(items =>
-{
-items.Add().Text("Job Summary").Content(@<text>
-
-
-# if (IsSendForApproval == false)
-{#
-
-<a href='@Url.Action("Technical_SendForApproval", "JobOrder")/?Id=#=JobOrderID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-# }#
-<a href='@Url.Action("JobPrintNew", "MaintenancePrint")/?id=#=JobOrderID#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-
-# if (Status == "Rejected"  )
-{#
-<br />
-
-<label>Reject Reason: </label>
-#=RejectionReason#
-<br />
-# }#
-
-
-# if (IsSendForApproval == false || IsSendForApproval == "false")
-{#
-
-<form action=@Url.Action("UpdateType","JobOrder") method="post">
-<select name="JobType" multiple style="height : 50px; width : 250px;" required>
-@foreach (var Type in ViewBag.ServiceType as List<MaintenanceType>)
-{
-<option value="@Type.Name">@Type.Name</option>
-}
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-
-
-
-</select>
-<input type="hidden" name="Id" value="#=JobOrderID#">
-<input type="submit" class="k-primary  form-control " value=" Update " />
-
-</form>
-
-# }#
-
-
-
-
-
-
-</text>
-);
-items.Add().Text(" Job Services ").Content(@<text>
-@*# if (IsOnlineApproved)
-{#
-<a onclick='return addToServiceCenter("#=JobOrderID#")' href=' \#' title="Add to Service Center"><i class="fa fa-plus-square fa-2x"></i></a>
-
-# }#*@
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobOrderDetail>()
-.Name("JobServicegrid_#=JobOrderID#")
-.Columns(columns =>
-{
-columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
-
-columns.ForeignKey(e => e.JobCausesId, (IEnumerable)ViewData["JobCauses"], "Code", "Name").EditorTemplateName("JobCause").Width(120);
-columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
-columns.ForeignKey(e => e.RepairTypeID, (IEnumerable)ViewData["Service"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(150);
-columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").EditorTemplateName("ServiceCenter").Width(150);
-columns.Bound(o => o.Status).Width(100);
-columns.Bound(o => o.ApprovalStatus).Width(100);
-columns.Bound(o => o.Remark).Width(100).Title("Failure");
-columns.Command(command => { command.Edit(); }).Width(250);
-
-}).Events(e => e.DataBound("approveonDataBound"))
-//   .ToolBar(t => t.Create())
-.Editable(editable => editable.Mode(GridEditMode.InLine))
-.Pageable(p => p.Refresh(true))
-.DataSource(dataSource => dataSource
-.Ajax()
-.PageSize(20)
-
-.Model(model =>
-{
-model.Id(p => p.JobOrderDetailID);
-model.Field(p => p.MaintenanceCenter).Editable(false);
-model.Field(p => p.Remark).Editable(true);
-model.Field(p => p.ApprovalStatus).Editable(false);
-model.Field(p => p.Status).Editable(false);
-}).Events(ev => ev
-.Error("error_handler(\"JobServicegrid_#=JobOrderID#\")")
-.RequestStart("onRequestStart(\"JobServicegrid_#=JobOrderID#\")")
-.RequestEnd("onRequestEnd(\"JobServicegrid_#=JobOrderID#\")"))
-.Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderID#" }).Data("sendForgery"))
-.Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
-.Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail").Data("sendForgery"))
-
-)
-
-.ToClientTemplate())
-
-</text>
-);
-
-items.Add().Text(" Causes  ").Content(@<text>
-
-
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobCauses>()
-.Name("JobCauses_#=JobOrderID#")
-.Columns(columns =>
-{
-columns.Bound(o => o.Name).Width(120);
-columns.Bound(o => o.Description).EditorTemplateName("JobReasonDescEditor").Width(200);
-columns.Command(command =>
-{
-
-}).Width(100);
-
-})
-
-.Editable(editable => editable.Mode(GridEditMode.InLine))
-.DataSource(dataSource => dataSource
-.Ajax()
-.PageSize(20)
-.Model(model => model.Id(p => p.JobCausesId)).Events(ev => ev
-.Error("error_handler(\"JobCauses_#=JobOrderID#\")")
-.RequestStart("onRequestStart(\"JobCauses_#=JobOrderID#\")")
-.RequestEnd("onRequestEnd(\"JobCauses_#=JobOrderID#\")"))
-.Read(read => read.Action("JobCausesOrder_Read", "JobCauses", new { Id = "#=Referance#" }).Data("sendForgery"))
-
-
-)
-.Pageable(p => p.Refresh(true))
-
-.ToClientTemplate())
-
-</text>
-);
-@*items.Add().Text("Technical Approval").Content(@<text>
-@(Html.Kendo().Grid<ExceedERP.Web.Areas.Maintenance.Models.TechnicalApprovalViewModel>()
-.Name("Technicalgrid_#=JobOrderID#")
-.Columns(columns =>
-{
-
-columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").EditorTemplateName("MCByTypeBind").Width(120);
-columns.Bound(o => o.ApproveStatus).EditorTemplateName("ApprovalStatusBind").Width(126);
-columns.Bound(c => c.Remark).Width(120);
-columns.Bound(c => c.CreatedBy).Width(120);
-columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
-columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
-
-})
-.Events(e => e.DataBound("approveonDataBound"))
-.Editable(editable =>
-{
-
-editable.DisplayDeleteConfirmation("Approve");
-})
-.DataSource(dataSource => dataSource
-.Ajax()
-                                                                                                                                                                                                           
-.PageSize(6)
-.Model(model =>
-{
-model.Id(p => p.JobOrderID);
-model.Field(p => p.CreatedBy).Editable(false);
-model.Field(p => p.DateCreated).Editable(false);
-}
-
-).Events(ev => ev
-.Error("error_handler(\"Technicalgrid_#=JobOrderID#\")")
-.RequestStart("onRequestStart(\"Technicalgrid_#=JobOrderID#\")")
-.RequestEnd("onRequestEnd(\"Technicalgrid_#=JobOrderID#\")"))
-.Create(update => update.Action("Technical_Approval", "TechnicalJobApproval").Data("sendForgery"))
-.Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
-.Update(update => update.Action("Technical_Approval", "TechnicalJobApproval").Data("sendForgery"))
-
-)
-
-.ToClientTemplate())
-</text>
-);*@
-items.Add().Text("Mechanic").Content(@<text>@Mechanic()</text>);
-items.Add().Text("spare parts").Content(@<text>@SparePart()</text>);
-items.Add().Text("workshop").Content(@<text>@Workshop()</text>);
-items.Add().Text("Additional Info").Content(@<text>@AdditionalInfo()</text>);
-})
-
-
-
-.ToClientTemplate())
-</script>
-
 
 @helper AdditionalInfo()
 {
+    /**/
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.AdditionalWorkShopDetail>()
-.Name("addional_#=Num#")
-.Columns(columns =>
-{
-columns.Bound(o => o.OtherCosts).Width(200);
-columns.Bound(o => o.Description).Width(200);
-                                            
-})
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.AdditionalWorkShopDetail>()
+                                        .Name("addional_#=Num#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.Bound(o => o.OtherCosts).Width(200);
+                                            columns.Bound(o => o.Description).Width(200);
 
-.Editable(editable => editable.Mode(GridEditMode.InLine))
-.DataSource(dataSource => dataSource
-.Ajax()
-.PageSize(5)
-.Model(model =>
-{
-model.Id(p => p.AdditionalWorkShopDetailId);
+                                        })
 
-})
-.Events(ev => ev
-.Error("error_handler(\"addional_#=Num#\")")
-.RequestStart("onRequestStart(\"addional_#=Num#\")")
-.RequestEnd("onRequestEnd(\"addional_#=Num#\")"))
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .PageSize(5)
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.AdditionalWorkShopDetailId);
 
-.Read(read => read.Action("ReadJobOrder", "AdditionalWorkShopDetail", new { num = "#=Num#" }).Data("sendForgery"))
+                                        })
+                                        .Events(ev => ev
+                                        .Error("error_handler(\"addional_#=Num#\")")
+                                        .RequestStart("onRequestStart(\"addional_#=Num#\")")
+                                        .RequestEnd("onRequestEnd(\"addional_#=Num#\")"))
+
+                                        .Read(read => read.Action("ReadJobOrder", "AdditionalWorkShopDetail", new { num = "#=Num#" }).Data("sendForgery"))
 
 
-)
-.ToClientTemplate())
+                                        )
+                                        .ToClientTemplate())
 
 }
+@helper ClosedWithRemark()
+{
+    /**/
 
+    @(Html.Kendo().Grid<CloseWorkShopWithRemark>()
+                                                .Name("CloseWithRemark_#=Num#")
+                                                .Columns(columns =>
+                                                {
+                                                    columns.Bound(column => column.Remark);
+                                                }
+                                                )
+                                                //.ToolBar(toolbar => toolbar.Create())
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                //.Events(ev => ev.DataBound("workShopDataBound"))
+                                                .Pageable(p => p.Refresh(true))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .PageSize(20)
+                                                .Model(model =>
+                                                {
+                                                    model.Id(p => p.CloseWorkShopWithRemarkId);
+                                                }).Events(ev => ev
+                                                .Error("error_handler(\"CloseWithRemark_#=Num#\")")
+                                                .RequestStart("onRequestStart(\"CloseWithRemark_#=Num#\")")
+                                                .RequestEnd("onRequestEnd(\"CloseWithRemark_#=Num#\")"))
+                                               .Read(read => read.Action("ReadClosedWithRemark", "AdditionalWorkShopDetail", new { num = "#=Num#" }).Data("sendForgery"))
+                                                )
+                                                .ToClientTemplate()
+    );
+}
+@*@helper AdditionalService()
+    {
+     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobOrderDetail>()
+                                         .Name("AdditionalServiceGrid_#=Num#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
+                                            columns.ForeignKey(e => e.JobCausesId, (IEnumerable)ViewData["JobCauses"], "Code", "Name").EditorTemplateName("JobCause").Width(120);
+                                            columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                                            columns.ForeignKey(e => e.RepairTypeID, (IEnumerable)ViewData["Service"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(150);
+                                            columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").EditorTemplateName("ServiceCenter").Width(150);
+                                            columns.Bound(o => o.Status).Width(100);
+                                            columns.Bound(o => o.ApprovalStatus).Width(100);
+                                            columns.Bound(o => o.Remark).Width(100).Title("Failure");
+                                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                                        })//.Events(e => e.DataBound("approveonDataBound"))
+                                        .ToolBar(t => t.Create())
+
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .Pageable(p => p.Refresh(true))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .PageSize(20)
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.JobOrderDetailID);
+                                            model.Field(p => p.MaintenanceCenter).Editable(false);
+                                            model.Field(p => p.Remark).Editable(true);
+                                            model.Field(p => p.ApprovalStatus).Editable(false);
+                                            model.Field(p => p.Status).Editable(false);
+                                        }).Events(ev => ev
+                                        .Error("error_handler(\"AdditionalServiceGrid_#=Num#\")")
+                                        .RequestStart("onRequestStart(\"AdditionalServiceGrid_#=Num#\")")
+                                        .RequestEnd("onRequestEnd(\"AdditionalServiceGrid_#=Num#\")"))
+                                        .Read(read => read.Action("OrderServiceJobOrder", "JobOrderDetailFromWorkShop", new { num = "#=Num#" }).Data("sendForgery"))
+                                        )
+
+                                        .ToClientTemplate())
+
+    }*@
 @helper Workshop()
 {
+    /**/
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ServiceCrewWorkLog>()
-.Name("WorkLogrid_#=Num#")
-.Columns(columns =>
-{
-columns.ForeignKey(c => c.MecanicId, (System.Collections.IEnumerable)ViewData["Mechanic"], "Code", "Name").EditorTemplateName("MechanicEditor").Width(120);
-columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
-columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
-columns.ForeignKey(o => o.JobOrderDetailId, (System.Collections.IEnumerable)ViewData["JobOrderDetail"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(120);
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ServiceCrewWorkLog>()
+                                        .Name("WorkLogrid_#=Num#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.ForeignKey(c => c.MecanicId, (System.Collections.IEnumerable)ViewData["Mechanic"], "Code", "Name").EditorTemplateName("MechanicEditor").Width(120);
+                                            columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
+                                            columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                                            columns.ForeignKey(o => o.JobOrderDetailId, (System.Collections.IEnumerable)ViewData["JobOrderDetail"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(120);
 
-columns.Bound(o => o.WorkShopType).EditorTemplateName("WorkhopType").Width(120);
-columns.Bound(o => o.StandaredHours).EditorTemplateName("ServiceStandaredHourMapping").Width(120);
-columns.Bound(o => o.TotalLabourHours).Width(100);
+                                            columns.Bound(o => o.WorkShopType).EditorTemplateName("WorkhopType").Width(120);
+                                            columns.Bound(o => o.StandaredHours).EditorTemplateName("ServiceStandaredHourMapping").Width(120);
+                                            columns.Bound(o => o.AdditionalWork).EditorTemplateName("Additional Work").Width(120);
+                                            columns.Bound(o => o.TotalLabourHours).Width(100);
 
-columns.Bound(o => o.CreatedBy).Width(80);
-columns.Bound(o => o.DateCreated).Format("{0:dd/MM/yyyy}").Width(80);
-//    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-
-})
-//  .ToolBar(x => { x.Create(); })
-.ClientDetailTemplateId("followup")
-.Scrollable(h => h.Height(200))
-.DataSource(dataSource => dataSource
-.Ajax()
+                                            columns.Bound(o => o.CreatedBy).Width(80);
+                                            columns.Bound(o => o.DateCreated).Format("{0:dd/MM/yyyy}").Width(80);
+                                        })
+                                        .ClientDetailTemplateId("followup")
+                                        .Scrollable(h => h.Height(200))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
 
 
-.Model(model =>
-{
-model.Id(p => p.ServiceCrewWorkLogId);
-model.Field(p => p.DateCreated).Editable(false);
-model.Field(p => p.CreatedBy).Editable(false);
-}).Events(ev => ev
-.Error("error_handler(\"WorkLogrid_#=Num#\")")
-.RequestStart("onRequestStart(\"WorkLogrid_#=Num#\")")
-.RequestEnd("onRequestEnd(\"WorkLogrid_#=Num#\")"))
-//.Create(create => create.Action("ServiceCrewWorkLog_Create", "ServiceCrewWorkLog", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
-.Read(read => read.Action("ServiceCrewWorkLog_ReadJobOrder", "ServiceCrewWorkLog", new { num = "#=Num#" }).Data("sendForgery"))
-//.Update(update => update.Action("ServiceCrewWorkLog_Update", "ServiceCrewWorkLog").Data("sendForgery"))
-//.Destroy(destroy => destroy.Action("ServiceCrewWorkLog_Destory", "ServiceCrewWorkLog").Data("sendForgery"))
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.ServiceCrewWorkLogId);
+                                            model.Field(p => p.DateCreated).Editable(false);
+                                            model.Field(p => p.CreatedBy).Editable(false);
+                                        }).Events(ev => ev
+                                        .Error("error_handler(\"WorkLogrid_#=Num#\")")
+                                        .RequestStart("onRequestStart(\"WorkLogrid_#=Num#\")")
+                                        .RequestEnd("onRequestEnd(\"WorkLogrid_#=Num#\")"))
+                                        //.Create(create => create.Action("ServiceCrewWorkLog_Create", "ServiceCrewWorkLog", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
+                                        .Read(read => read.Action("ServiceCrewWorkLog_ReadJobOrder", "ServiceCrewWorkLog", new { num = "#=Num#" }).Data("sendForgery"))
+                                        //.Update(update => update.Action("ServiceCrewWorkLog_Update", "ServiceCrewWorkLog").Data("sendForgery"))
+                                        //.Destroy(destroy => destroy.Action("ServiceCrewWorkLog_Destory", "ServiceCrewWorkLog").Data("sendForgery"))
 
-)//.Events(events => events.DataBound("WorkSheetDataBound"))
-.Pageable(p => p.Refresh(true))
-.ToClientTemplate())
+                                        )//.Events(events => events.DataBound("WorkSheetDataBound"))
+                                        .Pageable(p => p.Refresh(true))
+                                        .ToClientTemplate())
 }
 
 @helper Mechanic()
 {
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ServiceCrew>()
-.Name("ServiceCrewAssigngrid_#=Num#")
-.Columns(columns =>
-{
+    /**/
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ServiceCrew>()
+                                        .Name("ServiceCrewAssigngrid_#=Num#")
+                                        .Columns(columns =>
+                                        {
 
-columns.ForeignKey(c => c.MechanicCrewID, (System.Collections.IEnumerable)ViewData["Mechanic"], "Code", "Name").Width(180);
-columns.Bound(o => o.TotalLabourHours).Width(150);
-columns.Bound(o => o.TotalLabourCost).Width(150);
-columns.Command(command =>
-{
-}).Width(250);
-})
-.Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            columns.ForeignKey(c => c.MechanicCrewID, (System.Collections.IEnumerable)ViewData["Mechanic"], "Code", "Name").Width(180);
+                                            columns.Bound(o => o.TotalLabourHours).Width(150);
+                                            columns.Bound(o => o.TotalLabourCost).Width(150);
+                                            columns.Command(command =>
+                                {
+                                }).Width(250);
+                                        })
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
 
-.Sortable(sortable =>
-{
-sortable.SortMode(GridSortMode.SingleColumn);
-})
-.Filterable()
-.Scrollable()
+                                        .Sortable(sortable =>
+                                        {
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+                                        .Filterable()
+                                        .Scrollable()
 
-.DataSource(dataSource => dataSource
-.Ajax()
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
 
-.PageSize(20)
-.Model(model =>
-{
-model.Id(p => p.ServiceCrewID);
-model.Field(p => p.TotalLabourCost).Editable(false);
-}
-).Events(ev => ev
-.Error("error_handler(\"ServiceCrewAssigngrid_#=Num#\")")
-.RequestStart("onRequestStart(\"ServiceCrewAssigngrid_#=Num#\")")
-.RequestEnd("onRequestEnd(\"ServiceCrewAssigngrid_#=Num#\")"))
+                                        .PageSize(20)
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.ServiceCrewID);
+                                            model.Field(p => p.TotalLabourCost).Editable(false);
+                                        }
+                                        ).Events(ev => ev
+                                        .Error("error_handler(\"ServiceCrewAssigngrid_#=Num#\")")
+                                        .RequestStart("onRequestStart(\"ServiceCrewAssigngrid_#=Num#\")")
+                                        .RequestEnd("onRequestEnd(\"ServiceCrewAssigngrid_#=Num#\")"))
 
-.Read(read => read.Action("ServiceCrewByService_ReadJobOrder", "ServiceCrew", new { num = "#=Num#" }).Data("sendForgery"))
+                                        .Read(read => read.Action("ServiceCrewByService_ReadJobOrder", "ServiceCrew", new { num = "#=Num#" }).Data("sendForgery"))
 
-)
-.Pageable(p => p.Refresh(true))
-.ToClientTemplate())
+                                        )
+                                        .Pageable(p => p.Refresh(true))
+                                        .ToClientTemplate())
 }
 
 @helper SparePart()
 {
+    /**/
 
-@(Html.Kendo().Grid<StoreRequisition>()
-.Name("SparePartStoreRequisitionGrid_#=Num#")
-.Columns(columns =>
-{
-columns.Bound(c => c.Reference).Title("Reference").Width(120);
-columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
-columns.Bound(c => c.RequestDate).Width(110);
-columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
-columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
-columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
-columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+    @(Html.Kendo().Grid<StoreRequisition>()
+                                        .Name("SparePartStoreRequisitionGrid_#=Num#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.Bound(c => c.Reference).Title("Reference").Width(120);
+                                            columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                            columns.Bound(c => c.RequestDate).Width(110);
+                                            columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
+                                            columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
+                            columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
+                                            columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "Id", "Name").EditorTemplateName("BranchSelector").Width(150);
 
-columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
-columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
-columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
-"<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
-columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
-columns.Bound(c => c.PlateNo).Width(100);
-columns.Bound(c => c.Remark).Width(120);
-columns.Bound(c => c.Status).Width(100);
+                                            columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+                                            columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+                                            columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
+                                "<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
+                                            columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "Id", "Name").Width(120);
+                                            columns.Bound(c => c.PlateNo).Width(100);
+                                            columns.Bound(c => c.Remark).Width(120);
+                                            columns.Bound(c => c.Status).Width(100);
 
-//columns.Command(command =>
-//{
-//    command.Edit();
-//    command.Destroy();
-//}).Width(280);
+                            //columns.Command(command =>
+                            //{
+                            //    command.Edit();
+                            //    command.Destroy();
+                            //}).Width(280);
 
-}).Filterable()
-
-
-//.ToolBar(toolbar =>
-//{
-//    toolbar.Create();
+                        }).Filterable()
 
 
-//})
-//.Events(ev => ev.Edit("onMasterEdit"))
+                                        //.ToolBar(toolbar =>
+                                        //{
+                                        //    toolbar.Create();
 
-//.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SparePartStoreRequisition").Window(w => w.Title("Store Requisition")))
-.HtmlAttributes(new { style = "height: 400px;" })
 
-.Scrollable()
+                                        //})
+                                        //.Events(ev => ev.Edit("onMasterEdit"))
 
-.Filterable()
-.Selectable(selectable =>
-{
-selectable.Mode(GridSelectionMode.Single);
-selectable.Type(GridSelectionType.Row);
-})
-.Sortable(sortable =>
-{
-sortable.SortMode(GridSortMode.SingleColumn);
-})
-.Events(ev => ev.DetailExpand("detailExpand"))
-.Scrollable(h => h.Height(400))
-//.Events(x => x.DataBound("onDataBoundMaster"))
-.DataSource(dataSource => dataSource
-.Ajax()
-.Sort(sort => sort.Add("StoreRequisitionID").Descending())
-.Events(ev => ev
-.Error("error_handler(\"SparePartStoreRequisitionGrid_#=Num#\")")
-.RequestStart("onRequestStart(\"SparePartStoreRequisitionGrid_#=Num#\")")
-.RequestEnd("onRequestEnd(\"SparePartStoreRequisitionGrid_#=Num#\")"))
+                                        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SparePartStoreRequisition").Window(w => w.Title("Store Requisition")))
+                                        .HtmlAttributes(new { style = "height: 400px;" })
 
-.Model(model =>
-{
-model.Id(p => p.StoreRequisitionID);
-model.Field(p => p.StoreRequisitionID).Editable(false);
-model.Field(p => p.BranchId).Editable(false);
-model.Field(p => p.OrgStructureId).Editable(false);
-model.Field(p => p.Status).Editable(false);
-model.Field(p => p.CreatedBy).Editable(false);
-model.Field(p => p.DateCreated).Editable(false);
-model.Field(p => p.ModifiedBy).Editable(false);
-model.Field(p => p.LastModified).Editable(false);
-})
-.Read(read => read.Action("SparePartStoreRequisitions_ReadJobOrder", "SparePartStoreRequisition", new { num = "#=Num#" }).Data("sendForgery"))
-//.Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition", new { Id = "#=Num#" }).Data("sendForgery"))
-//.Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition").Data("sendForgery"))
-//.Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition").Data("sendForgery"))
+                                        .Scrollable()
 
-).Resizable(resize => resize.Columns(true))
-.ClientDetailTemplateId("SparePartStoreRequisitions")
-.ToClientTemplate())
+                                        .Filterable()
+                                        .Selectable(selectable =>
+                                        {
+                                            selectable.Mode(GridSelectionMode.Single);
+                                            selectable.Type(GridSelectionType.Row);
+                                        })
+                                        .Sortable(sortable =>
+                                        {
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+                                        .Events(ev => ev.DetailExpand("detailExpand"))
+                                        .Scrollable(h => h.Height(400))
+                                        //.Events(x => x.DataBound("onDataBoundMaster"))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Sort(sort => sort.Add("StoreRequisitionID").Descending())
+                                        .Events(ev => ev
+                                        .Error("error_handler(\"SparePartStoreRequisitionGrid_#=Num#\")")
+                                        .RequestStart("onRequestStart(\"SparePartStoreRequisitionGrid_#=Num#\")")
+                                        .RequestEnd("onRequestEnd(\"SparePartStoreRequisitionGrid_#=Num#\")"))
+
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.StoreRequisitionID);
+                                            model.Field(p => p.StoreRequisitionID).Editable(false);
+                                            model.Field(p => p.BranchId).Editable(false);
+                                            model.Field(p => p.OrgStructureId).Editable(false);
+                                            model.Field(p => p.Status).Editable(false);
+                                            model.Field(p => p.CreatedBy).Editable(false);
+                                            model.Field(p => p.DateCreated).Editable(false);
+                                            model.Field(p => p.ModifiedBy).Editable(false);
+                                            model.Field(p => p.LastModified).Editable(false);
+                                        })
+                                        .Read(read => read.Action("SparePartStoreRequisitions_ReadJobOrder", "SparePartStoreRequisition", new { num = "#=Num#" }).Data("sendForgery"))
+                                        //.Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition", new { Id = "#=Num#" }).Data("sendForgery"))
+                                        //.Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition").Data("sendForgery"))
+                                        //.Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition").Data("sendForgery"))
+
+                                        ).Resizable(resize => resize.Columns(true))
+                                        .ClientDetailTemplateId("SparePartStoreRequisitions")
+                                        .ToClientTemplate())
 }
 <script id="SparePartStoreRequisitions" type="text/Kendo-tmpl">
-@(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
-{
-items.Add().Text("Detail").Content(
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
+                                        {
+                                            items.Add().Text("Detail").Content(
 
-@<text>
-# if (!IsSendForApproval&&!IsSendForApproval)
-{#
+                                @<text>
+                                    # if (!IsSendForApproval&&!IsSendForApproval)
+                                    {#
 
-<a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-<br />
-# } #
+                                    <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    <br />
+                                    # } #
 
-# if (IsOnlineApproved)
-{#
-<a href='@Url.Action("SparePartStoreRequisitionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-<br />
-# } #
-<div>
-<hr>
-<dl class="dl-horizontal">
+                                    # if (IsOnlineApproved)
+                                    {#
+                                    <a href='@Url.Action("SparePartStoreRequisitionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                    <br />
+                                    # } #
+                                    <div>
+                                        <hr>
+                                        <dl class="dl-horizontal">
 
-<dt>
-Request Date
-</dt>
-<dd>
-#=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
-</dd>
-<dt>
-Status
-</dt>
-<dd>
-#= Status #
-</dd>
-<dt>
-Is Transfer
-</dt>
-<dd>
-#= IsTransfer #
-</dd>
-<dt>
-Receiver Store
-</dt>
-<dd>
-#= ToStoreCode #
-</dd>
-<dt>
-CreatedOn
-</dt>
-<dd>
-#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                            <dt>
+                                                Request Date
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                            </dd>
+                                            <dt>
+                                                Status
+                                            </dt>
+                                            <dd>
+                                                #= Status #
+                                            </dd>
+                                            <dt>
+                                                Is Transfer
+                                            </dt>
+                                            <dd>
+                                                #= IsTransfer #
+                                            </dd>
+                                            <dt>
+                                                Receiver Store
+                                            </dt>
+                                            <dd>
+                                                #= ToStoreCode #
+                                            </dd>
+                                            <dt>
+                                                CreatedOn
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
 
-</dd>
-<dt>
-CreatedBy
-</dt>
-<dd>
-#= CreatedBy #
-</dd>
-<dt>
-Modified By
-</dt>
-<dd>
-#= ModifiedBy #s
-</dd>
-<dt>
-Modified Date
-</dt>
-<dd>
-#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-</dd>
-<dt>
-Approved By
-</dt>
-<dd>
-#= OnlineApprovedBy #s
-</dd>
-<dt>
-Approval Time
-</dt>
-<dd>
-#=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
-</dd>
-</dl>
-</div>
+                                            </dd>
+                                            <dt>
+                                                CreatedBy
+                                            </dt>
+                                            <dd>
+                                                #= CreatedBy #
+                                            </dd>
+                                            <dt>
+                                                Modified By
+                                            </dt>
+                                            <dd>
+                                                #= ModifiedBy #s
+                                            </dd>
+                                            <dt>
+                                                Modified Date
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            </dd>
+                                            <dt>
+                                                Approved By
+                                            </dt>
+                                            <dd>
+                                                #= OnlineApprovedBy #s
+                                            </dd>
+                                            <dt>
+                                                Approval Time
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                            </dd>
+                                        </dl>
+                                    </div>
 
-<hr>
+                                    <hr>
 
-@*# if (IsOnlineApproved&&!IsVoid)
-{#
-@if (HttpContext.Current.User.IsInRole("Property_Void"))
-{
-<a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-}
-/**/
-# } #*@
+                                    @*# if (IsOnlineApproved&&!IsVoid)
+                                        {#
+                                        @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                        {
+                                        <a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                        }
+                                        /**/
+                                        # } #*@
 
-</text>
+                                </text>
+                                                            );
+
+                                                    items.Add().Text("Items").Content(
+        @<text>
+            @(Html.Kendo().Grid<StoreRequisitionItem>()
+                                                .Name("SparePartStoreRequisitionItem_#=StoreRequisitionID#")
+                                                .Columns(columns =>
+                                                {
+                                                            columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+                                                            columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(300);
+                                                            columns.Bound(c => c.Unit).Width(120);
+                                                            columns.Bound(c => c.CurrentAPrice).Width(120);
+                                                            columns.Bound(c => c.CurrentBalance).Width(80);
+                                                            columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                                            columns.Bound(c => c.ModelNo).Width(120);
+                                                            columns.Bound(c => c.SerialNo).Width(120);
+                                                            columns.Bound(c => c.ChasisNo).Width(120);
+                                                            columns.Bound(c => c.RequestedQuantity).Width(120);
+                                                            columns.Bound(c => c.ApprovedQuantity).Width(120);
+                                                            columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
+                                                            columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+                                                            columns.Bound(c => c.ItemSpecification).Width(120);
+                                                //columns.Bound(c => c.CurrentAPrice).Width(80);
+
+                                                columns.Command(command =>
+                                                {
+                                                            command.Edit();
+                                                            command.Destroy();
+                                                        });
+
+                                                        })
+                                                .ToolBar(toolbar =>
+                                                {
+                                                            toolbar.Create();
+                                                        })
+                                                .Events(ev => ev.Edit("onItemEdit"))
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                .Scrollable()
+                                                .Events(x => x.DataBound("onDataBoundLines"))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Events(ev => ev
+                                                .Error("error_handler(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")")
+                                                .RequestStart("onRequestStart(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")")
+                                                .RequestEnd("onRequestEnd(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")"))
+                                                .Model(model =>
+                                                {
+                                                            model.Id(p => p.StoreRequisitionItemID);
+                                                            model.Field(p => p.IssuedQuantity).Editable(false);
+                                                            model.Field(p => p.PurchaseQuantity).Editable(false);
+                                                            model.Field(p => p.PartNo).Editable(false);
+                                                            model.Field(p => p.Unit).Editable(false);
+                                                            model.Field(p => p.CreatedBy).Editable(false);
+                                                            model.Field(p => p.DateCreated).Editable(false);
+                                                            model.Field(p => p.ModifiedBy).Editable(false);
+                                                            model.Field(p => p.LastModified).Editable(false);
+                                                            model.Field(p => p.CurrentAPrice).Editable(false);
+                                                            model.Field(p => p.AgreementPrice).Editable(false);
+                                                            model.Field(p => p.CurrentBalance).Editable(false);
+
+                                                        })
+                                                .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                                                .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem").Data("sendForgery"))
+                                                .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem").Data("sendForgery"))
+                                                ).ToClientTemplate())
+        </text>
 );
 
-items.Add().Text("Items").Content(
-@<text>
-@(Html.Kendo().Grid<StoreRequisitionItem>()
-.Name("SparePartStoreRequisitionItem_#=StoreRequisitionID#")
-.Columns(columns =>
-{
-columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
-columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(300);
-columns.Bound(c => c.Unit).Width(120);
-columns.Bound(c => c.CurrentAPrice).Width(120);
-columns.Bound(c => c.CurrentBalance).Width(80);
-columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
-columns.Bound(c => c.ModelNo).Width(120);
-columns.Bound(c => c.SerialNo).Width(120);
-columns.Bound(c => c.ChasisNo).Width(120);
-columns.Bound(c => c.RequestedQuantity).Width(120);
-columns.Bound(c => c.ApprovedQuantity).Width(120);
-columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
-columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
-columns.Bound(c => c.ItemSpecification).Width(120);
-//columns.Bound(c => c.CurrentAPrice).Width(80);
-
-columns.Command(command =>
-{
-command.Edit();
-command.Destroy();
-});
-
-})
-.ToolBar(toolbar =>
-{
-toolbar.Create();
-})
-.Events(ev => ev.Edit("onItemEdit"))
-.Editable(editable => editable.Mode(GridEditMode.InLine))
-.Scrollable()
-.Events(x => x.DataBound("onDataBoundLines"))
-.DataSource(dataSource => dataSource
-.Ajax()
-.Events(ev => ev
-.Error("error_handler(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")")
-.RequestStart("onRequestStart(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")")
-.RequestEnd("onRequestEnd(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")"))
-.Model(model =>
-{
-model.Id(p => p.StoreRequisitionItemID);
-model.Field(p => p.IssuedQuantity).Editable(false);
-model.Field(p => p.PurchaseQuantity).Editable(false);
-model.Field(p => p.PartNo).Editable(false);
-model.Field(p => p.Unit).Editable(false);
-model.Field(p => p.CreatedBy).Editable(false);
-model.Field(p => p.DateCreated).Editable(false);
-model.Field(p => p.ModifiedBy).Editable(false);
-model.Field(p => p.LastModified).Editable(false);
-model.Field(p => p.CurrentAPrice).Editable(false);
-model.Field(p => p.AgreementPrice).Editable(false);
-model.Field(p => p.CurrentBalance).Editable(false);
-
-})
-.Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-.Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
-.Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem").Data("sendForgery"))
-.Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem").Data("sendForgery"))
-).ToClientTemplate())
-</text>
-);
 
 
 
 
-
-}).ToClientTemplate())
-@*============================================================ Store Requisition Property Validation ===============================================================================*@
+                                        }).ToClientTemplate())
+    @*============================================================ Store Requisition Property Validation ===============================================================================*@
 
 
 
@@ -741,59 +830,327 @@ model.Field(p => p.CurrentBalance).Editable(false);
 </script>
 
 <script id="followup" type="text/kendo-tmpl">
-@(Html.Kendo().TabStrip()
-.Name("tabStripMain_#=ServiceCrewWorkLogId#")
-.SelectedIndex(0)
-.Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-.Items(items =>
-{
-items.Add().Text(" Follow-Ups").Content(@<text>
+    @(Html.Kendo().TabStrip()
+                                        .Name("tabStripMain_#=ServiceCrewWorkLogId#")
+                                        .SelectedIndex(0)
+                                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                        .Items(items =>
+                                        {
+                                            items.Add().Text(" Follow-Ups").Content(@<text>
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.FollowUp>()
-.Name("Followupsgrid_#=ServiceCrewWorkLogId#")
-.Columns(columns =>
-{
-columns.Bound(o => o.DurationHr).EditorTemplateName("NumEditor").Width(100);
-columns.Bound(o => o.Status).EditorTemplateName("FollowupType").Width(200);
-columns.Bound(o => o.DateCreated).Format("{0:yyyy-MM-dd}").Width(100).Width(100);
+                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.FollowUp>()
+                                                                                    .Name("Followupsgrid_#=ServiceCrewWorkLogId#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+                                                                                                columns.Bound(o => o.DurationHr).EditorTemplateName("NumEditor").Width(100);
+                                                                                                columns.Bound(o => o.Status).EditorTemplateName("FollowupType").Width(200);
+                                                                                                columns.Bound(o => o.DateCreated).Format("{0:yyyy-MM-dd}").Width(100).Width(100);
 
-//columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                                                    //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
 
-})
-// .ToolBar(x => x.Create())
-.Events(ev =>
-{
-ev.DataBound("detailGridsDataBound");
-})
-.DataSource(dataSource => dataSource
-.Ajax()
+                                                                                })
+                                                                                    // .ToolBar(x => x.Create())
+                                                                                    .Events(ev =>
+                                                                                    {
+                                                                                                ev.DataBound("detailGridsDataBound");
+                                                                                            })
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                    .Ajax()
 
-.PageSize(20)
-.Model(model =>
-{
-model.Id(p => p.FollowUpId);
-model.Field(p => p.DateCreated).Editable(false);
+                                                                                    .PageSize(20)
+                                                                                    .Model(model =>
+                                                                                    {
+                                                                                                model.Id(p => p.FollowUpId);
+                                                                                                model.Field(p => p.DateCreated).Editable(false);
 
-}).Events(ev => ev
-.Error("error_handler(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
-.RequestStart("onRequestStart(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
-.RequestEnd("onRequestEnd(\"Followupsgrid_#=ServiceCrewWorkLogId#\")"))
-//      .Create(create => create.Action("FollowUp_Create", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }).Data("sendForgery"))
-.Read(read => read.Action("FollowUp_Read", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }).Data("sendForgery"))
-//  .Update(update => update.Action("FollowUp_Update", "FollowUp").Data("sendForgery"))
-//  .Destroy(destroy => destroy.Action("FollowUp_Destory", "FollowUp").Data("sendForgery"))
+                                                                                            }).Events(ev => ev
+                                                .Error("error_handler(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
+                                                .RequestStart("onRequestStart(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
+                                                .RequestEnd("onRequestEnd(\"Followupsgrid_#=ServiceCrewWorkLogId#\")"))
+                                                                                    //      .Create(create => create.Action("FollowUp_Create", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }).Data("sendForgery"))
+                                                                                    .Read(read => read.Action("FollowUp_Read", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }).Data("sendForgery"))
+                                                                                    //  .Update(update => update.Action("FollowUp_Update", "FollowUp").Data("sendForgery"))
+                                                                                    //  .Destroy(destroy => destroy.Action("FollowUp_Destory", "FollowUp").Data("sendForgery"))
 
-)
-.ToClientTemplate())
-</text>
-);
-}).ToClientTemplate())
+                                                                                    )
+                                                                                    .ToClientTemplate())
+                                            </text>
+                                                                    );
+                                                }).ToClientTemplate())
 
 
 </script>
+<script id="templatee" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                .Name("tabStripMain_#=ServiceCenterJobId#")
+                                                                                .SelectedIndex(0)
+                                                                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                                                .Items(items =>
+                                                                                {
+                                                                                    items.Add().Text("Issued Spare Parts").Content(@<text>
+                                                                                        @IssueItems()
+                                                                                    </text>);
+                                                                                            items.Add().Text("External Job").Content(@<text>
+                                                                                                @ExternalJob()
+                                                                                            </text>);
+                                                                                                    items.Add().Text(" Canibalization ").Content(@<text>
+                                                                                                        @(Html.Kendo().Grid<Canibalization>()
+.Name("CanibalizationGrid_#=ServiceCenterJobId#")
+.Columns(columns =>
+{
+                                            columns.Group(g => g.Title("Requesting Machine").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+.Columns(detail =>
+{
+                                //detail.Bound(evp => evp.BAC).Width(100).Format("{0:N2}");
+                                detail.Bound(c => c.RequestingMachinModel).Title("Model");
+                                            detail.Bound(c => c.RequestingMachinePlateNumber).Title("Plate Number");
+                                            detail.Bound(c => c.RequestingMachineEngineModel).Title("Engine Model");
+                                            detail.Bound(c => c.RequestingMachineEngineNumber).Title("Engine Number");
+                                        })
+);
+                                            columns.Group(g => g.Title("Providing Machine").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+.Columns(detail =>
+{
+                                            detail.Bound(c => c.ProvidingMachinModel).Title("Machine Model");
+                                            detail.ForeignKey(c => c.ProvidingMachinePlateNumber, (IEnumerable)ViewData["CanibalizePlates"], "PlateNumber", "Name").Title("Plate Number");
+                                            detail.Bound(c => c.ProvidingMachineEngineModel).Title("Engine Model");
+                                            detail.Bound(c => c.ProvidingMachineEngineNumber).Title("Engine Number");
+                                        })
+);
+                                            columns.Bound(c => c.Remark);
+                                            columns.Bound(c => c.Status);
+
+
+                                        }).Filterable()
 
 
 
+//.Events(ev => ev.Edit("onMasterEdit"))
+
+//.Editable(editable => editable.Mode(GridEditMode.InLine))
+.HtmlAttributes(new { style = "height: 400px;" })
+
+.Scrollable()
+
+.Filterable()
+.Selectable(selectable =>
+{
+                                            selectable.Mode(GridSelectionMode.Single);
+                                            selectable.Type(GridSelectionType.Row);
+                                        })
+.Sortable(sortable =>
+{
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+//.Events(ev => ev.DataBound("CanibalizationDB"))
+// .Events(ev => ev.DetailExpand("detailExpand"))
+.Scrollable(h => h.Height(400))
+// .Events(x => x.DataBound("onDataBoundMaster"))
+.DataSource(dataSource => dataSource
+                                                                                                                                                                                                    .Ajax()
+                                                                                                                                                                                                    .Sort(sort => sort.Add("CanibalizationId").Descending())
+                                                                                                                                                                                                    .Events(ev => ev
+                                                                                                                                                                                                    .Error("error_handler(\"CanibalizationGrid_#=ServiceCenterJobId#\")")
+                                                                                                                                                                                                    .RequestStart("onRequestStart(\"CanibalizationGrid_#=ServiceCenterJobId#\")")
+                                                                                                                                                                                                    .RequestEnd("onRequestEnd(\"CanibalizationGrid_#=ServiceCenterJobId#\")"))
+
+                                                                                                                                                                                                    .Model(model =>
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        model.Id(p => p.CanibalizationId);
+                                                                                                                                                                                                        model.Field(p => p.RequestingMachinePlateNumber).Editable(false);
+                                                                                                                                                                                                        model.Field(p => p.RequestingMachineEngineNumber).Editable(false);
+                                                                                                                                                                                                        model.Field(p => p.RequestingMachineEngineModel).Editable(false);
+                                                                                                                                                                                                        model.Field(p => p.RequestingMachinModel).Editable(false);
+                                                                                                                                                                                                        model.Field(p => p.ProvidingMachineEngineNumber).Editable(false);
+                                                                                                                                                                                                        model.Field(p => p.ProvidingMachineEngineModel).Editable(false);
+                                                                                                                                                                                                        model.Field(p => p.ProvidingMachinModel).Editable(false);
+                                                                                                                                                                                                        model.Field(p => p.Status).Editable(false);
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    )
+                                                                                                                                                                                                    .Read(read => read.Action("Canibalization_Read", "Canibalization", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
+
+).Resizable(resize => resize.Columns(true))
+.ClientDetailTemplateId("PartsToBeCanabilized")
+.ToClientTemplate())
+                                                                                                    </text>
+);
+
+                                                                                                        })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            .ToClientTemplate())
+</script>
+<script id="PartsToBeCanabilized" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                                        .Name("tabstripCanibalization_#=CanibalizationId#")
+                                                                                                        .SelectedIndex(0)
+                                                                                                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                                                                        .Items(items =>
+                                                                                                        {
+
+                                                                                                            items.Add().Text("CanibalizedParts")
+                                                                                                .Content(
+                                                        @<text>
+                                                            @CanibalizedParts()
+                                                        </text>);
+
+
+                                                                                                                }
+                                                                            ).ToClientTemplate()
+    )
+
+
+</script>
+@helper IssueItems()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.IssueItem>()
+                            .Name("IssueItem_#=ServiceCenterJobId#")
+                             .Columns(columns =>
+                             {
+                                 columns.Bound(c => c.Name);
+                                 columns.Bound(c => c.IssuedQuantity);
+                                 columns.Bound(c => c.UnitPrice);
+                             })
+                                .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                                      .Filterable()
+                                      .Scrollable()
+
+                                      .DataSource(dataSource => dataSource
+                                      .Ajax()
+
+                                      .PageSize(20)
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.IssueItemID);
+                                      }
+                                      ).Events(ev => ev
+                                      .Error("error_handler(\"IssueItem_#=ServiceCenterJobId#\")")
+                                      .RequestStart("onRequestStart(\"IssueItem_#=ServiceCenterJobId#\")")
+                                      .RequestEnd("onRequestEnd(\"IssueItem_#=ServiceCenterJobId#\")"))
+
+                                      .Read(read => read.Action("IssueRead", "JobOrderClosed", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
+
+                                      ).ToClientTemplate()
+
+    )
+}
+@helper ExternalJob()
+{
+    @(Html.Kendo().Grid<JobOrder>()
+                                                    .Name("ExternalJobOrder_grid#=ServiceCenterJobId#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.Bound(e => e.Num).Width(80);
+                                                        columns.Bound(e => e.IsInsured).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsInsured #' " + " # if (IsPM) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+                                                        columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150);
+                                                        columns.Bound(e => e.EquipmentName).Width(100);
+                                                        columns.Bound(e => e.LicensePlate).Width(100);
+
+                                        //columns.Bound(e => e.IsRework).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsRework? checked='checked': checked='' #/>");
+                                        columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(120);
+                                                        if (GlobalHelper.IsMultipleBusinessUnit())
+                                                        {
+                                                            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "Id", "Name").Width(120).EditorTemplateName("BusinessUnitSelector");
+                                                        }
+                                                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "Id", "Name").Width(120).EditorTemplateName("AllBranchSelector");
+                                                        columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(120).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                        columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(120);
+                                                        columns.Bound(e => e.DateCreated).Title("Date Created").Format("{0:yyyy-MM-dd}").Width(100);
+                                                        columns.Bound(e => e.OnlineApprovedTime).Title("Date Approved").Format("{0:yyyy-MM-dd}").Width(100);
+                                                        columns.Bound(e => e.SecondOnlineApprovedTime).Title("Date Closed").Format("{0:yyyy-MM-dd}").Width(100);
+                                                        columns.Bound(e => e.Status).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                        columns.Bound(e => e.KMReading).Width(100);
+                                                        columns.Bound(e => e.GPSInfo).Width(100);
+                                                        columns.Bound(e => e.Referance).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                        columns.Bound(e => e.Description).Width(100);
+                                                        columns.Bound(e => e.IsPM).Width(100);
+
+                                                    })
+                                                    .HtmlAttributes(new { style = "height: 500px;" })
+                                                    .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+                                                    .Scrollable()
+                                                    .Sortable()
+                                                    .Filterable()
+                                                    .Scrollable(h => h.Height(500))
+                                                    // .Events(ev => ev.DataBound("ExternaldataBound"))
+                                                    // .ClientDetailTemplateId("template")
+                                                    //  .Events(ev => ev.DetailExpand("onDetailExpandUser"))
+                                                    .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .ServerOperation(true)
+                                                    //.Group(g=> {
+                                                    //    g.Add(gg => gg.Num);
+
+                                                    //})
+                                                    .Sort(x => x.Add(s => s.Num).Descending())
+
+                                                    .PageSize(10)
+                                                    .Model(model =>
+                                                    {
+                                                        model.Id(p => p.JobOrderID);
+                                                        model.Field(p => p.JobOrderID).Editable(false);
+                                                        model.Field(p => p.BranchId).Editable(false);
+                                                        model.Field(p => p.OrgStructureId).Editable(false);
+                                                        model.Field(p => p.BusinessUnitId).Editable(false);
+                                                    }
+                                                    ).Events(ev => ev
+                                                    .Error("error_handler(\"ExternalJobOrder_grid#=ServiceCenterJobId#\")")
+                                                    .RequestStart("onRequestStart(\"ExternalJobOrder_grid#=ServiceCenterJobId#\")")
+                                                    .RequestEnd("onRequestEnd(\"ExternalJobOrder_grid#=ServiceCenterJobId#\")"))
+                                                    // .Create(update => update.Action("JobOrder_Create", "JobOrderWorkShop", new { id = "#=ServiceCenterJobId#", Location = "ServiceCenter" }).Data("sendForgery"))
+                                                    .Read(read => read.Action("JobOrder_Read", "JobOrderWorkShop", new { id = "#=ServiceCenterJobId#", Location = "ServiceCenter" }).Data("sendForgery"))
+                                                    //.Update(update => update.Action("JobOrder_Update", "JobOrderWorkShop").Data("sendForgery"))
+                                                    // .Destroy(update => update.Action("JobOrder_Destroy", "JobOrderWorkShop").Data("sendForgery"))
+
+                                                    )
+                                                    // .Events(events => events.DataBound("dataBound"))
+                                                    .ToClientTemplate()
+    )
+}
+@helper CanibalizedParts()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.CanibalizedParts>()
+                                                                .Name("CanibalizedP_#=CanibalizationId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.ForeignKey(e => e.VehiclePartId, (IEnumerable)ViewData["VehicleParts"], "VehiclePartId", "Name").Title("Vehicle Part").Width(150);
+                                                                    columns.Bound(c => c.Quantity);
+                                                                    columns.Bound(c => c.Unit);
+                                                                    columns.Bound(c => c.Description);
+
+
+                                                                })
+                                                                //.ToolBar(commands => commands.Create())
+                                                                //.Events(ev => ev.DataBound("CanibalizedPartsDB"))
+                                                                //.Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .PageSize(5)
+                                                                .Model(model =>
+                                                                {
+                                                                    model.Id(p => p.CanibalizedPartsId);
+
+                                                                })
+                                                                .Events(ev => ev
+                                                                .Error("error_handler(\"CanibalizedP_#=CanibalizationId#\")")
+                                                                .RequestStart("onRequestStart(\"CanibalizedP_#=CanibalizationId#\")")
+                                                                .RequestEnd("onRequestEnd(\"CanibalizedP_#=CanibalizationId#\")"))
+
+                                                                //.Create(update => update.Action("Create", "CanabilizedPart", new { Id = "#=CanibalizationId#" }).Data("sendForgery"))
+                                                                .Read(read => read.Action("Read", "CanabilizedPart", new { Id = "#=CanibalizationId#" }).Data("sendForgery"))
+                                                                //.Update(update => update.Action("Update", "CanabilizedPart").Data("sendForgery"))
+                                                                //.Destroy(delete => delete.Action("Destroy", "CanabilizedPart").Data("sendForgery"))
+
+
+                                                                )
+                                                                .ToClientTemplate())
+}
 
 
 
@@ -1005,9 +1362,10 @@ if (dataItem.Status == "Rejected")
 $(this).css("background-color", "#F75D59");
 
 
-}
-if (dataItem.Status == "Closed") {
+    }
 
+    if (dataItem.Status == "Closed") {
+        //grid.showColumn("RemarkAfterDelivery");
 $(this).addClass("k-state-FleetApproved");
 }
 if (dataItem.Progress < 30) {
@@ -1266,118 +1624,118 @@ alert(result);
 
 
 <style type="text/css">
-div.k-edit-form-container {
-width: 700px;
-}
+    div.k-edit-form-container {
+        width: 700px;
+    }
 </style>
 
 <style>
-#gauge-container {
-width: 404px;
-height: 404px;
-text-align: center;
-margin: 0 auto 30px auto;
-}
+    #gauge-container {
+        width: 404px;
+        height: 404px;
+        text-align: center;
+        margin: 0 auto 30px auto;
+    }
 
-#gauge {
-width: 330px;
-height: 330px;
-margin: 0 auto 0;
-}
+    #gauge {
+        width: 330px;
+        height: 330px;
+        margin: 0 auto 0;
+    }
 
-#RejectionReason {
-width: 300px;
-height: 100px;
-}
+    #RejectionReason {
+        width: 300px;
+        height: 100px;
+    }
 
-#submit {
-width: 60px;
-height: 20px;
-border-radius: 5px;
-}
+    #submit {
+        width: 60px;
+        height: 20px;
+        border-radius: 5px;
+    }
 
-html .k-grid tr:hover {
-background: transparent;
-}
+    html .k-grid tr:hover {
+        background: transparent;
+    }
 
-html .k-grid tr.k-alt:hover {
-background: #f1f1f1;
-}
+    html .k-grid tr.k-alt:hover {
+        background: #f1f1f1;
+    }
 
-div.k-content {
-overflow: visible;
-}
+    div.k-content {
+        overflow: visible;
+    }
 </style>
 
 <script type="text/javascript">
-var masterDataItem;
-var masterRow;
-var masterGrid;
-function detailExpand(e) {
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    function detailExpand(e) {
 
-masterRow = e.masterRow;
-var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
-masterDataItem = masterGrid.dataItem(masterRow);
-codeid = masterDataItem.StoreRequisitionID;
-isapproved = masterDataItem.IsOnlineApproved;
+        masterRow = e.masterRow;
+        var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
 
-var lineGrid = $("#SparePartStoreRequisitionItem_" + codeid).data("kendoGrid");
-if (isapproved) {
-$(".k-grid-top", lineGrid).hide();
+        var lineGrid = $("#SparePartStoreRequisitionItem_" + codeid).data("kendoGrid");
+        if (isapproved) {
+            $(".k-grid-top", lineGrid).hide();
 
-}
-
-
-}
-
-var storeCode;
-var codeid;
-var isapproved;
-
-function onItemEdit(e) {
-var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
-var masterGrid = $("#grid").data("kendoGrid");
-var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
-var masterDataItem = masterGrid.dataItem(masterRow);
-storeCode = masterDataItem.StoreCode;
-codeid = masterDataItem.StoreRequisitionID;
-
-if (e.model.isNew() === true) {
-$("#ApprovedQuantity").attr("readonly", true);
-}
-//edit
-if (e.model.isNew() !== true) {
-
-//$("#RequestedQuantity").attr("readonly", true);
-//$("#ItemCategoryCode").attr("readonly", true);
-}
+        }
 
 
+    }
 
-}
+    var storeCode;
+    var codeid;
+    var isapproved;
 
-function onDataBoundLines(e) {
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        codeid = masterDataItem.StoreRequisitionID;
 
-var detailGrid = "#" + e.sender.element[0].id;// "#SparePartStoreRequisitionItem_" + codeid;
-if (isapproved) {
+        if (e.model.isNew() === true) {
+            $("#ApprovedQuantity").attr("readonly", true);
+        }
+        //edit
+        if (e.model.isNew() !== true) {
 
-$(".k-grid-add", detailGrid).hide();
-$(".k-grid-delete", detailGrid).hide();
-$(".k-grid-edit", detailGrid).hide();
-}
-}
+            //$("#RequestedQuantity").attr("readonly", true);
+            //$("#ItemCategoryCode").attr("readonly", true);
+        }
 
-function detailGridsDataBound() {
-var grid = this;
 
-grid.tbody.find("tr[role='row']").each(function () {
-var dataItem = grid.dataItem(this);
 
-if (IsOnlineTransfered == true) {
-$(this).find(".k-grid-edit").remove();
-$(this).find(".k-grid-delete").remove();
-}
+    }
 
-});
-}
+    function onDataBoundLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#SparePartStoreRequisitionItem_" + codeid;
+        if (isapproved) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    function detailGridsDataBound() {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (IsOnlineTransfered == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+        });
+    }
 </script>

@@ -1,0 +1,252 @@
+
+<script>
+    function filterEquipmentIdentity() {
+
+        var dropdownlist = $("#EquipmentTypeID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentIdentityID").val(),
+            Search: filterInput.val()
+        };
+
+    }
+
+    function filterEquipment() {
+        var dropdownlist = $("#FleetsID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentNameId: $("#EquipmentNameID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterByType() {
+        var dropdownlist = $("#EquipmentNameID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeID").val(),
+            search: filterInput.val()
+        };
+
+    }
+</script>
+@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Core.Domain
+@using ExceedERP.Helpers
+@using ExceedERP.Core.Domain.FleetManagement
+@model  ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+@*<div class="row">
+   
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Plate/Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter(FilterType.Contains)
+                                    .OptionLabel("Select")
+                                    .DataSource(d => d.Read(r => r.Action("GetFleetForPlanAndEvaluation", "FleetManagementDataProvider").Data("sendForgery")
+                                    .Data("filterPlateNo"))
+                                    .ServerFiltering(false)
+                                    .Events(ev=>ev. "onPlateNumberChange()" }) // Add onchange event
+                                    )
+                        // .CascadeFrom("EquipmentNameId")
+                )
+            </div>
+        </div>
+    </div>
+</div>*@
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Plate/Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                            .Name("FleetsID") // Ensure consistent naming
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("GetFleetForPlanAndEvaluation", "FleetManagementDataProvider")
+                                .Data("sendForgery")
+                                .Data("filterPlateNo"))
+                                .ServerFiltering(false))
+                            .HtmlAttributes(new { style = "width:100%", onchange = "onPlateNumberChange()" }) // Add onchange event
+                )
+            </div>
+        </div>
+    </div>
+
+    <!-- Add the "From" field beside PlateNumber -->
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>From</label>
+            <div>
+                <input type="text" id="FromLocation" name="FromLocation" class="k-textbox" style="width:100%" readonly />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div> Starting Date</div>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.StartingDate).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>To Date</div>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.ToDate).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Destination Site</div>
+            <div>
+
+
+                @(Html.Kendo().DropDownListFor(m => m.BranchId)
+
+                 .DataTextField("Text")
+                 .DataValueField("Value")
+                 .Filter(FilterType.Contains)
+                 .OptionLabel("Select Plate No")
+                 .DataSource(d => d.Read(r => r.Action("GetBranchForSiteVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery").Data("filterBranch"))
+                 .ServerFiltering(true)).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Battery Status</div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.BatteryStatus)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .BindTo(EnumExtension.EnumToSelectList(typeof(BatteryStatus))
+                    ))
+            </div>
+        </div>
+    </div>
+</div>
+
+@* 2nd Row *@
+
+<div class="row">
+
+
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Equipment Condition</div>
+            <div>
+@(Html.Kendo().DropDownListFor(model => model.EquipmentCondition)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .HtmlAttributes(new { style = "width:100%" })
+                .BindTo(EnumExtension.EnumToSelectList(typeof(EquipmentCondition))
+                ))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Transfer Mode</div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.TransferMode)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .HtmlAttributes(new { style = "width:100%" })
+                .BindTo(EnumExtension.EnumToSelectList(typeof(TransferMode))
+                ))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Transered Operator One</div>
+            <div>
+                @*@Html.Kendo().TextBoxFor(model => model.TransferedOperator).HtmlAttributes(new { style = "width:100%" })*@
+                @(Html.Kendo().DropDownListFor(m => m.OperatorId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Operator")
+                .DataSource(d => d.Read(r => r.Action("GetOperatorForVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery"))
+                .ServerFiltering(false))
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Transered Operator Two</div>
+            <div>
+                @*@Html.Kendo().TextBoxFor(model => model.TransferedOperator).HtmlAttributes(new { style = "width:100%" })*@
+                @(Html.Kendo().DropDownListFor(m => m.SecondOperatorId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Operator")
+                .DataSource(d => d.Read(r => r.Action("GetOperatorForVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery"))
+                .ServerFiltering(false)).ValuePrimitive(true)
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Battery Quantity</div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.BatteryQuantity).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+
+<div class="row">
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Fuel Amount</div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FuelAmount)
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .HtmlAttributes(new { style = "width:100%" })
+                                                    .BindTo(EnumExtension.EnumToSelectList(typeof(FuelAmount))
+                                                    ))
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>Transfer Reason</div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.TransferReason).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+

@@ -31,8 +31,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         public ActionResult TyreByFleet_Read([DataSourceRequest] DataSourceRequest request, string Id)
         {
-            List<EquipmentTyreViewModel> tires = new List<EquipmentTyreViewModel>();
-            var Tyres = db.EquipmentTyres.Where(x => x.fleetId.ToString() == Id && x.Isattached == true).ToList();
+            //List<EquipmentTyreViewModel> tires = new List<EquipmentTyreViewModel>();
+            var Tyres = db.EquipmentTyres.Where(x => x.fleetId.ToString() == Id && x.Isattached == true).AsQueryable();
            
             
           

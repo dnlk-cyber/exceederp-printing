@@ -22,6 +22,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     public class DriverTransferController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         IDriverVehicleTransferService _DriverVehicleTransferService;
         IFleetService _FleetService;
         public DriverTransferController()
@@ -32,29 +33,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //
         // GET: /FleetManagement/DriverVehicleTransfer/
         public ActionResult Index()
-        {            
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
-
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
+        {
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
                 Text = s.PlateNumber + " " + s.SerialNo
-            }).ToList();
-            ViewData["Operators"] = db.Operator.ToList().Select(s => new {
+            });
+            ViewData["Operators"] = db.Operator.Select(s => new {
                 Id = s.OperatorID,
                 Name = s.EmployeeId+"_"+s.FullName
             });
@@ -81,7 +84,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult DriverVehicleTransfer_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var DriverVehicleTransfer = _DriverVehicleTransferService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
+            var OBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            var DriverVehicleTransfer = db.DriverVehicleTransfer.Where(x => x.OrgBranchName ==OBranchName).ToList();
 
             return Json(DriverVehicleTransfer.ToDataSourceResult(request));
         }
@@ -228,7 +232,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(new[] { DriverVehicleTransfer }.ToDataSourceResult(request));
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
 
     }
 }

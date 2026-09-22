@@ -20,7 +20,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 	public class RentToExternalController : Controller
 	{
 		IRentOtherSuppliersService _RentOtherSuppliersService;
-		ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
+        ExceedDbContext db = new ExceedDbContext();
 		public RentToExternalController()
 		{
 			_RentOtherSuppliersService = new RentOtherSuppliersService();
@@ -29,31 +30,49 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		// GET: /FleetManagement/RentOtherSuppliers/
 		public ActionResult Index()
 		{
-			ViewData["Fleets"] = db.Fleets.ToList().Select(s=>new {
-			Id = s.FleetsID.ToString(),
-			s.OrgBranchName,
-			Name = s.EquipmentName
-			}).Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+			
+                var defaultBranch = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
 
-			ViewData["EquipmentCategories"] = db.EquipmentIdentity.ToList().Select(s => new {
-				Id = s.EquipmentIdentityID,
-				Name = s.EquipmentCategoryName
-			});
-			ViewData["EquipmentTypes"] = db.EquipmentType.ToList().Select(s => new {
-				Id = s.EquipmentTypeID,
-				Name = s.EquipmentTypeName
-			});
-			ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new {
-				Id = s.EquipmentNameID,
-				Name = s.Name
-			});
-			return View();
+            ViewData["Fleets"] = db.Fleets
+                .Where(s => s.OrgBranchName == defaultBranch)
+                .Select(s => new
+                {
+                    Id = s.FleetsID.ToString(),
+                    s.OrgBranchName,
+                    Name = s.PlateNumber + " " + s.SerialNo
+                })
+                .ToList();
+            ViewData["EquipmentCategories"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Name = i.Name,
+          Id = i.Id
+      }).AsQueryable();
+            ViewData["EquipmentTypes"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            ViewData["EquipmentNames"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            var fetchSetting = db.RequestToInspections.FirstOrDefault();
+            string isECWC = (fetchSetting != null && fetchSetting.Remark == "ECWC") ? "ECWC" : "Not";
+
+            ViewData["IsECWC"] = isECWC;
+            return View();
 		}
 
 
 		public ActionResult RentOtherSuppliers_Read([DataSourceRequest] DataSourceRequest request)
 		{
-			var RentOtherSuppliers = _RentOtherSuppliersService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+            //var RentOtherSuppliers = _RentOtherSuppliersService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name));
+            var userBranch = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            IQueryable<RentToExternal> RentOtherSuppliers = db.RentToExternals.Where(x => x.OrgBranchName == userBranch).AsQueryable();
 
 			return Json(RentOtherSuppliers.ToDataSourceResult(request));
 		}
@@ -115,7 +134,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		}
 
 
-
-	}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 }
 

@@ -29,6 +29,7 @@ namespace ExceedERP.Core.Domain.Maintenance.Settings
         public string Code { get; set; }
         public string Name { get; set; }
         public string Remark { get; set; }
+        public bool ApplyForAll { get; set; }
         public string Description { get; set; }
         public string Code_Name
         {

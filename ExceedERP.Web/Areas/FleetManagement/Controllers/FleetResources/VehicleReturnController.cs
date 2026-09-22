@@ -9,12 +9,14 @@ using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.ApplicationServices.FleetManagement.FleetResource;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class VehicleReturnController : Controller
     {
         IVehicleReturnService _VehicleReturnService;
+        ExceedDbContext db = new ExceedDbContext();
 
         public VehicleReturnController()
         {
@@ -30,7 +32,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult VehicleReturn_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var VehicleReturn = _VehicleReturnService.GetAll().Select(v=> new VehicleReturn
+            var VehicleReturn = db.VehicleReturn.Select(v=> new VehicleReturn
                 {
                     FleetsID = v.FleetsID,
                     Description = v.Description,
@@ -93,6 +95,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return Json(new[] { VehicleReturn }.ToDataSourceResult(request));
         }
+
     }
 }
 

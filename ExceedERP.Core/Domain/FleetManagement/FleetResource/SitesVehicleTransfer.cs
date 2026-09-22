@@ -8,7 +8,6 @@ using System.Linq;
 using System.Web;
 using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations.Schema;
-using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
@@ -19,12 +18,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Num { get; set; }
-       
+
         public Guid SitesVehicleTransferID { get; set; }
-        
+
         [Display(Name = "Equipment Category")]
         public Guid EquipmentIdentityID { get; set; }
-        [Display(Name = "Equipment Type")]       
+        [Display(Name = "Equipment Type")]
         public Guid EquipmentTypeID { get; set; }
         [Display(Name = "Equipment Name")]
         public Guid EquipmentNameID { get; set; }
@@ -42,13 +41,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 
         public Nullable<DateTime> ToDate { get; set; }
         [DisplayName("Initial Site")]
-        
+
         public string InitialSite { get; set; }
         [DisplayName("Destination Site")]
-        
+
         public string DestinationSite { get; set; }
-        
+
         public int BranchId { get; set; }
+
         [DisplayName("OdoMeter")]
         public string OdoMeter { get; set; }
         [DataType(DataType.MultilineText)]
@@ -73,12 +73,28 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DisplayName("Transfered Operator")]
         public string TransferedOperator { get; set; }
         public Guid OperatorId { get; set; }
-        public Guid SecondOperatorId { get; set; }
+        public Guid? SecondOperatorId { get; set; }
         [DisplayName("Loaded Plate No")]
         public string LoadedPlateNo { get; set; }
         [DisplayName("Transfer Reason")]
         public string TransferReason { get; set; }
         public virtual Fleets Fleet { get; set; }
+        public bool IsOperationApproved { get; set; }
+        public string OperationApprvedBy { get; set; }
+        public DateTime? OperationApprovalDate { get; set; }
+        public bool IsDepartmentApproved { get; set; }
+        public string DGMApprovedBy { get; set; }
+        public DateTime? DGMApprovalDate { get; set; }
+        public TransferStatus? TransferStatus {get;set;}
+    }
+    public enum TransferStatus
+    {
+        Draft,
 
+        WaitingOperationManager,
+
+        WaitingDepartmentGM,
+
+        Approved,
     }
 }

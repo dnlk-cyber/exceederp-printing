@@ -13,7 +13,7 @@
           columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
           columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
           columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["equipmentName"], "Id", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-          columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "Value", "Text").Width(120);
+          columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(120);
           columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").Width(120);
           columns.ForeignKey(e => e.SecondOperatorId, (System.Collections.IEnumerable)ViewData["OperatorTwo"], "Id", "Name").Width(120);
                    columns.Bound(e => e.StartingDate).Title("Starting Date").Format("{0:d}").Width(100);

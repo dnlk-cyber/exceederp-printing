@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //[AuthorizeRoles(FleetManagementRoles.ResourceRequestor, FleetManagementRoles.ResourceApprover, FleetManagementRoles.ResourceDistributor, FleetManagementRoles.ResourceRequestApprover)]
         public JsonResult AssignedEquipment_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var AssignedEquipment = _AssignedEquipmentService.GetAll().Select(a => new AssignedEquipment
+            var AssignedEquipment =db.AssignedEquipment.Select(a => new AssignedEquipment
             {
 
                 RequestNumber = a.RequestNumber,
@@ -229,7 +229,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 RequestedEquipment.Quantity = RequestedEquipment.Quantity;
                 RequestedEquipment.LastModified = DateTime.Now;
                 RequestedEquipment.ModifiedBy = User.Identity.Name;
-                decimal totalkm = RequestedEquipment.AsphaltKm + RequestedEquipment.GravelKm;
+                decimal totalkm = (RequestedEquipment.AsphaltKm ?? 0)
+                                + (RequestedEquipment.GravelKm ?? 0);
                 RequestedEquipment.NumberHourPerKm = totalkm.ToString();
                 db.RequestedEquipments.Attach(RequestedEquipment);
                 db.Entry(RequestedEquipment).State = EntityState.Modified;
@@ -325,35 +326,109 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         //    return Json(db.RequestedEquipments.Where(RequestedEquipment => RequestedEquipment.RequestNumber.ToString() == readRequestNumber && RequestedEquipment.IsAssigned == false).Select(a => new { RequestedEquipmentId = a.RequestedEquipmentId, RequestNumber = a.RequestNumber, SubEquipmentName = a.SubEquipmentName, EquipmentID = a.EquipmentID, ManufacturedYear = a.ManufacturedYear, AssignedDate = a.AssignedDate, Type = a.Type, EquipmentName = a.EquipmentName, RequestDesc = a.Type + " -- " + a.EquipmentName + " -- " + a.Quantity + " -- Year " + a.ManufacturedYear, Quantity = a.Quantity, StartDate = a.StartDate, EndDate = a.EndDate, EquipmentStatus = a.EquipmentStatus, CategoryRef = a.CategoryRef }).ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
         //}
+        //public JsonResult RequestedViewEquipment(string readRequestNumber, string readType, [DataSourceRequest] DataSourceRequest request)
+        //{
+
+        //    var Request = db.RequestedEquipments.Where(RequestedEquipment => RequestedEquipment.RequestNumber.ToString() == readRequestNumber && RequestedEquipment.IsAssigned == false).Select(a => new {
+
+
+        //        RequestedEquipmentId = a.RequestedEquipmentId,
+        //        RequestNumber = a.RequestNumber,
+        //        NumberHourKM=a.NumberHourKM,
+        //        NumberofPersonston=a.NumberofPersonston,
+        //        Remarks=a.Remarks,
+        //        AsphaltKm = a.AsphaltKm,
+        //        GravelKm = a.GravelKm,
+        //        EquipmentIdentityID = a.EquipmentIdentityID,
+        //        EquipmentTypeID = a.EquipmentTypeID,
+        //        ManufacturedYear = a.ManufacturedYear,
+        //        AssignedDate = a.AssignedDate,
+        //        RequestDesc = a.Quantity + " -- Year " + a.ManufacturedYear,
+        //        Quantity = a.Quantity,
+        //        IsReturned=CheckIsAssigned(a.RequestedEquipmentId),
+        //        StartDate = a.StartDate,
+        //        EndDate = a.EndDate,
+        //        NumberHourPerKm = a.NumberHourPerKm,
+        //        Destination = a.Destination,
+        //        NumberofPersonOrTon = a.NumberofPersonOrTon,
+        //        EquipmentStatus = a.EquipmentStatus,
+        //        VehicleDemandId = a.VehicleDemandId,
+        //        EquipmentNameId = a.EquipmentNameId
+        //    }).ToList();
+        //    return Json(Request.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+        //}
+        private bool CheckIsAssigned(Guid Id)
+        {
+            bool returned = false;
+            var isAssigned = db.AssignedEquipment.FirstOrDefault(x => x.RequestedEquipmentId == Id);
+            if (isAssigned != null)
+            {
+                if (isAssigned.Returned == true)
+                {
+                    returned = true;
+                }
+            }
+            return returned;
+        }
         public JsonResult RequestedViewEquipment(string readRequestNumber, string readType, [DataSourceRequest] DataSourceRequest request)
         {
+            // Step 1: Get data from DB (without calling C# methods)
+            var query = db.RequestedEquipments
+                .Where(req => req.RequestNumber.ToString() == readRequestNumber)
+                .Select(a => new
+                {
+                    a.RequestedEquipmentId,
+                    a.RequestNumber,
+                    a.NumberHourKM,
+                    a.NumberofPersonston,
+                    a.Remarks,
+                    a.AsphaltKm,
+                    a.GravelKm,
+                    a.EquipmentIdentityID,
+                    a.EquipmentTypeID,
+                    a.ManufacturedYear,
+                    a.AssignedDate,
+                    RequestDesc = a.Quantity + " -- Year " + a.ManufacturedYear,
+                    a.Quantity,
+                    a.StartDate,
+                    a.EndDate,
+                    a.NumberHourPerKm,
+                    a.Destination,
+                    a.NumberofPersonOrTon,
+                    a.EquipmentStatus,
+                    a.VehicleDemandId,
+                    a.EquipmentNameId
+                })
+                .ToList(); // <-- materialize query here (EF executes SQL now)
 
-            var Request = db.RequestedEquipments.Where(RequestedEquipment => RequestedEquipment.RequestNumber.ToString() == readRequestNumber && RequestedEquipment.IsAssigned == false).Select(a => new {
+            // Step 2: Now you can safely call your C# method
+            var result = query.Select(a => new
+            {
+                a.RequestedEquipmentId,
+                a.RequestNumber,
+                a.NumberHourKM,
+                a.NumberofPersonston,
+                a.Remarks,
+                a.AsphaltKm,
+                a.GravelKm,
+                a.EquipmentIdentityID,
+                a.EquipmentTypeID,
+                a.ManufacturedYear,
+                a.AssignedDate,
+                a.RequestDesc,
+                a.Quantity,
+                IsReturned = CheckIsAssigned(a.RequestedEquipmentId),
+                a.StartDate,
+                a.EndDate,
+                a.NumberHourPerKm,
+                a.Destination,
+                a.NumberofPersonOrTon,
+                a.EquipmentStatus,
+                a.VehicleDemandId,
+                a.EquipmentNameId
+            });
 
-                
-                RequestedEquipmentId = a.RequestedEquipmentId,
-                RequestNumber = a.RequestNumber,
-                NumberHourKM=a.NumberHourKM,
-                NumberofPersonston=a.NumberofPersonston,
-                Remarks=a.Remarks,
-                AsphaltKm = a.AsphaltKm,
-                GravelKm = a.GravelKm,
-                EquipmentIdentityID = a.EquipmentIdentityID,
-                EquipmentTypeID = a.EquipmentTypeID,
-                ManufacturedYear = a.ManufacturedYear,
-                AssignedDate = a.AssignedDate,
-                RequestDesc = a.Quantity + " -- Year " + a.ManufacturedYear,
-                Quantity = a.Quantity,
-                StartDate = a.StartDate,
-                EndDate = a.EndDate,
-                NumberHourPerKm = a.NumberHourPerKm,
-                Destination = a.Destination,
-                NumberofPersonOrTon = a.NumberofPersonOrTon,
-                EquipmentStatus = a.EquipmentStatus,
-                VehicleDemandId = a.VehicleDemandId,
-                EquipmentNameId = a.EquipmentNameId
-            }).ToList();
-            return Json(Request.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+            return Json(result.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
         }
         public ActionResult AssignedEquipmentSelfCare_Read([DataSourceRequest] DataSourceRequest request, int num, string vDemandId)
         {
@@ -649,7 +724,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 IVehicleDemandService vehicleDemandService = new VehicleDemandService();
                 VehicleDemand vehicleDemand =
-                    vehicleDemandService.GetAll().Where(x => x.VehicleDemandId == RequestID).FirstOrDefault();
+                    db.VehicleDemand.Where(x => x.VehicleDemandId == RequestID).FirstOrDefault();
                 var fleets =
                     _AssignedEquipmentService.GetAll().Where(e => e.RequestNumber == RequestID).ToList();
 
@@ -669,6 +744,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

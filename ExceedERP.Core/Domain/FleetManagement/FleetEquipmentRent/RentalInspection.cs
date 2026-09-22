@@ -22,44 +22,46 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         
         [DisplayName("Equipment Name")]
         public Guid? EquipmentNameID { get; set; }
-        [Required]
+     //   [Required]
         [DisplayName("Model")]
         public string Model { get; set; }
-        [Required]
+       // [Required]
         [DisplayName("Chasis/Serial No.")]
         public string ChasisSerialNo { get; set; }
-        [Required]
+      //  [Required]
         [DisplayName("Engine Model")]
         public string EngineModel { get; set; }
-        [Required]
+       // [Required]
         [DisplayName("Engine Serial No.")]
         public string EngineSerialNo { get; set; }
-        [Required]
+       // [Required]
         [DisplayName("Year of Manufacture")]
         public string ManufacturingYear { get; set; }
-        [Required]
+        //[Required]
         [DisplayName("Capacity")]
         public string Capacity { get; set; }
         public string Manufacturer { get; set; }
-        [Required]
+       // [Required]
         [DisplayName("HP")]
         public decimal Hp { get; set; }
-        [Required]
+        //[Required]
         [DisplayName("Operator's License No.")]
         public string OperatorLicenceNo { get; set; }
         [Display(Name ="Operator Name")]
         public string OperatorName { get; set; }
-        [Required]
+       // [Required]
         [DisplayName("Lessor")]
         public string Lessor { get; set; }
         [Required]
         [DisplayName("Plate No.")]
         public string PlateNo { get; set; }
+        public decimal Volume { get; set; }
+        public UnitSpecification? Unit { get; set; }
         [Required]
         [DisplayName("Branch")]
 
         public int BranchId { get; set; }
-        [Required]
+        //[Required]
         [DisplayName("Hr./Km Meter Reading")]
         public string MeterReading { get; set; }
         public virtual EquipmentType EquipmentType { get; set; }

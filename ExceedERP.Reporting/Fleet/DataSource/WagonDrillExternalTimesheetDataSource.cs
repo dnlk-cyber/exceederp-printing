@@ -165,7 +165,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     item.FuelRate = wagonDrillExternalTimesheet.FuelRate;
                     item.FuelCost = item.FuelInLiter * item.FuelRate;
                     item.TireCost = wagonDrillExternalTimesheet.TireCost;
-                    item.LubricantCost = wagonDrillExternalTimesheet.LubricantCost;
+                    //item.LubricantCost = wagonDrillExternalTimesheet.LubricantCost;
                     item.MaintenanceCost = wagonDrillExternalTimesheet.MaintenanceCost;
                     item.ServiceCharge = wagonDrillExternalTimesheet.ServiceCharge;
                     item.Revenue = wagonDrillExternalTimesheet.NumberOfHolesDrilled * wagonDrillExternalTimesheet.OperationDrilledHoleDepth * wagonDrillExternalTimesheet.RateInMeter;

@@ -1,0 +1,9 @@
+﻿@using Kendo.Mvc.UI
+@(Html.Kendo().DropDownListFor(m => m)
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Filter("Contains")
+                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.TimeSheetType)))
+
+
+)

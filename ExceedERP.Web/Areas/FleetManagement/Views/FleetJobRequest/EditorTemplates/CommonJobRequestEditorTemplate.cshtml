@@ -108,7 +108,7 @@
                                         d.Read(r =>
                                         {
                                             //r.Action("GetAllMaintenanceCenters", "MaintenanceCenter"); // takes the name as a value
-                                            r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter"); // takes the MaintenanceCenterId as a value
+                                            r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter",new { area="Maintenance"}); // takes the MaintenanceCenterId as a value
                                         })
                                         .ServerFiltering(false);
                                     }).ValuePrimitive(true)

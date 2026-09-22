@@ -5,9 +5,10 @@
           .DataValueField("Code")
           .OptionLabel(" Select ")
           .Filter(FilterType.Contains)
-            .CascadeFrom("SubCategoryCode")
+            //.CascadeFrom("SubCategoryCode")
             .DataSource(d => d.Read(r => r.Action("GetServiceCategoryEnums", "MaintenanceDataProvider").Data("sendForgery")
-            .Data("filterSubCategories"))
+            .Data("filterSubCategories")
+            )
             .ServerFiltering(true)))
                   @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("sendForgery").Data("filterSerivce")).ServerFiltering(false)))*@
 </div>

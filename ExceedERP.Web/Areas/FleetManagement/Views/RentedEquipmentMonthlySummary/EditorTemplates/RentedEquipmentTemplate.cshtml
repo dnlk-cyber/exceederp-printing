@@ -1,0 +1,53 @@
+﻿@using Kendo.Mvc.UI;
+@model ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentMonthlyPaymentSummary
+<div class="row">
+    <div class="col-md-3">
+         <div class="form-group">
+             Period
+             <div>
+                 @(Html.Kendo().DropDownListFor(model=>model.GlPeriodId)
+                .DataValueField("Value")
+                .DataTextField("Text")
+                .Filter("Contains")
+                .OptionLabel("Select Period")
+                .DataSource(d=>d.Read(r=>r.Action("GetPeriods","FleetManagementDataProvider")))    
+    )
+             </div>
+
+         </div>
+    </div>
+    <div class="col-md-3">
+         <div class="form-group">
+          Fleet
+             <div>
+    @(Html.Kendo().DropDownListFor(model=>model.FleetId)
+    .DataValueField("Value")
+    .DataTextField("Text")
+    .Filter("Contains")
+    .CascadeFrom("GlPeriodId")
+    .OptionLabel("Select Fleet")
+    .DataSource(d=>d.Read(r=>r.Action("GetFleets", "FleetManagementDataProvider").Data("filterPeriod")).ServerFiltering(true))
+    
+    )
+             </div>
+
+         </div>
+    </div> 
+    @*<div class="col-md-3">
+         <div class="form-group">
+          Branch/Project
+             <div>
+    @(Html.Kendo().DropDownListFor(model=>model.BranchId)
+    .DataValueField("Value")
+    .DataTextField("Text")
+    .Filter("Contains")
+    //.CascadeFrom("GlPeriodId")
+    .OptionLabel("Select Branch/Project")
+    .DataSource(d=>d.Read(r=>r.Action("GetBranch", "FleetManagementDataProvider")))
+    
+    )
+             </div>
+
+         </div>
+    </div>*@
+</div>

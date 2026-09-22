@@ -190,7 +190,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         timeSheet.FuelInLiter = group.Sum(lv => lv.FuelConsumption);
                     timeSheet.FuelRate = firstEntry.FuelRate; // Assuming rate is fixed
                         timeSheet.FuelCost = group.Sum(lv => lv.FuelConsumption * lv.FuelRate);
-                        timeSheet.LubricantCost = group.Sum(lv => lv.LubricantCost);
+                        //timeSheet.LubricantCost = group.Sum(lv => lv.LubricantCost);
                         timeSheet.MaintenanceCost = group.Sum(lv => lv.MaintenanceCost);
                         timeSheet.TireCost = group.Sum(lv => lv.TireCost);
                         timeSheet.Perdium = group.Sum(lv => lv.Perdium);

@@ -1,0 +1,198 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.TimeSheet
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.FleetsID, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
+                          .DataTextField("PlateNumber")
+                          .DataValueField("FleetsID")
+                          .OptionLabel("Select ").Filter(FilterType.Contains)
+                          .DataSource(d => d.Read(r => r.Action("OnTimeSheetFleetDDBind", "FleetManagementDataProvider").Data("FilterFleetId")).ServerFiltering(false)).Events(e => e.Change("BindFleetDetail")))
+                    @Html.ValidationMessageFor(model => model.FleetsID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TypeofWork, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.TypeofWork)
+                    @Html.ValidationMessageFor(model => model.TypeofWork, "", new { @class = "text-danger" })
+                </div>
+            </div> 
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ChargeMethod, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.ChargeMethod)
+                 .Name("ChargeMethod")     // <-- Required for popup editors
+                 .DataTextField("Text")
+                 .DataValueField("Value")
+                 .ValuePrimitive(true)
+                 .Events(ev => ev.Change("onChargeMethodChange"))
+                 .BindTo(EnumExtension.EnumToSelectList(
+                     typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.ChargeMethod)
+                 ))
+                    )
+                    @Html.ValidationMessageFor(model => model.ChargeMethod, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.Date)
+                    @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.WorkingHoursAfternoonFrom, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursAfternoonFrom)
+                    @Html.ValidationMessageFor(model => model.WorkingHoursAfternoonFrom, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.DownTime, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().NumericTextBoxFor(model => model.DownTime)
+                    @Html.ValidationMessageFor(model => model.DownTime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+           
+            <div class="row"></div>
+
+        </div>
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.RentalRate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.RentalRate)
+                    @Html.ValidationMessageFor(model => model.RentalRate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.CustomerName)
+                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+
+
+            <div class="form-group" id="initialKM">
+                @Html.LabelFor(model => model.KMHrReading, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.KMHrReading)
+                    @Html.ValidationMessageFor(model => model.KMHrReading, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.WorkingHoursMorningFrom, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursMorningFrom)
+                    @Html.ValidationMessageFor(model => model.WorkingHoursMorningFrom, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.WorkingHoursAfternoonTo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursAfternoonTo)
+                    @Html.ValidationMessageFor(model => model.WorkingHoursAfternoonTo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.BreakDownTime, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.BreakDownTime)
+                    @Html.ValidationMessageFor(model => model.BreakDownTime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdealRentalRate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.IdealRentalRate)
+                    @Html.ValidationMessageFor(model => model.IdealRentalRate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.EquipmentAdministratorName, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-6">
+                    @*@Html.Kendo().TextBoxFor(model => model.EquipmentAdministratorName)
+                @Html.ValidationMessageFor(model => model.EquipmentAdministratorName, "", new { @class = "text-danger" })*@
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group" id="finalKM">
+                @Html.LabelFor(model => model.FinalKMHrReading, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.FinalKMHrReading)
+                    @Html.ValidationMessageFor(model => model.FinalKMHrReading, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.WorkingHoursMorningto, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursMorningto)
+                    @Html.ValidationMessageFor(model => model.WorkingHoursMorningto, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdleTime, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.IdleTime)
+                    @Html.ValidationMessageFor(model => model.IdleTime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+          
+            <div class="form-group" id="cubicValue">
+            @Html.LabelFor(model => model.CubicValue, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+
+                @Html.Kendo().NumericTextBoxFor(model => model.CubicValue)
+                @Html.ValidationMessageFor(model => model.CubicValue, "", new { @class = "text-danger" })
+            </div>
+        </div>
+            <div class="row"></div>
+
+
+
+        </div>
+    </div>
+</div>

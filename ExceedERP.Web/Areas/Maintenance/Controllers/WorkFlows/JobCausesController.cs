@@ -37,6 +37,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 {
                     Name = XAPI.Common.RemoveSpecialChars(model.Name),
                     Description = XAPI.Common.RemoveSpecialChars(model.Description),
+
                 });
                 return Json(result);
             }
@@ -71,6 +72,46 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 db.JobCauses.Add(Level);
                 db.SaveChanges();
                 model.JobCausesId = Level.JobCausesId;
+            }
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult JobCausesFromOrder_Create([DataSourceRequest] DataSourceRequest request, JobCauses model, int Id)
+        {
+            ModelState.Remove("JobCausesId");
+            ModelState.Remove("OrderId");
+
+            if (model.Description == "" || string.IsNullOrEmpty(model.Description))
+            {
+                ModelState.Clear();
+                ModelState.AddModelError("EmptyValue", " Reason Can't be Empty");
+                return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+
+            }
+            else
+            {
+                if (Id != 654)
+                {
+                    var fetchRequest = db.JobRequest.FirstOrDefault(x => x.Num == Id);
+                    if (fetchRequest != null)
+                    {
+                        var Level = new JobCauses
+                        {
+                            JobCausesId = Guid.NewGuid(),
+                            Name = XAPI.Common.RemoveSpecialChars(model.Name),
+                            Description = XAPI.Common.RemoveSpecialChars(model.Description),
+                            OrderId = fetchRequest.JobRequestId,
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name
+                        };
+                        db.JobCauses.Add(Level);
+                        db.SaveChanges();
+                        model.JobCausesId = Level.JobCausesId;
+                    }
+                }
+          
+
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
@@ -126,6 +167,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json("", JsonRequestBehavior.AllowGet);
            
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

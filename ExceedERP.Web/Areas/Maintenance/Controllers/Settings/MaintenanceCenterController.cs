@@ -60,7 +60,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         public JsonResult MaintenanceCenter_Create([DataSourceRequest] DataSourceRequest request, MaintenanceCenter MaintenanceCenter)
         {
             ModelState.Remove("MaintenanceCenterID");
-            var existing = _MaintenanceCenterService.GetAll().Where(f => f.Name == MaintenanceCenter.Name).ToList();
+            //var existing = _MaintenanceCenterService.GetAll().Where(f => f.Name == MaintenanceCenter.Name).ToList();
+            IQueryable<MaintenanceCenter> existing =db.MaintenanceCenter.Where(f => f.Name == MaintenanceCenter.Name).AsQueryable();
 
             if (existing.Any())
             {
@@ -149,6 +150,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             });
 
             return Json(data, JsonRequestBehavior.AllowGet);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

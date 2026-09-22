@@ -1,0 +1,14 @@
+﻿
+
+@(Html.Kendo().DropDownListFor(m => m)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select Equipment Name...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            //.Events(e => e.Change("handleFleetNameChange"))
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetFleetRentalRequest", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("getSupplierAndBranchId"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))

@@ -807,33 +807,33 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return Json(Placment, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetMappedInventoryItem()
-        {
+        //public JsonResult GetMappedInventoryItem()
+        //{
 
-            var InventoryItems = new List<FleetBindingHelper.HelperObject>();
-            var mapping = db.InventoryCateoryMaps.ToList();
-            foreach (var map in mapping)
-            {
+        //    var InventoryItems = new List<FleetBindingHelper.HelperObject>();
+        //    var mapping = db.InventoryCateoryMaps.ToList();
+        //    foreach (var map in mapping)
+        //    {
 
-                var Items = db.InventoryItems.Where(x => x.ItemCategory.ItemCategoryCode == map.InventoryCategoryId).Select(s => new FleetBindingHelper.HelperObject
-                {
-                    Value = s.ItemCode.ToString(),
-                    Name = s.Name,
-                }).ToList();
-                InventoryItems.AddRange(Items);
-            }
-            if (!InventoryItems.Any())
-            {
+        //        var Items = db.InventoryItems.Where(x => x.ItemCategory.ItemCategoryCode == map.InventoryCategoryId).Select(s => new FleetBindingHelper.HelperObject
+        //        {
+        //            Value = s.ItemCode.ToString(),
+        //            Name = s.Name,
+        //        }).ToList();
+        //        InventoryItems.AddRange(Items);
+        //    }
+        //    if (!InventoryItems.Any())
+        //    {
 
-                var Items = db.InventoryItems.Take(100).Select(s => new FleetBindingHelper.HelperObject
-                {
-                    Value = s.ItemCode.ToString(),
-                    Name = s.Name,
-                }).ToList();
-                InventoryItems.AddRange(Items);
-            }
-            return Json(InventoryItems, JsonRequestBehavior.AllowGet);
-        }
+        //        var Items = db.InventoryItems.Take(100).Select(s => new FleetBindingHelper.HelperObject
+        //        {
+        //            Value = s.ItemCode.ToString(),
+        //            Name = s.Name,
+        //        }).ToList();
+        //        InventoryItems.AddRange(Items);
+        //    }
+        //    return Json(InventoryItems, JsonRequestBehavior.AllowGet);
+        //}
 
 
         public JsonResult DailyCareDDBind(string Category)
@@ -1143,7 +1143,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     {
                         var FuelConsumptions =
                        fleetReportHelper.GetInventoryIssueItem(x => x.Issue.IsFuel == true && x.Issue.PlateNo == Asset.PlateNo && x.DateCreated >= FromDate && x.DateCreated <= ToDate).ToList();
-                        var Sheet = _TimeSheetService.GetAll().Where(x => x.FleetsID == Fleet.FleetsID && x.DateCreated >= FromDate && x.DateCreated <= ToDate);
+                        var Sheet = db.TimeSheet.Where(x => x.FleetsID == Fleet.FleetsID && x.DateCreated >= FromDate && x.DateCreated <= ToDate);
                         if (Fleet.ReadingType == ReadingType.HR)
                         {
                             foreach (var Work in Sheet)
@@ -1415,6 +1415,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    FollowUPTypes.Add(FollowUPType);
         //    return Json(FollowUPTypes, JsonRequestBehavior.AllowGet);
         //}
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
 

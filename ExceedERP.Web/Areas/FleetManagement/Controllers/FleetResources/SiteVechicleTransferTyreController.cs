@@ -32,7 +32,7 @@ public SiteVechicleTransferTyreController()
         public JsonResult SiteVechicleTransferTyre_Read([DataSourceRequest] DataSourceRequest request, Guid Id)
         {
 
-            var SiteVechicleTransferTyreDetailes = db.SiteVechicleTransferTyreDetailes.Where(x => x.SiteVechicleTransferId == Id).ToList();
+            var SiteVechicleTransferTyreDetailes = db.SiteVechicleTransferTyreDetailes.Where(x => x.SiteVechicleTransferId == Id);
 
 
             return this.Json(SiteVechicleTransferTyreDetailes.ToDataSourceResult(request, ModelState));

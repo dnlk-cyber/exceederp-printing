@@ -12,7 +12,8 @@ namespace ExceedERP.Core.Domain.Maintenance
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public  class JobOrder : OperationWithSecondValidation
+   
+    public  class JobOrder :OperationWithSecondValidation
     {
         public JobOrder()
         {
@@ -26,6 +27,8 @@ namespace ExceedERP.Core.Domain.Maintenance
 
         public Guid JobOrderID { get; set; }
         public string ToExternalJobOrderId { get; set; }
+        public string RemarkAfterDelivery { get; set; }
+
         public string ServiceCenterJobId { get; set; }
 
         [DisplayName(" Is Rework?")]
@@ -36,8 +39,18 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string GPSInfo { get; set; }
         [DisplayName(" Equipment (License Plate)")]
         public Guid EquipmentInformationId { get; set; }
-
-
+        [NotMapped]
+        public string CustomerName { get; set; }   // new
+        [NotMapped]
+        public string RequesterName { get; set; }  // new
+        [NotMapped]
+        public string BranchName { get; set; } // new [NotMapped]
+        [NotMapped]
+        public string MaintenanceName { get; set; } // new
+        [NotMapped]
+        public string BusinessUnitName { get; set; } // new
+        [NotMapped]
+        public string OrgStructureName { get; set; }
         [DisplayName("Type ")]
         public string Type { get; set; }
         [DisplayName("Equipment")]

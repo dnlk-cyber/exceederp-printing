@@ -31,7 +31,7 @@
                 columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(200);
                 if (GlobalHelper.IsMultipleBusinessUnit())
                 {
-                    columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+                    columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "Id", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
                 }
                 columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
                 columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");

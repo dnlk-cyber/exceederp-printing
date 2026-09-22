@@ -40,7 +40,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [Display(Name ="Operator One")]
         public Guid OperatorId { get; set; }
         [Display(Name = "Operator Two")]
-        public Guid SecondOperatorId { get; set; }
+        public Guid? SecondOperatorId { get; set; }
         [Display(Name ="Equipment Category")]
         public Guid EquipmentCategoryId { get; set; }
         [Display(Name = "Equipment Type")]

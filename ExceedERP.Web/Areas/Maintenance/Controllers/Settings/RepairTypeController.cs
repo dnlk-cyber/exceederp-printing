@@ -19,6 +19,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
     public class RepairTypeController : Controller
     {
         IRepairTypeService _RepairTypeService;
+        ExceedDbContext db = new ExceedDbContext();
         private ExceedDbContext _db = new ExceedDbContext();
 
         public RepairTypeController()
@@ -38,33 +39,41 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public JsonResult RepairType_Read([DataSourceRequest] DataSourceRequest request)
         {
-            _RepairTypeService = new RepairTypeService();
-            var oper = _RepairTypeService.GetAll();
-            var Opers = oper.Select(o => new RepairType
+            try
             {
-                RepairTypeID = o.RepairTypeID,
-                Name = o.Name,
-                Weight = o.Weight,
-                Code = o.Code,
-                CategoryCode = o.CategoryCode,
-                ServiceGroup = o.ServiceGroup,
-                SubCategoryCode = o.SubCategoryCode,
-                StandaredTime = o.StandaredTime,
-                AutomotiveStandaredHour = o.AutomotiveStandaredHour,
-                PayableTime = o.PayableTime,
-                Difference = o.Difference,
-                LabourRateAtCompany = o.LabourRateAtCompany,
-                LabourRateAtCustomer = o.LabourRateAtCustomer,
-                TotalAmountCompany = o.TotalAmountCompany,
-                TotalAmountCustomer = o.TotalAmountCustomer,
-                Remark = o.Remark,
-                Place=o.Place,
-                Reason=o.Reason,
-                Time=o.Time,
-                Process=o.Process
-            });
+                var data = db.RepairType
+                    .Select(o => new
+                    {
+                        o.RepairTypeID,
+                        o.Name,
+                        o.Weight,
+                        o.Code,
+                        o.CategoryCode,
+                        o.ServiceGroup,
+                        o.SubCategoryCode,
+                        o.StandaredTime,
+                        o.AutomotiveStandaredHour,
+                        o.PayableTime,
+                        o.Difference,
+                        o.LabourRateAtCompany,
+                        o.LabourRateAtCustomer,
+                        o.TotalAmountCompany,
+                        o.TotalAmountCustomer,
+                        o.Remark,
+                        o.Place,
+                        o.Reason,
+                        o.Time,
+                        o.Process,
+                        o.IsGeneric
+                    });
 
-            return this.Json(Opers.ToDataSourceResult(request, ModelState));
+                return Json(data.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                // Log exception (recommended)
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -72,11 +81,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             ModelState.Remove("RepairTypeID");
             List<RepairType> RepairTypes = _RepairTypeService.GetAll().Where(f => f.Name == RepairType.Name).ToList();
-            if (RepairTypes.Any())
-            {
-                ModelState.Clear();
-                ModelState.AddModelError("ExistingName", " Repair Type with Name Already Exists ");
-            }
+            //if (RepairTypes.Any())
+            //{
+            //    ModelState.Clear();
+            //    ModelState.AddModelError("ExistingName", " Repair Type with Name Already Exists ");
+            //}
             List<RepairType> RepairTypeCodes = _RepairTypeService.GetAll().Where(f => f.Code == RepairType.Code).ToList();
             if (RepairTypeCodes.Any())
             {
@@ -153,6 +162,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(fleets, JsonRequestBehavior.AllowGet);
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

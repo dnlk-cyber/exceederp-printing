@@ -1,0 +1,8 @@
+﻿@using Kendo.Mvc.UI;
+@(Html.Kendo().DropDownListFor(m=>m)
+    .OptionLabel("Select Plate Number")
+    .DataValueField("Value")
+    .DataTextField("Text")
+    .Filter("Contains")
+    .DataSource(d=>d.Read(r=>r.Action("GetFleets", "CouponFuel").Data("filterFleets")))
+    )

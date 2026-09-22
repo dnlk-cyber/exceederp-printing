@@ -1,4 +1,5 @@
 using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.Maintenance.Settings;
 using ExceedERP.Core.Domain.Maintenance.SpareStoreRequisition;
@@ -19,6 +20,14 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.MaintenanceCompanyDocumentTypeId);
         }
     }
+    public class SatisfactionNoteEntityTypeConfiguration : EntityTypeConfiguration<SatisfactionNote>
+    {
+        public SatisfactionNoteEntityTypeConfiguration()
+        {
+            this.ToTable("SatisfactionNote", "Maintenance");
+            this.HasKey<int>(p => p.SatisfactionNoteId);
+        }
+    }
     public class ExternalServiceCenterDetailEntityTypeConfiguration : EntityTypeConfiguration<ExternalServiceCenterDetail>
     {
         public ExternalServiceCenterDetailEntityTypeConfiguration()
@@ -33,6 +42,38 @@ namespace ExceedERP.DataAccess.Context
         {
             this.ToTable("ExternalMaintenancePaymentRequestValidations", "Maintenance");
             this.HasKey<int>(p => p.ExternalMaintenancePaymentRequestValidationId);
+        }
+    }
+    public class AccesseryInfoEntityTypeConfiguration : EntityTypeConfiguration<AccesseryInfo>
+    {
+        public AccesseryInfoEntityTypeConfiguration()
+        {
+            this.ToTable("AccesseryInfo", "Maintenance");
+            this.HasKey<int>(p => p.AccesseryInfoId);
+        }
+    }
+    public class TyreSerialInfoEntityTypeConfiguration : EntityTypeConfiguration<TyreSerialInfo>
+    {
+        public TyreSerialInfoEntityTypeConfiguration()
+        {
+            this.ToTable("TyreSerialInfo", "Maintenance");
+            this.HasKey<int>(p => p.TyreSerialInfoId);
+        }
+    }
+    public class MaintenanceStageEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceStage>
+    {
+        public MaintenanceStageEntityTypeConfiguration()
+        {
+            this.ToTable("MaintenanceStage", "Maintenance");
+            this.HasKey<int>(p => p.MaintenanceStageId);
+        }
+    }
+    public class DescriptionOfAchievementEntityTypeConfiguration : EntityTypeConfiguration<DescriptionOfAchievement>
+    {
+        public DescriptionOfAchievementEntityTypeConfiguration()
+        {
+            this.ToTable("DescriptionOfAchievement", "Maintenance");
+            this.HasKey<int>(p => p.DescrtiptionOfAchievementId);
         }
     }
     public class ExternalMaintenancePaymentRequestDepValidationEntityTypeConfiguration : EntityTypeConfiguration<ExternalMaintenancePaymentRequestDepValidation>
@@ -182,6 +223,14 @@ namespace ExceedERP.DataAccess.Context
         }
     }
 
+    public class MaintenanceDailyPlanEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceDailyPlan>
+    {
+        public MaintenanceDailyPlanEntityTypeConfiguration()
+        {
+            this.ToTable("MaintenanceDailyPlan", "Maintenance");
+            this.HasKey<int>(p => p.MaintenanceDailyPlanId);
+        }
+    }
     public class MaintenancePlanEntityTypeConfiguration : EntityTypeConfiguration<MaintenancePlan>
     {
         public MaintenancePlanEntityTypeConfiguration()
@@ -216,6 +265,26 @@ namespace ExceedERP.DataAccess.Context
 
         }
     }
+    public class WorkshopFieldWorkToolEntityTypeConfiguration : EntityTypeConfiguration<WorkshopFieldWorkTool>
+    {
+
+        public WorkshopFieldWorkToolEntityTypeConfiguration()
+        {
+            this.ToTable("WorkshopFieldWorkTool", "Maintenance");
+            this.HasKey<int>(t => t.WorkshopFieldWorkToolId);
+
+        }
+    }
+    public class ExternalServiceAttachementEntityTypeConfiguration : EntityTypeConfiguration<ExternalServiceAttachement>
+    {
+
+        public ExternalServiceAttachementEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalServiceAttachement", "Maintenance");
+            this.HasKey<int>(t => t.ExternalServiceAttachementId);
+
+        }
+    }
     public class ExternalServiceCenterPaymentEntityTypeConfiguration : EntityTypeConfiguration<ExternalServiceCenterPayment>
     {
         public ExternalServiceCenterPaymentEntityTypeConfiguration()
@@ -239,6 +308,16 @@ namespace ExceedERP.DataAccess.Context
         {
             this.ToTable("VehicleReceptionForm", "Maintenance");
             this.HasKey<int>(t => t.VehicleReceptionFormId);
+
+        }
+    }
+    public class VehicleReceptionDocumentEntityTypeConfiguration : EntityTypeConfiguration<VehicleReceptionDocument>
+    {
+
+        public VehicleReceptionDocumentEntityTypeConfiguration()
+        {
+            this.ToTable("VehicleReceptionDoucment", "Maintenance");
+            this.HasKey<int>(t => t.VehicleReceptionDocumentId);
 
         }
     }
@@ -513,6 +592,16 @@ namespace ExceedERP.DataAccess.Context
 
         }
     }
+    //public class StoreRequisitionSecondValidationEntityTypeConfiguration : EntityTypeConfiguration<StoreRequisitionSecondValidation>
+    //{
+
+    //    public StoreRequisitionSecondValidationEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("StoreRequisitionSecondValidation", "Maintenance");
+    //        this.HasKey<Guid>(t => t.StoreRequisitionSecondValidationId);
+
+    //    }
+    //}
     public class AdministrativeJobApprovalEntityTypeConfiguration : EntityTypeConfiguration<AdministrativeJobApproval>
     {
 

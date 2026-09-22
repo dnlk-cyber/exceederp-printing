@@ -1,4 +1,6 @@
 ﻿
+ 
+    <legend>Vehicle Part Damage Type</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.Settings.VehiclePartDamageType>
     ()
@@ -6,7 +8,7 @@
     .Columns(columns =>
     {
         columns.Bound(c => c.Code);
-        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Name).Title("Condition");
         columns.Bound(c => c.Remark);
         columns.Bound(c => c.Description);
 

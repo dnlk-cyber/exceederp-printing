@@ -16,8 +16,10 @@ using Kendo.Mvc.UI;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
@@ -87,11 +89,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Name = s.TradeName
             }).ToList();
 
-            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
-            {
-                Id = s.MaintenanceCenterID,
-                Name = s.Name
-            }).ToList();
+            ViewData["MaintenanceCenter"] = CacheData.GetMaintenanceCenterCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
 
 
             ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
@@ -167,13 +170,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         public ActionResult EquipmentServiceHistory_Read([DataSourceRequest] DataSourceRequest request, string plateNumber, Guid JId)
         {
             var ServiceList = new List<JobOrderDetail>();
-            var JobOrder = _JobOrderService.GetAll()
+            var JobOrder =db.JobOrder
                 .Where(
                     x =>
                         x.IsOnlineApproved == true && x.LicensePlate == plateNumber).ToList();
             foreach (var job in JobOrder)
             {
-                var Service = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == job.JobOrderID && x.JobOrderID != JId).ToList();
+                var Service =db.JobOrderDetail.Where(x => x.JobOrderID == job.JobOrderID && x.JobOrderID != JId).ToList();
                 ServiceList.AddRange(Service.Select(s => new JobOrderDetail
                 {
                     RepairTypeID = s.RepairTypeID,
@@ -240,7 +243,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             FleetCostHelper fleetCostHelper = new FleetCostHelper();
             var inventoryMapping = db.InventorySparePartMapping.ToList();
-            var JobOrder = _JobOrderService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.IsOnlineApproved == true && x.IsExternal == false)
+            var JobOrder = db.JobOrder.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.IsOnlineApproved == true && x.IsExternal == false)
                 .Select(j => new JobOrder
                 {
                     ProjectName = j.ProjectName,
@@ -719,11 +722,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 var Requests = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
                 if (Requests != null)
                 {
-                    RequestOrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
-                    RequestOrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
+                    RequestOrderLine = db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
+                    RequestOrderLineFinished =db.JobOrderDetail.Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
                 }
-                decimal OrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id).ToList().Count;
-                decimal OrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
+                decimal OrderLine =db.JobOrderDetail.Where(x => x.JobOrderID == Id).ToList().Count;
+                decimal OrderLineFinished = db.JobOrderDetail.Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
                 var progress = (OrderLineFinished + RequestOrderLineFinished) / (OrderLine + RequestOrderLine);
 
                 progress = progress * 100;
@@ -740,7 +743,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             try
             {
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
+                var OrderLine = db.JobOrder.Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -764,7 +767,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
 
 
-                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id).FirstOrDefault();
+                var OrderLine =db.JobOrder.Where(x => x.JobOrderID == Id).FirstOrDefault();
 
                 if (!OrderLine.IsOnlineTransferred)
                 {
@@ -894,8 +897,83 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         #endregion
 
+        public ActionResult Doc_Read([DataSourceRequest]DataSourceRequest request, string id)
+        {
+            var Doc = db.ExternalServiceAttachement.Where(x => x.ServiceCenterJobId == id);
+            return Json(Doc.ToDataSourceResult(request));
+        }
+        public ActionResult Doc_Delete([DataSourceRequest]DataSourceRequest request, ExternalServiceAttachement model)
+        {
+            var Doc = db.ExternalServiceAttachement.FirstOrDefault(x => x.ExternalServiceAttachementId == model.ExternalServiceAttachementId);
+            db.ExternalServiceAttachement.Remove(Doc);
+            db.SaveChanges();
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Attachment_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> attachments, string id)
+        {
+            if (attachments != null)
+            {
+                string[] AllowedExtensions = { ".jpg", ".png", ".pdf" };
+                int MaxFileSize = 2 * 1024 * 1024;
 
-        
+                string subPath = "~/App_Data/ExternalServiceCenter/";
+                string shortPath = "/App_Data/ExternalServiceCenter/";
 
+                bool exists = Directory.Exists(Server.MapPath(subPath));
+
+                if (!exists)
+                    Directory.CreateDirectory(Server.MapPath(subPath));
+
+                foreach (var file in attachments)
+                {
+                    if (file != null)
+                    {
+                        #region file validation
+                        var fileExtension = Path.GetExtension(file.FileName).ToLower();
+                        if (!AllowedExtensions.Contains(fileExtension))
+                        {
+                            ModelState.AddModelError("File", "Invalid file type.");
+                        }
+                        if (file.ContentLength > MaxFileSize)
+                        {
+                            ModelState.AddModelError("File", $"File size exceeds the {MaxFileSize / (1024 * 1024)} MB limit.");
+                        }
+                        #endregion
+                        if (ModelState.IsValid)
+                        {
+                            string fileName = Path.GetFileName(file.FileName);
+                            string physicalPath = Server.MapPath(subPath + fileName);
+                            //   string physicalPath = Server.MapPath("~/Content/Memberimage/" + FileName);
+                            file.SaveAs(physicalPath);
+                            db.ExternalServiceAttachement.Add(new ExternalServiceAttachement()
+                            {
+                                FileName = Path.GetFileName(file.FileName),
+                                ServiceCenterJobId = id,
+                                ShortPath = shortPath,
+                                FilePath = physicalPath
+
+                            });
+                            db.SaveChanges();
+                        }
+                    }
+                }
+                
+            }
+
+            return Json(new[] { attachments }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult DownloadDocument(int CompanyDocumentId)
+        {
+            var record = db.ExternalServiceAttachement.Find(CompanyDocumentId);
+
+            return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

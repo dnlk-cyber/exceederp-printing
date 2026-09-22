@@ -1,0 +1,18 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel("Select Equipment Type...")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("contains")               // 👈 enables text search
+        //.MinLength(2)                    // 👈 start searching after 2 chars
+        //.AutoBind(false)
+        .DataSource(source =>
+        {
+            source.Read(read =>
+            {
+                read.Action("GetEquipmentTypesForNames", "EquipmentName",new { area="FleetManagement"})
+                    .Data("filterEquipmentType");
+            })
+            .ServerFiltering(false);       // 👈 server-side filtering
+        })
+)

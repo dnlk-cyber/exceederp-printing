@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -14,13 +15,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
     {
         // GET: FleetManagement/TimeSheetSetting
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
-            ViewData["branch"] = db.Branch.Select(s => new
-            {
-                Value = s.BranchId,
-                Text = s.Name
-            }).ToList();
+            ViewData["branch"] = CacheData.GetBranchCaches().Select(
+       i => new
+       {
+           Name = i.Name,
+           BranchId = i.Id
+       }).AsQueryable();
             return View();
         }
         public ActionResult TimeSheetSetting_Read([DataSourceRequest]DataSourceRequest request)

@@ -24,7 +24,23 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         }
         public ActionResult FleetCheckLists_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var fleetCheckLists = db.FleetCheckLists;
+            var fleetCheckLists = db.FleetCheckLists.Where(x=>x.DriverVehicleTransferID==null);
+
+            DataSourceResult result = fleetCheckLists.ToDataSourceResult(request, fleetCheckList => new
+            {
+                FleetCheckListId = fleetCheckList.FleetCheckListId,
+                EquipmentIdentityID = fleetCheckList.EquipmentIdentityID,
+                EquipmentTypeID = fleetCheckList.EquipmentTypeID,
+                
+                Description = fleetCheckList.Description,
+                Remark = fleetCheckList.Remark,
+                
+            });
+            return Json(result);
+        }
+        public ActionResult DriverFleetCheckLists_Read([DataSourceRequest] DataSourceRequest request,string id)
+        {
+            var fleetCheckLists = db.FleetCheckLists.Where(x=>x.DriverVehicleTransferID==id);
             DataSourceResult result = fleetCheckLists.ToDataSourceResult(request, fleetCheckList => new
             {
                 FleetCheckListId = fleetCheckList.FleetCheckListId,
@@ -44,6 +60,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 var count = db.FleetCheckLists.Count();
                 var entity = new FleetCheckList
                 {
+                    
                     FleetCheckListId = fleetCheckList.FleetCheckListId,
                     EquipmentIdentityID = fleetCheckList.EquipmentIdentityID,
                     EquipmentTypeID = fleetCheckList.EquipmentTypeID,
@@ -53,7 +70,53 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 };
                 db.FleetCheckLists.Add(entity);
                 db.SaveChanges();
+                
                 fleetCheckList.FleetCheckListId = entity.FleetCheckListId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Fleet checklist registration", "Success", User.Identity.Name, $"created checklist registration {entity.FleetCheckListId} ", Modules.FleetManagement);
+                #endregion
+            }
+            return Json(new[] { fleetCheckList }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult DriverFleetCheckLists_Create([DataSourceRequest] DataSourceRequest request, FleetCheckList fleetCheckList,string id)
+        {
+            var fetchDriverMachine = db.DriverVehicleTransfer.FirstOrDefault(x => x.DriverVehicleTransferID.ToString() == id);
+              
+            if (ModelState.IsValid)
+            {
+                var count = db.FleetCheckLists.Count();
+                var entity = new FleetCheckList
+                {
+                    FleetCheckListId = fleetCheckList.FleetCheckListId,
+                    EquipmentIdentityID = fetchDriverMachine.EquipmentCategoryId,
+                    EquipmentTypeID = fetchDriverMachine.EquipmentTypeId,
+                    DriverVehicleTransferID = id,
+                    Description = fleetCheckList.Description,
+                   
+                };
+                db.FleetCheckLists.Add(entity);
+                db.SaveChanges();
+                var masterCheckList = db.FleetCheckLists.FirstOrDefault(x => x.EquipmentIdentityID == entity.EquipmentIdentityID&&x.EquipmentTypeID==entity.EquipmentTypeID&& x.DriverVehicleTransferID==null);
+                 if(masterCheckList!=null)
+                {
+                    var checkListLines = db.FleetLineCheckLists.Where(x => x.FleetCheckListId == masterCheckList.FleetCheckListId).ToList();
+                    foreach (var fcl in checkListLines)
+                    {
+                        var Lineentity = new FleetLineCheckList
+                        {
+                            FleetCheckListId = entity.FleetCheckListId,
+                            SystemName = fcl.SystemName,
+                            Description = fcl.Description,                            
+                            CheckList = fcl.CheckList,
+                            CreatedBy = User.Identity.Name,
+                        };
+                        db.FleetLineCheckLists.Add(Lineentity);
+                    }
+                    db.SaveChanges();
+                }
+                
+                fleetCheckList.FleetCheckListId = entity.FleetCheckListId;
+
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Fleet checklist registration", "Success", User.Identity.Name, $"created checklist registration {entity.FleetCheckListId} ", Modules.FleetManagement);
                 #endregion

@@ -127,7 +127,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
 			return this.Json(new[] { EquipmentName }.ToDataSourceResult(request));
 		}
-		
+        public JsonResult GetEquipmentTypesForNames(string text)
+        {
+            var result = db.EquipmentType.ToList();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                result = result.Where(x => x.EquipmentTypeName.ToLower().Contains(text.ToLower())).ToList();
+            }
+            var types = result.Select(s => new
+            {
+                Value = s.EquipmentTypeID,
+                Text = s.EquipmentTypeName
+            }).ToList();
+           
 
-	}
+            return Json(types, JsonRequestBehavior.AllowGet);
+
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 }

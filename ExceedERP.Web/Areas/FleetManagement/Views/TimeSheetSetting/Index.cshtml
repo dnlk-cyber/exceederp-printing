@@ -72,7 +72,7 @@
                         .Name("TimeSheetException_grid#=TimeSheetSettingId#")
                         .Columns(columns =>
                         {
-                            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text")
+                            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "BranchId", "Name")
                                    .EditorTemplateName("ExceptionBranchSelector")
                                    .Title("Branch Name")
                                    .Width(100); columns.Bound(c => c.Reason);

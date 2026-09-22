@@ -30,6 +30,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public Guid EquipmentIdentity { get; set; }
         [DisplayName("Equipment Type")]
         public Guid EquipmentType { get; set; }
+
         [DisplayName("Supplier Name")]
         public int ProcurementSupplierID { get; set; }
 
@@ -44,10 +45,6 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
 
         [DisplayName(" Email ")]
         public string CompanyEmail { get; set; }
-        [Required]
-        [DisplayName("Working Capacity")]
-        public string WorkingCapacity { get; set; }
-
         [DisplayName("Including VAT ")]
         public bool RentalRateIncludingVAT { get; set; }
 
@@ -78,16 +75,16 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         [DisplayName(" Bank Slip No")]
         public string BankSlipNo { get; set; }
 
-        [DataType(DataType.Currency)]
+        //[DataType(DataType.Currency)]
         [DisplayName("Advance Payment")]
-        public Nullable<int> AdvancePayment { get; set; }
+        public int? AdvancePayment { get; set; }
 
         [Required]
         [DisplayName("Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? StartDate { get; set; }
-        [Required]
+        //[Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [DisplayName("End Date")]
@@ -100,7 +97,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         [NotMapped]
         [DisplayName("Date Difference")]
         public double DateDifference { get; set; }
-
+       
         public double Hour { get; set; }
         [NotMapped]
         public string PlateNo { get; set; }
@@ -120,6 +117,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public Guid EquipmentTypeID { get; set; }
         [DisplayName(" Equipment Name ")]
         public Guid EquipmentNameID { get; set; }
+        public bool IsContractTerminated { get; set; }
 
         public Guid FleetId { get; set; }
         [DisplayName("Rent Type")]
@@ -127,16 +125,50 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
 
         [DisplayName(" Rental Rate  ")]
         public decimal RentalRate { get; set; }
-        [DisplayName("Idle Rental Rate  ")]
+        public decimal PayableIdleHrPercent { get; set; }
+        public decimal Vat { get; set; }
+        //public decimal Tot { get; set; }
+        public bool IsOnlineApproved { get; set; }
         public bool IsDumpTruck { get; set; }
+        [DisplayName("Idle Rental Rate  ")]
         public decimal IdleRentalRate { get; set; }
-        //fk
         public Guid RentFromExternalId { get; set; }
         public string Status { get; set; }
 
         [NotMapped]
         public string EquipmentType { get; set; }
 
+    }
+    public class RentalEquipmentAdvancePayment : TrackUserSettingOperation
+    {
+        public int RentalEquipmentAdvancePaymentId { get; set; }
+        public int RentFromExternalEquipmentId { get; set; }
+        public decimal AdvancePayed { get; set; }
+        public decimal VAT { get; set; }
+        public decimal Tot { get; set; }
+        public decimal AdvanceWithTax { get; set; }
+        public string FleetId { get; set; }
+        public decimal CostSheetAmount { get; set; }
+        public bool IsFullPayment { get; set; }
+    }
+    public class RentFromExternalDocument : TrackUserOperation
+    {
+        public int RentFromExternalDocumentId { get; set; }
+        public string RentFromExternalId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+    }
+
+    public class RentFromExternalCustomerChange:TrackUserOperation
+    {
+        public int RentFromExternalCustomerChangeId { get; set; }
+        public Guid RentFromExternalId { get; set; }
+        [DisplayName("Supplier Name")]
+        public int ProcurementSupplierID { get; set; }
+        public bool IsCurent { get; set; }
     }
     public class RentFromExternalEquipmentRate : TrackUserSettingOperation
     {

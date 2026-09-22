@@ -20,6 +20,20 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public Guid? EquipmentCategoryId { get; set; }
         [Display(Name = "Equipment Type")]
         public Guid? EquipmentTypeId { get; set; }
+        [Display(Name = "Operator")]
+        public string ExternalOperatorName { get; set; }
+        public decimal Volume { get; set; }
+        public UnitSpecification? Unit { get; set; }
+        public decimal LabourCost { get; set; }
+        public decimal SparePartCost { get; set; }
+        public int? RentalAgreementNum { get; set; }
+        public decimal BasicSalary { get; set; }
+        public decimal OverTime { get; set; }
+        public decimal GreaseCost { get; set; }
+        public decimal BatteryCost { get; set; }
+        [NotMapped]
+        public bool IsECWC { get; set; }
+        
         [Display(Name = "Equipment Name")]
         public Guid? EquipmentNameId { get; set; }
         [Required]
@@ -60,6 +74,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal FuelConsumption { get; set; }
         [Display(Name ="Grease Rate")]
         public decimal GreaseRate { get; set; }
+        public decimal TotalTime { get; set; }
+        public decimal OilCost { get; set; }
+        public decimal OilConsumption { get; set; }
         [Display(Name = "Fuel Rate")]
         public decimal FuelRate { get; set; }
         [Display(Name = "Rental Rate")]
@@ -70,7 +87,6 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal GreaseConsumption { get; set; }
         [Display(Name = "Idle Hours")]
         public decimal IdleHours { get; set; }
-        public decimal OilConsumption { get; set; }
         [Display(Name = "Idle Reason")]
         public string IdleReason { get; set; }
         [Display(Name = "Down Hours")]
@@ -97,8 +113,6 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal FuelCost { get; set; }
         [Display(Name = "Service Recharge(%)")]
         public decimal ServiceRecharge { get; set; }
-        [Display(Name = "Lubricant Cost")]
-        public decimal LubricantCost { get; set; }
         [Display(Name = "Maintenance Cost")]
         public decimal MaintenanceCost { get; set; }
         public decimal TotalCost { get; set; }
@@ -119,8 +133,15 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public Guid? OperatorId { get; set; }
         [Display(Name = "External Operator")]
         public string ExternalOperator { get; set; }
+        public string FuelType { get; set; }
+        public string OilType { get; set; }
+        public decimal InitialEHR { get; set; }
+        public decimal FinalEHR { get; set; }
+        public decimal DifferenceEHR { get; set; }
+        public decimal FuelKMR { get; set; }
+        public decimal? MaintenanceFuel { get; set; }
+        public DownReasonList? ReasonForDown { get; set; }
+        public IdleReasonList? ReasonForIdle { get; set; }
     }
 
-    
-    
 }

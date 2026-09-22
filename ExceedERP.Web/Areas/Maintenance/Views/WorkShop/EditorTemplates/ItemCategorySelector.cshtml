@@ -1,13 +1,13 @@
 ﻿@(Html.Kendo().DropDownListFor(m => m)
-                  .ValuePrimitive(true)
-                  .OptionLabel("Select Category...")
-                      .DataTextField("Name")
-                          .DataValueField("ItemCategoryCode")
-                          .Filter("contains")
-                                .DataSource(dataSource =>
-                                {
-                                    dataSource.Read(read => read.Action("GetItemCategoryExcludingFuel", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
-                                    .ServerFiltering(false);
-                                })
+.ValuePrimitive(true)
+.OptionLabel("Select Category...")
+    .DataTextField("Name")
+        .DataValueField("ItemCategoryCode")
+        .Filter("contains")
+              .DataSource(dataSource =>
+              {
+                  dataSource.Read(read => read.Action("GetSparePartMaterialCategory", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery"))
+                  .ServerFiltering(false);
+              })
 )
 @Html.ValidationMessageFor(m => m)

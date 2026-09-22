@@ -33,6 +33,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     public class EquipmentRegistrationRentalController : Controller
     {
 
+        private readonly CacheData CacheData = new CacheData();
         private readonly IFleetService _FleetsService;
         private readonly IAccessoriesService _AccessoriesService;
         private readonly IFleetHistoryService _FleetHistoryService;
@@ -269,7 +270,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var record = db.Fleets.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved)
             {
-                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                record.Status = Enum.GetName(typeof(Core.Domain.FleetManagement.FleetOperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;
@@ -450,38 +451,41 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             ViewBag.EquipmentStatus = EquipmentStatuss;
 
-            var equitsCats = db.EquipmentIdentity.Select(s => new
-            {
-                Id = s.EquipmentIdentityID,
-                Name = s.EquipmentCategoryName
-            }).ToList();
-            var equipSubCats = db.EquipmentType.Select(s => new
-            {
-                Id = s.EquipmentTypeID,
-                Name = s.EquipmentTypeName
-            }).ToList();
-            var equipSubCatNames = db.EquipmentName.Select(s => new
-            {
-                Id = s.EquipmentNameID,
-                Name = s.Name
-            }).ToList();
+            var equitsCats = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Name = i.Name,
+          Id = i.Id
+      }).AsQueryable();
+            var equipSubCats = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
+            var equipSubCatNames = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Name = i.Name,
+            Id = i.Id
+        }).AsQueryable();
             var assets = db.AssetRegistrations.Select(s => new
             {
                 Id = s.AssetRegistrationId,
                 Name = s.Name
-            }).ToList();
+            }).AsQueryable();
 
-            var branch = db.Branch.Select(s => new
+            var branch = CacheData.GetBranchCaches().Select(s => new
             {
-                Id = s.BranchId,
+                Id = s.Id,
                 Name = s.Name
-            });
+            }).AsQueryable();
             ViewData["EquipmentCategorys"] = equitsCats;
             ViewData["EquipmentSubCategorys"] = equipSubCats;
             ViewData["EquipmentNames"] = equipSubCatNames;
             ViewData["FixedAssets"] = assets;
-            ViewData["VehicleParts"] = db.VehiclePart.ToList();
-            ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.ToList();
+            ViewData["VehicleParts"] = db.VehiclePart.AsQueryable();
+            ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.AsQueryable();
             ViewData["Branch"] = branch;
             return View();
         }
@@ -557,6 +561,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     Manufacturer = f.Manufacturer,
                     ManufacturerYear = f.ManufacturerYear,
                     Model = f.Model,
+                    BranchId=f.BranchId,
                     PlateNumber = GetAssetDependancies(f, assetRegistrations).PlateNumber,
                     PreviousOdoMeter = f.PreviousOdoMeter,
                     PlannerID = f.PlannerID,
@@ -829,6 +834,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 IFRSCondition = f.IFRSCondition,
                 LastMaintained = f.LastMaintained,
                 Libre = f.Libre,
+                RentFromExternalNum = f.RentFromExternalNum,
+                RentId = f.RentId,
                 Manufacturer = f.Manufacturer,
                 ManufacturerYear = f.ManufacturerYear,
                 Model = f.Model,
@@ -861,7 +868,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 IsOnlineApproved = f.IsOnlineApproved,
                 DateCreated = f.DateCreated,
                 AssetId = f.AssetId,
-                RentFromExternalNum = f.RentFromExternalNum
 
             }
 
@@ -898,7 +904,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             IFleetService _FleetService = new FleetService();
             AssetRegistration Asset = db.AssetRegistrations.Where(x => x.AssetRegistrationId == fleets.AssetId || x.AssetRegistrationId.ToString() == fleets.SerialNo || x.AssetRegistrationId.ToString() == fleets.PlateNumber).FirstOrDefault();
 
-            List<Fleets> fleetsPlate = _FleetService.GetAll().Where(f => f.UnitNum == Asset?.Tag).ToList();
+            List<Fleets> fleetsPlate = db.Fleets.Where(f => f.UnitNum == Asset.Tag).ToList();
             if (fleetsPlate.Any())
             {
                 ModelState.Clear();
@@ -1048,7 +1054,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             if (Asset != null)
             {
-                List<Fleets> fleetsPlate = _FleetService.GetAll().Where(f => f.UnitNum == Asset.Tag && f.FleetsID != fleets.FleetsID).ToList();
+                List<Fleets> fleetsPlate = db.Fleets.Where(f => f.UnitNum == Asset.Tag && f.FleetsID != fleets.FleetsID).ToList();
                 if (fleetsPlate.Any())
                 {
                     ModelState.Clear();
@@ -1147,6 +1153,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     fleets.ModifiedBy = User.Identity.Name;
                     fleets.LastModified = DateTime.Now;
                     fleets.Battery = fleets.Battery;
+                    fleets.IsExternal = true;
                     fleets.ChasisNumber = fleets.ChasisNumber;
                     fleets.EngineNumber = fleets.EngineNumber;
                     fleets.EngineModel = fleets.EngineModel;
@@ -1226,7 +1233,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     Issued =
                       db.IssueItems.Where(x => x.Issue.IsFuel == true && x.Issue.PlateNo == Fleet.PlateNumber).Sum(x => x.ApprovedQuantity);
-                    var Sheet = _TimeSheetService.GetAll().Where(x => x.FleetsID == Fleet.FleetsID);
+                    var Sheet = db.TimeSheet.Where(x => x.FleetsID == Fleet.FleetsID);
                     if (Fleet.ReadingType == ReadingType.HR)
                     {
                         foreach (var Work in Sheet)
@@ -1403,7 +1410,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             decimal Cost = 0;
             IJobOrderService jobOrderService = new JobOrderService();
             FleetCostHelper fleetCostHelper = new FleetCostHelper();
-            var JobOrder = jobOrderService.GetAll().Where(x => x.FleetsID == Id).ToList();
+            var JobOrder = db.JobOrder.Where(x => x.FleetsID == Id).ToList();
 
 
             var SpareMap = db.InventorySparePartMapping.ToList();
@@ -1419,7 +1426,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             decimal Cost = 0;
 
-            var JobOrder = _JobOrderService.GetAll().Where(x => x.FleetsID == Id).ToList();
+            var JobOrder = db.JobOrder.Where(x => x.FleetsID == Id).ToList();
 
 
             var SpareMap = db.InventorySparePartMapping.ToList();
@@ -1434,7 +1441,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             decimal Cost = 0;
 
-            var JobOrder = _JobOrderService.GetAll().Where(x => x.FleetsID == Id).ToList();
+            var JobOrder = db.JobOrder.Where(x => x.FleetsID == Id).ToList();
 
 
 
@@ -2120,7 +2127,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var _JobOrderService = new JobOrderService();
             var JobOrderDetailService = new JobOrderDetailService();
             decimal Cost = decimal.Zero;
-            var JobOrder = _JobOrderService.GetAll()
+            var JobOrder = db.JobOrder
                 .Where(
                     x =>
                          x.FleetsID == Id).ToList();
@@ -2136,7 +2143,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             var IssueItems = new List<IssueItem>();
             FleetReportHelper fleetReportHelper = new FleetReportHelper();
-            var JobOrder = _JobOrderService.GetAll().Where(x => x.FleetsID == Id).ToList();
+            var JobOrder = db.JobOrder.Where(x => x.FleetsID == Id).ToList();
             foreach (var job in JobOrder)
             {
                 var StoreRequestions = db.StoreRequisitions.Where(x => x.JobOrderNo == job.Num.ToString() || x.JobOrderNo == job.JobOrderID.ToString());
@@ -2156,7 +2163,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult EquipmentManPower_Read([DataSourceRequest] DataSourceRequest request, Guid Id)
         {
             var Crews = new List<ServiceCrew>();
-            var JobOrder = _JobOrderService.GetAll().Where(x => x.FleetsID == Id).ToList();
+            var JobOrder =db.JobOrder.Where(x => x.FleetsID == Id).ToList();
             FleetMaintenaceHelper fleetMaintenaceHelper = new FleetMaintenaceHelper();
             foreach (var job in JobOrder)
             {
@@ -2203,7 +2210,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public string EquipmentManPowerCost(Guid Id)
         {
             decimal TotalCost = 0;
-            var JobOrder = _JobOrderService.GetAll().Where(x => x.FleetsID == Id).ToList();
+            var JobOrder = db.JobOrder.Where(x => x.FleetsID == Id).ToList();
             FleetMaintenaceHelper fleetMaintenaceHelper = new FleetMaintenaceHelper();
             foreach (var job in JobOrder)
             {
@@ -2247,13 +2254,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var _JobOrderService = new JobOrderService();
             var JobOrderDetailService = new JobOrderDetailService();
             var inventortySpareMapping = db.InventorySparePartMapping.ToList();
-            var JobOrder = _JobOrderService.GetAll()
+            var JobOrder = db.JobOrder
                 .Where(
                     x =>
                         x.FleetsID == Id).ToList();
             foreach (var job in JobOrder)
             {
-                var Service = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == job.JobOrderID).ToList();
+                var Service = db.JobOrderDetail.Where(x => x.JobOrderID == job.JobOrderID).ToList();
 
                 if (Service.Any())
                 {

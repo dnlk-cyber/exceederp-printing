@@ -6,7 +6,7 @@
           .DataValueField("Code")
           .OptionLabel(" Select ")
           .Filter(FilterType.Contains)
-                  .DataSource(d => d.Read(r => r.Action("GetServicesForPmSchedules", "MaintenanceDataProvider").Data("sendForgery")
+                  .DataSource(d => d.Read(r => r.Action("GetServicesForPmSchedules", "MaintenanceDataProvider").Data("FilterRepairType")
                  )
                   .ServerFiltering(true)))
                   @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("sendForgery").Data("filterSerivce")).ServerFiltering(false)))*@

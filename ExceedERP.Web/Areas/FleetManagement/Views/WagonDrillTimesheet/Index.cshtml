@@ -2,67 +2,170 @@
 @{
     ViewBag.Title = "Wagon Drill Timesheet";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var checkIsMIDROC = (string)ViewBag.IsMIDROC;
+    bool isMIDROC = (ViewBag.setting as string) == "MIDROC";
+    var IsMCG = (ViewBag.setting as string) == "MCG";
 }
+
 
 <legend>Wagon Drill Timesheet</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.WagonDrillTimesheet>()
-                    .Name("grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(c => c.WagonDrillTimesheetId).Title("#").Width(70);
-                        columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
-                        columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
-                        columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
-                        columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Value", "Text").Title("Serial No").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
-                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
-                        //columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
-                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Value", "Text").Title("Business unit").Width(100);
-                        columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
-                        columns.Bound(c => c.FuelCost).Width(100);
-                        columns.Bound(c => c.LubricantCost).Title("Lubricant Consumption").Width(100);
-                        columns.Bound(c => c.MaintenanceCost).Width(100);
-                        columns.Bound(c => c.TireCost).Width(100);
-                        columns.Bound(c => c.TotalCost).Width(100);
-                        columns.Bound(c => c.WorkItem).Width(100);
-                        columns.Bound(c => c.OperationNetWorkingHour).Width(120);
-                        columns.Bound(c => c.IdleHour).Width(120);
-                        columns.Bound(c => c.DownTime).Width(120);
-                        columns.Bound(c => c.NumberOfHolesDrilled).Width(120);
-                        columns.Bound(c => c.OperationDrilledHoleDepth).Width(120);
-                        columns.Bound(c => c.IdleRateHour).Width(120);
-                        columns.Bound(c => c.TimeSheetStatus).Width(120);
+                   .Name("grid")
+                   .Columns(columns =>
+                   {
+                   columns.Bound(c => c.WagonDrillTimesheetId).Title("#").Width(70);
+                   columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                   columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                   columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+                   columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Value", "Text").Title("Serial No").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                   columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+                   columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "BranchId", "Name").Title("Branch Name").Width(100);
+                   columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Id", "Name").Title("Business unit").Width(100);
+                   columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
+                   columns.Bound(c => c.ExternalOperatorName).Title("External Operator").Width(100);
+                   if (isMIDROC == false)
+                   {
+                       columns.Bound(c => c.FuelInLiter).Width(100);
+                       columns.Bound(c => c.FuelType).Width(100);
+                   }
+                   if (IsMCG == true)
+                   {
+                       columns.Bound(c => c.IdleReason).Width(100);
+                       columns.Bound(c => c.DownReason).Width(100);
+                       columns.Bound(c => c.FuelKMR).Width(100);
+                       columns.Bound(c => c.InitialEHR).Width(100);
+                       columns.Bound(c => c.FinalEHR).Width(100);
+                       columns.Bound(c => c.DifferenceEHR).Width(100);
+                       columns.Bound(c => c.MorningTimeStart).Width(100);
+                       columns.Bound(c => c.MorningTimeEnd).Width(100);
+                       columns.Bound(c => c.AfternoonTimeStart).Width(100);
+                       columns.Bound(c => c.AfternoonTimeEnd).Width(100);
+                       columns.Bound(c => c.NightTimeStart).Width(100);
+                       columns.Bound(c => c.NightTimeEnd).Width(100);
+                       columns.Bound(c => c.TotalTime).Width(100);
+                       columns.Bound(c => c.Unit).Title("Unit").Width(100);
+                       columns.Bound(c => c.Volume).Title("Volume").Width(100);
+                       columns.Bound(c => c.OilConsumption).Title("Oil Consumption").Width(100);
+                   }
+                   columns.Bound(c => c.MaintenanceCost).Width(100);
+                   columns.Bound(c => c.TireCost).Width(100);
+                   columns.Bound(c => c.TotalCost).Width(100);
+                   columns.Bound(c => c.WorkItem).Width(100);
+                   columns.Bound(c => c.OperationNetWorkingHour).Width(120);
+                   columns.Bound(c => c.IdleHour).Width(120);
+                   columns.Bound(c => c.DownTime).Width(120);
+                   columns.Bound(c => c.NumberOfHolesDrilled).Width(120);
+                   columns.Bound(c => c.OperationDrilledHoleDepth).Width(120);
+                   columns.Bound(c => c.IdleRateHour).Width(120);
+                   columns.Bound(c => c.TimeSheetStatus).Width(120);
 
 
-                        columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
-                    })
-                    .ToolBar(toolbar =>
-                    {
-                        toolbar.Create();
+                   columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
+                   if (IsMCG || isMIDROC)
+                   {
+                       columns.Template(@<text></text>)
+                                                  .ClientTemplate(
+                                                  "# if (!TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
+                                                      "<input type='checkbox' class='approveCheckbox' />" +
+                                                  "# } else { #" +
+                                                      "<input type='checkbox' disabled='disabled' />" +
+                                                  "# } #")
+                                                  .Title("Request Approval")
+                                                  .Width(60);
+                       columns.Template(@<text></text>)
+                                                  .ClientTemplate(
+                                                  "# if (TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
+                                                      "<input type='checkbox' class='approveCheckbox' />" +
+                                                  "# } else { #" +
+                                                      "<input type='checkbox' disabled='disabled' />" +
+                                                  "# } #")
+                                                  .Title("Approve")
+                                                  .Width(60);
+                       columns.Template(@<text></text>)
+                                                  .ClientTemplate(
+                                                  "# if (TimeSheetSendForAproval&& TimeSheetApproved&&!CostSheetApproved) { #" +
+                                                      "<input type='checkbox' class='approveCheckbox' />" +
+                                                  "# } else { #" +
+                                                      "<input type='checkbox' disabled='disabled' />" +
+                                                  "# } #")
+                                                  .Title("Reject")
+                                                  .Width(60);
+                       }
+                   })
+                             .ToolBar(toolbar =>
+                             {
+                             toolbar.Template(@<text>
+                                    <!-- Always visible -->
+                                    <a class="k-button k-button-icontext k-grid-add" href="#">
+                                        <span class="k-icon k-i-plus"></span>
+                                        Add New Record
+                                    </a>
+                                    <!-- Conditional content -->
+                                    @if (isMIDROC||IsMCG)
+                                                {
+                                        <label style="margin-left:20px;">Branch:</label>
+                                        @(Html.Kendo().DropDownList()
+                                                                            .Name("branchDropdown")
+                                                                            .DataTextField("Text")
+                                                                            .DataValueField("Value")
+                                                                            .BindTo((IEnumerable<SelectListItem>)ViewData["branchh"])
+                                                                            .OptionLabel("Select Branch")
+                                                                            .HtmlAttributes(new { style = "width:200px;margin-right:10px;" })
+                                        )
 
-                    })
-                    .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                    .TemplateName("WagonDrillTimesheetTemplate")
-                    .Window(win => win.Title("Wagon Drill Timesheets").Width(800)))
-                    .Pageable()
-                    .Filterable()
-                    .Events(e => e.DataBound("dataBound"))
-                    .Events(e => e.DetailExpand("onDetailExpand"))
-                    .Scrollable(s => s.Height(550))
-                    .DataSource(dataSource => dataSource
-                        .Ajax()
-                        .Sort(s => s.Add(e => e.WagonDrillTimesheetId).Descending())
-                        .Model(model => model.Id(p => p.WagonDrillTimesheetId))
-                        .Events(ev => ev
-                                     .Error("error_handler(\"grid\")")
-                                     .RequestStart("onRequestStart(\"grid\")")
-                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Read(read => read.Action("WagonDrillTimesheets_Read", "WagonDrillTimesheet").Data("sendForgery"))
-                        .Create(create => create.Action("WagonDrillTimesheets_Create", "WagonDrillTimesheet").Data("sendForgery"))
-                        .Update(update => update.Action("WagonDrillTimesheets_Update", "WagonDrillTimesheet").Data("sendForgery"))
-                        .Destroy(destroy => destroy.Action("WagonDrillTimesheets_Destroy", "WagonDrillTimesheet").Data("sendForgery"))
-                    ).ClientDetailTemplateId("template")
+                                        <label style="margin-left:10px;">Date:</label>
+                                        @(Html.Kendo().DatePicker()
+                                                                            .Name("datePicker")
+                                                                            .Format("yyyy-MM-dd")
+                                                                            .Value(DateTime.Now)
+                                                                            .HtmlAttributes(new { style = "width:180px;margin-right:10px;" })
+                                        )
+
+                                        <button class="k-button k-primary" onclick="generateTimesheet()">
+                                            Request Approval
+                                        </button>
+                                        <button type="button"
+                                                class="k-button k-primary"
+                                                onclick="SendForApprovalSelected()">
+                                            Approve Selected
+                                        </button><button type="button"
+                                                class="k-button k-primary"
+                                                onclick="ApproveSelected()">
+                                            Approve Selected
+                                        </button><button type="button"
+                                                class="k-button k-primary"
+                                                onclick="RejectSelected()">
+                                            Reject Selected
+                                        </button>
+                                                }
+                                    /**/
+                                    /**/
+                                    /**/
+
+                                </text>);
+                                    })
+                                      .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                      .TemplateName("WagonDrillTimesheetTemplate")
+                                      .Window(win => win.Title("Wagon Drill Timesheets").Width(800)))
+                                      .Pageable()
+                                      .Filterable()
+                                      .Events(e => e.DataBound("dataBound"))
+                                      .Events(e => e.DetailExpand("onDetailExpand"))
+                                      .Scrollable(s => s.Height(550))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Sort(s => s.Add(e => e.WagonDrillTimesheetId).Descending())
+                                          .Model(model => model.Id(p => p.WagonDrillTimesheetId))
+                                          .Events(ev => ev
+                                                       .Error("error_handler(\"grid\")")
+                                                       .RequestStart("onRequestStart(\"grid\")")
+                                                       .RequestEnd("onRequestEnd(\"grid\")"))
+                                          .Read(read => read.Action("WagonDrillTimesheets_Read", "WagonDrillTimesheet").Data("sendForgery"))
+                                          .Create(create => create.Action("WagonDrillTimesheets_Create", "WagonDrillTimesheet").Data("sendForgery"))
+                                          .Update(update => update.Action("WagonDrillTimesheets_Update", "WagonDrillTimesheet").Data("sendForgery"))
+                                          .Destroy(destroy => destroy.Action("WagonDrillTimesheets_Destroy", "WagonDrillTimesheet").Data("sendForgery"))
+                                      ).ClientDetailTemplateId("template")
 )
 
 
@@ -71,113 +174,301 @@
 <script id="template" type="text/kendo-tmpl">
 
     @(Html.Kendo().TabStrip()
-                                                   .Name("tabStrip_#=WagonDrillTimesheetId#")
-                                                   .SelectedIndex(0)
-                                                   .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                                   .Items(items =>
-                                                   {
+                                 .Name("tabStrip_#=WagonDrillTimesheetId#")
+                                 .SelectedIndex(0)
+                                 .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                 .Items(items =>
+                                 {
 
-                                                       items.Add().Text("Detail").Content(
-                                                            @<text>
-                                                                <legend>Detail</legend>
-                                                                <div class="box">
-                                                                    <div class="box-col">
+                                     items.Add().Text("Detail").Content(
+                                        @<text>
+                                            <legend>Detail</legend>
+                                            <div class="box">
+                                                <div class="box-col">
 
-                                                                        # if (TimeSheetSendForAproval == false)
-                                                                        {#
+                                                    # if (TimeSheetSendForAproval == false)
+                                                    {#
 
-                                                                        <a onclick='return sendForApproval("#=WagonDrillTimesheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                        # }#
-                                                                        # if (TimeSheetSendForAproval == true&&TimeSheetApproved==true)
-                                                                        {#
+                                                    <a onclick='return sendForApproval("#=WagonDrillTimesheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                    # }#
+                                                    # if (TimeSheetSendForAproval == true&&TimeSheetApproved==true&&!CostSheetSendForAproval)
+                                                    {#
 
-                                                                        <a onclick='return voidTimeSheet("#=WagonDrillTimesheetId#")' href=' \#' title="Void Record"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                                                                        # }#
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-1">
-                                                                    </div>
-                                                                    <div class="col-md-6" style="margin-top:20px;">
-                                                                        <div class="form-group">
-                                                                            <label>Status</label>: <span>#=TimeSheetStatus#</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Created By</label>: <span>#=CreatedBy#</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Date Created</label>: <span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Approved By</label>: <span>#=TimeSheetApprovedBy#</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Approved Date</label>: <span>#=kendo.toString(kendo.parseDate(TimeSheetApprovedDate), 'dd/MM/yyyy')#</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </text>
-                                                                                       ); items.Add().Text("Approval").Content(@<text>
+                                                    <a onclick='return voidTimeSheet("#=WagonDrillTimesheetId#")' href=' \#' title="Void Record"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                    # }#
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-1">
+                                                </div>
+                                                <div class="col-md-6" style="margin-top:20px;">
+                                                    <div class="form-group">
+                                                        <label>Status</label>: <span>#=TimeSheetStatus#</span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Created By</label>: <span>#=CreatedBy#</span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Date Created</label>: <span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Approved By</label>: <span>#=TimeSheetApprovedBy#</span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Approved Date</label>: <span>#=kendo.toString(kendo.parseDate(TimeSheetApprovedDate), 'dd/MM/yyyy')#</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </text>
+                                                                                           );
+                                             if (isMIDROC == true)
+                                             {
+                                                 items.Add().Text("Fuel Consumption")
+                                                                 .Content(@<text>
+                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.ItemConsumptionVm>()
+                                                                                                            .Name("FuelCD#=WagonDrillTimesheetId#")
+                                                                                                            .Columns(columns =>
+                                                                                                            {
+                                                                                       //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").Title("Item Category Name").Width(50);
+                                                                                       // columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemCode"], "Value", "Text").Title("Item Name").Width(50);
+                                                                                       columns.Bound(c => c.ItemCategoryCode).Title("Item Category Name").Width(50);
+                                                                                                   columns.Bound(c => c.ItemCode).Title("Item Name").Width(50);
+                                                                                                   columns.Bound(c => c.UnitPrice).Title("Unit Price").Width(50);
+                                                                                                   columns.Bound(c => c.IssuedQuantity).Title("Quantity").Width(50);
+                                                                                                   columns.Bound(c => c.Total).Title("Total Cost").Width(50);
+                                                                                               })
+                                                                                                               .Events(ev =>
+                                                                                                               {
+                                                                                          //ev.DataBound("approvalDataBound");
+                                                                                      })
+                                                                                                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                   .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                                                                                                   .DataSource(dataSource => dataSource
+                                                                                                                                           .Ajax()
+                                                                                                                                           .PageSize(5)
+                                                                                                                                           .Model(model =>
+                                                                                                                                           {
+                                                                                                                                  model.Id(p => p.PlateNo);
+                                                                                                                              })
+                                                                                                                    .Events(ev => ev
+                                                                                                                        .Error("error_handler(\"FuelCD#=WagonDrillTimesheetId#\")")
+                                                                                                                        .RequestStart("onRequestStart(\"FuelCD#=WagonDrillTimesheetId#\")")
+                                                                                                                        .RequestEnd("onRequestEnd(\"FuelCD#=WagonDrillTimesheetId#\")"))
+                                                                                                                        .Read(read => read.Action("GetFuelConsumption", "DryLoadingTimeSheets").Data("getSparePartData")
+                                                                                                                        )
+                                                                                                                    )
+                                                                                                                    .ToClientTemplate())
 
-                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
-                                                                                                                            .Name("TimeSheetApproval#=WagonDrillTimesheetId#")
-                                                                                                                            .Columns(columns =>
-                                                                                                                            {
-                                                                                                                                     columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
 
-                                                                                                                                     columns.Bound(o => o.Remark).Width(200);
-                                                                                                                                     columns.Bound(c => c.CreatedBy).Width(150);
-                                                                                                                                     columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                                                                                                                     columns.Command(command => { command.Edit(); }).Width(250);
-
-                                                                                                                                 })
-                                                                                                                            .ToolBar(commands => commands.Create().Text("Approve Request"))
-                                                                                                                            .Events(ev =>
-                                                                                                                            {
-                                                                                                                                     ev.DataBound("approvalDataBound");
-                                                                                                                                 })
-                                                                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                    .DataSource(dataSource => dataSource
-                                                                                                                                    .Ajax()
-                                                                                                                                    .PageSize(5)
-                                                                                                                                    .Model(model =>
-                                                                                                                                    {
-                                                                                                                                             model.Id(p => p.TimeSheetApprovalNewId);
-                                                                                                                                             model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                             model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                                         })
-                                                                                                                                    .Events(ev => ev
-                                                                                                                                    .Error("error_handler(\"TimeSheetApproval#=WagonDrillTimesheetId#\")")
-                                                                                                                                    .RequestStart("onRequestStart(\"TimeSheetApproval#=WagonDrillTimesheetId#\")")
-                                                                                                                                    .RequestEnd("onRequestEnd(\"TimeSheetApproval#=WagonDrillTimesheetId#\")"))
-
-                                                                                                                                    .Create(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
-                                                                                                                                    .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
-                                                                                                                                    .Update(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet").Data("sendForgery"))
+                                                                </text>);
 
 
-                                                                                                                                )
-                                                                                                                                .ToClientTemplate())
-                                                                                    </text>
-                                                                                                    );
-                                                                }).ToClientTemplate())
+                                                        items.Add().Text("Spare Part Consumption")
+                                                                          .Content(@<text>
+                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.ItemConsumptionVm>()
+                                                                                                            .Name("SparePartCD#=WagonDrillTimesheetId#")
+                                                                                                            .Columns(columns =>
+                                                                                                            {
+                                                                                          //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").Title("Item Category Name").Width(50);
+                                                                                          // columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemCode"], "Value", "Text").Title("Item Name").Width(50);
+                                                                                          columns.Bound(c => c.ItemCategoryCode).Title("Item Category Name").Width(50);
+                                                                                                      columns.Bound(c => c.ItemCode).Title("Item Name").Width(50); columns.Bound(c => c.UnitPrice).Title("Unit Price").Width(50);
+                                                                                                      columns.Bound(c => c.IssuedQuantity).Title("Quantity").Width(50);
+                                                                                                      columns.Bound(c => c.Total).Title("Total Cost").Width(50);
+
+                                                                                                  })
+                                                                                                               .Events(ev =>
+                                                                                                               {
+                                                                                                     })
+                                                                                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                   .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                                                                                                   .DataSource(dataSource => dataSource
+                                                                                                                   .Ajax()
+                                                                                                                   .PageSize(5)
+                                                                                                                   .Model(model =>
+                                                                                                                   {
+                                                                                                             model.Id(p => p.PlateNo);
+                                                                                                         })
+                                                                                                                    .Events(ev => ev
+                                                                                                                        .Error("error_handler(\"SparePartCD#=WagonDrillTimesheetId#\")")
+                                                                                                                        .RequestStart("onRequestStart(\"SparePartCD#=WagonDrillTimesheetId#\")")
+                                                                                                                        .RequestEnd("onRequestEnd(\"SparePartCD#=WagonDrillTimesheetId#\")"))
+
+                                                                                                                        .Read(read => read.Action("GetSparePartConsumption", "DryLoadingTimeSheets").Data("getSparePartData"))
+                                                                                                                    )
+                                                                                                                    .ToClientTemplate())
+
+
+                                                                        </text>);
+                                                       items.Add().Text("Oil And Lub Consumption")
+                                                                     .Content(@<text>
+                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.ItemConsumptionVm>()
+                                                                                                        .Name("OilLubCD#=WagonDrillTimesheetId#")
+                                                                                                        .Columns(columns =>
+                                                                                                        {
+                                                                                        //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").Title("Item Category Name").Width(50);
+                                                                                        // columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemCode"], "Value", "Text").Title("Item Name").Width(50);
+                                                                                        columns.Bound(c => c.ItemCategoryCode).Title("Item Category Name").Width(50);
+                                                                                                    columns.Bound(c => c.ItemCode).Title("Item Name").Width(50); columns.Bound(c => c.UnitPrice).Title("Unit Price").Width(50);
+                                                                                                    columns.Bound(c => c.IssuedQuantity).Title("Quantity").Width(50);
+                                                                                                    columns.Bound(c => c.Total).Title("Total Cost").Width(50);
+
+                                                                                                })
+                                                                                                           .Events(ev =>
+                                                                                                           {
+                                                                                                   })
+                                                                                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                               .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                                                                                               .DataSource(dataSource => dataSource
+                                                                                                               .Ajax()
+                                                                                                               .PageSize(5)
+                                                                                                               .Model(model =>
+                                                                                                               {
+                                                                                                           model.Id(p => p.PlateNo);
+                                                                                                       })
+                                                                                                                .Events(ev => ev
+                                                                                                                    .Error("error_handler(\"OilLubCD#=WagonDrillTimesheetId#\")")
+                                                                                                                    .RequestStart("onRequestStart(\"OilLubCD#=WagonDrillTimesheetId#\")")
+                                                                                                                    .RequestEnd("onRequestEnd(\"OilLubCD#=WagonDrillTimesheetId#\")"))
+
+                                                                                                                    .Read(read => read.Action("GetOilConsumption", "DryLoadingTimeSheets").Data("getSparePartData"))
+                                                                                                                )
+                                                                                                                .ToClientTemplate())
+
+
+                                                                    </text>);
+
+                                                 }
+                                                 if (IsMCG == true)
+                                                 {
+                                                     items.Add().Text("Maintenance Cost Detail")
+                                         .Content(@<text>
+                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.MaintenanceCostDetail>()
+                                                                             .Name("MaintenanceCD#=WagonDrillTimesheetId#")
+                                                                             .Columns(columns =>
+                                                                             {
+                                                                                 columns.ForeignKey(c => c.RepairTypeId, (IEnumerable)ViewData["RepairTypes"], "Code", "Name").Title("Repair Type").Width(50);
+                                                                                 columns.Bound(c => c.SparePartCost).Width(50);
+                                                                                 columns.Bound(c => c.GreaseConsumption).Width(50);
+                                                                                 columns.Bound(c => c.GreaseCost).Width(50);
+                                                                                 columns.Bound(c => c.LabourCost).Width(50);
+                                                                                 columns.Bound(c => c.ServiceCost).Width(50);
+                                                                                 columns.Bound(c => c.OtherCost).Width(50);
+                                                                                 columns.Bound(c => c.MiscellaneousCost).Width(50);
+                                                                                 columns.Bound(c => c.Cost).Title("Total Cost").Width(50);
+                                                                                 columns.Bound(c => c.MechanicName).Title("Mechanic Name").Width(50);
+                                                                                 columns.Bound(c => c.TimeTaken).Title("Total Time Taken").Width(50);
+                                                                                 columns.Command(command =>
+                                                                                 {
+                                                                                     command.Edit();
+                                                                                     command.Destroy();
+                                                                                 }).Title("Action").Width(50);
+
+                                                                             })
+                                                                             .ToolBar(commands => commands.Create())
+                                                                        .Events(ev =>
+                                                                        {
+                                                                            //ev.DataBound("approvalDataBound");
+                                                                        })
+                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .TableHtmlAttributes(new { style = "table-layout:fixed; width:50%;" })
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .PageSize(5)
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.MaintenanceCostDetailId);
+                                            model.Field(p => p.CreatedBy).Editable(false);
+                                            model.Field(p => p.DateCreated).Editable(false);
+                                        })
+                                        .Events(ev => ev
+                                        .Error("error_handler(\"MaintenanceCD#=WagonDrillTimesheetId#\")")
+                                        .RequestStart("onRequestStart(\"MaintenanceCD#=WagonDrillTimesheetId#\")")
+                                        .RequestEnd("onRequestEnd(\"MaintenanceCD#=WagonDrillTimesheetId#\")"))
+
+                                        .Create(create => create.Action("RepairType_Create", "MaintenanceCostDetail", new { id = "#=WagonDrillTimesheetId#", Text = "WagonDrill" }).Data("sendForgery"))
+                                        .Read(read => read.Action("WagonDrill_Read", "MaintenanceCostDetail", new { id = "#=WagonDrillTimesheetId#", Text = "WagonDrill" }).Data("sendForgery"))
+                                        .Update(update => update.Action("RepairType_Update", "MaintenanceCostDetail", new { Text = "WagonDrill" }).Data("sendForgery"))
+                                        .Destroy(update => update.Action("RepairType_Destroy", "MaintenanceCostDetail", new { Text = "WagonDrill" }).Data("sendForgery"))
+
+
+                                        )
+                                        .ToClientTemplate())
+
+
+                                        </text>);
+                                           }
+                                           items.Add().Text("Approval").Content(@<text>
+
+                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
+                                        .Name("TimeSheetApproval#=WagonDrillTimesheetId#")
+                                        .Columns(columns =>
+                                        {
+                                                   columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                                                   columns.Bound(o => o.Remark).Width(200);
+                                                   columns.Bound(c => c.CreatedBy).Width(150);
+                                                   columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                   columns.Command(command => { command.Edit(); }).Width(250);
+
+                                               })
+                                        .ToolBar(commands => commands.Create().Text("Approve Request"))
+                                        .Events(ev =>
+                                        {
+                                                   ev.DataBound("approvalDataBound");
+                                               })
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .PageSize(5)
+                                        .Model(model =>
+                                        {
+                                                   model.Id(p => p.TimeSheetApprovalNewId);
+                                                   model.Field(p => p.CreatedBy).Editable(false);
+                                                   model.Field(p => p.DateCreated).Editable(false);
+                                               })
+                                        .Events(ev => ev
+                                        .Error("error_handler(\"TimeSheetApproval#=WagonDrillTimesheetId#\")")
+                                        .RequestStart("onRequestStart(\"TimeSheetApproval#=WagonDrillTimesheetId#\")")
+                                        .RequestEnd("onRequestEnd(\"TimeSheetApproval#=WagonDrillTimesheetId#\")"))
+
+                                        .Create(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
+                                        .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
+                                        .Update(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet").Data("sendForgery"))
+
+
+                                        )
+                                        .ToClientTemplate())
+                                        </text>
+                                                                                                                                );
+                                            }).ToClientTemplate())
 
 
 </script>
 
 
 <script>
-    function filterEquipmentType() {
+    @*function filterEquipmentType() {
         var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
         var filterInput = dropdownlist.filterInput;
-        
+
         return {
             timeSheetEquipmentType: "@ViewBag.wagonDrill",
             equipmentIdentityId: $("#EquipmentCategoryId").val(),
             search: filterInput.val()
         };
 
-    }
+    }*@
+    function filterEquipmentType() {
+    var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+    var filterInput = dropdownlist.filterInput;
+
+    return {
+        timeSheetEquipmentType: @((int)ViewBag.TimesheetType),
+        equipmentIdentityId: $("#EquipmentCategoryId").val(),
+        search: filterInput.val()
+    };
+}
 
     function filterEquipmentNames() {
         var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
@@ -225,14 +516,15 @@
     }
 
     function dataBound() {
-
-
         var grid = this;
 
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             if (dataItem.TimeSheetApproved == true) {
                 $(this).addClass("k-state-FleetApproved");
+            }
+            if (dataItem.TimeSheetSendForAproval == true && dataItem.TimeSheetApproved == false) {
+                $(this).addClass("k-state-FleetSendForApproval");
             }
             if (dataItem.TimeSheetApproved == true || dataItem.TimeSheetSendForAproval == true) {
 
@@ -278,7 +570,16 @@
             }
         });
     }
+    function getSparePartData() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = $(".k-detail-row:visible").prev();
+        var dataItem = grid.dataItem(row);
 
+        return {
+            fleetId: dataItem.FleetsID,
+            date: kendo.toString(dataItem.Date, "yyyy-MM-dd")
+        };
+    }
     function approvalDataBound(e) {
         var grid = this;
 
@@ -301,9 +602,9 @@
     }
     function handleFleetId() {
         return {
-            equipmentNameId: $("#EquipmentNameId").val(),
-            
-        text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+            //equipmentNameId: $("#EquipmentNameId").val(),
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+            timeSheetType: "WagonDrill",
         }
     }
     function filterOperator() {
@@ -323,11 +624,183 @@
         });
     });
 </script>
+<script>
 
+function generateTimesheet() {
+
+    var branchId = $("#branchDropdown").data("kendoDropDownList").value();
+    var selectedDate = $("#datePicker").data("kendoDatePicker").value();
+
+    if (!branchId) {
+        alert("Please select a branch");
+        return;
+    }
+
+    if (!selectedDate) {
+        alert("Please select a date");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("AutoGenerateTimeSheet", "GenerateTimeSheet")',
+        type: "POST",
+        data: {
+            id: branchId,
+            date: kendo.toString(selectedDate, "yyyy-MM-dd")
+        },
+        success: function (response) {
+
+            if (response.Result == "OK") {
+                alert(response.Message);
+                $("#grid").data("kendoGrid").dataSource.read();
+            }
+        },
+        error: function () {
+            alert("Error generating timesheets");
+        }
+    });
+}
+$(document).ready(function () {
+        var fleetDropdown = $("#FleetsID").data("kendoDropDownList");
+
+        if (fleetDropdown && fleetDropdown.value()) {
+            fleetDropdown.trigger("change");
+        }
+    });
+    function onFleetChange(e) {
+    var fleetId = this.value();
+
+    if (!fleetId) return;
+
+    $.ajax({
+        url: '@Url.Action("GetFleetIsExternal", "FleetManagementDataProvider")',
+        type: 'GET',
+        data: { fleetId: fleetId },
+        success: function (res) {
+
+            if (res.isExternal === true) {
+                $('#ProcurementSupplierID').data("kendoDropDownList").value(res.SupplierId);
+                $('#ProcurementSupplierID').data("kendoDropDownList").trigger("change");
+                $("#internalOperatorDiv").show();
+                $("#externalOperatorDiv").show();
+            } else {
+                $("#internalOperatorDiv").show();
+                $("#externalOperatorDiv").hide();
+            }
+
+        }
+    });
+}
+</script>
+<script>
+    function SendForApprovalSelected() {
+
+    var grid = $("#grid").data("kendoGrid");
+    var ids = [];
+
+    $("#grid tbody tr").each(function () {
+
+        var checkbox = $(this).find(".approveCheckbox");
+
+        if (checkbox.is(":checked")) {
+
+            var dataItem = grid.dataItem(this);
+
+            ids.push(dataItem.WagonDrillTimesheetId);
+        }
+    });
+
+    if (ids.length === 0) {
+        alert("Please select at least one record.");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("SendForApprovalSelected", "WagonDrillTimesheet")',
+        type: "POST",
+        traditional: true,
+        data: { ids: ids },
+        success: function (result) {
+            $("#grid").data("kendoGrid").dataSource.read();
+            alert(result.Message);
+        }
+    });
+    }
+    function ApproveSelected() {
+
+    var grid = $("#grid").data("kendoGrid");
+    var ids = [];
+
+    $("#grid tbody tr").each(function () {
+
+        var checkbox = $(this).find(".approveCheckbox");
+
+        if (checkbox.is(":checked")) {
+
+            var dataItem = grid.dataItem(this);
+
+            ids.push(dataItem.WagonDrillTimesheetId);
+        }
+    });
+
+    if (ids.length === 0) {
+        alert("Please select at least one record.");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("ApproveSelected", "WagonDrillTimesheet")',
+        type: "POST",
+        traditional: true,
+        data: { ids: ids },
+        success: function (result) {
+            $("#grid").data("kendoGrid").dataSource.read();
+            alert(result.Message);
+        }
+    });
+    }
+    function RejectSelected() {
+
+    var grid = $("#grid").data("kendoGrid");
+    var ids = [];
+
+    $("#grid tbody tr").each(function () {
+
+        var checkbox = $(this).find(".approveCheckbox");
+
+        if (checkbox.is(":checked")) {
+
+            var dataItem = grid.dataItem(this);
+
+            ids.push(dataItem.WagonDrillTimesheetId);
+        }
+    });
+
+    if (ids.length === 0) {
+        alert("Please select at least one record.");
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("RejectSelected", "WagonDrillTimesheet")',
+        type: "POST",
+        traditional: true,
+        data: { ids: ids },
+        success: function (result) {
+            $("#grid").data("kendoGrid").dataSource.read();
+            alert(result.Message);
+        }
+    });
+}
+</script>
 <style>
     div.k-edit-form-container {
         width: auto;
         height: auto;
+    }
+
+    .k-state-FleetSendForApproval {
+        background-color: burlywood !important;
     }
 
     .row .col-sm-2 {

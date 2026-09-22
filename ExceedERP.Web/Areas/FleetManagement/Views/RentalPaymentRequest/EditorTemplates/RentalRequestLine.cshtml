@@ -80,7 +80,8 @@
                                     .DataSource(d => d.Read(r => r.Action("GetFleetRentalRequest", "FleetManagementDataProvider").Data("sendForgery")
                                     .Data("filterFleet"))
                                     .ServerFiltering(true))
-                                    .CascadeFrom("EquipmentNameId"))
+                                    .CascadeFrom("EquipmentNameId")
+                                    )
             </div>
         </div>
     </div>
@@ -88,7 +89,7 @@
 </div>
 <div class="row">
    
-    <div class="col-sm-2">
+    @*<div class="col-sm-2">
         <div class="form-group">
             <label>Tax Rate</label>
             <div>
@@ -109,8 +110,8 @@
 
             </div>
         </div>
-    </div>
-    <div class="col-sm-2">
+    </div>*@
+    @*<div class="col-sm-2">
         <div class="form-group">
             <label>Advance Payment</label>
             <div>
@@ -120,5 +121,5 @@
 
             </div>
         </div>
-    </div>
+    </div>*@
 </div>

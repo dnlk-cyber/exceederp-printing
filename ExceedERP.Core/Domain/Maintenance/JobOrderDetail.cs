@@ -18,6 +18,8 @@ namespace ExceedERP.Core.Domain.Maintenance
         public ServiceGroup ServiceGroup { get; set; }
         public int ServiceGroupSettingId { get; set; }
         public Guid ServiceID { get; set; }
+        [NotMapped]
+        public bool IsCreatedAfterApproval { get; set; }
         public string ServiceName { get; set; }
         public bool IsFromWorkShop { get; set; }
         public string DescriptionOfJobs { get; set; }

@@ -93,5 +93,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(ItemCategory, JsonRequestBehavior.AllowGet);
         }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

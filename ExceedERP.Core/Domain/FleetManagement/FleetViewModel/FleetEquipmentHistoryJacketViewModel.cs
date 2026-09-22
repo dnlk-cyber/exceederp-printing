@@ -417,7 +417,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetViewModel
         public decimal IdleHour { get; set; }
         public decimal DownTime { get; set; }
         public decimal OperationAmount { get; set; }
-        
+
         [DataType(DataType.Time)]
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime MorningTimeStart { get; set; }
@@ -451,7 +451,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetViewModel
         public string Branch { get; set; }
         public string LoadingLocationFrom { get; set; }
         public decimal ActualDistance { get; set; }
-        
+
         public string ReasonForDown { get; set; }
         public decimal IdleRentalRate { get; set; }
         public string LoadingLocationTo { get; set; }
@@ -459,9 +459,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetViewModel
         public decimal OilConsumption { get; set; }
         public string ReasonForIdle { get; set; }
         public string TypeOfWorkExcuted { get; set; }
-       
+
         public decimal TotalHaulage { get; set; }
-        
+
         public decimal DownHour { get; set; }
         public decimal Capacity { get; set; }
         [DataType(DataType.Date)]
@@ -471,9 +471,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetViewModel
         public string TripStartPlace { get; set; }
         public decimal TotalKmTravelled { get; set; }
         public string TripArrivalPlace { get; set; }
-       
+
         public decimal WorkingHour { get; set; }
-        
+
         public decimal RoadType { get; set; }
         public FleetMesuringCategory CategoryType { get; set; }
         public decimal Quantity { get; set; }
@@ -494,7 +494,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetViewModel
         public string ArrivalPlace { get; set; }
         public DateTime StartingDate { get; set; }
         public DateTime EndDate { get; set; }
-        public FleetMesuringCategory Category { get; set; }
+        //public FleetMesuringCategory Category { get; set; }
         public int NoOfTripe { get; set; }
         public decimal AsphaltTraveled { get; set; }
         public decimal GravelTraveled { get; set; }

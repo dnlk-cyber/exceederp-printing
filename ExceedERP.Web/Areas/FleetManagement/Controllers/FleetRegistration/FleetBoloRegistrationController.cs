@@ -17,30 +17,33 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
     public class FleetBoloRegistrationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         // GET: FleetManagement/FleetBoloRegistration
         public ActionResult Index()
         {
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
-
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
-            ViewData["Fleet"] = db.Fleets.Select(s => new
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+      i => new
+      {
+          Text = i.Name,
+          Value = i.Id
+      }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["Fleet"] = CacheData.GetFleetsSecondCache().Select(s => new
             {
                 Text = s.PlateNumber,
                 Value = s.FleetsID
-            }).ToList();
+            }).AsQueryable();
             return View();
         }
         public ActionResult Read([DataSourceRequest]DataSourceRequest request)
@@ -53,6 +56,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
                 BoloExpireDate = model.BoloExpireDate,
                 BoloRegistrationDate = model.BoloRegistrationDate,
                 Remark = model.Remark,
+                AddToHistory = false,
                 DateCreated = model.DateCreated,
                 LastModified = model.LastModified,
                 CreatedBy = model.CreatedBy,
@@ -104,19 +108,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
             ModelState.Remove("EquipmentCategoryId");
             ModelState.Remove("EquipmentTypeID");
             ModelState.Remove("EquipmentNameID");
-            var fleetBoloRegistrationUpdate = db.FleetBoloRegistrations.Where(fbr => fbr.EquipmentCategoryId == null).ToList();
-            foreach (var FleetBoloRegistrationUpdate in fleetBoloRegistrationUpdate)
-            {
-                var fetchfromfleetRegistration = db.Fleets.SingleOrDefault(pl => pl.FleetsID == FleetBoloRegistrationUpdate.FleetId);
-                if (fetchfromfleetRegistration != null)
-                {
-                    FleetBoloRegistrationUpdate.EquipmentCategoryId = fetchfromfleetRegistration.EquipmentIdentityID;
-                    FleetBoloRegistrationUpdate.EquipmentTypeId = fetchfromfleetRegistration.EquipmentTypeID;
-                    FleetBoloRegistrationUpdate.EquipmentNameId = fetchfromfleetRegistration.EquipmentNameID;
-                    db.Entry(FleetBoloRegistrationUpdate).State = EntityState.Modified;
-                }
-            }
-            db.SaveChanges();
+            ModelState.Remove("FleetBoloRegistrationId");
+            model.AddToHistory = false;
             var FetcheFromEquipmentIdentity = db.Fleets.SingleOrDefault(pl => pl.FleetsID == model.FleetId);
             if (FetcheFromEquipmentIdentity == null)
                {
@@ -125,7 +118,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
                 
             }
 
-                model.CreatedBy = User.Identity.Name;
                 model.DateCreated = DateTime.Today;
                 model.EquipmentCategoryId = FetcheFromEquipmentIdentity.EquipmentIdentityID;
                 model.EquipmentTypeId = FetcheFromEquipmentIdentity.EquipmentTypeID;
@@ -133,13 +125,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
 
                 if (ModelState.IsValid)
             {
-               
-                    db.FleetBoloRegistrations.Add(model);
-                    db.SaveChanges();
-                    
+                var entity = new FleetBoloRegistration();
+                entity.FleetBoloRegistrationId = entity.FleetBoloRegistrationId;
+                entity.DateCreated = DateTime.Today;
+                entity.CreatedBy = User.Identity.Name;
+                entity.EquipmentCategoryId = FetcheFromEquipmentIdentity.EquipmentIdentityID;
+                entity.EquipmentTypeId = FetcheFromEquipmentIdentity.EquipmentTypeID;
+                entity.EquipmentNameId = FetcheFromEquipmentIdentity.EquipmentNameID;
+                entity.BoloRegistrationDate = model.BoloRegistrationDate;
+                entity.BoloExpireDate = model.BoloExpireDate;
+                entity.AddToHistory = false;
+                entity.FleetId = model.FleetId;
+                entity.Remark = model.Remark;
+                db.FleetBoloRegistrations.Add(entity);
+                db.SaveChanges();
+
             }
-                
-            
+
+
 
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
@@ -167,7 +170,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
                 model.EquipmentNameId = FetcheFromEquipmentIdentity.EquipmentNameID;
                 if (FetcheFromEquipmentIdentity != null)
                 {
-                    if (model.BoloExpireDate >= DateTime.Now)
+
+                    if (model.AddToHistory==true)
                     {
                         var fleetBoloRegistrationHistory = new FleetBoloRegistrationHistory();
                         fleetBoloRegistrationHistory.BoloExpireDate = previousBolo.BoloExpireDate;
@@ -208,24 +212,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
             {
 
                 var bolo = db.FleetBoloRegistrations.Find(model.FleetBoloRegistrationId);
-                if (model.BoloExpireDate >= DateTime.Now)
-                {
-                    var fleetBoloRegistrationHistory = new FleetBoloRegistrationHistory();
-                    fleetBoloRegistrationHistory.BoloExpireDate = bolo.BoloExpireDate;
-                    fleetBoloRegistrationHistory.BoloRegistrationDate = bolo.BoloRegistrationDate;
-                    fleetBoloRegistrationHistory.CreatedBy = bolo.CreatedBy;
-                    fleetBoloRegistrationHistory.ModifiedBy = bolo.ModifiedBy;
-                    fleetBoloRegistrationHistory.FleetBoloRegistrationHistoryId = fleetBoloRegistrationHistory.FleetBoloRegistrationHistoryId;
-                    fleetBoloRegistrationHistory.EquipmentCategoryId = bolo.EquipmentCategoryId;
-                    fleetBoloRegistrationHistory.EquipmentNameId = bolo.EquipmentNameId;
-                    fleetBoloRegistrationHistory.EquipmentTypeId = bolo.EquipmentTypeId;
-                    fleetBoloRegistrationHistory.FleetBoloRegistrationId = bolo.FleetBoloRegistrationId;
-                    fleetBoloRegistrationHistory.FleetId = bolo.FleetId;
-                    db.FleetBoloRegistrationsHistorys.Add(fleetBoloRegistrationHistory);
-                    db.SaveChanges();
+                //if (model.BoloExpireDate >= DateTime.Now)
+               
+                    //var fleetBoloRegistrationHistory = new FleetBoloRegistrationHistory();
+                    //fleetBoloRegistrationHistory.BoloExpireDate = bolo.BoloExpireDate;
+                    //fleetBoloRegistrationHistory.BoloRegistrationDate = bolo.BoloRegistrationDate;
+                    //fleetBoloRegistrationHistory.CreatedBy = bolo.CreatedBy;
+                    //fleetBoloRegistrationHistory.ModifiedBy = bolo.ModifiedBy;
+                    //fleetBoloRegistrationHistory.FleetBoloRegistrationHistoryId = fleetBoloRegistrationHistory.FleetBoloRegistrationHistoryId;
+                    //fleetBoloRegistrationHistory.EquipmentCategoryId = bolo.EquipmentCategoryId;
+                    //fleetBoloRegistrationHistory.EquipmentNameId = bolo.EquipmentNameId;
+                    //fleetBoloRegistrationHistory.EquipmentTypeId = bolo.EquipmentTypeId;
+                    //fleetBoloRegistrationHistory.FleetBoloRegistrationId = bolo.FleetBoloRegistrationId;
+                    //fleetBoloRegistrationHistory.FleetId = bolo.FleetId;
+                    //db.FleetBoloRegistrationsHistorys.Add(fleetBoloRegistrationHistory);
+                    //db.SaveChanges();
                     db.FleetBoloRegistrations.Remove(bolo);
                     db.SaveChanges();
-                }
+                
             }
 
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
@@ -292,7 +296,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetRegistration
                     }
                 }
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "PO attachment", "Success", User.Identity.Name, $"created attachement under po {id} ", Modules.Procurement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Bolo attachment", "Success", User.Identity.Name, $"created attachement under po {id} ", Modules.FleetManagement);
                 #endregion
             }
 

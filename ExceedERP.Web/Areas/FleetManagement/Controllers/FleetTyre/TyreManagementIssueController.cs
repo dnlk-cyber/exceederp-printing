@@ -23,6 +23,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
    // [AuthorizeRoles(FleetManagementRoles.TyreUser, FleetManagementRoles.TyreApprover)]
     public class TyreManagementIssueController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         ExceedDbContext db = new ExceedDbContext();
         ITireIssueService _TireIssueService;
 
@@ -34,21 +35,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/TireIssue/
         public ActionResult Index()
         {
-            ViewData["category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            });
-            ViewData["type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            });
-            ViewData["name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            });
+            ViewData["category"] = CacheData.GetEquipmentIdentityCaches().Select(
+     i => new
+     {
+         Text = i.Name,
+         Value = i.Id
+     }).AsQueryable();
+            ViewData["type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+            ViewData["name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
             ViewData["fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
@@ -79,6 +83,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 TireTube = t.TireTube,
                 IssueReference = t.IssueReference,
                 IssueDate = t.IssueDate,
+                IsCreatedOnFleet = t.IsCreatedOnFleet,
                 TireType = t.TireType,
                 IsOnlineApproved = t.IsOnlineApproved,
                 IsSendForApproval = t.IsSendForApproval,
@@ -109,20 +114,28 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TireIssue_Create([DataSourceRequest] DataSourceRequest request, TireIssue TireIssue)
         {
+            ModelState.Remove("TireReturnId");
+            ModelState.Remove("TireIssueID");
+            ModelState.Remove("EquipmentTireId");
+            ModelState.Remove("IssueDate");
+            ModelState.Remove("IsCreatedOnFleet");
             IOperatorService _OperatorService = new OperatorService();
             IFleetService fleetService = new FleetService();
             ITireReturnService _TireReturnService = new TireReturnService();
-            
             //Fleets fleet = fleetService.GetAll().ToList().Where(x => x.FleetsID == TireIssue.FleetId).FirstOrDefault();
             var fleet = db.Fleets.Find(TireIssue.FleetId);
             TireIssue.TireIssueID = Guid.NewGuid();
             TireIssue.TireReturnId = Guid.NewGuid();
+            //TireIssue.EquipmentTypeID=
             //TireIssue.FleetId = fleet.FleetsID;
+            TireIssue.IssueDate = DateTime.Now;
+            TireIssue.EquipmentTireId = Guid.NewGuid();
             TireIssue.Brand = TireIssue.Brand;
             TireIssue.IssueReference = TireIssue.IssueReference;
             TireIssue.IssueDate = TireIssue.IssueDate;
             TireIssue.InstalledDate = DateTime.Now;
             TireIssue.StoreCode = TireIssue.StoreCode;
+            TireIssue.IsCreatedOnFleet = true;
             TireIssue.IssueDate = TireIssue.IssueDate;
            // TireIssue.IssueReference = TireIssue.IssueReference;
             TireIssue.KMReading = TireIssue.KMReading;
@@ -136,7 +149,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             TireIssue.CreatedBy = User.Identity.Name;
             TireIssue.DateCreated = DateTime.Now;
             TireIssue.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-            _TireIssueService.Insert(TireIssue);
+            if(ModelState.IsValid)
+            {
+                db.TireIssue.Add(TireIssue);
+                db.SaveChanges();
+            }
+           
+            //_TireIssueService.Insert(TireIssue);
             #region operation log
             UserHelper.OperationLog(Request.UserHostAddress, "Tyre management issue registration", "Success", User.Identity.Name, $"created tyre mangement issue {TireIssue.TireIssueID}", Modules.FleetManagement);
             #endregion
@@ -220,6 +239,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(Response, JsonRequestBehavior.AllowGet);
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

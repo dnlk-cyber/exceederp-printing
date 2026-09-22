@@ -24,6 +24,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
     public class AnnualEquipmentInventoryInspectionController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         ExceedDbContext db = new ExceedDbContext();
         IAnnualEquipmentInventoryInspectionService _AnnualEquipmentInventoryInspectionService;
         public AnnualEquipmentInventoryInspectionController()
@@ -39,27 +40,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Name = x.StatusKey
             }).ToList();
             
-            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
-            {
-                Value = s.EquipmentIdentityID,
-                Text = s.EquipmentCategoryName
-            }).ToList();
-            ViewData["Type"] = db.EquipmentType.Select(s => new
-            {
-                Value = s.EquipmentTypeID,
-                Text = s.EquipmentTypeName
-            }).ToList();
+            ViewData["Category"] = CacheData.GetEquipmentIdentityCaches().Select(
+       i => new
+       {
+           Text = i.Name,
+           Value = i.Id
+       }).AsQueryable();
+            ViewData["Type"] = CacheData.GetEquipmentTypeCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
 
-            ViewData["Name"] = db.EquipmentName.Select(s => new
-            {
-                Value = s.EquipmentNameID,
-                Text = s.Name
-            }).ToList();
+            ViewData["Name"] = CacheData.GetEquipmentNameCaches().Select(
+        i => new
+        {
+            Text = i.Name,
+            Value = i.Id
+        }).AsQueryable();
+           
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
                 Text = s.PlateNumber + " " + s.SerialNo
-            }).ToList();
+            }).AsQueryable();
 
             return View();
         }
@@ -67,10 +72,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult AnnualInspectionlog_Read([DataSourceRequest] DataSourceRequest request, Guid Id)
         {
-            var AnnualEquipmentInventoryInspection = db.InspectionLogs.Where(x => x.AnnualEquipmentInventoryInspectionID == Id);
-
-            var result = AnnualEquipmentInventoryInspection
-                        .Select(model => new 
+            IQueryable<InspectionLog> AnnualEquipmentInventoryInspection = db.InspectionLogs.Where(x => x.AnnualEquipmentInventoryInspectionID == Id);
+            DataSourceResult result = AnnualEquipmentInventoryInspection.ToDataSourceResult(request,model=>new
                         {
                             InspectionLogId = model.InspectionLogId,
                             DateCreated = model.DateCreated,
@@ -100,7 +103,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                             VoidTime = model.VoidTime
                         });
 
-            return Json(result.ToDataSourceResult(request)); 
+            return Json(result,JsonRequestBehavior.AllowGet); 
         }
 
 
@@ -124,7 +127,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public ActionResult AnnualEquipmentInventoryInspection_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionService.GetAll().Select(model => new AnnualEquipmentInventoryInspection
+            IQueryable<AnnualEquipmentInventoryInspection> AnnualEquipmentInventoryInspection = db.AnnualEquipmentInventoryInspection;
+            DataSourceResult result= AnnualEquipmentInventoryInspection.ToDataSourceResult(request,model => new 
             {
                 DateofInspection = model.DateofInspection,
                 FleetsID = model.FleetsID,
@@ -161,7 +165,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             });
 
-            return Json(AnnualEquipmentInventoryInspection.ToDataSourceResult(request));
+            return Json(result,JsonRequestBehavior.AllowGet);
         }
 
 
@@ -386,6 +390,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             var logs = db.CheckListLogs.ToList();
             return Json(logs.ToDataSourceResult(request));
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
 
     }

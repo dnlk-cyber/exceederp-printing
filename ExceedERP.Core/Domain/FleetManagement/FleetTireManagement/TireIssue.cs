@@ -35,6 +35,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
         public FleetBatteryOrTyreType IssueType { get; set; }
         [DisplayName("Type")]
         public string TireType { get; set; }
+        public bool IsCreatedOnFleet { get; set; }
         public enum TireTypeenum { Wire, Fiber }
         [DisplayName("Installed Date")]
         [Required]

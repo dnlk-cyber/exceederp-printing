@@ -1,0 +1,6 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.PoorCondition))) // Convert Enum to SelectList
+                .ValuePrimitive(true)
+                .OptionLabel("Select Poor Condition") // Default placeholder
+                .HtmlAttributes(new { style = "width:100%" }) // Apply styling
+)

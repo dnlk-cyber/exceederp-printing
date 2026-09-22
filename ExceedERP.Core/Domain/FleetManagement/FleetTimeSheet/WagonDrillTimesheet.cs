@@ -18,12 +18,27 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public int? ProcurementSupplierID { get; set; }
         [Display(Name ="Equipment Category")]
         public Guid? EquipmentCategoryId { get; set; }
+        public decimal LabourCost { get; set; }
+        public decimal SparePartCost { get; set; }
+        [Display(Name = "Operator")]
+        public string ExternalOperatorName { get; set; }
+        public int? RentalAgreementNum { get; set; }
+
+        public decimal BasicSalary { get; set; }
+        public decimal OverTime { get; set; }
+        [NotMapped]
+        public bool IsECWC { get; set; }
+        public decimal BatteryCost { get; set; }
         [Display(Name = "Equipment Type")]
         public Guid? EquipmentTypeId { get; set; }
+
         [Display(Name = "Equipment Name")]
         public Guid? EquipmentNameId { get; set; }
         [Display(Name ="Plate/Category")]
         public Guid FleetsID { get; set; }
+        public decimal TotalTime { get; set; }
+        public decimal Volume { get; set; }
+        public UnitSpecification? Unit { get; set; }
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [DisplayName("Date")]
         [Column(TypeName = "DATE")]
@@ -63,8 +78,6 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal FuelCost { get; set; }
         [DisplayName("Service Charge")]
         public decimal ServiceCharge { get; set; }
-        [DisplayName("Lubricant cost")]
-        public decimal LubricantCost { get; set; }
         [DisplayName("Maintenance cost")]
         public decimal MaintenanceCost { get; set; }
         [DisplayName("Tire Cost")]
@@ -75,6 +88,10 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal NetAmount { get; set; }
         public virtual Fleets Fleets { get; set; }
         public decimal Perdium { get; set; }
+        public decimal OilConsumption { get; set; }
+        public decimal OilCost { get; set; }
+        public decimal GreaseConsumption { get; set; }
+        public decimal GreaseCost { get; set; }
         public decimal Salary { get; set; }
         [Display(Name ="Reason For Down")]
         public string ReasonForDown { get; set; }
@@ -90,6 +107,41 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         [Display(Name = "External Operator")]
         public string ExternalOperator { get; set; }
         [Display(Name ="Rate(M)")]
-        public decimal RateInMeter { get; set; } 
+        public decimal RateInMeter { get; set; }
+        public string FuelType { get; set; }
+        public string OilType { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Morning Time Start")]
+        public DateTime? MorningTimeStart { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Morning Time End")]
+        public DateTime? MorningTimeEnd { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Afternoon Time Start")]
+        public DateTime? AfternoonTimeStart { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Afternoon Time End")]
+        public DateTime? AfternoonTimeEnd { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Night Time Start")]
+        public DateTime? NightTimeStart { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Night Time End")]
+        public DateTime? NightTimeEnd { get; set; }
+        public decimal InitialEHR { get; set; }
+        public decimal FinalEHR { get; set; }
+        public decimal DifferenceEHR { get; set; }
+        public decimal FuelKMR { get; set; }
+        public decimal? MaintenanceFuel { get; set; }
+        public DownReasonList? DownReason { get; set; }
+        public IdleReasonList? IdleReason { get; set; }
     }
+
+    
 }

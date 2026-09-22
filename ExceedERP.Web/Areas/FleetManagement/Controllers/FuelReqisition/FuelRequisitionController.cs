@@ -11,6 +11,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Web.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -280,7 +281,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                     ExternalDriver = storeRequisition.ExternalDriver,
                     RequestDate = storeRequisition.RequestDate.Date,// DateTime.Today,
                     StoreCode = storeRequisition.StoreCode,
-                    Status = Enum.GetName(typeof(OperationStatuses), 5),
+                    Status = Enum.GetName(typeof(ExceedERP.Core.Domain.FleetManagement.FleetOperationStatuses), 5),
                     PlateNo = storeRequisition.PlateNo,
                     Remark = storeRequisition.Remark,
                     GLPeriodId = storeRequisition.GLPeriodId,
@@ -632,7 +633,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                         EmployeeId = 1,
                         RequestDate = import.RequestDate,
                         Reference = import.DocumentReference,
-                        Status = Enum.GetName(typeof(OperationStatuses), 5)
+                        Status = Enum.GetName(typeof(ExceedERP.Core.Domain.FleetManagement.FleetOperationStatuses), 5)
                     };
 
                     List<StoreRequisitionItem> items = new List<StoreRequisitionItem>();
@@ -694,7 +695,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.StoreRequisitionItem.Count > 0)
                
                 {
-                    record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                    record.Status = Enum.GetName(typeof(ExceedERP.Core.Domain.FleetManagement.FleetOperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;
@@ -790,7 +791,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                 }
                 #endregion
 
-                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.Status = Enum.GetName(typeof(ExceedERP.Core.Domain.FleetManagement.FleetOperationStatuses), 10);
                 record.IsVoid = true;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;
@@ -877,7 +878,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                     EmployeeId = record.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     RequestDate = record.RequestDate.Date,// DateTime.Today,
                     StoreCode = record.StoreCode,
-                    Status = Enum.GetName(typeof(OperationStatuses), 5),
+                    Status = Enum.GetName(typeof(ExceedERP.Core.Domain.FleetManagement.FleetOperationStatuses), 5),
                     Remark = record.Remark,
                     GLPeriodId = record.GLPeriodId,
                     IsFuel = true,

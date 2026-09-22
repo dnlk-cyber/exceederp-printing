@@ -96,6 +96,54 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         db.Entry(checkAssignment).State = EntityState.Modified;
                         db.SaveChanges();
                     }
+                    var fetchRequst = db.RequestedEquipments.FirstOrDefault(x => x.RequestNumber == entity.RequestID);
+                        if(fetchRequst!=null)
+                    {
+                        fetchRequst.IsAssigned = true;
+                        db.Entry(fetchRequst).State = EntityState.Modified;
+                        db.SaveChanges();
+                        var assignments = db.AssignedEquipment.Where(x => x.RequestedEquipmentId == fetchRequst.RequestedEquipmentId).ToList();
+                        foreach(var ae in assignments)
+                        {
+                            ae.IsAssigned = true;
+                            db.Entry(ae).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                        var additionalDistributions = db.VehicleDistribution.Where(x => x.ParentId == Id.ToString()).ToList();
+                        foreach(var distribution in additionalDistributions)
+                        {
+                            entity = db.VehicleDistribution.Where(x => x.VehicleDistributionID == distribution.VehicleDistributionID).FirstOrDefault();
+                            entity.IsOnlineApproved = true;
+                            entity.OnlineApprovedBy = User.Identity.Name;
+                            entity.OnlineApprovedTime = DateTime.Now;
+                            entity.Status = MaintenanceConst.Approved;
+                            db.VehicleDistribution.Attach(entity);
+                            db.Entry(entity).State = EntityState.Modified;
+                            db.SaveChanges();
+                           checkAssignment = db.VehicleDemand.Where(x => x.VehicleDemandId == entity.RequestID).FirstOrDefault();
+                            if (checkAssignment != null)
+                            {
+                                checkAssignment.IsAssigned = true;
+                                //db.VehicleDemand.Attach(checkAssignment);
+                                db.Entry(checkAssignment).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            fetchRequst = db.RequestedEquipments.FirstOrDefault(x => x.RequestNumber == entity.RequestID);
+                            if (fetchRequst != null)
+                            {
+                                fetchRequst.IsAssigned = true;
+                                db.Entry(fetchRequst).State = EntityState.Modified;
+                                db.SaveChanges();
+                                var assignments = db.AssignedEquipment.Where(x => x.RequestedEquipmentId == fetchRequst.RequestedEquipmentId).ToList();
+                                foreach (var ae in assignments)
+                                {
+                                    ae.IsAssigned = true;
+                                    db.Entry(ae).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
                 }
                 if (VehicleDistributionApproval.Status == MaintenanceConst.Rejected)
                 {
@@ -122,6 +170,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {             
             }
             return Json(new[] { VehicleDistributionApproval }.ToDataSourceResult(request));
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
     }

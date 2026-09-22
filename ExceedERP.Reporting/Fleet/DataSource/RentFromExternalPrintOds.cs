@@ -42,7 +42,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             Operator = rentFromExternal.Operator,
                             Quantity = rentFromExternal.Quantity,
                             UnitOfWork = rentFromExternal.UnitOfWorkMeasurement,
-                            WorkingCapacity = rentFromExternal.WorkingCapacity,
+                            //WorkingCapacity = rentFromExternal.WorkingCapacity,
                             ApprovedBy = rentFromExternal.OnlineApprovedBy,
                             CreateBy = rentFromExternal.CreatedBy,
                             DateApproved = rentFromExternal.OnlineApprovedTime,

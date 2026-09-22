@@ -1,0 +1,137 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@using ExceedERP.Helpers.Common
+@model  ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequestLine
+
+@Html.HiddenFor(model => model.RentalPaymentRequestLineId)
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label></label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmnetTypeId)
+                    .ValuePrimitive(true)
+                    .OptionLabel("Select Equipment Type...")
+                    .DataTextField("Name")
+                    .DataValueField("Id")
+                    .Filter("contains")
+                    .MinLength(2)
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetEquipmentType", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                            .ServerFiltering(false);
+                    })
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.EquipmnetTypeId, "Equipment Type", htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.EquipmnetTypeId)
+                                          .ValuePrimitive(true)
+                                          .OptionLabel("Select Equipment Type...")
+                                          .DataTextField("Name")
+                                          .DataValueField("Id")
+                                          .Filter("contains")
+                                          .MinLength(2)
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetEquipmentType", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                  .ServerFiltering(false);
+                                          })
+                    )
+                    @Html.ValidationMessageFor(model => model.EquipmnetTypeId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                <div class="row"></div>
+                @Html.LabelFor(model => model.GLTaxRateID, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @(Html.Kendo().DropDownListFor(model => model.GLTaxRateID)
+                                                 .ValuePrimitive(true)
+                                                 .OptionLabel("Select tax")
+                                                 .DataTextField("Name")
+                                                 .DataValueField("Id")
+                                                 .Filter("contains")
+                                                 .MinLength(2)
+                                                 .DataSource(dataSource =>
+                                                 {
+                                                     dataSource.Read(read => read.Action("GetTax", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                         .ServerFiltering(false);
+                                                 })
+                    )
+                    @Html.ValidationMessageFor(model => model.GLTaxRateID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                <div class="row"></div>
+                @Html.LabelFor(model => model.Commission, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.Commission)
+                    @Html.ValidationMessageFor(model => model.Commission, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.AdvancedPayment, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.AdvancedPayment)
+                    @Html.ValidationMessageFor(model => model.AdvancedPayment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.EquipmentNameId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.EquipmentNameId)
+                                                .ValuePrimitive(true)
+                                                .OptionLabel("Select Equipment Name...")
+                                                .DataTextField("Name")
+                                                .DataValueField("Id")
+                                                .Filter("contains")
+                                                .MinLength(2)
+                                                .DataSource(dataSource =>
+                                                {
+                                                    dataSource.Read(read => read.Action("GetEquipmentName", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                    .ServerFiltering(false);
+                                                })
+                    )
+                    @Html.ValidationMessageFor(model => model.EquipmentNameId, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Amount)
+                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>            
+            <div class="form-group">
+                @Html.LabelFor(model => model.FuelAmount, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.FuelAmount)
+                    @Html.ValidationMessageFor(model => model.FuelAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

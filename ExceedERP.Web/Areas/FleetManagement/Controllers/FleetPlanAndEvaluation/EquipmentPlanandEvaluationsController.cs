@@ -32,8 +32,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/EquipmentPlanandEvaluations/
         public ActionResult Index()
         {
-            ViewData["EquipmentType"] = db.EquipmentType.ToList();
-            ViewData["EquipmentCategory"] = db.EquipmentIdentity.ToList();
+            //ViewData["EquipmentType"] = db.EquipmentType.ToList();
+            //["EquipmentCategory"] = db.EquipmentIdentity.ToList();
             return View();
         }
 
@@ -115,6 +115,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     EquipmentPlanandEvaluations.Category = EquipmentType.EquipmentIdentity.EquipmentCategoryName;
                     EquipmentPlanandEvaluations.Type = EquipmentType.EquipmentTypeName;
+                    EquipmentPlanandEvaluations.PlanIncome = EquipmentPlanandEvaluations.PlanIncome;
                     EquipmentPlanandEvaluations.EquipmentName = fleet.UnitNum + " - " + fleet.PlateNumber;
                     EquipmentPlanandEvaluations.RentalRate = 0;
                     EquipmentPlanandEvaluations.ModifiedBy = User.Identity.Name;

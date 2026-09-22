@@ -1,26 +1,30 @@
 ﻿@using ExceedERP.Core.Domain.CRM
-@model  ExceedERP.Core.Domain.CRM.SalesQuoteVoucherView
 <style>
     .k-grid table tr.k-state-Issued {
         background: #b7ff9e;
         color: #040000;
     }
+
     .k-grid table tr.k-state-first-approved {
         background: #99e6ff;
         color: #040000;
     }
+
     .k-grid table tr.k-state-second-approved {
         background: #99c2ff;
         color: #040000;
     }
+
     .k-grid table tr.k-state-waiting-approval {
         background: #ffffcc;
         color: #040000;
     }
+
     .k-grid table tr.k-state-Rejected {
         background: #fcabab;
         color: #040000;
     }
+
     fieldset.scheduler-border {
         border: 1px ridge #e6e6e6 !important;
         /*border: 1px ridge #e88686 !important;*/
@@ -34,165 +38,153 @@
         font-size: 1.2em !important;
         font-weight: bold !important;
         text-align: left !important;
-        /*padding: 0 10px;*/ /* To give a bit of padding on the left and right */
         border-bottom: none;
     }
 </style>
 
 <legend>Sales Quote Vouchers</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherView>()
-          .Name("SalesQuoteVoucher")
-          .Columns(columns =>
-          {
-              columns.Bound(c => c.SalesQuoteVoucherID).Title(" # ").Width(80);
-              columns.Bound(c => c.JobOrderNumber).Title("JO # ").Width(80);
-              columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("OrgCustomerEditor").Width(100);
-              columns.Bound(c => c.PlateNo).Width(80);
-              columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(100);
-              columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(100);
-              columns.ForeignKey(c => c.CRMPeriodId, (System.Collections.IEnumerable)ViewData["CRMPeriods"], "CRMPeriodId", "Name").EditorTemplateName("OpenCRMPeriodsSelector").Width(100);
-              columns.Bound(c => c.Date).Width(100).EditorTemplateName("Date");
-              columns.Bound(c => c.PaymentMethod).Title("Payment Method").EditorTemplateName("PaymentMethodType").Width(100);
-              columns.ForeignKey(c => c.QuotationTermId, (System.Collections.IEnumerable)ViewData["QuotationTerms"], "QuotationTermId", "QuotationInDays").EditorTemplateName("QuotationTermEditor").Width(100);
-              columns.Bound(c => c.DueDate).Width(100).EditorTemplateName("Date");
-              columns.Bound(c => c.GrandTotal).Format("{0:N4}").Width(100);
-              columns.Bound(c => c.CreatedBy).Width(80);
-              columns.Bound(c => c.Status).Width(80);
-              columns.Bound(c => c.Remark).Width(100);
-              
-          })
-          .Selectable()
-          .Scrollable(s => s.Height(500))
-          .ToolBar(toolbar =>
-          {
-             
-              toolbar.Excel();
-          })
-          .Events(ev =>
-          {
-              ev.DetailExpand("onDetailExpandUser");
-              ev.DataBound("onDataBound");
-          })
-          
-          .HtmlAttributes(new { style = "height: 700px;" })
-          .Pageable(pageable => pageable
-                        .Input(true)
-                        .Numeric(false)
-                        .Refresh(true)
-                        .PageSizes(true)
-                        .ButtonCount(5))
-                .Scrollable()
-                .Sortable()
-                .Filterable()
-                .Scrollable(h => h.Height(500))
-          .DataSource(dataSource => dataSource
-                  .Ajax()
-                  .Sort(x => x.Add(s => s.SalesQuoteVoucherID).Descending())
-              .Model(model =>
+              .Name("SalesQuoteVoucher")
+              .Columns(columns =>
               {
-                  model.Id(p => p.SalesQuoteVoucherID);
-                  model.Field(v => v.SalesQuoteVoucherID).Editable(false);
-                  model.Field(v => v.GrandTotal).Editable(false);
-                  model.Field(v => v.AdditionalCharge).Editable(false);
-                  model.Field(v => v.Discount).Editable(false);
-                  model.Field(v => v.Status).Editable(false);
-                  model.Field(f => f.DueDate).Editable(false);
-                  model.Field(f => f.CreatedBy).Editable(false);
+                  columns.Bound(c => c.SalesQuoteVoucherID).Title(" # ").Width(80);
+                  columns.Bound(c => c.JobOrderNumber).Title("JO # ").Width(80);
+                  columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").Width(100);
+                  columns.Bound(c => c.PlateNo).Width(80);
+                  columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(100);
+                  columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(100);
+                  columns.ForeignKey(c => c.CRMPeriodId, (System.Collections.IEnumerable)ViewData["CRMPeriods"], "CRMPeriodId", "Name").Width(100);
+                  columns.Bound(c => c.Date).Width(100);
+                  columns.Bound(c => c.PaymentMethod).Title("Payment Method").Width(100);
+                  columns.ForeignKey(c => c.QuotationTermId, (System.Collections.IEnumerable)ViewData["QuotationTerms"], "QuotationTermId", "Desription").Width(100);
+                  columns.Bound(c => c.DueDate).Width(100).EditorTemplateName("Date");
+                  columns.Bound(c => c.GrandTotal).Format("{0:N4}").Width(100);
+                  columns.Bound(c => c.CreatedBy).Width(80);
+                  columns.Bound(c => c.Status).Width(80);
+                  columns.Bound(c => c.Remark).Width(100);
+              })
+              .Selectable()
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Excel();
+              })
+              .Events(ev =>
+              {
+                  ev.DetailExpand("onDetailExpandUser");
+                  ev.DataBound("onDataBound");
+              })
 
-                  model.Field(v => v.SubTotal).Editable(false);
-              }
-                  ).Events(ev => ev
-                            .Error("error_handler(\"SalesQuoteVoucher\")")
-                            .RequestStart("onRequestStart(\"SalesQuoteVoucher\")")
-                            .RequestEnd("onRequestEnd(\"SalesQuoteVoucher\")"))
+              .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+              .Sortable()
+              .Filterable()
+              .Scrollable(h => h.Height(700))
+              .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Sort(x => x.Add(s => s.SalesQuoteVoucherID).Descending())
+                  .Model(model =>
+                  {
+                      model.Id(p => p.SalesQuoteVoucherID);
+                      model.Field(v => v.SalesQuoteVoucherID).Editable(false);
+                      model.Field(v => v.GrandTotal).Editable(false);
+                      model.Field(v => v.AdditionalCharge).Editable(false);
+                      model.Field(v => v.Discount).Editable(false);
+                      model.Field(v => v.Status).Editable(false);
+                      model.Field(f => f.DueDate).Editable(false);
+                      model.Field(f => f.CreatedBy).Editable(false);
 
-                .Read(read => read.Action("Vouchers_Read", "MntSalesQuote").Data("sendForgery"))
-                .Create(create => create.Action("Vouchers_Create", "MntSalesQuote").Data("sendForgery"))
-                .Update(update => update.Action("Vouchers_Update", "MntSalesQuote").Data("sendForgery"))
-                .Destroy(distroy => distroy.Action("Vouchers_Delete", "MntSalesQuote").Data("sendForgery"))
-          ).ClientDetailTemplateId("template")
+                      model.Field(v => v.SubTotal).Editable(false);
+                  }
+                      )
+                    .Read(read => read.Action("Vouchers_Read", "MntSalesQuote").Data("sendForgery"))
+              ).ClientDetailTemplateId("template")
 )
 
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-        .Name("tabstrip_#=SalesQuoteVoucherID#")
-        .SelectedIndex(0)
-        .Items(items =>
-        {
-        items.Add().Text("Detail").Content(
+                .Name("tabstrip_#=SalesQuoteVoucherID#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                    items.Add().Text("Detail").Content(
             @<text>
-                
+
                 #if (IsMiddleOnlineApproved&& !IsSecondOnlineApproved && !IsSecondSendForApproval && !IsOnlineApproved && !IsSendForApproval){#
-                    <a onclick='return sendForSecondApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 2nd Approval"><i class="fa fa-share-square fa-2x text-danger"></i></a>
+                <a onclick='return sendForSecondApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 2nd Approval"><i class="fa fa-share-square fa-2x text-danger"></i></a>
                 #}#
-                 #if (IsSecondOnlineApproved  && !IsOnlineApproved && !IsSendForApproval){#
-                    <a onclick='return sendForApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 3rd Approval"><i class="fa fa-share-square fa-2x text-success"></i></a>
+                #if (IsSecondOnlineApproved  && !IsOnlineApproved && !IsSendForApproval){#
+                <a onclick='return sendForApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 3rd Approval"><i class="fa fa-share-square fa-2x text-success"></i></a>
                 #}#
                 <a href='@Url.Action("QuotePrint", "Print", new { area="CRM"})/#=SalesQuoteVoucherID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
                 &nbsp;
                 # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
                 {#
-                    @if (HttpContext.Current.User.IsInRole(CRMRoles.CRMVoid))
-                    {
-                        <a onclick='return voidRecord("#=SalesQuoteVoucherID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                    }
+                @if (HttpContext.Current.User.IsInRole(CRMRoles.CRMVoid))
+                            {
+                    <a onclick='return voidRecord("#=SalesQuoteVoucherID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                            }
+                /**/
                 # } #
 
                 @(Html.Kendo().PanelBar()
-                        .Name("panelbar_#=SalesQuoteVoucherID#")
-                        .ExpandMode(PanelBarExpandMode.Multiple)
-                        //.HtmlAttributes(new { st})
-                        .Items(panelbar =>
-                        {
-                                    panelbar.Add()
-                                        .Expanded(true)
-                                        .Text("Quote Detail")
-                                        .Content(
-                                            "<div>" +
-                                            "<ul>" +
-                                            "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
-                                            "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
-                                            "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
-                                            "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
-                                            "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
-                                            "</ul>" +
-                                            "</div>"
-                                        );
-                                }).ToClientTemplate()
-                    )
-                </text>
+                                .Name("panelbar_#=SalesQuoteVoucherID#")
+                                .ExpandMode(PanelBarExpandMode.Multiple)
+                                //.HtmlAttributes(new { st})
+                                .Items(panelbar =>
+                                {
+                                            panelbar.Add()
+                                    .Expanded(true)
+                                    .Text("Quote Detail")
+                                    .Content(
+                                        "<div>" +
+                                        "<ul>" +
+                                        "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                        "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                        "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                        "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                        "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                        "</ul>" +
+                                        "</div>"
+                                    );
+                                        }).ToClientTemplate()
+                )
+            </text>
             );
-        items.Add().Text("Line Items").Content(
+                    items.Add().Text("Line Items").Content(
             @<text>
                 #if(IsMiddleOnlineApproved && !IsSecondOnlineApproved &&!IsOnlineApproved && !IsSendForApproval){#
-                    @SalesQuoteLineItemHelperCrud()
+                @SalesQuoteLineItemHelperCrud()
                 #}else{#
-                    @SalesQuoteLineItemHelper()
+                @SalesQuoteLineItemHelper()
                 #}#
             </text>);
-        items.Add().Text("Services").Content(
+                    items.Add().Text("Services").Content(
             @<text>
                 #if(!IsSecondOnlineApproved &&!IsOnlineApproved && !IsSendForApproval){#
-                    @ServiceLineItemHelperWithCrud()
+                @ServiceLineItemHelperWithCrud()
                 #}else{#
-                    @ServiceLineItemHelper()
-                #}#  
-            </text>);
-        
-        if (User.IsInRole(CRMRoles.SalesQuoteSecondApprover))
-        {
-            items.Add().Text("Second Validation").Content(
-            @<text>
-                #if(!IsSecondOnlineApproved && IsSecondSendForApproval && !IsOnlineApproved && !IsSendForApproval){#
-                    @SecondValidationHelperWithCrud()
-                #}else{#
-                    @SecondValidationHelper()
+                @ServiceLineItemHelper()
                 #}#
             </text>);
-        }
-        
-        }).ToClientTemplate()
+
+                    if (User.IsInRole(CRMRoles.SalesQuoteSecondApprover))
+                    {
+                        items.Add().Text("Second Validation").Content(
+            @<text>
+                #if(!IsSecondOnlineApproved && IsSecondSendForApproval && !IsOnlineApproved && !IsSendForApproval){#
+                @SecondValidationHelperWithCrud()
+                #}else{#
+                @SecondValidationHelper()
+                #}#
+            </text>);
+                    }
+
+                }).ToClientTemplate()
 
     )
 </script>
@@ -217,7 +209,8 @@
                     columns.Bound(c => c.StoreRequisitionNumber).Title("SR No.").Width(60);
 
                     columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
-                    columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                    //columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                    columns.Bound(c => c.ProductDisplay).Width(100);
                     columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N4}").Width(80);
                     columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N4}").Width(80);
                     columns.Bound(c => c.UOM).Width(60).Title("UoM");
@@ -229,7 +222,7 @@
                     columns.ForeignKey(c => c.WithholdingType, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(120);
                     columns.Bound(c => c.WithholdingAmount).Width(100);
                     columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
-                    
+
                     columns.Bound(c => c.Status).Width(60);
 
                     columns.Command(command =>
@@ -248,7 +241,7 @@
                     w.Title("Line Item");
                     w.Scrollable(false);
                 }))
-                
+
                 .Pageable(pageable => pageable
                     .Input(true)
                     .Numeric(false)
@@ -259,10 +252,10 @@
                 .Scrollable()
                 .Sortable()
                 .Filterable()
-                
+
                 .DataSource(dataSource => dataSource
                     .Ajax()
-                   
+
                     .Model(model =>
                     {
                         model.Id(p => p.LineItemID);
@@ -291,7 +284,8 @@
                 columns.Bound(c => c.ShipmentNumber).Title("Issue No.").Width(60);
                 columns.Bound(c => c.StoreRequisitionNumber).Title("SR No.").Width(60);
                 columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
-                columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                //columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                columns.Bound(c => c.ProductDisplay).Width(100);
                 columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N4}").Width(80);
                 columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N4}").Width(80);
                 columns.Bound(c => c.UOM).Width(60).Title("UoM");
@@ -320,7 +314,7 @@
             //.Events(e => e.Edit("AddCostItemInit"))
             .DataSource(dataSource => dataSource
                 .Ajax()
-               
+
                 .Model(model =>
                 {
                     model.Id(p => p.LineItemID);
@@ -363,7 +357,7 @@
                             command.Destroy();
                         }).Width(180);
                     })
-                    
+
                     .Pageable(pageable => pageable
                         .Input(true)
                         .Numeric(false)
@@ -377,7 +371,7 @@
 
                     .DataSource(dataSource => dataSource
                         .Ajax()
-                       
+
                         .Model(model =>
                         {
                             model.Id(p => p.ServiceLineItemId);
@@ -432,7 +426,7 @@
 
             .DataSource(dataSource => dataSource
                 .Ajax()
-               
+
                 .Model(model =>
                 {
                     model.Id(p => p.ServiceLineItemId);
@@ -975,7 +969,7 @@
             success: function (result) {
                 alert(result.Message);
                 location.reload(true);
-            }, 
+            },
             error: function (result) {
                 alert(result);
             }
@@ -989,7 +983,7 @@
             success: function (result) {
                 alert(result.Message);
                 location.reload(true);
-            }, 
+            },
             error: function (result) {
                 alert(result);
             }
@@ -1003,7 +997,7 @@
             success: function (result) {
                 alert(result.Message);
                 location.reload(true);
-            }, 
+            },
             error: function (result) {
                 alert(result);
             }
@@ -1096,7 +1090,7 @@
         var grid = $(e.target).data("kendoGrid");
         var item = grid.dataItem(grid.select());
         var code = item.SalesQuoteVoucherID;
-        
+
         $.ajax({
             url: "/SalesQuoteVoucherView/SalesQuoteVoucherViews_Forward",
             data: { userRole: code, salesQuoteVoucherViewID: code }
@@ -1200,7 +1194,7 @@
                 } else {
                     $("#otherUnitContainer").hide();
                 }
-                
+
             }
         });
 
@@ -1216,7 +1210,7 @@
                 } else {
                     $("#otherUnitContainer").hide();
                 }
-                
+
             }
         });
 
@@ -1595,7 +1589,7 @@
         var drp = this;
         var id = drp.value();
         var voucherDate = $("#Date").data("kendoDatePicker");
-        
+
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetPeriodRanges", "CRMDataProvider", new { area = "CRM" })',
@@ -1612,9 +1606,9 @@
                         voucherDate.max(endDate);
                         voucherDate.value(startDate);
                         voucherDate.trigger("change");
-                    } 
+                    }
                 }
-            }, 
+            },
             error: function (result) {
             }
         });

@@ -431,73 +431,73 @@
 
                                                      @Html.LabelFor(model => model.TypeOfFuel)
                                                                                     </div>
-                                                                                    @Html.Kendo().TextBoxFor(model => model.TypeOfFuel).Enable(false)
+                                       @Html.Kendo().TextBoxFor(model => model.TypeOfFuel).Enable(false)
 
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <div class="form-group">
-                                                                                    <div class="k-label">
-                                                                                        @Html.LabelFor(model => model.SupplierCompany)
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        @Html.Kendo().TextBoxFor(model => model.SupplierCompany).Enable(false)
+                                   </div>
+                               </div>
+                               <div class="col-md-3">
+                                   <div class="form-group">
+                                       <div class="k-label">
+                                           @Html.LabelFor(model => model.SupplierCompany)
+                                       </div>
+                                       <div>
+                                           @Html.Kendo().TextBoxFor(model => model.SupplierCompany).Enable(false)
 
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
+                                       </div>
+                                   </div>
+                               </div>
 
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col-md-1">
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <div class="form-group">
-                                                                                    <div class="k-label">
-                                                                                        @Html.LabelFor(model => model.HistoricalCost)
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        @Html.Kendo().TextBoxFor(model => model.HistoricalCost).Enable(false)
+                           </div>
+                           <div class="row">
+                               <div class="col-md-1">
+                               </div>
+                               <div class="col-md-3">
+                                   <div class="form-group">
+                                       <div class="k-label">
+                                           @Html.LabelFor(model => model.HistoricalCost)
+                                       </div>
+                                       <div>
+                                           @Html.Kendo().TextBoxFor(model => model.HistoricalCost).Enable(false)
 
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <div class="form-group">
-                                                                                    <div class="k-label">
-                                                                                        @Html.LabelFor(model => model.Battery)
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        @Html.Kendo().TextBoxFor(model => model.Battery).Enable(false)
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="col-md-3">
+                                   <div class="form-group">
+                                       <div class="k-label">
+                                           @Html.LabelFor(model => model.Battery)
+                                       </div>
+                                       <div>
+                                           @Html.Kendo().TextBoxFor(model => model.Battery).Enable(false)
 
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <div class="form-group">
-                                                                                    <div class="k-label">
-                                                                                        @Html.LabelFor(model => model.Location)
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        @Html.Kendo().TextBoxFor(model => model.Location).Enable(false)
-                                                                                        @Html.ValidationMessageFor(model => model.Location)
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="col-md-3">
+                                   <div class="form-group">
+                                       <div class="k-label">
+                                           @Html.LabelFor(model => model.Location)
+                                       </div>
+                                       <div>
+                                           @Html.Kendo().TextBoxFor(model => model.Location).Enable(false)
+                                           @Html.ValidationMessageFor(model => model.Location)
+                                       </div>
+                                   </div>
+                               </div>
 
-                                                                        </div>
-                                                                     
-                                                                        <div class="row">
-                                                                            <footer class="col-xs-12 form-group text-right">
-                                                                                <div class="custom-tabstrip-button">
-                                                                                    <a role="button" class="k-button k-button-icontext k-primary k-grid-next" href="#" onclick="onNextClick(this)">Next&nbsp;<span class="fa fa-forward"></span></a>
-                                                                                </div>
-                                                                            </footer>
-                                                                        </div>
-                                                                    </text>);
+                           </div>
+                        
+                           <div class="row">
+                               <footer class="col-xs-12 form-group text-right">
+                                   <div class="custom-tabstrip-button">
+                                       <a role="button" class="k-button k-button-icontext k-primary k-grid-next" href="#" onclick="onNextClick(this)">Next&nbsp;<span class="fa fa-forward"></span></a>
+                                   </div>
+                               </footer>
+                           </div>
+                       </text>);
         //More
-                                                                     tabstrip.Add().Text(" More ")
-                                                                     .Enabled(false)
+                               tabstrip.Add().Text(" More ")
+                               .Enabled(false)
                                 .Content(@<text>
                                     <div class="row">
                                         <div class="col-md-1">

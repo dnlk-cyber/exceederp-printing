@@ -49,9 +49,11 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [NotMapped]
         [DisplayName(" Sub Type ")]
         public string SubType { get; set; }
+        //public string StatusReason { get; set; }
         public string Type { get; set; }
         [DisplayName("Asset Code No")]
         public string UnitNum { get; set; }
+        public bool IsContractTerminated { get; set; }
         [NotMapped]
         public bool IsDumpTruck { get; set; }
         public string Manufacturer { get; set; }
@@ -63,6 +65,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public ReadingType ReadingType { get; set; }
         [DisplayName(" Engine Model ")]
         public string EngineModel { get; set; }
+        public int VehicleReceptionFormId { get; set; }
         [DisplayName(" Operator Name ")]
         public string OperatorName { get; set; }
         [DisplayName(" Engine Manufacturer ")]
@@ -72,12 +75,16 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [DisplayName(" Historical Cost ")]
         public string HistoricalCost { get; set; }
         public string Model { get; set; }
+        [DisplayName(" Is Reserved ")]
+        public bool IsReserved { get; set; }
         public bool IsReturned { get; set; }
         public string Capacity { get; set; }
+        public decimal Volume { get; set; }
+        public UnitSpecification? Unit { get; set; }
         public bool IsExternal { get; set; }
         [DisplayName("Rent Type")]
         public RentType RentType { get; set; }
-        public Guid RentId { get; set; }
+        public Guid? RentId { get; set; }
         // Fk
         [Display(Name ="Rent Num")]
         public int? RentFromExternalNum { get; set; } 
@@ -85,6 +92,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 
         [DisplayName("  Tire Size")]
         public string TyreSize { get; set; }
+        //public decimal? FuelTankerCapacity { get; set; }
 
         [DisplayName("Plate Number")]
         public string PlateNumber { get; set; }
@@ -175,6 +183,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [NotMapped]
         [DisplayName(" Other Repair Cost ")]
         public string OtherRepairCost { get; set; }
+        public bool IsExternalCustomer { get; set; }
         [NotMapped]
         [DisplayName(" Tyre Repair Cost ")]
         public string TyreRepairCost { get; set; }
@@ -224,6 +233,11 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         Donated,
         Transferred,
         Rental
+    }
+    public enum UnitSpecification
+    {
+        Trip,
+        M3
     }
     public enum manufaturerenum
     {

@@ -20,18 +20,7 @@
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @Html.Kendo().TextBoxFor(model => model.OrgStructureId).HtmlAttributes(new {@readonly="readonly"})
-                    @*@(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                          .ValuePrimitive(true)
-                          .OptionLabel("Select Work Unit")
-                          .DataTextField("Name")
-                          .DataValueField("OrgStructureId")
-                          .Filter("contains")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}).Data("sendForgery"))
-                                  .ServerFiltering(false);
-                          })
-                          )*@
+                    
                 </div>
             </div>
             <div class="row"></div>
