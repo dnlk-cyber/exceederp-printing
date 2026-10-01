@@ -17,7 +17,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         [Display(Name = "HR_LeaveManagment_LeaveEntitle_PersonEmployee", ResourceType = typeof(Localization.Resources))]
         public int EmployeeId { get; set; }
         public virtual Person_Employee Employee { get; set; }
-    
+
         [Required]
         [Display(Name = "HR_LeaveManagment_LeaveEntitle_LeavePeriod", ResourceType = typeof(Localization.Resources))]
         public int GlFiscalYearId { get; set; }
@@ -45,9 +45,41 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         // sum of active balances or sum of not exprired balances
         [NotMapped]
         public decimal SumOfBalances { get; set; }
+        // sum of active and inactive balances or sum of not exprired and expried  entitlents
+        [Display(Name = "Sum of all Entitlement (Expired & Unexpired)")]
+        [NotMapped]
+        public decimal SumOfAllEntitlement { get; set; }
+        // sum of active and inactive balances or sum of not exprired and expried  Balances
+        [Display(Name = "Sum of all Balances (Expired & Unexpired)")]
+        [NotMapped]
+        public decimal SumOfAllBalances { get; set; }
         [Display(Name = "Rpt_HireDate", ResourceType = typeof(Localization.Resources))]
         [NotMapped]
         public string HireDate { get; set; }
 
     }
+
+    public class LeaveEntitlementHistory : TrackUserOperation
+    {
+        [Key]
+        public int LeaveEntitlementHistoryId { get; set; }
+
+        [Display(Name = "HR_LeaveManagment_LeaveEntitle_LeavePeriod", ResourceType = typeof(Localization.Resources))]
+        public int? GlFiscalYearId { get; set; }
+        public virtual GlFiscalYear GlFiscalYear { get; set; }
+
+        [Display(Name = "Entitlement Amount")]
+        public decimal Entitlement { get; set; }
+
+        [Display(Name = "Balance")]
+        public decimal Balance { get; set; }
+
+        public int EmployeeId { get; set; }
+
+        // Optional but recommended
+        public virtual Person_Employee Employee { get; set; }
+
+
+    }
+
 }

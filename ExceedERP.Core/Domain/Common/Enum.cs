@@ -259,7 +259,8 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_Leave_Day_Full_Time", ResourceType = typeof(Resources))]
         Full_Day,
         [Display(Name = "Enum_Leave_Day_Half_Time", ResourceType = typeof(Resources))]
-        Half_Day
+        Half_Day,
+        Mixed
     }
 
     public enum MorningOrAfternoon

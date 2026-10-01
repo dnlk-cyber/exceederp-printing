@@ -362,7 +362,16 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("LeaveEntitle", "HRM");
             this.HasKey<int>(o => o.LeaveEntitleId);
-            //this.HasIndex(u => new { u.GlFiscalYearId, u.EmployeeId }).IsUnique(true);
+        }
+
+      
+    }
+    public class LeaveEntitlementHistoryEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitlementHistory>
+    {
+        public LeaveEntitlementHistoryEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveEntitlementHistories", "HRM");
+            this.HasKey<int>(o => o.LeaveEntitlementHistoryId);
         }
 
       

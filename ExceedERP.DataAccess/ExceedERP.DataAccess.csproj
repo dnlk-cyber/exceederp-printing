@@ -97,6 +97,14 @@
     <Compile Include="Migrations\202609142150212_HRandothermodelchanges.Designer.cs">
       <DependentUpon>202609142150212_HRandothermodelchanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202609220901537_fleetandmaaintenacechanges.cs" />
+    <Compile Include="Migrations\202609220901537_fleetandmaaintenacechanges.Designer.cs">
+      <DependentUpon>202609220901537_fleetandmaaintenacechanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202610011359581_LiveEntitlementChangesMigration.cs" />
+    <Compile Include="Migrations\202610011359581_LiveEntitlementChangesMigration.Designer.cs">
+      <DependentUpon>202610011359581_LiveEntitlementChangesMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -121,6 +129,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202609142150212_HRandothermodelchanges.resx">
       <DependentUpon>202609142150212_HRandothermodelchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202609220901537_fleetandmaaintenacechanges.resx">
+      <DependentUpon>202609220901537_fleetandmaaintenacechanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610011359581_LiveEntitlementChangesMigration.resx">
+      <DependentUpon>202610011359581_LiveEntitlementChangesMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

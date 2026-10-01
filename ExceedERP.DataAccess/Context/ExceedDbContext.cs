@@ -650,6 +650,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PlacementHistoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveEntitleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveEntitlementHistoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveTransferEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new IncommingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OutgoingEntityTypeConfiguration());
@@ -2962,6 +2963,8 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<MonthlyLeavePlanDetail> MonthlyLeavePlanDetails { get; set; }
         public System.Data.Entity.DbSet<Leave> Leaves { get; set; }
         public System.Data.Entity.DbSet<LeaveEntitle> LeavesEntitle { get; set; }
+        public DbSet<LeaveEntitlementHistory> LeaveEntitlementHistories { get; set; }
+
         public System.Data.Entity.DbSet<LeaveTransfer> LeaveTransfer { get; set; }
         public System.Data.Entity.DbSet<LeavePaid> LeavePaid { get; set; }
         public System.Data.Entity.DbSet<LeaveUsageTrackingForVoid> LeaveUsageTrackingForVoids { get; set; }

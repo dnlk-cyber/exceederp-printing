@@ -19,6 +19,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
     {
         private ExceedDbContext db = new ExceedDbContext();
 
+      
         public ActionResult LeaveRequestAttachements_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             var attachements = db.LeaveRequestAttachements.Where(x => x.LeaveRequestId == id ).ToList();
