@@ -3410,7 +3410,7 @@ namespace ExceedERP.Web.Controllers
             {
 
                 var fullname = c.Employee.FirstName + " " + c.Employee.MiddleName + " " + c.Employee.LastName;
-               _dashboardHelper.AddNotofication(Request.UserHostAddress, "HR_Termination_User,HR_Admin", User.Identity.Name, c.TerminationDate, "", fullname + " -Employee Termination");
+               _dashboardHelper.AddNotofication(Request.UserHostAddress, "HR_Termination_User,HR_Admin", User.Identity.Name, c.TerminationDate.Value, "", fullname + " -Employee Termination");
             }
             #endregion
 

@@ -11,7 +11,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class RecruitmentObjectDataSource : List<EmployeeSummary>
+    public class RecruitmentObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -78,6 +78,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
 
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

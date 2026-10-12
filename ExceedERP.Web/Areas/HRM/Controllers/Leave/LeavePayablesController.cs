@@ -32,7 +32,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         {
             //GetPeriod();
             PopulateViewData();
-           
+            ViewBag.EnableTaxableAllowance = db.LeavePayableSettings.FirstOrDefault()?.EnableTaxableAllowance ?? false;
 
             return View();
         }
@@ -53,8 +53,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             ViewData["workunits"] = workunits;
             ViewData["businessUnits"] = db.BusinessUnits;
             ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
-            var periodList = db.GLFiscalYears;
-            ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
+            // Project to a plain DTO - exposing the raw GlFiscalYear entity here causes a circular
+            // JSON serialization loop (GlFiscalYear -> GLPeriod -> GlFiscalYear) when Kendo embeds this list.
+            ViewData["PeriodList"] = db.GLFiscalYears
+                .Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name })
+                .ToList();
 
         }
         public JsonResult GetPeriod()
@@ -245,10 +248,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 PaymentRequest = paymentRequest, // use navigation instead of ID
                 Amount = payableDetail.NetPayment,
-                TaxAmount = payableDetail.BasicSalaryIncomeTax,
+                TaxAmount =  payableDetail.BasicSalaryIncomeTax,
                 TotalAmount = payableDetail.NetPayment,
 
-                ItemName = " ",
+                ItemName =  "0",
                 GLTaxRateID = null,
 
                 Description = "Payable Leave Payment",
@@ -535,7 +538,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
         //    return Json(new { Message = "Successfully Generated.", Status = "OK" }, JsonRequestBehavior.AllowGet);
         //}
-        public ActionResult GenerateLeavePayable(int id, string employee = null)
+        public ActionResult GenerateLeavePayable(int id, string employee = null, int? selectedFiscalYearId = null)
         {
             var leavePayable = db.LeavePayables.Find(id);
             if (leavePayable == null)
@@ -557,21 +560,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             bool allowCurrentYearBalance = leavePayableSetting.IncludeCurrentFiscalYearDays;
 
-            // 1. Get up to 2 previous fiscal years
-            var pastFiscalYears = db.GLFiscalYears
-                .Where(x => x.DateTo < fiscalYear.DateTo)
-                .OrderByDescending(x => x.DateTo)
-                .Take(2)
-                .Select(x => x.GlFiscalYearId)
-                .ToList();
+            // When a specific fiscal year is picked (optional), pay out only that single year's balance
+            // (e.g. paying out an old, about-to-expire year) instead of the default 2-past-years + current logic.
+            bool isSingleYearPayout = selectedFiscalYearId.HasValue;
 
-            int? fiscalYear1 = pastFiscalYears.Count > 0 ? pastFiscalYears[0] : (int?)null;
-            int? fiscalYear2 = pastFiscalYears.Count > 1 ? pastFiscalYears[1] : (int?)null;
+            int? fiscalYear1;
+            int? fiscalYear2 = null;
+            List<int> pastFiscalYears;
+            List<int> targetFiscalYears;
 
-            // 2. Include current fiscal year ID alongside past fiscal years
-            var targetFiscalYears = new List<int>(pastFiscalYears) { fiscalYear.GlFiscalYearId };
+            if (isSingleYearPayout)
+            {
+                var singleFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == selectedFiscalYearId.Value);
+                if (singleFiscalYear == null)
+                {
+                    return Json(new { Message = "The selected fiscal year was not found.", Status = "NOT-OK" }, JsonRequestBehavior.AllowGet);
+                }
 
-            // 3. Query entitlements across past + current fiscal years
+                fiscalYear1 = singleFiscalYear.GlFiscalYearId;
+                pastFiscalYears = new List<int> { singleFiscalYear.GlFiscalYearId };
+                targetFiscalYears = pastFiscalYears;
+                allowCurrentYearBalance = false; // only the selected year's balance is payable in this mode
+            }
+            else
+            {
+                // 1. Get up to 2 previous fiscal years
+                pastFiscalYears = db.GLFiscalYears
+                    .Where(x => x.DateTo < fiscalYear.DateTo)
+                    .OrderByDescending(x => x.DateTo)
+                    .Take(2)
+                    .Select(x => x.GlFiscalYearId)
+                    .ToList();
+
+                fiscalYear1 = pastFiscalYears.Count > 0 ? pastFiscalYears[0] : (int?)null;
+                fiscalYear2 = pastFiscalYears.Count > 1 ? pastFiscalYears[1] : (int?)null;
+
+                // 2. Include current fiscal year ID alongside past fiscal years
+                targetFiscalYears = new List<int>(pastFiscalYears) { fiscalYear.GlFiscalYearId };
+            }
+
+            // 3. Query entitlements across the target fiscal years
             var query = db.LeavesEntitle.Where(x => !x.IsExpired && targetFiscalYears.Contains(x.GlFiscalYearId));
 
             if (!string.IsNullOrEmpty(employee) && int.TryParse(employee, out int employeeId))
@@ -642,11 +670,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     continue;
                 }
 
+                var leavePayableDetail = db.LeavePayableDetails.FirstOrDefault(x => x.EmployeeId == empId && x.LeavePayableId == id);
+
+                // Preserve any manually-entered Taxable Allowance across regenerations; new rows default to 0.
+                decimal taxableAllowance = leavePayableDetail?.TaxableAllowance ?? 0;
+                decimal totalTaxableSalary = placement.Salary + taxableAllowance;
+
                 decimal total = (placement.Salary * totalPayableDays) / leavePayableSetting.CurrentValue;
                 decimal annualLeavePerMonth = total / 12;
-                decimal aggregateTaxableAmount = annualLeavePerMonth + placement.Salary;
-
-                var leavePayableDetail = db.LeavePayableDetails.FirstOrDefault(x => x.EmployeeId == empId && x.LeavePayableId == id);
+                decimal aggregateTaxableAmount = annualLeavePerMonth + totalTaxableSalary;
 
                 if (leavePayableDetail == null)
                 {
@@ -659,6 +691,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         BusinessUnitId = placement.BusinessUnitId,
                         OrgStructureId = placement.OrgStructureId,
                         BasicSalary = placement.Salary,
+                        TaxableAllowance = taxableAllowance,
+                        TotalTaxableSalary = totalTaxableSalary,
                         PayableDays = totalPayableDays,
                         Year1 = balance1,
                         Year2 = balance2,
@@ -667,7 +701,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         AnnualLeavePerMonth = annualLeavePerMonth,
                         AgregateTaxableAmount = aggregateTaxableAmount,
                         AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount),
-                        BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary),
+                        BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)totalTaxableSalary),
                         Remark = "Generated Leave Payable",
                         DateCreated = leavePayable.DateCreated,
                         CreatedBy = leavePayable.CreatedBy,
@@ -688,10 +722,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     leavePayableDetail.CurrentYear = currentLeaveBalance;
                     leavePayableDetail.Balance = total;
                     leavePayableDetail.BasicSalary = placement.Salary;
+                    leavePayableDetail.TotalTaxableSalary = totalTaxableSalary;
                     leavePayableDetail.AnnualLeavePerMonth = annualLeavePerMonth;
                     leavePayableDetail.AgregateTaxableAmount = aggregateTaxableAmount;
                     leavePayableDetail.AgregateIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxableAmount);
-                    leavePayableDetail.BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)placement.Salary);
+                    leavePayableDetail.BasicSalaryIncomeTax = (decimal)IncomeTax.GetIncomeTax((float)totalTaxableSalary);
                     leavePayableDetail.Remark = "Generated Leave Payable";
                     leavePayableDetail.LastModified = DateTime.Now;
                     leavePayableDetail.ModifiedBy = User.Identity.Name;

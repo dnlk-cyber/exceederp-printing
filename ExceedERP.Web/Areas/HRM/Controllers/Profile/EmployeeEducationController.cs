@@ -97,6 +97,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult EmpTrainingEducations_Create([DataSourceRequest]DataSourceRequest request, Training empTrainingEducation, int idEdTwo)
         {
             ModelState.Clear();
+
             if (ModelState.IsValid)
             {
                

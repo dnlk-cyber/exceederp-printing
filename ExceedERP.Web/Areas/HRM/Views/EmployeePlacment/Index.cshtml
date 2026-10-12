@@ -89,10 +89,10 @@
                })
 
                   .Model(model => model.Id(p => p.PlacementId))
-                  .Read(read => read.Action("Placements_Read", "EmployeePlacment"))
-                          .Create(create => create.Action("Placements_Create", "EmployeePlacment"))
-                  .Update(update => update.Action("Placements_Update", "EmployeePlacment"))
-                  .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacment"))
+                  .Read(read => read.Action("Placements_Read", "EmployeePlacment").Data("sendForgery"))
+                          .Create(create => create.Action("Placements_Create", "EmployeePlacment").Data("sendForgery"))
+                  .Update(update => update.Action("Placements_Update", "EmployeePlacment").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacment").Data("sendForgery"))
 
       )
 )

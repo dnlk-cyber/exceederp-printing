@@ -35,6 +35,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
         private void PopulateViewData()
         {
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
             var list = inputs.GetEmployees(User.Identity.Name);
             ViewData["EmployeeList"] = list.Where(x => x.IsActive);
             ViewData["Period"] = db.GLPeriods.ToList();
@@ -103,6 +104,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult LeavePlans_Create([DataSourceRequest]DataSourceRequest request, LeavePlan leavePlan)
         {
 
+            bool useEthiopianDate = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
             // Validation
             if ((string.IsNullOrEmpty(leavePlan.FromAmharic) || string.IsNullOrEmpty(leavePlan.ToAmharic)) &&
                 (!leavePlan.GLPeriodId.HasValue || leavePlan.GLPeriodId == 0))
@@ -125,12 +127,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             else
             {
-            
+                if (useEthiopianDate)
+                {
                     // Convert Amharic (Ethiopian) dates to Gregorian
                     leavePlan.From = HrHelper.ParseEthiopicDate(leavePlan.FromAmharic);
                     leavePlan.To = HrHelper.ParseEthiopicDate(leavePlan.ToAmharic);
-             
-               
+                }
+                else
+                {
+                    // Use already assigned Gregorian dates to set Amharic values
+                    leavePlan.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.From.Day, leavePlan.From.Month, leavePlan.From.Year);
+                    leavePlan.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.To.Day, leavePlan.To.Month, leavePlan.To.Year);
+                }
             }
 
 
@@ -251,7 +259,56 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavePlans_Update([DataSourceRequest]DataSourceRequest request, LeavePlan leavePlan)
         {
-            
+
+            #region commentedOut
+            //// Check if either both (FromAmharic and ToAmharic Dates) or GLPeriodId are provided
+            //if ((string.IsNullOrEmpty(leavePlan.FromAmharic)
+            //    || string.IsNullOrEmpty(leavePlan.ToAmharic))
+            //    && (!leavePlan.GLPeriodId.HasValue
+            //    || leavePlan.GLPeriodId == 0))
+            //{
+            //    ModelState.AddModelError("", "Select (From and To Dates) or Period!!");
+            //    return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
+            //}
+
+            //// If GLPeriodId is provided, fetch period details
+            //if (leavePlan.GLPeriodId.HasValue
+            //    && leavePlan.GLPeriodId != 0)
+            //{
+            //    var glperiod = db.GLPeriods.Find(leavePlan.GLPeriodId);
+            //    if (glperiod != null)
+            //    {
+            //        leavePlan.From = glperiod.DateFrom;
+            //        leavePlan.To = glperiod.DateTo;
+            //        leavePlan.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(glperiod.DateFrom.Day, glperiod.DateFrom.Month, glperiod.DateFrom.Year);
+            //        leavePlan.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(glperiod.DateTo.Day, glperiod.DateTo.Month, glperiod.DateTo.Year);
+            //    }
+            //}
+            //else
+            //{
+            //    if (!string.IsNullOrEmpty(leavePlan.FromAmharic))
+            //    {
+            //        var splitDate = leavePlan.FromAmharic.Split('/');
+            //        leavePlan.From = XAPI.EthiopicDateTime.GetGregorianDate(
+            //            Convert.ToInt32(splitDate[0]),
+            //            Convert.ToInt32(splitDate[1]),
+            //            Convert.ToInt32(splitDate[2]));
+            //    }
+
+            //    // Convert ToAmharic date to Gregorian
+            //    if (!string.IsNullOrEmpty(leavePlan.ToAmharic))
+            //    {
+            //        var splitDate = leavePlan.ToAmharic.Split('/');
+            //        leavePlan.To = XAPI.EthiopicDateTime.GetGregorianDate(
+            //            Convert.ToInt32(splitDate[0]),
+            //            Convert.ToInt32(splitDate[1]),
+            //            Convert.ToInt32(splitDate[2]));
+            //    }
+            //}
+            #endregion
+
+            bool useEthiopianDate = HrHelper.GetDatePreference();
+
             // Validation
             if ((string.IsNullOrEmpty(leavePlan.FromAmharic) || string.IsNullOrEmpty(leavePlan.ToAmharic)) &&
                 (!leavePlan.GLPeriodId.HasValue || leavePlan.GLPeriodId == 0))
@@ -274,11 +331,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             else
             {
-                
+                if (useEthiopianDate)
+                {
                     // Convert Amharic (Ethiopian) dates to Gregorian
                     leavePlan.From = HrHelper.ParseEthiopicDate(leavePlan.FromAmharic);
                     leavePlan.To = HrHelper.ParseEthiopicDate(leavePlan.ToAmharic);
-                
+                }
+                else
+                {
+                    // Use already assigned Gregorian dates to set Amharic values
+                    leavePlan.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.From.Day, leavePlan.From.Month, leavePlan.From.Year);
+                    leavePlan.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.To.Day, leavePlan.To.Month, leavePlan.To.Year);
+                }
             }
 
 

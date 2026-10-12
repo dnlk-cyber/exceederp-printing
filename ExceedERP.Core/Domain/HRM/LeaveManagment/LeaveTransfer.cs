@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 
@@ -6,9 +6,9 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
 {
     /// <summary>   A leave entitle transfer. </summary>
     ///
-    /// <remarks>   Mekanehiwot, 10/31/2016. </remarks>
+    /// <remarks>   Mekanehiwot, 10/31/2016. modified by Kibrom Abera 11/1/2016(22/09/2023) </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    /// There  UI 
     public class LeaveTransfer:TrackUserOperation 
     {
         [Key]
@@ -27,7 +27,6 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public int To { get; set; }
         [Required]
         [Display(Name = "HR_LeaveManagment_LeaveTransfer_Amount", ResourceType = typeof(Localization.Resources))]
-      
         public decimal Amount { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }

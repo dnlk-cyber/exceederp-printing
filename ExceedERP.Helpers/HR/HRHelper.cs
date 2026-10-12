@@ -1,21 +1,70 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
+using ExceedERP.Core.Domain.HRM.Company;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Core.Localization;
-using ExceedERP.Core.Domain.Finance.AP.Travel;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using System;
+using System.Collections.Generic;
 using System.Data.Entity;
-using ExceedERP.Core.Domain.HRM.EmployeeDetail;
+using System.Linq;
 
 namespace ExceedERP.Helpers.HR
 {
     public static class HrHelper
     {
-        public static int GetLeaveIncrementPerYear( ResponsibilityLevel responsibilityLevel)
+        public struct OTSetting
+        {
+            public decimal RestDayRate { get; set; }
+            public decimal NormalRate { get; set; }
+            public decimal NightRate { get; set; }
+            public decimal HolidayRate { get; set; }
+            public decimal OTCoefficient { get; set; }
+        }
+
+        public static OTSetting GetOTSetting()
+        {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                var otrates = db.Configurations
+                .Where(x => x.Reference == "OverTime")
+                .ToList();
+
+                return new OTSetting
+                {
+                    RestDayRate = GetValue(otrates, OverTimeAttribute.RESTDAY_RATE),
+                    NormalRate = GetValue(otrates, OverTimeAttribute.NORMAL_RATE),
+                    NightRate = GetValue(otrates, OverTimeAttribute.NIGHT_RATE),
+                    HolidayRate = GetValue(otrates, OverTimeAttribute.HOLIDAY_RATE),
+                    OTCoefficient = GetValue(otrates, OverTimeAttribute.COEFFICIENT)
+                };
+            }
+        }
+
+        private static decimal GetValue(List<Configuration> list, OverTimeAttribute attr)
+        {
+            return list
+                .FirstOrDefault(x => x.Attribute == attr.ToString())
+                ?.CurrentValue is string val
+                ? Convert.ToDecimal(val)
+                : 0;
+        }
+    
+        public static decimal CalculateEmployeePension(decimal salary)
+        {
+            decimal pensionRate = 0.07m; // example 7%
+            return salary * pensionRate;
+        }
+        public static decimal CalculateEmployerPension(decimal salary)
+        {
+            decimal pensionRate = 0.11m; // example 11%
+            return salary * pensionRate;
+        }
+       
+        public static int GetLeaveIncrementPerYear(ResponsibilityLevel responsibilityLevel)
         {
             using (ExceedDbContext db = new ExceedDbContext())
             {
@@ -35,7 +84,16 @@ namespace ExceedERP.Helpers.HR
 
                 return int.Parse(config.CurrentValue);
             }
-               
+
+        }
+        public static int GetAge(this DateTime birthDate)
+        {
+            var today = DateTime.Today;
+            if (birthDate.Date > today)
+                return 0;
+            var age = today.Year - birthDate.Year;
+            if (birthDate.Date > today.AddYears(-age)) age--;
+            return age;
         }
         public static decimal GetFieldDays(int empId, int glperiodId, DateTime? fromDate, DateTime? toDate)
         {
@@ -296,100 +354,6 @@ namespace ExceedERP.Helpers.HR
             }
             return isHalf;
         }
-        public static double GetWeekDays(DateTime startDate, DateTime endDate, int empId)
-        {
-            ExceedDbContext db = new ExceedDbContext();
-            double noOfWeek = 0;
-            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
-            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
-            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
-            List<DateTime> dayList = new List<DateTime>();
-            TimeSpan diff = endDate - startDate;
-            int days = diff.Days;
-            for (var i = 0; i <= days; i++)
-            {
-                var testDate = startDate.AddDays(i);
-                switch (testDate.DayOfWeek)
-                {
-                    case DayOfWeek.Saturday:
-
-                        if (saturdayweekendSetting != null)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                var weekendExceptions = db.WeekendExceptions.ToList();
-                                if (weekendExceptions.Any())
-                                {
-                                    var weekendException = db.WeekendExceptions
-                                              .FirstOrDefault(x => x.EmployeeId == empId);
-                                    if (weekendException == null && placement != null)
-                                    {
-                                        weekendException = db.WeekendExceptions.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
-
-                                    }
-                                    // Skip because this is an exception for those simple employees that have Saturday as a working day, while other workers have it as an off day.
-
-                                    if (weekendException != null)
-                                    {
-                                        noOfWeek += saturdayweekendSetting.IsHalfDay ? 0.5 : saturdayweekendSetting.IsFullDay ? 0 : 1;
-
-                                    }
-                                    else
-                                    {
-                                        // Skip because this is an exception for those simple employees that have Saturday as a working day, while other workers have it as an off day.
-                                        noOfWeek += 1;
-                                    }
-                                }
-                                else
-                                {
-                                    if (saturdayweekendSetting.IsHalfDay)
-                                    {
-                                        noOfWeek += 0.5;
-                                    }
-                                    else if (saturdayweekendSetting.IsFullDay)
-                                    {
-                                        noOfWeek += 0;
-
-                                    }
-                                    else
-                                    {
-                                        noOfWeek += 1;
-
-                                    }
-                                }
-
-                            }
-                        }
-                        break;
-                    case DayOfWeek.Sunday:
-
-                        if (sundayweekendSetting != null)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                if (sundayweekendSetting.IsHalfDay)
-                                {
-                                    noOfWeek += 0.5;
-                                }
-                                else if (sundayweekendSetting.IsFullDay)
-                                {
-                                    noOfWeek += 0;
-                                }
-                                else
-                                {
-                                    noOfWeek += 1;
-
-                                }
-                            }
-                        }
-                        //dayList.Add(testDate);
-                        break;
-                }
-            }
-            return noOfWeek;
-        }
         public static decimal GetHolidays(DateTime from, DateTime to, int glFiscalYearId)
         {
             ExceedDbContext db = new ExceedDbContext();
@@ -408,7 +372,6 @@ namespace ExceedERP.Helpers.HR
             }
             return count;
         }
-
         public static decimal GetLeaveDays(DateTime from, DateTime to, int glFiscalYearId, LeaveDay day, LeaveType leaveType, int empId)
         {
             ExceedDbContext db = new ExceedDbContext();
@@ -486,9 +449,9 @@ namespace ExceedERP.Helpers.HR
                 case EmployeeStatus.PERMANENT:
                     return Resources.Enum_EmployeeStatus_PERMANENT.ToLower();
                 case EmployeeStatus.PROBATION:
-                    return Resources.Enum_EmployeeStatus_PROBATION.ToLower(); 
+                    return Resources.Enum_EmployeeStatus_PROBATION.ToLower();
                 case EmployeeStatus.NO_STATUS:
-                    return Resources.Enum_EmployeeStatus_NO_STATUS.ToLower().Replace("_"," ");
+                    return Resources.Enum_EmployeeStatus_NO_STATUS.ToLower().Replace("_", " ");
                 case EmployeeStatus.FREELANCER:
                     return Resources.Enum_EmployeeStatus_FREELANCER.ToLower();
             }
@@ -589,7 +552,7 @@ namespace ExceedERP.Helpers.HR
         }
         public static string GetGender(Gender gender)
         {
-            
+
             if (gender == Gender.FEMALE)
             {
                 return "Female";
@@ -737,17 +700,6 @@ namespace ExceedERP.Helpers.HR
                 return 0;
             }
         }
-        public static int GetAge(this DateTime birthDate)
-        {
-            var today = DateTime.Today;
-            if (birthDate.Date > today)
-                return 0;
-
-            var age = today.Year - birthDate.Year;
-            if (birthDate.Date > today.AddYears(-age)) age--;
-            return age;
-        }
-
         public static double GetEmployeeExactAge(int employeeId)
         {
             using (ExceedDbContext db = new ExceedDbContext())
@@ -852,7 +804,7 @@ namespace ExceedERP.Helpers.HR
                 return "";
             }
         }
-        
+
         //public static List<Person_Employee> PersonEmployeesList(object[] branchId, string orgStructureId, string employeeType)
         //{
         //    using (ExceedDbContext db = new ExceedDbContext())
@@ -945,77 +897,93 @@ namespace ExceedERP.Helpers.HR
         public static decimal GetWorkingDays(DateTime from, DateTime to)
         {
             decimal days = 0;
-            double weekDays = GetWeekDays(from, to);
+            double weekDays = GetWeekDays(from, to,0);
             decimal count = GetHolidays(from, to);
 
             days = to.Subtract(from).Days + 1 - count - Convert.ToDecimal(weekDays);
 
             return days;
         }
-        public static double GetWeekDays(DateTime startDate, DateTime endDate)
+        public static double GetWeekDays(DateTime startDate, DateTime endDate, int empId)
         {
-            using (ExceedDbContext db = new ExceedDbContext())
+            using (var db = new ExceedDbContext())
             {
                 double noOfWeek = 0;
-                var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
-                var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
-                List<DateTime> dayList = new List<DateTime>();
-                TimeSpan diff = endDate - startDate;
-                int days = diff.Days;
-                for (var i = 0; i <= days; i++)
+
+                var placement = db.Placements
+                    .FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
+
+                var saturdayWeekend = db.Weekends
+                    .FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
+
+                var sundayWeekend = db.Weekends
+                    .FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
+
+                // Load holidays once
+                HashSet<DateTime> holidays = new HashSet<DateTime>(
+                    db.Holidays
+                      .Where(x => x.Date >= startDate && x.Date <= endDate)
+                      .Select(x => x.Date));
+
+                // Load all weekend exceptions
+                List<WeekendException> weekendExceptions = db.WeekendExceptions
+                    .Where(x => x.EmployeeId == empId)
+                    .ToList();
+
+                if (!weekendExceptions.Any() && placement != null)
                 {
-                    var testDate = startDate.AddDays(i);
-                    switch (testDate.DayOfWeek)
+                    weekendExceptions = db.WeekendExceptions
+                        .Where(x => x.OrgStructureId == placement.OrgStructureId)
+                        .ToList();
+                }
+
+                if (!weekendExceptions.Any() && placement != null)
+                {
+                    weekendExceptions = db.WeekendExceptions
+                        .Where(x => x.BranchId == placement.BranchId)
+                        .ToList();
+                }
+
+                int totalDays = (endDate.Date - startDate.Date).Days;
+
+                for (int i = 0; i <= totalDays; i++)
+                {
+                    var currentDate = startDate.Date.AddDays(i);
+
+                    if (holidays.Contains(currentDate))
+                        continue;
+
+                    var weekendSetting = currentDate.DayOfWeek == DayOfWeek.Saturday
+                        ? saturdayWeekend
+                        : currentDate.DayOfWeek == DayOfWeek.Sunday
+                            ? sundayWeekend
+                            : null;
+
+                    if (weekendSetting == null)
+                        continue;
+
+                    // Find the exception for THIS weekend only
+                    var weekendException = weekendExceptions
+                        .FirstOrDefault(x => x.WeekendId == weekendSetting.WeekendId);
+
+                    if (weekendException != null)
                     {
-                        case DayOfWeek.Saturday:
-
-                            if (saturdayweekendSetting != null)
-                            {
-                                var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                                if (holiday == null)
-                                {
-                                    if (saturdayweekendSetting.IsHalfDay)
-                                    {
-                                        noOfWeek += 0.5;
-                                    }
-                                    else if (sundayweekendSetting.IsFullDay)
-                                    {
-                                        noOfWeek += 0;
-                                    }
-                                    else
-                                    {
-                                        noOfWeek += 1;
-
-                                    }
-                                }
-                            }
-                            break;
-                        case DayOfWeek.Sunday:
-
-                            if (sundayweekendSetting != null)
-                            {
-                                var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                                if (holiday == null)
-                                {
-                                    if (sundayweekendSetting.IsHalfDay)
-                                    {
-                                        noOfWeek += 0.5;
-                                    }
-                                    else if (sundayweekendSetting.IsFullDay)
-                                    {
-                                        noOfWeek += 0;
-                                    }
-                                    else
-                                    {
-                                        noOfWeek += 1;
-
-                                    }
-                                }
-                            }
-                            //dayList.Add(testDate);
-                            break;
+                        noOfWeek += weekendException.IsHalfDay
+                            ? 0.5
+                            : weekendException.IsFullDay
+                                ? 0
+                                : 1;
+                    }
+                    else
+                    {
+                        noOfWeek += weekendSetting.IsHalfDay
+                            ? 0.5
+                            : weekendSetting.IsFullDay
+                                ? 0
+                                : 1;
                     }
                 }
+
                 return noOfWeek;
             }
         }
@@ -1288,79 +1256,6 @@ namespace ExceedERP.Helpers.HR
                 return costCenter;
             }
         }
-        public static List<int> GetEmployeeInProbaition(List<Person_Employee> employees)
-        {
-            using (ExceedDbContext db = new ExceedDbContext())
-            {
-                var today = DateTime.Now.Date;
-
-                var employeeProbationSetting = db.EmployeeProbationSettings.FirstOrDefault();
-
-                //var probationSettings = db.ProbationsSettings.ToList();
-
-                var placements = db.Placements
-                    .Where(x => x.isCurrent).DistinctByField(e=>e.EmployeeId)
-                    .ToList();
-
-                // Convert to dictionary for O(1) lookup
-                var placementDict = placements.ToDictionary(x => x.EmployeeId);
-
-                //var probationDict = probationSettings
-                //        .Where(x => x.ResponsibilityLevel != null)
-                //        .GroupBy(x => x.ResponsibilityLevel)
-                //        .ToDictionary(
-                //            g => g.Key,
-                //            g => g.FirstOrDefault()?.ProbationDays ?? 0
-                //        );
-
-                // Use HashSet for fast lookup
-                HashSet<DateTime> holidays = new HashSet<DateTime>( db.Holidays.Select(h => h.Date));
-
-                int defaultProbationDays =  60;
-
-                var employeeIds = new List<int>();
-
-                foreach (var employee in employees)
-                {
-                    if (!placementDict.TryGetValue(employee.EmployeeId, out var placement))
-                        continue;
-
-                    int probationDays =  defaultProbationDays;
-
-                    var hireDate = employee.HiredDate.Date;
-
-                    int countedDays = 0;
-                    var currentDate = hireDate;
-
-                    while (countedDays < probationDays && currentDate < today)
-                    {
-                        currentDate = currentDate.AddDays(1);
-
-                        bool isWeekend = currentDate.DayOfWeek == DayOfWeek.Saturday|| currentDate.DayOfWeek == DayOfWeek.Sunday;
-
-                        bool isHoliday = holidays.Contains(currentDate);
-
-                        if (employeeProbationSetting != null)
-                        {
-                            if (!employeeProbationSetting.IncludeWeekend && isWeekend)
-                                continue;
-
-                            if (!employeeProbationSetting.IncludeHoliday && isHoliday)
-                                continue;
-                        }
-
-                        countedDays++;
-                    }
-
-                    if (countedDays <= probationDays)
-                    {
-                        employeeIds.Add(employee.EmployeeId);
-                    }
-                }
-
-                return employeeIds;
-            }
-        }
         public static List<int> GetEmployeesWithExpiringContracts(List<ContactVM> employees)
         {
             using (ExceedDbContext db = new ExceedDbContext())
@@ -1386,6 +1281,49 @@ namespace ExceedERP.Helpers.HR
                     .ToList();
 
                 return result;
+            }
+        }
+        public static List<int> GetEmployeeInProbaition(List<Person_Employee> employees)
+        {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                var today = DateTime.Now.Date;
+                var employeeProbationSetting = db.EmployeeProbationSettings.FirstOrDefault();
+                var probationSetting = db.ProbationsSettings.FirstOrDefault();
+                int probationDays = probationSetting?.ProbationDays ?? 60;
+                List<DateTime> holidays = db.Holidays.Select(h => h.Date).ToList();
+                var employeeIds = new List<int>();
+                foreach (var employee in employees)
+                {
+                    var hireDate = employee.HiredDate.Date;
+                    var daysElapsed = (today - hireDate).Days;
+                    // If more than the configured probation days have passed, skip
+                    if (daysElapsed > probationDays)
+                        continue;
+                    int countedDays = 0;
+                    var currentDate = hireDate;
+                    while (countedDays < probationDays && currentDate < today)
+                    {
+                        currentDate = currentDate.AddDays(1);
+                        bool isWeekend = currentDate.DayOfWeek == DayOfWeek.Saturday
+                            || currentDate.DayOfWeek == DayOfWeek.Sunday;
+                        bool isHoliday = holidays.Contains(currentDate);
+                        if (employeeProbationSetting != null)
+                        {
+                            if (!employeeProbationSetting.IncludeWeekend && isWeekend)
+                                continue;
+                            if (!employeeProbationSetting.IncludeHoliday && isHoliday)
+                                continue;
+                        }
+                        countedDays++;
+                    }
+                    // If still within probation period, include the employee
+                    if (countedDays < probationDays)
+                    {
+                        employeeIds.Add(employee.EmployeeId);
+                    }
+                }
+                return employeeIds;
             }
         }
         public static int GetRemainingContractDays(int employeeId)
@@ -1476,8 +1414,16 @@ namespace ExceedERP.Helpers.HR
                                   .FirstOrDefault();
 
                 // Determine probation days
-                int probationDays = 60; // default
-              
+                var probationSetting = db.ProbationsSettings.FirstOrDefault();
+                int probationDays = probationSetting?.ProbationDays ?? 60; // default
+                if (placement != null)
+                {
+                    probationSetting = db.ProbationsSettings
+                                            .FirstOrDefault(x => x.ResponsibilityLevel == placement.ResponsibilityLevel);
+
+                    if (probationSetting != null && probationSetting.ProbationDays > 0)
+                        probationDays = probationSetting.ProbationDays;
+                }
 
                 // Load holidays once (HashSet for O(1) lookup)
                 var holidays = new HashSet<DateTime>(db.Holidays.Select(x => x.Date));
@@ -1502,54 +1448,34 @@ namespace ExceedERP.Helpers.HR
                 return workingDays >= probationDays;
             }
         }
-        public static decimal CalculateEmployeePension(decimal salary)
-        {
-            decimal pensionRate = 0.07m; // example 7%
-            return salary * pensionRate;
-        }
         public static bool GetDatePreference()
         {
             using (ExceedDbContext db = new ExceedDbContext())
-            {               
+            {
                 return db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
             }
         }
-        public static OTSetting GetOTSetting()
+        public static decimal CalculateNetSalary(decimal baseSalary)
         {
             using (ExceedDbContext db = new ExceedDbContext())
             {
-                var otrates = db.Configurations
-                .Where(x => x.Reference == "OverTime")
-                .ToList();
+                if (baseSalary <= 0)
+                    return 0;
 
-                return new OTSetting
-                {
-                    RestDayRate = GetValue(otrates, OverTimeAttribute.RESTDAY_RATE),
-                    NormalRate = GetValue(otrates, OverTimeAttribute.NORMAL_RATE),
-                    NightRate = GetValue(otrates, OverTimeAttribute.NIGHT_RATE),
-                    HolidayRate = GetValue(otrates, OverTimeAttribute.HOLIDAY_RATE),
-                    OTCoefficient = GetValue(otrates, OverTimeAttribute.COEFFICIENT)
-                };
+                // Employee Pension (7%)
+                decimal pension = CalculateEmployeePension(baseSalary);
+                // Taxable Income
+                //decimal taxableIncome = baseSalary - pension;
+
+                // PAYE Tax
+                //decimal tax = (decimal)XAPI.IncomeTax.GetIncomeTax( (float)taxableIncome);
+                decimal tax = (decimal)XAPI.IncomeTax.GetIncomeTax( (float)baseSalary);
+
+                // Net Salary
+                return Math.Round(baseSalary - pension - tax, 2);
             }
+      
+            
         }
-        private static decimal GetValue(List<Configuration> list, OverTimeAttribute attr)
-        {
-            return list
-                .FirstOrDefault(x => x.Attribute == attr.ToString())
-                ?.CurrentValue is string val
-                ? Convert.ToDecimal(val)
-                : 0;
-        }
-     
-
-    }
-
-    public struct OTSetting
-    {
-        public decimal RestDayRate { get; set; }
-        public decimal NormalRate { get; set; }
-        public decimal NightRate { get; set; }
-        public decimal HolidayRate { get; set; }
-        public decimal OTCoefficient { get; set; }
     }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class ComplainODS
+    public class ComplainODS:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -152,6 +152,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return singleComplain;
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

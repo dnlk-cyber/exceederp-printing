@@ -16,16 +16,7 @@ namespace ExceedERP.Reporting.SharedDataSources
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<RecruitmentVacancy> GetMediaVacancyCode()
         {
-            List<RecruitmentVacancy> list = new List<RecruitmentVacancy>();
-            var recruitmentVacancy = db.RecruitmentVacancy.DistinctByField(x => x.MediaVacancyCode).ToList();
-           
-
-            if (!recruitmentVacancy.Any())
-            {
-                return list;
-            }
-
-            return recruitmentVacancy;
+            return db.RecruitmentVacancy.DistinctByField(x => x.MediaVacancyCode).ToList();
             
         }
     }

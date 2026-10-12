@@ -3,178 +3,429 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
-<legend >@Resources.Navigator_Recruitment_Vacancy</legend>
 
+<legend>@Resources.Navigator_Recruitment_Vacancy</legend>
 @(Html.Kendo().Grid<Vacancy>()
-      .Name("VaccancyPlangrid")
-      .Columns(columns =>
-      {
-          //columns.Bound(c => c.VacancyId).Width(130);
-          @*columns.Bound(c => c.IsComplete).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
-                              .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(60);*@
-          columns.Bound(c => c.VaccancyCode).Width(120);
-          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width(100);
-          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelectorFromPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
-          //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-          // columns.ForeignKey(c => c.RecruitmentPlanId, (IEnumerable)ViewData["Recruitments"], "RecruitmentPlanId", "JobTitle").EditorTemplateName("RecruitmentPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-          // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
-          columns.Bound(c => c.RecruSource).EditorTemplateName("Enum").Width(150);
-          //columns.Bound(c => c.FromVacAm).EditorTemplateName("Calander").Width(150);
-          //columns.Bound(c => c.ToVacAm).EditorTemplateName("Calander").Width(150);
-          columns.Bound(c => c.From).Width(150);
-          columns.Bound(c => c.To).Width(150);
-          // columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Media"], "LookupId", "Description").Width(90).EditorTemplateName("Media");
-          columns.Bound(c => c.VacancyType).EditorTemplateName("Enum").Width(120);
-          columns.Command(command =>
-          {
-              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
-              {
-                  command.Custom("open").Text(Resources.Button_Force_Open).Click("forchOpen");
-                  command.Custom("close").Text(Resources.Payroll_Process_Close).Click("terminate");
+            .Name("VaccancyPlangrid")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.VacancyId).Width(100);
+                columns.Bound(c => c.VaccancyCode).Width(120);
+                columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width(100);
+                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelectorFromPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                columns.ForeignKey(c => c.Department, (IEnumerable)ViewData["mainCompanyStructure"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                // columns.ForeignKey(c => c.RecruitmentPlanId, (IEnumerable)ViewData["Recruitments"], "RecruitmentPlanId", "JobTitle").EditorTemplateName("RecruitmentPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
+                columns.Bound(c => c.RecruSource).EditorTemplateName("Enum").Width(150);
+                //columns.Bound(c => c.FromVacAm).EditorTemplateName("Calander").Width(150);
+                //columns.Bound(c => c.ToVacAm).EditorTemplateName("Calander").Width(150);
+                columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                columns.Bound(c => c.Salary).Width(80);
+                columns.Bound(c => c.TotalYearOfExperience).Width(80);
+                if (useEthiopian)
+                {
+                    columns.Bound(c => c.FromVacAm).EditorTemplateName("Calander").Width(150);
+                    columns.Bound(c => c.ToVacAm).EditorTemplateName("Calander").Width(150);
+                }
+                else
+                {
+                    columns.Bound(c => c.From).Width(100);
+                    columns.Bound(c => c.To).Width(100);
+                }
 
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-              }
-              if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-              {
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-              }
-          }).Width(300);
-
-      })
-
-      .ToolBar(toolbar =>
-      {
-
-
-      toolbar.Template(@<text>
-                               
-  @if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
-  {
- 
-      @item.CreateButton(Resources.ActionButton_AddNewRecord)
-      @*@item.SaveButton()*@
-  }
-
-        </text>);
-
-
-      })
-
-      .Filterable()
-      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Vacancy"))
-      .Selectable(selectable =>
-      {
-          selectable.Mode(GridSelectionMode.Single);
-          selectable.Type(GridSelectionType.Row);
-      })
-      .Events(e =>
-      {
-          e.Save("GetDate");
-          e.Edit("GetDate");
-          e.DataBound("onDataBound");
-
-      })
-      .Scrollable(h => h.Height(500))
-      .Pageable(pageable => pageable
-          .Input(true)
-          .Numeric(false)
-          .Refresh(true)
-          .PageSizes(true)
-          .ButtonCount(5))
-
-      .DataSource(dataSource => dataSource
-                .Ajax()
-              //.Batch(true)
-              //.ServerOperation(false)
-              .Sort(sort => sort.Add("VacancyId").Descending())
-          .Events(events =>
-          {
-              events.Error("error_handler(\"VaccancyPlangrid\")");
-              events.RequestStart("onRequestStart(\"VaccancyPlangrid\")");
-              events.RequestEnd("onRequestEnd(\"VaccancyPlangrid\")");
-          })
-
-                      .Model(model =>
+                columns.ForeignKey(c => c.JobTitle, (IEnumerable)ViewData["jobTitle"], "JobTitle", "Description").Width(90).EditorTemplateName("Media");
+                columns.Bound(c => c.VacancyType).EditorTemplateName("Enum").Width(120);
+                columns.Bound(c => c.NoOfVacant).Width(130);
+                columns.Bound(c => c.ReportsTo).Width(130);
+                columns.Bound(c => c.Location).Width(130);
+                columns.Bound(c => c.ExperienceLevel).Width(130);
+                columns.Command(command =>
+    {
+                      if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
                       {
-                          model.Id(p => p.VacancyId);
-                          model.Field(p => p.VacancyId).Editable (false);
-                          model.Field(p => p.VaccancyCode).Editable(false);
+                          command.Custom("open").Text(Resources.Button_Force_Open).Click("forchOpen");
+                          command.Custom("close").Text(Resources.Payroll_Process_Close).Click("terminate");
 
-                      })
-               .Read(read => read.Action("VaccancyPlans_Read", "Vacancy", new { Area = "HRM" }))
-            .Create(create => create.Action("VaccancyPlans_Create", "Vacancy", new { Area = "HRM"}))
-          .Update(update => update.Action("VaccancyPlans_Update", "Vacancy"))
-           //.Update(update => update.Action("ChangingStatus_Edit", "Vacancy"))
-           .Destroy(destroy => destroy.Action("VaccancyPlans_Destroy", "Vacancy"))
-      ).ClientDetailTemplateId("Interviwers")
+                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                      }
+                      if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                      {
+                          command.Custom("postToPortal").Text("Post -to-portal").Click("postToPortal");
+                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                      }
+
+                  }).Width(300);
+
+            })
+            .ToolBar(toolbar =>
+            {
+
+
+                toolbar.Template(@<text>
+
+                    @if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                    {
+
+                        @item.CreateButton(Resources.ActionButton_AddNewRecord)
+
+
+
+                    }
+                 
+
+
+                </text>);
+
+
+                    })
+
+                            .Filterable()
+                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Vacancy"))
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Events(e =>
+                            {
+                                e.Save("GetDate");
+                                e.Edit("GetDate");
+                                e.DataBound("onDataBound");
+
+                            })
+                            .Scrollable(h => h.Height(500))
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+
+                            .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                    //.Batch(true)
+                                    //.ServerOperation(false)
+                                    .Sort(sort => sort.Add("VacancyId").Descending())
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"VaccancyPlangrid\")");
+                                    events.RequestStart("onRequestStart(\"VaccancyPlangrid\")");
+                                    events.RequestEnd("onRequestEnd(\"VaccancyPlangrid\")");
+                                })
+
+                                            .Model(model =>
+                                            {
+                                                model.Id(p => p.VacancyId);
+                                                model.Field(p => p.VacancyId).Editable(false);
+                                                model.Field(p => p.VaccancyCode).Editable(false);
+
+                                            })
+                                .Read(read => read.Action("VaccancyPlans_Read", "Vacancy", new { Area = "HRM" }).Data("sendForgery"))
+                                .Create(create => create.Action("VaccancyPlans_Create", "Vacancy", new { Area = "HRM" }).Data("sendForgery"))
+                                .Update(update => update.Action("VaccancyPlans_Update", "Vacancy").Data("sendForgery"))
+                               //.Update(update => update.Action("ChangingStatus_Edit", "Vacancy").Data("sendForgery"))
+                               .Destroy(destroy => destroy.Action("VaccancyPlans_Destroy", "Vacancy").Data("sendForgery"))
+                            ).ClientDetailTemplateId("Interviwers")
 )
 
 
 <script id="Interviwers" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                  .Name("tabstrip2_#=VacancyId#")
-            .SelectedIndex(0)
-            .Items(items =>
-             {
+                .Name("tabstrip2_#=VacancyId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
 
-                 items.Add().Text("Interviewrs").Content(
+                    items.Add().Text("Detail").Content(
                     @<text>
+                        <a href='@Url.Action("VaccancyPrintOut", "Vacancy")/?id=#=VacancyId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        @(Html.Kendo().PanelBar()
+                                .Name("panelbar_#=VacancyId#")
+                                .ExpandMode(PanelBarExpandMode.Single)
+                                .Items(panelbar =>
+                                {
 
-                   @(Html.Kendo().Grid<RecruitmetnInterviewerPerseon>()
-                      .Name("Interviewer#=VacancyId#")
-                      .Columns(columns =>
-                      {
-                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList").Width(150);
-                          columns.Bound(c => c.Remark).Width(150);
+                                            panelbar.Add().Text("Responsibility")
+                                .Expanded(true)
+                                    .Content(
+                                        "<div>" +
+                                        "<table class='table'>" +
+                                        "<tr>" +
+                                        "<td>" +
+                                        "<div class='employee-details'>" +
+                                        "<ul>" +
+                                        "<li><span class='decoded-message'>#=Responsibility #</span></li>" +
+                                        "</ul>" +
+                                        "</div>" +
+                                        "</td>" +
+                                        "</tr>" +
+                                        "</table>" +
+                                        "</div>"
+                                    );
+                                            panelbar.Add().Text("Job Requirement")
+                                .Expanded(true)
+                                    .Content(
+                                        "<div>" +
+                                        "<table class='table'>" +
+                                        "<tr>" +
+                                        "<td>" +
+                                        "<div class='employee-details'>" +
+                                        "<ul>" +
+                                        "<li><span class='decoded-message'>#=JobRequirement #</span></li>" +
+                                        "</ul>" +
+                                        "</div>" +
+                                        "</td>" +
+                                        "</tr>" +
+                                        "</table>" +
+                                        "</div>"
+                                    );
 
-                          columns.Command(command =>
-                          {
-
-                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-
-                              command.Destroy().Text(Resources.ActionButton_Cancel);
-
-                          }).Width(250);
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
-                          {
-                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                              //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
-                          }
-                      })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Scrollable(h => h.Height(500))
-
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                                  .Events(events =>
-                                  {
-                                      events.Error("error_handler(\"Interviewer#=VacancyId#\")");
-                                      events.RequestStart("onRequestStart(\"Interviewer#=VacancyId#\")");
-                                      events.RequestEnd("onRequestEnd(\"Interviewer#=VacancyId#\")");
-                                  }
-                                            )
-
-                                  .Model(model =>
-                                              model.Id(p => p.RecruitmetnInterviewerPerseonId))
-
-                                          .Read(read => read.Action("Interviewer_Read", "Interviewer", new { Area = "HRM", id = "#=VacancyId#" }))
-                                            .Create(create => create.Action("Interviewer_Create", "Interviewer", new { Area = "HRM", id = "#=VacancyId#" }))
-                                  .Update(update => update.Action("Interviewer_Update", "Interviewer"))
-                                  .Destroy(destroy => destroy.Action("Interviewer_Destroy", "Interviewer"))
-                      ).ToClientTemplate()
+                                        }).ToClientTemplate()
                         )
-                    </text>
-                    );
+                    </text> );
+
+                items.Add().Text("Interviewrs").Content(
+                @<text>
+                    @(Html.Kendo().Grid<RecruitmetnInterviewerPerseon>()
+                            .Name("Interviewer#=VacancyId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                                columns.Bound(c => c.Remark).Width(150);
+                                columns.Command(command =>
+                                {
+
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                                }).Width(250);
+
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
+                                }
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"Interviewer#=VacancyId#\")");
+                                    events.RequestStart("onRequestStart(\"Interviewer#=VacancyId#\")");
+                                    events.RequestEnd("onRequestEnd(\"Interviewer#=VacancyId#\")");
+
+                                })
+
+                                .Model(model =>
+                                            model.Id(p => p.RecruitmetnInterviewerPerseonId))
+
+                                .Read(read => read.Action("Interviewer_Read", "Interviewer", new { Area = "HRM", id = "#=VacancyId#" }).Data("sendForgery"))
+                                .Create(create => create.Action("Interviewer_Create", "Interviewer", new { Area = "HRM", id = "#=VacancyId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("Interviewer_Update", "Interviewer").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("Interviewer_Destroy", "Interviewer").Data("sendForgery"))
+
+                                ).ToClientTemplate()
+                    )
+                </text>);
+
+            items.Add().Text("Education level-Details").Content(
+            @<text>
+                @educationLevel()
+            </text>);
+
+            items.Add().Text("Vacancy-Languages").Content(
+            @<text>
+                @vacancyLanguages()
+            </text>);
+@*items.Add().Text("Education level-Details").Content(
+     @<text>
+    @(Html.Kendo().Grid<VacancyDetail>()
+       .Name("VacancyDetail#=VacancyId#")
+       .Columns(columns =>
+       {
+           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["level"], "LookupId", "Description").EditorTemplateName("EduLevel").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+           columns.Bound(c => c.Experience).Width(150);
+           columns.Bound(c => c.Decription).Width(150);
+
+           columns.Command(command =>
+           {
+
+               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+               command.Destroy().Text(Resources.ActionButton_Cancel);
+
+           }).Width(250);
+       })
+       .ToolBar(toolbar =>
+       {
+           if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+           {
+               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+               //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
+           }
+       })
+       .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .Scrollable(h => h.Height(500))
+
+       .DataSource(dataSource => dataSource
+           .Ajax()
+           .Events(events =>
+           {
+               events.Error("error_handler(\"VacancyDetail#=VacancyId#\")");
+               events.RequestStart("onRequestStart(\"VacancyDetail#=VacancyId#\")");
+               events.RequestEnd("onRequestEnd(\"VacancyDetail#=VacancyId#\")");
+
+           })
+           .Model(model =>
+             model.Id(p => p.VacancyDetailId))
+             .Read(read => read.Action("VacancyDetails_Read", "VacancyDetails", new { Area = "HRM", id = "#=VacancyId#" }).Data("sendForgery"))
+             .Create(create => create.Action("VacancyDetails_Create", "VacancyDetails", new { Area = "HRM", id = "#=VacancyId#" }).Data("sendForgery"))
+             .Update(update => update.Action("VacancyDetails_Update", "VacancyDetails").Data("sendForgery"))
+             .Destroy(destroy => destroy.Action("VacancyDetails_Destroy", "VacancyDetails").Data("sendForgery"))
+       ).ToClientTemplate() )
+     </text>);*@
 
 
-             }).ToClientTemplate())
+
+
+        }).ToClientTemplate())
 </script>
 
+@helper educationLevel()
+{
+    @(Html.Kendo().Grid<EducationLevelDetail>()
+                  .Name("EducationLevelDetail#=VacancyId#")
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["level"], "LookupId", "Description")
+                                                .EditorTemplateName("EduLevel")
+                                                .Filterable(ftb => ftb.Multi(true).Search(true))
+                                                .Width(160);
+                      columns.Bound(c => c.Experience).Width(150);
+                      columns.Bound(c => c.Remark)/*.Width(150)*/;
 
+      //columns.Command(command =>
+      //{
+
+      //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+      //    command.Destroy().Text(Resources.ActionButton_Cancel);
+
+      //}).Width(250);
+
+  })
+                  .ToolBar(toolbar =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                      {
+          //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      }
+
+
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Scrollable(h => h.Height(500))
+                    .Filterable()
+                    .Pageable(pageable => pageable
+                                               .Input(true)
+                                               .Numeric(false)
+                                               .Refresh(true)
+                                               .PageSizes(true)
+                                               .ButtonCount(5))
+                       .DataSource(dataSource => dataSource
+                           .Ajax()
+                           .Sort(sort => sort.Add(x => x.EducationLevelDetailId).Descending())
+                           .Events(events =>
+                           {
+                               events.Error("error_handler(\"EducationLevelDetail#=VacancyId#\")");
+                               events.RequestStart("onRequestStart(\"EducationLevelDetail#=VacancyId#\")");
+                               events.RequestEnd("onRequestEnd(\"EducationLevelDetail#=VacancyId#\")");
+                           })
+                           .Model(model =>
+                           model.Id(p => p.EducationLevelDetailId))
+                           .Read(read => read.Action("EducationLevelDetailsForVacancy_Read", "EducationLevelDetails", new { Area = "HRM", id = "#=JobTitle#" }).Data("sendForgery"))
+                           .Create(create => create.Action("EducationLevelDetails_Create", "EducationLevelDetails", new { Area = "HRM", id = "#=JobTitle#" }).Data("sendForgery"))
+                           .Update(update => update.Action("EducationLevelDetails_Update", "EducationLevelDetails").Data("sendForgery"))
+                           .Destroy(destroy => destroy.Action("EducationLevelDetails_Destroy", "EducationLevelDetails").Data("sendForgery"))
+                       ).ToClientTemplate())
+}
+
+@helper vacancyLanguages()
+{
+    @(Html.Kendo().Grid<VacancyLanguage>()
+          .Name("VacancyLanguage_grid_#=VacancyId#")
+          .Columns(columns =>
+            {
+
+                columns.Bound(c => c.LanguageName)
+                       .EditorTemplateName("LanguageAutoComplate")
+                       .Width(150);
+                columns.Bound(c => c.ProficiencyLevel).Width(150);
+                columns.Bound(c => c.IsRequired).ClientTemplate("<input type='checkbox' disabled = 'true' value='\\#= IsRequired\\#' " +
+                                                                "\\# if (IsRequired) { \\#" +
+                                                                "checked='checked'" +
+                                                                "\\# } \\#" +
+                                                                "/>"
+                                                                ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(130);
+
+                columns.Bound(c => c.Description);
+
+                columns.Command(command =>
+                {
+
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                    command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                })/*.Width(250)*/;
+
+            })
+            .ToolBar(toolbar =>
+            {
+                if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                {
+                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                }
+
+
+
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+            .Filterable()
+            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"VacancyLanguage_grid_#=VacancyId#\")");
+                        events.RequestStart("onRequestStart(\"VacancyLanguage_grid_#=VacancyId#\")");
+                        events.RequestEnd("onRequestEnd(\"VacancyLanguage_grid_#=VacancyId#\")");
+                    })
+                    .Model(model =>
+                    model.Id(p => p.VacancyLanguageId))
+                    .Read(read => read.Action("VacancyLanguages_Read", "VacancyLanguages", new { Area = "HRM", masterId = "#=VacancyId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("VacancyLanguages_Create", "VacancyLanguages", new { Area = "HRM", masterId = "#=VacancyId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("VacancyLanguages_Update", "VacancyLanguages").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("VacancyLanguages_Destroy", "VacancyLanguages").Data("sendForgery"))
+                ).ToClientTemplate())
+
+
+}
 <style type="text/css">
     div.k-edit-form-container {
         width: 900px;
@@ -227,6 +478,51 @@
 
     }
 </script>
+<script>
+    function GetSalary() {
+        //if (isNew_Global == "True") {
+            var rank = $("#RankId").data("kendoDropDownList").value();
+            var step = $("#StepId").data("kendoDropDownList").value();
+            //var Jobs = $("#LookupId").data("kendoDropDownList");
+            //var job = Jobs.value();
+
+            if (rank != 0 && step != 0) {
+
+                $("#Salary").val(0);
+
+                $.ajax({
+                    url: '@Url.Action("GetSalaryAmount", "Vacancy",new { area="HRM"})',
+                    data: { rank: rank, step: step },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        $("#Salary").val(result);
+                        $("#Salary").trigger("change");
+                    }
+                });
+            }
+        //}
+    }
+    function onJobTitleChange() {
+        var jobTitle = $("#JobTitle").data("kendoDropDownList").value();
+        if (jobTitle != 0)
+        {
+            $.ajax({
+                url: '@Url.Action("GetExperienceAmount", "Vacancy",new { area="HRM"})',
+                data: { lookUpId: jobTitle},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    $("#TotalYearOfExperience").val(result);
+                    $("#TotalYearOfExperience").trigger("change");
+                }
+            });
+
+        }
+
+    }
+
+</script>
 <Script>
     function onDataBound(e) {
         var rows = e.sender.tbody.children();
@@ -234,6 +530,12 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
+            if (dataItem.Isposted ) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-postToPortal").hide();
+            }
             if (dataItem.IsActive == false) {
 
                 row.find(".k-grid-edit").hide();
@@ -242,13 +544,21 @@
                 row.find(".k-grid-open").show();
                 row.css("background-color", "gray");
             }
-            else {
+            if (dataItem.IsActive) {
+
                 row.find(".k-grid-edit").show();
-                row.find(".k-grid-delete").show();
+                row.find(".k-grid-delete").hide();
                 row.find(".k-grid-close").show();
                 row.find(".k-grid-open").hide();
-                row.css("background-color", "");
+                row.css("background-color", "pink");
             }
+            //else {
+            //    row.find(".k-grid-edit").show();
+            //    row.find(".k-grid-delete").show();
+            //    row.find(".k-grid-close").show();
+            //    row.find(".k-grid-open").hide();
+            //    row.css("background-color", "");
+            //}
             //if (dataItem.Status === 0) {
 
             //    row.css("background-color", "red");
@@ -315,7 +625,7 @@
 </script>
 <script>
     function Transfer() {
-       
+
         var value = this.value(),
             grid = $("#VaccancyPlangrid").data("kendoGrid");
 
@@ -324,7 +634,7 @@
         } else {
             grid.dataSource.filter({});
         }
-        
+
     }
 </script>
 <script>
@@ -348,6 +658,33 @@
                         alert(r);
 
                     grid.dataSource.read();
+                }
+
+
+
+            });
+
+        }
+    }
+    function postToPortal(e) {
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#VaccancyPlangrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.VacancyId;
+
+        if (id.length !== 0) {
+            $.ajax({
+                url: '@Url.Action("PostVacancyDetail", "Vacancy")',
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result)
+                {
+                    alert(result.status);
+
+                    grid.dataSource.read();
+
                 }
 
 
@@ -419,22 +756,22 @@
 </script>
 <script>
 
-     function filterWorkunit() {
+    function filterWorkunit() {
         return {
             BranchId: $("#BranchId").val()
         };
     }
 
     //function filterWorkunit() {
-     //   return {
-      //      BranchId: $("#BranchId").val(),
-      //      searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val()
-      //  };
-  //  }
+    //   return {
+    //      BranchId: $("#BranchId").val(),
+    //      searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val()
+    //  };
+    //  }
     function filterJobTitle() {
         return {
-             BranchId: $("#BranchId").val(),
-             OrgStructureId: $("#Department").val()
+            BranchId: $("#BranchId").val(),
+            OrgStructureId: $("#Department").val()
         };
     }
 
@@ -460,11 +797,18 @@
         });
         grid.refresh();
     }
+
     function filterEmployees() {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
 
             //text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        };
+    }
+    function filterReportToStructure() {
+        return {
+            branchId: $("#BranchId").val(),
+            searchText: $("#Department").data("kendoDropDownList").filterInput.val(),
         };
     }
 </script>

@@ -6,6 +6,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
     {
        
         public string JobTitleName { get; set; }
+        public string JobTitleNameEnglish { get; set; }
         public string From { get; set; }
         public string To { get; set; }
         public string FromString { get; set; }

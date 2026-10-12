@@ -117,4 +117,109 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="IdNumber.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="FullName.Value" xml:space="preserve">
+    <value>Employee Id</value>
+  </data>
+  <data name="Sex.Value" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Department.Value" xml:space="preserve">
+    <value>Sex</value>
+  </data>
+  <data name="JobTitle.Value" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="Rank.Value" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>Step</value>
+  </data>
+  <data name="Salary.Value" xml:space="preserve">
+    <value>Salary</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>Remark</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Fields.Department</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>= Fields.JobTitle</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>= Fields.EmployeeId</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Fields.Rank</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>= Fields.Salary</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>= IIf(Fields.Sex="Male","Male","Female")</value>
+  </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>= Fields.Step</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>= Fields.Remark</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.EmployeementType</value>
+  </data>
+  <data name="textBox36.Value" xml:space="preserve">
+    <value>Branch: </value>
+  </data>
+  <data name="textBox35.Value" xml:space="preserve">
+    <value>= Parameters.branchId.Label</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>EmployeementType :{Parameters.employeementType.Label}</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>= Fields.Item</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>Department: </value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Work Unit</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Business Unit</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="reportParameter7.Text" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="reportParameter8.Text" xml:space="preserve">
+    <value>Employeement Type</value>
+  </data>
 </root>

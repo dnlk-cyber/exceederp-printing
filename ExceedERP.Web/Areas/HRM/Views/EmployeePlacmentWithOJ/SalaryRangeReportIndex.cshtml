@@ -1,0 +1,36 @@
+﻿@model ExceedERP.Web.Areas.HRM.Controllers.Profile.SalaryRangeFilterVM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend><i class="fa fa-bar-chart"></i> Salary Range By Project / Branch Report</legend>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default" style="box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 6px;">
+            <div class="panel-heading" style="background-color: #1b4d89; color: #fff; font-weight: bold;">
+                <i class="fa fa-filter"></i> Select Date Interval
+            </div>
+            <div class="panel-body" style="padding: 25px;">
+                @using (Html.BeginForm("SalaryRangeByProjectReport", "EmployeePlacmentWithOJ", new { area = "HRM" }, FormMethod.Get, new { target = "_blank" }))
+                {
+                    <div class="form-group">
+                        <label class="control-label font-weight-bold">From Date:</label>
+                        <input type="date" name="from" class="form-control" value="@(Model.FromDate.HasValue ? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")" required />
+                    </div>
+
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label class="control-label font-weight-bold">To Date:</label>
+                        <input type="date" name="to" class="form-control" value="@(Model.ToDate.HasValue ? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")" required />
+                    </div>
+
+                    <div class="form-group" style="margin-top: 25px; text-align: right;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-print"></i> Generate & View Report
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

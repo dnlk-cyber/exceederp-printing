@@ -11,7 +11,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
 
     [DataObject]
-    public class TrainingRequestODS : List<TrainingReqeustVM>
+    public class TrainingRequestODS : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -51,6 +51,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 list.Add(training);
             }
             return list;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

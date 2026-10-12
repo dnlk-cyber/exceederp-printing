@@ -13,7 +13,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class LeavePayableObjectDataSource : List<LeavePayableVM>
+    public class LeavePayableObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -73,12 +73,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 employees.TryGetValue(detail.EmployeeId, out var emp);
                 orgStructures.TryGetValue(detail.OrgStructureId, out var workUnit);
                 branches.TryGetValue(detail.BranchId, out var branchObj);
-
+                
                 return new LeavePayableDetailVM
                 {
+                    EmployeeCode = emp != null ? $"{emp.EmployeeCode} " : string.Empty,
                     EmployeeFullName = emp != null ? $"{emp.FirstNameEnglish} {emp.MiddleNameEnglish} {emp.LastNameEnglish}" : string.Empty,
                     WorkUnit = workUnit?.Name ?? string.Empty,
                     Branch = branchObj?.Name ?? string.Empty,
+                    BasicSalary = detail.BasicSalary,
                     FiscalYear1 = leavePayableVM.FiscalYear1,
                     FiscalYear2 = leavePayableVM.FiscalYear2,
                     Year1 = detail.Year1,
@@ -165,6 +167,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
         //}
-
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 }

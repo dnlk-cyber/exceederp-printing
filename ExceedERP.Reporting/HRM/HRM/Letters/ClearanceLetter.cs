@@ -4,7 +4,8 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
     using System;
     using System.ComponentModel;
     using System.Drawing;
-    
+    using System.Globalization;
+    using System.Threading;
     using Telerik.Reporting;
     using Telerik.Reporting.Drawing;
 
@@ -18,6 +19,8 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
             //
             // Required for telerik Reporting designer support
             //
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
             InitializeComponent();
 
             Telerik.Reporting.Drawing.PictureWatermark pictureWatermark1 = new Telerik.Reporting.Drawing.PictureWatermark();

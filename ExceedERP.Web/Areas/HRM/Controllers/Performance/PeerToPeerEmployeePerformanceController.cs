@@ -97,21 +97,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             if (employeePerformanceScore.Score > employeePerformanceScore.Weight)
             {
                 ModelState.AddModelError("", "Score can't exceed the weight");
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+
             }
+            var allowedScores = db.PerformanceAllowedScores.Select(x => x.ScoreValue).OrderBy(x => x).ToList();
 
-            //var criteriaType = db.EvaluationCriteriaActionTypes.FirstOrDefault(x => x.IsActive);
-            //if (criteriaType != null && criteriaType.PerformanceCriteriaActionType == PerformanceCriteriaActionType.Open)
-            //{
-            //    var revertOther = db.PeerToPeerEmployeePerformanceScores.Where(x => x.PeerEmployeeMeasurementId == employeePerformanceScore.PeerEmployeeMeasurementId && x.PeerToPeerEmployeePerformanceScoreId != employeePerformanceScore.PeerToPeerEmployeePerformanceScoreId).ToList();
-            //    foreach (var rev in revertOther)
-            //    {
-            //        //rev.IsChecked = false;
-            //        rev.Score = 0;
+            if (allowedScores.Any() && !allowedScores.Contains(employeePerformanceScore.Score))
+            {
+                var allowedValuesText = string.Join(", ", allowedScores);
 
-            //        db.Entry(rev).State = EntityState.Modified;
-            //        db.SaveChanges();
-            //    }
-            //}
+                ModelState.AddModelError("Score",
+                    $"Invalid score. Allowed values are: {allowedValuesText}. " +
+                    "Please contact HR to modify the evaluation score configuration if needed.");
+
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+            }
 
             if (ModelState.IsValid)
             {

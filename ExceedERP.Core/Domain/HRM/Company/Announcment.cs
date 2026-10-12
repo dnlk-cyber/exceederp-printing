@@ -20,6 +20,20 @@ namespace ExceedERP.Core.Domain.HRM.Company
         public string DateAnnAmharic { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        public bool IsTransfered { get; set; }
+        public bool IsForAllEmployee { get; set; }
 
     }
+    public class AnnouncmentAttachment
+    {
+        public int AnnouncmentAttachmentId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+        public int AnnouncmentId { get; set; }
+        public Announcment Announcment { get; set; }
+    }
+
 }

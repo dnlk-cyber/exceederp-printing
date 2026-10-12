@@ -9,7 +9,7 @@
                                           .CascadeFrom("RegionId")
           .DataSource(dataSource =>
           {
-              dataSource.Read(read => read.Action("GetZones", "HRMDataProvider", new { area = "HRM" }).Data("filterZones"))
+              dataSource.Read(read => read.Action("GetZones", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterZones"))
                   .ServerFiltering(true);
           })
                         .ValuePrimitive(true)

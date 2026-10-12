@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeeSalaryObjectDataSource : List<EmployeeJob>
+    public class EmployeeSalaryObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private string cultureName = GlobalHelper.GetCurrentCulture();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeJob> GetEmployeeSalary(int min, int max, string branchId, string orgStructureId, DateTime from, DateTime to, string status)
+        public List<EmployeeJob> GetEmployeeSalary(int min, int max, string branchId,string bussinessUnitId, string orgStructureId, DateTime from, DateTime to, string status)
         {
             List<EmployeeJob> EmployeeInfoList = new List<EmployeeJob>();
 
@@ -26,6 +26,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 int.TryParse(branchId, out int braId);
                 placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+            }
+            if (bussinessUnitId != null)
+            {
+                int.TryParse(bussinessUnitId, out int uId);
+                placements = placements.Where(x=>x.BusinessUnitId==uId).ToList();
             }
             if (orgStructureId != null)
             {
@@ -61,38 +66,26 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         EmployeeInfo.EmployeeId = employee.EmployeeCode;
 
-                        if (employee.Gender == Gender.MALE)
-                        {
-                            EmployeeInfo.Sex = "ወንድ";
-                        }
-                        else
-                        {
-                            EmployeeInfo.Sex = "ሴት";
-                        }
-
-                        EmployeeInfo.FullName = employee.FullNameAmharic;
-
+                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
+                        EmployeeInfo.FullName = (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                                        ? $"{employee.FirstName} {employee.MiddleName} {employee.LastName}"
+                                        : $"{employee.FirstNameEnglish} {employee.MiddleNameEnglish} {employee.LastNameEnglish}";
                         var rank = db.Ranks.FirstOrDefault(x => x.RankId == l.RankId);
                         if (rank != null)
                         {
                             EmployeeInfo.Rank = rank.RankName;
                         }
-
                         var look = db.Lookups.FirstOrDefault(x => x.LookupId == l.LookupId);
                         if (look != null)
                         {
                             EmployeeInfo.JobTitle = look.Description;
                         }
-
                         EmployeeInfo.Salary = l.Salary;
-
                         var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == l.OrgStructureId);
-
                         if (deptt != null)
                         {
                             EmployeeInfo.Departement = deptt.Name;
                         }
-
                         EmployeeInfoList.Add(EmployeeInfo);
                     }
                 }
@@ -104,16 +97,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         EmployeeInfo.EmployeeId = employee.EmployeeCode;
 
-                        if (employee.Gender == Gender.MALE)
-                        {
-                            EmployeeInfo.Sex = "ወንድ";
-                        }
-                        else
-                        {
-                            EmployeeInfo.Sex = "ሴት";
-                        }
-                        EmployeeInfo.FullName = employee.FullNameAmharic;
-
+                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
+                        EmployeeInfo.FullName = (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                                                              ? $"{employee.FirstName} {employee.MiddleName} {employee.LastName}"
+                                                              : $"{employee.FirstNameEnglish} {employee.MiddleNameEnglish} {employee.LastNameEnglish}";
                         var rank = db.Ranks.FirstOrDefault(x => x.RankId == l.RankId);
 
                         if (rank != null)
@@ -144,6 +131,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return EmployeeInfoList.OrderBy(x => x.EmployeeId).ToList();
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

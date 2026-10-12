@@ -10,6 +10,9 @@ using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -19,7 +22,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         HrmConstants.HRDepartmentHead, 
         HrmConstants.HREmployeeSelfService)]
 
-    public class InternalCustomerPerformanceEvaluationsController : Controller
+    public class InternalCustomerPerformanceEvaluationsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -35,6 +38,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = internalCustomerPerformanceEvaluation.OrgStructureId,
                 PerformanceRequestPeriodId = internalCustomerPerformanceEvaluation.PerformanceRequestPeriodId,
                 IsConfirmed = internalCustomerPerformanceEvaluation.IsConfirmed,
+                Remark = internalCustomerPerformanceEvaluation.Remark,
 
             });
 
@@ -50,6 +54,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 NumberOfEmployee = internalCustomerPerformance.NumberOfEmployee,
                 OrgStructureId = internalCustomerPerformance.OrgStructureId,
                 IsConfirmed = internalCustomerPerformance.IsConfirmed,
+                Remark = internalCustomerPerformance.Remark,
 
 
             });
@@ -108,12 +113,62 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 PerformanceRequestPeriodId = internalCustomerPerformance.PerformanceRequestPeriodId,
                 NumberOfEmployee = internalCustomerPerformance.NumberOfEmployee,
                 IsConfirmed = internalCustomerPerformance.IsConfirmed,
-                OrgStructureId = internalCustomerPerformance.OrgStructureId
-                
+                OrgStructureId = internalCustomerPerformance.OrgStructureId,
+                Remark = internalCustomerPerformance.Remark,
+
             };
             return entity;
         }
         public JsonResult InternalCustomerEvaluatorConfirmation(int id)
+        {
+            // Find the evaluator by ID or return error if not found
+            var evaluator = db.InternalCustomerPerformanceEvaluations.Find(id);
+
+            if (evaluator == null)
+            {
+                // Return error if no evaluation record found
+                return Json(new { Message = "The internal customer evaluation with the provided ID could not be found. Please check the ID and try again.", Status = "Error" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Check if the evaluation has already been confirmed
+            if (evaluator.IsConfirmed)
+            {
+                // If already confirmed, notify the user that no further action is needed
+                return Json(new { Message = "This evaluation has already been confirmed. No further approval is necessary.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                // Approve the evaluation and save changes
+                evaluator.IsConfirmed = true;
+                db.Entry(evaluator).State = EntityState.Modified;
+                db.SaveChanges();
+                var head = db.Placements
+                   .FirstOrDefault(x => x.OrgStructureId == evaluator.OrgStructureId
+                   && x.isCurrent
+                   && x.IsHead);
+                // Prepare and send the notification
+                NotifModels notif = new NotifModels
+                {
+                    UserId = UserInformationHelper.GetEmployeeUserId(head?.HeadId??0), // Send notification to the evaluator
+                    Title = "Evaluation Approval Notification",
+                    Message = $"The evaluation for internal customer {UserInformationHelper.GetEmployeeFullName(User.Identity.Name)} has been successfully approved. You may now proceed with the next steps.",
+                    URL = "/HRM/AssignEvaluators" // You can customize the URL
+                };
+
+                Notify.NotifyUser(notif);
+
+                // Return success message after successful approval
+                return Json(new { Message = "Evaluation successfully approved and notification sent.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                // Return a detailed error message if something goes wrong
+                return Json(new { Message = $"An error occurred while processing the request: {ex.Message}. Please try again later or contact support if the issue persists.", Status = "Error" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult InternalCustomerEvaluatorConfirmationCCC(int id)
         {
             var evaluator = db.InternalCustomerPerformanceEvaluations.Find(id);
             if (evaluator != null)

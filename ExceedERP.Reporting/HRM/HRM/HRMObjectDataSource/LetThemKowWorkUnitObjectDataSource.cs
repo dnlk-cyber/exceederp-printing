@@ -13,7 +13,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
     
 
     [DataObject]
-    public class LetThemKowWorkUnitObjectDataSource : List<LetThemKnow>
+    public class LetThemKowWorkUnitObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -43,6 +43,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return letThemKnowList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

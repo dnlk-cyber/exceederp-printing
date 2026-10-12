@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class ExperienceAmharicTwoODS
+    public class ExperienceAmharicTwoODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -236,6 +236,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return experienceList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

@@ -7,65 +7,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@*<legend>Swapping Employee Placements</legend>
-    <div class="row">
 
-        <div class="col-md-2">
-
-            <label class="category-label" for="EmployeeId">First @Resources.Employee</label>
-            @(Html.Kendo().DropDownListFor(m => m)
-                .Name("EmployeeId1")
-                .DataValueField("EmployeeId")
-                .DataTextField("FullNameaEnglish")
-                .OptionLabel(Resources.Select)
-                .Filter("contains")
-                .HtmlAttributes(new { style = "width:200px;height:50px" })
-
-                .DataSource(source =>
-                {
-                    source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee1s"))
-            .ServerFiltering(true);
-                })
-                .ValuePrimitive(true)
-            )
-
-        </div>
-        <div class="col-md-2">
-
-            <label class="category-label" for="EmployeeId">Second @Resources.Employee</label>
-            @(Html.Kendo().DropDownListFor(m => m)
-                .Name("EmployeeId2")
-                .DataValueField("EmployeeId")
-                .DataTextField("FullNameaEnglish")
-                .OptionLabel(Resources.Select)
-                .Filter("contains")
-                .HtmlAttributes(new { style = "width:200px;height:50px" })
-
-                .DataSource(source =>
-                {
-                    source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee2s"))
-                    .ServerFiltering(true);
-                })
-                .ValuePrimitive(true)
-            )
-
-        </div>
-        <div class="col-md-1">
-
-            <br />
-
-            @(Html.Kendo().Button()
-                  .Name("btnRefresh")
-                  .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width:200px;height:50px" })
-                  .Events(e => e.Click("employeeSwappingProcess"))
-                  .Content("Swap"))
-            &nbsp; &nbsp;
-            &nbsp; &nbsp;
-            &nbsp;  &nbsp;
-
-
-        </div>
-    </div>*@
 <!DOCTYPE html>
 <html>
 <head>
@@ -136,7 +78,7 @@
                                             .HtmlAttributes(new { style = "width:200px;height:50px" })
                                             .DataSource(source =>
                                             {
-                                                source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee1s"))
+                                                source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployee1s"))
                                                     .ServerFiltering(true);
                                             })
                                             .ValuePrimitive(true)
@@ -153,7 +95,7 @@
                                             .HtmlAttributes(new { style = "width:200px;height:50px" })
                                             .DataSource(source =>
                                             {
-                                                source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee2s"))
+                                                source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployee2s"))
                                                     .ServerFiltering(true);
                                             })
                                             .ValuePrimitive(true)
@@ -167,10 +109,10 @@
             </td>
             <td class="col-md-1">
                 @(Html.Kendo().Button()
-                                                      .Name("btnRefresh")
-                                                      .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width:200px;height:50px" })
-                                                      .Events(e => e.Click("employeeSwappingProcess"))
-                                                      .Content("Placement Swap"))
+                                .Name("btnRefresh")
+                                .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width:200px;height:50px" })
+                                .Events(e => e.Click("employeeSwappingProcess"))
+                                .Content("Placement Swap"))
             </td>
         </tr>
     </table>

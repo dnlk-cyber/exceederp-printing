@@ -8,20 +8,38 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
 {
    public class ChangeOfPayrollVM
-    {
+   {
         public string FullName { get; set; }
+        public string FullNameAmharic { get; set; }
         public string EmpCode { get; set; }
+        public string FromBranch { get; set; }
+        public string FromDepartment { get; set; }
+        public string FromBussnessUnit { get; set; }
         public string Branch { get; set; }
         public string Department { get; set; }
+        public string BussnessUnit { get; set; }
         public string JobTitle { get; set; }
         public string AssignmentDate { get; set; }
+        public string HiredDate { get; set; }
         public string AssignmentType { get; set; }
+        public string Resaon { get; set; }
         public string Salary { get; set; }
         public string Step { get; set; }
         public string Rank { get; set; }
         public string ApprovedBy { get; set; }
-        public string PreparedBy { get; set; }
+        public Image Signature { get; set; }
 
+        // General Manager (GM) Approval
+        public string GMApprovedBy { get; set; }
+        public string GMApprovedDate { get; set; }
+        public Image GMSignature { get; set; }
+
+        // Deputy General Manager (DGM) Approval
+        public string DGMApprovedBy { get; set; }
+        public string DGMApprovedDate { get; set; }
+        public Image DGMSignature { get; set; }
+
+        public string PreparedBy { get; set; }
         public string Name { get; set; }
         public string AmharicName { get; set; }
         public string EnglishName { get; set; }
@@ -34,5 +52,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Fax { get; set; }
         public string Pobox { get; set; }
         public string Tel { get; set; }
+
     }
 }

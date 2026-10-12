@@ -52,7 +52,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "HR_EmployeeDetail_Experience_ClearanceDateTime", ResourceType = typeof(Localization.Resources))]
-        public DateTime ClearanceDateTime { get; set; }
+        public DateTime? ClearanceDateTime { get; set; }
         [Display(Name = "HR_EmployeeDetail_Experience_ClearanceDateTime", ResourceType = typeof(Localization.Resources))]
         public string ClearanceDateTimeAm { get; set; }
         [Display(Name = "HR_EmployeeDetail_Experience_CleranceReason", ResourceType = typeof(Localization.Resources))]

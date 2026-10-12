@@ -138,6 +138,38 @@ namespace ExceedERP.Helpers.Common
                 db.SaveChanges();
             }
         }
+        public static string GetUserNameByEmployeeId(int employeeId)
+        {
+            string userName = null;
+
+            string strcon = ConfigurationManager.ConnectionStrings["ExceedERPUserManagment"].ConnectionString;
+
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                try
+                {
+                    con.Open();
+                    SqlCommand cmd = new SqlCommand(
+                        "SELECT UserName FROM [User].AspNetUsers WHERE EmployeeId = @empId",
+                        con);
+
+                    cmd.Parameters.AddWithValue("@empId", employeeId);
+
+                    var result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        userName = result.ToString();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // TODO: log error
+                }
+            }
+
+            return userName; // returns null if not found
+        }
+
         public static void OperationLog(string ip, string type, string status, string user, string description,Modules module)
         {
             using (ExceedDbContext db = new ExceedDbContext())

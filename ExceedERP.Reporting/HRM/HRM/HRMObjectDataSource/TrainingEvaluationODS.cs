@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class TrainingEvaluationODS
+    public class TrainingEvaluationODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -50,16 +50,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             switch (evalual.Score)
                             {
                                 case TrainingScore.Very_High:
-                                    evaluation.Excellent = "✓";
+                                    evaluation.Excellent = "✓✓✓✓✓";
                                     break;
                                 case TrainingScore.High:
-                                    evaluation.VeryGood = "✓";
+                                    evaluation.VeryGood = "✓✓✓✓";
                                     break;
                                 case TrainingScore.Medium:
-                                    evaluation.Good = "✓";
+                                    evaluation.Good = "✓✓✓";
                                     break;
                                 case TrainingScore.Low:
-                                    evaluation.Low = "✓";
+                                    evaluation.Low = "✓✓";
                                     break;
                                 case TrainingScore.Very_Low:
                                     evaluation.VeryLow = "✓";
@@ -78,6 +78,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return trainingEvaluationList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         [Display(Name = "HR_LeaveManagment_LeaveEntitle_PersonEmployee", ResourceType = typeof(Localization.Resources))]
         public int EmployeeId { get; set; }
         public virtual Person_Employee Employee { get; set; }
-
+    
         [Required]
         [Display(Name = "HR_LeaveManagment_LeaveEntitle_LeavePeriod", ResourceType = typeof(Localization.Resources))]
         public int GlFiscalYearId { get; set; }
@@ -59,7 +59,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
 
     }
 
-    public class LeaveEntitlementHistory : TrackUserOperation
+    public class LeaveEntitlementHistory: TrackUserOperation
     {
         [Key]
         public int LeaveEntitlementHistoryId { get; set; }
@@ -79,7 +79,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         // Optional but recommended
         public virtual Person_Employee Employee { get; set; }
 
-
+       
     }
 
 }

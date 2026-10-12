@@ -1,0 +1,15 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+            .OptionLabel(Resources.Select)
+            .DataTextField("Name")
+            .DataValueField("CriteriaCategoryId")
+            .Filter("contains")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetCriteriaCategory", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                    .ServerFiltering(false);
+
+            })
+            .ValuePrimitive(true)
+)

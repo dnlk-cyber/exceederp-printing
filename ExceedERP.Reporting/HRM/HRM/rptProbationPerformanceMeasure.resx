@@ -117,20 +117,179 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>Emloyeed Status</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>Employment Date</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>3. Department Head</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Department Title</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>1.Employee Name</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>45 Day Trial</value>
+  </data>
+  <data name="textBox33.Value" xml:space="preserve">
+    <value>= Fields.Probation</value>
+  </data>
+  <data name="textBox40.Value" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Fields.Contrat</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>Freelancer</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>= Fields.Freelance</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>= Fields.HireDate</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>= Fields.Workunit</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Fields.JobTitle</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.EmpName</value>
+  </data>
+  <data name="textBox36.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox37.Value" xml:space="preserve">
+    <value>Evaluation criteria</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>Very Good</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>Good	</value>
+  </data>
+  <data name="textBox32.Value" xml:space="preserve">
+    <value>Probation</value>
+  </data>
+  <data name="textBox34.Value" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="textBox38.Value" xml:space="preserve">
+    <value>The benchmark</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>=Today()</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>from Human Resource Development</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>to_______________________________________</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>6. The fisrt 45 days trial end Date </value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>textBox8</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Fields.Measurment</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>= Fields.VeryGood</value>
+  </data>
+  <data name="textBox35.Value" xml:space="preserve">
+    <value>= Fields.Good</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>= Fields.Enough</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>= Fields.Low</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>= RowNumber("tblPro")</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>7. Evaluation opinion to be filled by the chief officer</value>
+  </data>
   <data name="textBox55.Value" xml:space="preserve">
-    <value>አጠቃላይ አስተያይት  _________________________________________________________________________________________________________________________________
+    <value>Summarized Comment _________________________________________________________________________________________________________________________________
 _________________________________________________________________________________________________________________________________________</value>
   </data>
+  <data name="textBox54.Value" xml:space="preserve">
+    <value>Name_________________________________________________</value>
+  </data>
+  <data name="textBox53.Value" xml:space="preserve">
+    <value>Sign_______________________ </value>
+  </data>
+  <data name="textBox52.Value" xml:space="preserve">
+    <value>Date_____________________________</value>
+  </data>
   <data name="textBox51.Value" xml:space="preserve">
-    <value>8. ግምገማዉን የሰጠው የዘርፉ ሃላፊ አስተያየት  ___________________________________________________________________________________________________________
+    <value>8. The opinion of the head of the sector who gave the evaluation___________________________________________________________________________________________________________
 _________________________________________________________________________________________________________</value>
+  </data>
+  <data name="textBox50.Value" xml:space="preserve">
+    <value>Name_________________________________________________</value>
+  </data>
+  <data name="textBox49.Value" xml:space="preserve">
+    <value>Sign _______________________ </value>
+  </data>
+  <data name="textBox48.Value" xml:space="preserve">
+    <value>Date_____________________________</value>
   </data>
   <data name="textBox43.Value" xml:space="preserve">
-    <value>9. የሃብት አስተዳደር ቢዝነስ ዘርፍ አስተያየት   _______________________________________________________________________________________________________
+    <value>9. Resource management business sector opinion  _______________________________________________________________________________________________________
 _________________________________________________________________________________________________________</value>
   </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>Name_________________________________________________</value>
+  </data>
+  <data name="textBox41.Value" xml:space="preserve">
+    <value>Sign _______________________ </value>
+  </data>
+  <data name="textBox39.Value" xml:space="preserve">
+    <value>Date_____________________________</value>
+  </data>
   <data name="textBox47.Value" xml:space="preserve">
-    <value>10. የዋና ስራ አስፈጻሚ ዉሳኔ   _______________________________________________________________________________________________________
+    <value>10. Excutive Head Decision _______________________________________________________________________________________________________
 _________________________________________________________________________________________________________</value>
+  </data>
+  <data name="textBox46.Value" xml:space="preserve">
+    <value>Name_________________________________________________</value>
+  </data>
+  <data name="textBox45.Value" xml:space="preserve">
+    <value>Sign_______________________ </value>
+  </data>
+  <data name="textBox44.Value" xml:space="preserve">
+    <value>Date_____________________________</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>A performance evaluation report for permanent employees</value>
+  </data>
+  <data name="textBox56.Value" xml:space="preserve">
+    <value>page: {PageNumber}</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee</value>
   </data>
 </root>

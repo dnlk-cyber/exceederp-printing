@@ -11,7 +11,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
     [DataObject]
     public class EmployeeMasterColumnsODS
     {
-        private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> GetEmployeeMasterColumns()
@@ -45,7 +44,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             columns.Add("Descipline");
             columns.Add("InternalExpriance");
             columns.Add("InternalExprianceDetail");
-            columns.Add(".ExpirianceDetails");
+            columns.Add("ExpirianceDetails");
+
+            // Newly added master list columns
+            columns.Add("PhoneNo");
+            columns.Add("AccountNo");
+            columns.Add("ResponsibilityAllowance");
+            columns.Add("ProfessionalAllowance");
+            columns.Add("ProjectAllowance");
+            columns.Add("DesertAllowance");
+            columns.Add("TransportAllowance");
+            columns.Add("NetPay");
 
             return columns;
         }

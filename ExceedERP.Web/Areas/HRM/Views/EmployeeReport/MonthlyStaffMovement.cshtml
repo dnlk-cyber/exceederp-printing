@@ -1,0 +1,49 @@
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var culture = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
+}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Monthly Staff Movement</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+   <script src="~/ReportViewer/js/jquery-3.3.1.min.js"></script>
+   <link href="~/ReportViewer/css/2018.2.620/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/ReportViewer/css/kendo.blueopal.min.css" rel="stylesheet" />
+
+    <script src="~/Scripts/kendo/2018.3.911/kendo.all.min.js"></script>
+    <script src="~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js"></script>
+   <script src="@Url.Content("~/ReportViewer/js/telerikReportViewer-12.2.18.912.min.js")"></script>
+
+    <script src="~/Scripts/Exceed/KendoReport.js"></script>
+
+</head>
+<body>
+
+@(Html.TelerikReporting().ReportViewer()
+        .Id("reportViewer1")
+                  .ParameterEditors(
+                            editors => editors
+                                .SingleSelectEditor("createSingleSelectEditor")
+                                .MultiValueEditor("createMultiSelectEditor"))
+
+        .ServiceUrl(Url.Content("/api/reports/"))
+            .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.HRM.HRM.MonthlyStaffMovementReport, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", Parameters = {
+                    new Parameter("FormTitle", ViewBag.FormTitle),
+                    new Parameter("FormNumber", ViewBag.FormNumber)
+                }
+            })
+        .ViewMode(ViewMode.Interactive)
+        .ScaleMode(ScaleMode.Specific)
+        .Scale(1.0)
+        .PersistSession(false)
+        .PrintMode(PrintMode.AutoSelect)
+)
+
+</body>
+</html>

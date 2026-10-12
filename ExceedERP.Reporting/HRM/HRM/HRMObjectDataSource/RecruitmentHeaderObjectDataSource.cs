@@ -12,7 +12,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
 
     [DataObject]
-    public class RecruitmentHeaderObjectDataSource : List<InternalVacancy>
+    public class RecruitmentHeaderObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -108,11 +108,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
                     }
 
-                    applicantHeader.Salary = vacancy.Salary;
+                    applicantHeader.Salary = vacancy.Salary.ToString();
 
                     if (applicantHeader.Salary == "0")
                     {
-                        applicantHeader.Salary = "በድርጅቱ ስኬል ";
+                        //applicantHeader.Salary = "በድርጅቱ ስኬል ";
+                        applicantHeader.Salary = "By The company's scale ";
                     }
 
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
@@ -123,11 +124,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     // applicantHeader.RecruitmentType = vacancy.VacancyType;
                     if (vacancy.VacancyType == VacancyType.PERMANENT)
                     {
-                        applicantHeader.RecruitmentType = "ቋሚ";
+                        //applicantHeader.RecruitmentType = "ቋሚ";
+                        applicantHeader.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
                     }
                     else
                     {
-                        applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        //applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        applicantHeader.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+
                     }
 
                     //var rank = db.Ranks.FirstOrDefault(x => x.RankId == vacancy.RankId);
@@ -141,10 +145,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             return applicantHeaderList;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 
     [DataObject]
-    public class RecruitmentInternalHeaderObjectDataSource : List<InternalVacancy>
+    public class RecruitmentInternalHeaderObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -228,11 +236,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     applicantHeader.EduandExp = vacancy.TotalYearOfExperience.ToString();
                     applicantHeader.ExperienceLevel = vacancy.ExperienceLevel.ToString();
-                    applicantHeader.Salary = vacancy.Salary;
+                    applicantHeader.Salary = vacancy.Salary.ToString();
 
                     if (applicantHeader.Salary == "0")
                     {
-                        applicantHeader.Salary = "በድርጅቱ ስኬል";
+                        //applicantHeader.Salary = "በድርጅቱ ስኬል";
+                        applicantHeader.Salary = "By The company's scale ";
+
                     }
 
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
@@ -243,11 +253,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     //applicantHeader.RecruitmentType = vacancy.VacancyType;
                     if (vacancy.VacancyType == VacancyType.PERMANENT)
                     {
-                        applicantHeader.RecruitmentType = "ቋሚ";
+                       // applicantHeader.RecruitmentType = "ቋሚ";
+                        applicantHeader.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
+
+
                     }
                     else
                     {
-                        applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        // applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        applicantHeader.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+
                     }
 
                     //var rank = db.Ranks.FirstOrDefault(x => x.RankId == vacancy.RankId);
@@ -260,6 +275,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return applicantHeaderList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 

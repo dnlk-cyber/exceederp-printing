@@ -4,14 +4,12 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using ExceedERP.Core.Domain.Global;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -19,7 +17,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         HrmConstants.HRPerformanceUser,
         HrmConstants.HRPerformanceAdmin,
         HrmConstants.HREmployeeSelfService)]
-    public class ProbationPerformanceSettingController : Controller
+    public class ProbationPerformanceSettingController : BaseController
     {
         // GET: HRM/ProbationPerformanceSetting
         private ExceedDbContext db = new ExceedDbContext();

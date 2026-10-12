@@ -6,21 +6,24 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+
 }
 <div class="col-md-2 flex-item custom-dropdown">
     <label for="FromGrade" class="custom-label">From Grade:</label>
     <br />
     @(Html.Kendo().DropDownListFor(m => m)
-                        .Name("FromGrade")
-                        .ValuePrimitive(true)
-                        .OptionLabel(Resources.Select)
-                        .HtmlAttributes(new { style = "width:120px", @class = "custom-dropdown-field" })
-                        .DataTextField("RankName")
-                        .DataValueField("RankId")
-                        .DataSource(dataSource =>
-                        {
-                            dataSource.Read(read => read.Action("GetRank", "HRMDataProvider"));
-                        }))
+          .Name("FromGrade")
+          .ValuePrimitive(true)
+          .OptionLabel(Resources.Select)
+          .HtmlAttributes(new { style = "width:120px", @class = "custom-dropdown-field" })
+          .DataTextField("RankName")
+          .DataValueField("RankId")
+          .DataSource(dataSource =>
+          {
+              dataSource.Read(read => read.Action("GetRank", "HRMDataProvider").Data("sendForgery"));
+
+          }))
 </div>
 
 <div class="col-md-2 flex-item custom-dropdown">
@@ -35,7 +38,7 @@
                         .DataValueField("RankId")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetRank", "HRMDataProvider"));
+                            dataSource.Read(read => read.Action("GetRank", "HRMDataProvider").Data("sendForgery"));
                         }))
 </div>
 
@@ -52,7 +55,7 @@
                         .DataValueField("StepId")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
+                            dataSource.Read(read => read.Action("GetStep", "HRMDataProvider").Data("sendForgery"));
                         }))
 </div>
 
@@ -69,9 +72,28 @@
                         .DataValueField("StepId")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
+                            dataSource.Read(read => read.Action("GetStep", "HRMDataProvider").Data("sendForgery"));
 
                         }))
+</div>
+
+<div class="col-md-2 flex-item custom-dropdown">
+    <label for="hireDate" class="custom-label">Before Date:</label>
+    <br />
+    @if (useEthiopian)
+    {
+
+        @Html.TextBox("HiredDateAm", "", new { disabled = "disabled", @class = "et-popup-picker" });<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+
+
+    }
+    else
+    {
+        @(Html.Kendo().DatePicker().Name("HiredDateGorg").HtmlAttributes(new { style = "width:150px;height:40px" }))
+
+    }
+
 </div>
 
 <div class="col-md-2 flex-item">
@@ -139,48 +161,66 @@
 
 <script>
      function handleButtonClick(e) {
-            e.preventDefault(); // Prevent default form submission behavior
+        e.preventDefault(); // Prevent default form submission behavior
 
-            var fromGrade = $("#FromGrade").data("kendoDropDownList").value();
-            var toGrade = $("#ToGrade").data("kendoDropDownList").value();
-            var fromStep = $("#FromStep").data("kendoDropDownList").value();
-            var toStep = $("#ToStep").data("kendoDropDownList").value(); // Corrected typo in variable name
+        var fromGrade = $("#FromGrade").data("kendoDropDownList").value();
+        var toGrade = $("#ToGrade").data("kendoDropDownList").value();
+        var fromStep = $("#FromStep").data("kendoDropDownList").value();
+        var toStep = $("#ToStep").data("kendoDropDownList").value(); // Corrected typo in variable name
+         $("#HiredDateAm").trigger("change");
+         var hireDateAm = $("#HiredDateAm").val();
+         var HiredDateAGorg = $("#HiredDateGorg").val();
 
             // Check conditions sequentially and return if any condition fails
-            if (fromGrade === "") {
+
+         if (fromGrade === "") {
                 alert("Please select From grade first");
                 return;
-            }
-            if (toGrade === "") {
+
+         }
+
+         if (toGrade === "") {
                 alert("Please select the to Grade first");
                 return;
-            }
-            if (fromStep === "") {
+
+         }
+
+         if (fromStep === "") {
                 alert("Please select from step");
                 return;
-            }
-            if (toStep === "") {
+
+         }
+
+         if (toStep === "") {
                 alert("Please select the to step");
                 return;
-                }
-            if (toStep === fromStep) {
-                alert(" From and  to step  can't be equal Please select another");
-                return;
-            }
-            if (fromGrade === toGrade) {
-                alert(" from and  to grade can't be equal Please select another");
-                return;
-            }
 
+         }
+         if (toStep === fromStep && fromGrade === toGrade) {
+             alert(" ‘From’ and ‘To’ steps and grades cannot be the same. Please select different values.");
+                return;
+         }
 
-        // If all conditions pass, make the AJAX request
+         if (hireDateAm == null && HiredDateAGorg == "") {
+             alert("Please select before hire  date first to updat saklary");
+
+         }
+        
         $('#loading-image').show();
         $.ajax({
             url: '@Url.Action("UpdateSalary", "EmployeePlacmentWithOJ")',
-            data: { fromRank: fromGrade, toRank: toGrade, fromStep: fromStep, toStep: toStep },
+            data: {
+                fromRank: fromGrade,
+                toRank: toGrade,
+                fromStep: fromStep,
+                toStep: toStep,
+                hireDateAm: hireDateAm,
+                hiredDateAGorg: HiredDateAGorg
+            },
             type: 'POST',
             cache: false,
-            success: function(result) {
+            success: function (result)
+            {
                 alert(result);
                 location.reload();
             }

@@ -1,4 +1,4 @@
-using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-   public class QuarterLengthODS
+   public class QuarterLengthODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<QuarterLengthVM> quarLengthList = new List<QuarterLengthVM>();
 
-            var quarterLengths = db.QuarterLengths.ToList();
+            var quarterLengths = db.QuarterLengths.OrderByDescending(x=>x.GlFiscalYearId).ToList();
 
             foreach(var quart in quarterLengths)
             {
@@ -36,7 +36,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 quarLengthList.Add(len);
             }
 
-            return quarLengthList;
+            return quarLengthList.OrderByDescending(x=>x.GLFiscalYearId).ToList();
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }    
 

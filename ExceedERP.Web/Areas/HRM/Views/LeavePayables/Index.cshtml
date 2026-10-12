@@ -4,7 +4,57 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<Legend>@Resources.NavigatorLeave_LeavePayable </Legend>
+<style>
+    .leave-payable-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+        .leave-payable-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .leave-payable-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .leave-payable-toolbar {
+        background-color: #f8f9fb;
+        border: 1px solid #e3e6ea;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-bottom: 15px;
+    }
+
+        .leave-payable-toolbar .form-group {
+            margin: 0 20px 0 0;
+        }
+
+        .leave-payable-toolbar label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+    .leave-payable-action-btn {
+        min-width: 100px;
+        text-align: center;
+    }
+
+        .leave-payable-action-btn i {
+            margin-right: 5px;
+        }
+</style>
+<div class="leave-payable-header">
+    <i class="fa fa-money"></i>
+    <Legend>@Resources.NavigatorLeave_LeavePayable </Legend>
+</div>
 @(Html.Kendo().Grid<LeavePayable>()
       .Name("LeavePayable_grid")
       .Columns(columns =>
@@ -69,40 +119,52 @@
 
                   items.Add().Text("Leave Payable Details").Content(
                     @<text>
-                        
 
-                        <div class="row">
-
-
-
-                            <div class="col-sm-3" style="padding-right:0px">
-                               
-                                @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("EmployeeId")
-                                        .OptionLabel("Select Employee")
-                                        .Filter("contains")
-                                        .DataTextField("FullNameaEnglish")
-                                        .DataValueField("EmployeeId")
-                                        .HtmlAttributes(new { style = "width: 170px;" })
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
-                                            .ServerFiltering(true);
+                        <div class="leave-payable-toolbar">
+                            <div class="form-inline" style="display:flex;flex-wrap:wrap;align-items:flex-end;">
+                                <div class="form-group">
+                                    <label>Employee</label>
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                            .Name("EmployeeId")
+                                            .OptionLabel("Select Employee")
+                                            .Filter("contains")
+                                            .DataTextField("FullNameaEnglish")
+                                            .DataValueField("EmployeeId")
+                                            .HtmlAttributes(new { style = "width: 220px;" })
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
+                                                .ServerFiltering(true);
 
 
 
-                                        }).ToClientTemplate()
-                                )
-
-                            </div>
-                            <div class="col-sm-3" style="padding-right:5px">
-
-                                <a onclick='return generateLeavePayable("#=LeavePayableId#")' href=' \#' title="Generate"><i class="fa fa-wrench fa-2x"></i>Generate</a>
-
-                            </div>
-                            <div class="col-sm-3" style="padding-right:5px">
-                                <a href='@Url.Action("LeavePayableReport", "LeaveReport")/#=LeavePayableId#' title="Print"><i class="fa fa-print fa-2x">Print</i></a>
-
+                                            }).ToClientTemplate()
+                                    )
+                                </div>
+                                <div class="form-group">
+                                    <label>Fiscal Year</label>
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                            .Name("SelectedFiscalYearId")
+                                            .OptionLabel("Pay All Eligible Years (Default)")
+                                            .DataTextField("Name")
+                                            .DataValueField("GlFiscalYearId")
+                                            .HtmlAttributes(new { style = "width: 230px;" })
+                                            .BindTo((IEnumerable)ViewData["PeriodList"])
+                                            .ToClientTemplate()
+                                    )
+                                </div>
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <a onclick='return generateLeavePayable("#=LeavePayableId#")' href=' \#' title="Generate" class="btn btn-primary btn-sm leave-payable-action-btn">
+                                        <i class="fa fa-wrench"></i>Generate
+                                    </a>
+                                </div>
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <a href='@Url.Action("LeavePayableReport", "LeaveReport")/#=LeavePayableId#' title="Print" class="btn btn-default btn-sm leave-payable-action-btn" target="_blank">
+                                        <i class="fa fa-print"></i>Print
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         @(Html.Kendo().Grid<LeavePayableDetail>()
@@ -115,17 +177,23 @@
                                 columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                                 columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
                                 columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-                                columns.Bound(c => c.BasicSalary).Width(120);
-                                columns.Bound(c => c.Year1).Width(120);
-                                columns.Bound(c => c.Year2).Width(120);
-                                columns.Bound(c => c.PayableDays).Width(120);
-                                columns.Bound(c => c.Balance).Width(120);
-                                columns.Bound(c => c.AnnualLeavePerMonth).Width(140);
-                                columns.Bound(c => c.AgregateTaxableAmount).Width(150);
-                                columns.Bound(c => c.AgregateIncomeTax).Width(140);
-                                columns.Bound(c => c.BasicSalaryIncomeTax).Width(120);
-                                columns.Bound(c => c.TaxDifference).Width(120);
-                                columns.Bound(c => c.NetPayment).Width(120);
+                                columns.Bound(c => c.BasicSalary).Width(120).Format("{0:n2}");
+                                if (ViewBag.EnableTaxableAllowance == true)
+                                {
+                                    columns.Bound(c => c.TaxableAllowance).Width(130).Format("{0:n2}");
+                                    columns.Bound(c => c.TotalTaxableSalary).Title("Total Taxable Salary").Width(150).Format("{0:n2}");
+                                }
+                                columns.Bound(c => c.Year1).Width(120).Format("{0:n2}");
+                                columns.Bound(c => c.Year2).Width(120).Format("{0:n2}");
+                                columns.Bound(c => c.CurrentYear).Width(120).Format("{0:n2}");
+                                columns.Bound(c => c.PayableDays).Width(120).Format("{0:n2}");
+                                columns.Bound(c => c.Balance).Width(120).Format("{0:n2}");
+                                columns.Bound(c => c.AnnualLeavePerMonth).Width(140).Format("{0:n2}");
+                                columns.Bound(c => c.AgregateTaxableAmount).Width(150).Format("{0:n2}");
+                                columns.Bound(c => c.AgregateIncomeTax).Width(140).Format("{0:n2}");
+                                columns.Bound(c => c.BasicSalaryIncomeTax).Width(120).Format("{0:n2}");
+                                columns.Bound(c => c.TaxDifference).Width(120).Format("{0:n2}");
+                                columns.Bound(c => c.NetPayment).Width(120).Format("{0:n2}");
 
 
                                 columns.Command(command =>
@@ -185,6 +253,7 @@
                                     model.Field(p => p.OrgStructureId).Editable(false);
 
                                     model.Field(p => p.Balance).Editable(false);
+                                    model.Field(p => p.TotalTaxableSalary).Editable(false);
 
 
                                 })
@@ -214,11 +283,12 @@
 
     function generateLeavePayable(id) {
         var employee = $("#EmployeeId").val();
+        var selectedFiscalYearId = $("#SelectedFiscalYearId").val();
         $('#loading-image').show();
         $.ajax({
             type: "POST",
             url: '@Url.Action("GenerateLeavePayable", "LeavePayables", new { area = "HRM" })',
-            data: { id: id, employee: employee},
+            data: { id: id, employee: employee, selectedFiscalYearId: selectedFiscalYearId },
             success: function (result)
             {
                 alert(result.Message);
@@ -233,12 +303,14 @@
         });
     }
 
-    function filterEmployeeBranch() {
+    function filterEmployeeBranch()
+    {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
 
         };
     }
+
     function sync_handler(e) {
         this.read();
 

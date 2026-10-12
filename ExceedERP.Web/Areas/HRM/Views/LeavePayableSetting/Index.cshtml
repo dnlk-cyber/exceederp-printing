@@ -10,6 +10,11 @@
           .Columns(columns =>
           {
               columns.Bound(c => c.CurrentValue).Width(200);
+              columns.Bound(c => c.EnableTaxableAllowance)
+                     .Title("Enable Taxable Allowance")
+                     .ClientTemplate("<input type='checkbox' disabled='true' value='#=EnableTaxableAllowance#' " +
+                                     "# if (EnableTaxableAllowance) { # checked='checked' # } # />")
+                     .Width(160);
               columns.Command(command =>
               {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);

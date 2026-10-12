@@ -11,6 +11,9 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -19,7 +22,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         HrmConstants.HRPerformanceAdmin,
         HrmConstants.HRDepartmentHead,
         HrmConstants.HREmployeeSelfService)]
-    public class PeerToPeerPerformanceEvaluationsController : Controller
+    public class PeerToPeerPerformanceEvaluationsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
        
@@ -116,46 +119,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             };
             return entity;
         }
-
         public JsonResult PeerToPeerEvaluatorConfirmation(int id)
         {
+            // Find the evaluator with the provided ID or return an error if not found
             var evaluator = db.PeerToPeerPerformanceEvaluations.Find(id);
-            if (evaluator != null)
-            {
-                if (evaluator.IsAsignmentApproved)
-                {
-                    var formattedData = new
-                    {
-                        Message = "You can't approve again, it is already approved.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    // Approve the assignment here
-                    evaluator.IsAsignmentApproved = true;
-                    db.Entry(evaluator).State = EntityState.Modified;
-                    db.SaveChanges();  // Make sure to save the changes in the database
 
-                    var formattedData = new
-                    {
-                        Message = "You successfully approved .",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-            }
-            else
+            if (evaluator == null)
             {
-                var formattedData = new
+                return Json(new { Message = "The evaluation record with the specified ID was not found. Please check the ID and try again.", Status = "Error" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Check if the assignment is already approved
+            if (evaluator.IsAsignmentApproved)
+            {
+                return Json(new { Message = "This evaluation has already been approved. You cannot approve it again.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                // Approve the assignment and save the changes
+                evaluator.IsAsignmentApproved = true;
+                db.Entry(evaluator).State = EntityState.Modified;
+                db.SaveChanges();
+
+                // Prepare and send the notification
+                NotifModels notif = new NotifModels
                 {
-                    Message = "No evaluation found for the provided ID.",
-                    Status = "Error"
+                    UserId = UserInformationHelper.GetEmployeeUserId(evaluator.EvaluatorId),
+                    Title = "New Evaluation Assigned",
+                    Message = $"You have been assigned to evaluate the performance of {UserInformationHelper.GetEmployeeFullNameById(evaluator.EmployeeId)}. Please complete the evaluation within the specified timeframe.",
+                    URL = "/HRM/PeerToPeerEmployeePerformance"
                 };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+                Notify.NotifyUser(notif);
+
+                return Json(new { Message = "Evaluation successfully approved and notification sent to the evaluator.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                // General error handling
+                return Json(new { Message = $"An error occurred while processing the request: {ex.Message}. Please try again later or contact support if the issue persists.", Status = "Error" }, JsonRequestBehavior.AllowGet);
             }
         }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

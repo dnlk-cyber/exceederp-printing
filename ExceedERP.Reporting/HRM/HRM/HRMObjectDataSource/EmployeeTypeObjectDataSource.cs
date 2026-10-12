@@ -18,8 +18,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<string> sourceList = Enum.GetValues(typeof(EmployeeStatus))
                                           .Cast<EmployeeStatus>()
                                           .Where(status => status != EmployeeStatus.NOTSELECTED)
-                                          .Select(status => status.ToString())
-                                          .ToList();
+                                          .Select(status => status.ToString()).ToList();
 
 
             return sourceList;
@@ -39,7 +38,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return sourceList;
         }
 
-
+       
 
     }
 }

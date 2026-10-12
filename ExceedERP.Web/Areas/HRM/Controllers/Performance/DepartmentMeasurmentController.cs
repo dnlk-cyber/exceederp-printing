@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Global;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
-    public class DepartmentMeasurmentController : Controller
+    public class DepartmentMeasurmentController : BaseController
     {
         // GET: HRM/DepartmentMeasurment
         private ExceedDbContext db = new ExceedDbContext();

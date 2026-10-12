@@ -117,4 +117,94 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>With Header?</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>= Fields.Pobox</value>
+  </data>
+  <data name="textBox49.Value" xml:space="preserve">
+    <value>= Fields.Tel</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Date:-</value>
+  </data>
+  <data name="l.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>To Inform: </value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>= Fields.Address</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>_________________________</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Fields.Address</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>CCC፡-  </value>
+  </data>
+  <data name="textBox43.Value" xml:space="preserve">
+    <value>___________________</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>= Fields. Abbreviation</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox40.Value" xml:space="preserve">
+    <value>Number:-</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.RecruitmentLetter</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox32.Value" xml:space="preserve">
+    <value>= Fields.Fax</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>W</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>= Fields.Email</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>om</value>
+  </metadata>
 </root>

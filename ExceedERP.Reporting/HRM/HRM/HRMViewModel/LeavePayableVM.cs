@@ -15,9 +15,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
     }
     public class LeavePayableDetailVM
     {
+        public string EmployeeCode { get; set; }
         public string EmployeeFullName { get; set; }
         public string Branch { get; set; }
         public string WorkUnit { get; set; }
+        public decimal BasicSalary { get; set; }
+
         public string FiscalYear1 { get; set; }
         public string FiscalYear2 { get; set; }
         public decimal Year1 { get; set; }

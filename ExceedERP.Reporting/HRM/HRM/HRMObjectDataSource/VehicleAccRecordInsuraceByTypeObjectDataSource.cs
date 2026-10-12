@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
@@ -8,7 +9,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class VehicleAccRecordInsuraceByTypeObjectDataSource : List<VehicleAccRecordInsuraceByType>
+    public class VehicleAccRecordInsuraceByTypeObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -109,6 +110,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             //}
             return InfoList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

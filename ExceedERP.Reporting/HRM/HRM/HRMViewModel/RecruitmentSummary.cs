@@ -36,5 +36,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public int Rank { get; set; }
         public decimal Performance { get; set; }
         public string RecruitmentResult { get; set; }
+        public decimal OtherResult { get; set; }
+        public string Remark { get; set; }
     }
 }

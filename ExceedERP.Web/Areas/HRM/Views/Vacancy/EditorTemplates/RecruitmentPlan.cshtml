@@ -11,7 +11,7 @@
       
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetJobTitleFromPlanToVac", "HRMDataProvider", new { area = "HRM" }).Data("filterJobTitle"))
+          dataSource.Read(read => read.Action("GetJobTitleFromPlanToVac", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterJobTitle"))
               .ServerFiltering(true);
       })
       .ValuePrimitive(true)          

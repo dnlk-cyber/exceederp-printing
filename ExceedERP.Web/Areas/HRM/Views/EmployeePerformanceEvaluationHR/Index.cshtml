@@ -5,194 +5,158 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+<div class="epe-page-header">
+    <i class="fa fa-bar-chart"></i>
+    <legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+</div>
 
-<div class="row">
-    <div class="col-md-12">
-           
-    <div class="cards-container">
-        <div class="k-card k-card-horizontal">
-                   
-            <div class="k-vbox k-column">
-                       
-                <div class="k-card-body">
-                           
-                    <div class="row">
+<div class="epe-toolbar">
+    <div class="epe-toolbar-title"><i class="fa fa-filter"></i> Filter Criteria</div>
+    <div class="row">
 
+        <div class="col-md-2 col-sm-6 col-xs-12">
 
+            <label class="category-label" @*for="Period"*@>Year</label>
 
-                        <div class="col-md-1">
+            @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("GlFiscalYearId")
+                        //.Placeholder("Period")
+                        .OptionLabel(Resources.Select)
+                        .Filter("contains")
+                        .DataTextField("Name")
+                        .DataValueField("GlFiscalYearId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                .ServerFiltering(false);
+                        })
+                        .HtmlAttributes(new { style = "width: 100%;" })
 
-                            <label class="category-label" @*for="Period"*@>Year</label>
+            )
 
-                            <br />
-
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("GlFiscalYearId")
-                                        //.Placeholder("Period")
-                                        .OptionLabel(Resources.Select)
-                                        .Filter("contains")
-                                        .DataTextField("Name")
-                                        .DataValueField("GlFiscalYearId")
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformanceEvaluationHR", new { area = "HRM" }).Data("sendForgery"))
-                                                .ServerFiltering(false);
-                                        })
-                                        .HtmlAttributes(new { style = "width: 120px;" })
-
-                            )
-
-                        </div>
-
-                        <div class="col-md-1">
-
-                            <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
-
-                            <br />
-
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("Period")
-                                        //.Placeholder("Period")
-                                        .OptionLabel(Resources.Select)
-                                        .Filter("contains")
-                                        .CascadeFrom("GlFiscalYearId")
-                                        .DataTextField("Name")
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformanceEvaluationHR", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
-                                            .ServerFiltering(true);
-                                        })
-                                    .DataValueField("QuarterId")
-                                    .AutoBind(false)
-                                    .Events(e => e.Change("Period"))
-                                    .HtmlAttributes(new { style = "width: 120px;" })
-
-                            )
-
-                        </div>
-
-                        <div class="col-md-1">
-
-                            <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
-                            <br />
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("EmployeeId")
-                                        .OptionLabel(Resources.Select)
-                                        .Filter("contains")
-                                        .DataTextField("FullNameaEnglish")
-                                        .DataValueField("EmployeeId")
-                                        .Events(e => e.Change("EmployeeId"))
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
-                                            .ServerFiltering(true);
-
-                                        })
-
-                                                .HtmlAttributes(new { style = "width: 150px;" })
-                            )
-
-                        </div>
-                        <div class="col-md-1">
-                            <label class="category-label" for="Role" style="width: 120px;">Evaluation-Level</label>
-
-                            <br />
-
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("Evaluation")
-                                        .OptionLabel(Resources.Select)
-                                        //.Placeholder("Evaluation Level")
-                                        .DataTextField("Text")
-                                        .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.HRM.PerformanceManagment.EvaluationTypeLevel)))
-                                        .DataValueField("Value")
-                                        .Filter("contains")
-                                        //.Events(x => x.Change("onCriteriaChange"))
-                                        .HtmlAttributes(new { style = "width:150px" })
-                                        .AutoBind(false)
-                                        //.Events(e => e.Change("Roles"))
-                                        .HtmlAttributes(new { style = "width: 150px;" })
-
-                            )
-                        </div>
-                        <div class="col-md-1">
-                            <label class="category-label" for="CriteriaCategoryId" style="width: 150px;">@Resources.Rpt_Criteria @Resources.Common_Lookup_Category</label>
-                            <br />
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                                .Name("CriteriaCategoryId")
-                                                .OptionLabel(Resources.Select)
-                                                // .Placeholder("Type")
-                                                //.CascadeFrom("Evaluation")
-                                                .DataTextField("Name")
-                                                //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
-                                                .DataValueField("CriteriaCategoryId")
-                                                .Filter("contains")
-                                               // .AutoBind(false)
-                                                .DataSource(dataSource =>
-                                                {
-                                                    dataSource.Read(read => read.Action("GetCriteriaCategory", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery")/*.Data("filterEvaluationCriteria")*/)
-                                                    .ServerFiltering(false);
-                                                })
-                                   
-                                                //.HtmlAttributes(new { style = "width: 150px;" })
-                            )
-                        </div>
-
-                        <div class="col-md-1">
-                            <label class="category-label" for="EvaluationCriteriaId" style="width: 150px;">@Resources.HR_PerformanceManagment_EmployeePerformance_EvaluationType</label>
-                            <br />
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                                .Name("EvaluationCriteriaId")
-                                                .OptionLabel(Resources.Select)
-                                                // .Placeholder("Type")
-                                                .CascadeFrom("Evaluation")
-                                                .CascadeFrom("CriteriaCategoryId")
-                                                .DataTextField("Name")
-                                                //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
-                                                .DataValueField("MeasurementDefinitionId")
-                                                .Filter("contains")
-                                                // .AutoBind(false)
-                                                .DataSource(dataSource =>
-                                                {
-                                                    dataSource.Read(read => read.Action("GetCorporateOrSectorEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEvaluationCriteria"))
-                                                    .ServerFiltering(true);
-                                                })
-                                                .HtmlAttributes(new { style = "width: 150px;" })
-                            )
-                        </div>
-
-                        <div class="col-md-1">
-
-                            <br />
-
-                            @(Html.Kendo().Button()
-                                        .Name("btnRefresh")
-                                        .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width: 100px;height:40px" })
-                                        .Events(e => e.Click("Process"))
-                                        .Content(Resources.Show))
-                            &nbsp; &nbsp;
-                            &nbsp; &nbsp;
-                            &nbsp;  &nbsp;
-
-                            @*@(Html.Kendo().Button()
-            .Name("btnApprove")
-            .HtmlAttributes(new { type = "button", @class = "btn btn-success" })
-            .Events(e => e.Click("Approve"))
-            .Content("Approve"))*@
-
-                        </div>
-                    </div>
-                         
-                </div>
-                       
-            </div>
         </div>
 
-    </div>
-    </div>
-    </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
 
-      
+            <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                  .Name("Period")
+                  //.Placeholder("Period")
+                  .OptionLabel(Resources.Select)
+                  .Filter("contains")
+                  .CascadeFrom("GlFiscalYearId")
+                  .DataTextField("Name")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetPeriodOrQuarterList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
+                      .ServerFiltering(true);
+
+                  })
+                  .DataValueField("QuarterId")
+                  .AutoBind(false)
+                  .Events(e => e.Change("Period"))
+                  .HtmlAttributes(new { style = "width: 100%;" })
+
+            )
+
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+
+            <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("EmployeeId")
+                        .OptionLabel(Resources.Select)
+                        .Filter("contains")
+                        .DataTextField("FullNameaEnglish")
+                        .DataValueField("EmployeeId")
+                        .Events(e => e.Change("EmployeeId"))
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
+                            .ServerFiltering(true);
+
+                        })
+                        .HtmlAttributes(new { style = "width: 100%;" })
+            )
+
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+            <label class="category-label" for="Role">Evaluation-Level</label>
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("Evaluation")
+                        .OptionLabel(Resources.Select)
+                        //.Placeholder("Evaluation Level")
+                        .DataTextField("Text")
+                        .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.HRM.PerformanceManagment.EvaluationTypeLevel)))
+                        .DataValueField("Value")
+                        .Filter("contains")
+                        //.Events(x => x.Change("onCriteriaChange"))
+                        .AutoBind(false)
+                        //.Events(e => e.Change("Roles"))
+                        .HtmlAttributes(new { style = "width: 100%;" })
+
+            )
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+            <label class="category-label" for="CriteriaCategoryId">@Resources.Rpt_Criteria @Resources.Common_Lookup_Category</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                                .Name("CriteriaCategoryId")
+                                .OptionLabel(Resources.Select)
+                                // .Placeholder("Type")
+                                //.CascadeFrom("Evaluation")
+                                .DataTextField("Name")
+                                //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
+                                .DataValueField("CriteriaCategoryId")
+                                .Filter("contains")
+                               // .AutoBind(false)
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetCriteriaCategory", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery")/*.Data("filterEvaluationCriteria")*/)
+                                    .ServerFiltering(false);
+                                })
+                                .HtmlAttributes(new { style = "width: 100%;" })
+            )
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+            <label class="category-label" for="EvaluationCriteriaId">@Resources.HR_PerformanceManagment_EmployeePerformance_EvaluationType</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                                .Name("EvaluationCriteriaId")
+                                .OptionLabel(Resources.Select)
+                                // .Placeholder("Type")
+                                .CascadeFrom("Evaluation")
+                                .CascadeFrom("CriteriaCategoryId")
+                                .DataTextField("Name")
+                                //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
+                                .DataValueField("MeasurementDefinitionId")
+                                .Filter("contains")
+                                // .AutoBind(false)
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetCorporateOrSectorEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEvaluationCriteria"))
+                                    .ServerFiltering(true);
+                                })
+                                .HtmlAttributes(new { style = "width: 100%;" })
+            )
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+
+            <label class="category-label">&nbsp;</label>
+
+            @(Html.Kendo().Button()
+                        .Name("btnRefresh")
+                        .HtmlAttributes(new { type = "button", @class = "k-primary epe-btn" })
+                        .Events(e => e.Click("Process"))
+                        .Content(Resources.Show))
+
+        </div>
+    </div>
+</div>
+
 <br />
 
     <div class="row">
@@ -287,6 +251,7 @@
 
         <div class="col-md-10">
 
+            <div class="epe-grid-wrapper">
             @(Html.Kendo().Grid<EmployeeMeasurement>()
                   .Name("Measurementgrid")
                   .Columns(columns =>
@@ -327,6 +292,7 @@
                              } )
                         .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceEvaluationHR").Data("sendForgery").Data("filterdata"))
                             ).ClientDetailTemplateId("template"))
+            </div>
      
 
        
@@ -408,6 +374,122 @@
         border-radius: 5%;
         padding-top: 1px;
         padding-bottom: 1px;
+    }
+
+    .epe-page-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+        .epe-page-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .epe-page-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .epe-toolbar {
+        padding: 18px 18px 14px;
+        background: #f8f9fa;
+        border: 1px solid #e2e6ea;
+        border-top: 3px solid #337ab7;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+        .epe-toolbar-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #337ab7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e2e6ea;
+        }
+
+            .epe-toolbar-title i {
+                margin-right: 6px;
+            }
+
+        .epe-toolbar .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px 18px;
+            align-items: end;
+            margin: 0;
+        }
+
+        .epe-toolbar .row > div {
+            padding: 0;
+            float: none;
+            width: auto;
+            margin-bottom: 0;
+        }
+
+        .epe-toolbar .category-label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+    .epe-btn {
+        width: 100%;
+        height: 34px;
+        font-weight: 600;
+    }
+
+    .epe-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #Measurementgrid.k-grid {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #Measurementgrid.k-grid .k-grid-header {
+            background-color: #f9fafb;
+        }
+
+        #Measurementgrid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        #Measurementgrid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #Measurementgrid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+
+    @@media (max-width: 767px) {
+        .epe-toolbar {
+            padding: 12px 12px 8px;
+        }
+
+        .epe-toolbar .row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        #Measurementgrid.k-grid {
+            font-size: 12px;
+        }
     }
     /*#grid .k-grid-toolbar {
         padding: .6em 1.3em;

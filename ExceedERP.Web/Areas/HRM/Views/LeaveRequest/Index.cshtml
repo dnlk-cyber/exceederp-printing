@@ -4,18 +4,17 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? false;
 }
 <legend>@Resources.NavigatorLeave_LeaveRequests</legend>
-<div class="row">
-    <p>
-        <span class="fa fa-circle" style="color:darkgrey;"></span>&nbsp;&nbsp;  Final Approved &nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:limegreen;"></span>&nbsp;&nbsp; Department Aproved &nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp; Waiting for approval,&nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:Orange;"></span>&nbsp;&nbsp; Pending &nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:LightGray;"></span>&nbsp;&nbsp; Rejected &nbsp;&nbsp;
 
-    </p>
+<!-- Status Legend -->
+<div class="well well-sm" style="background: #fff; border-radius: 4px; margin-bottom: 12px; padding: 8px 15px;">
+    <span class="fa fa-circle" style="color: #6b7280;"></span> Final Approved &nbsp;&nbsp;
+    <span class="fa fa-circle" style="color: #10b981;"></span> Department Approved &nbsp;&nbsp;
+    <span class="fa fa-circle" style="color: #0284c7;"></span> Waiting for Approval &nbsp;&nbsp;
+    <span class="fa fa-circle" style="color: #f59e0b;"></span> Pending &nbsp;&nbsp;
+    <span class="fa fa-circle" style="color: #ef4444;"></span> Rejected
 </div>
 
 @(Html.Kendo().Grid<LeaveRequest>()
@@ -23,10 +22,12 @@
       .Columns(columns =>
       {
 
-          columns.Bound(c => c.LeaveRequestId).Width(100).Title("Request Id");
-          columns.Bound(c => c.EmployeeCode).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.Bound(c => c.LeaveRequestId).Width(70).Title("#");
+          columns.Bound(c => c.IsApproved).Visible(false);
+          columns.Bound(c => c.EmployeeCode).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName + "(Local)").Width(160);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName + "(Eng.)").Width(160);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(110);
           columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
           columns.Bound(c => c.Type).EditorTemplateName("LeaveType").Width(100);
@@ -34,37 +35,49 @@
           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
           if (useEthiopian)
           {
-              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
-              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
+              columns.Bound(c => c.FromAmharic).Width(100);
+              columns.Bound(c => c.ToAmharic).Width(100);
           }
           else
           {
-              columns.Bound(c => c.From).Width(100);
-              columns.Bound(c => c.To).Width(100);
+              columns.Bound(c => c.From).Format("{0:dd/MM/yyyy}").Width(100);
+              columns.Bound(c => c.To).Format("{0:dd/MM/yyyy}").Width(100);
           }
-          columns.Bound(c => c.LeaveBalance).Width(110);
-          columns.Bound(c => c.LeaveDays).Width(100);
-          columns.Bound(c => c.Status).Width(100);
-          columns.Bound(c => c.Reason).Width(150);
-          columns.Bound(c => c.Day).Width(80);
+          columns.Bound(c => c.LeaveBalance).Title("Balance").Width(90);
+          columns.Bound(c => c.LeaveDays).Title("Days").Width(80);
+          columns.Bound(c => c.Status).Width(110);
+          columns.Bound(c => c.Reason).Width(140);
+          columns.Bound(c => c.LeaveActionTypes).Width(100).Visible(false);
+          columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
+              "<input type='checkbox' disabled='true' value='#=IsOnlineApproved#' " +
+              "# if (IsOnlineApproved) { #" + "checked='checked'" + "# } #" + "/>").Width(100);
+          columns.Bound(c => c.IsVoid).ClientTemplate(
+              "<input type='checkbox' disabled='true' value='#=IsVoid#' " +
+              "# if (IsVoid) { #" + "checked='checked'" + "# } #" + "/>").Width(90);
           columns.Command(command =>
           {
               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
               command.Destroy().Text(Resources.ActionButton_Cancel);
-          }).Width(190);
+          }).Width(180);
 
       })
     .ToolBar(toolbar =>
     {
-        //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
     })
-    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+    .Editable(editable => editable.Mode(GridEditMode.PopUp)
+        .TemplateName("LeaveRequest")
+        .Window(window =>
+        {
+            window.Title(Resources.NavigatorLeave_LeaveRequest);
+            window.Width(1150);
+            window.Scrollable(false);
+        }))
     .Events(events =>
     {
         events.DetailExpand("onDetailExpandUser");
         events.DataBound("onDataBound");
-        //events.Save("GetDate");
-        //events.Edit("GetDate");
+        events.Edit("onEdit");
+        events.Save("GetDate");
     })
     .Scrollable(h => h.Height(500))
     .Sortable(sortable =>
@@ -90,12 +103,10 @@
               })
               .Model(model => model.Id(p => p.LeaveRequestId))
               .Read(read => read.Action("LeaveRequest_Read", "LeaveRequest").Data("sendForgery"))
-              .Create(create => create.Action("LeaveRequest_Create", "LeaveRequest").Data("sendForgery"))
               .Update(update => update.Action("LeaveRequest_Update", "LeaveRequest").Data("sendForgery"))
               .Destroy(destroy => destroy.Action("LeaveRequest_Destroy", "LeaveRequest").Data("sendForgery"))
               ).ClientDetailTemplateId("template")
 )
-
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
@@ -110,7 +121,6 @@
                          .Columns(columns =>
                          {
                              columns.Bound(c => c.DateReqStatAm).Width(120);
-                             //columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(200);
                              columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutWaitingForApprovalAndApprove").Width(200);
                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
@@ -118,15 +128,12 @@
                              columns.Command(command =>
                              {
                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                 // command.Destroy().Text(Resources.ActionButton_Cancel);
                              }).Width(400);
                          })
                          .ToolBar(toolbar =>
                          {
 
                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                             //  toolbar.Custom().Action("SendForApproval", "LeaveRequest").Text(Resources.HR_Send_For_Approval);
-
 
                          })
 
@@ -136,7 +143,6 @@
                         {
                             e.DataBound("onRequestesStatusDataBound");
                             e.Edit("onRequestesStatusEdit");
-
 
                         })
                         .DataSource(dataSource => dataSource
@@ -148,7 +154,6 @@
                                     events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
                                     events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
 
-
                                 })
                                 .Model(model =>
                                 {
@@ -158,60 +163,37 @@
                                     model.Field(p => p.ApproverId).Editable(false);
                                     model.Field(p => p.ApproverDepartment).Editable(false);
                                 })
-                                .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { area="HRM", id = "#=LeaveRequestId#", referenceType = "Leave" }).Data("sendForgery"))
-                                .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { area = "HRM", id = "#=LeaveRequestId#", referenceType2 = "Leave" }).Data("sendForgery"))
+                                .Read(read => read.Url(Url.Action("RequestesStatus_Read", "RequestesStatus", new { area = "HRM", referenceType = "Leave" }) + "&id=#=LeaveRequestId#").Data("sendForgery"))
+                                .Create(create => create.Url(Url.Action("RequestesStatus_Create", "RequestesStatus", new { area = "HRM", referenceType2 = "Leave" }) + "&id=#=LeaveRequestId#").Data("sendForgery"))
                                 .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
                                 .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
 
                                 ).ToClientTemplate()
                             )
-                              <a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-
+                            <div style="margin-top: 10px;">
+                                <a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' class="btn btn-xs btn-default" title="Print" target="_blank">
+                                    <i class="fa fa-print"></i> Print Letter
+                                </a>
+                            </div>
 
                         </text> );
                   //*****************************************************************************************************//
                     items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
                       @<text>
                         @documentAttachment()
-                      
+
                     </text>);
                   items.Add().Text(Resources.Details).Content(
                 @<text>
-                    @(Html.Kendo().PanelBar()
-                      .Name("panelbar_#=LeaveRequestId#")
-                      .ExpandMode(PanelBarExpandMode.Single)
-                      .Items(panelbar =>
-                      {
-
-                          panelbar.Add().Text("Status")
-                          .Expanded(true)
-                          .Content(
-
-                               "<div>" +
-                        "<table class='table'>" +
-                        "<tr>" +
-                        "<td>" + "<div class='employee-details'>" +
-                              "<ul>" +
-
-                              "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                              // "<li><label>Title:  </label>#=Title #</li>" +
-                              "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                              "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                              "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
-
-                              "</ul>" +
-                              "</div>" + "<th>" +
-                        // "<td>" + EmployeeChartsResult() + "<th>" +
-
-                        "</table>" +
-                        "</div>"
-                          );
-
-
-                      }).ToClientTemplate() )
-                  
-                   </text>);
-
+                    <div style="padding: 10px;">
+                        <ul style="list-style: none; padding-left: 0; line-height: 24px;">
+                            <li><strong>Created By:</strong> #=CreatedBy #</li>
+                            <li><strong>Created Date:</strong> #=DateCreated #</li>
+                            <li><strong>Modified By:</strong> #=ModifiedBy #</li>
+                            <li><strong>Last Modified Date:</strong> #=LastModified #</li>
+                        </ul>
+                    </div>
+                </text>);
 
   }).ToClientTemplate())
 
@@ -251,7 +233,7 @@
 )
 
 @helper documentAttachment()
-{ 
+{
      @(Html.Kendo().Grid<LeaveRequestAttachement>()
             .Name("LeaveRequestAttachementGrid#=LeaveRequestId#")
             .Columns(columns =>
@@ -296,8 +278,67 @@
 }
 
 <style type="text/css">
+    /* Force Kendo popup container to full width to prevent column wrapping */
     div.k-edit-form-container {
-        width: 850px;
+        width: 100% !important;
+        max-width: 1120px !important;
+        padding: 15px 25px !important;
+    }
+
+    .k-window {
+        max-width: 95vw !important;
+    }
+
+    /* Base Row Colors */
+    .row-approved {
+        background-color: #e5e7eb !important;
+    }
+
+    .row-dept-approved {
+        background-color: #d1fae5 !important;
+    }
+
+    .row-waiting {
+        background-color: #e0f2fe !important;
+    }
+
+    .row-pending {
+        background-color: #fef3c7 !important;
+    }
+
+    .row-rejected {
+        background-color: #fee2e2 !important;
+    }
+
+    /* Dynamic Hover States based on Status Legend */
+    .k-grid tbody tr.row-approved:hover,
+    .k-grid tbody tr.row-approved.k-state-hover {
+        background-color: #cbd5e1 !important;
+        cursor: pointer;
+    }
+
+    .k-grid tbody tr.row-dept-approved:hover,
+    .k-grid tbody tr.row-dept-approved.k-state-hover {
+        background-color: #a7f3d0 !important;
+        cursor: pointer;
+    }
+
+    .k-grid tbody tr.row-waiting:hover,
+    .k-grid tbody tr.row-waiting.k-state-hover {
+        background-color: #bae6fd !important;
+        cursor: pointer;
+    }
+
+    .k-grid tbody tr.row-pending:hover,
+    .k-grid tbody tr.row-pending.k-state-hover {
+        background-color: #fde68a !important;
+        cursor: pointer;
+    }
+
+    .k-grid tbody tr.row-rejected:hover,
+    .k-grid tbody tr.row-rejected.k-state-hover {
+        background-color: #fecaca !important;
+        cursor: pointer;
     }
 
     .Employee-photo {
@@ -335,57 +376,99 @@
     }
 </script>
 
-
-
 <script>
-    function GetBalance() {
+    var editingEmployeeId = 0;
 
-        $("#LeaveBalance").val(0);
+    function onEdit(e) {
+        editingEmployeeId = e.model.EmployeeId || 0;
+        // Keep the stored balance and days on open; they are recalculated only when the user changes something.
+        toggleDayControls();
+    }
+
+    // The dropdown may still be loading when the popup opens, so fall back to the edited row.
+    function currentEmployeeId() {
         var employee = $("#EmployeeId").data("kendoDropDownList");
-        var empId = employee.value();
-        var periods = $("#GlFiscalYearId").data("kendoDropDownList");
-        var period = periods.value();
+        return (employee && parseInt(employee.value(), 10)) || editingEmployeeId;
+    }
 
-        if (empId.length !== 0 && period.length !== 0)
-        {
+    function GetDate() {
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+    }
 
-            $.ajax({
-                url: '@Url.Action("GetAmount", "LeaveRequest")',
+    function applyLeaveAmounts(result) {
+        if (!result) return;
+        var parts = result.split('-');
+        $("#LeaveBalance").val(parts[0] || "0").trigger("change");
+        $("#ExactDeserveLeaveDays").val(parts[1] || "0").trigger("change");
+        $("#LeaveDays").val(parts[2] || "0").trigger("change");
+    }
 
-                data: { period: period, empId: empId },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                    var s = r.split(/-/);
+    function GetTotalBalance() {
+        var empId = currentEmployeeId();
+        var morningOrAfternoonDDL = $("#MorningOrAfternoon").data("kendoDropDownList");
+        var morningOrAfternoon = morningOrAfternoonDDL ? morningOrAfternoonDDL.value() : 0;
 
-                    $("#LeaveBalance").val(s[0]);
-                    $("#LeaveBalance").trigger("change");
-                }
+        $.ajax({
+            url: '@Url.Action("GetTotalLeaveAmount", "LeaveRequest")',
+            type: 'POST',
+            data: { empId: empId, from: $("#From").val(), to: $("#To").val(), fromAm: $("#FromAmharic").val(), toAm: $("#ToAmharic").val(), morningOrAfternoon: morningOrAfternoon },
+            cache: false,
+            success: applyLeaveAmounts
+        });
+    }
 
-            });
-        }
-        else
-        {
+    function GetTotalBalanceGord() {
+        var empId = currentEmployeeId();
+        var morningOrAfternoonDDL = $("#MorningOrAfternoon").data("kendoDropDownList");
+        var morningOrAfternoon = morningOrAfternoonDDL ? morningOrAfternoonDDL.value() : 0;
 
-            $.ajax({
-                url: '@Url.Action("GetCurrentEmpBalance", "LeaveRequest")',
+        $.ajax({
+            url: '@Url.Action("GetTotalLeaveAmountGorg", "LeaveRequest")',
+            type: 'POST',
+            data: { empId: empId, from: $("#From").val(), to: $("#To").val(), morningOrAfternoon: morningOrAfternoon },
+            cache: false,
+            success: applyLeaveAmounts
+        });
+    }
 
-                data: { period: period },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                    var s = r.split(/-/);
-
-                    $("#LeaveBalance").val(s[0]);
-                    $("#LeaveBalance").trigger("change");
-                }
-
-            });
+    function GetRequestedAmount() {
+        if (toggleDayControls() != 2) {
+            GetTotalBalance();
         }
     }
 
+    // Returns the selected Day value: Half Day (1) shows the time pickers, Mixed (2) allows manual leave days.
+    function toggleDayControls() {
+        var dayT = $("#Day").data("kendoDropDownList");
+        var half = dayT ? dayT.value() : 0;
+
+        if (half == 1) {
+            $(".showTime").show();
+            $(".showTime2").show();
+        } else {
+            $(".showTime").hide();
+            $(".showTime2").hide();
+        }
+
+        var leaveDaysInput = $("#LeaveDays");
+
+        if (half == 2) {
+            leaveDaysInput.removeAttr("readonly").prop("disabled", false).css({
+                "background": "#ffffff",
+                "color": "#1f2937",
+                "cursor": "text"
+            });
+        } else {
+            leaveDaysInput.attr("readonly", "readonly").prop("disabled", true).css({
+                "background": "#fef2f2",
+                "color": "#dc2626",
+                "cursor": "not-allowed"
+            });
+        }
+
+        return half;
+    }
 </script>
 <script>
 
@@ -399,6 +482,7 @@
 
         masterId = masterDataItem.LeaveRequestId;
         var gridName = "#RequestesStatusgrid_" + masterId;
+        var attachmentGridName = "#LeaveRequestAttachementGrid" + masterId;
         $.ajax({
             url: '@Url.Action("CheckStatus", "LeaveRequest")',
 
@@ -407,15 +491,14 @@
             cache: false,
             success: function (result) {
                 r = result;
-                //if (r == "true") {
-                //    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                //    $(".k-grid-top", gridName).hide();
-                //}
                 if(r == "approved") {
                     $(gridName).find(".k-toolbar").hide(); //hide toolbar
                     $(".k-grid-top", gridName).hide();
                     $(".k-grid-edit", gridName).hide();
                     $(".k-grid-delete", gridName).hide();
+
+                    $(attachmentGridName).find(".k-grid-toolbar").hide(); //hide upload button
+                    $(".k-grid-delete", attachmentGridName).hide();
 
                 }
                 else if (r == "Dapproved") {
@@ -423,89 +506,54 @@
                     $(".k-grid-top", gridName).hide();
                     $(".k-grid-edit", gridName).hide();
                     $(".k-grid-delete", gridName).hide();
+
+                    $(attachmentGridName).find(".k-grid-toolbar").hide(); //hide upload button
+                    $(".k-grid-delete", attachmentGridName).hide();
                 }
                 else {
                     $(gridName).find(".k-toolbar").show(); //hide toolbar
                     $(".k-grid-top", gridName).show();
                     $(".k-grid-edit", gridName).hide();
                     $(".k-grid-delete", gridName).hide();
+
+                    $(attachmentGridName).find(".k-grid-toolbar").show(); //show upload button
+                    $(".k-grid-delete", attachmentGridName).show();
                 }
 
             }
 
         });
-       // e.sender.refresh();
     }
     function onUploadSuccess(e) {
-        // Force the rebinding of the Grid on successful upload
-        $("#ArchiveAttachementGrid" + masterId).data("kendoGrid").dataSource.read();
+        $("#LeaveRequestAttachementGrid" + masterId).data("kendoGrid").dataSource.read();
     }
+
     function SetEmployee(e) {
-        var x = e.checked;
+        var isChecked = e.checked;
         var dropDown = $("#EmployeeId").data("kendoDropDownList");
-        if (x == true) {
-            $("#LeaveBalance").val(0);
-            $("#LeaveBalance").trigger("change");
+
+        if (isChecked) {
             dropDown.enable(true);
-
-
-        }
-        else {
+            $("#LeaveBalance").val(0).trigger("change");
+        } else {
             dropDown.value(0);
             dropDown.enable(false);
         }
+
         $.ajax({
-            contentType: "application/json; charset=utf-8",
             url: '@Url.Action("SetEmployee", "LeaveRequest")',
-            data: { x: x },
             type: 'GET',
+            data: { x: isChecked },
             cache: false,
             success: function (result) {
-                r = result;
-                if (x==true && r == "0")
-                {
+                if (isChecked && result == 0) {
                     e.checked = false;
                     dropDown.value(0);
                     dropDown.enable(false);
-                    alert("You can not request for other employee!!.\nThere is no employee under your postion.");
+                    alert("You cannot request for other employees!\nNo subordinates under your position.");
                 }
-              //  $("#EmployeeId").data('kendoComboBox').dataSource.read();
-                //$("#EmployeeId").data('kendoComboBox').refresh();
-            }
-
-        });
-
-
-    }
-    function valueMapper(options) {
-        $.ajax({
-            url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
-            data: {
-                value: options.value || 0,
-                status: 1,
-                excludeId: -1
-            },
-            success: function (data) {
-                options.success(data);
             }
         });
-    }
-
-    function convertValues(value) {
-        var data = {};
-
-        value = $.isArray(value) ? value : [value];
-
-        for (var idx = 0; idx < value.length; idx++) {
-            data["values[" + idx + "]"] = value[idx];
-        }
-
-        return data;
-    }
-    function IsforOthers() {
-        return {
-            IsForOther: $("#IsForOther").val()
-        };
     }
 
 </script>
@@ -513,107 +561,34 @@
 <script>
     function onDataBound(e) {
         var grid = this;
-        grid.tbody.find("tr[role='row']").each(function (e) {
+        grid.tbody.find("tr[role='row']").each(function () {
             var model = grid.dataItem(this);
-            if (model.IsOnlineApproved) {
+            if (!model) return;
 
-                $(this).css("background-color", "darkgrey");
-                $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
-            }
-            else if (model.Status === "DEPARTMENT_APPROVAL" || model.IsDepartmentOnlineApproved == true) {
-                $(this).css("background-color", "limegreen");
-                $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
-            }
-            else if (model.Status = "Pending") {
+            var $row = $(this);
+            $row.removeClass("row-approved row-dept-approved row-waiting row-pending row-rejected");
 
-                $(this).css("background-color", "Orange");
-                $(this).find(".k-grid-edit").show();
-                $(this).find(".k-grid-delete").show();
+            if (model.IsOnlineApproved || model.IsApproved === true) {
+                $row.addClass("row-approved");
+                $row.find(".k-grid-edit, .k-grid-delete").remove();
             }
-            else if (model.Status = "Rejected") {
-
-                $(this).css("background-color", "LightGray");
-                $(this).find(".k-grid-edit").show();
-                $(this).find(".k-grid-delete").show();
+            else if (model.IsDepartmentOnlineApproved === true || model.Status === "DEPARTMENT_APPROVAL") {
+                $row.addClass("row-dept-approved");
+                $row.find(".k-grid-edit, .k-grid-delete").remove();
             }
-           
-            else if (model.IsWaiting === true || model.Status == "WAITING_FOR_APPROVAL") {
-
-                $(this).css("background-color", "lightblue");
-                $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
+            else if (model.Status === "Pending" || model.IsPending === true) {
+                $row.addClass("row-pending");
             }
-            
+            else if (model.Status === "Rejected" || model.IsRejected === true) {
+                $row.addClass("row-rejected");
+            }
+            else if (model.Status === "WAITING_FOR_APPROVAL") {
+                $row.addClass("row-waiting");
+                $row.find(".k-grid-delete").remove();
+            }
         });
     }
 
-    //function onDataBound(e)
-    //{
-    //    var rows = e.sender.tbody.children();
-
-    //    for (var j = 0; j < rows.length; j++) {
-    //        var row = $(rows[j]);
-    //        var dataItem = e.sender.dataItem(row);
-    //        if (dataItem.IsApproved === true || dataItem.IsOnlineApproved == true) {
-
-    //            row.css("background-color", "darkgrey");
-    //            row.find(".k-grid-edit").remove();
-    //            row.find(".k-grid-delete").remove();
-
-    //        }
-    //        else if (dataItem.Status === "DEPARTMENT_APPROVAL" || dataItem.IsDepartmentOnlineApproved == true) {
-
-    //            row.find(".k-grid-edit").remove();
-    //            row.find(".k-grid-delete").remove();
-    //            row.css("background-color", "limegreen");
-
-    //        }
-    //        else if (dataItem.IsPending === true) {
-
-    //            row.css("background-color", "Orange");
-    //            row.find(".k-grid-edit").show();
-    //            row.find(".k-grid-delete").show();
-    //        }
-    //        else if (dataItem.IsRejected === true) {
-
-    //            row.css("background-color", "LightGray");
-    //            row.find(".k-grid-edit").show();
-    //            row.find(".k-grid-delete").show();
-    //        }
-
-            
-    //        else if (model.IsWaiting === true || model.Status == "WAITING_FOR_APPROVAL") {
-
-    //            row.css("background-color", "lightblue");
-    //            row.find(".k-grid-edit").remove();
-    //            row.find(".k-grid-delete").remove();
-    //        }
-
-
-    //    }
-
-    //}
-    //function onDataBound(e) {
-    //    var grid = this;
-    //    grid.tbody.find("tr[role='row']").each(function (e) {
-    //        var model = grid.dataItem(this);
-    //        if (model.IsDepartmentSendForApproval && !model.IsApproved) {
-    //            $(this).css("background-color", "lightgreen");
-    //            $(this).find(".k-grid-edit").remove();
-    //            $(this).find(".k-grid-delete").remove();
-    //        }
-    //        if (model.IsDepartmentSendForApproval && model.IsApproved) {
-    //            $(this).css("background-color", "darkgrey");
-    //            $(this).find(".k-grid-edit").remove();
-    //            $(this).find(".k-grid-delete").remove();
-    //        }
-    //        else {
-    //            $(this).css("background-color", "lightgreen");
-    //        }
-    //    });
-    //}
     function onRequestesStatusDataBound(e) {
             var grid = this;
             grid.tbody.find("tr[role='row']").each(function (e) {
@@ -622,12 +597,10 @@
                     $(this).find(".k-grid-edit").remove();
                     $(this).find(".k-grid-delete").remove();
                 }
-               
+
             });
-        //e.sender.refresh();
-    
+
     }
     function onRequestesStatusEdit(e) {
-        //e.sender.refresh();
     }
 </script>

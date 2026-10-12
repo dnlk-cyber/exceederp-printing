@@ -14,14 +14,31 @@ using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain;
 
-namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
+namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
     [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser,HrmConstants.HRAdmin)]
     public class HRMSettingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
+
         public ActionResult Index()
-        {          
+        {
+            ViewData["branches"] = CacheData.GetBranchCaches().Select(
+              i => new
+              {
+                  Name = i.Name,
+                  BranchId = i.Id,
+              }).AsQueryable();
+            ViewData["Contributiontype"] = db.ContributionTypes.Select(
+                x => new
+                { x.ContributionTypeId,
+                    Name = x.Description + " " + x.ContributionCategory.ToString()
+                }).AsQueryable();
+
+            ViewData["ApSetupItem"] = db.ApSetupItems.Select(x => new { x.ApSetupItemId, x.Name }).AsQueryable();
+            ViewData["TaxRate"] = db.GLTaxRates.Select(x => new { x.GLTaxRateID, x.TaxName }).AsQueryable();
+
             return View();
         }
        
@@ -36,12 +53,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 CurrentValue = configuration.CurrentValue,
                 PreviousValue = configuration.PreviousValue,
                 Remark = configuration.Remark,
-               
                 DateCreated = configuration.DateCreated,
                 LastModified = configuration.LastModified,
-
                 CreatedBy = configuration.CreatedBy,
-
                 ModifiedBy = configuration.ModifiedBy 
             });
 
@@ -186,6 +200,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             .Select(v => v.ToString())
                             .ToList();
                     break;
+                case "BiometricEmployeeAutoRegistration":
+                    attributes =
+                        Enum.GetValues(typeof(BiometricEmployeeAutoRegistration))
+                            .Cast<BiometricEmployeeAutoRegistration>()
+                            .Select(v => v.ToString())
+                            .ToList();
+                    break;
+                case "BiometricEmployeeAutoExempt":
+                    attributes =
+                        Enum.GetValues(typeof(BiometricEmployeeAutoExempt))
+                            .Cast<BiometricEmployeeAutoExempt>()
+                            .Select(v => v.ToString())
+                            .ToList();
+                    break;
+               
 
             }
 

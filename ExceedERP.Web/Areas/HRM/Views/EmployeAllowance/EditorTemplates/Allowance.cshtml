@@ -1,10 +1,21 @@
-﻿@using System.Collections
-@using ExceedERP.Core.Localization
-@using ExceedERP.Core.Domain.Common
-@(Html.Kendo().DropDownListFor(m => m)
-    .OptionLabel(Resources.Select)
-             .DataTextField("AllowanceName")
-                    .DataValueField("AllowanceDefinationId")
-                       .BindTo((IEnumerable)ViewData["AllowanceList"])
-                         .ValuePrimitive(true)
+﻿@*@using System.Collections
+    @using ExceedERP.Core.Localization
+    @using ExceedERP.Core.Domain.Common
+    @(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel(Resources.Select)
+                 .DataTextField("AllowanceName")
+                        .DataValueField("AllowanceDefinationId")
+                           .BindTo((IEnumerable)ViewData["AllowanceList"])
+                            .Filter("contains")
+                             .ValuePrimitive(true)
+    )*@
+
+@model int?
+
+@(Html.Kendo().MultiSelectFor(m => m)
+          .DataTextField("AllowanceName")
+          .DataValueField("AllowanceDefinationId")
+          .Placeholder("Select allowances...")
+          .Filter("contains")
+          .BindTo((IEnumerable<ExceedERP.Core.Domain.HRM.Allowance.AllowanceDefination>)ViewData["AllowanceList"])
 )

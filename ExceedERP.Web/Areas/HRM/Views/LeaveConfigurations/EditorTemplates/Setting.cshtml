@@ -4,8 +4,11 @@
  Html.Kendo().DropDownListFor(m => m)
         .DataTextField("Text")
         .DataValueField("Text")
+        .Filter("contains")
         .BindTo(EnumExtension.EnumToSelectList(typeof(LeaveSetting)))
             .ValuePrimitive(true)
+            .HtmlAttributes(new { style = "width:250px;" })
+
         )
 
 

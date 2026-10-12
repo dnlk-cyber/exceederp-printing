@@ -135,23 +135,11 @@
   <data name="Age.Value" xml:space="preserve">
     <value>Age</value>
   </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
   <data name="Department.Value" xml:space="preserve">
     <value>Department</value>
-  </data>
-  <data name="txtOrgName.Value" xml:space="preserve">
-    <value>= Fields.AmharicName</value>
-  </data>
-  <data name="textBox11.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="Date.Value" xml:space="preserve">
-    <value>Date:</value>
-  </data>
-  <data name="textBox14.Value" xml:space="preserve">
-    <value>= Fields.Date</value>
-  </data>
-  <data name="EmpByAge.Value" xml:space="preserve">
-    <value>Employee Age</value>
   </data>
   <data name="textBox8.Value" xml:space="preserve">
     <value>= Fields.Sex</value>
@@ -168,9 +156,6 @@
   <data name="textBox6.Value" xml:space="preserve">
     <value>= Fields.IdNumber</value>
   </data>
-  <data name="textBox3.Value" xml:space="preserve">
-    <value>Total</value>
-  </data>
   <data name="textBox4.Value" xml:space="preserve">
     <value>= Count(Fields.FullName)</value>
   </data>
@@ -183,32 +168,38 @@
   <data name="textBox29.Value" xml:space="preserve">
     <value>= Fields.Branch</value>
   </data>
-  <data name="textBox28.Value" xml:space="preserve">
-    <value>Branch</value>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Parameters.agemin.Label</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>= Parameters.orgStructureId.Label</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Age Min:</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>Age Max:</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Parameters.agemax.Label</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Parameters.BussinessUnitId.Label</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Bussiness Unit:</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>Sex:{Parameters.Gender.Label}</value>
   </data>
   <data name="Page.Value" xml:space="preserve">
     <value>Page: </value>
   </data>
   <data name="textBox1.Value" xml:space="preserve">
     <value>= PageNumber</value>
-  </data>
-  <data name="textBox17.Value" xml:space="preserve">
-    <value>Department</value>
-  </data>
-  <data name="textBox15.Value" xml:space="preserve">
-    <value>= Parameters.orgStructureId.Label</value>
-  </data>
-  <data name="textBox21.Value" xml:space="preserve">
-    <value>Age Min</value>
-  </data>
-  <data name="textBox20.Value" xml:space="preserve">
-    <value>= Parameters.agemin.Label</value>
-  </data>
-  <data name="textBox19.Value" xml:space="preserve">
-    <value>Age Max</value>
-  </data>
-  <data name="textBox18.Value" xml:space="preserve">
-    <value>= Parameters.agemax.Label</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -217,15 +208,21 @@
     <value>Branch</value>
   </data>
   <data name="reportParameter2.Text" xml:space="preserve">
-    <value>Work Unit</value>
+    <value>Bussiness Unit</value>
   </data>
   <data name="reportParameter3.Text" xml:space="preserve">
-    <value>Minimum Age</value>
+    <value>Work Unit</value>
   </data>
   <data name="reportParameter4.Text" xml:space="preserve">
-    <value>Maximum Age</value>
+    <value>Minimum Age</value>
   </data>
   <data name="reportParameter5.Text" xml:space="preserve">
+    <value>Maximum Age</value>
+  </data>
+  <data name="reportParameter6.Text" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="reportParameter7.Text" xml:space="preserve">
+    <value>Gender</value>
   </data>
 </root>

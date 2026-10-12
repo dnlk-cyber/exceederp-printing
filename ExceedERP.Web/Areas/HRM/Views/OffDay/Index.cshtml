@@ -16,291 +16,317 @@
          tabstrip.Add().Text(Resources.Navigator_Weekend)
          .Selected(true)
          .Content(@<text>
-         <legend>@Resources.Navigator_Weekend</legend>
-            @(Html.Kendo().Grid<Weekend>()
-                 .Name("Weekend")
-                 .Columns(columns =>
-                 {
-                     columns.Bound(c => c.Name).EditorTemplateName("Enum").Width(200);
-                     columns.Bound(c => c.IsHalfDay).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsHalfDay #' " + " # if (IsHalfDay) { #" + "checked='checked'" + "# } #" + " />").Width(200);
-                     columns.Bound(c => c.IsFullDay).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsFullDay #' " + " # if (IsFullDay) { #" + "checked='checked'" + "# } #" + " />").Width(200);
-                     columns.Bound(c => c.Remark).Width(200);
-                     columns.Command(command =>
-                     {
-                         if (HttpContext.Current.User.IsInRole("HR_Company_User")
-                         || HttpContext.Current.User.IsInRole("HR_Admin") 
-                         || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                         {
-                             command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                         }
-                         if (HttpContext.Current.User.IsInRole("HR_Admin") 
-                         || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                         {
-                             command.Destroy().Text(Resources.ActionButton_Cancel);
-                         }
-                     }).Width(200);
+    <legend>@Resources.Navigator_Weekend</legend>
+    @(Html.Kendo().Grid<Weekend>
+        ()
+        .Name("Weekend")
+        .Columns(columns =>
+        {
+        columns.Bound(c => c.Name).EditorTemplateName("Enum").Width(200);
+        columns.Bound(c => c.IsHalfDay).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsHalfDay #' " + " # if (IsHalfDay) { #" + "checked='checked'" + "# } #" + " />" ).Width(200);
+                                                               columns.Bound(c=> c.IsFullDay).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsFullDay #' " + " # if (IsFullDay) { #" + "checked='checked'" + "# } #" + " />" ).Width(200);
+                                                                                                                     columns.Bound(c=> c.Remark).Width(200);
+        columns.Command(command =>
+        {
+        if (HttpContext.Current.User.IsInRole("HR_Company_User")
+        || HttpContext.Current.User.IsInRole("HR_Admin")
+        || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+        {
+        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+        }
+        if (HttpContext.Current.User.IsInRole("HR_Admin")
+        || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+        {
+        command.Destroy().Text(Resources.ActionButton_Cancel);
+        }
+        }).Width(200);
 
-                 })
-                .ToolBar(toolbar =>
-                {
-                    if (HttpContext.Current.User.IsInRole("HR_Company_User")
-                    ||HttpContext.Current.User.IsInRole("HR_Admin") 
-                    || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                    {
-                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                    }
-                })
+        })
+        .ToolBar(toolbar =>
+        {
+        if (HttpContext.Current.User.IsInRole("HR_Company_User")
+        ||HttpContext.Current.User.IsInRole("HR_Admin")
+        || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+        {
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+        }
+        })
 
-                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                .Selectable(selectable =>
-                {
-                    selectable.Mode(GridSelectionMode.Single);
-                    selectable.Type(GridSelectionType.Row);
-                })
-                .Scrollable(h => h.Height(500))
-                .Sortable(sortable =>
-                {
-                    sortable.SortMode(GridSortMode.SingleColumn);
-                })
-                    .Filterable()
-                    .Pageable(pageable => pageable
-                        .Input(true)
-                        .Numeric(false)
-                        .Refresh(true)
-                        .PageSizes(true)
-                        .ButtonCount(5))
-                    .DataSource(dataSource => dataSource
-                        .Ajax()
-                        .Events(events =>
-                        {
-                            events.Error("error_handler(\"Weekend\")");
-                            events.RequestStart("onRequestStart(\"Weekend\")");
-                            events.RequestEnd("onRequestEnd(\"Weekend\")");
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Selectable(selectable =>
+        {
+        selectable.Mode(GridSelectionMode.Single);
+        selectable.Type(GridSelectionType.Row);
+        })
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+        sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Events(events =>
+        {
+        events.Error("error_handler(\"Weekend\")");
+        events.RequestStart("onRequestStart(\"Weekend\")");
+        events.RequestEnd("onRequestEnd(\"Weekend\")");
 
-                        })
-                        .Model(model => model.Id(p => p.WeekendId))
-                        .Read(read => read.Action("Weekend_Read", "Weekend").Data("sendForgery"))
-                        .Create(create => create.Action("Weekend_Create", "Weekend").Data("sendForgery"))
-                        .Update(update => update.Action("Weekend_Update", "Weekend").Data("sendForgery"))
-                        .Destroy(destroy => destroy.Action("Weekend_Destroy", "Weekend").Data("sendForgery")))
-                        .ClientDetailTemplateId("weekend_Template")
-                            )
-                        </text>);
+        })
+        .Model(model => model.Id(p => p.WeekendId))
+        .Read(read => read.Action("Weekend_Read", "Weekend").Data("sendForgery"))
+        .Create(create => create.Action("Weekend_Create", "Weekend").Data("sendForgery"))
+        .Update(update => update.Action("Weekend_Update", "Weekend").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("Weekend_Destroy", "Weekend").Data("sendForgery")))
+        .ClientDetailTemplateId("weekend_Template")
+        )
+</text>);
 
 
          tabstrip.Add().Text(Resources.Enum_HOLIDAY)
-            .Content(@<text> <legend>@Resources.Enum_HOLIDAY</legend>
+            .Content(@<text>
+    <legend>@Resources.Enum_HOLIDAY</legend>
 
-                    @(Html.Kendo().Grid<Holiday>()
-                        .Name("Holiday")
-                        .Columns(columns =>
-                        {
-                            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
-                            if (useEthiopian)
-                            {
-                                columns.Bound(c => c.DateHoAmhaic).EditorTemplateName("Calander").Width(120);
-                            }
-                            else
-                            {
-                                columns.Bound(c => c.Date).Width(120);
-                            }
+    @(Html.Kendo().Grid<Holiday>
+        ()
+        .Name("Holiday")
+        .Columns(columns =>
+        {
+        columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+        if (useEthiopian)
+        {
+        columns.Bound(c => c.DateHoAmhaic).EditorTemplateName("Calander").Width(120);
+        }
+        else
+        {
+        columns.Bound(c => c.Date).Width(120);
+        }
 
-                            columns.Bound(c => c.Name);
-                            columns.Bound(c => c.Remark);
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Remark);
 
-                            columns.Command(command =>
-                            {
-                                if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                {
-                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                }
-                                if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                                {
-                                    command.Destroy().Text(Resources.ActionButton_Cancel);
-                                }
-                            }).Width(200);
+        columns.Command(command =>
+        {
+        if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+        {
+        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+        }
+        if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+        {
+        command.Destroy().Text(Resources.ActionButton_Cancel);
+        }
+        }).Width(200);
 
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                            if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                            {
-                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                            }
-                        })
-                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                .Selectable(selectable =>
-                                {
-                                    selectable.Mode(GridSelectionMode.Single);
-                                    selectable.Type(GridSelectionType.Row);
-                                })
-                                .Scrollable(h => h.Height(500))
-                                //.Groupable()
-                                .Sortable(sortable =>
-                                {
-                                    sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .ToolBar(toolbar =>
+        {
+        if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+        {
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+        }
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Selectable(selectable =>
+        {
+        selectable.Mode(GridSelectionMode.Single);
+        selectable.Type(GridSelectionType.Row);
+        })
+        .Scrollable(h => h.Height(500))
+        //.Groupable()
+        .Sortable(sortable =>
+        {
+        sortable.SortMode(GridSortMode.SingleColumn);
 
-                                })
-                                .Filterable()
-                                    .Events(x =>
-                                    {
-                                        x.Save("GetDate");
-                                        x.Edit("GetDate");
-                                    })
-                                    .Pageable(pageable => pageable
-                                    .Input(true)
-                                    .Numeric(false)
-                                    .Refresh(true)
-                                    .PageSizes(true)
-                                    .ButtonCount(5))
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                            .Sort(sort => sort.Add("HolidayId").Descending())
-                                .Events(events =>
-                                {
+        })
+        .Filterable()
+        .Events(x =>
+        {
+        x.Save("GetDate");
+        x.Edit("GetDate");
+        })
+        .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Sort(sort => sort.Add("HolidayId").Descending())
+        .Events(events =>
+        {
 
-                                    events.Error("error_handler(\"Holiday\")");
-                                    events.RequestStart("onRequestStart(\"Holiday\")");
-                                    events.RequestEnd("onRequestEnd(\"Holiday\")");
+        events.Error("error_handler(\"Holiday\")");
+        events.RequestStart("onRequestStart(\"Holiday\")");
+        events.RequestEnd("onRequestEnd(\"Holiday\")");
 
-                                })
-                                .Model(model => model.Id(p => p.HolidayId))
-                                .Read(read => read.Action("Holiday_Read", "Holiday").Data("sendForgery"))
-                                .Create(create => create.Action("Holiday_Create", "Holiday").Data("sendForgery"))
-                                .Update(update => update.Action("Holiday_Update", "Holiday").Data("sendForgery"))
-                                .Destroy(destroy => destroy.Action("Holiday_Destroy", "Holiday").Data("sendForgery"))
-                              )
-                    )
-            </text>);
+        })
+        .Model(model => model.Id(p => p.HolidayId))
+        .Read(read => read.Action("Holiday_Read", "Holiday").Data("sendForgery"))
+        .Create(create => create.Action("Holiday_Create", "Holiday").Data("sendForgery"))
+        .Update(update => update.Action("Holiday_Update", "Holiday").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("Holiday_Destroy", "Holiday").Data("sendForgery"))
+        )
+        )
+</text>);
 
      })
 )
 
 <script id="weekend_Template" type="text/kendo-tmpl">
-   
+
     @(Html.Kendo().TabStrip()
-        .Name("tabstrip_#=WeekendId#")
-        .SelectedIndex(0)
-        .Items(items =>
-        {
-            
-                items.Add().Text("Weekend Exception").Content(
-                @<text>
-                   @(Html.Kendo().Grid<WeekendException>()
-                        .Name("WeekendException_#=WeekendId#")
-                        .Columns(columns =>
-                        {
-                            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
-                            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
-                            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ActiveEmployees").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(170);
-                            columns.Bound(c => c.IsHalfDay).ClientTemplate(
-                                  "<input type='checkbox' disabled = 'true' value='\\#=IsHalfDay\\#' " +
-                                  "\\# if (IsHalfDay) { \\#" +
-                                  "checked='checked'" +
-                                  "\\# } \\#" + "/>")
-                                  .HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
+    .Name("tabstrip_#=WeekendId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
 
-                            columns.Bound(c => c.IsFullDay).ClientTemplate(
-                                  "<input type='checkbox' disabled = 'true' value='\\#=IsFullDay\\#' " +
-                                  "\\# if (IsFullDay) { \\#" +
-                                  "checked='checked'" +
-                                  "\\# } \\#" + "/>")
-                                  .HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
-                            columns.Bound(c => c.Remark).Width(150);
-                            columns.Command(command =>
-                            {
-                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                command.Destroy().Text(Resources.ActionButton_Cancel);
+    items.Add().Text("Weekend Exception").Content(
+    @<text>
+        @(Html.Kendo().Grid<WeekendException>
+            ()
+            .Name("WeekendException_#=WeekendId#")
+            .Columns(columns =>
+            {
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ActiveEmployees").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(170);
+            columns.Bound(c => c.IsHalfDay).ClientTemplate(
+            "<input type='checkbox' disabled='true' value='\\#=IsHalfDay\\#' " +
+                                  " \\# if (IsHalfDay) { \\#" +
+                    "checked='checked'" +
+                    "\\# } \\#" + "/>" )
+                    .HeaderHtmlAttributes(new { style="overflow: visible; white-space: normal" }).Width(150);
+                    columns.Bound(c=> c.IsFullDay).ClientTemplate(
+            "<input type='checkbox' disabled='true' value='\\#=IsFullDay\\#' " +
+                                  " \\# if (IsFullDay) { \\#" +
+                    "checked='checked'" +
+                    "\\# } \\#" + "/>" )
+                    .HeaderHtmlAttributes(new { style="overflow: visible; white-space: normal" }).Width(150);
+                    columns.Bound(c=> c.Remark).Width(150);
+            columns.Command(command =>
+            {
+            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                            }).Width(200);
-                        })
-                        .ToolBar(toolbar =>
-                        {
+            }).Width(200);
+            })
+            .ToolBar(toolbar =>
+            {
 
-                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
 
-                        })
-                        .Editable(editable => editable.Mode(GridEditMode.InLine)) 
-                        .Scrollable(h => h.Height(500))
-                        .Sortable(sortable =>
-                        {
-                            sortable.SortMode(GridSortMode.SingleColumn);
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+            .Sortable(sortable =>
+            {
+            sortable.SortMode(GridSortMode.SingleColumn);
 
-                        })
-                        .Filterable()
-                        .Pageable(pageable => pageable
-                                .Input(true)
-                                .Numeric(false)
-                                .Refresh(true)
-                                .PageSizes(true)
-                                .ButtonCount(5))
-                            .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"WeekendException_#=WeekendId#\")");
-                                    events.RequestStart("onRequestStart(\"WeekendException_#=WeekendId#\")");
-                                    events.RequestEnd("onRequestEnd(\"WeekendException_#=WeekendId#\")");
-                                })
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events =>
+            {
+            events.Error("error_handler(\"WeekendException_#=WeekendId#\")");
+            events.RequestStart("onRequestStart(\"WeekendException_#=WeekendId#\")");
+            events.RequestEnd("onRequestEnd(\"WeekendException_#=WeekendId#\")");
+            })
 
-                                .Model(model => model.Id(p => p.WeekendExceptionId))
-                                .Read(read => read.Action("WeekendExceptions_Read", "WeekendExceptions", new { Area = "HRM", id = "#=WeekendId#" }).Data("sendForgery"))
-                                .Create(create => create.Action("WeekendExceptions_Create", "WeekendExceptions", new { Area = "HRM", id = "#=WeekendId#" }).Data("sendForgery"))
-                                .Update(update => update.Action("WeekendExceptions_Update", "WeekendExceptions").Data("sendForgery"))
-                                .Destroy(destroy => destroy.Action("WeekendExceptions_Destroy", "WeekendExceptions").Data("sendForgery"))
-                                ).ToClientTemplate()
+            .Model(model => model.Id(p => p.WeekendExceptionId))
+            .Read(read => read.Action("WeekendExceptions_Read", "WeekendExceptions", new { Area = "HRM", id = "#=WeekendId#" }).Data("sendForgery"))
+            .Create(create => create.Action("WeekendExceptions_Create", "WeekendExceptions", new { Area = "HRM", id = "#=WeekendId#" }).Data("sendForgery"))
+            .Update(update => update.Action("WeekendExceptions_Update", "WeekendExceptions").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("WeekendExceptions_Destroy", "WeekendExceptions").Data("sendForgery"))
+            ).ToClientTemplate()
 
             )
 
-        </text>);
-          @*items.Add().Text(Resources.Details).Content(
-          @<text>
-          @(Html.Kendo().PanelBar()
+    </text>);
+    @*items.Add().Text(Resources.Details).Content(
+    @
+    <text>
+        @(Html.Kendo().PanelBar()
 
-            .Name("panelbar_#=WeekendId#")
-            .ExpandMode(PanelBarExpandMode.Single)
-            .Items(panelbar =>
-            {
+        .Name("panelbar_#=WeekendId#")
+        .ExpandMode(PanelBarExpandMode.Single)
+        .Items(panelbar =>
+        {
 
-                panelbar.Add().Text("Status")
-                .Expanded(true)
-                .Content(
+        panelbar.Add().Text("Status")
+        .Expanded(true)
+        .Content(
 
-                     "<div>" +
-              "<table class='table'>" +
-              "<tr>" +
-              "<td>" + "<div class='setting-details'>" +
-                    "<ul>" +
+        "<div>
+            " +
+            "<table class='table'>
+                " +
+                "
+                <tr>
+                    " +
+                    "
+                    <td>
+                        " + "<div class='setting-details'>
+                            " +
+                            "<ul>
+                                " +
 
-                    "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                    // "<li><label>Title:  </label>#=Title #</li>" +
-                    "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                    "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                    "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+                                "
+                                <li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                                // "
+                                <li><label>Title:  </label>#=Title #</li>" +
+                                "
+                                <li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                                "
+                                <li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                                "
+                                <li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
 
-                    "</ul>" +
-                    "</div>" + "<th>" +
-              // "<td>" + EmployeeChartsResult() + "<th>" +
+                                "
+                            </ul>" +
+                            "
+                        </div>" + "
+                    <th>
+                        " +
+                        // "
+                    <td>" + EmployeeChartsResult() + "
+                    <th>
+                        " +
 
-              "</table>" +
-              "</div>"
-                );
-
-
-
-
-
-
-            }).ToClientTemplate() )
-                        
-                    
-             </text>);*@
-          
-          
+                        "
+            </table>" +
+            "
+        </div>"
+        );
 
 
-        }).ToClientTemplate())
+
+
+
+
+        }).ToClientTemplate() )
+
+
+    </text>);*@
+
+
+
+
+    }).ToClientTemplate())
 
 
 </script>

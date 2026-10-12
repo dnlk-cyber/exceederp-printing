@@ -1,0 +1,212 @@
+﻿@model ExceedERP.Web.Areas.HRM.Controllers.Profile.SalaryRangeByProjectReportVM
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Salary Range By Project</title>
+    <style>
+        @@page {
+            size: A4 landscape;
+            margin: 8mm 10mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, "Segoe UI", Tahoma, sans-serif;
+            font-size: 11px;
+            color: #000;
+            background: #fff;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .no-print-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .btn-print {
+            background-color: #1b4d89;
+            color: #fff;
+            padding: 6px 14px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10.5px;
+        }
+
+            .matrix-table th, .matrix-table td {
+                border: 1px solid #000;
+                padding: 4px 3px;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .matrix-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+
+            .matrix-table .text-left {
+                text-align: left;
+                padding-left: 6px;
+            }
+
+        .total-row {
+            background-color: #eaeaea;
+            font-weight: bold;
+        }
+
+        @@media print {
+            .no-print-bar {
+                display: none !important;
+            }
+
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print-bar">
+        <button type="button" class="btn-print" onclick="window.print()">Print Report</button>
+    </div>
+
+    <table class="matrix-table">
+        <!-- Top Header Filter Banner -->
+        <thead>
+            <tr>
+                <th colspan="2" class="text-left" style="font-size: 12px; font-weight: bold;">@Model.CompanyName</th>
+                <th>From:</th>
+                <th>@(Model.FromDate.HasValue ? Model.FromDate.Value.ToString("M/d/yyyy") : "-")</th>
+                <th>To:</th>
+                <th>@(Model.ToDate.HasValue ? Model.ToDate.Value.ToString("M/d/yyyy") : "-")</th>
+                <th colspan="14" class="text-left" style="font-size: 12px; font-weight: bold;">Salary Range By Project</th>
+            </tr>
+            <!-- Bracket Headers -->
+            <tr>
+                <th rowspan="2" class="text-left" style="min-width: 170px;">Project / Branch</th>
+                <th colspan="3">(A) 0-10000</th>
+                <th colspan="3">(B) 10001-20000</th>
+                <th colspan="3">(C) 20001-30000</th>
+                <th colspan="3">(D) 30001-40000</th>
+                <th colspan="3">(E) 40001-50000</th>
+                <th colspan="3">(F) >50000</th>
+                <th rowspan="2" style="background-color: #e0e0e0;">Total</th>
+            </tr>
+            <!-- Gender Sub-headers -->
+            <tr>
+                <th>Female</th>
+                <th>Male</th>
+                <th style="font-weight: bold;">Total</th>
+                <th>Female</th>
+                <th>Male</th>
+                <th style="font-weight: bold;">Total</th>
+                <th>Female</th>
+                <th>Male</th>
+                <th style="font-weight: bold;">Total</th>
+                <th>Female</th>
+                <th>Male</th>
+                <th style="font-weight: bold;">Total</th>
+                <th>Female</th>
+                <th>Male</th>
+                <th style="font-weight: bold;">Total</th>
+                <th>Female</th>
+                <th>Male</th>
+                <th style="font-weight: bold;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr>
+                    <td class="text-left">@row.ProjectName</td>
+
+                    <!-- A -->
+                    <td>@row.RangeA.Female</td>
+                    <td>@row.RangeA.Male</td>
+                    <td style="font-weight: bold; background: #fafafa;">@row.RangeA.Total</td>
+
+                    <!-- B -->
+                    <td>@row.RangeB.Female</td>
+                    <td>@row.RangeB.Male</td>
+                    <td style="font-weight: bold; background: #fafafa;">@row.RangeB.Total</td>
+
+                    <!-- C -->
+                    <td>@row.RangeC.Female</td>
+                    <td>@row.RangeC.Male</td>
+                    <td style="font-weight: bold; background: #fafafa;">@row.RangeC.Total</td>
+
+                    <!-- D -->
+                    <td>@row.RangeD.Female</td>
+                    <td>@row.RangeD.Male</td>
+                    <td style="font-weight: bold; background: #fafafa;">@row.RangeD.Total</td>
+
+                    <!-- E -->
+                    <td>@row.RangeE.Female</td>
+                    <td>@row.RangeE.Male</td>
+                    <td style="font-weight: bold; background: #fafafa;">@row.RangeE.Total</td>
+
+                    <!-- F -->
+                    <td>@row.RangeF.Female</td>
+                    <td>@row.RangeF.Male</td>
+                    <td style="font-weight: bold; background: #fafafa;">@row.RangeF.Total</td>
+
+                    <!-- Row Grand Total -->
+                    <td style="font-weight: bold; background: #f0f0f0;">@row.RowTotal</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td class="text-left"><strong>Total</strong></td>
+
+                <td>@Model.GrandTotal.RangeA.Female</td>
+                <td>@Model.GrandTotal.RangeA.Male</td>
+                <td>@Model.GrandTotal.RangeA.Total</td>
+
+                <td>@Model.GrandTotal.RangeB.Female</td>
+                <td>@Model.GrandTotal.RangeB.Male</td>
+                <td>@Model.GrandTotal.RangeB.Total</td>
+
+                <td>@Model.GrandTotal.RangeC.Female</td>
+                <td>@Model.GrandTotal.RangeC.Male</td>
+                <td>@Model.GrandTotal.RangeC.Total</td>
+
+                <td>@Model.GrandTotal.RangeD.Female</td>
+                <td>@Model.GrandTotal.RangeD.Male</td>
+                <td>@Model.GrandTotal.RangeD.Total</td>
+
+                <td>@Model.GrandTotal.RangeE.Female</td>
+                <td>@Model.GrandTotal.RangeE.Male</td>
+                <td>@Model.GrandTotal.RangeE.Total</td>
+
+                <td>@Model.GrandTotal.RangeF.Female</td>
+                <td>@Model.GrandTotal.RangeF.Male</td>
+                <td>@Model.GrandTotal.RangeF.Total</td>
+
+                <td style="background-color: #d6d6d6;">@Model.GrandTotal.RowTotal</td>
+            </tr>
+        </tfoot>
+    </table>
+
+</body>
+</html>

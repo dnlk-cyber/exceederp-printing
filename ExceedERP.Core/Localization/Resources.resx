@@ -415,7 +415,8 @@
     <value>Religion</value>
   </data>
   <data name="Common_PersonEmployee_Status" xml:space="preserve">
-    <value>Status</value>
+    <value>Employment Type</value>
+    <comment>Employment Type</comment>
   </data>
   <data name="Common_PersonEmployee_Title" xml:space="preserve">
     <value>Title</value>
@@ -460,745 +461,745 @@
     <value>LOW</value>
   </data>
   <data name="Enum_AccidentLevel_MEDIUM" xml:space="preserve">
-    <value>MEDIUM</value>
+    <value>Medium</value>
   </data>
   <data name="Enum_AccidentType_CRASH" xml:space="preserve">
-    <value>CRASH</value>
+    <value>Crash</value>
   </data>
   <data name="Enum_AccidentType_REVERSE" xml:space="preserve">
-    <value>REVERSE</value>
+    <value>Reverse</value>
   </data>
   <data name="Enum_ACCOUNTING_PERIOD" xml:space="preserve">
-    <value>ACCOUNTING_PERIOD</value>
+    <value>Accounting Period</value>
   </data>
   <data name="Enum_AdditionTaxType_NON_TAXABLE" xml:space="preserve">
-    <value>NON_TAXABLE</value>
+    <value>None Taxable</value>
   </data>
   <data name="Enum_AdditionTaxType_TAXABLE" xml:space="preserve">
-    <value>TAXABLE</value>
+    <value>Taxable</value>
   </data>
   <data name="Enum_AddressType_FAX" xml:space="preserve">
-    <value>FAX</value>
+    <value>Fax</value>
   </data>
   <data name="Enum_AddressType_KEBELE" xml:space="preserve">
-    <value>KEBELE</value>
+    <value>Kebelle</value>
   </data>
   <data name="Enum_AddressType_KIFLEKETEMA" xml:space="preserve">
-    <value>KIFLEKETEMA</value>
+    <value>Kifle ketema</value>
   </data>
   <data name="Enum_AddressType_OFFICE_CITYPROVINCE" xml:space="preserve">
-    <value>CITYPROVINCE</value>
+    <value>City-Pronvice</value>
   </data>
   <data name="Enum_AddressType_OFFICE_CONTACT_PERSON" xml:space="preserve">
-    <value>CONTACT_PERSON</value>
+    <value>Contact Person</value>
   </data>
   <data name="Enum_AddressType_OFFICE_COUNTRY" xml:space="preserve">
-    <value>COUNTRY</value>
+    <value>Country</value>
   </data>
   <data name="Enum_AddressType_OFFICE_FACEBOOK" xml:space="preserve">
-    <value>FACEBOOK</value>
+    <value>Facebook</value>
   </data>
   <data name="Enum_AddressType_OFFICE_HOME_PHONE" xml:space="preserve">
-    <value>HOME_PHONE</value>
+    <value>Home_Phone</value>
   </data>
   <data name="Enum_AddressType_OFFICE_HOUSE_NO" xml:space="preserve">
-    <value>HOUSE_NO</value>
+    <value>House No_</value>
   </data>
   <data name="Enum_AddressType_OFFICE_LINKEDIN" xml:space="preserve">
-    <value>LINKEDIN</value>
+    <value>LinkedIn</value>
   </data>
   <data name="Enum_AddressType_OFFICE_MOBILE_PHONE_1" xml:space="preserve">
-    <value>MOBILE_PHONE_1</value>
+    <value>Mobile Phone 1</value>
   </data>
   <data name="Enum_AddressType_OFFICE_MOBILE_PHONE_2" xml:space="preserve">
-    <value>MOBILE_PHONE_2</value>
+    <value>Mobile Phone_2</value>
   </data>
   <data name="Enum_AddressType_OFFICE_OFFICE_EMAIL" xml:space="preserve">
-    <value>OFFICE_EMAIL</value>
+    <value>Office Email</value>
   </data>
   <data name="Enum_AddressType_OFFICE_PERSONAL_EMAIL" xml:space="preserve">
-    <value>PERSONAL_EMAIL</value>
+    <value>Personal Email</value>
   </data>
   <data name="Enum_AddressType_OFFICE_PHONE" xml:space="preserve">
-    <value>OFFICE_PHONE</value>
+    <value>Office Phone</value>
   </data>
   <data name="Enum_AddressType_OFFICE_POBOX" xml:space="preserve">
     <value>POBOX</value>
   </data>
   <data name="Enum_AddressType_OFFICE_REGION" xml:space="preserve">
-    <value>REGION</value>
+    <value>Region </value>
   </data>
   <data name="Enum_AddressType_OFFICE_SKYPE" xml:space="preserve">
-    <value>SKYPE</value>
+    <value>Skype</value>
   </data>
   <data name="Enum_AddressType_OFFICE_SPECIAL_LOCATION" xml:space="preserve">
-    <value>SPECIAL_LOCATION</value>
+    <value>Special Location</value>
   </data>
   <data name="Enum_AddressType_OFFICE_STREET" xml:space="preserve">
-    <value>STREET</value>
+    <value>Street</value>
   </data>
   <data name="Enum_AddressType_OFFICE_TWITTER" xml:space="preserve">
-    <value>TWITTER</value>
+    <value>Twitter</value>
   </data>
   <data name="Enum_AddressType_OFFICE_WEBSITE" xml:space="preserve">
-    <value>WEBSITE</value>
+    <value>Website</value>
   </data>
   <data name="Enum_AddressType_OFFICE_WORADA" xml:space="preserve">
-    <value>WORADA</value>
+    <value>Worada</value>
   </data>
   <data name="Enum_AllowanceType_DESERT" xml:space="preserve">
-    <value>DESERT</value>
+    <value>Desert</value>
   </data>
   <data name="Enum_AllowanceType_HOME" xml:space="preserve">
-    <value>HOME</value>
+    <value>Home</value>
   </data>
   <data name="Enum_AllowanceType_POSITION" xml:space="preserve">
-    <value>POSITION</value>
+    <value>Position</value>
   </data>
   <data name="Enum_AllowanceType_PROFESSIONAL" xml:space="preserve">
-    <value>PROFESSIONAL</value>
+    <value>Professional </value>
   </data>
   <data name="Enum_AllowanceType_PROJECT" xml:space="preserve">
-    <value>PROJECT</value>
+    <value>Project</value>
   </data>
   <data name="Enum_AllowanceType_RESPONSIBILITY" xml:space="preserve">
-    <value>RESPONSIBILITY</value>
+    <value>Responsibiliy </value>
   </data>
   <data name="Enum_AllowanceType_TELEPHONE" xml:space="preserve">
-    <value>TELEPHONE</value>
+    <value>Telephone </value>
   </data>
   <data name="Enum_AllowanceType_TOP_UP" xml:space="preserve">
-    <value>TOP_UP</value>
+    <value>Top Up</value>
   </data>
   <data name="Enum_AllowanceType_TRANSPORT" xml:space="preserve">
-    <value>TRANSPORT</value>
+    <value>Transport </value>
   </data>
   <data name="Enum_ApplicationType_PROMOTION" xml:space="preserve">
-    <value>PROMOTION</value>
+    <value>Promotion </value>
   </data>
   <data name="Enum_ApplicationType_TRANSFER" xml:space="preserve">
-    <value>TRANSFER</value>
+    <value>Transfer</value>
   </data>
   <data name="Enum_AssignmentType_ASSIGNMENT" xml:space="preserve">
-    <value>ASSIGNMENT</value>
+    <value>Assignment </value>
   </data>
   <data name="Enum_AssignmentType_DEMOTION" xml:space="preserve">
-    <value>DEMOTION</value>
+    <value>Demotion </value>
   </data>
   <data name="Enum_AssignmentType_NEW" xml:space="preserve">
-    <value>NEW</value>
+    <value>New</value>
   </data>
   <data name="Enum_AssignmentType_PROMOTION" xml:space="preserve">
-    <value>PROMOTION</value>
+    <value>Promotion </value>
   </data>
   <data name="Enum_AssignmentType_RECOMENDATION" xml:space="preserve">
-    <value>RECOMENDATION</value>
+    <value>Recomendation</value>
   </data>
   <data name="Enum_AssignmentType_STRUCTURE_CHANGE" xml:space="preserve">
-    <value>STRUCTURE_CHANGE</value>
+    <value>Structure Change </value>
   </data>
   <data name="Enum_AssignmentType_TRANSFER" xml:space="preserve">
-    <value>TRANSFER</value>
+    <value>Transfer</value>
   </data>
   <data name="Enum_AssignmentType_YEARLY_PROMOTION" xml:space="preserve">
-    <value>YEARLY_PROMOTION</value>
+    <value>Yearly Promotion</value>
   </data>
   <data name="Enum_AssocationType_CREDIT" xml:space="preserve">
-    <value>CREDIT</value>
+    <value>Credit</value>
   </data>
   <data name="Enum_AssocationType_LABOUR" xml:space="preserve">
-    <value>LABOUR</value>
+    <value>Labour</value>
   </data>
   <data name="Enum_AssocationType_OTHER" xml:space="preserve">
-    <value>OTHER</value>
+    <value>Other</value>
   </data>
   <data name="Enum_AssocationType_SPORT_FEE" xml:space="preserve">
-    <value>SPORT_FEE</value>
+    <value>Sport Fee</value>
   </data>
   <data name="Enum_AssociationType_CHILD" xml:space="preserve">
-    <value>CHILD</value>
+    <value>Child</value>
   </data>
   <data name="Enum_AssociationType_FATHER" xml:space="preserve">
-    <value>FATHER</value>
+    <value>Father</value>
   </data>
   <data name="Enum_AssociationType_HUSBAND" xml:space="preserve">
-    <value>HUSBAND</value>
+    <value>Husband</value>
   </data>
   <data name="Enum_AssociationType_MOTHER" xml:space="preserve">
-    <value>MOTHER</value>
+    <value>Mother</value>
   </data>
   <data name="Enum_AssociationType_OTHER" xml:space="preserve">
-    <value>OTHER</value>
+    <value>Other</value>
   </data>
   <data name="Enum_AssociationType_WIFE" xml:space="preserve">
-    <value>WIFE</value>
+    <value>Wife</value>
   </data>
   <data name="Enum_BankAccountType_CREDIT" xml:space="preserve">
-    <value>CREDIT</value>
+    <value>Credit</value>
   </data>
   <data name="Enum_BankAccountType_PAYROLL" xml:space="preserve">
-    <value>PAYROLL</value>
+    <value>Payroll</value>
   </data>
   <data name="Enum_BankAccountType_SAVING" xml:space="preserve">
-    <value>SAVING</value>
+    <value>Saving</value>
   </data>
   <data name="Enum_BonusAttribute_EMPLOYEE_MULTIPLIER" xml:space="preserve">
-    <value>MULTIPLIER</value>
+    <value>Multiplier</value>
   </data>
   <data name="Enum_BonusType_WITH_OUT_PERFORMANCE" xml:space="preserve">
-    <value>WITH_OUT_PERFORMANCE</value>
+    <value>With Out Performance</value>
   </data>
   <data name="Enum_BonusType_WITH_PERFORMANCE" xml:space="preserve">
-    <value>WITH_PERFORMANCE</value>
+    <value>With Performance</value>
   </data>
   <data name="Enum_BranchTypes_Branch" xml:space="preserve">
-    <value>HEAD_OFFICE</value>
+    <value>Head Office </value>
   </data>
   <data name="Enum_BranchTypes_Project" xml:space="preserve">
-    <value>PROJECT</value>
+    <value>Project</value>
   </data>
   <data name="Enum_CommitmentType_EDUCATION" xml:space="preserve">
-    <value>EDUCATION</value>
+    <value>Education</value>
   </data>
   <data name="Enum_CommitmentType_TRAINING" xml:space="preserve">
-    <value>TRAINING</value>
+    <value>Training</value>
   </data>
   <data name="Enum_CommitteType_OBSERVANT" xml:space="preserve">
-    <value>OBSERVANT</value>
+    <value>Observant</value>
   </data>
   <data name="Enum_CommitteType_PERFORMANCE" xml:space="preserve">
-    <value>PERFORMANCE</value>
+    <value>Performance</value>
   </data>
   <data name="Enum_CommitteType_PROMOTION" xml:space="preserve">
-    <value>PROMOTION</value>
+    <value>Promotion</value>
   </data>
   <data name="Enum_CommitteType_RECRUITMENT" xml:space="preserve">
-    <value>RECRUITMENT</value>
+    <value>Recruitment</value>
   </data>
   <data name="Enum_ContributionCategory_FIXED" xml:space="preserve">
-    <value>FIXED</value>
+    <value>Fixed</value>
   </data>
   <data name="Enum_ContributionCategory_REGULAR" xml:space="preserve">
-    <value>REGULAR</value>
+    <value>Regular</value>
   </data>
   <data name="Enum_EmployeeStatus_CONTRACT" xml:space="preserve">
-    <value>CONTRACT</value>
+    <value>Contract </value>
   </data>
   <data name="Enum_EmployeeStatus_NO_STATUS" xml:space="preserve">
-    <value>NO_STATUS</value>
+    <value>No Status </value>
   </data>
   <data name="Enum_EmployeeStatus_PERMANENT" xml:space="preserve">
-    <value>PERMANENT</value>
+    <value>Permannent </value>
   </data>
   <data name="Enum_EmployeeStatus_PROBATION" xml:space="preserve">
-    <value>PROBATION</value>
+    <value>Probation </value>
   </data>
   <data name="Enum_EVALUATION_PERIOD" xml:space="preserve">
-    <value>EVALUATION_PERIOD</value>
+    <value>Evaluation Period </value>
   </data>
   <data name="Enum_Female" xml:space="preserve">
     <value>Female</value>
   </data>
   <data name="Enum_FISCAL_YEAR" xml:space="preserve">
-    <value>FISCAL_YEAR</value>
+    <value>Fiscal Year</value>
   </data>
   <data name="Enum_FixedContAmtType_AMOUNT" xml:space="preserve">
-    <value>AMOUNT</value>
+    <value>Amount </value>
   </data>
   <data name="Enum_FixedContAmtType_GROSS" xml:space="preserve">
-    <value>FROM_BASIC</value>
+    <value>From basic </value>
   </data>
   <data name="Enum_FixedContAmtType_NET" xml:space="preserve">
-    <value>FROM_NET</value>
+    <value>From Net</value>
   </data>
   <data name="Enum_FixedContAmtType_PERCENT" xml:space="preserve">
-    <value>PERCENT</value>
+    <value>Percent </value>
   </data>
   <data name="Enum_HOLIDAY" xml:space="preserve">
-    <value>HOLIDAY</value>
+    <value>Holiday </value>
   </data>
   <data name="Enum_IdentificationType_BIOMETRIC_ID" xml:space="preserve">
-    <value>BIOMETRIC_ID</value>
+    <value>Biometric Id</value>
   </data>
   <data name="Enum_IdentificationType_DRIVING_LICENSE" xml:space="preserve">
-    <value>DRIVING_LICENSE</value>
+    <value>Driving License </value>
   </data>
   <data name="Enum_IdentificationType_LICENSE_NUMBER" xml:space="preserve">
-    <value>LICENSE_NUMBER</value>
+    <value>License Number I</value>
   </data>
   <data name="Enum_IdentificationType_PASSPORT" xml:space="preserve">
-    <value>PASSPORT</value>
+    <value>Passport </value>
   </data>
   <data name="Enum_IdentificationType_PENSION_NO" xml:space="preserve">
-    <value>PENSION_NO</value>
+    <value>Pension No_ </value>
   </data>
   <data name="Enum_IdentificationType_RESIDENTIAL_ID" xml:space="preserve">
-    <value>RESIDENTIAL_ID</value>
+    <value>Residential ID </value>
   </data>
   <data name="Enum_IdentificationType_SMART_CARD" xml:space="preserve">
-    <value>SMART_CARD</value>
+    <value>SMart Card</value>
   </data>
   <data name="Enum_IdentificationType_STUDENT_ID" xml:space="preserve">
-    <value>STUDENT_ID</value>
+    <value>Student ID</value>
   </data>
   <data name="Enum_IdentificationType_TIN" xml:space="preserve">
     <value>TIN</value>
   </data>
   <data name="Enum_IdentificationType_VAT_NUMBER" xml:space="preserve">
-    <value>VAT_NUMBER</value>
+    <value>VAT NUmber</value>
   </data>
   <data name="Enum_IdentificationType_VISA" xml:space="preserve">
     <value>VISA</value>
   </data>
   <data name="Enum_IdentificationType_WORK_ID" xml:space="preserve">
-    <value>WORK_ID</value>
+    <value>Work ID</value>
   </data>
   <data name="Enum_IndustryType_AUTOMOTIVE" xml:space="preserve">
-    <value>AUTOMOTIVE</value>
+    <value>Automotive </value>
   </data>
   <data name="Enum_IndustryType_BOOK_AND_PUBLICATION" xml:space="preserve">
-    <value>BOOK_AND_PUBLICATION</value>
+    <value>Book  and Publication </value>
   </data>
   <data name="Enum_IndustryType_CAFEE" xml:space="preserve">
-    <value>CAFEE</value>
+    <value>Cafee</value>
   </data>
   <data name="Enum_IndustryType_CLINIC" xml:space="preserve">
-    <value>CLINIC</value>
+    <value>Clinic </value>
   </data>
   <data name="Enum_IndustryType_CONSTRUCTION" xml:space="preserve">
-    <value>CONSTRUCTION</value>
+    <value>Construction</value>
   </data>
   <data name="Enum_IndustryType_ELECTRONICS" xml:space="preserve">
-    <value>ELECTRONICS</value>
+    <value>Electronics</value>
   </data>
   <data name="Enum_IndustryType_GARMENT" xml:space="preserve">
-    <value>GARMENT</value>
+    <value>Garment </value>
   </data>
   <data name="Enum_IndustryType_HOSPITAL" xml:space="preserve">
-    <value>HOSPITAL</value>
+    <value>Hospital </value>
   </data>
   <data name="Enum_IndustryType_HOSPITALITY" xml:space="preserve">
-    <value>HOSPITALITY</value>
+    <value>Hospitality </value>
   </data>
   <data name="Enum_IndustryType_MANUFACTURING" xml:space="preserve">
-    <value>MANUFACTURING</value>
+    <value>Manufacturing </value>
   </data>
   <data name="Enum_IndustryType_PHARMACY" xml:space="preserve">
-    <value>PHARMACY</value>
+    <value>Pharmacy </value>
   </data>
   <data name="Enum_IndustryType_REAL_STATE" xml:space="preserve">
-    <value>REAL STATE</value>
+    <value>Real State</value>
   </data>
   <data name="Enum_IndustryType_RESTAURANT" xml:space="preserve">
-    <value>RESTAURANT</value>
+    <value>Restaurant </value>
   </data>
   <data name="Enum_IndustryType_RETAIL" xml:space="preserve">
-    <value>RETAIL</value>
+    <value>Retail </value>
   </data>
   <data name="Enum_IndustryType_WHOLESALES" xml:space="preserve">
-    <value>WHOLE SALES</value>
+    <value>Whole Sales </value>
   </data>
   <data name="Enum_InsuranceAttribute_CHILDREN" xml:space="preserve">
-    <value>CHILDREN</value>
+    <value>Children </value>
   </data>
   <data name="Enum_InsuranceAttribute_JUDGE" xml:space="preserve">
-    <value>JUDGE</value>
+    <value>Judge </value>
   </data>
   <data name="Enum_InsuranceAttribute_WIFE_OR_HUSBAND" xml:space="preserve">
-    <value>WIFE_OR_HUSBAND</value>
+    <value>Wfe or Husband </value>
   </data>
   <data name="Enum_JobTitlePlan_BOUNDED" xml:space="preserve">
-    <value>BOUNDED</value>
+    <value>Bounded </value>
   </data>
   <data name="Enum_JobTitlePlan_UNBOUNDED" xml:space="preserve">
-    <value>UNBOUNDED</value>
+    <value>Unbounded </value>
   </data>
   <data name="Enum_LanguageType_INTERNATIONAL_LANGUAGE" xml:space="preserve">
-    <value>INTERNATIONAL LANGUAGE</value>
+    <value>International Language</value>
   </data>
   <data name="Enum_LanguageType_LOCAL_LANGUAGE" xml:space="preserve">
-    <value>LOCAL LANGUAGE</value>
+    <value>Local Language </value>
   </data>
   <data name="Enum_LeaveSetting_LEAVE_FOR_LEADRES" xml:space="preserve">
-    <value>LEAVE FOR LEADRES</value>
+    <value>Leave for Leaders </value>
   </data>
   <data name="Enum_LeaveSetting_LEAVE_FOR_PERFORMERS" xml:space="preserve">
-    <value>LEAVE FOR PERFORMERS</value>
+    <value>Leave for Performers </value>
   </data>
   <data name="Enum_LeaveType_ANNUAL" xml:space="preserve">
-    <value>ANNUAL</value>
+    <value>Annual </value>
   </data>
   <data name="Enum_LeaveType_MARRIAGE" xml:space="preserve">
-    <value>MARRIAGE</value>
+    <value>Marriage </value>
   </data>
   <data name="Enum_LeaveType_MATERNITY" xml:space="preserve">
-    <value>MATERNITY</value>
+    <value>Maternity </value>
   </data>
   <data name="Enum_LeaveType_OTHER" xml:space="preserve">
-    <value>OTHER</value>
+    <value>Other </value>
   </data>
   <data name="Enum_LeaveType_PATERNITY" xml:space="preserve">
-    <value>PATERNITY</value>
+    <value>Paternity </value>
   </data>
   <data name="Enum_LeaveType_SICK_LEAVE" xml:space="preserve">
-    <value>SICK_LEAVE</value>
+    <value>Sick Leave </value>
   </data>
   <data name="Enum_LEAVE_PERIOD" xml:space="preserve">
-    <value>LEAVE PERIOD</value>
+    <value>Leave Period </value>
   </data>
   <data name="Enum_LetterOwner_ORGANIZATION" xml:space="preserve">
-    <value>ORGANIZATION</value>
+    <value>Organization </value>
   </data>
   <data name="Enum_LetterOwner_PRIVATE" xml:space="preserve">
-    <value>PRIVATE</value>
+    <value>Private </value>
   </data>
   <data name="Enum_LettersStatus_ANSWERED" xml:space="preserve">
-    <value>ANSWERED</value>
+    <value>Answered </value>
   </data>
   <data name="Enum_LettersStatus_NEW" xml:space="preserve">
-    <value>NEW</value>
+    <value>New </value>
   </data>
   <data name="Enum_LettersStatus_TRANSFERED" xml:space="preserve">
-    <value>TRANSFERED</value>
+    <value>Transfered </value>
   </data>
   <data name="Enum_LetterType_INCOMING" xml:space="preserve">
-    <value>INCOMING</value>
+    <value>Incoming </value>
   </data>
   <data name="Enum_LetterType_OUTGOING" xml:space="preserve">
-    <value>OUTGOING</value>
+    <value>OutGoung </value>
   </data>
   <data name="Enum_LookUpTypes_ADDITION_TYPE" xml:space="preserve">
-    <value>ADDITION TYPE</value>
+    <value>Addition Type</value>
   </data>
   <data name="Enum_LookUpTypes_COMMITMENT_TYPE" xml:space="preserve">
-    <value>COMMITMENT TYPE</value>
+    <value>Commitment Type </value>
   </data>
   <data name="Enum_LookUpTypes_COMMITTEE_TYPE" xml:space="preserve">
-    <value>COMMITTEE TYPE</value>
+    <value>Committee Type </value>
   </data>
   <data name="Enum_LookUpTypes_COMPLAIN_TYPE" xml:space="preserve">
-    <value>COMPLAIN TYPE</value>
+    <value>Complain Type </value>
   </data>
   <data name="Enum_LookUpTypes_CONSTRUCTION_TYPE" xml:space="preserve">
-    <value>CONSTRUCTION_TYPE</value>
+    <value>Construction Type </value>
   </data>
   <data name="Enum_LookUpTypes_CONTRIBUTION_TYPE" xml:space="preserve">
-    <value>CONTRIBUTION_TYPE</value>
+    <value>Contribution Type </value>
   </data>
   <data name="Enum_LookUpTypes_COSIGN_TYPE" xml:space="preserve">
-    <value>COSIGN_TYPE</value>
+    <value>Cosign Type </value>
   </data>
   <data name="Enum_LookUpTypes_COURSE" xml:space="preserve">
-    <value>COURSE</value>
+    <value>Course</value>
   </data>
   <data name="Enum_LookUpTypes_DOCUMENT_TYPE" xml:space="preserve">
-    <value>DOCUMENT_TYPE</value>
+    <value>Document Type </value>
   </data>
   <data name="Enum_LookUpTypes_EDUCATION_FIELD" xml:space="preserve">
-    <value>EDUCATION_FIELD</value>
+    <value>Education Field </value>
   </data>
   <data name="Enum_LookUpTypes_EDUCATION_LEVEL" xml:space="preserve">
-    <value>EDUCATION_LEVEL</value>
+    <value>Education Level </value>
   </data>
   <data name="Enum_LookUpTypes_EVALUATION_TYPE" xml:space="preserve">
-    <value>EVALUATION_TYPE</value>
+    <value>Evaluation Type </value>
   </data>
   <data name="Enum_LookUpTypes_INSURANCE_CLASS_OF_BUSINESS" xml:space="preserve">
-    <value>INSURANCE_CLASS_OF_BUSINESS</value>
+    <value>Insurance Class of Business </value>
   </data>
   <data name="Enum_LookUpTypes_JOB_TITLE" xml:space="preserve">
-    <value>JOB_TITLE</value>
+    <value>Job Title </value>
   </data>
   <data name="Enum_LookUpTypes_MEDIA" xml:space="preserve">
-    <value>MEDIA</value>
+    <value>Media</value>
   </data>
   <data name="Enum_LookUpTypes_NATION" xml:space="preserve">
-    <value>NATION</value>
+    <value>Nation </value>
   </data>
   <data name="Enum_LookUpTypes_OTHER_BENEFIT" xml:space="preserve">
-    <value>OTHER_BENEFIT</value>
+    <value>Other Benefit </value>
   </data>
   <data name="Enum_LookUpTypes_OVERTIME_TYPE" xml:space="preserve">
-    <value>OVERTIME_TYPE</value>
+    <value>Over time </value>
   </data>
   <data name="Enum_LookUpTypes_PROBATION_STATUS" xml:space="preserve">
-    <value>PROBATION_STATUS</value>
+    <value>Pobation Status</value>
   </data>
   <data name="Enum_LookUpTypes_PROJECT_TYPE" xml:space="preserve">
-    <value>PROJECT_TYPE</value>
+    <value>Project Type</value>
   </data>
   <data name="Enum_LookUpTypes_RELATIONSHIP" xml:space="preserve">
-    <value>RELATIONSHIP</value>
+    <value>Relation ship </value>
   </data>
   <data name="Enum_LookUpTypes_ROW_DATA" xml:space="preserve">
-    <value>ROW_DATA</value>
+    <value>Row Data </value>
   </data>
   <data name="Enum_LookUpTypes_SKILL_TYPE" xml:space="preserve">
-    <value>SKILL_TYPE</value>
+    <value>Skill Type </value>
   </data>
   <data name="Enum_LookUpTypes_TARGET_GROUP" xml:space="preserve">
-    <value>TARGET_GROUP</value>
+    <value>Target Group</value>
   </data>
   <data name="Enum_LookUpTypes_TERMINATIONTYPE" xml:space="preserve">
-    <value>TERMINATIONTYPE</value>
+    <value>Termination Type </value>
   </data>
   <data name="Enum_LookUpTypes_TRAINING_TYPE" xml:space="preserve">
-    <value>TRAINING_TYPE</value>
+    <value>Traing Type </value>
   </data>
   <data name="Enum_LookUpTypes_UOM" xml:space="preserve">
     <value>UOM</value>
   </data>
   <data name="Enum_LookUpTypes_WORK_ITEM" xml:space="preserve">
-    <value>WORK_ITEM</value>
+    <value>Work Item </value>
   </data>
   <data name="Enum_Male" xml:space="preserve">
     <value>Male</value>
   </data>
   <data name="Enum_MartialStatus_DIVORCED" xml:space="preserve">
-    <value>DIVORCED</value>
+    <value>Divorced </value>
   </data>
   <data name="Enum_MartialStatus_MARRIED" xml:space="preserve">
-    <value>MARRIED</value>
+    <value>Married </value>
   </data>
   <data name="Enum_MartialStatus_SEPARATED" xml:space="preserve">
-    <value>SEPARATED</value>
+    <value>Separated </value>
   </data>
   <data name="Enum_MartialStatus_SINGLE" xml:space="preserve">
-    <value>SINGLE</value>
+    <value>Single </value>
   </data>
   <data name="Enum_OverTimeAttribute_COEFFICIENT" xml:space="preserve">
-    <value>COEFFICIENT</value>
+    <value>Cofficient </value>
   </data>
   <data name="Enum_OverTimeAttribute_HOLIDAY_RATE" xml:space="preserve">
-    <value>HOLIDAY_RATE</value>
+    <value>Holiday Rate </value>
   </data>
   <data name="Enum_OverTimeAttribute_NIGHT_RATE" xml:space="preserve">
-    <value>NIGHT_RATE</value>
+    <value>Night Rate </value>
   </data>
   <data name="Enum_OverTimeAttribute_NORMAL_RATE" xml:space="preserve">
-    <value>NORMAL_RATE</value>
+    <value>Normal Rate </value>
   </data>
   <data name="Enum_OverTimeAttribute_RESTDAY_RATE" xml:space="preserve">
-    <value>RESTDAY_RATE</value>
+    <value>Rest Day Rate </value>
   </data>
   <data name="Enum_PayrollAccountType_ADDITIONS" xml:space="preserve">
-    <value>ADDITIONS</value>
+    <value>Addition </value>
   </data>
   <data name="Enum_PayrollAccountType_ADVANCE" xml:space="preserve">
-    <value>ADVANCE</value>
+    <value>Advanced </value>
   </data>
   <data name="Enum_PayrollAccountType_ASSOCIATION" xml:space="preserve">
-    <value>ASSOCIATION</value>
+    <value>Association </value>
   </data>
   <data name="Enum_PayrollAccountType_BASIC_SALARY_CONRACT" xml:space="preserve">
-    <value>BASIC_SALARY_CONRACT</value>
+    <value>Basic Salary Contract </value>
   </data>
   <data name="Enum_PayrollAccountType_BASIC_SALARY_PERMANENT" xml:space="preserve">
-    <value>BASIC_SALARY_PERMANENT</value>
+    <value>Basic Salary Permanent </value>
   </data>
   <data name="Enum_PayrollAccountType_INCOME_TAX" xml:space="preserve">
-    <value>INCOME_TAX</value>
+    <value>Income Tax </value>
   </data>
   <data name="Enum_PayrollAccountType_LABOR_UNION" xml:space="preserve">
-    <value>LABOR_UNION</value>
+    <value>Labor Union </value>
   </data>
   <data name="Enum_PayrollAccountType_LOAN" xml:space="preserve">
-    <value>LOAN</value>
+    <value>Loan </value>
   </data>
   <data name="Enum_PayrollAccountType_NET_PAY" xml:space="preserve">
-    <value>NET_PAY</value>
+    <value>Net Pay</value>
   </data>
   <data name="Enum_PayrollAccountType_OVER_TIME" xml:space="preserve">
-    <value>OVER_TIME</value>
+    <value>Over Time</value>
   </data>
   <data name="Enum_PayrollAccountType_PENSION_COMPANY" xml:space="preserve">
-    <value>PENSION_COMPANY</value>
+    <value>Pension Company </value>
   </data>
   <data name="Enum_PayrollAccountType_PENSION_EXPENSE" xml:space="preserve">
-    <value>PENSION_EXPENSE</value>
+    <value>Pension Expense</value>
   </data>
   <data name="Enum_PayrollAccountType_PENSION_PAYABLE" xml:space="preserve">
-    <value>PENSION_PAYABLE</value>
+    <value>Pension Payable </value>
   </data>
   <data name="Enum_PayrollSettingCategories_BONUS" xml:space="preserve">
-    <value>BONUS</value>
+    <value>Bonus </value>
   </data>
   <data name="Enum_PayrollSettingCategories_OVERTIME" xml:space="preserve">
-    <value>OVERTIME</value>
+    <value>Over Time </value>
   </data>
   <data name="Enum_PayrollSettingCategories_PENSION" xml:space="preserve">
-    <value>PENSION</value>
+    <value>Pension  </value>
   </data>
   <data name="Enum_PayrollSettingCategories_PROVIDENT_FUND" xml:space="preserve">
-    <value>PROVIDENT_FUND</value>
+    <value>Provident Fund </value>
   </data>
   <data name="Enum_PAYROLL_PERIOD" xml:space="preserve">
-    <value>PAYROLL_PERIOD</value>
+    <value>Payroll Period </value>
   </data>
   <data name="Enum_PenalityType_PENALITY" xml:space="preserve">
-    <value>EMPLOYEE_PENALITY</value>
+    <value>Employee Penality </value>
   </data>
   <data name="Enum_PensionAttribute_COMPANY_CONTRIBUTION" xml:space="preserve">
-    <value>COMPANY_CONTRIBUTION</value>
+    <value>Company Contribution </value>
   </data>
   <data name="Enum_PensionAttribute_EMPLOYEE_CONTRIBUTION" xml:space="preserve">
-    <value>EMPLOYEE_CONTRIBUTION</value>
+    <value>Employee Contribution </value>
   </data>
   <data name="Enum_PensionAttribute_RETIREMENT_AGE" xml:space="preserve">
-    <value>RETIREMENT_AGE</value>
+    <value>Retirement Age </value>
   </data>
   <data name="Enum_PeriodStatusList_CLOSED" xml:space="preserve">
-    <value>CLOSED</value>
+    <value>Closed </value>
   </data>
   <data name="Enum_PeriodStatusList_NEW" xml:space="preserve">
-    <value>NEW</value>
+    <value>New</value>
   </data>
   <data name="Enum_PeriodStatusList_PROCESSING" xml:space="preserve">
-    <value>PROCESSING</value>
+    <value>Processing </value>
   </data>
   <data name="Enum_PeriodStatusList_TRANSFERRED" xml:space="preserve">
-    <value>TRANSFERRED</value>
+    <value>Transferred </value>
   </data>
   <data name="Enum_PersonTitle_AMBASADOR" xml:space="preserve">
-    <value>AMBASADOR</value>
+    <value>Ambasador </value>
   </data>
   <data name="Enum_PersonTitle_ATO" xml:space="preserve">
-    <value>ATO</value>
+    <value>Ato</value>
   </data>
   <data name="Enum_PersonTitle_BISHOP" xml:space="preserve">
-    <value>BISHOP</value>
+    <value>Bishop </value>
   </data>
   <data name="Enum_PersonTitle_BRIGADIER" xml:space="preserve">
-    <value>BRIGADIER</value>
+    <value>Brigadier </value>
   </data>
   <data name="Enum_PersonTitle_CAPITAIN" xml:space="preserve">
-    <value>CAPITAIN</value>
+    <value>Captitain </value>
   </data>
   <data name="Enum_PersonTitle_CRENEL" xml:space="preserve">
-    <value>CRENEL</value>
+    <value>Crenel </value>
   </data>
   <data name="Enum_PersonTitle_DIPLOMAT" xml:space="preserve">
-    <value>DIPLOMAT</value>
+    <value>Diplomat </value>
   </data>
   <data name="Enum_PersonTitle_DR" xml:space="preserve">
-    <value>DR</value>
+    <value>Dr.</value>
   </data>
   <data name="Enum_PersonTitle_ENGINEER" xml:space="preserve">
-    <value>ENGINEER</value>
+    <value>Engineer </value>
   </data>
   <data name="Enum_PersonTitle_GENERAL" xml:space="preserve">
-    <value>GENERAL</value>
+    <value>General </value>
   </data>
   <data name="Enum_PersonTitle_HISEXCELLENCY" xml:space="preserve">
-    <value>HISEXCELLENCY</value>
+    <value>His Excellency </value>
   </data>
   <data name="Enum_PersonTitle_HONORABLE" xml:space="preserve">
-    <value>HONORABLE</value>
+    <value>Honorable </value>
   </data>
   <data name="Enum_PersonTitle_LOWRET" xml:space="preserve">
-    <value>LOWRET</value>
+    <value>Lowret </value>
   </data>
   <data name="Enum_PersonTitle_MAJOR" xml:space="preserve">
-    <value>MAJOR</value>
+    <value>Major </value>
   </data>
   <data name="Enum_PersonTitle_MR" xml:space="preserve">
-    <value>MR</value>
+    <value>Mr</value>
   </data>
   <data name="Enum_PersonTitle_MRS" xml:space="preserve">
-    <value>MRS</value>
+    <value>Mrs</value>
   </data>
   <data name="Enum_PersonTitle_PASTER" xml:space="preserve">
-    <value>PASTER</value>
+    <value>Paster </value>
   </data>
   <data name="Enum_PersonTitle_POPE" xml:space="preserve">
-    <value>POPE</value>
+    <value>Pope </value>
   </data>
   <data name="Enum_PersonTitle_PROFFESOR" xml:space="preserve">
-    <value>PROFFESOR</value>
+    <value>Proffesor </value>
   </data>
   <data name="Enum_PersonTitle_SHEK" xml:space="preserve">
-    <value>SHEK</value>
+    <value>Shek </value>
   </data>
   <data name="Enum_PersonTitle_SIR" xml:space="preserve">
-    <value>SIR</value>
+    <value>Sir </value>
   </data>
   <data name="Enum_PersonTitle_W_RO" xml:space="preserve">
-    <value>W_RO</value>
+    <value>W.RO</value>
   </data>
   <data name="Enum_PersonTitle_W_T" xml:space="preserve">
-    <value>W_T</value>
+    <value>W.T</value>
   </data>
   <data name="Enum_Proficiency_EXCELLENT" xml:space="preserve">
-    <value>EXCELLENT</value>
+    <value>Excellent </value>
   </data>
   <data name="Enum_Proficiency_GOOD" xml:space="preserve">
-    <value>GOOD</value>
+    <value>Good </value>
   </data>
   <data name="Enum_Proficiency_POOR" xml:space="preserve">
-    <value>POOR</value>
+    <value>Poor </value>
   </data>
   <data name="Enum_Proficiency_VERY_GOOD" xml:space="preserve">
-    <value>VERY_GOOD</value>
+    <value>Very Good </value>
   </data>
   <data name="Enum_PromotionSetting_PROMOTION_PER_YEAR" xml:space="preserve">
-    <value>PROMOTION_PER_YEAR</value>
+    <value>Promotion Per Year </value>
   </data>
   <data name="Enum_PromotionSetting_VACANCY_LIFE_TIME_INDAY" xml:space="preserve">
-    <value>VACANCY_LIFE_TIME_INDAY</value>
+    <value>Vacancy life time in day </value>
   </data>
   <data name="Enum_PromotionSetting_VACANCY_PASS_MARK" xml:space="preserve">
-    <value>PASS_MARK</value>
+    <value>Pass Mark </value>
   </data>
   <data name="Enum_PromotionSetting_YEARLY_PROMOTION_PER_YEAR" xml:space="preserve">
-    <value>YEARLY_PROMOTION_PER_YEAR</value>
+    <value>Yearly Promotion Per year </value>
   </data>
   <data name="Enum_ProvidentAttribute_ADDITIONAL_COMPANY_CONTRIBUTION" xml:space="preserve">
-    <value>ADDITIONAL_COMPANY_CONTRIBUTION</value>
+    <value>Additional Company Contribution </value>
   </data>
   <data name="Enum_ProvidentAttribute_ADDITIONAL_EMPLOYEE_CONTRIBUTION" xml:space="preserve">
-    <value>ADDITIONAL_EMPLOYEE_CONTRIBUTION</value>
+    <value>Additional Employee Contribution  </value>
   </data>
   <data name="Enum_ProvidentAttribute_COMPANY_CONTRIBUTION" xml:space="preserve">
-    <value>COMPANY_CONTRIBUTION</value>
+    <value>Company Contribution </value>
   </data>
   <data name="Enum_ProvidentAttribute_EMPLOYEE_CONTRIBUTION" xml:space="preserve">
-    <value>EMPLOYEE_CONTRIBUTION</value>
+    <value>Employee Contribution </value>
   </data>
   <data name="Enum_QUARTER" xml:space="preserve">
-    <value>QUARTER</value>
+    <value>Quarter </value>
   </data>
   <data name="Enum_RECRUITMENT" xml:space="preserve">
-    <value>RECRUITMENT</value>
+    <value>Recruitment </value>
   </data>
   <data name="Enum_RecruitmentResult_FAIL" xml:space="preserve">
-    <value>FAIL</value>
+    <value>Fail </value>
   </data>
   <data name="Enum_RecruitmentResult_PASS" xml:space="preserve">
-    <value>PASS</value>
+    <value>Pass </value>
   </data>
   <data name="Enum_RecruitmentSetting_DISABILITY" xml:space="preserve">
-    <value>DISABILITY</value>
+    <value>Disability </value>
   </data>
   <data name="Enum_RecruitmentSetting_DISCIPLINE" xml:space="preserve">
-    <value>DISCIPLINE</value>
+    <value>Discipline </value>
   </data>
   <data name="Enum_RecruitmentSetting_EDUCATIONAL_FIELD" xml:space="preserve">
-    <value>EDUCATIONAL_FIELD</value>
+    <value>Education Field </value>
   </data>
   <data name="Enum_RecruitmentSetting_EDUCATION_LEVEL" xml:space="preserve">
-    <value>EDUCATION_LEVEL</value>
+    <value>Education  Level </value>
   </data>
   <data name="Enum_RecruitmentSetting_GENDER" xml:space="preserve">
-    <value>GENDER</value>
+    <value>Gender </value>
   </data>
   <data name="Enum_RecruitmentSetting_INTERVIEW" xml:space="preserve">
-    <value>INTERVIEW</value>
+    <value>Interview </value>
   </data>
   <data name="Enum_RecruitmentSetting_PRACTICAL_EXAM" xml:space="preserve">
-    <value>PRACTICAL_EXAM</value>
+    <value>Practical Exam </value>
   </data>
   <data name="Enum_RecruitmentSetting_PROFILE" xml:space="preserve">
-    <value>PROFILE</value>
+    <value>Profile </value>
   </data>
   <data name="Enum_RecruitmentSetting_RELATED_EXPERIENCE" xml:space="preserve">
     <value>Related Experience and Education</value>
@@ -1207,136 +1208,136 @@
     <value>Relevant Experience and Education</value>
   </data>
   <data name="Enum_RecruitmentSetting_THEORY_EXAM" xml:space="preserve">
-    <value>THEORY_EXAM</value>
+    <value>Theory Exam</value>
   </data>
   <data name="Enum_RecruitmentSetting_TRAINING" xml:space="preserve">
-    <value>TRAINING</value>
+    <value>Training </value>
   </data>
   <data name="Enum_RecruitmentSource_EXTERNAL" xml:space="preserve">
-    <value>EXTERNAL</value>
+    <value>External </value>
   </data>
   <data name="Enum_RecruitmentSource_INTERNAL" xml:space="preserve">
-    <value>INTERNAL</value>
+    <value>Internal </value>
   </data>
   <data name="Enum_Region_AFAR" xml:space="preserve">
-    <value>AFAR</value>
+    <value>Afar </value>
   </data>
   <data name="Enum_Region_AMHARA" xml:space="preserve">
-    <value>AMHARA</value>
+    <value>Amhara </value>
   </data>
   <data name="Enum_Region_BENSHANGUL_GUMUZ" xml:space="preserve">
-    <value>BENSHANGUL_GUMUZ</value>
+    <value>Benshangul Gumuz </value>
   </data>
   <data name="Enum_Region_GAMBELLA" xml:space="preserve">
-    <value>GAMBELLA</value>
+    <value>Gambella </value>
   </data>
   <data name="Enum_Region_HARRARI" xml:space="preserve">
-    <value>HARRARI</value>
+    <value>Harrari </value>
   </data>
   <data name="Enum_Region_OROMO" xml:space="preserve">
-    <value>OROMIYA</value>
+    <value>Oromiya </value>
   </data>
   <data name="Enum_Region_SOMALIA" xml:space="preserve">
-    <value>SOMALIA</value>
+    <value>Somalia</value>
   </data>
   <data name="Enum_Region_SOUTH_NATION_AND_NATIONALITIES" xml:space="preserve">
-    <value>SOUTH_NATION_AND_NATIONALITIES</value>
+    <value>South Nation and Nationalities </value>
   </data>
   <data name="Enum_Region_TIGRAY" xml:space="preserve">
-    <value>TIGRAY</value>
+    <value>Tigray </value>
   </data>
   <data name="Enum_ReligionList_CATHOLIC" xml:space="preserve">
-    <value>CATHOLIC</value>
+    <value>Catholic </value>
   </data>
   <data name="Enum_ReligionList_MUSLIM" xml:space="preserve">
-    <value>MUSLIM</value>
+    <value>Muslim </value>
   </data>
   <data name="Enum_ReligionList_ORTHODOX" xml:space="preserve">
-    <value>ORTHODOX</value>
+    <value>Orthodox </value>
   </data>
   <data name="Enum_ReligionList_OTHER" xml:space="preserve">
-    <value>OTHER</value>
+    <value>Other </value>
   </data>
   <data name="Enum_ReligionList_PROTESTANT" xml:space="preserve">
-    <value>PROTESTANT</value>
+    <value>Protestant </value>
   </data>
   <data name="Enum_ReligionList_WAAQEFFATAA" xml:space="preserve">
-    <value>WAAQEFFATAA</value>
+    <value>Waqeffataa </value>
   </data>
   <data name="Enum_RequestStatus_APPROVE" xml:space="preserve">
-    <value>APPROVE</value>
+    <value>Approve </value>
   </data>
   <data name="Enum_RequestStatus_DEPARTMENT_APPROVAL" xml:space="preserve">
-    <value>DEPARTMENT_APPROVAL</value>
+    <value>Department Approval </value>
   </data>
   <data name="Enum_RequestStatus_PEND" xml:space="preserve">
-    <value>PEND</value>
+    <value>Pend </value>
   </data>
   <data name="Enum_RequestStatus_REJECT" xml:space="preserve">
-    <value>REJECT</value>
+    <value>Reject </value>
   </data>
   <data name="Enum_RequestStatus_WAITING_FOR_APPROVAL" xml:space="preserve">
-    <value>WAITING_FOR_APPROVAL</value>
+    <value>Waiting for Approval </value>
   </data>
   <data name="Enum_ResponsibilityLevel_CHIEF_JUDGE" xml:space="preserve">
-    <value>CHIEF_JUDGE</value>
+    <value>Chief Judge </value>
   </data>
   <data name="Enum_ResponsibilityLevel_JUDGE" xml:space="preserve">
-    <value>JUDGE</value>
+    <value>Judge </value>
   </data>
   <data name="Enum_ResponsibilityLevel_LOW_MANAGMENT" xml:space="preserve">
-    <value>LOW_MANAGMENT</value>
+    <value>Low Managment</value>
   </data>
   <data name="Enum_ResponsibilityLevel_MEDIUM_MANAGMENT" xml:space="preserve">
-    <value>MEDIUM_MANAGMENT</value>
+    <value>Medium Managment </value>
   </data>
   <data name="Enum_ResponsibilityLevel_PRESIDENT" xml:space="preserve">
-    <value>PRESIDENT</value>
+    <value>President </value>
   </data>
   <data name="Enum_ResponsibilityLevel_STAFF" xml:space="preserve">
-    <value>STAFF</value>
+    <value>Staff</value>
   </data>
   <data name="Enum_ResponsibilityLevel_TOP_MANAGMENT" xml:space="preserve">
-    <value>TOP_MANAGMENT</value>
+    <value>Top Managment </value>
   </data>
   <data name="Enum_SEASON" xml:space="preserve">
-    <value>SEASON</value>
+    <value>Season</value>
   </data>
   <data name="Enum_SEMI_ANNUAL" xml:space="preserve">
-    <value>SEMI_ANNUAL</value>
+    <value>Semi-Annual</value>
   </data>
   <data name="Enum_TrainingLocation_EXTERNAL" xml:space="preserve">
-    <value>EXTERNAL</value>
+    <value>External </value>
   </data>
   <data name="Enum_TrainingLocation_INTERNAL" xml:space="preserve">
-    <value>INTERNAL</value>
+    <value>Internal </value>
   </data>
   <data name="Enum_TrainingTerm_LONG" xml:space="preserve">
-    <value>LONG</value>
+    <value>Long </value>
   </data>
   <data name="Enum_TrainingTerm_SHORT" xml:space="preserve">
-    <value>SHORT</value>
+    <value>Short </value>
   </data>
   <data name="Enum_TrainingType_EDUCATION" xml:space="preserve">
-    <value>EDUCATION</value>
+    <value>Education </value>
   </data>
   <data name="Enum_TrainingType_TRAINING" xml:space="preserve">
-    <value>TRAINING</value>
+    <value>Training </value>
   </data>
   <data name="Enum_VacancyType_CONTRACT" xml:space="preserve">
-    <value>CONTRACT</value>
+    <value>Contract </value>
   </data>
   <data name="Enum_VacancyType_PERMANENT" xml:space="preserve">
-    <value>PERMANENT</value>
+    <value>Permanent </value>
   </data>
   <data name="Enum_Weekend_SATURDAY" xml:space="preserve">
-    <value>SATURDAY</value>
+    <value>Saturday </value>
   </data>
   <data name="Enum_Weekend_SUNDAY" xml:space="preserve">
-    <value>SUNDAY</value>
+    <value>Sunday </value>
   </data>
   <data name="Enum_WEEKLY" xml:space="preserve">
-    <value>WEEKLY</value>
+    <value>Weekly </value>
   </data>
   <data name="GLPeriod_DateFrom" xml:space="preserve">
     <value>Start Date</value>
@@ -1528,7 +1529,7 @@
     <value>Person Employee</value>
   </data>
   <data name="HR_ArchiveManagement_LetterSender_Receiver" xml:space="preserve">
-    <value>Receiver</value>
+    <value>CC</value>
   </data>
   <data name="HR_ArchiveManagement_LetterSender_Reference" xml:space="preserve">
     <value>Reference</value>
@@ -1921,7 +1922,7 @@
     <value>Plan Type</value>
   </data>
   <data name="HR_Company_JobTitleMapping_Quntity" xml:space="preserve">
-    <value>Quantity</value>
+    <value>Head Count</value>
   </data>
   <data name="HR_Company_JobTitleMapping_WorkUnitId" xml:space="preserve">
     <value>Work Unit</value>
@@ -2395,7 +2396,7 @@
     <value>Salary</value>
   </data>
   <data name="HR_EmployeeDetail_PlacementHistory_Step" xml:space="preserve">
-    <value>Step</value>
+    <value>Step/Scale</value>
   </data>
   <data name="HR_EmployeeDetail_PlacementHistory_To" xml:space="preserve">
     <value>To</value>
@@ -2446,7 +2447,7 @@
     <value>Salary</value>
   </data>
   <data name="HR_EmployeeDetail_Placement_Step" xml:space="preserve">
-    <value>Step</value>
+    <value>Step/Scale</value>
   </data>
   <data name="HR_EmployeeDetail_Termination_ApplicationDate" xml:space="preserve">
     <value>Application Date</value>
@@ -2863,7 +2864,7 @@
     <value>Leave Entitle Id</value>
   </data>
   <data name="HR_LeaveManagment_LeaveEntitle_LeavePeriod" xml:space="preserve">
-    <value>Leave Period</value>
+    <value>Leave Year</value>
   </data>
   <data name="HR_LeaveManagment_LeaveEntitle_PersonEmployee" xml:space="preserve">
     <value>Employee</value>
@@ -3646,7 +3647,7 @@
     <value>To</value>
   </data>
   <data name="HR_RecruitmentManagment_Vacancy_VacancyType" xml:space="preserve">
-    <value>Recruitment Type</value>
+    <value>Employment Type</value>
   </data>
   <data name="HR_RecruitmentManagment_Vacancy_VaccancyCode" xml:space="preserve">
     <value>Vacancy Code</value>
@@ -3690,8 +3691,14 @@
   <data name="HR_SalaryStructure_SalaryJobTitle_SalJobTiId" xml:space="preserve">
     <value>Salary Job Title Id</value>
   </data>
+  <data name="HR_SalaryStructure_SalaryJobTitle_SalaryStructureVersionId" xml:space="preserve">
+    <value>Salary Structure Version</value>
+  </data>
   <data name="HR_SalaryStructure_SalaryJobTitle_StepId" xml:space="preserve">
-    <value>Step</value>
+    <value>Step/scale</value>
+  </data>
+  <data name="HR_SalaryStructure_SalaryStructureVersion_StructureVersionName" xml:space="preserve">
+    <value>Salary Structure Version Name</value>
   </data>
   <data name="HR_SalaryStructure_Salary_RankId" xml:space="preserve">
     <value>Grade</value>
@@ -3703,16 +3710,16 @@
     <value>Salary Structure Id</value>
   </data>
   <data name="HR_SalaryStructure_Salary_StepId" xml:space="preserve">
-    <value>Step</value>
+    <value>Step/Scale</value>
   </data>
   <data name="HR_SalaryStructure_Step_StepId" xml:space="preserve">
-    <value>Step Id</value>
+    <value>Step/Scale Id</value>
   </data>
   <data name="HR_SalaryStructure_Step_StepName" xml:space="preserve">
-    <value>Step Name</value>
+    <value>Step/Scale Name</value>
   </data>
   <data name="HR_SalaryStructure_Step_StepSequence" xml:space="preserve">
-    <value>Step Sequence</value>
+    <value>Step/Scale Sequence</value>
   </data>
   <data name="HR_SelfCare_ApplicantionForm_ApplicationType" xml:space="preserve">
     <value>Application Type</value>
@@ -4708,7 +4715,7 @@
     <value>Termination</value>
   </data>
   <data name="NavigatorReport_Summary_TerminationReason" xml:space="preserve">
-    <value>Termination Reason</value>
+    <value>Termination Type</value>
   </data>
   <data name="NavigatorReport_Summary_VacantPostion" xml:space="preserve">
     <value>Vacant Position</value>
@@ -4762,10 +4769,10 @@
     <value>Termination</value>
   </data>
   <data name="NavigatorTermination_TerminationRequest" xml:space="preserve">
-    <value>Termination Request</value>
+    <value>Resignation</value>
   </data>
   <data name="NavigatorTermination_TerminationRequestes" xml:space="preserve">
-    <value>Termination Requests</value>
+    <value>Resignations</value>
   </data>
   <data name="NavigatorTraining_CourseTracking" xml:space="preserve">
     <value>Course Tracking</value>
@@ -4842,8 +4849,11 @@
   <data name="Navigator_Company_SalaryStructures" xml:space="preserve">
     <value>Salary Structures</value>
   </data>
+  <data name="Navigator_Company_SalaryStructureVersions" xml:space="preserve">
+    <value>Salary Structure Versions</value>
+  </data>
   <data name="Navigator_Company_Steps" xml:space="preserve">
-    <value>Steps</value>
+    <value>Steps/Scales</value>
   </data>
   <data name="Navigator_Company_UploadDocument" xml:space="preserve">
     <value>Upload Document</value>
@@ -4864,7 +4874,7 @@
     <value>Employee</value>
   </data>
   <data name="Navigator_Employee_EmployeeProfile" xml:space="preserve">
-    <value>Employee Profile(Active and Placed)</value>
+    <value>Employee Profile</value>
   </data>
   <data name="Navigator_Employee_Experience" xml:space="preserve">
     <value>Experience</value>
@@ -5242,7 +5252,7 @@
     <value>Employee fixed asset</value>
   </data>
   <data name="Rpt_FromStep" xml:space="preserve">
-    <value>From Step</value>
+    <value>From Step/Scale</value>
   </data>
   <data name="Rpt_GivenDate" xml:space="preserve">
     <value>Given Date</value>
@@ -5335,7 +5345,7 @@
     <value>To Be Staff</value>
   </data>
   <data name="Rpt_ToStep" xml:space="preserve">
-    <value>To Step</value>
+    <value>To Step/Scale</value>
   </data>
   <data name="Rpt_TotalExpriance" xml:space="preserve">
     <value>Total Internal Experience</value>
@@ -5455,19 +5465,19 @@
     <value>Termination Date</value>
   </data>
   <data name="Enum_PayrollSettingCategories_BENEFIT" xml:space="preserve">
-    <value>BENEFIT_ZERO _THRESHOLD</value>
+    <value>Benefit Zero Threshold </value>
   </data>
   <data name="Enum_BenefittAtribute_NONTAXABLE" xml:space="preserve">
-    <value>NON_TAXABLE</value>
+    <value>Non-Taxable</value>
   </data>
   <data name="Enum_BenefittAtribute_TAXABLE" xml:space="preserve">
-    <value>TAXABLE</value>
+    <value>Taxable</value>
   </data>
   <data name="NavigatorPayroll_ProvidentFund" xml:space="preserve">
     <value>Provident Fund</value>
   </data>
   <data name="Enum_IdentificationType_PROVIDENT_FUND" xml:space="preserve">
-    <value>PROVIDENT_FUND</value>
+    <value>Provident Fund</value>
   </data>
   <data name="HR_Benefit_Setting" xml:space="preserve">
     <value>Is taxable when the  threshold amount is zero?</value>
@@ -5485,16 +5495,16 @@
     <value>Save Changes</value>
   </data>
   <data name="Enum_MartialStatus_DIVORCEDF" xml:space="preserve">
-    <value>DIVORCED</value>
+    <value>Divorced </value>
   </data>
   <data name="Enum_MartialStatus_MARRIEDF" xml:space="preserve">
-    <value>MARRIED</value>
+    <value>Married </value>
   </data>
   <data name="Enum_MartialStatus_SEPARATEDF" xml:space="preserve">
-    <value>SEPARATED</value>
+    <value>Separated </value>
   </data>
   <data name="Enum_MartialStatus_SINGLEF" xml:space="preserve">
-    <value>SINGLE</value>
+    <value>Single </value>
   </data>
   <data name="HR_Allowance_AllowancePerEmployee_Pend" xml:space="preserve">
     <value>Pend</value>
@@ -5506,19 +5516,19 @@
     <value>Refersh</value>
   </data>
   <data name="Enum_PensionAttribute_PROBATION_DAY_LENGTH" xml:space="preserve">
-    <value>PROBATION_DAY_LENGTH</value>
+    <value>Probation  Day Length </value>
   </data>
   <data name="NavigatorPayrollReport_PayrollDetailD" xml:space="preserve">
     <value>Dynamic Payroll Detail</value>
   </data>
   <data name="Enum_RecruitmentSetting_NATION" xml:space="preserve">
-    <value>NATION</value>
+    <value>Nation </value>
   </data>
   <data name="Enum_AssignmentType_HOUSE_OF_REPRESENTATIVE" xml:space="preserve">
-    <value>HOUSE_OF_REPRESENTATIVE</value>
+    <value>House of Representative </value>
   </data>
   <data name="Enum_AssignmentType_JUDGES_ADMINISTRATION_OFFICE" xml:space="preserve">
-    <value>JUDGES_ADMINISTRATION_OFFICE</value>
+    <value>Judges Administration Office </value>
   </data>
   <data name="Navigator_Employee_RetiredEmployeeProfile" xml:space="preserve">
     <value>Retired Employee Profile</value>
@@ -5533,34 +5543,34 @@
     <value>External Experience</value>
   </data>
   <data name="Enum_CommitteType_DISCIPLINE" xml:space="preserve">
-    <value>DISCIPLINE</value>
+    <value>Discipline</value>
   </data>
   <data name="Enum_InsuranceAttribute_MAXAGE" xml:space="preserve">
-    <value>MAXIMUM_AGE</value>
+    <value>Maximum Age </value>
   </data>
   <data name="Enum_InsuranceAttribute_MINAGE" xml:space="preserve">
-    <value>MINIMUM_AGE</value>
+    <value>Minimum Age</value>
   </data>
   <data name="HR_TrainingEducation_Education_IsHighLevel" xml:space="preserve">
     <value>High Level</value>
   </data>
   <data name="Enum_ResponsibilityLevel_COORDINATOR" xml:space="preserve">
-    <value>COORDINATOR_JUDGE</value>
+    <value>Coordinator Judge </value>
   </data>
   <data name="Enum_ResponsibilityLevel_DIRECTIVE_CURATOR" xml:space="preserve">
-    <value>DIRECTIVE_CURATOR</value>
+    <value>Directive Curator</value>
   </data>
   <data name="Enum_ResponsibilityLevel_DIRECTOR" xml:space="preserve">
-    <value>DIRECTOR</value>
+    <value>Director</value>
   </data>
   <data name="Enum_ResponsibilityLevel_HIGHER_CURATOR" xml:space="preserve">
-    <value>HIGHER_CURATOR</value>
+    <value>Higher Curator </value>
   </data>
   <data name="Enum_ResponsibilityLevel_OFFICE_CURATOR" xml:space="preserve">
-    <value>OFFICE_CURATOR</value>
+    <value>Office Curator </value>
   </data>
   <data name="Enum_ResponsibilityLevel_TEAM_LEADER" xml:space="preserve">
-    <value>TEAM_LEADER</value>
+    <value>Team Leader </value>
   </data>
   <data name="HR_LeaveManagment_Leave_Hour" xml:space="preserve">
     <value>Hours</value>
@@ -5665,10 +5675,10 @@
     <value>Experience Letter</value>
   </data>
   <data name="Enum_TrainingLocation_INTERNALTRAINING" xml:space="preserve">
-    <value>INTERNAL</value>
+    <value>Internal </value>
   </data>
   <data name="Enum_TrainingLocation_EXTERNAL_TRAINING" xml:space="preserve">
-    <value>EXTERNAL</value>
+    <value>External</value>
   </data>
   <data name="External_Vacancy" xml:space="preserve">
     <value>External Vacancy</value>
@@ -5749,7 +5759,7 @@
     <value>Total Amount Taken</value>
   </data>
   <data name="Enum_EmployeeStatus_FREELANCER" xml:space="preserve">
-    <value>FREELANCER</value>
+    <value>Freelancer</value>
   </data>
   <data name="NavigatorReport_Detail_TobePromoted" xml:space="preserve">
     <value>Employee For Promotion</value>
@@ -5947,10 +5957,10 @@
     <value>Business Unit</value>
   </data>
   <data name="Enum_LookUpTypes_OLD_JOB_TITLE" xml:space="preserve">
-    <value>OLD_JOB_TITLE</value>
+    <value>Old Job Title </value>
   </data>
   <data name="Enum_BonusType_From_PROFIT" xml:space="preserve">
-    <value>PROFIT</value>
+    <value>Profit</value>
   </data>
   <data name="Navigator_Manpower_PlanningRequest" xml:space="preserve">
     <value>Manpower Planning Request</value>
@@ -6172,7 +6182,7 @@
     <value>Employee</value>
   </data>
   <data name="Placement_Boss" xml:space="preserve">
-    <value>Head Name</value>
+    <value>Immediate Supervisor</value>
   </data>
   <data name="Placement_FullName" xml:space="preserve">
     <value>Full Name</value>
@@ -6211,10 +6221,10 @@
     <value>Request Type</value>
   </data>
   <data name="Navigator_Employee_Inactive_Employee" xml:space="preserve">
-    <value>Inactive  Employees</value>
+    <value>Inactive  </value>
   </data>
   <data name="Navigator_Employee_Not_Placed_Employee" xml:space="preserve">
-    <value>Not Placed Employees</value>
+    <value>Not Placed</value>
   </data>
   <data name="Requeststatus_ApproverDepartment" xml:space="preserve">
     <value>Approver Department</value>
@@ -6487,10 +6497,10 @@
     <value>Experience Level</value>
   </data>
   <data name="JobRequirement" xml:space="preserve">
-    <value>Job Requirement</value>
+    <value>Qualification Requirements</value>
   </data>
   <data name="Enum_LookUpTypes_CLEARANCE_TYPE" xml:space="preserve">
-    <value>CLEARANCE TYPE</value>
+    <value>CLearance Type </value>
   </data>
   <data name="NavigatorPrintableDocument_ExperienceLetter_Five" xml:space="preserve">
     <value>Experience Letter Five</value>
@@ -6544,13 +6554,15 @@
     <value>External Experience</value>
   </data>
   <data name="Navigator_Employee__Experience_After_System" xml:space="preserve">
-    <value>Experience After System</value>
+    <value>System Auto Experience</value>
+    <comment>System Auto Experience</comment>
   </data>
   <data name="Navigator_Employee__Experience_Before_System" xml:space="preserve">
-    <value>Experience Before System</value>
+    <value>Manual Experience</value>
+    <comment>Manual Experience</comment>
   </data>
   <data name="Enum_AssignmentType_TEMPORARY" xml:space="preserve">
-    <value>TEMPORARY</value>
+    <value>Temporary </value>
   </data>
   <data name="Enum_Template_Type_Promotion_English" xml:space="preserve">
     <value>Promotion English</value>
@@ -6595,13 +6607,13 @@
     <value>Severance Payable</value>
   </data>
   <data name="Enum_AssignmentType_TEMPORARY_Job_Title_Change" xml:space="preserve">
-    <value>JOB TITLE CHANGE</value>
+    <value>Job Title Change </value>
   </data>
   <data name="Enum_AssignmentType_TEMPORARY_REHIRE" xml:space="preserve">
-    <value>REHIRE</value>
+    <value>Re-hire</value>
   </data>
   <data name="Enum_AssignmentType_ACTING" xml:space="preserve">
-    <value>ACTING</value>
+    <value>Acting </value>
   </data>
   <data name="Enum_Evaluation_Type_Corporate_Result" xml:space="preserve">
     <value>Corporate Level Result</value>
@@ -7261,7 +7273,7 @@
     <value>Office  Location</value>
   </data>
   <data name="Enum_EmployeeStatus_NOTSELECTED" xml:space="preserve">
-    <value>NOT SELECTED</value>
+    <value>Not Selected  </value>
   </data>
   <data name="ActionButton_Action" xml:space="preserve">
     <value>Action</value>
@@ -7765,6 +7777,122 @@
     <value>General Leave Setting</value>
   </data>
   <data name="Enum_AssignmentType_SCALE_PROMOTION" xml:space="preserve">
-    <value>SCALE PROMOTION</value>
+    <value>Scale Promotion </value>
+  </data>
+  <data name="End_Delegation" xml:space="preserve">
+    <value>Stop or End Delegation</value>
+  </data>
+  <data name="Start_Delegation" xml:space="preserve">
+    <value>Start Delegation</value>
+  </data>
+  <data name="Common_PersonEmployee_IsPlaced" xml:space="preserve">
+    <value>Is Placed</value>
+  </data>
+  <data name="Eighth" xml:space="preserve">
+    <value>8th</value>
+  </data>
+  <data name="Fifth" xml:space="preserve">
+    <value>5th</value>
+  </data>
+  <data name="First" xml:space="preserve">
+    <value>1st</value>
+  </data>
+  <data name="Fourth" xml:space="preserve">
+    <value>4th</value>
+  </data>
+  <data name="Ninth" xml:space="preserve">
+    <value>9th</value>
+  </data>
+  <data name="Second" xml:space="preserve">
+    <value>2nd</value>
+  </data>
+  <data name="Seventh" xml:space="preserve">
+    <value>7th</value>
+  </data>
+  <data name="Sixth" xml:space="preserve">
+    <value>6th</value>
+  </data>
+  <data name="Tenth" xml:space="preserve">
+    <value>10th</value>
+  </data>
+  <data name="Third" xml:space="preserve">
+    <value>3rd</value>
+  </data>
+  <data name="Contract_Employees_Less_Than_30" xml:space="preserve">
+    <value>Contract Employees &lt;30 days left</value>
+  </data>
+  <data name="Branch_Rank_Mapping" xml:space="preserve">
+    <value>Branch Rank Mapping</value>
+  </data>
+  <data name="Date_Preference_Settings" xml:space="preserve">
+    <value>Date Preference Settings</value>
+  </data>
+  <data name="Password_Reset_Requests" xml:space="preserve">
+    <value>Password Reset Requests</value>
+  </data>
+  <data name="Probation_Settings" xml:space="preserve">
+    <value>Probation_Settings</value>
+  </data>
+  <data name="Promotion_Settings" xml:space="preserve">
+    <value>Promotion Settings</value>
+  </data>
+  <data name="Responsiblity_Level_Summary_Report" xml:space="preserve">
+    <value>Responsiblity Level Summary Report</value>
+  </data>
+  <data name="Enable_Editing" xml:space="preserve">
+    <value>Enable editing</value>
+  </data>
+  <data name="Expiring_Soon" xml:space="preserve">
+    <value>Expiring Soon</value>
+  </data>
+  <data name="Loan_Request" xml:space="preserve">
+    <value>Loan Request</value>
+  </data>
+  <data name="Probation" xml:space="preserve">
+    <value>Probation</value>
+  </data>
+  <data name="Retirement_Eligibility_180_Days" xml:space="preserve">
+    <value>Retirement Eligibility (180 Days)</value>
+  </data>
+  <data name="Service_Requests" xml:space="preserve">
+    <value>Service Requests</value>
+  </data>
+  <data name="Unapproved_Employees" xml:space="preserve">
+    <value>Unapproved employees</value>
+  </data>
+  <data name="Common_Company_MainCompany_AfanOromoName" xml:space="preserve">
+    <value>Afan Oromo Name</value>
+  </data>
+  <data name="CGPA" xml:space="preserve">
+    <value>CGPA</value>
+  </data>
+  <data name="Cost_Sharing" xml:space="preserve">
+    <value>Cost Sharing</value>
+  </data>
+  <data name="GPA" xml:space="preserve">
+    <value>GPA</value>
+  </data>
+  <data name="Enum_VacancyType_PART_TIME" xml:space="preserve">
+    <value>Part-Time</value>
+  </data>
+  <data name="Common_PersonEmployee_ShoeSize" xml:space="preserve">
+    <value>Shoe Size</value>
+    <comment>Shoe Size</comment>
+  </data>
+  <data name="Common_PersonEmployee_UniformSize" xml:space="preserve">
+    <value>Uniform Size</value>
+    <comment>Label for uniform size field</comment>
+  </data>
+  <data name="Common_PersonEmployee_HouseNo" xml:space="preserve">
+    <value>House Number</value>
+    <comment>House Number</comment>
+  </data>
+  <data name="Common_PersonEmployee_CurrentPlace" xml:space="preserve">
+    <value>Current Location</value>
+    <comment>Current Place</comment>
+  </data>
+  <data name="Common_PersonEmployee_Height" xml:space="preserve">
+    <value>Height (cm)</value>
+    <comment>Height</comment>
   </data>
 </root>

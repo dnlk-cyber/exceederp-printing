@@ -74,6 +74,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             //return list;
             #endregion
         }
+
+
         public List<EmployeeIdView> GetEmployeesForPlacment(string user)
         {
 

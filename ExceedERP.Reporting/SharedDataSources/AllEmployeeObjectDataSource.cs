@@ -19,7 +19,7 @@ namespace ExceedERP.Reporting.SharedDataSources
             foreach (var personEmployee in employees)
             {
                 var employee = new EmployeeCodeViewModel();
-                employee.EmployeeName = personEmployee.FullNameAmharic;
+                employee.EmployeeName = personEmployee.EmployeeCode+"-"+personEmployee.FullNameAmharic;
                 employee.EmployeeCode = personEmployee.EmployeeCode;
                 employee.EmployeeId = personEmployee.EmployeeId;
                 list.Add(employee);
@@ -27,5 +27,7 @@ namespace ExceedERP.Reporting.SharedDataSources
 
             return list;
         }
+
+        
     }
 }

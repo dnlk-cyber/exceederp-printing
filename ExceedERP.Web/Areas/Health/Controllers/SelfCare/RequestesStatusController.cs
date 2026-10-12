@@ -922,15 +922,15 @@ namespace ExceedERP.Web.Areas.Health.Controllers.SelfCare
                         recruitmentRequest.Status = requestesStatus.Status.ToString();
                         if (requestesStatus.Status == RequestStatus.DEPARTMENT_APPROVAL)
                         {
-                            recruitmentRequest.DepartmentOnlineApprovedBy = User.Identity.Name;
-                            recruitmentRequest.DepartmentOnlineApprovedTime = DateTime.Now;
-                            recruitmentRequest.IsDepartmentOnlineApproved = true;
+                            recruitmentRequest.SecondOnlineApprovedBy = User.Identity.Name;
+                            recruitmentRequest.SecondOnlineApprovedTime = DateTime.Now;
+                            recruitmentRequest.IsSecondOnlineApproved = true;
                         }
                         else if (requestesStatus.Status == RequestStatus.WAITING_FOR_APPROVAL)
                         {
-                            recruitmentRequest.DepartmentSendForApprovalBy = User.Identity.Name;
-                            recruitmentRequest.DepartmentSendForApprovalTime = DateTime.Now;
-                            recruitmentRequest.IsDepartmentSendForApproval = true;
+                            recruitmentRequest.SendForApprovalBy = User.Identity.Name;
+                            recruitmentRequest.SendForApprovalTime = DateTime.Now;
+                            recruitmentRequest.IsSendForApproval = true;
                         }
                         else if (requestesStatus.Status == RequestStatus.APPROVE)
                         {
@@ -2789,15 +2789,15 @@ namespace ExceedERP.Web.Areas.Health.Controllers.SelfCare
                         recruitmentRequest.Status = requestesStatus.Status.ToString();
                         if (requestesStatus.Status == RequestStatus.DEPARTMENT_APPROVAL)
                         {
-                            recruitmentRequest.DepartmentOnlineApprovedBy = User.Identity.Name;
-                            recruitmentRequest.DepartmentOnlineApprovedTime = DateTime.Now;
-                            recruitmentRequest.IsDepartmentOnlineApproved = true;
+                            recruitmentRequest.SecondOnlineApprovedBy = User.Identity.Name;
+                            recruitmentRequest.SecondOnlineApprovedTime = DateTime.Now;
+                            recruitmentRequest.IsSecondOnlineApproved = true;
                         }
                         else if (requestesStatus.Status == RequestStatus.WAITING_FOR_APPROVAL)
                         {
-                            recruitmentRequest.DepartmentSendForApprovalBy = User.Identity.Name;
-                            recruitmentRequest.DepartmentSendForApprovalTime = DateTime.Now;
-                            recruitmentRequest.IsDepartmentSendForApproval = true;
+                            recruitmentRequest.SendForApprovalBy = User.Identity.Name;
+                            recruitmentRequest.SendForApprovalTime = DateTime.Now;
+                            recruitmentRequest.IsSendForApproval = true;
                         }
                         else if (requestesStatus.Status == RequestStatus.APPROVE)
                         {
@@ -3800,7 +3800,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers.SelfCare
 
                         foreach (var over in overtimeEmployees)
                         {
-                            double duration = (overtime.ToTime - overtime.FromTime).TotalHours;
+                            double duration = (overtime.ToTime.Value - overtime.FromTime.Value).TotalHours;
                             int diff = overtime.ToDate.Subtract(overtime.FromDate).Days + 1;
 
                             var checkOverTime = db.OverTimes.FirstOrDefault(x => x.EmployeeId == over.EmployeeId && x.GLPeriodId == periodId);

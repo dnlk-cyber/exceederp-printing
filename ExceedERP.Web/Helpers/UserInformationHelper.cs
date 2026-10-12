@@ -13,6 +13,7 @@ using ExceedERP.Web.Hubs;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Core.Domain.HRM;
 using System.Text;
+using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Helpers
 {
@@ -458,9 +459,85 @@ namespace ExceedERP.Web.Helpers
 
 		}
 
-		#endregion
+        #endregion
 
-		public static List<int> GetUserReportsToAndChildWorkUnits(string userName)
+        public static void UpdateDefalutBranchAndBusinessunit(int empId, int branchId, int businessUnitId)
+        {
+            string userId = GetEmployeeUserId(empId);
+
+            using (var _appDbContext = new ApplicationDbContext())
+            using (var _exceedDbContext = new ExceedDbContext())
+            {
+                using (var transaction = _appDbContext.Database.BeginTransaction()) //  Use DbContextTransaction
+                {
+                    try
+                    {
+                        // Update User Branches
+                        var existingUserBranch = _appDbContext.UserBranches
+                            .FirstOrDefault(ub => ub.ApplicationUserId == userId && ub.UserBranchId == branchId.ToString());
+
+                        var defaultUserBranches = _appDbContext.UserBranches
+                            .Where(ub => ub.ApplicationUserId == userId && ub.IsDefault).ToList();
+
+                        foreach (var ub in defaultUserBranches)
+                        {
+                            ub.IsDefault = false;
+                        }
+
+                        if (existingUserBranch == null)
+                        {
+                            _appDbContext.UserBranches.Add(new UserBranchGroup
+                            {
+                                ApplicationUserId = userId,
+                                UserBranchId = branchId.ToString(),
+                                IsDefault = true
+                            });
+                        }
+                        else
+                        {
+                            existingUserBranch.IsDefault = true;
+                        }
+                        _appDbContext.SaveChanges();
+
+                        // Update User Business Units
+                        var existingUserBusinessUnit = _exceedDbContext.UserBusinessUnitMaps
+                            .FirstOrDefault(ub => ub.UserId == userId && ub.BusinessUnitId == businessUnitId);
+
+                        var defaultUserBusinessUnits = _exceedDbContext.UserBusinessUnitMaps
+                            .Where(ub => ub.UserId == userId && ub.IsDefault).ToList();
+
+                        foreach (var ub in defaultUserBusinessUnits)
+                        {
+                            ub.IsDefault = false;
+                        }
+
+                        if (existingUserBusinessUnit == null)
+                        {
+                            _exceedDbContext.UserBusinessUnitMaps.Add(new UserBusinessUnitMap
+                            {
+                                UserId = userId,
+                                BusinessUnitId = businessUnitId,
+                                IsDefault = true
+                            });
+                        }
+                        else
+                        {
+                            existingUserBusinessUnit.IsDefault = true;
+                        }
+                        _exceedDbContext.SaveChanges();
+
+                        transaction.Commit(); //  Commit transaction
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback(); //  Rollback on error
+                        throw;
+                    }
+                }
+            }
+        }
+
+        public static List<int> GetUserReportsToAndChildWorkUnits(string userName)
 		{
 			ExceedDbContext db = new ExceedDbContext();
 			List<int> list = new List<int>();

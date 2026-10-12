@@ -3,9 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -25,8 +23,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         private const string HR_Benefit_User = "HR_Benefit_User";
         private const string HR_Admin = "HR_Admin";
         HRMInputs inputs = new HRMInputs();
-        public static DateTime? From { get; set; }
-        public static DateTime? To { get; set; }
         public ActionResult Index()
         {
             var alloanceList = db.AllowanceDefinations.AsQueryable();
@@ -37,31 +33,53 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             return View();
         }
-        [Authorize(Roles = HR_Admin + "," + HR_Benefit_Admin + "," + HR_Benefit_User)]
-        public ActionResult AllowancePerEmployees_Read([DataSourceRequest]DataSourceRequest request)
+
+
+        public ActionResult AllowancePerEmployees_Read([DataSourceRequest] DataSourceRequest request)
         {
-            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<AllowancePerEmployee> allowanceperemployees = db.AllowancePerEmployees.Where(x => employees.Contains(x.EmployeeId.ToString()));
-            DataSourceResult result = allowanceperemployees.ToDataSourceResult(request, allowancePerEmployee => new
+            db.Database.CommandTimeout = 7200; // added
+
+            string user = User.Identity.Name;
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(user);
+            List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(user);
+
+            var placments = db.Placements.Where(x => x.isCurrent).
+                                         Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
             {
+                placments = placments.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+            List<int> employees = placments.Select(x => x.EmployeeId).Distinct().ToList();
+
+            // 1. Fetch raw records from the database first (without unsupported array projections)
+            var rawData = db.AllowancePerEmployees
+                .AsNoTracking()
+                .Where(x => employees.Contains(x.EmployeeId))
+                .ToList();
+
+            // 2. Project the results in-memory to safely initialize arrays/collections
+            var result = rawData.Select(allowancePerEmployee => new AllowancePerEmployee
+            {
+                AllowanceId = allowancePerEmployee.AllowanceId,
                 EmployeeId = allowancePerEmployee.EmployeeId,
                 AllowanceDefinationId = allowancePerEmployee.AllowanceDefinationId,
-                AllowanceId = allowancePerEmployee.AllowanceId,
+                AllowanceDefinationIds = new int[] { allowancePerEmployee.AllowanceDefinationId }, // 👈 Safe in-memory assignment
                 Remark = allowancePerEmployee.Remark,
                 DateCreated = allowancePerEmployee.DateCreated,
                 LastModified = allowancePerEmployee.LastModified,
                 CreatedBy = allowancePerEmployee.CreatedBy,
                 ModifiedBy = allowancePerEmployee.ModifiedBy,
-                EmployeeCode = allowancePerEmployee.EmployeeCode,
+                EmployeeCode = allowancePerEmployee.EmployeeCode?? allowancePerEmployee.Employee.EmployeeCode,
                 OrgBranchName = allowancePerEmployee.OrgBranchName,
                 From = allowancePerEmployee.From,
                 To = allowancePerEmployee.To,
-                Pend = allowancePerEmployee.Pend,
-            });
+                Pend = allowancePerEmployee.Pend
+            }).AsQueryable().ToDataSourceResult(request);
 
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
+
         public void PerapreEmployeeAllowance()
         {
             var mappings = db.AllowanceMappings;
@@ -196,174 +214,508 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             }
 
         }
-
-        [Authorize(Roles = HR_Benefit_User)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AllowancePerEmployees_Create([DataSourceRequest]DataSourceRequest request, AllowancePerEmployee allowancePerEmployee)
         {
             ModelState.Clear();
+
+            // Safely extract definition IDs, ignoring any zeros or uninitialized values
+            var definitionIds = (allowancePerEmployee.AllowanceDefinationIds != null && allowancePerEmployee.AllowanceDefinationIds.Length > 0)
+                ? allowancePerEmployee.AllowanceDefinationIds.Where(id => id > 0).ToArray()
+                : (allowancePerEmployee.AllowanceDefinationId > 0 ? new[] { allowancePerEmployee.AllowanceDefinationId } : new int[0]);
+
+            if (!definitionIds.Any())
+            {
+                ModelState.AddModelError("", "Please select at least one allowance definition.");
+                return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+            }
+
+            // --- Date Validation for HARDSHIP and DESERT ---
+            var selectedDefinitions = db.AllowanceDefinations
+                .Where(x => definitionIds.Contains(x.AllowanceDefinationId))
+                .ToList();
+
+            bool requiresDates = selectedDefinitions.Any(x =>
+                x.AllowanceType == AllowanceType.HARDSHIP ||
+                x.AllowanceType == AllowanceType.DESERT);
+
+            if (requiresDates)
+            {
+                if (!allowancePerEmployee.From.HasValue || allowancePerEmployee.From == DateTime.MinValue)
+                {
+                    ModelState.AddModelError("From", "The 'From' date is required for Hardship and Desert allowances.");
+                }
+
+                if (!allowancePerEmployee.To.HasValue || allowancePerEmployee.To == DateTime.MinValue)
+                {
+                    ModelState.AddModelError("To", "The 'To' date is required for Hardship and Desert allowances.");
+                }
+
+                if (allowancePerEmployee.From.HasValue && allowancePerEmployee.To.HasValue && allowancePerEmployee.From > allowancePerEmployee.To)
+                {
+                    ModelState.AddModelError("To", "The 'To' date must be later than or equal to the 'From' date.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+                }
+            }
+            // -----------------------------------------------
+            var results = new List<AllowancePerEmployee>();
+
+            foreach (var defId in definitionIds)
+            {
+                var exist = db.AllowancePerEmployees.Where(x => x.EmployeeId == allowancePerEmployee.EmployeeId && x.AllowanceDefinationId == defId);
+
+                if (exist.Any())
+                {
+                    continue; // Skip existing duplicates gracefully during batch inserts
+                }
+
+                var allowancetype = db.AllowanceDefinations.Find(defId);
+
+                if (allowancetype != null)
+                {
+                    var allowanceSettings = db.AllowanceSettings
+                        .Where(x => x.AllowanceType == allowancetype.AllowanceType)
+                        .ToList();
+
+                    var placement = db.Placements
+                        .FirstOrDefault(x => x.EmployeeId == allowancePerEmployee.EmployeeId && x.isCurrent);
+
+                    if (allowanceSettings.Any())
+                    {
+                        // 1. Head-only restriction
+                        if (allowanceSettings.Any(x => x.IsOnlyForHead))
+                        {
+                            if (placement != null && !placement.IsHead)
+                            {
+                                continue; // Skip if restricted to head positions only
+                            }
+                        }
+
+                        // 2. Job title restriction
+                        if (placement != null)
+                        {
+                            bool isAllowedJobTitle = allowanceSettings.Any(x => x.LookupId == placement.LookupId);
+
+                            if (!isAllowedJobTitle)
+                            {
+                                continue; // Skip if job title doesn't match allowance settings
+                            }
+                        }
+                    }
+                }
+
+                var firstOrDefault = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == allowancePerEmployee.EmployeeId);
+                if (firstOrDefault != null)
+                {
+                    var entity = new AllowancePerEmployee
+                    {
+                        EmployeeId = allowancePerEmployee.EmployeeId,
+                        AllowanceDefinationId = defId,
+                        Remark = allowancePerEmployee.Remark,
+                        DateCreated = DateTime.Now,
+                        LastModified = allowancePerEmployee.LastModified,
+                        CreatedBy = User.Identity.Name,
+                        ModifiedBy = allowancePerEmployee.ModifiedBy,
+                        EmployeeCode = firstOrDefault.EmployeeCode,
+                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                        From = allowancePerEmployee.From,
+                        To = allowancePerEmployee.To,
+                        Pend = allowancePerEmployee.Pend,
+                    };
+
+                    db.AllowancePerEmployees.Add(entity);
+                    db.SaveChanges();
+
+                    var resultRow = new AllowancePerEmployee
+                    {
+                        AllowanceId = entity.AllowanceId,
+                        EmployeeId = entity.EmployeeId,
+                        AllowanceDefinationId = entity.AllowanceDefinationId,
+                        Remark = entity.Remark,
+                        DateCreated = entity.DateCreated,
+                        LastModified = entity.LastModified,
+                        CreatedBy = entity.CreatedBy,
+                        ModifiedBy = entity.ModifiedBy,
+                        EmployeeCode = entity.EmployeeCode,
+                        OrgBranchName = entity.OrgBranchName,
+                        From = entity.From,
+                        To = entity.To,
+                        Pend = entity.Pend
+                    };
+
+                    results.Add(resultRow);
+
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"create allowance {entity.AllowanceId} of employee {entity.EmployeeCode}", Modules.Payroll);
+                    #endregion
+                }
+            }
+
+            return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult AllowancePerEmployees_Update([DataSourceRequest]DataSourceRequest request, AllowancePerEmployee allowancePerEmployee)
+        {
+            ModelState.Clear();
+
+            // Capture all selected definition IDs from the multi-select popup
+            ModelState.Clear();
+
+            // Safely extract definition IDs, ignoring any zeros or uninitialized values
+            var definitionIds = (allowancePerEmployee.AllowanceDefinationIds != null && allowancePerEmployee.AllowanceDefinationIds.Length > 0)
+                ? allowancePerEmployee.AllowanceDefinationIds.Where(id => id > 0).ToArray()
+                : (allowancePerEmployee.AllowanceDefinationId > 0 ? new[] { allowancePerEmployee.AllowanceDefinationId } : new int[0]);
+
+            if (!definitionIds.Any())
+            {
+                ModelState.AddModelError("", "Please select at least one allowance definition.");
+                return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+            }
+
+            // --- Date Validation for HARDSHIP and DESERT ---
+            var selectedDefinitions = db.AllowanceDefinations
+                .Where(x => definitionIds.Contains(x.AllowanceDefinationId))
+                .ToList();
+
+            bool requiresDates = selectedDefinitions.Any(x =>
+                x.AllowanceType == AllowanceType.HARDSHIP ||
+                x.AllowanceType == AllowanceType.DESERT);
+
+            if (requiresDates)
+            {
+                if (!allowancePerEmployee.From.HasValue || allowancePerEmployee.From == DateTime.MinValue)
+                {
+                    ModelState.AddModelError("From", "The 'From' date is required for Hardship and Desert allowances.");
+                }
+
+                if (!allowancePerEmployee.To.HasValue || allowancePerEmployee.To == DateTime.MinValue)
+                {
+                    ModelState.AddModelError("To", "The 'To' date is required for Hardship and Desert allowances.");
+                }
+
+                if (allowancePerEmployee.From.HasValue && allowancePerEmployee.To.HasValue && allowancePerEmployee.From > allowancePerEmployee.To)
+                {
+                    ModelState.AddModelError("To", "The 'To' date must be later than or equal to the 'From' date.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+                }
+            }
+            // -----------------------------------------------
+
             if (ModelState.IsValid)
             {
-                var entity = new AllowancePerEmployee
-                {
-                    EmployeeId = allowancePerEmployee.EmployeeId,
-                    AllowanceDefinationId = allowancePerEmployee.AllowanceDefinationId,
-                    Remark = allowancePerEmployee.Remark,
-                    DateCreated = DateTime.Now,
-                    LastModified = allowancePerEmployee.LastModified,
-                    CreatedBy = User.Identity.Name,
-                    ModifiedBy = allowancePerEmployee.ModifiedBy,
-                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == allowancePerEmployee.EmployeeId).FirstOrDefault().EmployeeCode,
-                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                    From = allowancePerEmployee.From,
-                    To = allowancePerEmployee.To,
-                    Pend = allowancePerEmployee.Pend,
-                };
+                var employee = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == allowancePerEmployee.EmployeeId);
+                string empCode = employee?.EmployeeCode;
 
-                db.AllowancePerEmployees.Add(entity);
-                db.SaveChanges();
-                allowancePerEmployee.AllowanceId = entity.AllowanceId;
+                // 1. Update the primary/current record with the first selected definition
+                var primaryDefId = definitionIds.FirstOrDefault();
+                var entity = db.AllowancePerEmployees.Find(allowancePerEmployee.AllowanceId);
+
+                if (entity != null)
+                {
+                    entity.EmployeeId = allowancePerEmployee.EmployeeId;
+                    entity.AllowanceDefinationId = primaryDefId != 0 ? primaryDefId : allowancePerEmployee.AllowanceDefinationId;
+                    entity.Remark = allowancePerEmployee.Remark;
+                    entity.LastModified = DateTime.Now;
+                    entity.ModifiedBy = User.Identity.Name;
+                    entity.EmployeeCode = empCode;
+                    entity.From = allowancePerEmployee.From;
+                    entity.To = allowancePerEmployee.To;
+                    entity.Pend = allowancePerEmployee.Pend;
+
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+                // 2. If multiple definitions were checked during update, create records for any additional ones
+                foreach (var defId in definitionIds.Skip(1))
+                {
+                    var exists = db.AllowancePerEmployees.Any(x => x.EmployeeId == allowancePerEmployee.EmployeeId && x.AllowanceDefinationId == defId);
+                    if (!exists)
+                    {
+                        var extraEntity = new AllowancePerEmployee
+                        {
+                            EmployeeId = allowancePerEmployee.EmployeeId,
+                            AllowanceDefinationId = defId,
+                            Remark = allowancePerEmployee.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = DateTime.Now,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = User.Identity.Name,
+                            EmployeeCode = empCode,
+                            OrgBranchName = allowancePerEmployee.OrgBranchName,
+                            From = allowancePerEmployee.From,
+                            To = allowancePerEmployee.To,
+                            Pend = allowancePerEmployee.Pend,
+                        };
+                        db.AllowancePerEmployees.Add(extraEntity);
+                        db.SaveChanges();
+                    }
+                }
 
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"create allowance  {entity.AllowanceDefination.AllowanceName} of employee {entity.EmployeeCode} ", Modules.Payroll);
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"updated allowance definitions for employee {empCode}", Modules.Payroll);
                 #endregion
             }
 
             return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
         }
-        public ActionResult SetDate(string from, string to)
-        {
-            if (from != "")
-            {
-                From = Convert.ToDateTime(from);
-            }
-            if (to != "")
-            {
-                To = Convert.ToDateTime(to);
-            }
-            return null;
-        }
-        [Authorize(Roles = HR_Benefit_User)]
+        
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult AllowancePerEmployees_Create([DataSourceRequest]DataSourceRequest request, AllowancePerEmployee allowancePerEmployee)
+        //{
+        //    ModelState.Clear();
+        //    var exist = db.AllowancePerEmployees.Where(x => x.EmployeeId == allowancePerEmployee.EmployeeId &&x.AllowanceDefinationId == allowancePerEmployee.AllowanceDefinationId);
+
+        //    if (exist.Any())
+        //    {
+        //        ModelState.AddModelError("", "This allowance already exists for the selected employee.");
+        //        return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+        //    }
+
+        //    var allowancetype = db.AllowanceDefinations.Find(allowancePerEmployee.AllowanceDefinationId);
+
+        //    if (allowancetype != null)
+        //    {
+        //        var allowanceSettings = db.AllowanceSettings
+        //            .Where(x => x.AllowanceType == allowancetype.AllowanceType)
+        //            .ToList();
+
+        //        var placement = db.Placements
+        //            .FirstOrDefault(x => x.EmployeeId == allowancePerEmployee.EmployeeId && x.isCurrent);
+
+        //        if (allowanceSettings.Any())
+        //        {
+        //            // 1. Head-only restriction
+        //            if (allowanceSettings.Any(x => x.IsOnlyForHead))
+        //            {
+        //                if (placement != null && !placement.IsHead)
+        //                {
+        //                    ModelState.AddModelError("", "This allowance type is restricted to employees in head positions only.");
+        //                    return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+        //                }
+        //            }
+
+        //            // 2. Job title restriction
+        //            if (placement != null)
+        //            {
+        //                bool isAllowedJobTitle = allowanceSettings.Any(x => x.LookupId == placement.LookupId);
+
+        //                if (!isAllowedJobTitle)
+        //                {
+        //                    var jobTitle = db.Lookups.Find(placement.LookupId);
+
+        //                    if (jobTitle != null)
+        //                    {
+        //                        ModelState.AddModelError("", $"This allowance type is only permitted for employees with the job title: {jobTitle.Description}.");
+        //                    }
+
+        //                    return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+        //                }
+        //            }
+        //        }
+        //    }
+
+
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        var entity = new AllowancePerEmployee
+        //        {
+        //            EmployeeId = allowancePerEmployee.EmployeeId,
+        //            AllowanceDefinationId = allowancePerEmployee.AllowanceDefinationId,
+        //            Remark = allowancePerEmployee.Remark,
+        //            DateCreated = DateTime.Now,
+        //            LastModified = allowancePerEmployee.LastModified,
+        //            CreatedBy = User.Identity.Name,
+        //            ModifiedBy = allowancePerEmployee.ModifiedBy,
+        //            EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == allowancePerEmployee.EmployeeId).FirstOrDefault().EmployeeCode,
+        //            OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+        //            From = allowancePerEmployee.From,
+        //            To = allowancePerEmployee.To,
+        //            Pend = allowancePerEmployee.Pend,
+        //        };
+
+        //        db.AllowancePerEmployees.Add(entity);
+        //        db.SaveChanges();
+        //        allowancePerEmployee.AllowanceId = entity.AllowanceId;
+
+        //        #region operation log
+        //        UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"create allowance  {entity.AllowanceId} of employee {entity.EmployeeCode} ", Modules.Payroll);
+        //        #endregion
+        //    }
+
+        //    return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+        //}
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult AllowancePerEmployees_Update([DataSourceRequest]DataSourceRequest request, AllowancePerEmployee allowancePerEmployee)
+        //{
+        //    ModelState.Clear();
+
+        //    var exist = db.AllowancePerEmployees.Where(x => x.EmployeeId == allowancePerEmployee.EmployeeId)
+        //                                        .Where(x => x.AllowanceDefinationId == allowancePerEmployee.AllowanceDefinationId)
+        //                                        .Where(x => x.AllowanceId != allowancePerEmployee.AllowanceId);
+        //    if (exist.Any())
+        //    {
+        //        ModelState.AddModelError("Exisit", "The allowance already exists for this employee");
+        //        return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    var allowancetype = db.AllowanceDefinations.Find(allowancePerEmployee.AllowanceDefinationId);
+
+        //    if (allowancetype != null)
+        //    {
+
+        //        var allowanceSettings = db.AllowanceSettings.Where(x => x.AllowanceType == allowancetype.AllowanceType).ToList();
+        //        var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == allowancePerEmployee.EmployeeId && x.isCurrent && !x.IsHead);
+        //        if (allowanceSettings.Any())
+        //        {
+        //            if (allowanceSettings.Where(x => x.IsOnlyForHead).Any() && placement != null && !placement.IsHead)
+        //            {
+
+        //                ModelState.AddModelError("", "This Allowance Type is only allowed for head only ");
+        //                return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+
+        //            }
+        //            if (placement != null && !allowanceSettings.Where(x => x.LookupId == placement.LookupId).Any())
+        //            {
+        //                if (allowanceSettings.Where(x => x.LookupId == placement.LookupId).Any())
+        //                {
+        //                    var jobTitle = db.Lookups.Find(placement.LookupId);
+        //                    if (jobTitle != null)
+        //                    {
+        //                        ModelState.AddModelError("", "This Allowance Type is only allowed for   " + jobTitle.Description + "jobtitle only"); ;
+        //                        return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+
+        //                    }
+
+        //                }
+
+        //            }
+        //        }
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        var entity = new AllowancePerEmployee
+        //        {
+        //            EmployeeId = allowancePerEmployee.EmployeeId,
+        //            AllowanceDefinationId = allowancePerEmployee.AllowanceDefinationId,
+        //            AllowanceId = allowancePerEmployee.AllowanceId,
+        //            Remark = allowancePerEmployee.Remark,
+        //            DateCreated = allowancePerEmployee.DateCreated,
+        //            LastModified = DateTime.Now,
+        //            CreatedBy = allowancePerEmployee.CreatedBy,
+        //            ModifiedBy = User.Identity.Name,
+        //            EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == allowancePerEmployee.EmployeeId).FirstOrDefault().EmployeeCode,
+        //            OrgBranchName = allowancePerEmployee.OrgBranchName,
+        //            From = allowancePerEmployee.From,
+        //            To = allowancePerEmployee.To,
+        //            Pend = allowancePerEmployee.Pend,
+
+        //        };
+
+        //        db.AllowancePerEmployees.Attach(entity);
+        //        db.Entry(entity).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        #region operation log
+        //        UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"updated allowance  {entity.AllowanceId} of employee {entity.EmployeeCode} ", Modules.Payroll);
+        //        #endregion
+        //    }
+
+        //    return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
+        //}
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Editing_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<AllowancePerEmployee> allowanceesPerEmployees)
         {
             var results = new List<AllowancePerEmployee>();
-
-            ExceedDbContext dbs = new ExceedDbContext();
-
             var allowancePerEmployees = allowanceesPerEmployees as IList<AllowancePerEmployee> ?? allowanceesPerEmployees.ToList();
 
             if (ModelState.IsValid)
             {
                 foreach (var allowancePerEmployee in allowancePerEmployees)
                 {
-                    //if (From != null)
-                    //{
-                    //    allowancePerEmployee.From = From;
-                    //}
-                    //if (To != null)
-                    //{
-                    //    allowancePerEmployee.To = To;
-                    //}
+                    // Determine which definition IDs to loop through (supports multi-select array or single fallback)
+                    var defIds = (allowancePerEmployee.AllowanceDefinationIds != null && allowancePerEmployee.AllowanceDefinationIds.Length > 0)
+                        ? allowancePerEmployee.AllowanceDefinationIds
+                        : new[] { allowancePerEmployee.AllowanceDefinationId };
 
-                    //dbs = new ExceedDbContext();
-
-                    //var list = dbs.AllowancePerEmployees.Where(x => x.AllowanceDefinationId == allowancePerEmployee.AllowanceDefinationId && x.EmployeeId == allowancePerEmployee.EmployeeId);
-                    //if (list.Any())
-                    //{
-                    //    dbs.AllowancePerEmployees.RemoveRange(list);
-                    //    dbs.SaveChanges();
-                    //}
-
-                    var firstOrDefault = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == allowancePerEmployee.EmployeeId);
-                    if (firstOrDefault != null)
+                    foreach (var defId in defIds)
                     {
-                        var entity = new AllowancePerEmployee
-                        {
-                            AllowanceId = allowancePerEmployee.AllowanceId,
-                            EmployeeId = allowancePerEmployee.EmployeeId,
-                            AllowanceDefinationId = allowancePerEmployee.AllowanceDefinationId,
-                            Remark = allowancePerEmployee.Remark,
-                            DateCreated = allowancePerEmployee.DateCreated,
-                            LastModified = DateTime.Now,
-                            CreatedBy = allowancePerEmployee.CreatedBy,
-                            ModifiedBy = User.Identity.Name,
-                            EmployeeCode = firstOrDefault.EmployeeCode,
-                            OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                            From = allowancePerEmployee.From,
-                            To = allowancePerEmployee.To,
-                            Pend = allowancePerEmployee.Pend,
-                        };
+                        // Check if this allowance definition already exists for this specific employee
+                        var exist = db.AllowancePerEmployees
+                            .Any(x => x.EmployeeId == allowancePerEmployee.EmployeeId &&
+                                      x.AllowanceDefinationId == defId);
 
-                        if(entity.AllowanceId != 0)
+                        if (exist)
                         {
-                            db.Entry(entity).State = EntityState.Modified;
-                            db.SaveChanges();
+                            continue; // Skip duplicates silently or handle per your workflow
                         }
-                        else
+
+                        var firstOrDefault = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == allowancePerEmployee.EmployeeId);
+                        if (firstOrDefault != null)
                         {
+                            var entity = new AllowancePerEmployee
+                            {
+                                EmployeeId = allowancePerEmployee.EmployeeId,
+                                AllowanceDefinationId = defId,
+                                Remark = allowancePerEmployee.Remark,
+                                DateCreated = DateTime.Now,
+                                LastModified = DateTime.Now,
+                                CreatedBy = User.Identity.Name,
+                                ModifiedBy = User.Identity.Name,
+                                EmployeeCode = firstOrDefault.EmployeeCode,
+                                OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                                From = allowancePerEmployee.From,
+                                To = allowancePerEmployee.To,
+                                Pend = allowancePerEmployee.Pend,
+                            };
+
                             db.AllowancePerEmployees.Add(entity);
                             db.SaveChanges();
+
+                            var resultRow = new AllowancePerEmployee
+                            {
+                                AllowanceId = entity.AllowanceId,
+                                EmployeeId = entity.EmployeeId,
+                                AllowanceDefinationId = entity.AllowanceDefinationId,
+                                Remark = entity.Remark,
+                                DateCreated = entity.DateCreated,
+                                LastModified = entity.LastModified,
+                                CreatedBy = entity.CreatedBy,
+                                ModifiedBy = entity.ModifiedBy,
+                                EmployeeCode = entity.EmployeeCode,
+                                OrgBranchName = entity.OrgBranchName,
+                                From = entity.From,
+                                To = entity.To,
+                                Pend = entity.Pend
+                            };
+
+                            results.Add(resultRow);
+
+                            #region operation log
+                            UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"created allowance {entity.AllowanceId} for employee {entity.EmployeeCode}", Modules.Payroll);
+                            #endregion
                         }
-
-                        //db.AllowancePerEmployees.Add(entity);
-                        //db.SaveChanges();
-                        //allowancePerEmployee.AllowanceId = entity.AllowanceId;
-
-                        #region operation log
-
-
-                        UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"updated allowance  {entity.AllowanceId}", Modules.Payroll);
-
-                        #endregion
                     }
                 }
             }
 
             return Json(results.ToDataSourceResult(request, ModelState));
         }
-        [Authorize(Roles = HR_Benefit_User)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult AllowancePerEmployees_Update([DataSourceRequest]DataSourceRequest request, AllowancePerEmployee allowancePerEmployee)
-        {
-            ModelState.Clear();
-            if (ModelState.IsValid)
-            {
-                var entity = new AllowancePerEmployee
-                {
-                    EmployeeId = allowancePerEmployee.EmployeeId,
-                    AllowanceDefinationId = allowancePerEmployee.AllowanceDefinationId,
-                    AllowanceId = allowancePerEmployee.AllowanceId,
-                    Remark = allowancePerEmployee.Remark,
-                    DateCreated = allowancePerEmployee.DateCreated,
-                    LastModified = DateTime.Now,
-                    CreatedBy = allowancePerEmployee.CreatedBy,
-                    ModifiedBy = User.Identity.Name,
-                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == allowancePerEmployee.EmployeeId).FirstOrDefault().EmployeeCode,
-                    OrgBranchName = allowancePerEmployee.OrgBranchName,
-                    From = allowancePerEmployee.From,
-                    To = allowancePerEmployee.To,
-                    Pend = allowancePerEmployee.Pend,
-
-                };
-
-                db.AllowancePerEmployees.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
-                #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "payroll allowance per employee", "Success", User.Identity.Name, $"updated allowance  {entity.AllowanceDefination.AllowanceName} of employee {entity.EmployeeCode} ", Modules.Payroll);
-                #endregion
-            }
-
-            return Json(new[] { allowancePerEmployee }.ToDataSourceResult(request, ModelState));
-        }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeAllowance_Destroy([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<AllowancePerEmployee> allowanceesPerEmployees)
         {
             ModelState.Clear();
-
-            string message = "";
-
             if (ModelState.IsValid)
             {
 
@@ -444,12 +796,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult AllowancePerEmployees_Destroy([DataSourceRequest]DataSourceRequest request, AllowancePerEmployee allowancePerEmployee)
         {
             ModelState.Clear();
-            var checkexistance = db.PayrollProcessViewModel.FirstOrDefault(x => x.EmployeeId == allowancePerEmployee.EmployeeId);
+            //var checkexistance = db.PayrollProcessViewModel.FirstOrDefault(x => x.EmployeeId == allowancePerEmployee.EmployeeId);
 
-            if (checkexistance != null)
-            {
-                ModelState.AddModelError("", "You can not delete this allowance is already processed!!");
-            }
+            //if (checkexistance != null)
+            //{
+            //    ModelState.AddModelError("", "You can not delete this allowance is already processed!!");
+            //}
 
             if (ModelState.IsValid)
             {

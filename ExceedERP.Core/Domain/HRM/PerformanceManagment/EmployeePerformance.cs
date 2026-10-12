@@ -65,21 +65,36 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public bool IsAcceptedByEmployee { get; set; }
         [Display(Name = "Is Rejected By Employee ")]
         public bool IsRejectedByEmployee { get; set; }
-        [Display(Name = "Employee Remark")]
+        [Display(Name = "Employee Reason(Accept/Reject)")]
         public string EmployeeRemark { get; set; }
         [Display(Name = "Reason for Rejection")]
         public string ReasonFor2ndRejection { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
+           ApplyFormatInEditMode = true), Display(Name = "2nd Level Approved Date")]
+        public DateTime? SecondLevelApprovalDate { get; set; }
         [Display(Name = "Reason for HR Rejection")]
         public string ReasonForHRRejection { get; set; }
         [Display(Name = "Is Second Level Approved")]
         public bool IsSecondLevelApproved { get; set; }
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
-           ApplyFormatInEditMode = true), Display(Name = "SecondLevelApproval Date")]
-        public DateTime? SecondLevelApprovalDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",ApplyFormatInEditMode = true), 
+            Display(Name = "Second Level Rejection Date")]
+        public DateTime? SecondLevelRejectionDate { get; set; }
+        [Display(Name = "Second Level Rejector")]
+        public string SecondLevelRejector { get; set; }
         [Display(Name = "Second Level Approver")]
         public string SecondLevelApprover { get; set; }
         [Display(Name = "Is Second Level Rejected")]
         public bool IsSecondLevelRejected { get; set; }
+        /// --- ITEM 606: Dispute Escalation & Review Cycles ---
+        [Display(Name = "Interaction Count")]
+        public int? InteractionCount { get; set; } = 0;
+
+        [Display(Name = "Is Escalated To HR")]
+        public bool IsEscalatedToHR { get; set; } = false;
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true),
+            Display(Name = "Escalation Date")]
+        [DataType(DataType.DateTime)]
+        public DateTime? EscalationDate { get; set; }
         [Display(Name = "Is HR Approved")]
         public bool IsHRApproved { get; set; }
         [Display(Name = "Is HR Rejected")]
@@ -97,6 +112,15 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public string Comment { get; set; }
         public string EvalutionType { get; set; }
         public bool IsAveraged { get; set; }
+        // --- ITEM 607: Structured Evaluator Remarks ---
+        [Display(Name = "Special Accomplishments")]
+        public string SpecialAccomplishments { get; set; }
+
+        [Display(Name = "Employee Strengths")]
+        public string Strengths { get; set; }
+
+        [Display(Name = "Areas Needing Improvement")]
+        public string AreasNeedingImprovement { get; set; }
         [NotMapped]
         public string Grade { get; set; }
         [NotMapped]

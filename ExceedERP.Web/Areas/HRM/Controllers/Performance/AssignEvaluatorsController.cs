@@ -10,11 +10,12 @@ using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
     [Authorize]
-    public class AssignEvaluatorsController : Controller
+    public class AssignEvaluatorsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         public static int EmployeeId { get; set; }
@@ -72,6 +73,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 PeriodId = performanceRequestPeriod.PeriodId,
                 OrgStructureId = performanceRequestPeriod.OrgStructureId,
                 DateCreated = performanceRequestPeriod.DateCreated,
+                Remark = performanceRequestPeriod.Remark,
+                Status = performanceRequestPeriod.Status,
+                DepartmentOnlineApprovedTime = performanceRequestPeriod.DepartmentOnlineApprovedTime,
+                DepartmentOnlineApprovedBy = performanceRequestPeriod.DepartmentOnlineApprovedBy,
+                DepartmentSendForApprovalBy = performanceRequestPeriod.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = performanceRequestPeriod.DepartmentSendForApprovalTime,
+                IsDepartmentOnlineApproved = performanceRequestPeriod.IsDepartmentOnlineApproved,
+                IsDepartmentSendForApproval = performanceRequestPeriod.IsDepartmentSendForApproval,
+                IsOnlineApproved = performanceRequestPeriod.IsOnlineApproved,
+                IsOnlineTransferred = performanceRequestPeriod.IsOnlineTransferred,
+                IsOnlineTransferredBy = performanceRequestPeriod.IsOnlineTransferredBy,
+                IsSendForApproval = performanceRequestPeriod.IsSendForApproval,
+                IsVoid = performanceRequestPeriod.IsVoid,
+                OnlineApprovedBy = performanceRequestPeriod.OnlineApprovedBy,
+                OnlineApprovedTime = performanceRequestPeriod.OnlineApprovedTime,
+                OrgBranchName = performanceRequestPeriod.OrgBranchName,
+                SendForApprovalBy = performanceRequestPeriod.SendForApprovalBy,
+                SendForApprovalTime = performanceRequestPeriod.SendForApprovalTime,
+                VoidBy = performanceRequestPeriod.VoidBy,
+                VoidTime = performanceRequestPeriod.VoidTime,
+                OnlineTransferredTime = performanceRequestPeriod.OnlineTransferredTime,
                 LastModified = performanceRequestPeriod.LastModified,
                 CreatedBy = performanceRequestPeriod.CreatedBy,
                 ModifiedBy = performanceRequestPeriod.ModifiedBy
@@ -134,6 +156,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 PeriodId = performanceRequestPeriod.PeriodId,
                 OrgStructureId = performanceRequestPeriod.OrgStructureId,
                 DateCreated = performanceRequestPeriod.DateCreated,
+                Remark = performanceRequestPeriod.Remark,
+                Status = performanceRequestPeriod.Status,
+                DepartmentOnlineApprovedTime = performanceRequestPeriod.DepartmentOnlineApprovedTime,
+                DepartmentOnlineApprovedBy = performanceRequestPeriod.DepartmentOnlineApprovedBy,
+                DepartmentSendForApprovalBy = performanceRequestPeriod.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = performanceRequestPeriod.DepartmentSendForApprovalTime,
+                IsDepartmentOnlineApproved = performanceRequestPeriod.IsDepartmentOnlineApproved,
+                IsDepartmentSendForApproval = performanceRequestPeriod.IsDepartmentSendForApproval,
+                IsOnlineApproved = performanceRequestPeriod.IsOnlineApproved,
+                IsOnlineTransferred = performanceRequestPeriod.IsOnlineTransferred,
+                IsOnlineTransferredBy = performanceRequestPeriod.IsOnlineTransferredBy,
+                IsSendForApproval = performanceRequestPeriod.IsSendForApproval,
+                IsVoid = performanceRequestPeriod.IsVoid,
+                OnlineApprovedBy = performanceRequestPeriod.OnlineApprovedBy,
+                OnlineApprovedTime = performanceRequestPeriod.OnlineApprovedTime,
+                OrgBranchName = performanceRequestPeriod.OrgBranchName,
+                SendForApprovalBy = performanceRequestPeriod.SendForApprovalBy,
+                SendForApprovalTime = performanceRequestPeriod.SendForApprovalTime,
+                VoidBy = performanceRequestPeriod.VoidBy,
+                VoidTime = performanceRequestPeriod.VoidTime,
+                OnlineTransferredTime = performanceRequestPeriod.OnlineTransferredTime,
                 LastModified = performanceRequestPeriod.LastModified,
                 CreatedBy = performanceRequestPeriod.CreatedBy,
                 ModifiedBy = performanceRequestPeriod.ModifiedBy
@@ -143,7 +186,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public JsonResult GetFiscalYear()
         {
 
-            var fiscalYear = db.GLFiscalYears.ToList();
+            var fiscalYear = db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
 
             return Json(fiscalYear.Select(p =>
             new

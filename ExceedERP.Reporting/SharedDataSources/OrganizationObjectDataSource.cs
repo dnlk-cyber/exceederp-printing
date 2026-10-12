@@ -20,50 +20,75 @@ namespace ExceedERP.Reporting.SharedDataSources
         [DataObjectMethod(DataObjectMethodType.Select)]
         public Organization GetOrganization()
         {
-
             Organization record = new Organization();
-            var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
-            if (Organization != null)
+
+            try
             {
-                record.Name = Organization.TradeName;
-                record.AmharicName = Organization.AmharicName;
-                record.Abbreviation = Organization.Abbreviation;
+                var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+                if (organization == null)
+                    return record; // Return empty record safely
 
-                var address =
-                    db.Addresses.Where(a =>
-                        a.Reference == Organization.MainCompanyId.ToString() &&
-                        a.ReferenceType.ToLower() == "company").ToList();
-                if (address.Any())
+                record.Name = organization.TradeName;
+                record.AmharicName = organization.AmharicName;
+                record.Abbreviation = organization.Abbreviation;
+
+                // ✅ Build address safely
+                var addresses = db.Addresses
+                    .Where(a => a.Reference == organization.MainCompanyId.ToString() &&
+                                a.ReferenceType.ToLower() == "company")
+                    .ToList();
+
+                if (addresses.Any())
                 {
-                    foreach (var a in address)
-                    {
-
-                        if (record.Address == null)
-                        {
-                            record.Address = a.Category + ":- " + a.Value;
-                        }
-                        else
-                        {
-                            record.Address += ", " + a.Category + "-" + a.Value;
-                        }
-
-
-                    }
-
+                    record.Address = string.Join(", ",
+                        addresses.Select(a => $"{a.Category}: {a.Value}"));
                 }
-                var logo =
-                    db.Attachments.FirstOrDefault(a => a.Reference == Organization.MainCompanyId.ToString() &&
-                                                       a.ReferenceType == AttachmentType.LOGO);
+
+                // ✅ Load logo safely
+                var logo = db.Attachments.FirstOrDefault(a =>
+                    a.Reference == organization.MainCompanyId.ToString() &&
+                    a.ReferenceType == AttachmentType.LOGO);
                 if (logo != null)
                 {
-                    record.LogoFileName = ByteArrayToImage(logo.BinaryFile);
+                    var img = ByteArrayToImage(logo.BinaryFile);
+                    if (img != null)
+                        record.LogoFileName = img;
+                }
+          
+
+                //if (logo?.BinaryFile != null && logo.BinaryFile.Length > 0)
+                //{
+                //    record.LogoFileName = ByteArrayToImage(logo.BinaryFile);
+                //}
+
+                // ✅ Load ISO logo safely
+                var isoLogo = db.Attachments.FirstOrDefault(a =>
+                    a.Reference == organization.MainCompanyId.ToString() &&
+                    a.ReferenceType == AttachmentType.ISO_LOGO);
+
+                if (isoLogo?.BinaryFile != null && isoLogo.BinaryFile.Length > 0)
+                {
+                    record.IsoLogoFileName = ByteArrayToImage(isoLogo.BinaryFile);
                 }
 
-                record.Date =
-                    XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+                // ✅ Ethiopian date
+                record.Date = XAPI.EthiopicDateTime.GetEthiopicDate(
+                    DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year) + " E.C";
             }
+            catch (Exception ex)
+            {
+                // You can log this, but it won't crash the report
+                System.Diagnostics.Debug.WriteLine("GetOrganization() failed: " + ex.Message);
+                // Return partially filled record safely
+                return record;
+            }
+
             return record;
         }
+
+      
+
+
         public static Image ByteArrayToImage(byte[] byteArrayIn)
         {
             if (byteArrayIn != null)
@@ -76,23 +101,7 @@ namespace ExceedERP.Reporting.SharedDataSources
 
         }
 
-        public  Image GetUserSignature(string userName)
-        {
-            // var user = db.
-            byte[] byteArrayIn = null;
-           var IsDigitallySigned = InventoryConfigurationHelper.IsElectronicSignatureEnabled();
-           if(IsDigitallySigned)
-            {               
-                byteArrayIn = UserHelper.GetUserSignature(userName);
-            if (byteArrayIn != null)
-            {
-                MemoryStream ms = new MemoryStream(byteArrayIn);
-                Image returnImage = Image.FromStream(ms);
-                return returnImage;
-            }
-            }
-            return null;
 
-        }
+
     }
 }

@@ -5,7 +5,104 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<style>
+    .leave-config-wrapper {
+        max-width: 100%;
+    }
 
+        .leave-config-wrapper .leave-config-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+            .leave-config-wrapper .leave-config-header i {
+                color: #fff;
+                background: #337ab7;
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+            }
+
+            .leave-config-wrapper .leave-config-header h3 {
+                margin: 0;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+        .leave-config-wrapper > .k-tabstrip {
+            border: none;
+            background: transparent;
+        }
+
+            .leave-config-wrapper > .k-tabstrip > .k-tabstrip-items {
+                border-bottom: 2px solid #e3e6ea;
+                padding: 0 2px;
+            }
+
+                .leave-config-wrapper > .k-tabstrip > .k-tabstrip-items .k-item {
+                    border: none;
+                    background: transparent;
+                    margin-right: 4px;
+                    font-weight: 600;
+                    color: #5a6b7b;
+                }
+
+                    .leave-config-wrapper > .k-tabstrip > .k-tabstrip-items .k-item.k-state-active {
+                        color: #337ab7;
+                        border-bottom: 3px solid #337ab7;
+                        background: transparent;
+                    }
+
+                    .leave-config-wrapper > .k-tabstrip > .k-tabstrip-items .k-item:hover {
+                        color: #337ab7;
+                    }
+
+        .leave-config-wrapper .k-content {
+            background: #fff;
+            border: 1px solid #e3e6ea;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            padding: 18px 20px;
+        }
+
+        .leave-config-wrapper legend {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #337ab7;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+            width: auto;
+            display: inline-block;
+            min-width: 260px;
+        }
+
+        .leave-config-wrapper .k-grid {
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #e3e6ea;
+        }
+
+            .leave-config-wrapper .k-grid .k-grid-header {
+                background: #f8f9fb;
+            }
+
+        .leave-config-wrapper .k-toolbar.k-grid-toolbar {
+            background: #f8f9fb;
+            border-color: #e3e6ea;
+        }
+</style>
+<div class="leave-config-wrapper">
+    <div class="leave-config-header">
+        <i class="fa fa-cogs"></i>
+        <h3>Leave Configurations</h3>
+    </div>
 @(Html.Kendo().TabStrip()
     .Name("tabstrip")
     .Animation(animation =>
@@ -47,13 +144,14 @@
               @leaveEntitlementSetting()
 
             </text>);
-     @*tabstrip.Add().Text("Company Leave Work-flow Setting")
+     tabstrip.Add().Text("Company Leave Work-flow Setting")
          .Content(@<text>
               @companyLeaveWorkflowSetting()
 
-            </text>);*@
+            </text>);
      })
 )
+</div>
 
 @helper sickLeaveSetting()
 { 
@@ -112,6 +210,7 @@
             .Columns(columns =>
             {
                 columns.Bound(c => c.SickLeaveSalarySettingId).Title("#").Width(80);
+                columns.Bound(c => c.Type).EditorTemplateName("Enum").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                 columns.Bound(c => c.FromDays).Width(120);
                 columns.Bound(c => c.ToDays).Width(120);
                 columns.Bound(c => c.PayableSalaryInPercent).Width(150);
@@ -248,9 +347,9 @@
     
  }
 
-@*@helper companyLeaveWorkflowSetting()
+@helper companyLeaveWorkflowSetting()
 { 
-    
+    <legend>Company Leave Work-flow Setting</legend>
      @(Html.Kendo().Grid<CompanyLeaveWorkflowSetting>()
           .Name("CompanyLeaveWorkflowSetting_grid")
           .Columns(columns =>
@@ -312,7 +411,7 @@
 )
 
     
- }*@
+ }
 
 @helper leaveSetting()
 { 
@@ -322,7 +421,7 @@
           .Columns(columns =>
           {
 
-              columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"], "Text", "Text").EditorTemplateName("Setting").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"], "Text", "Text").EditorTemplateName("Setting").Filterable(ftb => ftb.Multi(true).Search(true)).Width(250);
               columns.Bound(c => c.CurrentValue).Width(150);
               // columns.Bound(c => c.PreviousValue);
               // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYeaer"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
@@ -338,7 +437,7 @@
               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           })
           .Editable(editable => editable.Mode(GridEditMode.InLine))
-            .Scrollable(h => h.Height(250))
+            .Scrollable(h => h.Height(400))
             .Sortable(sortable =>
             {
                 sortable.SortMode(GridSortMode.SingleColumn);
@@ -483,6 +582,17 @@
           .Columns(columns =>
           {
               columns.Bound(c => c.CurrentValue).Width(200);
+              columns.Bound(c => c.IncludeCurrentFiscalYearDays).ClientTemplate(
+                   "<input type='checkbox' disabled = 'true' value='#=IncludeCurrentFiscalYearDays#' " +
+                   "# if (IncludeCurrentFiscalYearDays) { #" +
+                   "checked='checked'" +
+                   "# } #" +
+                   "/>").Width(200);
+              columns.Bound(c => c.EnableTaxableAllowance)
+                     .Title("Enable Taxable Allowance")
+                     .ClientTemplate("<input type='checkbox' disabled='true' value='#=EnableTaxableAllowance#' " +
+                                     "# if (EnableTaxableAllowance) { # checked='checked' # } # />")
+                     .Width(160);
               columns.Command(command =>
               {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);

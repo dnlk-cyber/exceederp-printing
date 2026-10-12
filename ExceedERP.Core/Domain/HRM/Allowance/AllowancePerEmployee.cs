@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 
@@ -20,6 +21,9 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
         public virtual AllowanceDefination AllowanceDefination
         {
             get; set; }
+        [NotMapped]
+        [Display(Name = "Allowance")]
+        public int[] AllowanceDefinationIds { get; set; }
         [Display(Name = "HR_Prohibition_Prohibition_EmployeeCode", ResourceType = typeof(Localization.Resources))]
         public string EmployeeCode { get; set; }
         [Required]

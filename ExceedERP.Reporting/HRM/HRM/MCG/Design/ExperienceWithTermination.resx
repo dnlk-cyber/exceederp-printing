@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value> With best regards 
+
+
+
+
+
+
+
+
+ 
+ 
+
+
+</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>To Inform</value>
+  </data>
+  <data name="$this.DocumentName" xml:space="preserve">
+    <value>Experience Letter</value>
+  </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>{PageNumber}</value>
+  </data>
+  <data name="htmlTextBox2.Value" xml:space="preserve">
+    <value>&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif"&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in -3.75pt 10pt 0in"&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; line-height: 115%"&gt;Mr./Ms/Mrs&amp;nbsp;{Fields.FullName}&amp;nbsp; &lt;/span&gt;&lt;/b&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; line-height: 115%"&gt;requested us an experience letter of his service rendered during his stay in our company. &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in -3.75pt 10pt 0in"&gt;&lt;/p&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in -3.75pt 10pt 0in"&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; line-height: 115%"&gt;Therefore, we would like to certify that &lt;b style="mso-bidi-font-weight: normal"&gt;Mr./Ms/Mrs. {Fields.FullName} &lt;/b&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;times new roman&amp;quot;,serif"&gt;has been working &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; line-height: 115%"&gt;under our company at &lt;/span&gt;&lt;span style="background-color: #ffffff"&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; background-image: none; background-repeat: repeat; background-attachment: scroll; background-position: 0% 0%; line-height: 115%; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-highlight: yellow"&gt;{Fields.Branch}&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; background-image: none; background-repeat: repeat; background-attachment: scroll; background-position: 0% 0%; line-height: 115%; mso-highlight: yellow"&gt; Project&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; line-height: 115%"&gt;,&amp;nbsp;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in -3.75pt 10pt 0in"&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; line-height: 115%"&gt;{Fields.Expereince} &lt;/span&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in -3.75pt 10pt 0in"&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;times new roman&amp;quot;,serif; line-height: 115%"&gt;he/she is earnings&lt;/span&gt;&lt;/p&gt;&lt;/span&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in -3.75pt 10pt 0in"&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>Place፡</value>
+  </data>
+  <data name="reportParameter8.Text" xml:space="preserve">
+    <value>ApplicationDate</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Fields.Amounts</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>R.No_:___________</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>{Fields.Earnings}:</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>➜</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>{Fields.Earnings}:</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Today()</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>TO WHOM IT MAY CONCERN</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>&lt;=&gt;This letter is given to upon his request and cannot be considered as a final release paper</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.Salary</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>Date፣</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Parameters.notify.Label</value>
+  </data>
+  <data name="reportParameter6.Text" xml:space="preserve">
+    <value>Place</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>page:</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Ccc</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>➜</value>
+  </data>
+  <data name="reportParameter7.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>He resigned on {Fields.TerminationDate}.
+Finally, we would like to further notify that all the necessary due taxes and pension contribution had been deducted from his salary and paid to the concerned Inland Revenue Authority.
+
+</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>CC:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+</root>

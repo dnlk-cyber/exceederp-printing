@@ -18,6 +18,7 @@ using ExceedERP.Helpers.HR;
 using System.Web;
 using System.IO;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
+using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -111,12 +112,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
         public ActionResult ProbationEligible_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            var person_employees = db.Person_Employee.AsNoTracking().ToList().Where(x => mybraches.Contains(x.BranchId.ToString()) && x.IsActive && x.IsPlaced).Where(x => (DateTime.Now.Date - x.HiredDate.Date).TotalDays < 90).ToList();
+            var person_employees = db.Person_Employee.AsNoTracking().ToList().Where(x => mybraches.Contains(x.BranchId) && x.IsActive && x.IsPlaced).Where(x => (DateTime.Now.Date - x.HiredDate.Date).TotalDays < 90).ToList();
             List<int> employeeIds = GetEmployeeIdInProbation(person_employees);
-            var placements = db.Placements.Where(x=>employeeIds.Contains(x.EmployeeId)||x.EmployementType==EmployeeStatus.PROBATION)
+            HashSet<int> probationPerformanceEmployeeIds = new HashSet<int>(db.ProbationPerformances/*.Where(x=>!x.IsOnlineApproved)*/.Select(x => x.EmployeeId));
+            var placements = db.Placements.Where(x=>(employeeIds.Contains(x.EmployeeId)||x.EmployementType==EmployeeStatus.PROBATION)&&probationPerformanceEmployeeIds.Contains(x.EmployeeId))
                                         .Where(x => x.isCurrent).ToList();
             
             DataSourceResult result = placements.ToDataSourceResult(request, placement => new
@@ -155,6 +156,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 IsApprove = placement.IsApprove,
                 FullName = GetFullName(placement.EmployeeId),
                 HireDate = HrHelper.GetHireDate(placement.EmployeeId),
+                IsFit = IsProbationEmployeeFit(placement.EmployeeId),
                 Age = EmployeeHelper.GetAge(placement.EmployeeId)
             });
 
@@ -176,6 +178,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 return "";
             }
         }
+        private bool IsProbationEmployeeFit(int id)
+        {
+            return db.ProbationPerformances
+                     .Any(x => x.EmployeeId == id && x.ResultType == EvaluateProbation.Fit);
+        }
+
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -225,16 +233,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                 var placement = db.Placements.FirstOrDefault(x=>x.isCurrent
                                      &&x.EmployeeId==performance.EmployeeId);
-                if (performance == null)
-                    return JsonResponse("This Probation Evalution is not found.", "FAIL");
+                if (placement == null)
+                    return JsonResponse("No current placement found for this employee.", "FAIL");
 
-
+                // Data mismatch: the placement no longer says Probation, so the employee's Status is
+                // a stale/mistaken value - sync it directly, no evaluation result check needed.
+                if (placement.EmployementType != EmployeeStatus.PROBATION)
+                {
+                    var mismatchedPerson = db.Person_Employee.Find(placement.EmployeeId);
+                    if (mismatchedPerson != null)
+                    {
+                        mismatchedPerson.Status = placement.EmployementType;
+                        mismatchedPerson.IsProbationEnd = true;
+                        mismatchedPerson.ProhabitionState = 0;
+                        db.Entry(mismatchedPerson).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    return JsonResponse("Placement already shows a non-probation type; employee status synced accordingly.", "OK");
+                }
 
                 if (performance.Result >= probationsetting.MinimumFitValue)
                 {
                     placement.EmployementType = EmployeeStatus.PERMANENT;
                     placement.IsApprove = true;
-                    placement.isCurrent = false;
+                    placement.isCurrent = true;
                     placement.ApprovedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                     db.Entry(placement).State = EntityState.Modified;
                     var person = db.Person_Employee.Find(placement.EmployeeId);
@@ -243,6 +265,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         person.IsActive = true;
                         person.IsPlaced = true;
                         person.Status = EmployeeStatus.PERMANENT;
+                        person.IsProbationEnd = true;
+                        person.ProhabitionState = 0; // clears the grid's stale "in probation" (yellow) background
                         db.Entry(person).State = EntityState.Modified;
 
                     }

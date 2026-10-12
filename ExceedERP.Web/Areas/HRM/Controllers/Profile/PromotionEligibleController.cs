@@ -26,6 +26,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     public class PromotionEligibleController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
 
         HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
@@ -35,25 +36,62 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             PopulateViewData();
             return View();
         }
-       
+
         private void PopulateViewData()
         {
-            var employeeIds = db.Placements.Select(x => x.EmployeeId).ToList();
-            // ViewData["EmployeeList"] = db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId)).Select(x => new { EmployeeId = x.EmployeeId, EmployeeCode = x.EmployeeCode, FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName, FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish }).ToList();// inputs.GetEmployeesForPlacment(User.Identity.Name);
-            ViewData["EmployeeList"] = db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId)).Select(x => new { EmployeeId = x.EmployeeId, HeadId=x.EmployeeId, EmployeeCode = x.EmployeeCode, FullNameAmharic = x.EmployeeCode + " - " + x.FirstName + " " + x.MiddleName + " " + x.LastName, FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish }).ToList();// inputs.GetEmployeesForPlacment(User.Identity.Name);
-            ViewData["jobTitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-            //var branches = db.Branch;
-            //ViewData["branches"] = branches;
-            //var workunits = db.MainCompanyStructures.ToList();
-            //ViewData["workunits"] = workunits;
-            var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["branches"] = branches;
-            var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["businessUnits"] = businessUnits;
-            var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
-            ViewData["workunits"] = workunits;
+
+            ViewData["RankList"] = CacheData.GetRankCaches().Select(
+               i => new
+               {
+                   RankName = i.Name,
+                   RankId = i.Id,
+               }).AsQueryable(); ;
+            var stepss = db.Steps.AsQueryable();
+            ViewData["StepList"] = CacheData.GetStepCaches().Select(
+               i => new
+               {
+                   StepName = i.Name,
+                   StepId = i.Id,
+
+               }).AsQueryable();
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+               i => new
+               {
+                   FullNameAmharic = i.AmharicName,
+                   FullNameaEnglish = i.Name,
+                   EmployeeId = i.Id,
+                   HeadId = i.Id
+               }).AsQueryable();
+            ViewData["jobTitle"] = CacheData.GetJobTitlesCaches().Select(
+               i => new
+               {
+                   Description = i.Name,
+                   LookupId = i.Id,
+               }).AsQueryable();
+            ViewData["branches"] = CacheData.GetBranchCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BranchId = i.Id,
+               }).AsQueryable(); ;
+
+            ViewData["businessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BusinessUnitId = i.Id,
+               }).AsQueryable(); ; ;
+            ViewData["workunits"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+               }).AsQueryable();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+            ViewData["isManual"] = db.GeneralJobtitleSettings.FirstOrDefault()?.IsManual;
 
         }
+
 
         public string GetFullName(int empId)
         {
@@ -73,52 +111,63 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var promotionYear = db.PromotionYearSettings.FirstOrDefault();
             List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             DateTime minimumDate = promotionYear != null? DateTime.Now.AddYears(-promotionYear.NumberOfPromotionYears): DateTime.Now.AddYears(-2);
-            var placements = db.Placements.AsNoTracking().ToList()
+            var placements = db.Placements.AsNoTracking()
                 .Where(x => x.AssignmentDate <= minimumDate)            // Assignment date is over 2 years old
                 .Where(x => x.isCurrent)
                 .Where(x => myBranches.Contains(x.BranchId))
                 .Where(x => db.Placements.Any(y => y.BranchId == x.BranchId 
                                                     &&y.StepId == x.StepId 
                                                     &&y.AssignmentDate == x.AssignmentDate))
-                .OrderBy(x => x.StepId).ToList();
+                .OrderBy(x => x.StepId).AsQueryable();
             
-            DataSourceResult result = placements.ToDataSourceResult(request, placement => new
+            DataSourceResult result = placements.ToDataSourceResult(request, x => new
             {
-                PlacementId = placement.PlacementId,
-                EmployeeId = placement.EmployeeId,
-                HeadId = placement.HeadId,
-                ImmediateSupervisor = placement.ImmediateSupervisor,
-                IsHead = placement.IsHead,
-                AssignmentDate = placement.AssignmentDate,
-                OrgStructureId = placement.OrgStructureId,
-                ParentOrgStructureId = placement.ParentOrgStructureId,
-                LookupId = placement.LookupId,
-                MappingId = placement.MappingId,
-                JobTitleName = GetTitleName(placement.LookupId),
-                ReportsToMappingId = placement.ReportsToMappingId,
-                RankId = placement.RankId,
-                StepId = placement.StepId,
-                BranchId = placement.BranchId,
-                Salary = placement.Salary,
-                Department = placement.Department,
-                ReportsTo = placement.ReportsTo,
-                AssignmentType = placement.AssignmentType,
-                ResponsibilityLevel = placement.ResponsibilityLevel,
-                Remark = placement.Remark,
-                DateCreated = placement.DateCreated,
-                LastModified = placement.LastModified,
-                CreatedBy = placement.CreatedBy,
-                ModifiedBy = placement.ModifiedBy,
-                isCurrent = placement.isCurrent,
-                AssignmentDateAmharic = placement.AssignmentDateAmharic,
-                EmployeeCode = placement.EmployeeCode,
-                EmployementType = placement.EmployementType,
-                IsPend = placement.IsPend,
-                BusinessUnitId = placement.BusinessUnitId,
-                IsApprove = placement.IsApprove,
-                FullName = GetFullName(placement.EmployeeId),
-                HireDate = HrHelper.GetHireDate(placement.EmployeeId),
-                Age = EmployeeHelper.GetAge(placement.EmployeeId)
+                x.PlacementId,
+                x.EmployeeId,
+                EmployeeCode = x.Employee.EmployeeCode,
+                x.HeadId,
+                x.ImmediateSupervisor,
+                x.IsHead,
+                x.AssignmentDate,
+                x.SalarChangeDate,
+                x.SalarChangeDateAmharic,
+                x.OrgStructureId,
+                x.ParentOrgStructureId,
+                x.LookupId,
+                x.MappingId,
+                x.JobTitleName,
+                x.ReportsToMappingId,
+                x.RankId,
+                x.StepId,
+                x.BranchId,
+                x.Salary,
+                x.Department,
+                x.ReportsTo,
+                x.AssignmentType,
+                x.ResponsibilityLevel,
+                x.Remark,
+                x.DateCreated,
+                x.LastModified,
+                x.CreatedBy,
+                x.ModifiedBy,
+                x.isCurrent,
+                x.IsEditable,
+                x.AssignmentDateAmharic,
+                x.EmployementType,
+                x.IsPend,
+                x.BusinessUnitId,
+                x.IsApprove,
+                x.Age,
+                x.StepName,
+                x.HaveFixedAsset,
+                x.ApprovedByEmpId,
+                x.NextSalaryChangeDateAmharic,
+                x.NextSalaryChangeDate,
+                HireDate = x.Employee.HiredDateAmharic,
+                HireDateGorg = x.Employee.HiredDate,
+                Gender = x.Employee.Gender.ToString(),
+                Check = x.HeadId == null && x.IsHead,
+               
             });
 
             return Json(result);

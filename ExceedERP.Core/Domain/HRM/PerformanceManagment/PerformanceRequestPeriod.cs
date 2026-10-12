@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
 {
-    public class PerformanceRequestPeriod: TrackUserSettingOperation
+    public class PerformanceRequestPeriod: DepartmentOperations
     {
         [Key]
         public int PerformanceRequestPeriodId { get; set; }

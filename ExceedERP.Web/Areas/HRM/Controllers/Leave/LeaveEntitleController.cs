@@ -24,7 +24,7 @@ using ExceedERP.Helpers.HR;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
 
-    [AuthorizeRoles(HrmConstants.HRLeaveUser, HrmConstants.HRLeaveAdmin, HrmConstants.HRLeaveAdmin)]
+    [AuthorizeRoles(HrmConstants.HRLeaveUser, HrmConstants.HRLeaveAdmin)]
     public class LeaveEntitleController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

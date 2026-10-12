@@ -5,7 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+<div class="epct-page-header">
+    <i class="fa fa-bar-chart"></i>
+    <legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+</div>
 <form>
 
     <div class="row">
@@ -13,6 +16,7 @@
        </div>
     <div class="row">
         
+        <div class="epct-grid-wrapper">
                @(Html.Kendo().Grid<MeasurementDefinition>()
           .Name("MeasurementDefinitiongrid")
       .Columns(columns =>
@@ -131,6 +135,7 @@
                                  .Destroy(destroy => destroy.Action("", "").Data("sendForgery"))
                   ).ClientDetailTemplateId("template")
                 )
+        </div>
                 <script id="template" type="text/kendo-tmpl">
                     @(Html.Kendo().TabStrip()
           .Name("tabstrip_#=MeasurementDefinitionId#")
@@ -436,13 +441,80 @@ events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=MeasurementDefinitionI
     .category-label {
         vertical-align: middle;
         padding-right: .5em;
+        font-weight: 600;
+        color: #4b5563;
     }
 
     #category {
         vertical-align: middle;
     }
 
-    .toolbar {
-        float: right;
+    .epct-page-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+        .epct-page-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .epct-page-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .epct-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #MeasurementDefinitiongrid .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 15px;
+    }
+
+    #MeasurementDefinitiongrid.k-grid {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #MeasurementDefinitiongrid.k-grid .k-grid-header {
+            background-color: #f9fafb;
+        }
+
+        #MeasurementDefinitiongrid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        #MeasurementDefinitiongrid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #MeasurementDefinitiongrid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+
+    @@media (max-width: 767px) {
+        #MeasurementDefinitiongrid .toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+            #MeasurementDefinitiongrid .toolbar .k-widget {
+                width: 100% !important;
+            }
+
+        #MeasurementDefinitiongrid.k-grid {
+            font-size: 12px;
+        }
     }
 </style>

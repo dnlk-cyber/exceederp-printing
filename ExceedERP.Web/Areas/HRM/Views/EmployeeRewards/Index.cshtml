@@ -3,20 +3,35 @@
 @using System.Collections
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
-<legend>Employee Reward</legend>
+<legend>@Resources.Employee_Rewards</legend>
 @(Html.Kendo().Grid<EmployeeReward>()
       .Name("grid")
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeRewardId).Title("#").Width(80);
+          columns.Bound(c => c.PayrollAccount).Width(130);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("AllEmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
           columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYear"], "GlFiscalYearId", "Name").EditorTemplateName("GLFiscalYearSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
           columns.Bound(c => c.SubBranch).Width(170);
-          columns.Bound(c => c.DateAm).EditorTemplateName("Calander").Width(150);
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.DateAm).EditorTemplateName("Calander").Width(150);
+
+          }
+          else
+          {
+              columns.Bound(c => c.Date).Width(150);
+
+          }
           columns.Bound(c => c.RewardType).Width(130);
           columns.Bound(c => c.Unit).Width(110);
           columns.Bound(c => c.ReasonForReward).Width(110);
+          columns.Bound(c => c.Salary).Width(110);
+          columns.Bound(c => c.PersonOfSalary).Width(110);
           columns.Bound(c => c.Amount).Width(110);
           columns.Bound(c => c.Remark).Width(110);
           columns.Command(command =>
@@ -32,14 +47,102 @@
       })
       .ToolBar(toolbar =>
       {
-
       toolbar.Template(@<text>
-         <div class="toolbar">
-          
-             @item.CreateButton(Resources.ActionButton_AddNewRecord)  
-         </div> 
-         </text>);
-      })
+                <div class="toolbar">
+  
+                    @item.CreateButton(Resources.ActionButton_AddNewRecord);
+                    @(Html.Kendo().ComboBox()
+                                            .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
+                                            .Name("BranchIdd")
+                                            .BindTo((IEnumerable)ViewData["branches"])
+                                            .DataTextField("Name")
+                                            .DataValueField("BranchId")
+                                            .Events(e => e.Change("onChangeGrid"))
+                                            .Filter("contains")
+                                                        .AutoBind(false)
+                                                        .HtmlAttributes(new { style = "width:150px;height:40px" })
+
+                    )
+                    @(Html.Kendo().ComboBox()
+                                          .Placeholder("Reward Type")
+                                          .Name("RewardType")
+                                          .Filter("contains")
+                                          .DataTextField("Text")
+                                          .DataValueField("Value")
+                                          .Events(e => e.Change("onChangeGrid"))
+                                          .HtmlAttributes(new { style = "width:150px;height:40px" })
+                                          .BindTo(EnumExtension.EnumToSelectList(typeof(RewardType)))
+
+                    )
+                    @(Html.Kendo().ComboBox()
+                                  .Name("GlFiscalYear")
+                                  .Placeholder(Resources.Select+" "+Resources.Fiscal_Year)
+                                  .Filter("contains")
+                                  .DataTextField("Name")
+                                  .DataValueField("GlFiscalYearId")
+                                  .Events(e => e.Change("onChangeGrid"))
+                                  .DataSource(dataSource =>
+                                  {
+                                                    dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                                                .ServerFiltering(false);
+
+                                                })
+                                  .ValuePrimitive(true)
+                                  .HtmlAttributes(new { style = "width:150px;height:40px" })
+                    )
+                    @(Html.Kendo().ComboBox()
+                                .Name("GLPeriod")
+                                .Placeholder(Resources.Select + " " + Resources.Enum_PAYROLL_PERIOD)
+                                .Filter("contains")
+                                .DataTextField("Name")
+                                .DataValueField("GLPeriodId")
+                                .CascadeFrom("GlFiscalYear")
+                                .Events(e => e.Change("onChangeGrid"))
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("filterFiscalYearForPeriod"))
+                                        .ServerFiltering(true);
+
+
+
+                                })
+                                .ValuePrimitive(true)
+                                .HtmlAttributes(new { style = "width:150px;height:40px" })    )
+   
+
+                    @(Html.Kendo().DatePicker().Name("rewardDate")
+                                                    .HtmlAttributes(new { style = "width:150px;height:40px" }))
+                    <!-- Result label and input here -->
+                    <label class="result-label" for="result">Percent of Salary</label>
+                    <input type="number" id="decimalInput" step="1" placeholder="Enter percent" style="width: 150px;height:40px" onchange="onSalaryOfPercentChange()" />
+
+                    @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "EmployeeRewards", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
+                    @(Html.Kendo().Button()
+                            .Name("btnCopy")
+                            .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-right" })
+                            .Events(e => e.Click("generateEmployeeReward"))
+                            .Content("Generate Employee Reward"))
+
+                     @(Html.Kendo().Button()
+                            .Name("btnUpdatePayroll")
+                            .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-warning btn-xs pull-right" })
+                            .Events(e => e.Click("updateAllPayrollAccounts"))
+                            .Content("Update Payroll Accounts"))
+
+
+                </div>
+
+                </text>);
+
+
+          })
+        .Excel(excel => excel
+                    .FileName("EmployeeReward" + ".xlsx")
+                    .Filterable(true)
+                        .AllPages(true))
+                        .Pdf(pdf => pdf
+                        .AllPages()
+                        .FileName("EmployeeReward" + ".pdf"))
       .Editable(editable => editable.Mode(GridEditMode.InLine))
          .Scrollable(h => h.Height(500))
 
@@ -59,6 +162,7 @@
          .ButtonCount(5))
       .DataSource(dataSource => dataSource
       .Ajax()
+      .Sort(x=>x.Add(sort=>sort.EmployeeRewardId).Descending())
       .Events(events =>
       {
 
@@ -71,12 +175,13 @@
       {
           model.Id(p => p.EmployeeRewardId);
           model.Field(p => p.EmployeeRewardId).Editable(false);
+          model.Field(p => p.Salary).Editable(false);
 
       })
-      .Read(read => read.Action("EmployeeRewards_Read", "EmployeeRewards"))
-      .Create(create => create.Action("EmployeeRewards_Create", "EmployeeRewards"))
-      .Update(update => update.Action("EmployeeRewards_Update", "EmployeeRewards"))
-      .Destroy(destroy => destroy.Action("EmployeeRewards_Destroy", "EmployeeRewards"))
+      .Read(read => read.Action("EmployeeRewards_Read", "EmployeeRewards").Data("sendForgery"))
+      .Create(create => create.Action("EmployeeRewards_Create", "EmployeeRewards").Data("sendForgery"))
+      .Update(update => update.Action("EmployeeRewards_Update", "EmployeeRewards").Data("sendForgery"))
+      .Destroy(destroy => destroy.Action("EmployeeRewards_Destroy", "EmployeeRewards").Data("sendForgery"))
       )
 )
       
@@ -94,11 +199,18 @@
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
         }
     }
+    function filterFiscalYearForPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYear").val()
+        };
+    }
+    function filterFiscalYear() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val(),
+        };
+    }
     function onEdit(e) {
         var dataItem = e.model;
-
-       
-
         // Check your condition
         if (dataItem.RewardType == 0 || dataItem.RewardType == 2) {
 
@@ -107,18 +219,204 @@
             //$("#SpecialistEmployeeId").data("kendoDropDownList").enable(false);
             
         }
-        //if () {
-
-        //    //$("#SpecialistEmployeeId").attr("disabled", true);
-        //    //$("#SpecialistEmployeeId").data("kendoDropDownList").enable(false);
-
-        //}
-        //else {
-        //    $("#SpecialistEmployeeId").attr("disabled", true);
-        //    $("#SpecialistEmployeeId").data("kendoDropDownList").enable(false);
-
-        //}
+       
     }
 
+    function onSalaryOfPercentChange() {
+        var resultValue = $("#decimalInput").val();
+
+        if (resultValue === "") {
+            alert("Please enter a percentage.");
+            return;
+        }
+
+        // Convert to integer
+        var percent = parseInt(resultValue, 10);
+
+        if (isNaN(percent)) {
+            alert("Please enter a valid whole number.");
+            return;
+        }
+
+        if (percent < 0) {
+            alert("Percentage cannot be negative.");
+            return;
+        }
+
+        if (percent > 100) {
+            alert("Percentage cannot be greater than 100.");
+            return;
+        }
+
+        if (percent % 1 !== 0) {
+            alert("Please enter a whole number (e.g., 20, 30, not 20.5).");
+            return;
+        }
+
+        //alert("Valid percent: " + percent + "%");
+    }
+</script>
+<script>
+    function generateEmployeeReward() {
+        try {
+            var branch = $("#BranchIdd").data("kendoComboBox");
+            var branchId = branch.value();
+            var rewardTypeCombo = $("#RewardType").data("kendoComboBox");
+            var rewardType = rewardTypeCombo.value();
+            //var fiscalYear = $("#GlFiscalYear").val();
+            //var period = $("#GLPeriod").val();
+            var fiscalYear = $("#GlFiscalYear").data("kendoComboBox");
+            var fiscalYearId = fiscalYear.value();
+            var period = $("#GLPeriod").data("kendoComboBox");
+            var periodId = period.value();
+            var rewardDatePicker = $("#rewardDate").data("kendoDatePicker");
+            var rewardDate = rewardDatePicker ? rewardDatePicker.value() : null;
+            var resultValue = $("#decimalInput").val();
+            // Validation
+            if (!branchId) {
+                alert("Please select Branch first!!");
+                return;
+            }
+            if (!rewardType) {
+                alert("Please select Reward Type first!!");
+                return;
+            }
+            if (!rewardDate) {
+                alert('Please select a valid Reward date.');
+                return;
+            }
+            if (!resultValue || resultValue <= 0) {
+                alert("Please enter a valid percentage.");
+                return;
+            }
+
+            // Show loading indicator
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '/HRM/EmployeeRewards/GenerateEmployeeReward',
+                data: {
+                    branchId: branchId,
+                    fiscalYearId: fiscalYearId,
+                    periodId: periodId,
+                    rewardDate: rewardDate.toISOString(), // Convert to ISO string
+                    rewardType: rewardType,
+                    percentOfSalary: resultValue
+                },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    $('#loading-image').hide();
+                    if (result.Status === "OK") {
+                        alert(result.Message);
+                        // Refresh grid if needed
+                        // $("#YourGridName").data("kendoGrid").dataSource.read();
+                    } else {
+                        alert("Error: " + result.Message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#loading-image').hide();
+                    console.error("AJAX Error:", xhr.responseText);
+                    alert("An error occurred: " + xhr.status + " - " + xhr.statusText);
+                }
+            });
+
+        } catch (e) {
+            $('#loading-image').hide();
+            console.error("JavaScript Error:", e);
+            alert("An error occurred: " + e.message);
+        }
+    }
+
+    function updateAllPayrollAccounts()
+    {
+
+        var fiscalYear = $("#GlFiscalYear").data("kendoComboBox");
+        var fiscalYearId = fiscalYear ? fiscalYear.value() : null;
+
+        var period = $("#GLPeriod").data("kendoComboBox");
+        var periodId = period ? period.value() : null;
+
+        // Basic validation
+        if (!fiscalYearId || !periodId) {
+            alert("Please select Fiscal Year and Period.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to update all employee payroll accounts?")) {
+            return;
+        }
+        $('#loading-image').show();
+        $.ajax({
+            url: '@Url.Action("UpdateAllPayrollAccounts", "EmployeeRewards",new { area="HRM"})',
+            type: 'POST',
+            data: {
+                fiscalYearId: fiscalYearId,
+                periodId: periodId
+            },
+            success: function (response) {
+                alert(response.message);
+
+                // Refresh grid
+                $("#grid").data("kendoGrid").dataSource.read();
+                $('#loading-image').hide();
+
+            },
+            error: function () {
+                alert("Error occurred while updating payroll accounts.");
+                $('#loading-image').hide();
+
+            }
+        });
+
+    }
+    @*function generateEmployeeReward() {
+
+        var branch = $("#BranchIdd").data("kendoComboBox");
+        var branchId = branch.value();
+        var rewardTypeCombo = $("#RewardType").data("kendoComboBox");
+        var rewardType = rewardTypeCombo.value();
+        var period = $("#Period").data("kendoComboBox");
+        var periodId = period.value();
+        var rewardDatePicker = $("#rewardDate").data("kendoDatePicker");
+        var rewardDate = rewardDatePicker ? rewardDatePicker.value() : null;
+        var resultValue = $("#decimalInput").val(); // Get the value of the decimal input field
+        if (!branchId) {
+            alert("Please select Branch first!!");
+            return;  // Stop execution
+        }
+        if (!rewardType) {
+            alert("Please select Reward Type first!!");
+            return;  // Stop execution
+        }
+        if (!rewardDate) {
+            alert('Please select a valid Reward date.');
+            return;
+        }
+        if (!resultValue) {
+            alert("Please enter a percentage.");
+            return;  // Stop execution
+        }
+        $.ajax({
+            url: '@Url.Action("GenerateEmployeeReward", "EmployeeRewards")',
+            data: { branchId: branchId, periodId: periodId, rewardDate: rewardDate, rewardType: rewardType, percentOfSalary: resultValue },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                alert(result.Message);
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred: " + error);
+            }
+        });
+
+    }*@
+
+    
+    function onChangeGrid(e) {
+        var grid = $("#grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
 </script>
 

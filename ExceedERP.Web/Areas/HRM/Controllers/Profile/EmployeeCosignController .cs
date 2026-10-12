@@ -3,11 +3,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Web.Areas.Common.Controllers;
 using System.IO;
 using System.Net;
 using System.Web;
@@ -19,30 +17,40 @@ using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
-   
+
+
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class EmployeeCosignController : BaseController
     {
         // GET: HRM/EmployeeExperience
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime AgreementDate { get; set; }
-        public static string AgreementDateAm { get; set; }
-        HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
+
             PopulateViewData();
             return View();
         }
         private void PopulateViewData()
         {
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
             var cosignTypes = db.Lookups.Where(x => x.LookupType == LookUpTypes.COSIGN_TYPE);
             ViewData["CosignType"] = cosignTypes;
 
-            var listt = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = listt.Where(x => x.IsActive);
+            var employeeIds = db.Placements.Select(x => x.EmployeeId).ToList();
+            ViewData["EmployeeList"] = db.Person_Employee
+                                        .Where(x => employeeIds.Contains(x.EmployeeId))
+                                        .Select(x => new {
+                                            EmployeeId = x.EmployeeId,
+                                            HeadId = x.EmployeeId,
+                                            EmployeeCode = x.EmployeeCode,
+                                            FullNameAmharic = x.EmployeeCode + " - " + x.FirstName + " " + x.MiddleName + " " + x.LastName,
+                                            FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish
+                                        }).ToList();
+
         }
         public ActionResult DownloadFile(string filename)
         {
@@ -87,19 +95,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             if (name == "AgreementDateAm")
             {
-                AgreementDateAm = value;
+                var AgreementDateAm = value;
                 var splitDate = AgreementDateAm.Split('/');
-                AgreementDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var AgreementDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
 
 
         }
-    
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
-        public ActionResult Cosigns_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult EmployeeCosigns_Read([DataSourceRequest]DataSourceRequest request, int employeeCosignId)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<Cosign> cosigns = db.Cosigns.Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<Cosign> cosigns = db.Cosigns.Where(x => x.EmployeeId == employeeCosignId);
             DataSourceResult result = cosigns.ToDataSourceResult(request, cosign => new
             {
                 CosignId = cosign.CosignId,
@@ -111,6 +116,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 Workorganization = cosign.Workorganization,
                 Remark = cosign.Remark,
                 Salary = cosign.Salary,
+                IsActive = cosign.IsActive,
+                AgreementDateAm = cosign.AgreementDateAm,
+                CreatedBy = cosign.CreatedBy,
+                DateCreated = cosign.DateCreated,
+                ModifiedBy = cosign.ModifiedBy,
+                LastModified = cosign.LastModified,
+                EmployeeCode = cosign.EmployeeCode,
+                OrgBranchName = cosign.OrgBranchName
+            });
+
+            return Json(result);
+        }
+        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
+        public ActionResult Cosigns_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Cosign> cosigns = db.Cosigns/*.Where(x => mybraches.Contains(x.OrgBranchName))*/;
+            DataSourceResult result = cosigns.ToDataSourceResult(request, cosign => new
+            {
+                CosignId = cosign.CosignId,
+                EmployeeId = cosign.EmployeeId,
+                AgreementDate = cosign.AgreementDate,
+                FullName = cosign.FullName,
+                Occupation = cosign.Occupation,
+                LookupId = cosign.LookupId,
+                Workorganization = cosign.Workorganization,
+                Remark = cosign.Remark,
+                Salary = cosign.Salary,
+                IsActive = cosign.IsActive,
                 AgreementDateAm = cosign.AgreementDateAm,
                 CreatedBy = cosign.CreatedBy,
                 DateCreated = cosign.DateCreated,
@@ -128,51 +162,138 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Cosigns_Create([DataSourceRequest]DataSourceRequest request, Cosign cosign)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(cosign.AgreementDateAm))
+                {
+                    ModelState.AddModelError("", "Agreement Date Date field is mandatory");
+                    return Json(new[] { cosign }.ToDataSourceResult(request, ModelState));
+                }
+
+
+                cosign.AgreementDate = HrHelper.ParseEthiopicDate(cosign.AgreementDateAm);
+             
+
+            }
+            else
+            {
+
+                cosign.AgreementDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(cosign.AgreementDate.Day, cosign.AgreementDate.Month, cosign.AgreementDate.Year);
+
+            }
+            if (cosign.AgreementDate.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Agreement date should be less or equal to the current date!!");
+            }
             if (ModelState.IsValid)
             {
-                if (AgreementDateAm == null)
-                {
-                    ModelState.AddModelError("", "Agreement date value is mandatory!!");
-                }
-                else if (AgreementDate.Date > DateTime.Now.Date)
-                {
 
-                    ModelState.AddModelError("", "Agreement date should be less or equal to the current date!!");
-                }
-                else
+                var employee = db.Person_Employee.Find(cosign.EmployeeId);
+                var entity = new Cosign
                 {
-                    var entity = new Cosign
-                    {
-                        EmployeeId = cosign.EmployeeId,
-                        AgreementDate = AgreementDate,
-                        FullName = cosign.FullName,
-                        LookupId = cosign.LookupId,
-                        Occupation = cosign.Occupation,
-                        Workorganization = cosign.Workorganization,
-                        Salary = cosign.Salary,
-                        Remark = cosign.Remark,
-                        AgreementDateAm = AgreementDateAm,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Now,
-                        ModifiedBy = cosign.ModifiedBy,
-                        LastModified = cosign.LastModified,
-                        EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == cosign.EmployeeId).FirstOrDefault().EmployeeCode,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
-                    };
+                    EmployeeId = cosign.EmployeeId,
+                    AgreementDate = cosign.AgreementDate,
+                    FullName = cosign.FullName,
+                    LookupId = cosign.LookupId,
+                    Occupation = cosign.Occupation,
+                    Workorganization = cosign.Workorganization,
+                    Salary = cosign.Salary,
+                    Remark = cosign.Remark,
+                    AgreementDateAm = cosign.AgreementDateAm,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    ModifiedBy = cosign.ModifiedBy,
+                    LastModified = cosign.LastModified,
+                    EmployeeCode = employee?.EmployeeCode??string.Empty,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
+                };
 
-                    db.Cosigns.Add(entity);
-                    db.SaveChanges();
-                    cosign.CosignId = entity.CosignId;
+                db.Cosigns.Add(entity);
+                db.SaveChanges();
+                cosign.CosignId = entity.CosignId;
 
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Cosign", "Success", User.Identity.Name, "Employee Cosign for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
+                {
+                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Cosign", "Success", User.Identity.Name, "Employee Cosign for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
                         
-                    }
-                    #endregion
                 }
+                #endregion
+                
+            }
+
+            return Json(new[] { cosign }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult EmployeeCosigns_Create([DataSourceRequest]DataSourceRequest request, Cosign cosign,int employeeCosignId)
+        {
+            ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(cosign.AgreementDateAm))
+                {
+                    ModelState.AddModelError("", "Agreement Date Date field is mandatory");
+                    return Json(new[] { cosign }.ToDataSourceResult(request, ModelState));
+                }
+
+
+                cosign.AgreementDate = HrHelper.ParseEthiopicDate(cosign.AgreementDateAm);
+             
+
+            }
+            else
+            {
+
+                cosign.AgreementDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(cosign.AgreementDate.Day, cosign.AgreementDate.Month, cosign.AgreementDate.Year);
+
+            }
+            if (cosign.AgreementDate.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Agreement date should be less or equal to the current date!!");
+            }
+            cosign.EmployeeId = employeeCosignId;
+            if (ModelState.IsValid)
+            {
+
+                var employee = db.Person_Employee.Find(cosign.EmployeeId);
+                var entity = new Cosign
+                {
+                    EmployeeId = cosign.EmployeeId,
+                    AgreementDate = cosign.AgreementDate,
+                    FullName = cosign.FullName,
+                    LookupId = cosign.LookupId,
+                    Occupation = cosign.Occupation,
+                    Workorganization = cosign.Workorganization,
+                    Salary = cosign.Salary,
+                    Remark = cosign.Remark,
+                    AgreementDateAm = cosign.AgreementDateAm,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    ModifiedBy = cosign.ModifiedBy,
+                    LastModified = cosign.LastModified,
+                    EmployeeCode = employee?.EmployeeCode??string.Empty,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
+                };
+
+                db.Cosigns.Add(entity);
+                db.SaveChanges();
+                cosign.CosignId = entity.CosignId;
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
+                {
+                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Cosign", "Success", User.Identity.Name, "Employee Cosign for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
+                        
+                }
+                #endregion
+                
             }
 
             return Json(new[] { cosign }.ToDataSourceResult(request, ModelState));
@@ -183,54 +304,67 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Cosigns_Update([DataSourceRequest]DataSourceRequest request, Cosign cosign)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(cosign.AgreementDateAm))
+                {
+                    ModelState.AddModelError("", "Agreement Date Date field is mandatory");
+                    return Json(new[] { cosign }.ToDataSourceResult(request, ModelState));
+                }
+
+
+                cosign.AgreementDate = HrHelper.ParseEthiopicDate(cosign.AgreementDateAm);
+
+
+            }
+            else
+            {
+
+                cosign.AgreementDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(cosign.AgreementDate.Day, cosign.AgreementDate.Month, cosign.AgreementDate.Year);
+
+            }
+            if (cosign.AgreementDate.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Agreement date should be less or equal to the current date!!");
+            }
             if (ModelState.IsValid)
             {
-                if (AgreementDateAm == null)
+                var employee = db.Person_Employee.Find(cosign.EmployeeId);
+                var entity = new Cosign
                 {
-                    AgreementDateAm = cosign.AgreementDateAm;
-                    var splitDate = AgreementDateAm.Split('/');
-                    AgreementDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (AgreementDate.Date > DateTime.Now.Date)
+                    CosignId = cosign.CosignId,
+                    EmployeeId = cosign.EmployeeId,
+                    AgreementDate =cosign.AgreementDate,
+                    FullName = cosign.FullName,
+                    Occupation = cosign.Occupation,
+                    LookupId = cosign.LookupId,
+                    Workorganization = cosign.Workorganization,
+                    Salary = cosign.Salary,
+                    Remark = cosign.Remark,
+                    AgreementDateAm = cosign.AgreementDateAm,
+                    CreatedBy = cosign.CreatedBy,
+                    DateCreated = cosign.DateCreated,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Now,
+                    EmployeeCode =  employee?.EmployeeCode ?? string.Empty,
+                    OrgBranchName = cosign.OrgBranchName
+                };
+
+                db.Cosigns.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
                 {
-
-                    ModelState.AddModelError("", "Agreement date should be less or equal to the current date!!");
-                }
-                else
-                {
-                    var entity = new Cosign
-                    {
-                        CosignId = cosign.CosignId,
-                        EmployeeId = cosign.EmployeeId,
-                        AgreementDate = AgreementDate,
-                        FullName = cosign.FullName,
-                        Occupation = cosign.Occupation,
-                        LookupId = cosign.LookupId,
-                        Workorganization = cosign.Workorganization,
-                        Salary = cosign.Salary,
-                        Remark = cosign.Remark,
-                        AgreementDateAm = AgreementDateAm,
-                        CreatedBy = cosign.CreatedBy,
-                        DateCreated = cosign.DateCreated,
-                        ModifiedBy = User.Identity.Name,
-                        LastModified = DateTime.Now,
-                        EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == cosign.EmployeeId).FirstOrDefault().EmployeeCode,
-                        OrgBranchName = cosign.OrgBranchName
-                    };
-
-                    db.Cosigns.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Cosign", "Success", User.Identity.Name, "Emoployee Cosign of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Cosign", "Success", User.Identity.Name, "Emoployee Cosign of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
                         
-                    }
-                    #endregion
                 }
+                #endregion
+                
             }
 
             return Json(new[] { cosign }.ToDataSourceResult(request, ModelState));
@@ -343,6 +477,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(new[] { attachment }.ToDataSourceResult(request, ModelState));
         }
+
+        public ActionResult EnableOrDisable(int id)
+        {
+            var cosign = db.Cosigns.Find(id);
+
+            if (cosign == null)
+            {
+                // Record not found case
+                return Json(new
+                {
+                    Message = "Record not found.",
+                    Status = "Error"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Toggle active/inactive status
+            cosign.IsActive = !cosign.IsActive;
+            db.Entry(cosign).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Message = cosign.IsActive
+                    ? "You successfully enabled this Cosign."
+                    : "You successfully disabled this Cosign.",
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

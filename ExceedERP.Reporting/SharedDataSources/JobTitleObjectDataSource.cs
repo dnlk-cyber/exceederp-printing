@@ -18,13 +18,17 @@ namespace ExceedERP.Reporting.SharedDataSources
             List<Lookup> list = new List<Lookup> { };
 
 
-            var lookups = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            var lookups = db.Lookups
+                                .Where(x => x.LookupType == LookUpTypes.JOB_TITLE
+                                         ||x.LookupType==LookUpTypes.OLD_JOB_TITLE
+                                         ||x.LookupType==LookUpTypes.Jobtitle_External_Experience).ToList();
             if (!lookups.Any())
             {
                 return list;
             }
 
             return lookups;
+
         }
     }
 }

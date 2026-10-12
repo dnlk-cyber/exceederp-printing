@@ -12,6 +12,7 @@ using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -38,7 +39,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 Name = emergency.Name,
                 LookupId = emergency.LookupId,
                 EmployeeId = emergency.EmployeeId,
-
+                DateOfBirth = emergency.DateOfBirth,
+                DateOfBirthAm = emergency.DateOfBirthAm,
                 Remark = emergency.Remark,
                 DateCreated = emergency.DateCreated,
                 LastModified = emergency.LastModified,
@@ -54,6 +56,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult EmployeeAssociation_Create([DataSourceRequest]DataSourceRequest request, EmployeeAssociation emergency, int id)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                // Ethiopian Date Parsing (Amharic)
+                if (!string.IsNullOrWhiteSpace(emergency.DateOfBirthAm))
+                {
+                    emergency.DateOfBirth = HrHelper.ParseEthiopicDate(emergency.DateOfBirthAm);
+                }
+               
+
+               
+            }
+            else if(emergency.DateOfBirth.HasValue)
+            {
+                // Convert Gregorian to Amharic format
+                emergency.DateOfBirthAm = XAPI.EthiopicDateTime.GetEthiopicDate(
+                    emergency.DateOfBirth.Value.Day,
+                    emergency.DateOfBirth.Value.Month,
+                    emergency.DateOfBirth.Value.Year
+                );
+
+               
+            }
             if (ModelState.IsValid)
             {
                 var entity = new EmployeeAssociation
@@ -61,6 +86,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     AssociationId = emergency.AssociationId,
                     Name = emergency.Name,
                     LookupId = emergency.LookupId,
+                    DateOfBirth = emergency.DateOfBirth,
+                    DateOfBirthAm = emergency.DateOfBirthAm,
                     EmployeeId = id,
 
                     Remark = emergency.Remark,
@@ -83,6 +110,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult EmployeeAssociation_Update([DataSourceRequest]DataSourceRequest request, EmployeeAssociation emergency)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                // Ethiopian Date Parsing (Amharic)
+                if (!string.IsNullOrWhiteSpace(emergency.DateOfBirthAm))
+                {
+                    emergency.DateOfBirth = HrHelper.ParseEthiopicDate(emergency.DateOfBirthAm);
+                }
+
+
+
+            }
+            else if (emergency.DateOfBirth.HasValue)
+            {
+                // Convert Gregorian to Amharic format
+                emergency.DateOfBirthAm = XAPI.EthiopicDateTime.GetEthiopicDate(
+                    emergency.DateOfBirth.Value.Day,
+                    emergency.DateOfBirth.Value.Month,
+                    emergency.DateOfBirth.Value.Year
+                );
+
+
+            }
             if (ModelState.IsValid)
             {
                 var entity = new EmployeeAssociation
@@ -92,6 +142,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     LookupId = emergency.LookupId,
                     EmployeeId = emergency.EmployeeId,
                     Remark = emergency.Remark,
+                    DateOfBirth = emergency.DateOfBirth,
+                    DateOfBirthAm = emergency.DateOfBirthAm,
                     DateCreated = emergency.DateCreated,
                     LastModified = DateTime.Now,
                     CreatedBy = User.Identity.Name,
@@ -120,6 +172,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     LookupId = emergency.LookupId,
                     EmployeeId = emergency.EmployeeId,
                     Remark = emergency.Remark,
+                    DateOfBirth = emergency.DateOfBirth,
+                    DateOfBirthAm = emergency.DateOfBirthAm,
                     DateCreated = emergency.DateCreated,
                     LastModified = DateTime.Now,
                     CreatedBy = emergency.CreatedBy,

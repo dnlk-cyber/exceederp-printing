@@ -56,15 +56,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             result.SeverancePayablesDetails = detailList.Select(detail =>
             {
                 var emp = db.Person_Employee.Find(detail.EmployeeId);
-                string fullName = emp != null
-                    ? $"{emp.FirstNameEnglish} {emp.MiddleNameEnglish} {emp.LastNameEnglish}"
-                    : string.Empty;
+
+                string fullName = emp != null? $"{emp.FirstNameEnglish} {emp.MiddleNameEnglish} {emp.LastNameEnglish}": string.Empty;
+
+                string empCode = emp != null? $"{emp.EmployeeCode}": string.Empty;
+
                 var orgStructure = db.MainCompanyStructures.Find(detail.OrgStructureId);
                 var Branch = db.Branch.Find(detail.BranchId);
                
 
                 return new SeverancePayableDetailVM
                 {
+                    EmployeeCode = empCode,
                     EmployeeFullName = fullName,
                     Branch = Branch?.Name??string.Empty,
                     WorkUnit = orgStructure?.Name ?? string.Empty,

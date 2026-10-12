@@ -1,16 +1,97 @@
 ﻿@using ExceedERP.Core.Localization
-@using (Html.BeginForm("Upload", "EmployeeProfile", FormMethod.Post,new { enctype = "multipart/form-data" }))
-{
+@using (Html.BeginForm("Upload", "EmployeeProfile",
+        new { area = "HRM"},
+        FormMethod.Post,
+        new { enctype = "multipart/form-data", id = "uploadForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <fieldset>
+            <div class="editor-field">
+                @Html.TextBox("file", "", new {
+                    type = "file",
+                    id = "file",
+                    name = "file",
+                    accept = "image/*",
+                    capture = "environment"
+                })
+            </div>
+            <br />
+            <div class="editor-field">
+                <input type="submit" value="@Resources.HR_ActionButton_Upload" />
+            </div>
+        </fieldset>
 
-    @Html.AntiForgeryToken()
-    <fieldset>
-        <div class="editor-field">
-            @Html.TextBox("file", "", new { type = "file", @id = "file" })
-        </div>
-        <br/>
-        <div class="editor-field">
-            <input type="submit" value="@Resources.HR_ActionButton_Upload"  />
-        </div>
 
-    </fieldset>
 }
+
+@*@using (Html.BeginForm(
+        "AttachmentTemplateFiles_Create",
+        "EmployeeProfile",
+        new
+        {
+            area = "HRM",
+            attachmentReferenceType = "Photo",
+            id = "\\#=EmployeeId\\#",
+            fileOwner = "\\#=EmployeeId\\#"
+        },
+        FormMethod.Post,
+        new { enctype = "multipart/form-data", id = "uploadForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <fieldset>
+            <div class="editor-field">
+                @Html.TextBox("file", "", new {
+                    type = "file",
+                    id = "file",
+                    name = "file",
+                    multiple = "multiple",
+                    accept = "image/*",
+                    capture = "environment"
+                })
+            </div>
+            <br />
+            <div class="editor-field">
+                <input type="submit" value="@Resources.HR_ActionButton_Upload" />
+            </div>
+        </fieldset>
+    }*@
+
+
+
+
+@*@using (Html.BeginForm("Upload", "EmployeeProfile", new { area = "HRM" }, FormMethod.Post, new { enctype = "multipart/form-data", id = "uploadForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <fieldset>
+            <div class="editor-field">
+                @Html.TextBox("file", "", new {
+                       type = "file",
+                       id = "file",
+                       accept = ".jpg,.jpeg,.png,.gif", // ✅ Restrict file chooser to image files only
+                       capture = "environment" // or "user" for front camera
+           })
+            </div>
+            <br />
+            <div class="editor-field">
+                <input type="submit" value="@Resources.HR_ActionButton_Upload" />
+            </div>
+        </fieldset>
+    }*@
+
+@*@using ExceedERP.Core.Localization
+    @using (Html.BeginForm("Upload", "EmployeeProfile", new { area = "HRM" }, FormMethod.Post, new { enctype = "multipart/form-data", id = "uploadForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <fieldset>
+            <div class="editor-field">
+                @Html.TextBox("file", "", new { type = "file", @id = "file" })
+            </div>
+            <br />
+            <div class="editor-field">
+                <input type="submit" value="@Resources.HR_ActionButton_Upload" />
+            </div>
+        </fieldset>
+    }*@
+
+
+

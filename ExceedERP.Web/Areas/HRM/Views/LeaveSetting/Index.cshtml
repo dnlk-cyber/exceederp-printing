@@ -15,7 +15,8 @@
               // columns.Bound(c => c.PreviousValue);
               // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYeaer"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
               columns.Bound(c => c.Remark);
-              columns.Command(command => {
+              columns.Command(command => 
+              {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                   command.Destroy().Text(Resources.ActionButton_Cancel);
               }).Width(200);
@@ -48,10 +49,10 @@
 
               })
               .Model(model => model.Id(p => p.ConfigurationId))
-              .Read(read => read.Action("Configurations_Read", "LeaveSetting"))
-              .Create(create => create.Action("Configurations_Create", "LeaveSetting"))
-              .Update(update => update.Action("Configurations_Update", "LeaveSetting"))
-              .Destroy(destroy => destroy.Action("Configurations_Destroy", "LeaveSetting"))
+              .Read(read => read.Action("Configurations_Read", "LeaveSetting").Data("sendForgery"))
+              .Create(create => create.Action("Configurations_Create", "LeaveSetting").Data("sendForgery"))
+              .Update(update => update.Action("Configurations_Update", "LeaveSetting").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("Configurations_Destroy", "LeaveSetting").Data("sendForgery"))
           )
 )
 <br/>
@@ -59,7 +60,7 @@
 <div class="row">
     <div class="col-md-6 col-sm-6 col-lg-6">
 
-        <legend>@Resources.Leave_new_declaration_start_year</legend>
+        <legend>@Resources.Leave_new_declaration_start_year <text> this also used for Increemental year setting</text></legend>
 
         @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveNewAwajStartYear>()
           .Name("LeaveNewAwajStartYearGrid")
@@ -97,10 +98,10 @@
                    events.RequestEnd("onRequestEnd(\"LeaveNewAwajStartYearGrid\")");
                })
               .Model(model => model.Id(p => p.LeaveNewAwajStartYearId))
-              .Read(read => read.Action("LeaveNewAwajStartYears_Read", "LeaveNewAwajStartYears"))
-              .Create(create => create.Action("LeaveNewAwajStartYears_Create", "LeaveNewAwajStartYears"))
-              .Update(update => update.Action("LeaveNewAwajStartYears_Update", "LeaveNewAwajStartYears"))
-              .Destroy(destroy => destroy.Action("LeaveNewAwajStartYears_Destroy", "LeaveNewAwajStartYears"))
+              .Read(read => read.Action("LeaveNewAwajStartYears_Read", "LeaveNewAwajStartYears").Data("sendForgery"))
+              .Create(create => create.Action("LeaveNewAwajStartYears_Create", "LeaveNewAwajStartYears").Data("sendForgery"))
+              .Update(update => update.Action("LeaveNewAwajStartYears_Update", "LeaveNewAwajStartYears").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("LeaveNewAwajStartYears_Destroy", "LeaveNewAwajStartYears").Data("sendForgery"))
           )
         )
 
@@ -148,10 +149,10 @@
                    events.RequestEnd("onRequestEnd(\"LeaveEntitleStartingDateGrid\")");
                })
               .Model(model => model.Id(p => p.LeaveEntitleStartingDateId))
-              .Read(read => read.Action("LeaveEntitleStartingDate_Read", "LeaveEntitleStartingDate"))
-          .Create(create => create.Action("LeaveEntitleStartingDate_Create", "LeaveEntitleStartingDate"))
-          .Update(update => update.Action("LeaveEntitleStartingDate_Update", "LeaveEntitleStartingDate"))
-          .Destroy(destroy => destroy.Action("LeaveEntitleStartingDate_Destroy", "LeaveEntitleStartingDate"))
+              .Read(read => read.Action("LeaveEntitleStartingDate_Read", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Create(create => create.Action("LeaveEntitleStartingDate_Create", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Update(update => update.Action("LeaveEntitleStartingDate_Update", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeaveEntitleStartingDate_Destroy", "LeaveEntitleStartingDate").Data("sendForgery"))
           )
         )
 

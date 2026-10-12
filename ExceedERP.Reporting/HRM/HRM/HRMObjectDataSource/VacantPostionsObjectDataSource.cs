@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
@@ -7,11 +7,13 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
+using System.Threading;
+using System;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class VacantPostionsObjectDataSource : VacantPostions
+    public class VacantPostionsObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -22,8 +24,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<Person_Employee> employees;
 
             VacantPostions = new VacantPostions();
-
+            //var cultureName = Thread.CurrentThread.CurrentCulture.Name;
+            var cultureName = GlobalHelper.GetCurrentCulture();
             employees = HrHelper.PersonEmployeesOneBranch(branchId, org, "");
+          
 
             var toBepostions = db.JobTitleMapping.ToList();
             var currentStaff = db.Placements.Where(x => x.isCurrent).ToList();
@@ -54,12 +58,27 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             VacantPostions.NumberOfMaleEmployee = currentStaff.Where(x => males.Contains(x.EmployeeId)).Count();
             VacantPostions.NumberOfFemaleEmployee = currentStaff.Where(x => females.Contains(x.EmployeeId)).Count();
-                       
+            VacantPostions.Status = "";          
 
             VacantPostions.TotalEmployee = VacantPostions.NumberOfFemaleEmployee + VacantPostions.NumberOfMaleEmployee;
             VacantPostions.VacantPos = VacantPostions.ToBeStaff - VacantPostions.TotalEmployee;
-
+            if(VacantPostions.VacantPos < 0&&(cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et"))
+            {
+                VacantPostions.Status = "ከተፈቀደው በላይ የተመደበ";
+            }
+            if (VacantPostions.VacantPos < 0 && (cultureName.ToLower() == "om" ))
+            {
+                VacantPostions.Status = "ol kaa’ameera";
+            }
+            if (VacantPostions.VacantPos < 0 && (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us"))
+            {
+                VacantPostions.Status = "over Placed";
+            }
             return VacantPostions;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

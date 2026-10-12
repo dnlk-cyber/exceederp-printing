@@ -148,7 +148,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             else
             {
 
-                termination.TerminationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.TerminationDate.Day, termination.TerminationDate.Month, termination.TerminationDate.Year);
+                termination.TerminationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.TerminationDate.Value.Day, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Year);
                 termination.ApplicationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.ApplicationDate.Day, termination.ApplicationDate.Month, termination.ApplicationDate.Year);
 
             }
@@ -162,7 +162,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             }
             
-           if (termination.TerminationDate.Date < termination.ApplicationDate.Date)
+           if (termination.TerminationDate.Value.Date < termination.ApplicationDate.Date)
            {
                 ModelState.AddModelError("", "Please check the date, Applicaton date should be less than Termination Date!!");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
@@ -176,7 +176,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
 
             }
-            var diff = (termination.TerminationDate - termination.ApplicationDate).TotalDays;
+            var diff = (termination.TerminationDate.Value - termination.ApplicationDate).TotalDays;
             if (diff < 30&&!termination.IsAgreeRetunSalary)
             {
                 ModelState.AddModelError("", "Your termination request date length is less than 30. You need  to agree to return one month salary to finance!!");
@@ -246,7 +246,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             else
             {
-                termination.TerminationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.TerminationDate.Day, termination.TerminationDate.Month, termination.TerminationDate.Year);
+                termination.TerminationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.TerminationDate.Value.Day, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Year);
                 termination.ApplicationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.ApplicationDate.Day, termination.ApplicationDate.Month, termination.ApplicationDate.Year);
             }
 
@@ -257,7 +257,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 ModelState.AddModelError("", "This employee already request the termination!!");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
             }
-            if (termination.TerminationDate.Date < termination.ApplicationDate.Date)
+            if (termination.TerminationDate.Value.Date < termination.ApplicationDate.Date)
             {
                 ModelState.AddModelError("", "Please check the date, Applicaton date should be less than Termination Date!!");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
@@ -267,7 +267,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
             }
-            var diff = (termination.TerminationDate - termination.ApplicationDate).TotalDays;
+            var diff = (termination.TerminationDate.Value - termination.ApplicationDate).TotalDays;
             if (diff < 30 && !termination.IsAgreeRetunSalary)
             {
                 ModelState.AddModelError("", "Your termination request date length is less than 30. You need to return one month salary to finance!!");
@@ -332,7 +332,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         EmployeeId = termination.EmployeeId,
                         LookupId = termination.LookupId,
                         Reason = termination.Reason,
-                        ApplicationDate = new DateTime(termination.TerminationDate.Year, termination.TerminationDate.Month, termination.TerminationDate.Day),
+                        ApplicationDate = new DateTime(termination.TerminationDate.Value.Year, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Day),
                         TerminationDate = termination.TerminationDate,
                         Remark = termination.Remark,
                         EmployeeCode = termination.EmployeeCode,

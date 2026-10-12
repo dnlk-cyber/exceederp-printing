@@ -3,82 +3,100 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class NotifyRetirmentObjectDataSource : List<EmployeeRetirment>
+    public class NotifyRetirmentObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeRetirment> GetNotifyRetirmentSummary(string value, string branchId, string orgStructureId)
+        public List<EmployeeRetirment> GetNotifyRetirmentSummary(DateTime? from, DateTime? to, string branchId, string orgStructureId)
         {
             List<EmployeeRetirment> list = new List<EmployeeRetirment>();
-            EmployeeRetirment employee = new EmployeeRetirment();
             db = new ExceedDbContext();
-            List<Person_Employee> emplist = db.Person_Employee.ToList();
-
-            var placements = db.Placements.ToList();
-
-            if(branchId != null)
+            var emplist = db.Person_Employee.Where(x => x.IsActive).ToList();
+            // Filter by branchId
+            if (!string.IsNullOrEmpty(branchId) && int.TryParse(branchId, out int braId))
             {
-                int.TryParse(branchId, out int braId);
-                var empIds = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).Select(x=>x.EmployeeId).ToList();
+                var empIds = db.Placements.Where(x=>x.BranchId== braId&&x.isCurrent).Select(x => x.EmployeeId);
                 emplist = emplist.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-            if(orgStructureId != null)
+            // Filter by orgStructureId
+            if (!string.IsNullOrEmpty(orgStructureId) && int.TryParse(orgStructureId, out int orgId))
             {
-                int.TryParse(orgStructureId, out int orgId);
-                var empIds = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId).Select(x => x.EmployeeId).ToList();
+                var empIds = db.Placements.Where(x => x.OrgStructureId == orgId && x.isCurrent).Select(x => x.EmployeeId);
                 emplist = emplist.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-
-            if (value != null)
+            // Get retirement age configuration
+            var validator = db.Configurations.FirstOrDefault(x => x.Attribute == "RETIREMENT_AGE");
+            if (validator == null)
             {
-                int retirementAge = 0;
-                var validator = db.Configurations.Where(x => x.Attribute == "RETIREMENT_AGE").FirstOrDefault();
-                if (validator != null)
+                return new List<EmployeeRetirment>(); // No retirement age configured
+            }
+            int retirementAge = Convert.ToInt32(validator.CurrentValue);
+            // Filter by retirement date range
+            DateTime fromDate = from ?? DateTime.Now;
+            DateTime toDate = to ?? DateTime.Now.AddDays(10);
+            emplist = emplist.Where(x=>!x.IsReHired).Where(x =>
+                (retirementAge - (fromDate - x.DateOfBirth).TotalDays / 365) > 0 &&
+                (retirementAge - (toDate - x.DateOfBirth).TotalDays / 365) < 0).ToList();
+
+            foreach (var emp in emplist)
+            {
+               var  employee = new EmployeeRetirment();
+                employee.FullName = emp.FullNameAmharic;
+                employee.IdNumber = emp.EmployeeCode;
+                if (emp.Gender == Gender.MALE)
                 {
-                    retirementAge = Convert.ToInt32(validator.CurrentValue);
-
-                    foreach (var emp in emplist)
-                    {
-                        employee = new EmployeeRetirment();
-                        int x = (DateTime.Now - emp.DateOfBirth).Days / 365;
-                        int y = retirementAge - x;
-                        if (y <= Convert.ToInt32(value))
-                        {
-                            employee.FullName = emp.FullNameAmharic;
-                            employee.IdNumber = emp.EmployeeCode;
-
-                            if (emp.Gender == Gender.MALE)
-                            {
-                                employee.Sex = "ወንድ";
-                            }
-                            else
-                            {
-                                employee.Sex = "ሴት";
-                            }
-
-                            var retireYear = emp.DateOfBirth.AddYears(60);
-
-                            employee.RemainingDays = retireYear.Subtract(DateTime.Today).TotalDays.ToString();
-
-                            DateTime date = emp.DateOfBirth.AddYears(retirementAge);
-
-                            employee.RetirmentDate = XAPI.EthiopicDateTime.GetEthiopicDate(date.Day, date.Month, date.Year);
-                            employee.BirthDate = emp.DateOfBirthAm;
-                            list.Add(employee);
-                        }
-                    }
+                    //employee.Sex = "ወንድ";
+                    employee.Sex = HrHelper.GetGender(emp.Gender);
                 }
+                else
+                {
+                    //employee.Sex = "ሴት";
+                    employee.Sex = HrHelper.GetGender(emp.Gender);
+                    
+                }
+                var retireYear = emp.DateOfBirth.AddYears(retirementAge);
+                employee.RemainingDays = Math.Round(retireYear.Subtract(DateTime.Now).TotalDays,2).ToString();
+                DateTime retirementDate = emp.DateOfBirth.AddYears(retirementAge);
+                employee.RetirmentDate = XAPI.EthiopicDateTime.GetEthiopicDate(retirementDate.Day, retirementDate.Month, retirementDate.Year);
+                employee.BirthDate = emp.DateOfBirthAm;
+                list.Add(employee);
+
             }
             return list;
+            // Generate the retirement summary
+            //var retirementList = emplist.ToList().Select(emp =>
+            //{
+            //    var employee = new EmployeeRetirment
+            //    {
+            //        FullName = emp.FullNameAmharic,
+            //        IdNumber = emp.EmployeeCode,
+            //        Sex = HrHelper.GetGender(emp.Gender),
+            //        BirthDate = emp.DateOfBirthAm
+            //    };
+
+            //    DateTime retirementDate = emp.DateOfBirth.AddYears(retirementAge);
+            //    employee.RemainingDays = retirementDate.Subtract(DateTime.Today).TotalDays.ToString();
+            //    employee.RetirmentDate = XAPI.EthiopicDateTime.GetEthiopicDate(retirementDate.Day, retirementDate.Month, retirementDate.Year);
+
+            //    return employee;
+            //}).ToList();
+
+            //return retirementList;
+
+
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

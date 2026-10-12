@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-   public class ChangeOfPayrollObjectDataSource
-    {
+   public class ChangeOfPayrollObjectDataSource:IDisposable
+   {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<ChangeOfPayrollVM> GetChangeOfPayroll(string id, bool header)
@@ -102,7 +102,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             }
 
-            if (!String.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id))
             {
                 int did = int.Parse(id);
                 var placement = db.Placements.Find(did);
@@ -111,8 +111,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
                     if (person != null)
                     {
-                        changeOfPayroll.FullName = person.FullNameaEnglish;
+                        changeOfPayroll.FullName = $"{person.FirstNameEnglish} {person.MiddleNameEnglish} {person.LastNameEnglish}";
+                        changeOfPayroll.FullNameAmharic = $"{person.FirstName} {person.MiddleName} {person.LastName}";
                         changeOfPayroll.EmpCode = person.EmployeeCode;
+                        changeOfPayroll.HiredDate = person.HiredDateAmharic;
                     }
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == placement.BranchId);
                     if (branch != null)
@@ -160,5 +162,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             return changeOfPayrolls;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
     }
 }

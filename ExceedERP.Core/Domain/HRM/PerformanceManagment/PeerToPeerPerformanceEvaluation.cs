@@ -19,6 +19,7 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public int EmployeeId { get; set; }
         [Display(Name = "Is Asignment Approved")]
         public bool IsAsignmentApproved { get; set; }
+        public string Remark { get; set; }
         public int PerformanceRequestPeriodId { get; set; }
         public virtual PerformanceRequestPeriod PerformanceRequest { get;set;}
 

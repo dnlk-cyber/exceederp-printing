@@ -117,7 +117,161 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Evaluation Criteria Name </value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>Evalution Type</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>Sub -Criteria</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>Action  Name</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="textBox32.Value" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="txtApprover.Value" xml:space="preserve">
+    <value>Second Level Approver </value>
+  </data>
+  <data name="txtApproverName.Value" xml:space="preserve">
+    <value>Name፡-</value>
+  </data>
+  <data name="txtApprovalDate.Value" xml:space="preserve">
+    <value>Date፡-</value>
+  </data>
+  <data name="txtApproverSign.Value" xml:space="preserve">
+    <value>Sign፡-</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.SecondLevelApproverApprover</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>_________________________________</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>_________________________________</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>________________________</value>
+  </data>
+  <data name="txtSign.Value" xml:space="preserve">
+    <value>Sign፡-</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>_______________</value>
+  </data>
+  <data name="txtSignDate.Value" xml:space="preserve">
+    <value>Date፡-</value>
+  </data>
+  <data name="txtCommentFromEvaluator.Value" xml:space="preserve">
+    <value>Comments for the Employee (By Immidiet Supervisor):  {Fields.ImmidiateApprover}</value>
+  </data>
+  <data name="htmlTextBox2.Value" xml:space="preserve">
+    <value>&lt;p&gt;Employee needed to Improve &lt;/p&gt;&lt;p&gt;________________________________________________________________________________________________________________________________________&lt;/p&gt;</value>
+  </data>
+  <data name="htmlTextBox3.Value" xml:space="preserve">
+    <value>&lt;p&gt;Employee&amp;nbsp;Comment :- &lt;/p&gt;&lt;p&gt;&amp;nbsp;_______________________________________________________________________________________________________________________________________________&lt;/p&gt;</value>
+  </data>
   <data name="htmlTextBox1.Value" xml:space="preserve">
-    <value>&lt;p&gt;Name : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.FullName}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; Department&amp;nbsp;: &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Department}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp;Jobtitle : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Jobtitle}&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Branch : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Branch}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp;Year : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.Year}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; Period : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Period}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp; &lt;/p&gt;&lt;p&gt;Evaluation Name : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.EvaluationCriteriaName}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp; Evaluation Type : &amp;nbsp;&lt;u&gt;&lt;strong&gt;{Fields.EvaluationType}&lt;/strong&gt;&lt;/u&gt;&amp;nbsp; &lt;/p&gt;&lt;p&gt;Role :&amp;nbsp;&lt;strong&gt;&lt;u&gt;{Fields.Role}&lt;/u&gt;&lt;/strong&gt;&amp;nbsp; Weight :&amp;nbsp;&lt;u&gt;&lt;strong&gt;{Fields.Weight}&lt;/strong&gt;&lt;/u&gt;&amp;nbsp; Result : &lt;strong&gt;&lt;u&gt;{Fields.Result}&lt;/u&gt;&lt;/strong&gt;&amp;nbsp; &lt;/p&gt;</value>
+    <value>&lt;p&gt;&amp;nbsp;&amp;nbsp; Name : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.FullName}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Jobtitle :&lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.Jobtitle}&lt;/strong&gt;&lt;strong&gt;&lt;span style="text-decoration: underline"&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&amp;nbsp; Department&amp;nbsp;: &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Department}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Branch : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Branch}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp; Year :{Parameters.year.Label}&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Period : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Parameters.period.Label}&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>= Fields.EvaluationCriteriaName</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>= Sum(Fields.Weight)</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Sum(Fields.Result)</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= RowNumber("table3")</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>= Fields.EvaluationType</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>= RowNumber("table6")</value>
+  </data>
+  <data name="textBox56.Value" xml:space="preserve">
+    <value>= Fields.ActionName</value>
+  </data>
+  <data name="textBox58.Value" xml:space="preserve">
+    <value>= Fields.Weight</value>
+  </data>
+  <data name="textBox59.Value" xml:space="preserve">
+    <value>= Fields.Score</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Sum(Fields.Weight)</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Sum(Fields.Score)</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.MeasurmentName</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= RowNumber("table4")</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>=Fields.Period</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>=Fields.Role</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>Result out of 100 </value>
+  </data>
+  <data name="textBox41.Value" xml:space="preserve">
+    <value>=Sum(Fields.Result) / Sum(Fields.Weight) * 100
+</value>
+  </data>
+  <data name="textBox33.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Criteria</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Employee </value>
   </data>
 </root>

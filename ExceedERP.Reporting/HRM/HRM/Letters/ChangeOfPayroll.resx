@@ -117,4 +117,130 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>Allowance Type</value>
+  </data>
+  <data name="textBox32.Value" xml:space="preserve">
+    <value>Allowance Name</value>
+  </data>
+  <data name="textBox34.Value" xml:space="preserve">
+    <value>Measurment</value>
+  </data>
+  <data name="textBox36.Value" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>Employe ID</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>JobTitle</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>= Fields.EmpCode</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>= Fields.Branch</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.Department</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>= Fields.JobTitle</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>Assignment Type</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>Assignment Date</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>Step</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>Salary</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.AssignmentType</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>= Fields.AssignmentDate</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>= Fields.Rank</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>= Fields.Step</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Fields.Salary</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= RowNumber("table1")</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>= Fields.BenfitType</value>
+  </data>
+  <data name="textBox33.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox35.Value" xml:space="preserve">
+    <value>= Fields.MeasureType</value>
+  </data>
+  <data name="textBox37.Value" xml:space="preserve">
+    <value>= Fields.Amount</value>
+  </data>
+  <data name="textBox39.Value" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="textBox38.Value" xml:space="preserve">
+    <value>_________________</value>
+  </data>
+  <data name="textBox41.Value" xml:space="preserve">
+    <value>Sign</value>
+  </data>
+  <data name="textBox40.Value" xml:space="preserve">
+    <value>_________________</value>
+  </data>
+  <data name="textBox43.Value" xml:space="preserve">
+    <value>Prepared By</value>
+  </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>= Fields.PreparedBy</value>
+  </data>
+  <data name="textBox45.Value" xml:space="preserve">
+    <value>Approved By</value>
+  </data>
+  <data name="textBox44.Value" xml:space="preserve">
+    <value>= Fields.ApprovedBy</value>
+  </data>
+  <data name="textBox47.Value" xml:space="preserve">
+    <value>Placement</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Header</value>
+  </data>
 </root>

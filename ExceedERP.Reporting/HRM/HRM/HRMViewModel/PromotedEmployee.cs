@@ -8,6 +8,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public int No { get; set; }
      
         public string RecruitmentType { get; set; }
+        public string EmployeeCode { get; set; }
         public string ApplicantName { get; set; }
         public string Perfromance { get; set; }
         public string TotalYear { get; set; }
@@ -24,10 +25,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public int DYear { get; set; }
         public string IntExp { get; set; }
         public string ExtExp { get; set; }
-       
         public int DMonth { get; set; }
         public int DDays { get; set; }
         public int OtherYear { get; set; }
+        public string Age { get; set; }
+        public string DateOfBirth { get; set; }
         public int OtherMonth { get; set; }
         public int OtherDays { get; set; }
     }

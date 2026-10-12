@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class DeligationODS
+    public class DeligationODS:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -163,12 +163,20 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     delg.Reason = delegReason.Reason;
                 }
 
-              
+                //var period = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == deligation.GLPeriodId);
+                //if (period != null)
+                //{
+                //    delg.Period = period.Name;
+                //}
                 delg.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year);
                 singleDeligation.Add(delg);
             }
 
             return singleDeligation;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

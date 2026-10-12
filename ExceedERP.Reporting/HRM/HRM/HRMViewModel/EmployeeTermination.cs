@@ -9,7 +9,10 @@
         public string JobTitle { get; set; }
         public string Branch { get; set; }
         public string Reason { get; set; }
+        public string AssignmentDate { get; set; }
         public string TerminationDate { get; set; }
+        public string EducationField { get; set; }
+        public string EducationLevel { get; set; }
 
     }
 }

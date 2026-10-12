@@ -1,251 +1,256 @@
 ﻿@using System.Collections
 @using ExceedERP.Helpers.Common
-@using ExceedERP.Core.Domain.Common
 @using Kendo.Mvc.UI
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
 @model ExceedERP.Core.Domain.HRM.SelfCare.LeaveRequest
 
-@using ExceedERP.Core.Localization
 @{
-    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? false;
 }
-<div class="form">
-    <div class="row fullrow">
-        <div class="col-md-4 ro1">
-            <div class="form-group">
 
-                <div class="col-md-6">
+<style>
+    /* Full modal width constraint */
+    div.k-edit-form-container {
+        width: 100% !important;
+        max-width: 1100px !important;
+        padding: 10px 20px !important;
+    }
 
+    .lr-popup-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
 
-                    @(Html.CheckBoxFor(m => m.IsForOther, htmlAttributes: new { @onchange = "SetEmployee(this)" })
+    .lr-col-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
 
-                    )
-                    @Html.LabelFor(model => model.IsForOther, htmlAttributes: new { @class = "control-label col-md-8" })
-                    @Html.ValidationMessageFor(model => model.IsForOther, "", new { @class = "text-danger" })
+    .lr-card-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #1f2937;
+        border-bottom: 2px solid #f3f4f6;
+        padding-bottom: 6px;
+        margin-bottom: 12px;
+    }
+
+    .lr-field {
+        margin-bottom: 10px;
+    }
+
+        .lr-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 3px;
+        }
+
+        .lr-field input[type="text"],
+        .lr-field select,
+        .lr-field textarea {
+            width: 100% !important;
+        }
+
+    .et-picker-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .et-picker-wrap input {
+            background-color: #fff !important;
+            cursor: pointer;
+        }
+
+        .et-picker-wrap img {
+            cursor: pointer;
+        }
+
+    .balance-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+
+        .balance-box .lr-field {
+            margin-bottom: 6px;
+        }
+
+            .balance-box .lr-field:last-child {
+                margin-bottom: 0;
+            }
+</style>
+
+<div class="lr-popup-grid">
+
+    <!-- Column 1: Requester & Setup -->
+    <div class="lr-col-card">
+        <div class="lr-card-title"><i class="fa fa-user"></i> Requester Profile</div>
+
+        <div class="lr-field">
+            <label style="cursor: pointer; font-size: 12px; color: #166534;">
+                @Html.CheckBoxFor(m => m.IsForOther, new { onchange = "SetEmployee(this)" })
+                <strong>Is for other employee?</strong>
+            </label>
+        </div>
+
+        <div class="lr-field">
+            @Html.LabelFor(model => model.EmployeeId, "Employee")
+            @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                        .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                        .Events(e => e.Change("GetTotalBalance"))
+                        .OptionLabel(Resources.Select)
+                        .Filter("contains")
+                        .MinLength(2)
+                        .HtmlAttributes(new { style = "width:100%" })
+                        .DataSource(source => source.Read(read => read.Action("GetEmployeesAskForOther", "HRMDataProvider")).ServerFiltering(false))
+                        .Enable(false)
+                        .ValuePrimitive(true)
+            )
+            @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger small" })
+        </div>
+
+        <div class="lr-field">
+            @Html.LabelFor(model => model.Type, "Leave Type")
+            @(Html.EnumDropDownListFor(m => m.Type, new { @class = "form-control input-sm", style = "width:100%" }))
+            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger small" })
+        </div>
+
+        <div class="lr-field">
+            @Html.LabelFor(model => model.LeaveActionTypes, "Leave Action Type")
+            @(Html.EnumDropDownListFor(m => m.LeaveActionTypes, new { @class = "form-control input-sm", style = "width:100%" }))
+            @Html.ValidationMessageFor(model => model.LeaveActionTypes, "", new { @class = "text-danger small" })
+        </div>
+    </div>
+
+    <!-- Column 2: Date & Time Configuration -->
+    <div class="lr-col-card">
+        <div class="lr-card-title"><i class="fa fa-calendar"></i> Date & Duration</div>
+
+        @if (useEthiopian)
+        {
+            <div class="lr-field">
+                @Html.LabelFor(model => model.FromAmharic, "From (Ethiopic)")
+                <div class="et-picker-wrap">
+                    @Html.TextBoxFor(model => model.FromAmharic, new { onchange = "GetTotalBalance()", @readonly = "readonly", @class = "form-control input-sm et-popup-picker", placeholder = "DD/MM/YYYY" })
+                    <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this); setTimeout(GetTotalBalance, 300);" alt="Calendar" />
                 </div>
-
+                @Html.ValidationMessageFor(model => model.FromAmharic, "", new { @class = "text-danger small" })
             </div>
-            @*<div class="col-md-3">
-                    <div class="form-group">
-                        <label>   <input type="checkbox" name="IsUser" title="Is By Logged in User?" onchange="SetEmployee(this)"> Resoou</label>
-                    </div>
-                </div>*@
-            <div class="form-group">
-                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                                                  //  .Name("EmployeeId")
-                                                  .DataValueField("PersonId")
-                                                  .DataTextField("FullName")
-                                                  .OptionLabel(Resources.Select)
-                                                  .Filter("contains")
-                                                  .MinLength(2)
-                                                  //.CascadeFrom("IsForOther")
-                                                  .HtmlAttributes(new { style = "width:200px" })
-                                                  .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
-                                                  .DataSource(source =>
-                                                  {
-                                                      source.Read(read =>
-                                                      {
-                                                          read.Action("GetEmployeesAskForOther", "HRMDataProvider");
-                                                              //.Data("IsforOthers");
-                                                          })
-                                                          .ServerFiltering(false);
-                                                  })
-                                                  .Enable(false)
-                                                  .ValuePrimitive(true)
 
-
-                                                  .Height(400)
-                                                  .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
-                                                                  "<span>Photo</span>" +
-                                                                  "<span>Full Name</span>" +
-                                                                  "</div>")
-                                                  .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#." + "#:data.ImageType#" + ");'></div>" +
-                                                            "<div class='Employee-name'>#:FullName#</div>")
-                    )
-
-
-
+            <div class="lr-field">
+                @Html.LabelFor(model => model.ToAmharic, "To (Ethiopic)")
+                <div class="et-picker-wrap">
+                    @Html.TextBoxFor(model => model.ToAmharic, new { onchange = "GetTotalBalance()", @readonly = "readonly", @class = "form-control input-sm et-popup-picker", placeholder = "DD/MM/YYYY" })
+                    <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this); setTimeout(GetTotalBalance, 300);" alt="Calendar" />
                 </div>
-
+                @Html.ValidationMessageFor(model => model.ToAmharic, "", new { @class = "text-danger small" })
+            </div>
+        }
+        else
+        {
+            <div class="lr-field">
+                @Html.LabelFor(model => model.From, "From Date")
+                @(Html.Kendo().DatePickerFor(model => model.From)
+                            .Name("From")
+                            .Events(e => e.Change("GetTotalBalanceGord"))
+                            .HtmlAttributes(new { style = "width:100%" }))
+                @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger small" })
             </div>
 
-
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.EnumDropDownListFor(m => m.Type, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 180px" })
-                            //.DataTextField("Text")
-                            //.DataValueField("Value")
-                            //         .ValuePrimitive(true)
-                            //.BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.LeaveType)))
-                    )
-                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-                </div>
+            <div class="lr-field">
+                @Html.LabelFor(model => model.To, "To Date")
+                @(Html.Kendo().DatePickerFor(model => model.To)
+                            .Name("To")
+                            .Events(e => e.Change("GetTotalBalanceGord"))
+                            .HtmlAttributes(new { style = "width:100%" }))
+                @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger small" })
             </div>
+        }
 
-            @*<div class="form-group">
-                    @Html.LabelFor(model => model.GlFiscalYearId, htmlAttributes: new { @class = "control-label col-md-8" })
-                    <div class="col-md-6">
-                        @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
-                                              .AutoBind(false)
-                                              .OptionLabel(Resources.Select)
-                                              .DataSource(dataSource =>
-                                              {
-                                                  dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
-                                                      .ServerFiltering(false);
-                                              })
-                                              .DataTextField("Name")
-                                              .DataValueField("GlFiscalYearId")
-                                              .HtmlAttributes(new { style = "width:200px" })
-                                              .ValuePrimitive(true)
-                                              .Events(e => e.Change("GetBalance"))
-                        )
-                    </div>
-                </div>*@
+        <div class="lr-field">
+            @Html.LabelFor(model => model.Day, "Day")
+            @(Html.Kendo().DropDownListFor(model => model.Day)
+                        .ValuePrimitive(true)
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Events(e => e.Change("GetRequestedAmount"))
+                        .BindTo(EnumExtension.EnumToSelectList(typeof(LeaveDay)))
+                        .HtmlAttributes(new { style = "width:100%" })
+            )
+        </div>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.Day, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(model => model.Day)
-                                             .ValuePrimitive(true)
-                                             .DataTextField("Text")
-                                             .DataValueField("Value")
-                                             .BindTo(EnumExtension.EnumToSelectList(typeof(LeaveDay)))
-                    )
-                    @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
-                </div>
+        <div class="lr-field">
+            @Html.LabelFor(model => model.MorningOrAfternoon, "Time / Segment")
+            @(Html.Kendo().DropDownListFor(model => model.MorningOrAfternoon)
+                        .ValuePrimitive(true)
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Events(e => e.Change("GetRequestedAmount"))
+                        .BindTo(EnumExtension.EnumToSelectList(typeof(MorningOrAfternoon)))
+                        .HtmlAttributes(new { style = "width:100%" })
+            )
+        </div>
+
+        <div class="row showTime" style="display:none; margin: 0 -5px;">
+            <div class="col-xs-6" style="padding: 0 5px;">
+                <label style="font-size: 10px;">From Time</label>
+                @(Html.Kendo().TimePickerFor(model => model.FromTime).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+            <div class="col-xs-6" style="padding: 0 5px;">
+                <label style="font-size: 10px;">To Time</label>
+                @(Html.Kendo().TimePickerFor(model => model.ToTime).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
-        <div class="col-md-4 ro1">
-            <div class="row"></div><br /><br />
-            <div class="form-group">
-                @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-10">
+    </div>
 
-                    @Html.Kendo().TextBoxFor(model => model.Reason)
-                    @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
-                </div>
+    <!-- Column 3: Balance & Justification -->
+    <div class="lr-col-card">
+        <div class="lr-card-title"><i class="fa fa-calculator"></i> Balances & Reason</div>
+
+        <div class="balance-box">
+            <div class="lr-field">
+                <label class="text-muted" style="font-size: 10px;">LEAVE BALANCE</label>
+                @(Html.Kendo().TextBoxFor(model => model.LeaveBalance).Enable(false).HtmlAttributes(new { style = "width:100%; font-weight:700; background:#f1f5f9;" }))
             </div>
-            @if (useEthiopian)
-            {
-                <div class="form-group">
-                    @Html.LabelFor(model => model.FromAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.FromAmharic, htmlAttributes: new { onchange = "GetExactDerevedLeavedays()", @*disabled = "disabled"*@  @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
 
-                        @Html.ValidationMessageFor(model => model.FromAmharic, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.ToAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
-                    <div class="col-md-10">
+            <div class="lr-field">
+                <label class="text-muted" style="font-size: 10px;">EXACT DESERVE LEAVE DAYS</label>
+                @(Html.Kendo().TextBoxFor(model => model.ExactDeserveLeaveDays).Enable(false).HtmlAttributes(new { style = "width:100%; font-weight:700; background:#f1f5f9;" }))
+            </div>
 
-
-                        @Html.TextBoxFor(model => model.ToAmharic, htmlAttributes: new { onchange = "GetExactDerevedLeavedays()" @*disabled = "disabled"*@, @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
-
-                        @Html.ValidationMessageFor(model => model.ToAmharic, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-            }
-            else
-            {
-                <div class="form-group">
-                    @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-8" })
-
-                    <div class="col-md-10">
-
-                        @Html.Kendo().DatePickerFor(model => model.From)
-                        @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-8" })
-
-                    <div class="col-md-10">
-
-                        @Html.Kendo().DatePickerFor(model => model.To)
-                        @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-            }
-            <div class="form-group">
-                @Html.LabelFor(model => model.MorningOrAfternoon, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-10">
-                    @(Html.Kendo().DropDownListFor(model => model.MorningOrAfternoon)
-                                                          .ValuePrimitive(true)
-                                                          .DataTextField("Text")
-                                                          .DataValueField("Value")
-
-                                                                  .BindTo(EnumExtension.EnumToSelectList(typeof(MorningOrAfternoon)))
-                    )
-                    @Html.ValidationMessageFor(model => model.MorningOrAfternoon, "", new { @class = "text-danger" })
-                </div>
+            <div class="lr-field">
+                <label class="text-muted" style="font-size: 10px;">REQUESTED LEAVE DAYS</label>
+                @(Html.Kendo().TextBoxFor(model => model.LeaveDays)
+                              .Enable(false) // Initially disabled
+                              .HtmlAttributes(new { id = "LeaveDays", style = "width:100%; font-weight:700; color:#dc2626; background:#fef2f2;" }))
             </div>
 
         </div>
-        <div class="col-md-3 ro1">
-            <div class="row"></div><br /><br />
-            <div class="form-group">
-                @Html.LabelFor(model => model.LeaveBalance, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().TextBoxFor(model => model.LeaveBalance).Enable(false))
-                    @Html.ValidationMessageFor(model => model.LeaveBalance, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.LeaveDays, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().TextBoxFor(model => model.LeaveDays)
-                                                  .Enable(false))
-                    @Html.ValidationMessageFor(model => model.LeaveDays, "", new { @class = "text-danger" })
-                </div>
-            </div>
 
+        <div class="lr-field">
+            @Html.LabelFor(model => model.Reason, "Detail Reason")
+            @Html.Kendo().TextBoxFor(model => model.Reason).HtmlAttributes(new { style = "width:100%", placeholder = "Enter reason..." })
+        </div>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-
-                    @Html.Kendo().TextBoxFor(model => model.Remark)
-                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.Hours, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.Hours)
-                    @Html.ValidationMessageFor(model => model.Hours, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
+        <div class="lr-field">
+            @Html.LabelFor(model => model.Remark, "Remark")
+            @Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%", placeholder = "Optional remarks..." })
         </div>
     </div>
 
 </div>
 
-
-<style>
-    .Employee-photo {
-        display: inline-block;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-size: 32px 35px;
-        background-position: center center;
-        vertical-align: middle;
-        line-height: 32px;
-        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
-        margin-left: 5px;
-    }
-
-    .Employee-name {
-        display: inline-block;
-        vertical-align: middle;
-        line-height: 32px;
-        padding-left: 3px;
-    }
-</style>

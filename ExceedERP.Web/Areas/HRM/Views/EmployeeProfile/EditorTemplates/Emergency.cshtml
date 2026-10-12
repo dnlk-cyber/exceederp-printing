@@ -33,7 +33,7 @@
                                             .DataValueField("LookupId")
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetRelationshipList", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetRelationshipList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       })
                             .ValuePrimitive(true)

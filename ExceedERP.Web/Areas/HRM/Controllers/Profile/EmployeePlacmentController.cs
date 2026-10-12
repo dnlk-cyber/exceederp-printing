@@ -180,8 +180,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
         public ActionResult Placements_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<Placement> placements = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Placement> placements = db.Placements.Where(x => mybraches.Contains(x.BranchId));
             if (request.Filters != null)
             {
             dd: if (request.Filters.Any())

@@ -28,9 +28,9 @@
                                                                     })
                
           .Model(model => model.Id(p => p.EmpMeasurementId))
-          .Read(read => read.Action("EmployeeMeasurement_Read", "EmployeeMeasurement"))
-          .Create(create => create.Action("EmployeeMeasurement_Create", "EmployeeMeasurement"))
-          .Update(update => update.Action("EmployeeMeasurement_Update", "EmployeeMeasurement"))
-          .Destroy(destroy => destroy.Action("EmployeeMeasurement_Destroy", "EmployeeMeasurement"))
+          .Read(read => read.Action("EmployeeMeasurement_Read", "EmployeeMeasurement").Data("sendForgery"))
+          .Create(create => create.Action("EmployeeMeasurement_Create", "EmployeeMeasurement").Data("sendForgery"))
+          .Update(update => update.Action("EmployeeMeasurement_Update", "EmployeeMeasurement").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("EmployeeMeasurement_Destroy", "EmployeeMeasurement").Data("sendForgery"))
       )
 )

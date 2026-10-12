@@ -5,6 +5,7 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <legend>Leave Return</legend>
     @(Html.Kendo().Grid<LeaveReturn>()
@@ -14,13 +15,19 @@
             columns.Bound(c => c.LeaveReturnId).Title("S.N").Width(100);
             columns.Bound(c => c.LeaveRequestId).Title("Request Id").Width(100);
             columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-
             columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
-            
-            columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(100);
-            columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(100);
-           
+            if (useEthiopian)
+            {
+                columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(100);
+                columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(100);
+            }
+            else
+            {
+                columns.Bound(c => c.From).Width(100);
+                columns.Bound(c => c.To).Width(100);
+            }
             columns.Bound(c => c.Amount).Width(100);
+            columns.Bound(c => c.Reason).Width(150);
             //columns.Bound(c => c.LeaveRequestId);
             //columns.Command(command =>
             //            {
@@ -95,19 +102,22 @@
         {
             items.Add().Text(Resources.HR_RequestStatus).Content(
             @<text>
-                @* <legend>Status</legend>*@
-
                 @(Html.Kendo().Grid<RequestesStatus>()
                     .Name("RequestesStatusgrid_#=LeaveReturnId#")
                     .Columns(columns =>
                     {
-                        //columns.Bound(c => c.RequestId);
-                        columns.Bound(c => c.DateReqStatAm).Width(120);
-                        columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
-                        //columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["UserName"], "EmployeeId", "UserName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
 
+                        if (useEthiopian)
+                        {
+                            columns.Bound(c => c.DateReqStatAm).EditorTemplateName("Calander").Width(100);
+                        }
+                        else
+                        {
+                            columns.Bound(c => c.Date).Width(100);
+                        }
+                        columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
+                        columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                        columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                         columns.Bound(c => c.Remark).Width(100);
                         columns.Command(command =>
                         {
@@ -119,8 +129,7 @@
                     .ToolBar(toolbar =>
                     {
                         toolbar.Create();
-                       // toolbar.Custom().Action("SendForApproval", "LeaveReturnPersonal").Text(Resources.HR_Send_For_Approval);
-                        //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
+
                     })
 
 
@@ -143,12 +152,12 @@
                         model.Field(p => p.ApproverId).Editable(false);
                         model.Field(p => p.ApproverDepartment).Editable(false);
                     })
-                                                                                                                               
+
                     .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }).Data("sendForgery"))
                     .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType2 = "LeaveReturn" }).Data("sendForgery"))
                     .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
                     .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
-                                                                               
+
                     ).ToClientTemplate())
 
                     @*<a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@

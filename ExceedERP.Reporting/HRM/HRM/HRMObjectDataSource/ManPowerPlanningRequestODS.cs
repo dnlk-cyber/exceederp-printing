@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class ManPowerPlanningRequestODS
+    public class ManPowerPlanningRequestODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -108,7 +108,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             if (manPowerRequest != null)
             {
-                manPower.NoOfEmployees = manPowerRequest.NoOfShouldBeStaff;
+                manPower.NoOfEmployees = manPowerRequest.NumberOfStaff;
                 manPower.EmployeementType = manPowerRequest.EmploymentType.ToString();
 
                 var mainCompany = db.MainCompanyStructures.FirstOrDefault(x=>x.OrgStructureId == manPowerRequest.OrgStructureId);
@@ -204,5 +204,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return manpowerRequestList;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
+
 }

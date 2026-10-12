@@ -12,7 +12,7 @@
       {
           //GetActiveEmployeesForRInterview
          // GetActiveEmployees
-          dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+          dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
               .ServerFiltering(true);
       })
                        

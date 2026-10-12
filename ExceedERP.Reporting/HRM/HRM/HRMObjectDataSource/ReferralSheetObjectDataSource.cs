@@ -8,7 +8,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
-    public class ReferralSheetObjectDataSource : List<ReferralSheet>
+    public class ReferralSheetObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -66,6 +66,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return ReferralSheetList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

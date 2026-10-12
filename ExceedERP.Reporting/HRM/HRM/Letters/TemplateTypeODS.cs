@@ -13,7 +13,7 @@ using System.Text;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-    public class TemplateTypeODS
+    public class TemplateTypeODS : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -29,6 +29,20 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
                 }).ToList();
         }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<EnumViewModel> GetTemplateTypeSetting()
+        {
+            return db.TemplateTypeSettings
+                     .Select(e => new EnumViewModel
+                     {
+                         Value = e.TemplateTypeSettingId.ToString(), // usually string for dropdowns
+                         DisplayName = e.TemplateType
+                     })
+                     .ToList();
+        }
+
+
 
         private string GetDisplayName(TemplateTypes templateTypes)
         {
@@ -47,8 +61,12 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
             return templateTypes.ToString(); // Fallback to raw enum name
         }
      
+            public void Dispose()
+            {
+                db.Dispose();
+            }
+        
     }
 
-
-    
+   
 }

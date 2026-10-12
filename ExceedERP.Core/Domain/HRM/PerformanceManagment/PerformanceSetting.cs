@@ -11,9 +11,9 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
     public class PerformanceSetting: TrackUserSettingOperation
     {
         public int PerformanceSettingId { get; set; }
-        [Display(Name = "Dead Line(Value)")]
+        [Display(Name ="Dead Line(Value)")]
         public decimal Value { get; set; }
         [Display(Name = "Peer & Internal Customer Eval. Hiden ")]
-        public bool IsPeerAndInternalCustomerHide { get; set; }
+        public bool  IsPeerAndInternalCustomerHide { get; set; }
     }
 }

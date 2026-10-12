@@ -8,17 +8,14 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.Global;
-using ExceedERP.Web.Helpers;
-
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
-    public class DepartmentPerformanceActionController : Controller
+    public class DepartmentPerformanceActionController : BaseController
     {
         // GET: HRM/DepartmentPerformanceAction
         private ExceedDbContext db = new ExceedDbContext();

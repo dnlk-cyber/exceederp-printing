@@ -117,32 +117,427 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="csvColumns.Source" xml:space="preserve">
-    <value>MartialStatus
-Branch
-Department
-Jobtitle
-ResponsibilityLevel
-EmployementType
-Rank
-Step
-LeaveBalance
-EducationField
-EducationLevel
-EduFrom
-EduTo
-EduInstitution
-TotalInternalExperience
-ExternalExperience
-TotalExperience
-HireDate
-BirthDate
-RetirementDate
-RecruitmentType
-Salary
-Training
-Language
-Performance
-Descipline</value>
+  <data name="performance.Value" xml:space="preserve">
+    <value>Implementation</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox35.Value" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Sex</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>Age</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>Employee Type</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>Nation</value>
+  </data>
+  <data name="martialStatus.Value" xml:space="preserve">
+    <value>Marital Status</value>
+  </data>
+  <data name="branch.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="department.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="responsibilityLevel.Value" xml:space="preserve">
+    <value>Responsiblity Level</value>
+  </data>
+  <data name="employementType.Value" xml:space="preserve">
+    <value>Employment Type</value>
+  </data>
+  <data name="rank.Value" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="step.Value" xml:space="preserve">
+    <value>Step</value>
+  </data>
+  <data name="leaveBalance.Value" xml:space="preserve">
+    <value>Total yearly Leave Remains</value>
+  </data>
+  <data name="educationField.Value" xml:space="preserve">
+    <value>Graduated Profession</value>
+  </data>
+  <data name="educationLevel.Value" xml:space="preserve">
+    <value>Edication level</value>
+  </data>
+  <data name="eduFrom.Value" xml:space="preserve">
+    <value>Education Began Date</value>
+  </data>
+  <data name="eduTo.Value" xml:space="preserve">
+    <value>Education end Date</value>
+  </data>
+  <data name="eduInstitution.Value" xml:space="preserve">
+    <value>Education Institutions</value>
+  </data>
+  <data name="totalInternalExperience.Value" xml:space="preserve">
+    <value>Total Internal Experience</value>
+  </data>
+  <data name="InternalExperienceDetail.Value" xml:space="preserve">
+    <value>Internal Experience Detail</value>
+  </data>
+  <data name="externalExperience.Value" xml:space="preserve">
+    <value>Total External Exprience</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value> External Experience details</value>
+  </data>
+  <data name="totalExperience.Value" xml:space="preserve">
+    <value>Total Exoerience</value>
+  </data>
+  <data name="hireDate.Value" xml:space="preserve">
+    <value>Employment Date</value>
+  </data>
+  <data name="birthDate.Value" xml:space="preserve">
+    <value>Birth Date</value>
+  </data>
+  <data name="retirementDate.Value" xml:space="preserve">
+    <value>Retirement Date</value>
+  </data>
+  <data name="recruitmentType.Value" xml:space="preserve">
+    <value>Employment Type</value>
+  </data>
+  <data name="Salary.Value" xml:space="preserve">
+    <value>Salary</value>
+  </data>
+  <data name="training.Value" xml:space="preserve">
+    <value>Training</value>
+  </data>
+  <data name="language.Value" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="textBox55.Value" xml:space="preserve">
+    <value>Criteria</value>
+  </data>
+  <data name="textBox57.Value" xml:space="preserve">
+    <value>Recorder </value>
+  </data>
+  <data name="textBox59.Value" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="descipline.Value" xml:space="preserve">
+    <value>Decipline</value>
+  </data>
+  <data name="phoneNo.Value" xml:space="preserve">
+    <value>Phone No</value>
+  </data>
+  <data name="accountNo.Value" xml:space="preserve">
+    <value>Account No</value>
+  </data>
+  <data name="responsibilityAllowance.Value" xml:space="preserve">
+    <value>Responsibility Allowance</value>
+  </data>
+  <data name="professionalAllowance.Value" xml:space="preserve">
+    <value>Professional Allowance</value>
+  </data>
+  <data name="projectAllowance.Value" xml:space="preserve">
+    <value>Project Allowance</value>
+  </data>
+  <data name="desertAllowance.Value" xml:space="preserve">
+    <value>Desert Allowance</value>
+  </data>
+  <data name="transportAllowance.Value" xml:space="preserve">
+    <value>Transport Allowance</value>
+  </data>
+  <data name="netPay.Value" xml:space="preserve">
+    <value>Net Pay</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Fields.Date</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.ResponsibilityLevel</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.Gender</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.EmployementType</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployee")</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.MartialStatus</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Fields.BranchName</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Fields.Expiriance</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>= Fields.DateOfBirth</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>= Fields.Age</value>
+  </data>
+  <data name="textBox33.Value" xml:space="preserve">
+    <value>= Fields.StructureName</value>
+  </data>
+  <data name="textBox34.Value" xml:space="preserve">
+    <value>= Fields.InternalExpriance</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Fields.HireDate</value>
+  </data>
+  <data name="textBox36.Value" xml:space="preserve">
+    <value>= Fields.TotalLeave</value>
+  </data>
+  <data name="textBox37.Value" xml:space="preserve">
+    <value>= Fields.EmployeeCode</value>
+  </data>
+  <data name="textBox39.Value" xml:space="preserve">
+    <value>= Fields.Employement</value>
+  </data>
+  <data name="textBox45.Value" xml:space="preserve">
+    <value>= Fields.Salary</value>
+  </data>
+  <data name="textBox52.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox72.Value" xml:space="preserve">
+    <value>Internal</value>
+  </data>
+  <data name="textBox47.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox49.Value" xml:space="preserve">
+    <value>= Fields.EvaluationCriteria</value>
+  </data>
+  <data name="textBox53.Value" xml:space="preserve">
+    <value>=Fields.Type</value>
+  </data>
+  <data name="textBox51.Value" xml:space="preserve">
+    <value>=Fields.Result</value>
+  </data>
+  <data name="textBox56.Value" xml:space="preserve">
+    <value>= Fields.Step</value>
+  </data>
+  <data name="textBox60.Value" xml:space="preserve">
+    <value>= Fields.Rank</value>
+  </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>= Fields.EduField</value>
+  </data>
+  <data name="textBox44.Value" xml:space="preserve">
+    <value>=Fields.EduLevel</value>
+  </data>
+  <data name="textBox62.Value" xml:space="preserve">
+    <value>=Fields.From</value>
+  </data>
+  <data name="textBox64.Value" xml:space="preserve">
+    <value>=Fields.To</value>
+  </data>
+  <data name="textBox66.Value" xml:space="preserve">
+    <value>=Fields.Institute</value>
+  </data>
+  <data name="textBox68.Value" xml:space="preserve">
+    <value>= Fields.RetirementDate</value>
+  </data>
+  <data name="textBox70.Value" xml:space="preserve">
+    <value>=Fields.ExpTotalSum</value>
+  </data>
+  <data name="textBox73.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox71.Value" xml:space="preserve">
+    <value>External</value>
+  </data>
+  <data name="textBox94.Value" xml:space="preserve">
+    <value>Measurement</value>
+  </data>
+  <data name="textBox95.Value" xml:space="preserve">
+    <value>Punishment</value>
+  </data>
+  <data name="textBox96.Value" xml:space="preserve">
+    <value>Manth</value>
+  </data>
+  <data name="textBox75.Value" xml:space="preserve">
+    <value>Decision Date</value>
+  </data>
+  <data name="textBox97.Value" xml:space="preserve">
+    <value>Amount of Money</value>
+  </data>
+  <data name="textBox98.Value" xml:space="preserve">
+    <value>= Fields.MeasureRank</value>
+  </data>
+  <data name="textBox99.Value" xml:space="preserve">
+    <value>= Fields.MeasureTaken</value>
+  </data>
+  <data name="textBox100.Value" xml:space="preserve">
+    <value>= Fields.Month</value>
+  </data>
+  <data name="textBox101.Value" xml:space="preserve">
+    <value>= Fields.DecisionDate</value>
+  </data>
+  <data name="textBox102.Value" xml:space="preserve">
+    <value>= Fields.Amount</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>= Fields.JobTitle</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>= Fields.Nation</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>=Fields.InternalExprianceDetail</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>=Fields.ExpirianceDetails</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Fields.EmployeeType</value>
+  </data>
+  <data name="textBox103.Value" xml:space="preserve">
+    <value>= Fields.PhoneNo</value>
+  </data>
+  <data name="textBox104.Value" xml:space="preserve">
+    <value>= Fields.AccountNo</value>
+  </data>
+  <data name="textBox106.Value" xml:space="preserve">
+    <value>= Fields.ResponsibilityAllowance</value>
+  </data>
+  <data name="textBox107.Value" xml:space="preserve">
+    <value>= Fields.ProfessionalAllowance</value>
+  </data>
+  <data name="textBox108.Value" xml:space="preserve">
+    <value>= Fields.ProjectAllowance</value>
+  </data>
+  <data name="textBox109.Value" xml:space="preserve">
+    <value>= Fields.DesertAllowance</value>
+  </data>
+  <data name="textBox110.Value" xml:space="preserve">
+    <value>= Fields.TransportAllowance</value>
+  </data>
+  <data name="textBox111.Value" xml:space="preserve">
+    <value>= Fields.NetPay</value>
+  </data>
+  <data name="textBox79.Value" xml:space="preserve">
+    <value>Employee  Type</value>
+  </data>
+  <data name="textBox85.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox84.Value" xml:space="preserve">
+    <value>= Parameters.branchId.Label</value>
+  </data>
+  <data name="textBox83.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox82.Value" xml:space="preserve">
+    <value>= Parameters.orgStructureId.Label</value>
+  </data>
+  <data name="textBox81.Value" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="textBox80.Value" xml:space="preserve">
+    <value>= Parameters.employee.Label</value>
+  </data>
+  <data name="textBox78.Value" xml:space="preserve">
+    <value>= Parameters.employeeType.Label</value>
+  </data>
+  <data name="textBox77.Value" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="textBox76.Value" xml:space="preserve">
+    <value>= Parameters.from.Label</value>
+  </data>
+  <data name="textBox89.Value" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="textBox88.Value" xml:space="preserve">
+    <value>= Parameters.from.Label</value>
+  </data>
+  <data name="textBox87.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="textBox86.Value" xml:space="preserve">
+    <value>= Parameters.to.Label</value>
+  </data>
+  <data name="textBox93.Value" xml:space="preserve">
+    <value>Hire From</value>
+  </data>
+  <data name="textBox92.Value" xml:space="preserve">
+    <value>= Parameters.hireFrom.Label</value>
+  </data>
+  <data name="textBox91.Value" xml:space="preserve">
+    <value>Hire To</value>
+  </data>
+  <data name="textBox90.Value" xml:space="preserve">
+    <value>= Parameters.hireTo.Label</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>Bussiness Unit:</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Parameters.BussinessUnitId.Label</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Page: {PageNumber}</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Bussiness Unit</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Workunit</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Employee Type</value>
+  </data>
+  <data name="reportParameter5.Text" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="reportParameter6.Text" xml:space="preserve">
+    <value>Employee Code</value>
+  </data>
+  <data name="reportParameter7.Text" xml:space="preserve">
+    <value>Experience From</value>
+  </data>
+  <data name="reportParameter8.Text" xml:space="preserve">
+    <value>Experience To</value>
+  </data>
+  <data name="reportParameter9.Text" xml:space="preserve">
+    <value>Hired From</value>
+  </data>
+  <data name="reportParameter10.Text" xml:space="preserve">
+    <value>Hired To</value>
+  </data>
+  <data name="reportParameter11.Text" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="reportParameter14.Text" xml:space="preserve">
+    <value>Religion</value>
+  </data>
+  <data name="reportParameter15.Text" xml:space="preserve">
+    <value>Assignment Date From</value>
+  </data>
+  <data name="reportParameter16.Text" xml:space="preserve">
+    <value>Assignment Date To</value>
   </data>
 </root>

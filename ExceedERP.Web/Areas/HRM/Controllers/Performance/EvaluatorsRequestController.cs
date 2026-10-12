@@ -10,11 +10,12 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
     [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
-    public class EvaluatorsRequestController : Controller
+    public class EvaluatorsRequestController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         public static int EmployeeId { get; set; }
@@ -115,6 +116,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = performanceRequestPeriod.OrgStructureId,
                 Head = GetHead(id),
                 DateCreated = performanceRequestPeriod.DateCreated,
+                Remark = performanceRequestPeriod.Remark,
+                Status = performanceRequestPeriod.Status,
+                DepartmentOnlineApprovedTime = performanceRequestPeriod.DepartmentOnlineApprovedTime,
+                DepartmentOnlineApprovedBy = performanceRequestPeriod.DepartmentOnlineApprovedBy,
+                DepartmentSendForApprovalBy = performanceRequestPeriod.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = performanceRequestPeriod.DepartmentSendForApprovalTime,
+                IsDepartmentOnlineApproved = performanceRequestPeriod.IsDepartmentOnlineApproved,
+                IsDepartmentSendForApproval = performanceRequestPeriod.IsDepartmentSendForApproval,
+                IsOnlineApproved = performanceRequestPeriod.IsOnlineApproved,
+                IsOnlineTransferred = performanceRequestPeriod.IsOnlineTransferred,
+                IsOnlineTransferredBy = performanceRequestPeriod.IsOnlineTransferredBy,
+                IsSendForApproval = performanceRequestPeriod.IsSendForApproval,
+                IsVoid = performanceRequestPeriod.IsVoid,
+                OnlineApprovedBy = performanceRequestPeriod.OnlineApprovedBy,
+                OnlineApprovedTime = performanceRequestPeriod.OnlineApprovedTime,
+                OrgBranchName = performanceRequestPeriod.OrgBranchName,
+                SendForApprovalBy = performanceRequestPeriod.SendForApprovalBy,
+                SendForApprovalTime = performanceRequestPeriod.SendForApprovalTime,
+                VoidBy = performanceRequestPeriod.VoidBy,
+                VoidTime = performanceRequestPeriod.VoidTime,
+                OnlineTransferredTime = performanceRequestPeriod.OnlineTransferredTime,
                 LastModified = performanceRequestPeriod.LastModified,
                 CreatedBy = performanceRequestPeriod.CreatedBy,
                 ModifiedBy = performanceRequestPeriod.ModifiedBy
@@ -221,6 +243,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 FiscalYearId = performanceRequestPeriod.FiscalYearId,
                 PeriodId = performanceRequestPeriod.PeriodId,
                 OrgStructureId = performanceRequestPeriod.OrgStructureId,
+                Remark = performanceRequestPeriod.Remark,
                 DateCreated = performanceRequestPeriod.DateCreated,
                 LastModified = performanceRequestPeriod.LastModified,
                 CreatedBy = performanceRequestPeriod.CreatedBy,
@@ -231,7 +254,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public JsonResult GetFiscalYear()
         {
 
-            var fiscalYear = db.GLFiscalYears.ToList();
+            var fiscalYear = db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
 
             return Json(fiscalYear.Select(p =>
             new
@@ -294,17 +317,69 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public JsonResult GetWorkUnit()
         {
-            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var branchId = EmployeeHelper.GetEmployeePlacementBranch(id);
-            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            var orgstucturIds = db.Placements.Where(x => x.BranchId==branchId && x.isCurrent).Select(x=>x.OrgStructureId).Distinct().ToList();
+            // Get current user's employee ID and assigned branches
+            int employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            int currentBranchId = EmployeeHelper.GetEmployeePlacementBranch(employeeId);
+            List<int> userBranchIds = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            return Json(db.MainCompanyStructures.Where(x=> orgstucturIds.Contains(x.OrgStructureId)).Select(p => new
+            // Safety check
+            if (employeeId == 0 || userBranchIds == null || !userBranchIds.Any())
             {
-                Name = p.Name,
-                OrgStructureId = p.OrgStructureId
-            }), JsonRequestBehavior.AllowGet);
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+            }
+
+            // Get OrgStructureIds from current placements where branch is either the assigned or current one
+            var orgStructureIds = db.Placements
+                .Where(p => p.isCurrent && (p.BranchId == currentBranchId || userBranchIds.Contains(p.BranchId)))
+                .Select(p => p.OrgStructureId)
+                .Distinct()
+                .ToList();
+
+            // Fetch the display-ready items for dropdown
+            var dropdownData = db.MainCompanyStructures
+                .Where(x => orgStructureIds.Contains(x.OrgStructureId))
+                .Select(x => new
+                {
+                     x.OrgStructureId,
+                     x.Name
+                })
+                .OrderBy(x => x.Name)
+                .ToList();
+
+            return Json(dropdownData, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetInternalCustomerWorkUnit()
+        {
+            var dropdownData = (from mcs in db.MainCompanyStructures
+                                join p in db.Placements
+                                    on mcs.OrgStructureId equals p.OrgStructureId
+                                where p.isCurrent
+                                select new
+                                {
+                                    mcs.OrgStructureId,
+                                    mcs.Name
+                                })
+                                .Distinct()
+                                .OrderBy(x => x.Name)
+                                .ToList();
+
+            return Json(dropdownData, JsonRequestBehavior.AllowGet);
+        }
+
+
+        //public JsonResult GetWorkUnit()
+        //{
+        //    var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+        //    var branchId = EmployeeHelper.GetEmployeePlacementBranch(id);
+        //    List<int> bracheIds = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+        //    var orgstucturIds = db.Placements.Where(x => (x.BranchId==branchId || bracheIds.Contains(x.BranchId)) && x.isCurrent).Select(x=>x.OrgStructureId).Distinct().ToList();
+        //    return Json(db.MainCompanyStructures.Where(x=> orgstucturIds.Contains(x.OrgStructureId)).Select(p => new
+        //    {
+        //        Name = p.Name,
+        //        OrgStructureId = p.OrgStructureId
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

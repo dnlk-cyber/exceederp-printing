@@ -69,6 +69,7 @@ namespace ExceedERP.Reporting.SharedDataSources
     public class AddressVm
     {
         public string Tel { get; set; }
+        public string Region { get; set; }
         public string Fax { get; set; }
         public string POBox { get; set; }
         public string Email { get; set; }

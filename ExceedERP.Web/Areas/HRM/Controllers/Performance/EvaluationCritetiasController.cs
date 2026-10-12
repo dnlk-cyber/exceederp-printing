@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -97,10 +93,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return true;
         }
-        public ActionResult EvaluationCritetias_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult EvaluationCritetias_Read([DataSourceRequest]DataSourceRequest request, string lookupId)
         {
-            IQueryable<MeasurementDefinition> measurementdefinitions = db.MeasurementDefinitions.Where(x => !x.IsDepartmentLevel);
-            DataSourceResult result = measurementdefinitions.ToDataSourceResult(request, measurementDefinition => new
+            IQueryable<MeasurementDefinition> measurementDefinitions = db.MeasurementDefinitions
+                                .Where(x => !x.IsDepartmentLevel);
+
+            if (!string.IsNullOrEmpty(lookupId) && int.TryParse(lookupId, out int lookId))
+            {
+                measurementDefinitions = measurementDefinitions
+                    .Where(x => x.LookupId == lookId);
+            }
+            DataSourceResult result = measurementDefinitions.ToDataSourceResult(request, measurementDefinition => new
             {
                 MeasurementDefinitionId = measurementDefinition.MeasurementDefinitionId,
                 EvaluationCriteria = measurementDefinition.EvaluationCriteria,
@@ -270,6 +273,100 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
 
             return Json(new[] { measurementDefinition }.ToDataSourceResult(request, ModelState));
+        }
+
+        public JsonResult AddCriteriaPerResponsiblityLevel(string evalutionTypeId)
+        {
+            if (!int.TryParse(evalutionTypeId, out int lookUpId))
+            {
+                return Json(new { Message = "Invalid Evaluation Type ID", status = "NOT-Ok" });
+            }
+
+            var sourceDefinition = db.MeasurementDefinitions.Where(x => !x.IsDepartmentLevel).FirstOrDefault(x => x.LookupId == lookUpId);
+            if (sourceDefinition == null)
+            {
+                return Json(new { Message = "Please select Evaluation Type", status = "NOT-Ok" });
+            }
+
+            // Get all existing roles for this LookupId
+            var existingRoles = db.MeasurementDefinitions
+                                  .Where(x => !x.IsDepartmentLevel)
+                                  .Where(x => x.LookupId == lookUpId)
+                                  .Select(x => x.Role)
+                                  .ToList().Distinct();
+
+            // Loop through all enum values except already existing
+            foreach (ResponsibilityLevel level in Enum.GetValues(typeof(ResponsibilityLevel)))
+            {
+                if (level == ResponsibilityLevel.NOTSELECTED || existingRoles.Contains(level))
+                    continue;
+
+                var newDefinition = new MeasurementDefinition
+                {
+                    EvaluationCriteria = sourceDefinition.EvaluationCriteria,
+                    DefnPercentageofWeight = sourceDefinition.DefnPercentageofWeight,
+                    LookupId = sourceDefinition.LookupId,
+                    CriteriaCategoryId = sourceDefinition.CriteriaCategoryId,
+                    EvalutionType = sourceDefinition.EvalutionType,
+                    Result = sourceDefinition.Result,
+                    Role = level,
+                    Remark = sourceDefinition.Remark,
+                    EmployeeId = sourceDefinition.EmployeeId,
+                    IsMainCompanyLevel = sourceDefinition.IsMainCompanyLevel,
+                    DateCreated = DateTime.Now,
+                    LastModified = sourceDefinition.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    IsDepartmentLevel = false,
+                    ModifiedBy = sourceDefinition.ModifiedBy
+                };
+
+                db.MeasurementDefinitions.Add(newDefinition);
+                db.SaveChanges(); // Save to get ID
+
+                // Clone Measurements
+                var sourceMeasurements = db.Measurements
+                                           .Where(x => x.MeasurementDefinitionId == sourceDefinition.MeasurementDefinitionId)
+                                           .ToList();
+
+                foreach (var measurement in sourceMeasurements)
+                {
+                    var newMeasurement = new Measurement
+                    {
+                        MeasurementName = measurement.MeasurementName,
+                        MesPercentageofWeight = measurement.MesPercentageofWeight,
+                        MeasurementDefinitionId = newDefinition.MeasurementDefinitionId,
+                        Remark = measurement.Remark,
+                        Result = measurement.Result
+                    };
+
+                    db.Measurements.Add(newMeasurement);
+                    db.SaveChanges();
+
+                    // Clone Performance Actions
+                    var sourceActions = db.PerformanceActions
+                                          .Where(x => x.MeasurementId == measurement.MeasurementId)
+                                          .ToList();
+
+                    foreach (var action in sourceActions)
+                    {
+                        var newAction = new PerformanceAction
+                        {
+                            ActionName = action.ActionName,
+                            AcPercentageofWeight = action.AcPercentageofWeight,
+                            Result = action.AcPercentageofWeight,
+                            MeasurementDefinitionId = newDefinition.MeasurementDefinitionId,
+                            MeasurementId = newMeasurement.MeasurementId,
+                            Remark = action.Remark
+                        };
+
+                        db.PerformanceActions.Add(newAction);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+
+            return Json(new { Message = "Successfully created for other roles", status = "Ok" });
         }
 
         protected override void Dispose(bool disposing)

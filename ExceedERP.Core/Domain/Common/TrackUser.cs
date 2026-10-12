@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Common
@@ -39,6 +39,15 @@ namespace ExceedERP.Core.Domain.Common
         public string ForwardedTo { get; set; }
         public bool IsFinalApproval { get; set; }
         public int? CurrentApprovalStep { get; set; }
+        public DateTime? ForwardedTime { get; set; }
+    }
+
+    public class DepartmentOperationsWithAudit : DepartmentNewOperations
+    {
+        //for payment requests
+        public bool IsAuditOnlineApproved { get; set; }
+        public string AuditOnlineApprovedBy { get; set; }
+        public DateTime? AuditOnlineApprovedTime { get; set; }
     }
 
     public class DepartmentNewOperations : NewOperations
@@ -50,6 +59,23 @@ namespace ExceedERP.Core.Domain.Common
         public bool IsDepartmentSendForApproval { get; set; }
         public string DepartmentSendForApprovalBy { get; set; }
         public DateTime? DepartmentSendForApprovalTime { get; set; }
+    }
+    public class DepartmentNewOperationWithSecondValidation : NewOperations
+    {
+        //for departmental ..like self service
+        public bool IsDepartmentOnlineApproved { get; set; }
+        public string DepartmentOnlineApprovedBy { get; set; }
+        public DateTime? DepartmentOnlineApprovedTime { get; set; }
+        public bool IsDepartmentSendForApproval { get; set; }
+        public string DepartmentSendForApprovalBy { get; set; }
+        public DateTime? DepartmentSendForApprovalTime { get; set; }
+        public bool IsSecondOnlineApproved { get; set; }
+        public string SecondOnlineApprovedBy { get; set; }
+        public DateTime? SecondOnlineApprovedTime { get; set; }
+
+        public bool IsSecondSendForApproval { get; set; }
+        public string SecondSendForApprovalBy { get; set; }
+        public DateTime? SecondSendForApprovalTime { get; set; }
     }
     public class DepartmentOperations : TrackUserSettingOperation
     {
@@ -77,31 +103,6 @@ namespace ExceedERP.Core.Domain.Common
         public bool IsDepartmentSendForApproval { get; set; }
         public string DepartmentSendForApprovalBy { get; set; }
         public DateTime? DepartmentSendForApprovalTime { get; set; }
-    }
-
-    public class DepartmentNewOperationWithSecondValidation : NewOperations
-    {
-        //for departmental ..like self service
-        public bool IsDepartmentOnlineApproved { get; set; }
-        public string DepartmentOnlineApprovedBy { get; set; }
-        public DateTime? DepartmentOnlineApprovedTime { get; set; }
-        public bool IsDepartmentSendForApproval { get; set; }
-        public string DepartmentSendForApprovalBy { get; set; }
-        public DateTime? DepartmentSendForApprovalTime { get; set; }
-        public bool IsSecondOnlineApproved { get; set; }
-        public string SecondOnlineApprovedBy { get; set; }
-        public DateTime? SecondOnlineApprovedTime { get; set; }
-
-        public bool IsSecondSendForApproval { get; set; }
-        public string SecondSendForApprovalBy { get; set; }
-        public DateTime? SecondSendForApprovalTime { get; set; }
-    }
-    public class DepartmentOperationsWithAudit : DepartmentNewOperations
-    {
-        //for payment requests
-        public bool IsAuditOnlineApproved { get; set; }
-        public string AuditOnlineApprovedBy { get; set; }
-        public DateTime? AuditOnlineApprovedTime { get; set; }
     }
     public class OperationWithSecondValidation : Operations
     {

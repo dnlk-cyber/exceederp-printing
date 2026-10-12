@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Finance.GL;
+﻿using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace ExceedERP.Reporting.SharedDataSources
         public List<GlFiscalYear> GetFiscalYear()
         {
 
-            return db.GLFiscalYears.ToList();
+            return db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
         }
     }
     

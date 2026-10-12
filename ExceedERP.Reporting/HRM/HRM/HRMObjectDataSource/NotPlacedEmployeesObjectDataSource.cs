@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class NotPlacedEmployeesObjectDataSource
+    public class NotPlacedEmployeesObjectDataSource:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -30,7 +30,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             foreach (var emp in employees)
             {
-                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId);
+                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId&&x.isCurrent);
                 if (placement == null)
                 {
                     var notPlaced = new NotPlacedEmployeeVM();
@@ -52,10 +52,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             return employeeList;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 
     [DataObject]
-    public class PlacedButInActiveInEmployeesProfileObjectDataSource
+    public class PlacedButInActiveInEmployeesProfileObjectDataSource:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -103,10 +107,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             return employeeList;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 
     [DataObject]
-    public class DoublePlacedObjectDataSource
+    public class DoublePlacedObjectDataSource:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -153,6 +161,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             //}
             return employeeList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

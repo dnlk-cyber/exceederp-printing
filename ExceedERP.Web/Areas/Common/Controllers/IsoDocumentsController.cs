@@ -250,7 +250,7 @@ namespace ExceedERP.Web.Areas.Common.Controllers
 				new IsoDocument
 				{
 					Module = Modules.HRM,
-					DocumentType = HRMModuleReportType.Termination_Reason_Summary.ToString(),
+					DocumentType = HRMModuleReportType.Termination_Summary.ToString(),
 					URL = "/HRM/EmployeeReport/TerminationReasonSummary"
 				},
 				new IsoDocument

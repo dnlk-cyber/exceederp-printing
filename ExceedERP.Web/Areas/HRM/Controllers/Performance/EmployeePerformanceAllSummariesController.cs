@@ -22,7 +22,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
     public class EmployeePerformanceAllSummariesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
             PopulateViewData();
@@ -32,18 +32,41 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         private void PopulateViewData()
         {
 
-            var fiscalYearList = db.GLFiscalYears.ToList();
-            ViewData["fiscalYearList"] = fiscalYearList;// != null ? periodList.ToList() : new List<GlFiscalYear>();
-            ViewData["Measurments"] = db.Measurements.ToList();
-            ViewData["PerformanceActions"] = db.PerformanceActions.ToList();
-            ViewData["EmployeeList"] = db.Person_Employee.Select(x=>new { x.EmployeeId,
-                              FullNameAmharic = x.EmployeeCode+"-"+x.FirstName+" "+x.MiddleName+" "+x.LastName}).AsQueryable();
-            var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["branches"] = branches;
-            var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["businessUnits"] = businessUnits;
-            var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
-            ViewData["workunits"] = workunits;
+
+            ViewData["fiscalYearList"] = CacheData.GetFiscalYearCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   GlFiscalYearId = i.Id,
+               }).AsQueryable();
+
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+              i => new
+              {
+                  FullNameAmharic = i.Code+"-"+i.AmharicName,
+                  FullNameaEnglish = i.Code + "-" + i.Name,
+                  EmployeeId = i.Id,
+                  EmployeeCode = i.Code,
+              }).AsQueryable();
+            ViewData["branches"] = CacheData.GetBranchCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BranchId = i.Id,
+               }).AsQueryable(); ;
+
+            ViewData["businessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BusinessUnitId = i.Id,
+               }).AsQueryable(); ; ;
+            ViewData["workunits"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+               }).AsQueryable();
             ViewData["Period"] = db.Quarters.Select(x=>new { x.QuarterId,x.Name}).ToList();
             var  measurments = db.MeasurementDefinitions.Select(p => new
             {
@@ -52,7 +75,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             }).ToList();
             ViewData["EvalutionCrateria"] = measurments;
-           // ViewData["branch"] = db.Branch.ToList();
+            ViewData["Measurments"] = db.Measurements.ToList();
+            ViewData["PerformanceActions"] = db.PerformanceActions.ToList();
         }
         public string GetEvaluationTypeName(int lookupId)
         {
@@ -122,7 +146,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 }
                 else
                 {
-                    var placementss = db.Placements.Where(x => x.EmployeeId == empPerformance.EmployeeId).FirstOrDefault();
+                    var placementss = db.Placements.Where(x => x.EmployeeId == empPerformance.EmployeeId).OrderByDescending(x=>x.PlacementId).FirstOrDefault();
                     if (placementss != null)
                     {
 
@@ -140,6 +164,65 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
             return View("Success");
         }
+        public JsonResult RefreshPerformanceData(int yearId)
+        {
+            // Step 1: Load performances for the year
+            var empPerformances = db.EmployeePerformances
+                                    .Where(x => x.GlFiscalYearId == yearId)
+                                    .ToList();
+
+            if (!empPerformances.Any())
+            {
+                return Json(new
+                {
+                    Message = "No employee performance records found for the selected year.",
+                    Status = "NotFound"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Step 2: Get relevant employee IDs
+            var employeeIds = empPerformances.Select(x => x.EmployeeId).Distinct().ToList();
+
+            // Step 3: Load only relevant placements
+            var placements = db.Placements
+                               .Where(x => employeeIds.Contains(x.EmployeeId))
+                               .ToList();
+
+            // Step 4: Organize placements by employeeId
+            var placementMap = placements
+                .GroupBy(p => p.EmployeeId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderByDescending(p => p.isCurrent)  // true first
+                          .ThenByDescending(p => p.PlacementId) // then most recent
+                          .FirstOrDefault()
+                );
+
+            // Step 5: Update each performance record with the best placement
+            foreach (var empPerformance in empPerformances)
+            {
+                if (placementMap.TryGetValue(empPerformance.EmployeeId, out var placement) && placement != null)
+                {
+                    empPerformance.OrgStructureId = placement.OrgStructureId;
+                    empPerformance.BranchId = placement.BranchId;
+                    empPerformance.DirectBossId = placement.HeadId ?? 0;
+                    empPerformance.BusinessUnitId = placement.BusinessUnitId;
+                    empPerformance.ResponsibilityLevel = placement.ResponsibilityLevel;
+                    empPerformance.JobTitleId = placement.LookupId;
+                    empPerformance.IsCurrent = placement.isCurrent;
+
+                    db.Entry(empPerformance).State = EntityState.Modified;
+                }
+            }
+
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Message = "Employee performance records have been updated successfully.",
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
+        }
         private bool GetHRLevelApprovals(int empId, int fiscalyearId, int periodId)
         {
             var records = db.EmployeePerformances
@@ -148,128 +231,270 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             // Return true only if there are matching records and all are approved
             return records.Any() && records.All(x => x.IsHRApproved);
         }
+        public ActionResult EmployeePerformanceAllSummaries_Read([DataSourceRequest] DataSourceRequest request, string fiscalYear)
+        {
+            int? fiscalYearId = null;
+
+            if (int.TryParse(fiscalYear, out int parsedYear))
+            {
+                fiscalYearId = parsedYear;
+            }
+
+            // Step 1: Batch calculate HR approvals and store in dictionary
+            var approvalQuery = db.EmployeePerformances
+                .Where(x => x.IsSecondLevelApproved);
+
+            if (fiscalYearId.HasValue)
+            {
+                approvalQuery = approvalQuery.Where(x => x.GlFiscalYearId == fiscalYearId.Value);
+            }
+
+            var approvals = approvalQuery
+                .GroupBy(x => new { x.EmployeeId, x.GlFiscalYearId, x.GlPeriodId })
+                .Select(g => new
+                {
+                    g.Key.EmployeeId,
+                    g.Key.GlFiscalYearId,
+                    g.Key.GlPeriodId,
+                    AreAllHRApproved = g.All(x => x.IsHRApproved)
+                })
+                .ToList()
+                .ToDictionary(
+                    x => (x.EmployeeId, x.GlFiscalYearId, x.GlPeriodId),
+                    x => x.AreAllHRApproved
+                );
+
+            // Step 2: Query only distinct/most recent approved records
+            var performanceQuery = db.EmployeePerformances
+                .Where(x => x.IsSecondLevelApproved);
+
+            if (fiscalYearId.HasValue)
+            {
+                performanceQuery = performanceQuery.Where(x => x.GlFiscalYearId == fiscalYearId.Value);
+            }
+
+            var employeePerformances = performanceQuery
+                .GroupBy(x => new { x.EmployeeId, x.GlFiscalYearId, x.GlPeriodId })
+                .Select(g => g.OrderByDescending(x => x.GlFiscalYearId).FirstOrDefault())
+                .ToList()
+                .Select(employeePerformance => new
+                {
+                    EmployeePerformanceId = employeePerformance.EmployeePerformanceId,
+                    EmployeeId = employeePerformance.EmployeeId,
+                    GlFiscalYearId = employeePerformance.GlFiscalYearId,
+                    GlPeriodId = employeePerformance.GlPeriodId,
+                    BusinessUnitId = employeePerformance.BusinessUnitId,
+                    OrgStructureId = employeePerformance.OrgStructureId,
+                    ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
+                    BranchId = employeePerformance.BranchId,
+                    IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
+                    IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
+                    IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
+                    IsApproved = employeePerformance.IsApproved,
+                    IsHRRejected = employeePerformance.IsHRRejected,
+                    IsHRApproved = employeePerformance.IsHRApproved,
+                    IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
+                    IsCorporateApplied = employeePerformance.IsCorporateApplied,
+                    IsSectorApplied = employeePerformance.IsSectorApplied,
+                    DateCreated = employeePerformance.DateCreated,
+                    ImmediateSuppurvisorApprovalDate = employeePerformance.ImmediateSuppurvisorApprovalDate,
+                    SecondLevelApprovalDate = employeePerformance.SecondLevelApprovalDate,
+                    FinalApprovalDate = employeePerformance.FinalApprovalDate,
+                    Date = employeePerformance.Date,
+                    IsCurrent = employeePerformance.IsCurrent,
+                    ReasonFor2ndRejection = employeePerformance.ReasonFor2ndRejection,
+                    Comment = employeePerformance.Comment,
+                    ReasonForHRRejection = employeePerformance.ReasonForHRRejection,
+                    EmployeeRemark = employeePerformance.EmployeeRemark,
+                    Remark = employeePerformance.Remark,
+
+                    AreAllHRLevelApproved = approvals.TryGetValue(
+                        (employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
+                        out var approved) ? approved : false
+                });
+
+            // Step 3: Apply Kendo filtering, sorting, paging
+            var result = employeePerformances.ToDataSourceResult(request);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult EmployeePerformanceSummaries_OnePerson_Read([DataSourceRequest] DataSourceRequest request,
+         int employeeId, int fiscalyearId, int quarterId)
+        {
+            var query = db.EmployeePerformances
+                .Where(x => x.EmployeeId == employeeId
+                            && x.GlFiscalYearId == fiscalyearId
+                            && x.GlPeriodId == quarterId
+                            && x.IsApproved
+                            && (x.IsAcceptedByEmployee||x.IsRejectedByEmployee)
+                            && x.IsSecondLevelApproved)
+                .Select(employeePerformance => new
+                {
+                    EmployeePerformanceId = employeePerformance.EmployeePerformanceId,
+                    EmployeeId = employeePerformance.EmployeeId,
+                    GlFiscalYearId = employeePerformance.GlFiscalYearId,
+                    GlPeriodId = employeePerformance.GlPeriodId,
+                    EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
+                    OrgStructureId = employeePerformance.OrgStructureId,
+                    BranchId = employeePerformance.BranchId,
+                    BusinessUnitId = employeePerformance.BusinessUnitId,
+                    ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
+                    IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
+                    IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
+                    IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
+                    IsApproved = employeePerformance.IsApproved,
+                    IsHRApproved = employeePerformance.IsHRApproved,
+                    IsCurrent = employeePerformance.IsCurrent,
+                    IsCorporateApplied = employeePerformance.IsCorporateApplied,
+                    IsSectorApplied = employeePerformance.IsSectorApplied,
+                    DateCreated = employeePerformance.DateCreated,
+                    Date = employeePerformance.Date,
+                    ImmediateSuppurvisorApprovalDate = employeePerformance.ImmediateSuppurvisorApprovalDate,
+                    SecondLevelApprovalDate = employeePerformance.SecondLevelApprovalDate,
+                    FinalApprovalDate = employeePerformance.FinalApprovalDate,
+                    IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
+                    IsHRRejected = employeePerformance.IsHRRejected,
+                    ReasonForHRRejection = employeePerformance.ReasonForHRRejection,
+                    ReasonFor2ndRejection = employeePerformance.ReasonFor2ndRejection,
+                    Comment = employeePerformance.Comment,
+                    EmployeeRemark = employeePerformance.EmployeeRemark,
+                    Remark = employeePerformance.Remark,
+                });
+
+            // Materialize the result to avoid executing GetWeight/GetEvaluationResult on the database side
+            var projectedList = query.ToList();
+
+            // Call methods only once per record — consider batch fetching if hitting DB
+            var result = projectedList
+                .Select(e => new
+                {
+                    e.EmployeePerformanceId,
+                    e.EmployeeId,
+                    e.GlFiscalYearId,
+                    e.GlPeriodId,
+                    e.EvaluationCriteriaTypeId,
+                    e.OrgStructureId,
+                    e.BranchId,
+                    e.BusinessUnitId,
+                    e.ResponsibilityLevel,
+                    e.IsAcceptedByEmployee,
+                    e.IsImmediateSuppurvisorApproved,
+                    e.IsSecondLevelRejected,
+                    e.IsApproved,
+                    e.IsHRApproved,
+                    e.IsCurrent,
+                    e.IsCorporateApplied,
+                    e.IsSectorApplied,
+                    e.DateCreated,
+                    e.Date,
+                    e.ImmediateSuppurvisorApprovalDate,
+                    e.SecondLevelApprovalDate,
+                    e.FinalApprovalDate,
+                    e.IsSecondLevelApproved,
+                    e.IsHRRejected,
+                    e.ReasonForHRRejection,
+                    ReasonFor2ndRejection = e.ReasonFor2ndRejection,
+                    Comment = e.Comment,
+                    EmployeeRemark = e.EmployeeRemark,
+                    e.Remark,
+                    Result = GetEvaluationWeightandResult(e.EmployeePerformanceId),
+                    Weight = GetWeight(e.EmployeePerformanceId)
+                })
+                .ToDataSourceResult(request);
+
+            return Json(result);
+        }
+
         //public ActionResult EmployeePerformanceAllSummaries_Read([DataSourceRequest] DataSourceRequest request)
         //{
 
         //    var employeePerformances = db.EmployeePerformances
-        //                         .Where(x => x.IsSecondLevelApproved)
-        //                         .DistinctBy(x => new
-        //                         {
-        //                             x.EmployeeId,
-        //                             x.GlFiscalYearId,
-        //                             x.GlPeriodId,
-        //                         })
-        //                         .OrderByDescending(x => x.GlFiscalYearId)
-        //                         .ToList();
+        //                        .Where(x => x.IsSecondLevelApproved).DistinctBy(x => new
+        //                        {
+        //                            x.EmployeeId,
+        //                            x.GlFiscalYearId,
+        //                            x.GlPeriodId,
 
-        //    // Determine if all `IsHRApproved` are true for each grouped record
-        //    var data = employeePerformances.GroupBy(performance => new
-        //    {
-        //        performance.EmployeeId,
-        //        performance.GlFiscalYearId,
-        //        performance.GlPeriodId
-        //    })
-        //    .Select(group => new
-        //    {
-        //        EmployeePerformanceId = group.First().EmployeePerformanceId,
-        //        EmployeeId = group.Key.EmployeeId,
-        //        GlFiscalYearId = group.Key.GlFiscalYearId,
-        //        GlPeriodId = group.Key.GlPeriodId,
-        //        BusinessUnitId = group.First().BusinessUnitId,
-        //        OrgStructureId = group.First().OrgStructureId,
-        //        ResponsibilityLevel = group.First().ResponsibilityLevel,
-        //        BranchId = group.First().BranchId,
-        //        IsAcceptedByEmployee = group.All(x => x.IsAcceptedByEmployee),
-        //        IsImmediateSuppurvisorApproved = group.All(x => x.IsImmediateSuppurvisorApproved),
-        //        IsSecondLevelRejected = group.All(x => x.IsSecondLevelRejected),
-        //        IsApproved = group.All(x => x.IsApproved),
-        //        IsHRApproved = group.All(x => x.IsHRApproved), // True only if all are true
-        //        IsSecondLevelApproved = group.All(x => x.IsSecondLevelApproved),
-        //        IsCurrent = group.All(x => x.IsCurrent),
-        //        Result = GetEvaluationWeightandResult(group.First().EmployeePerformanceId),
-        //        Weight = GetWeight(group.First().EmployeePerformanceId),
-        //        AreAllHRLevelApproved = GetHRLevelApprovals(group.Key.EmployeeId, group.Key.GlFiscalYearId, group.Key.GlPeriodId),
-        //    }).ToList();
+        //                        }).OrderByDescending(x => x.GlFiscalYearId).ToList();
 
-        //    // Convert to DataSourceResult
-        //    DataSourceResult result = data.ToDataSourceResult(request);
+        //    DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
+        //    {
+        //        EmployeePerformanceId = employeePerformance.EmployeePerformanceId,
+        //        EmployeeId = employeePerformance.EmployeeId,
+        //        GlFiscalYearId = employeePerformance.GlFiscalYearId,
+        //        GlPeriodId = employeePerformance.GlPeriodId,
+        //        BusinessUnitId = employeePerformance.BusinessUnitId,
+        //        OrgStructureId = employeePerformance.OrgStructureId,
+        //        ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
+        //        BranchId = employeePerformance.BranchId,
+        //        IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
+        //        IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
+        //        IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
+        //        IsApproved = employeePerformance.IsApproved,
+        //        IsHRApproved = employeePerformance.IsHRApproved,
+        //        IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
+        //        IsCorporateApplied = employeePerformance.IsCorporateApplied,
+        //        IsSectorApplied = employeePerformance.IsSectorApplied,
+        //        DateCreated = employeePerformance.DateCreated,
+        //        ImmediateSuppurvisorApprovalDate = employeePerformance.ImmediateSuppurvisorApprovalDate,
+        //        SecondLevelApprovalDate = employeePerformance.SecondLevelApprovalDate,
+        //        FinalApprovalDate = employeePerformance.FinalApprovalDate,
+        //        Date = employeePerformance.Date,
+        //        IsCurrent = employeePerformance.IsCurrent,
+        //        IsHRRejected = employeePerformance.IsHRRejected,
+        //        ReasonForHRRejection = employeePerformance.ReasonForHRRejection,
+        //        //Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
+        //        //Weight = GetWeight(employeePerformance.EmployeePerformanceId),
+        //        AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
+        //        //Result = employeePerformance.Result,
+        //        //Result = GetResult(employeePerformance.EmpMeasurementId),
+        //        Remark = employeePerformance.Remark
+        //    });
 
         //    return Json(result);
         //}
-        public ActionResult EmployeePerformanceAllSummaries_Read([DataSourceRequest] DataSourceRequest request)
-        {
+        //public ActionResult EmployeePerformanceSummaries_OnePerson_Read([DataSourceRequest] DataSourceRequest request,int employeeId,int fiscalyearId, int quarterId)
+        //{
+        //    List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
+        //    //var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+        //    //var subordinates = EmployeeHelper.GetSubordinates(id);
+        //    var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId==employeeId&&x.GlFiscalYearId==fiscalyearId&&x.GlPeriodId==quarterId&x.IsApproved&&x.IsAcceptedByEmployee&&x.IsSecondLevelApproved).ToList();     
+        //    //IQueryable<EmployeePerformance> employeePerformances = db.EmployeePerformances;
+        //    DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
+        //    {
+        //        EmployeePerformanceId = employeePerformance.EmployeePerformanceId,
+        //        EmployeeId = employeePerformance.EmployeeId,
+        //        GlFiscalYearId = employeePerformance.GlFiscalYearId,
+        //        GlPeriodId = employeePerformance.GlPeriodId,
+        //        EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
+        //        OrgStructureId = employeePerformance.OrgStructureId,
+        //        BranchId = employeePerformance.BranchId,
+        //        BusinessUnitId = employeePerformance.BusinessUnitId,
+        //        ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
+        //        IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
+        //        IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
+        //        IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
+        //        IsApproved = employeePerformance.IsApproved,
+        //        IsHRApproved = employeePerformance.IsHRApproved,
+        //        IsCurrent = employeePerformance.IsCurrent,
+        //        IsCorporateApplied = employeePerformance.IsCorporateApplied,
+        //        IsSectorApplied = employeePerformance.IsSectorApplied,
+        //        DateCreated = employeePerformance.DateCreated,
+        //        Date = employeePerformance.Date,
+        //        ImmediateSuppurvisorApprovalDate = employeePerformance.ImmediateSuppurvisorApprovalDate,
+        //        SecondLevelApprovalDate = employeePerformance.SecondLevelApprovalDate,
+        //        FinalApprovalDate = employeePerformance.FinalApprovalDate,
+        //        IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
+        //        IsHRRejected = employeePerformance.IsHRRejected,
+        //        ReasonForHRRejection = employeePerformance.ReasonForHRRejection,
+        //        Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
+        //        Weight = GetWeight(employeePerformance.EmployeePerformanceId),
+        //        //AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
 
-            var employeePerformances = db.EmployeePerformances
-                                .Where(x => x.IsSecondLevelApproved).DistinctBy(x => new
-                                {
-                                    x.EmployeeId,
-                                    x.GlFiscalYearId,
-                                    x.GlPeriodId,
+        //        Remark = employeePerformance.Remark
+        //    });
 
-                                }).OrderByDescending(x => x.GlFiscalYearId).ToList();
-
-            DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
-            {
-                EmployeePerformanceId = employeePerformance.EmployeePerformanceId,
-                EmployeeId = employeePerformance.EmployeeId,
-                GlFiscalYearId = employeePerformance.GlFiscalYearId,
-                GlPeriodId = employeePerformance.GlPeriodId,
-                BusinessUnitId = employeePerformance.BusinessUnitId,
-                OrgStructureId = employeePerformance.OrgStructureId,
-                ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
-                BranchId = employeePerformance.BranchId,
-                IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
-                IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
-                IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
-                IsApproved = employeePerformance.IsApproved,
-                IsHRApproved = employeePerformance.IsHRApproved,
-                IsHRRejected = employeePerformance.IsHRRejected,
-                IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
-                IsCurrent = employeePerformance.IsCurrent,
-                Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
-                Weight = GetWeight(employeePerformance.EmployeePerformanceId),
-                AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
-                //Result = employeePerformance.Result,
-                //Result = GetResult(employeePerformance.EmpMeasurementId),
-                Remark = employeePerformance.Remark
-            });
-
-            return Json(result);
-        }
-        public ActionResult EmployeePerformanceSummaries_OnePerson_Read([DataSourceRequest] DataSourceRequest request,int employeeId,int fiscalyearId, int quarterId)
-        {
-            List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
-            //var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            //var subordinates = EmployeeHelper.GetSubordinates(id);
-            var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId==employeeId&&x.GlFiscalYearId==fiscalyearId&&x.GlPeriodId==quarterId&x.IsApproved&&x.IsAcceptedByEmployee&&x.IsSecondLevelApproved).ToList();     
-            //IQueryable<EmployeePerformance> employeePerformances = db.EmployeePerformances;
-            DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
-            {
-                EmployeePerformanceId = employeePerformance.EmployeePerformanceId,
-                EmployeeId = employeePerformance.EmployeeId,
-                GlFiscalYearId = employeePerformance.GlFiscalYearId,
-                GlPeriodId = employeePerformance.GlPeriodId,
-                EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
-                OrgStructureId = employeePerformance.OrgStructureId,
-                BranchId = employeePerformance.BranchId,
-                BusinessUnitId = employeePerformance.BusinessUnitId,
-                ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
-                IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
-                IsImmediateSuppurvisorApproved = employeePerformance.IsImmediateSuppurvisorApproved,
-                IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
-                IsApproved = employeePerformance.IsApproved,
-                IsHRApproved = employeePerformance.IsHRApproved,
-                IsCurrent = employeePerformance.IsCurrent,
-                IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
-                Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
-                Weight = GetWeight(employeePerformance.EmployeePerformanceId),
-                AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
-
-                Remark = employeePerformance.Remark
-            });
-
-            return Json(result);
-        }
+        //    return Json(result);
+        //}
         public ActionResult EmployeeMeasurements_Read([DataSourceRequest] DataSourceRequest request, int performanceId)
         {
             
@@ -326,21 +551,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             if (employeePerformanceScore.Score > employeePerformanceScore.Weight)
             {
                 ModelState.AddModelError("", "Score can't exceed the weight");
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+
             }
 
-            //var criteriaType = db.EvaluationCriteriaActionTypes.FirstOrDefault(x => x.IsActive);
-            //if (criteriaType != null && criteriaType.PerformanceCriteriaActionType == PerformanceCriteriaActionType.Open)
-            //{
-            //    //var revertOther = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeePerformanceScore.EmployeeMeasurementId && x.EmployeePerformanceScoreId != employeePerformanceScore.EmployeePerformanceScoreId).ToList();
-            //    //foreach (var rev in revertOther)
-            //    //{
-            //        //rev.IsChecked = false;
-            //        //rev.Score = 0;
+           
+            var allowedScores = db.EmployeePerformanceScores.Select(x => x.Score).OrderBy(x => x) .ToList();
 
-            //        db.Entry(rev).State = EntityState.Modified;
-            //        db.SaveChanges();
-            ////    }
-            //}
+            if (allowedScores.Any() && !allowedScores.Contains(employeePerformanceScore.Score))
+            {
+                var allowedValuesText = string.Join(", ", allowedScores);
+
+                ModelState.AddModelError("Score",
+                    $"Invalid score. Allowed values are: {allowedValuesText}. " +
+                    "Please contact HR to modify the evaluation score configuration if needed.");
+
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+            }
 
             if (ModelState.IsValid)
             {
@@ -375,7 +602,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public JsonResult GetFiscalYear()
         {
 
-            var fiscalYear = db.GLFiscalYears.ToList();
+            var fiscalYear = db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
 
             return Json(fiscalYear.Select(p =>
             new
@@ -415,33 +642,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             // Check if there are any employee performances
             if ( !employeePerformances.Any())
             {
-                var errorMessage = new
+                return Json(new
                 {
                     Message = "No employee performance records found for the given criteria.",
                     Status = "Not-OK"
-                };
-                return Json(errorMessage, JsonRequestBehavior.AllowGet);
+                }, JsonRequestBehavior.AllowGet);
             }
 
             // Calculate total performance weight, ensuring that GetPerformanceWeight is not null
             decimal weight = employeePerformances
                 .Sum(performance => GetPerformanceWeight(performance.EmployeePerformanceId));
 
-            // Check if the total weight is 100
-            if (weight != 100)
-            {
-                var errorMessage = new
-                {
-                    Message = $"The total evaluation weight is {weight}. Please adjust the weight to sum up to 100%.",
-                    Status = "Not-OK"
-                };
-                return Json(errorMessage, JsonRequestBehavior.AllowGet);
-            }
+            var performanceEvaluation = db.PerformanceEvaluationSettings.FirstOrDefault(x => x.IsActive);
+            // Default required weight = 100
+            decimal requiredWeight = 100m;
 
+            // If setting exists and has a valid TotalWeight, use it
+            if (performanceEvaluation?.TotalWeight > 0)
+            {
+                requiredWeight = performanceEvaluation.TotalWeight.Value;
+            }
+            // Determine if validation should run
+            bool shouldValidate = performanceEvaluation?.EnforceTotalWeightValidation ?? true;
+            if (shouldValidate && weight != requiredWeight)
+            {
+                return Json(new
+                {
+                    Message = $"The total evaluation weight is {weight}. It must equal {requiredWeight}.",
+                    Status = "Not-OK"
+                }, JsonRequestBehavior.AllowGet);
+            }
             // Approve all evaluations in memory and save them in a single batch
             foreach (var employeePerformance in employeePerformances)
             {
                 employeePerformance.IsHRApproved = true;
+                employeePerformance.FinalApprovalDate = DateTime.Now;
+                employeePerformance.FinalApprover = User.Identity.Name;
                 db.Entry(employeePerformance).State = EntityState.Modified;
             }
             db.SaveChanges(); // Save changes once after all modifications
@@ -461,12 +697,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
 
             // Return success message
-            var successMessage = new
+           
+            return Json(new
             {
-                Message = "All evaluations have been successfully approved.",
+                Message = "All evaluations have been successfully approved..",
                 Status = "OK"
-            };
-            return Json(successMessage, JsonRequestBehavior.AllowGet);
+            }, JsonRequestBehavior.AllowGet);
         }
 
         public decimal GetPerformanceWeight(int empPerformanceId)
@@ -601,9 +837,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         {
             List<int> employeeIdLists = new List<int>();
 
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(user);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(user);
 
-            var placements = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent).ToList();
+            var placements = db.Placements.Where(x => mybraches.Contains(x.BranchId) && x.isCurrent).ToList();
             foreach (var place in placements)
             {
                 var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.EmployeeId && x.IsActive);
@@ -629,7 +865,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 x.GlFiscalYearId == yearId &&
                 x.GlPeriodId == periodId &&
                 x.EmployeeId == employeeId &&
-               ( !x.IsSectorApplied|| !x.IsCorporateApplied) &&
                 x.IsApproved &&
                 x.IsImmediateSuppurvisorApproved &&
                 x.IsSecondLevelApproved).ToList();
@@ -642,10 +877,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             foreach (var performance in employeePerformances)
             {
                 performance.IsSecondLevelApproved = false;
-                performance.IsAveraged = false;
                 performance.IsImmediateSuppurvisorApproved = false;
-                performance.IsHRRejected = true;
-                performance.IsHRRejected = true;
                 performance.IsHRRejected = true;
                 performance.IsHRApproved = false;
                 performance.ReasonForHRRejection = reason;
@@ -658,6 +890,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return Json(new { success = true, message = "Performance evaluation successfully rejected." });
         }
+
 
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)

@@ -35,6 +35,8 @@ namespace ExceedERP.Core.Domain.Common
         JOBTITLECHANGE,
         [Display(Name = "Enum_AssignmentType_ACTING", ResourceType = typeof(Resources))]
         ACTING,
+        [Display(Name = "Enum_AssignmentType_SCALE_PROMOTION", ResourceType = typeof(Resources))]
+        SCALE_PROMOTION
 
 
 

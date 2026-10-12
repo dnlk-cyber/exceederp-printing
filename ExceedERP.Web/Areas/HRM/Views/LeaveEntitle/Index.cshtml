@@ -77,7 +77,7 @@
                             })
                             .ValuePrimitive(true)
                     )
-                    @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+                    @if (HttpContext.Current.User.IsInRole("LeaveEntitlementManager"))
                     {
                         @(Html.Kendo().Button()
                                 .Name("btnRefresh")

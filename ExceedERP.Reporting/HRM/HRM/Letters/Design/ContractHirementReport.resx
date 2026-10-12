@@ -1,0 +1,710 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>ጉዳዩ፡ ለተወሰነ ጊዜ የተደረገ የቅጥር ውል ይመለከታል፤</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>ለአቶ ወ/ሮ/ሪት :</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>ከሰላምታ ጋር</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>ግልባጭ፡-</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>ኢ.ኮ.ስ.ኮ </value>
+  </data>
+  <data name="htmlTextBox2.Value" xml:space="preserve">
+    <value>&lt;span lang="EN-US" style="font-size: 11.5pt; font-family: nyala; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt; line-height: 150%; mso-pagination: none; mso-layout-grid-align: none"&gt;&lt;span style="font-size: 11pt"&gt;&lt;span style="font-family: times new roman"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;በ {Fields.VaccancyDate}&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;በወጣው&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;የቅጥር&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ማስታወቂያ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;መሰረት&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ለውድድር&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ተመዝግበውና&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ተፈትነው&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;አብላጫ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ውጤት&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ስላገኙ፤&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;እ&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt;.&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ኤ&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt;.&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;/span&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;&lt;span style="font-size: 11.5pt"&gt;አ&lt;/span&gt;{Fields.AssignmentDate} &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ጀምሮ በ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt;{Fields.Branch}&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; color: #000000; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin; mso-themecolor: text1"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ስር&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;በሚገኘው&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; color: #000000; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala; mso-themecolor: text1"&gt;በ {Fields.WorkUnit} &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt; mso-spacerun: yes"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ውስጥ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; color: #000000; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala; mso-themecolor: text1"&gt;{Fields.JobTitle} &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;የስራ &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;መደብ፤ &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ደረጃ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;{Fields.Rank} &lt;/span&gt;&lt;/b&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt; mso-spacerun: yes"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;የደመወዝ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;መጠን&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ብር &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt;{Fields.Salary}&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span style="font-size: 11.5pt; mso-effects-shadow-color: black; mso-effects-shadow-alpha: 40.0%; mso-effects-shadow-dpiradius: 4.0pt; mso-effects-shadow-dpidistance: 3.0pt; mso-effects-shadow-angledirection: 2700000; mso-effects-shadow-align: topleft; mso-effects-shadow-pctsx: 100.0%; mso-effects-shadow-pctsy: 100.0%; mso-effects-shadow-anglekx: 0; mso-effects-shadow-angleky: 0"&gt;(&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;/span&gt;&lt;/span&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala; mso-effects-shadow-color: black; mso-effects-shadow-alpha: 40.0%; mso-effects-shadow-dpiradius: 4.0pt; mso-effects-shadow-dpidistance: 3.0pt; mso-effects-shadow-angledirection: 2700000; mso-effects-shadow-align: topleft; mso-effects-shadow-pctsx: 100.0%; mso-effects-shadow-pctsy: 100.0%; mso-effects-shadow-anglekx: 0; mso-effects-shadow-angleky: 0"&gt;{Fields.SalaryInWord}&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala; mso-effects-shadow-color: black; mso-effects-shadow-alpha: 40.0%; mso-effects-shadow-dpiradius: 4.0pt; mso-effects-shadow-dpidistance: 3.0pt; mso-effects-shadow-angledirection: 2700000; mso-effects-shadow-align: topleft; mso-effects-shadow-pctsx: 100.0%; mso-effects-shadow-pctsy: 100.0%; mso-effects-shadow-anglekx: 0; mso-effects-shadow-angleky: 0"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="font-size: 11.5pt; text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin; mso-effects-shadow-color: black; mso-effects-shadow-alpha: 40.0%; mso-effects-shadow-dpiradius: 4.0pt; mso-effects-shadow-dpidistance: 3.0pt; mso-effects-shadow-angledirection: 2700000; mso-effects-shadow-align: topleft; mso-effects-shadow-pctsx: 100.0%; mso-effects-shadow-pctsy: 100.0%; mso-effects-shadow-anglekx: 0; mso-effects-shadow-angleky: 0"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin; mso-effects-shadow-color: black; mso-effects-shadow-alpha: 40.0%; mso-effects-shadow-dpiradius: 4.0pt; mso-effects-shadow-dpidistance: 3.0pt; mso-effects-shadow-angledirection: 2700000; mso-effects-shadow-align: topleft; mso-effects-shadow-pctsx: 100.0%; mso-effects-shadow-pctsy: 100.0%; mso-effects-shadow-anglekx: 0; mso-effects-shadow-angleky: 0"&gt; &lt;/span&gt;&lt;/b&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;እየተከፈልዎ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;እንዲያገለግሉ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ለስድስት&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; (06) &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ወር&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ከዚህ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ደብዳቤ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ጋር&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;በተያያዘው&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; 01 (&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;አንድ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt;) &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ገጽ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: simsun; mso-bidi-font-family: nyala"&gt;የ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ተወሰነ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ጊዜ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;የተደረገ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ቅጥር&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ውል&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;መሠረት&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;የተቀጠሩ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;መሆኑን&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;እየገለፅን፤&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;የተጣለብዎትን&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ተግባርና&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ኃላፊነት&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;በአግባቡ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;እንዲወጡ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ከአደራ&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;ጭምር&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt"&gt; &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: nyala"&gt;አስታውቃለሁ፡፡&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11.5pt; line-height: 150%; mso-fareast-font-family: calibri; mso-fareast-theme-font: minor-latin; mso-bidi-font-family: calibri; mso-ascii-font-family: calibri; mso-ascii-theme-font: minor-latin; mso-hansi-font-family: calibri; mso-hansi-theme-font: minor-latin; mso-bidi-theme-font: minor-latin"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt; &lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt; line-height: 150%; mso-pagination: none; mso-layout-grid-align: none"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt; line-height: 150%; mso-pagination: none; mso-layout-grid-align: none"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;span style="font-size: 11.5pt; font-family: times new roman"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>ማሳሰቢያ፡</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Parameters.notify.Label</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Today()</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>Ref. No:_________________________</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>'</value>
+  </data>
+  <data name="htmlTextBox1.Value" xml:space="preserve">
+    <value>&lt;p style="text-align: left"&gt;&lt;span style="font-size: 16px; font-family: times new roman"&gt;&lt;/span&gt;&lt;span style="font-size: 16px"&gt;&lt;span style="font-family: times new roman"&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 27.7pt 10pt 5.45pt; line-height: 11pt; mso-pagination: none; mso-line-height-rule: exactly"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #363435; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="mso-spacerun: yes"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #363435; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የተሰማራባቸው&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #363435; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #363435; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የሥራ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #363435; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 27.7pt 10pt 5.45pt; line-height: 11pt; mso-pagination: none; mso-line-height-rule: exactly"&gt;&lt;/p&gt;&lt;/span&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 27.7pt 10pt 5.45pt; line-height: 11pt; mso-pagination: none; mso-line-height-rule: exactly"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #363435; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="mso-spacerun: yes"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #363435; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;መስኮች&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #000000; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 27.7pt 10pt 5.45pt; line-height: 11pt; mso-pagination: none; mso-line-height-rule: exactly"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;span style="font-size: 16px"&gt;&lt;span lang="EN-US" style="font-family: symbol; color: #a6a6a6"&gt;·&lt;/span&gt;&lt;span lang="EN-US"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የትራንስፖርት&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;መሰረተ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ልማት&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ግንባተታ፤&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;span style="font-size: 16px"&gt;&lt;span lang="EN-US" style="font-family: symbol; color: #a6a6a6"&gt;·&lt;/span&gt;&lt;span lang="EN-US"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ውሃ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;መሰረተ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ልማት&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ግንባታ፤&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;span style="font-size: 16px"&gt;&lt;span lang="EN-US" style="font-family: symbol; color: #a6a6a6"&gt;·&lt;/span&gt;&lt;span lang="EN-US"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የህንፃና&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ቤቶች&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ልማት&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ግንባታ፤&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;span style="font-size: 16px"&gt;&lt;span lang="EN-US" style="font-family: symbol; color: #a6a6a6"&gt;·&lt;/span&gt;&lt;span lang="EN-US"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የግንባታ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;መሳሪያና&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ማሽነሪ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ጥገና&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;እና&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;መገጣጠም፤&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;span style="font-size: 16px"&gt;&lt;span lang="EN-US" style="font-family: symbol; color: #a6a6a6"&gt;·&lt;/span&gt;&lt;span lang="EN-US"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የግንባታ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ግብዓት&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ማምረት፤&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;span style="font-size: 16px"&gt;&lt;span lang="EN-US" style="font-family: symbol; color: #a6a6a6"&gt;·&lt;/span&gt;&lt;span lang="EN-US"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የፕሮጀክት&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ማነኔጅመንት&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;የግብርና&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="font-family: calibri"&gt; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 102%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ልማት፤&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 102%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 4.25pt 5.05pt 10pt 9pt; line-height: 102%; text-indent: -9pt; mso-pagination: none; tab-stops: 9.0pt"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;span style="font-size: 16px"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-family: nyala; color: #363435; mso-ansi-language: amh; mso-ascii-font-family: &amp;quot;power geez unicode1&amp;quot;"&gt;&amp;nbsp;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 10pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #363435; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;/p&gt;&lt;/span&gt;&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-family: &amp;quot;power geez unicode1&amp;quot;; color: #363435; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt;&lt;span style="mso-spacerun: yes"&gt;&lt;span style="font-size: 16px; font-family: calibri"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #363435; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;አድራሻ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #363435; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 6pt; font-family: nyala; line-height: 115%; mso-ansi-language: amh; mso-ascii-font-family: &amp;quot;power geez unicode1&amp;quot;"&gt;&amp;nbsp;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 6pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #000000; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 7pt; color: #0000c0; line-height: 115%"&gt;&lt;span style="mso-spacerun: yes"&gt;&lt;span style="font-family: calibri"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ስልክ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="EN-US" style="font-size: 8pt; color: #a6a6a6; line-height: 115%"&gt;&lt;span style="font-family: calibri"&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;+251&lt;span style="letter-spacing: 0.25pt"&gt; &lt;/span&gt;&lt;span style="mso-font-width: 102%"&gt;118 282 948&lt;/span&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;span lang="EN-US" style="font-size: 8pt; color: #a6a6a6; line-height: 115%"&gt;&lt;span style="font-family: calibri"&gt;&lt;span style="mso-spacerun: yes"&gt;&lt;p class="MsoNormal" style="margin: 1.2pt 0in 10pt 8.45pt; mso-pagination: none"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima; mso-font-width: 91%"&gt;ፋክስ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="EN-US" style="font-size: 8pt; color: #a6a6a6; line-height: 115%; mso-font-width: 91%"&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="EN-US" style="font-size: 8pt; color: #a6a6a6; line-height: 115%"&gt;+251&lt;span style="letter-spacing: 0.25pt"&gt; &lt;/span&gt;&lt;span style="mso-font-width: 102%"&gt;116 676 090&lt;/span&gt; &lt;p&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="margin: 1.2pt 0in 10pt; mso-pagination: none"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: nyala; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh"&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ፖ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: nyala; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh"&gt;.&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ሳ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: nyala; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh"&gt;.&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ቁ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; color: #a6a6a6; line-height: 115%"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="EN-US" style="font-size: 8pt; color: #a6a6a6; line-height: 115%; mso-font-width: 103%"&gt;21952/1000 &lt;p&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="margin: 1.2pt 0in 10pt; mso-pagination: none; tab-stops: 74.15pt"&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ጉርድ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ሾላ፤&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ከኢትዮጵያ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;አትሌቲክስ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ፌደሬሽን&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ገባ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: &amp;quot;power geez unicode1&amp;quot;; color: #a6a6a6; line-height: 115%; mso-hansi-font-family: nyala; mso-ansi-language: amh"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="AMH" style="font-size: 8pt; font-family: ebrima; color: #a6a6a6; line-height: 115%; mso-ansi-language: amh; mso-bidi-font-family: ebrima"&gt;ብሎ&lt;/span&gt;&lt;/b&gt;&lt;b&gt;&lt;span lang="EN-US" style="font-size: 8pt; color: #a6a6a6; line-height: 115%"&gt; &lt;p&gt;&lt;/p&gt;&lt;/span&gt;&lt;p&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;strong&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/strong&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;/p&gt;&lt;/span&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;span lang="EN-US" style="font-size: 8pt; font-family: &amp;quot;times new roman&amp;quot;,serif; color: #a6a6a6; line-height: 115%; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-theme-font: minor-bidi"&gt;&lt;strong&gt;&lt;/strong&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 10pt 5.45pt; mso-pagination: none"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>{PageNumber}</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>page:</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>'</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>የተሻለ ነገን እንገነባለን !</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="pictureBox1.Value" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAAcIAAABgCAYAAACOu3IUAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAW
+        JQAAFiUBSVIk8AAAUc5JREFUeF7tXQd4FVXa3n+rFRSx97q2VVcgBUQQLIhixa6Iva8VRUoS0gsQehOQ
+        omChSm8iFpCahPSeEBJI7/WW93/eb3JuJjf3JiGkAfPuc5ZMO3PmzPW88/W/wIABAwYMGDiF8Rf7HQYM
+        GDBgwMCpBIMIDRgwYMDAKQ2DCA0YMGDAwCmNE5oIrbCiEiXIRgKSsRMp2Il4/IIobEAkNiAam5GDRFSj
+        0v7SDoEJ1ShDHjIQgRhsRRx+Rir24SjikY8MlCIXNaiyv6zTwSyjLJW5r5R/S2W7CuWwwGx/ugEDBgx0
+        apxwREgyqUAh0rEHP2MCFuEpTEIPBOI6BOF6BOBa+OOq2nY1pqEfluED7MQ8HMIBFOEozKi277ZNUIMK
+        5CAFifgNB7ACP2EU5uExTIYbgnEzAnEtxuNWTEUfzMS9mIdHsQIfYhfm4hDCUIZ8ofuOhhUWlKMQRxGL
+        MCzDWozEN3gOi/AMFuP52vYsluJ1bMNEJOBnFCIT1UKMJvvuDBgwYKBT4YQjwqOIQyTWYBYGYwzOwmj8
+        FR44HV4429a80QXe6Ipx6AJP/AtjcTp8cQ3m4mnswGzkI9W+2zZBFqKxERPxFV5CKO7GWJyNMfgHvHA6
+        xuEseONsjMOZMn4PnIax+CdG4e8Yi26Yg0exDz+iCiX23bY7OIYIrMG3eBXeuBxf4q8y73yWMfibtNH4
+        m4zfG1dgKu7DFkwSabcQWfbdGTBgwECnwglDhNlIwmb4Yyb6IxR3wAcXwBvnwBfnwQ8XNNK6wxfd4INu
+        8MVFGI/bsAjP4xdMxV4sRRZiYG5FqcUCi6g6d2ExluBNhKIXfHGpjFcbQ3f44fzapsaobfMYz+FzeeN8
+        TMRtWIpXsA/fieqUquD2RBXKEIstWIb3EYqe8MXFGCdjO1fmnePV/q1r3jgPPrgQIbgFMzAQC/EMfsEk
+        pGM/KlFmfwsDBgwY6HB0aiKkvYmqRarbJsEVHjgLnjgD49C1llDsSa/xxmt4rRfOhCfOxThcIAv8SnyE
+        KKxHEbKEyFoCKmzTsAfr4Y2p6AsfIY2z4SNjJVkf23g5Vkq2niLtnieq07UYg98wA5k4KCTVFqCdLw6/
+        4BdMwRK8Aj9cAQ+Z87Ob8dGhGsd+Drxq35cXuiAI/5YPkN8xE5mIFLWpAQMGDHQGdEoiNKESRxCLHZiF
+        WXhIiMATZ9ZKThc6WHiPvWnSTDdZ4LW+r8R8PIbtmIIMhIvzB6m4MZCM0rEXEViFVfgMIbgVnugiKlkf
+        nGsn9bW8+eJcUfl6iCr1PITiTvyAN7EP3yAHCTChxn5ox4xyFCEW27EM7yEQ12OskNhZ8ME5DcZzrE0j
+        9a5CqJ44RyR6bfzfijNTCXLaWdY1YMCAgTp0IiK0IBvxiMMO/IzpmImH4I2Laxfjbq1GgA0b+z1fFmoS
+        4jh0xxT0xk8Yg734AQnYgWJk20ZJRx2qaaOwESvwESbgFlEZeop98qxaqamtxqqpTnkf2hWpPp0Gd6zF
+        aPGWLUUOLMfoCKQIcDk+RTBuFXtqnfTXeh8eqh/2y/GPxWky/unog/l4FBvhgXhsRQWK7IdowIABA22K
+        DidCenDSm3MLQjAbD2MiesIPlwsBUr3WuFSl2dW4uJIgKL1QFUlpzMdmt2rsevuF+ny5lgs1Ja8AXIeJ
+        6IWFeB4b4IltGI+18MXXeF48PjXi5Dj1qtrGiIPjVWPlGJWtTbO3Nf6s+nFqffF5qTqlypheqEvwOtbD
+        DzuxAIdrpVp7uyJVv/S8zUMq/sTX8myBuBFeOEck2eY9h2rK1tmccatmP346C50m0qI/LhdS3IGZOCK2
+        2+OXdA0YMNA4zFazU5NQteXYPqxPVLQ7EdIVn+RXhlwk4BeswMcSQsCFWHl8ampF+wXUvnHxJYHQuYTE
+        wu1LhUTprOEt6jiNdOpLN81Z4Nl47blCcpoEdia8hLwuqnVm6dpsu5+/3Ls7/KznwcfaHd5sIoXW/s39
+        Ms5u8Jc+j2WcbJo9kfZPErgvLkMoXLAYw4S8D+B7JGALorAK6zASS/EyQtFDnoc2vPpE3nTzt6mWtY8Q
+        bR70pHgsY9eapj4lMdKmeK6MbyU+lZjQXKTI78WEKvn9GDBgoHVQYamA/yF/TMic0OCj+YecH/BB8gfI
+        q8mrt/9kRLsToQnlSMFurIUfQtADY0Wq6tJMUqEUQRXk6RgjC/g1CEU/cevfjsnYjR+wGz/iZ0zFKozB
+        YryOUNwlLv1jap1kfFts89LIrI5U7Y/bN5JBN5HYRuEfGMXxVt2CGSXDsKbaH7/iK2y2hOL78rFYUPku
+        ptc8Dn/TbRhlpSPPv+ArRGvfZ1NNjZGOQF3kw2Kc2EFJsvSy7S6qT6olNfWnIl37fhw1fnCcWRviwZCU
+        c+HBjwLTDfCquRajzeditLmrvE8fnCXnN79vfbtQ5pjjG4szEIDrJexlOUYiCttQ3QnCSQwAB8sOIr0y
+        3X53qyG5Ihnz8+djwdEFIrG0NRLLE+V+C48udCodHStiy2MxO282Fh1d1IBk9MiqzsKBkgP2u1sF6/LW
+        YX7BfPxW9Bus1oZjSKhIgFu8G3pF98KEjAmYmzVX2pzMOeh1oBdck12xNm9to+M/GdBuRFiNUmQjEYn4
+        A6vhiVC4ywKtOWM0tWDSNsaFnVIPF/srMQdDsAY+2IXvkIRdEu5dLv8rQwGOIBPxSMAu7MZ3WAdvLMAL
+        CMKt8Ki1BSoVavMI+FiaRkQkXUqRgbgJMy1DsNDyKjZUTkFY+Q5kmdJQikLkWbOQWhWPuOp9CDdtxjbT
+        TMyvGYYg0x3wtHQXdSFjDSkpNo989Y1zynnTJFoSsuYU1B3+zZI4OS+UVLX58rCeDR/LFZhgccMc8xNY
+        gRFYBx9sME3CqkpfLK5+Fwur38SU6kHwqb4WHlbel96mtJu2xHHoQvltUFPgg8sRhP9gEYZjD5aIjfZk
+        /w+zMyOtMg1D4obgiegnUGwutj/cKtiQtwG9M3ujR1gPmNshW9FPuT+hd1Zv9NjXo9WIkAT3atKrcE11
+        xZTDUxz+ZimRPRvzLAbFDUJCeYL94ePGSzEvoXdOb4xNHevw/kkVSXCLcUOPAz3gEucC1wRX+dcl1gU9
+        D/SU7fX56x1eezKhzYmQnpWJ+BWrMRpz8ASmoD/8cIkssNpi62xBpopPSTbdEIhb8I14Gv4gmVpKkC/x
+        f9oLct74PypjK1CCQwjHdszEXDwBf1wLH1wC71q1XMP7H0vT1LQkLU/r2RhnuhxTqx/AVstkZCAapdYi
+        VFmrYLFaGh0v/wOssJQjy5yCvabVWFrzEULMLvC0nAdPK+2WDMegHa+5YQxsivQurCVA++P6Rhtm7Zxb
+        usLLfBH8K+/AvKqXsM08A3GmXci1ZKAMJTL3HK/YHC0mVFmqUWWpQq7pCCIr/8CayvGYU/UCJlUPhLfl
+        0tqkB8rxSZFiU+PhcWoBtA8mkiJjMhmeshpfIAYbUSyZglovDvRkw+6S3RgUMwj9w/qj74G+eCDhASw4
+        sqDBwvZC9AsYlDIIK3JXNDhmj7CSMLinu8sieVfYXbgv/D7cH3u/w4Wcv4nxh8fjwfgH0Tesr4xhQMQA
+        JJUn2Z9qQ251LpYeXQr3VHe4h7sjtybX/pQGKDIXYWj0UAyMGCj3uC/6PryX+B5KzM3TIKzPWw/XeFfc
+        tf8uHK46jKPVR3G05mg9tSDn5ZeiXzAodhD6hfXD3WF344H4B/Bd9neosTq2Z+fX5OORmEfgkuCCGVkz
+        cKT6SL3jRTVFcE9wl+Mu+11wX8R98o42F25u8j0Q3xz5BoPTBuOl2JdkfbHHm3FvwjXJFV8mfyn3lucy
+        HbXZ/iht55vypfED56HIh9ArphdW5q1EqakUJZaSenbCMksZ3k96X+aX83xv5L14MupJec4TGW1GhFyg
+        DuAHLMaLCMaNYrviQq7ZALkY2i96bCr4nTY4EuENmIz7sRyjEI2fUY7W+fpkPwn4HWFYg2UYJU4xmtRi
+        P57GmiZxqewwnubz4F9xJxaXfYw9lWtRYKrzNG0pTFYLMs0p2FG1EPMrhyOwqid8q26Ah1lzktGk6WOV
+        tOyfgf/WSo7Ws+BZczFCSwdjfuHHWFU4CdFlu1FqZijJMcAKUAtTZi5DtikT+0xr8L3lE0yw9oKH9RyM
+        tWqZdUjotDc2T0Jl0xxsNAmX6tfLMAN34yeMwE7MRgzWoRCH2y2FXmcHSbDX/l7yhf9czHN4P+F9uMa5
+        ihqMKkC9pDUofBDcUt2wLHdZkwswVaKfH/ocnyV/hncT30WviF4iQcSUx9ifik35m+CW4IYe+3vgw4QP
+        8XHix7gv8j4MiB0gqkN7RJZH4u6ouzHo4CB8lvQZ+kf1xxNxT4jk0hg+SPhAyOSBiAfkHiQ0qvUmH57c
+        5PMQQoSxriIR9orsJeThluKGAQcHIL4sXs4pMZXALdYNPSN6YnjscLyT8I48O4kjqbLh+ApqCvBuyrvo
+        FaW9A857z/CeQqZKTVlhrsCI5BHyrJ8kfyJk6Jroip/yf2py3CSfkakj4RLvAt90X4fnkwj5PJx/viN5
+        rnQ3jEofJR8p9qBK1CXKBT339cSmok1IraifhSvkUIh8oPADiPPM+ea8f5D4gcP7nyhodSJkTNh+LMfX
+        eEqCyjU3f+WM4WjR1hZAEhGdXhjk7ocbMQPPYCOmIgn7RZprbTBwvAS5+BnTxGuS2VIajs1RU1JKF3iY
+        u8Kn/D8ILrkH3xWPQQxJw9QGge5WoNhUgKTKCISVb8Pycm9Mq34QAebr4Ge1H9+xNH54dIW39RyMq74K
+        k8uG4KfiaUgpj0FhVQGqza1HKFXWGqRborHdPBdfm19GkPk2IUV6jI6TFHjnCik2jxDZNA9fOtcwvdtI
+        /BVeuAg/YoQkHDAAPBP9jCySrye/juxq7cNsXNo4uES6iCqs0lqXjH5wxGBZsN+KfwuhWaFClM1Z2Kqt
+        1XAJd5FrU6pS7A9jS8EWId+7wu+yqRy56LskuuChgw9h4qGJmHxkskhVxNvxb8M1zVVUecTz0c/DLc0N
+        4zPGNzoekiyJzzPVU7afi3pOFv2ph6c2ep3Cmtw1cEt0Q8+wnng06lEsPLIQi48sRp+DffBYwmM4WHpQ
+        JCP/NH+4Z7kjojwCpZZSuBx0Qc/InjhcfbhefyTB95LeQ6/YXrhz351YdGSRkBIJsXdkb2wq2ORwXAPC
+        BsjcbCp0fFyPPcV74J7kjh7hPZxKpMNjhsu7IRmOTh2NxUcXwyfVR+bm8+TP65HhzMMz4RLjImRN0uZ8
+        PpnwZD3pPaw0DPfF3YdHIh+RbY8UD1H9khSbGm9nRqsQIaU/VlTYg6VYiBfFhqfZ4ZTE4mxxU6o4qv0u
+        wRQMxgK8j02YjjSEt0nViGyk4DcsEJvhDNwLf1zZbFWj5sRxFsZYz4Jf1a34puQzHCj+BanlcagwtV+m
+        lBqLGYfLU7Ewbyy8TdeKWtZ+rI03kkhXeFsugHfZbZhS8Dw2FS1EZmUaasxta48RSdFajBTzQWwzzcI8
+        87OYZGEmnksxFv+qtYk25ZCkkSDfBdWlgbhBYj/pNHUQG1CBk9/LrTl4OfZluKa4YlLGJNsitbNwp6gA
+        3fa71SPChyMeFpuQSA8HeiC8LFzXUx1qLDWyoL8a/6r0/2z0syJtsD0d/TSGxQ7Dq3Gv4pWEV6T/bQXb
+        hAj7hPVBpblSxvFR4kdwiXZBz4M9hRhIdE9FPyX9U7LjmEemjBTiZP+UVKdlTmt0oVVEOCpllFz3dOTT
+        mkSY0TyJkMT1SconIo29nfC27Zp7w+6Vhf7HnB9ln8lqQkRVhKgI6dDDZyN5krBfT39dVMtEamWqSMJ8
+        xs0Fm2VfoakQw+KHyfN9mfKl7CM5vZb4mkiYL8a8KBI8+yPRUN3JuXwt9TXElNWXtnn94zGPC9F+n/O9
+        UzsqnYB6h/eWDyJ+lBB0zHGNcZWxUfVJiCQY4yLSbUB6ACJKI9AvvJ8Q4pCYIbYPKYLESGmeqlj1UTMg
+        fID8Jl6Lfc2hpNnZ0WIiZCwav7y3Ihhz8ABC8B+xudFBpGmVnYrXo6r0YkzHYGzGFKThIIqQI323JmhD
+        OopkbMUUTMW98ML5tTarM5oxVjZNretpPRchpl5YWTUO8VX7UUWJqen/xloNNeZqlNWU4mDRbizLnYAJ
+        ZffBVyTCpsbPpkmyVE3Tkcen+gbMyXsf23NX40h5JiwNzQttD5KipRQ5lixEWDbjewtDae4UcuOHVP1c
+        sloMpha6wnd2OSajD1bic8Rhu+Ri1bIBGVAQIkx2RUhGiG1h316wXRZveyLMNmXDJcJFiJDSUUZ1hkO7
+        D23drlGuog7j4vfwwYdtRDj44GDcG36vLLouSS4iMW3J3wK3JDdRtfU50Ef+FVVhvAumZk4VeyX7IvER
+        XIQ5Ptf9rmKDco1whXe6t0P7lx5vx70tizZVm3KPGE1l+c3Rb5pFhASlPc7XG/Fv2K4ZGDZQxrcyd2WD
+        ft5NeBdDY4aK/ZXz5p7hjtDDoXIe1ceUvCktZlRl1F0T/67cwyvNS7bvj7hfpDP3/e4YcnAIeu3TPkQ4
+        j0Mih8g8uR1yw66SXXI+pdLRaaOlj8eSH8OS7CUNxmWPV2JeEXIlIX6Y+CF2Fu/UiHBfT3lHxMjkkUL4
+        VHUrUo0si4RrpKvM46HqQ3a9Aj8X/owXUl/A45GP2z6iqH49ZlNKJ8AxEyFJhTk1f8IXCMXt4i6vxX7R
+        kUN5BzqWAFXwOGPxAnAT5uM5/I6FOIqkNqtjdwTx2IgATMHdkqpNC6ForhqUC28XeFnPx3TzIGwzz0SG
+        OR7mdmaNSlMFIop/x4qcyfg6ZyT8Cu+CZ81FOocj+3HbN2UD7IYJpt6YU/0CdpavQl5VTrsSeVMwWy04
+        QtcqyzzMNw9DsPlO+Fgvk0Tf9Bimo8xEuGMRXsUOzBHnJyNnqXNQyuCCGXwo2Lbvl8JfZLHiwktSU+BC
+        L4vZwTr7WFB6kO24AiUi2hqHxA8Rux3twFxkRTVamSLOJU/FP4Xh8cNFMqDk8HTi09IvidMj1QNe6V4I
+        PRRq6/PrI1/XI7rxh8aLeo6EwHGuL17v0P6ox7dHv4XbQTc8dvAx+KT5wCvDC/Oz5tuf1ij80vxkvl6P
+        e922T4g9wQXLc5fXO1cP/3R/ISx6fm4r3Cb7SIS0JfK5kyuTbee+l/Ce3IPzQPBZ74m/BzsKd8g2HYnY
+        F8MeCJLyY/GPSR+UdDl3JMZRyaNsfRJUtf6U95O0jfkbbftJkt/lfCfzyefINeVif+l+7UNhXy8baY1N
+        GSvjej/xfdu1fJ8cP5/jUFVDIlTgb4AfQrwHiZbq8hMNx0yEOUjCt3gNoyX3JePdlOOLY/JTjedRAvNC
+        V/jjTizAe4jCdtCPsq1Aj1XGK3riMlG7NS+GUJOcKAGOsf4doy2nY6L5XuypWQ+zgzicNocViCndjalH
+        3oZHnjs8y28ScvZrUpLVnoPPzHkfYzkDgeZeWF89E5FVf4qKstPCCiTXxGJN1RTMtQzDFPTCRNyBmXgE
+        y+CJcKxDOZr2JDzVcSxESJLiAkzHDZIiv+5pv3MEemJGlkbK30erjtqIMLo8WvZRZahXpZH0qA58JfYV
+        277GwPO5AHMMStKamOF4LHrQvjY0aahDJ5zmwBERDgwfKKq/ZTnL6p2rh2+ar1xHqVShuURI7CrSpD06
+        0NwTfo+8h9W5q2UfvTnjyzVnHV7DeSQZKqnt98Lf4XvEV+af/Yr36QEXm5RI8qR0zePeh7wlXGN38e5m
+        ESHH3RwiLDAVCBFSIm/p3Hc0jokIE/EL5mJwbfYSpgezX3wbNhKglr3kUoxHH8wWKZDJllNQ0wY2QIIS
+        Zji2SFC9P66pVbE1RhpsJA2NrMfgNARabsU880tYa/FHhiUW1To1UnuhyJKLXywzMaG6D7xrLoePpTt8
+        rc2pZFHnBepVcxlCKwZhVUUAEk37UWEpQc0J8MVGyaPCWoJiaw7ykCLJxTMRLf+yPqK1jTQIJxOaS4Qk
+        nt5JvfFG0hsot2gSNm1V9yXcJ9JDYyDh2ROhPWijdEt2w7C4YU6dOhTolUivxrcT30ZiRSKiyqLgFuYm
+        IQXO7JYK94ffL5LskqNL7A81C46IkKrffkn9sCp3Vb1z9RCVaoqrzLfCsRChgiMitB2DVd4ZiY7qZoKk
+        Q+9b9vdi7IviCMN3S3WrngipuuV1yla5q3hXqxIh+xCv1DgX7CvZZ3/4hECTRMhFhwvQ75iHYNwkmUWY
+        x7Ph4qtvVH+qdFndpFDrz5glNsA80LuqbcQRZtGMxFbMwYsIwO0YJ0HZTWVooefkOfCynA0v04WYWHMX
+        frJ4ItUSgSor4xTbH2aLWcIWZlW+gLEkM5xe6xBDMndG6FpogYRyWLvAr/pmzC97G7+VLUdW1WE0YWIx
+        cBKiKSIkKVHieD3xdSFCelgS/Aih4wYXz/lH5outKKoiymGqreYQIdWeL8S8IGTIcAZnYLzgK4mvoE9S
+        H8zInCH7OBbaMzlmerKqsSj7JYmS+9juCbtHYhtX5TgnrcbgiAh5fzZnQfZ0gPk05VNxjKGKVKEtiJDP
+        R+eYGYdnyPMuzVkq27T1cRzE9Mzp9UJNbEQY74K1+WtlX2sTIcmPatGH4x9GXHmc/eETAo0SISd/FxZh
+        MvqJJyjjt7RF15kaVJOqKDH64VopobQd08RTsymDbmsgBr9iMoZI9pk670P7MaqmSbXe1m7wLr8FUwue
+        xeayr5BpSoKlA/WGvPeBku0ILB4AD7OWVaapQHg+BwPufUzXILiqLxaUv4cD5T+juKa4rb45DJwAYPhE
+        7+zeorpToBcnVY2MfyPorNInpw/6HeinuxKIr4gXb00ujlR5UUpblL2o3jnEkaojQj48l4uzMzDommNx
+        ZHdUmJ01W8ZCBxWFcnO5LMaS9UQ3FhVuYXP1T9IyolAyez/5feSZGpJ2U2DoBcfI5ALNBb1EeQ1JRQ96
+        jYqtNdkNiZWJtv2vxb0m53+R/EW98wkSIdWY7pnuWJ5T3ybJ9dN1n6sQmvRb+274gUBvz2KT4xhrEqHL
+        Phfpc1We9oHwe9HvYmek565KOPB50ucyrtfj6z4COG6On/dLq0qz7bcHkwvw2nlH5tkfOmHQKBGyqvgU
+        9MVo/L3WLtVwEdYapRSt5pwf/o2FeFdyfubiULsQIMFK87PxmCRsbiolmahrLd3gUXMRphU/i18LViK7
+        IgsWS/uMtTGkVyRhUvFQeFjObka+Ti2gn96sU6sfxu8VK3CoMgnFNQUGARrAnpI92Fq6td5Xek5NDrYW
+        bxWPP4Jf+jzn16JfdVdCUqdtLdoqLvd3H7hbFt3F2YvrnUPQIWZL4RY5t7F0a7RL8T7K3uUIzGzCc7hQ
+        KzDzCcmb42C764AWKM+QAYJeoiQDSppyTv4WrCta1+hYnIEhCrz/vtLmq/eYRm1ryVZsL9xeb62jilnN
+        C51JFA6UHpB7OJOeKbGzv8yqTPtDckzNg75tLdgqYS2OwDGpPjlWgloA/gZ4HaVdgpI1x8XxKTBERH4D
+        hVtsKnNH+KPoD7mW5H+iwikRliJX4rJY4kcjFmcLslLJdRF15BoES67P9kQFSvEDPqwda2MeoVogvGf1
+        5ZhT8A5WFUxBZmVKp3EcKazJw6Kyz+Bh5jM4y76jGqXAM+BXdQc21kxFvjm70zyHgZMLEWURGJE6ot6C
+        3lHgQs1sKmph3pC/AYGHApsMrzBgoDE4JcIwLJcgZ00SdEaCrGhwDgJwMybjEWzFLJRB01W3J+KxE0G4
+        rQmp9QIhQZ+a6/BDoS9yK4/A0s5hEI2BJPZbxQ/wrLlKxul8zms9Qc0XYlLJ49hX/jNMneg5DBgwYOBE
+        g0MipDfnOnjCw5bg2dGiTEcUqiGvwkZMQArCpNp5e8MEE9bBTyrLN5ZhRbxcTf/GloqvUGZq/ZRtxwMG
+        yWbXHMHCmrcx1soKEc7UulomHr/qG7Gg4Askl8UZTjAGDBgwcJxwSISlKMD3eFeC5RurzMDsLJNwNw6j
+        42JHKlGChRgmAdeNEQjjAoNLHsaRyrosD50FheZ8hFX+gWmmQZJMu+H4tUZJkCro4KKHsa9gp2EHNGDA
+        gIFWgEMizEM65uGx2kXZMblIsmZcifUIabN4wOYgC4mYigdqHXUajlMbazd4VV+HNUUzJE1ZZ0OKORxL
+        akYh2EL1Lp1kGj6DJg12gZfpcnxb4IuCqobprwwYONXBskaO4Chd3IkKZ6WlmNFFXzLJQPPhkAhzkYqv
+        8LAUhnVEhJq69Gp8jfeQiTrX4I5AAvZiIgbU5p9sOFbxrLSeh9nFbyC/uhNmI7EC+yvXIaD0PviZaR90
+        5JjUXapM+FT9B+MLhyKyqPlebQYMnCr4IecHDEsaJp6xerByBNOURZVH1dt/IoLepCz2+032N/X2M/TC
+        I90DnumeEnJi4NjghAjT8BUecUqElL5CcBd2YSXMcOy2215IxF5MQJ/a5Nn2JEgHmXPgXX2dBJZ3Sq9K
+        K7CvfD0CigbB33R1rddrfSIUr13LZZiQ/wJWFcxEpfFDN2CgASS0It4Vr8a+igmHJkgeT/7LYrcMufg0
+        6VP7S+qBoQiheaG20IzOCMYX8lmYF3ZCxgR5PjYGxDNInnGGzBFq4NjQYiKciLsRjz/tL2130GOU1esd
+        EyFtg10xvux+JDeRtLfDQCKs2IDA4gedEiGz4/ibrse8wlHYXaol9TVg4GQAwx4Yy8Z4QWfgMZXhRd/s
+        rxkUMQhu4VpNQQaZSzFc5ivd1wvuMe4Ykzqm3vn2UAH1L8W8ZH+oUdiPqzVjp+37XJO3Br3jeksBXyE+
+        5haNdRFiZDC+W6SbZLXRw37+jFCThmgREbLSxDQ8gEw4D45tL8RjVyNE2F3Sjc0pfQX5rLTQGdEMIqTd
+        MMD0H6wpmof4cufZO04lMGOGs7RXBtoHOdU5SKpJkjJDtMElVWt/KzBAnvuKTI7tdgTTuvVP7V8vT6ce
+        TODNunhSieKAu0h9TA/HbVZqyNA5v7HaO9WCbI9GPirJsj3SPCR1G+MOm7KfSYq1JFdJL8c0ZdKqkpBX
+        7ThLDZ9v0dFFQrLMtdk3rC/6xfWT5AEkHFatt/XjpDUmvTFI/u6wu+Ee647dJbtlH5Nt81n4jIypfCj+
+        IfQK74WwkjA5TjuhnuhYMJhV5N3DascY1VfyuDJRtoE6tJAIz8RMPIxsOE+7015omgjPxvyKtxr9j7FD
+        0SwiPAtB5tvxZ9UGHDE1zDhxKkKjQedShIG2BfNQPpvwLNzi3bAiZwVCM0LhfthdCukqDIwYCPdD7lIT
+        0BFo73on5R24xrpKYVh7MJCfpY3ujbwX41LH4cGIByWnKev0cXtA1AA8FPeQQ9vf9MPT0StMUxXaZ81x
+        BhIhJUmVQJoJvN0y3PBi4ovIqtKysiiQ7FzCXSRdHSVIr1QvWwWIP4v/RHZNtiaRsqxVsqsQrKqowX6Z
+        lq5nVE/03t/b6QcdpT+e/0LSCw4Jk4T4edrnMmZW3lhTvKZe1Q/iuejnRGpkzUDOmdR4THbFrMxZ9c47
+        1XEcRPjQCUSEb6CQacc6I5pBhJzvUKsrUq2RqNSVzjmVUYkyaQY6Bqx0wMryLMZLsGoEF1hWqFd48OCD
+        UvF9afZS3ZV1kKK9qW6SC9MRfNJ95B6sek58lviZFI8dmzpWtiWRd7qb3NsRJDdnrIsQU3NAouD5JB/W
+        1VudtxoLshYImQ5LrHPC+a3oNwxMGCgETfI5Wn1U9jOP6tvJb4sESsmYOVBJjkwWziTirAhPkmV+UrlX
+        nIsUK3ZGhA8dfEie/6vMr+wPiWT4Tvw7oh6VfKu1JDw8YXi9vKMcK+8zLm2cbD8R9YScx2TqBupgEGFH
+        o0kiPF9iJBmveQjxqIaWG/BUBzMYlaGTvtOTHLRBUVJjVQKSHUHHFFmI4+pUnCRJSj/fZn+ru1pT+bHg
+        LInELcqtQZ5OBb90PyE+RYSfJn4q26NTR8v28zHPy7aqVciqEU/FPIXHox4XqZFVGUg8LEtEVenQqKF4
+        OuFppFfVt6EpkMCeiHlCpLfZmbNlHytu8DnphJNQniBqR6pzSeDPRz9f73ra4hQJUQ07J2sOZmRpVTSo
+        xiQx9j7QW86jCvOL1C9sOV/1YJHdoclDJTH6W4lvOVRjsjiyVBGJcpc0c1Sd9j7YW4iR86KfT6qXSeJU
+        pz4Y+aBIkPeF34en4p7Cx4kf1+v3VIVBhB2NZhDhOJyLyRiINMSgCo3bOQwYaEtQemEVdC7qdEqh1EJM
+        zpgsBDI0eigiSiOkDTw4EH3j+4o3pgJNFG8lvyXquuFpw7E5X6uR5wgMEaA09kzMM9IfKzfwuncT3pXt
+        x2MeF9UswyYIlmuiBMpF/qXYl4QI6URCteDTUU/b1J2NFY+lapfPMe3wNNmmZCfllCJ74VDlIamw4Rrt
+        Ksm+mby6OWD4Bh1ZXJJcpBI9Qx2cYVv+Nhnn/ZH3473E95xKiyR2jnNm1kzbvpU5K2W+aKt0dI+5mXPx
+        auqr8kEgzxTTSxyMDDglwnTMPUGIMAF7EAJXJ3UHTyYiHGAQoYFOgTv33ClqPtq8WOuONkBKeKpcEqUl
+        qix5zrq8dbbrmLT7w9QP5RiJUw+qT9kPyW9l7krbflFNJrgIwdFBRux3CS6iMuS99EV4WSCXziMxtR7i
+        Qj6xLthbslckuTcS38DwxOEN4gz1YOkqp0RYdQgHyw7KRwDHoWoANob9JftxT+Q9Mlba+pxJo8T2gu2i
+        4nw04dFGq3QQLGslkmuWJrkSrGFIImRNQ0cStoJIp6xHGNYLX2U1VLueinBIhEcQj9kYDE84znvZmYgw
+        EfsRioFOAuoNIjRgoDXBavOuca4YkTwCb8S9odUApCNITC/02NsDm/I3SdmkbYXbsLN4p+06FgF+O/5t
+        UZ9OOTzFtp+L92eHP7PV2WPrH97fdpygFMXQBt6LxWml/4Jtsl8PSk8spUSQdBUR0k5GsEbhkerGK+M4
+        IkKSIGv3HSsR0pPzgbgHRK06NG5oPQ9Xe1Bq7pfQD4NiB4kKlqC6eUTaCHyW9BlGJI2QklcKx0OEtJmq
+        wrzOJM5TDQ6JMBX7MA0DJT9nQ3KpI8IcOP+6aS8kIwKhuM8gQgMG2hj0Unwy5kn0Tu6NuVlzpbp5Vk2W
+        eFSy1p1yGnEELuI99/cUMttbvFf27Sndgz5xfcSD8uOkj0Ui5EL+bEyd5ylB1eLA2IHoe7AvEsubl8mK
+        9jB7ImwO7IkwszoT90ffj/tj75dQBKpkFRFWWCrsL7eB9sb+kf3leQdHDm4yxRudaShJPxn5pGxPy5wm
+        80IpmCpfSsH6ornHQ4QHSjSJkE42JZ2sAEFHwQkR7sd0IUJWpLcnF0WEQ3C0ExBhAnYhGP+tJcL64zSI
+        0ICB1sPkQ5PFOYU2pmMFiZDxf1T90RGF0uL0zOlCVPScNFk0J7BZWbOQq0uFSLWmS4QLhiQMkeKxzUVr
+        EaE99pfutxEhpTg+h77tKtuFInOROLCQbJ6Jf6ZJKZSgYw3Vv7TZsZ93Et4RUns17lUtrCPeRZx+FFpK
+        hIxvnJ81X8b2cuzLjZL5qYQWESEdU+jFuB6TsRM/IgwbEI5N7dYisBkHsBY7MRff4il4C3k4qpJhEKEB
+        A62BxIpEPJPwjEgmy3KX2R9uEiIRhmkOGlzAaeOzqVT393Aa7E5nHGZ7oUr2WFBmKhPbnnu6u1Roby7o
+        hNI7q7fERToCiZmSG8ctttC02sYwkBjNdvlH8R/iHeqe6S7k1Bzwo4AxlyRusX/Guwjhiso40VX6ZvC+
+        gsxLVm+RHBWYfo1xjW4H3JwSYUFNgainOV7GaRrQ0CIiZGmmQNyAYPRFKB7CdDyJGRjabm0mnsEUPAh/
+        XA0vGaMjEjSI0ICB1gIdTP4o+8Om1jxWcGHeU7JH3PwZjG5rJbttziyOQC/NPRV7GnUycQT2J/2X7W7S
+        lqcHbYC8H+2BjsDwCPZZ7xmKd2NH0Q7xJKUqlBJdWGkYdpfvbhDg7gyHqw7L+fb96pseJDGOk9cp8B2x
+        D0qtzkCJUM1Lsbku3vBUR4uIUJGhD86r/bcjGu/NwsDOSNAgQgMGDLQfthdtF8mOcZIGTiy0mAj1C3XH
+        Nfux2DeDCA0YMGDAQONoBSLszM0gQgMGDBgw0DhOYCIkWdTPydmwGURowIABAwYax3EQIXNgngUPnN4h
+        zROnSXMW62gQoQEDBgwYaA5aRISag8olmIl78TWewlw80Y7tSczFo5iD+zEbAzEJt8MPFzscp0GEBgwY
+        MGCgKbSACC8UKSwE1yMO21CCAhQjt11bEXJQhCwUIRO78R0CcCN8hEBOXiKcJEQYbRDhKYTo6Gi8/PLL
+        SExsXjaVjkBZWZmMcdOmTfaHDBg4YdAiImRmmYn4DzLR/EwPbQUm3Q7ErSd10m0vSWBwD9IRY5RhOoFh
+        NpvRs2dPXH/99bjqqqtw44034qabbsJ1110n2/x73Ditblzfvn1x8cUX4y9/+Qt+/bV5hWWbg82bN8u9
+        /v3vf8v91FjYrr32WtkXFxdX75qSkhKUl5fX20e89dZbuOaaa2SMISGOawIqDB06VPoODAy0P3RcOHDg
+        gPTLlpfnuJJ8a6O4uBivvPIKrr76apk3zuG2bdtkX1VVx9QL5ZgqKjomSwwrXfD+jp49Pz/f9n7273ce
+        39jRaCERno4p6I0s1P8PpiOQiN0nNRH64jwhwp8wEhUw8gKe6Pjb3/6GM844Ay4uLvjrX/8qJHLJJZfI
+        Nv9+77335LwHH3xQttn++OMP+25ajB07dsi9/vWvf0nf3bt3l+2BAwcKMXPfV199BYulLsD9/PPPx6OP
+        PlqvH+Lzzz/H//3f/8k1kyY1nvmFJMvzSJ6tCT6PmqesrPpV5Fsb/JCZMWOGvEPe74477pC5O/30021j
+        GDNmjP1l7QK+TxJxR4AfSZwTf39/+0M4cuSIbW5+/rlh7cXOghYQ4QXwxBmYicGdovpEAv48qYmQiQPG
+        oRu2YyJMhlr0hMbMmTNxzjnnYPVqLe2WkqYmTtQKy/LvHj16ICoqSr7u24IIFdzd3aXvTz/9VLbnz5+P
+        yZMny/25X0mA69atk4X+ySe1ZND2uOyyy5pFhDzu7e0tEmlrIjU1FaNGjZK+qaZtS5hMJts74YeBqvm3
+        atUq/O9//5P9o0drRYPbE8uWLZOPqjfeeMP+ULuAvxs++/jx4+0PobS0FCNHjpT3k55+bNmB2hMtIkIv
+        nIFZGIJsOE5D1J442YlQU42ei+kYhCNIdppD0EDnx/Lly4VoFKha4wKi1IVBQUHo3bu3LO5U86lFl6rR
+        559/Ho888ggee+yxBirAZ599VhbmIUOGNFsqcHV1lb4/+ugj2f7HP/6Bhx9+GCkpKVi5cqVIPyTsrl27
+        ynlU07L/J554AtXVdR9kl156qRwnyZMEeA7HuHdvw1RstCUuWVJXP5CYN2+eXMO2aFFdLk2Ckin7orp4
+        /fr1co6jxX779u3Sd1FRkW3fxx9/bOuXc2MvicbHx0vf4eHheO2112xzm5HhvFTSu+++KxIw1bxc4O3B
+        efjyyy/td+ODDz6QcfAeBw8erHeM6kTel2TK34GaP3vpycvLy/Y8lIKVCv3bb7+1SaRXXHGFHH/uueds
+        JD127Fjpjx86s2fPlr+Dg4Plt8h54fb06dPlXM4Rt9n4MabHO++8Y3sG/gZqarTsOSQ/9TulRoHnvP/+
+        +/Wu5W+K74dzrgfvp/pMSNBKTylwfjmODRs22J6d2zt31pX2ak0cBxE+jOxOUX3iZCdCzndXhKIv0hGL
+        ahjpm05k5OTUFYW1J0KCthbi6NGj9RYYSpJKJfef//xHzqHtTq9CPfvss+XfF154oUnpSBHhaaedhvPO
+        O08WeHv1J9WAf//73+U8/sv+qSatrKy0naOI8Morr8SFF14o/XGb46VajCA5KHunWiRJCJdffrnso1rv
+        n//8p0g13McPARIB++BxkjTtqOr5Xn31VZFYKTVTrUxVM/dz7kjefB5uX3DBBTImNT/q3nfffbftHF57
+        7rnnyj24zXdCyc8ROAae4+npaX9IVMmHDh2ykTE/JEjy6hnV2Plh0adPH3l3/Ai56KKLbM/IcZx55pm2
+        80nKu3fvtvXBuefz8F9uv/TSSwgNDbX9LtgHryMhErNmzbI9F+eS+/k31eC8Ts0L+yFuu+022z7aPIkf
+        f/yxwTOwcd4p5X344Yc2FT/fI89xc3OzzQs//PhcPE4C59ySeO375DkDBgwQAnzzzTdt88I+eUy9Y85f
+        Yx8rLcUpQoRvorCm+Yl32xVNEiG9dM/EBGsPxFn2oMRq2AlPFjgiQgU9Ef7++++yj1IXt7kQEp999plt
+        EVGSluqTX/2NQREhF8f7779fFkx7IiQo/fA8SgGOoIiQCytBSVCN+/BhLSE0CVUt8J988onsUwRFkufC
+        RqnhhhtukH1cJAnaS7mtX1jVAjltmlZ1Qal42UhClJ4pYbz44osiRW7cuNFmf3366aflmtdff912zX//
+        +1+Rbr7//nvZ5oLrjAhvvfVWOYeq2KZACUfdY9CgQbLvu+++s5ECpSESlfpwoJo8MjJSyFRdl5aWJh8E
+        apsqUD4P789noY2WuPfee+U4JVs9KBXec889cowfD8SwYcPwxRdfyN/qGOeDKCgosN2L88iPDX48cJsS
+        GUGpXdmX+cFFKPtvQECA7d4K1FaoPknqlArVtvq9ff311+jSpYvs4++DanR+GHGbjkj0mo6NjbVdxw+l
+        1sZxEOEQ5JwAqlEvaxfMKn0R2VVN1wTrEDRJhN3hYz0HE8rvx86SDcis6ni7rIHWQXOJUNkI+SXNbZIB
+        MWLECNs2Fzd+nSvpwJHjgh6KCJWNkAsyF1SCxEW7D0HbIM97/PHH612voIhQ2Qi52KlxKyIkFBkpIqRE
+        wW2q6xSmTJki+yhdEmoRJtkp2BNhWFiY7X5KAuWHA1WHar9qVBkSlN6UpKtUkFQxcpsSijMiVAs+VXWO
+        wAVa2UD1RKhfuAcPHiz7lBSmyNXX11e29URBAiAx0oNY/xwkEPV+CEp43K/ITg9FdvYkSfTv31+OKSLU
+        q+OpguT91XZmZqbtOs4Vx0v7MaHmxdFvjhKe6sOeCPkbV6CUzn1vv/22bKs+1e9K/547ERGeiRkYjKNI
+        tr+03dEUEY6znouJ+Y8jqTTG/tLOgWYRYTeEFg7Fjtx1OFTWeWPKDBwbGgs90C9KXEAIShDcVkRIUuE2
+        +6FKcO3atfjll1+wdevWJhcLSlm8VtkId+3aJXYhkiD3UzojFBE25SwzdepU2aaLvKOFjmEj3EcplqDa
+        ktskPwXOA/eRXAlFhLSbKigiVNfpiZfqYKrflNqTXp2UbJTUqCQY2uUUEVLCIiitcZtE6AxKOiNRq3ei
+        QOnp5ptvRrdu3SSkg44halyMB1Wg9K0fyy233CLbilyTk5Nt1ymbGkmIqkoSkFJ1sqmPGEWEitD0oLqR
+        xxzZVhURUhVJMNRB9b1nzx4kJSXZthuLZVWkRRu3PfR98rfB0By1TS2AAtXF+rGo/zaUAw6lZXVdp1GN
+        jkMXhOIeJOOA/aXtjsaJ8HwJP/DN74sNR76F2er4S69D0SQRni+FkMcXDcKilFDszt1u34OBEwy0ZXGR
+        USRCyY7b+pCFffv22f7Dp52GdjkultymapShApQkuc3Fkc4hXDDp/EF159KlS+vdU4FkwXvdfvvtci2d
+        GLhN6W3x4sU2iVKR2EMPPSTbXMB5Hhdq5YhBCUypOBk2wDHS0UaNW5FFbm6uTfJR9j0lIVIVuWXLFpEu
+        lB1ISYCKCGm7IplQEuI2SYxj5XxxbtT9uMgqyY4OJJxDfhAo0qd6j88QERFhe865c+fKuOm5y22qcJ15
+        N1KFqiRZqgfZP/tjY5wc91MSJdFSrUlS5D4SO8+hSlMRGT8IsrOzbXZHOtRwXuj4o56Hki2JnOpU/lZI
+        BiQoPgeP8+OC4IcCt6nG5n0UwZCE1LM/9dRTYpfUQ2kFqGbldVRDqntzXimNKlUuf1PqWUm8tNUpCVDN
+        CZ+Jx3mdAj8KVJ8rVqyQ96Fsv9SI8Hx+jKkPEw8PD/ntqf82qP6lLZi/D/28tDZaRIQkHX/cgj1Y2eFe
+        jI0TIVs3+JX2wKykUciprFPVdBo0gwh90RXBlW6YEP8pfkz7CqXmTmrvNNAsqEXXvukXKmUzUU2/QLJR
+        lUSQgOz7cSRhKihbWGONNi2lHtQ7VaimAreVJKIapRb9NkmFIPnp99PWRbJQZKhvJEHl6KOIkFIgEwCo
+        c5T0qVe7sVHKJPmqRZSNJMSF3v4++kay0W8rZyRHoGREu5fecYSNamUfH59651K9qEhC3+h9StiPixK9
+        +hhgIznQqUhJXPrGd6TUqfzX/jhBiVG/jxoFPezVx/369au3zXfEudHb+VRjuIgC7Z36Y5x/BUV6qvF3
+        xd+ycvjRNyXhKvWxalQ3q3hVNtoPWxtOiHAfpjVChH4S5N0Ni/Au8lGnO+4IxGMXAnGLUyIksfhX34yQ
+        2LexKWMJaqwdk33BKYQI1yOgeBD8zCTCbg28Rknm/uYrEZL9Amakj0JSScdn9DHQcvDLnou5vlElqVzS
+        iYULF9qO0Y5GCVB/PhdNBR5X++l40BgoLdjf277Zhwbox0KHHXpEEnRG0V9HiXTOnDm27QULFsh5XEz1
+        51GqJHi+/b316lRFhCRcEhCP60MsOF+cN/v7kYDUPkptBMMH7O/FRrsrJVv9PoYWNAX7Z9eHlOjx22+/
+        NbinAj8c9PspSfH9qW3OJUEJ1r4P/W+FoGSrjjHshOBHgf4aOpzYg+eq4/wQU/PJedFniqGkrc5T4RZ6
+        6O+jD5Hh+9Jfp+aJamb9NbyvAtP16Y9RW6EfJ99la8MhEaYjDNMwQLwVHRMhpcIuCMCt2InvOlQmTMIe
+        BAkRdmkwRq2dBz/rZRif9SxCw0ZgV946WKD9h9xZcKB6I4LLBgsRajlT7YmQ7+B8BJp7ICT3SSxPn4eC
+        mk7q/GPAQCuAak/GrpEIqcIzYKAt4ZAI85GB+RgKD5zhlAglNAFnYwoGIgV7OyzrSRGyMQsPwUvKMdmP
+        UWuUsgIsVyMkfRimRIxCZDF1zB1J3/WRhv34Hp8iBDeI/bUhEWpkKB8f5usw8dA7+Cl9AYrNdTFpBgyc
+        TLBX4Sq1mQEDbQGHRFiNSqyFJzzRVZxNGi7KbBfW5sHsijl4ChsxFekIt++qzVEDE36CN7zQvZGxkgy7
+        IsB0I0KSX8ecKG/sztuIpLIwVFobZohobxTjKKKxCTNwFzxxOvwdEiFbN81eWH43Jsd/gTWHFqDAZEiG
+        Bk4+UKVJ25NqtCsaMNBWcEiExH4sgx+uhLfY3pwtzBoZekupoCswD8OQDE0n3544gLXwx81O7YRao2R7
+        DgJrbsb49GGYEDYCU8JGYuWhWUir6FibmxlmlKEAS6xvYoz1NPg6lcLZSPbnI6SsHyYnjcC3SZNxoGg7
+        Ko1AewMGDBhoEZwSYRJ2YTxulwTbDRfj+o0OKQyy98VN2IgpqETj6Z1aGynYhwnoAy9x7mk4vrpGqfFc
+        BFfchYkJ/8OEiE8QtP9/WHv4KxSYmLm+49SlJqsZa03jMdZyrkh9Dceun28evxiTcodjYvgYLEwKRkL5
+        vg5TTxswYMDAiQynRFiDSmyCHzxxbq1UyEXYmWSokYwPumE8emI1/BCPP9utbBBVuZsxAV640EmB3vrj
+        pBTrb74OQVX/xYSMlzAhfATmx/hjZ8465FYf7jBnmpTKWEwqehrjLHwG52peLaSiG/ytV0ig/bT4UZgV
+        44dNmUsRWbQThysTUe3AO9YKMyrMpSiqyUVGZRLSKxKQVZmGgpocFJvyUW2tyyFpwEBbgfF+bVFRw4CB
+        lsIpERKsAP81nsBI/AUeoMquu4NFuf4CzeBvH1yGSbgXq+GPGPyGErR9wcxCHMXXeBaj8U8nIQj1GyVD
+        Slb+1ssQXDgAwanDEHLwf5gfG4jfsn/C0ao0VKNhMdK2RI3FhC3ZP2Jcfh/4WkmGjc+39gzdEVLVE6HZ
+        L2BK/OeYFu2JeXFB2Hh4KeJK9qPYlIcySxEyKpKwK3czVqbNx5KkqfgqPgBz4vwxPyEEi5OnYGnydGzK
+        +AHRxXtQZMqRDyEDJy/o1s6AfNUYgsEQBf0+Zqgh6Pau9jHTh7MUZE2B4RLsg8VsGSfZVmCcmv456H7/
+        ww8/2J920oIJApjlhc/uLDmAgfpolAiJFOzC93gLU9FXygFpXo3OFmiSD6UVSpHnwBtXSAaa7zACYViP
+        bKSiHFp2/bZAOvZjNh6BB7qKSleTDp3Z2zhW2jjpgHIO/CyXIbDMFYGHn0Rw9HuYG+2H1anz8Hv2Ghyt
+        br/8nrkVR7Ewww+epTfDW+ba2fhVo4SrnRdc1RMTCgdjwpEXMTHxI8yM98KPqXOwKv1rzIsPxqSETxGS
+        9RyCcx5FcP4DCMkbhOC8QQjKuw9BuQ9hQvrrmB7rge+TZ2HD4aXYk7cV2dUZsKAu44mBkwOqCK9qDEan
+        Q4p+n0rLddZZZ9Xb39JK6MwIovpQ+URbE0xLx6wr9sHazEzDTDONJRo40cB3wGd1lEFIn56PMXkGmkaT
+        REiYUIWjSBBP0iD8W8Iqml6kKR2SELtgHM5DMO7ADDyCJXgH4VjTZlJiAQ5jDbwwHfchANfAA2fq1KXO
+        pEQ+Ry0h4nwJwA848jCC4l9FSPR7mB09DlsOf4/DlQkwt4MdrrAqF+uKZ8LXzLn+h07CdTZ+tvNEwpUE
+        ArgQAebrEVDRC8G5j2BixnCEFDyEwJpbdOdSmuS86Jr1cgSX9cWEw8MRmvQhpsSNFIlxXcYSxJUckIw2
+        dOxpD1DdXSIVL8OxD99hLxYjA/vbXUo/WcFyUPq0VTExMSJJkPy4zaoMivD0mf8ZyK9SrLUErI/HflSp
+        oNaESuPGzCOUCikJMg2YSnXmrILGiQiVENtRAvDCwkKp4MH0bcwha6BpNIsIFcwwIQ4/YzGGwxeXCclo
+        hEgJ0Rkpcj/th+dIrB9jD6k6nY0H8StmSOJu9tuaYH8lyEUUNmIOHhFJlmEJdRJiY4SiOdSIGth6BQKq
+        bkHQkSEIjnoP0w+OxdpD85FUFoEqa9suyMyLGmb9CVOs92CM9aza8Z9TGyLibK71z6ARu3b+RbXPRKJX
+        1zds2jW0B18Ef+t1CK50xYScoQhNeUfUrt+mT0SeOBW1DSpRjHTsxa+YiiUYjmnoj2DcCV/cCB9ch2Dc
+        im/xHPZhEfKRAksr/25ONTDLjEr6zLg9QqXlYt5JkiOh8nnyXJUVhmBe0zVr1khj5hs9WC2A+9kH80vy
+        7z///NNWzZx5JpnRRV2vmj6zDJNOq/1U8TEjjzMwByfTnjGlGYu52oP3ZOFhPZi8WfVv37c6RimW5Z34
+        t+qXGWDUMZIO/1bJu/Vgrk/VP8enB6U27qf6mR8c6jyVtYfzpp8XNgXOu6rvyILNPEbi14MZXJj9xr6I
+        M5Oyq/70dSUVuJ/vUr0/Nj7HyY5jIkKFYmRjL77DYryEENws7v4kjsbd/lXT7Ihc2BmnyMrr2zATaQhD
+        GfJRgwpx6mgt5CINv2AaZuJe+OES+DRK2vZkojw4z0NQZQ+MTxuGkPD/YcrBz7E6Yw4SSvaJDa7SUgar
+        tW3Uh0ctKVhvCsJUSz8EWK6En/VS+FkVedmP2VHTPkQa7m+s8dlJomzd4Ge+Ev4l/bEm/ytUmVvrA8CK
+        SrHsRiENO7ELs4XkQnA9POX30R3euBp+uA6BuEk0CgG4A+PA7DuXYTrcsRFjkICtKMQhVKHMIMYWQFW0
+        YE5Igsm7lfTHRNCESrys0mBxcR05cqStuCobc58yYTLBRVkt1MyTqdSwd911l62mIis1qIoP+kb1LJNP
+        s38l4bGxkgTJU9XSs4fKe8o6hI5A2yYTgiuMHj3alqyajdUOeE/emwmzWVCW+5n7U5UyYqJtkrM6xlyq
+        qoIDm0ptRjD/J/OBqmPdu3eX/kkyJE/9dfrcmpS+eZ6qzahvfn5+0jclW/tjrLihMGHCBEmyzf2qLBRz
+        lrJfVeeP7ZlnnrGVOeKHEPOHcj/LPqkKHmx8DntCPdnQIiJUyEUKVsMTfrix1i53Zq3UYb+w2jdNIiPR
+        eOI0+ONOLMYohGM9cpEAUys7ajAxeCL+wEw8jrHoBk/8q3aczSWI8+CDsxBovhmT0z/ApL0eCNrzPiZH
+        fYwdecuRXBWOGmtdXr7WhsVqRbJ1Hxab/4fJpofhY71YYiKbT4YtayRBL/wDI/FP+FX1R7KlNRMmWJGM
+        7ViExySjzlicgdH4G8ZJhqArEIAran8nlGCpGqY0fxGCcAeC0FtIchT+jgBchc3wRiYiRaI0cGxQSbVV
+        6SNWAlAJjrmPUpyqSsBk4USvXr1siyRVpVyg1TbryVFqVFUPmESbdiqSGAlFlXniNtWzXNRZkYHSJqUV
+        Sh/6EkbMt0liZT09jovVLhyB0h7PZ4LopsDitKp/EiSrIqhtEjoL1LJeILeZ8JuSFftnzUZW0tAfo5TI
+        cdMBiM/BnJysYK/6I3Hri+uS3Fl9RJXQIplSRc3E5KyIoeyofFY6NPHZhw8fLvtUwWJ63apq8zzG++sl
+        Tn3SceZ5peStal9Saub5rDqizqEzlLqHapTcmTNUbauSUCcrjosIqYLMRjx+xUwsx6eYiQfgLanXlF2u
+        KTWkttj64mJMQF98g0+wGiH4E8vE1mdpxbi+alQgDXuxHr6Yiv7ww2XwkfE1Fqagb9p5gZW3a+rChPcR
+        Gv4ZZkV64evYQGzL+gHZ1eltIpXUWKqQUhaNFYdnYG6yF8YfegmBVf89BiJvQbNeJKrhUMtd+KF6FMKq
+        tqLScvzSYCWKkIytWIP/YTrc4Ier4IMr4I1LdRqFi2p/N3w+JcGrvy9GAK5GIP4t0qIvrkAIbsQ0uGE9
+        RqKkg5PAn2hgQm06w9B5Zd68eSL1kNyU5MACuJSWeA6TWtM+qIiSpZAUSIDcx/JOhKpjqKrCM5E3kzpT
+        WuH+v/71ryJ1kAi++eYbm0qQoG1PObzQyYXSJSs2MIm0I3Ueoaq0O5MICRIvoSpZqFqMBAmX+1RlA1Ub
+        kXY2gqpGEiQRHBwsx/iBoKAvsKvKRVHiUvZUqhgVqbAvlUKO0jZBT1z2zxyrVA/zWVlmicSlKsJTslZQ
+        ZZ9UBQo9KNGqd8Sk31SBq3uzJiDB+1FC5z6SINWzqsoFpWWiufUITwYcFxHWgct/JY4gDr9gKmZI5Yrz
+        4FFr19IWN+eESLWqdh4lgVsQAjd8haewDZOQiWjUtLKDSg7SsANzsQxfIAS3Sfxjc6QrTQWs2dnojBJS
+        eC/Gp7yM8XFvYnzEB5gT7Y2fDy9HRlk8Ki3Hl7rNjBpkVx9CWP6vWJEyBzOixmJy1GeYHPsJJh5+WYhQ
+        C2dpetzH1pik/EoEm+7GetN45JmzjzvPQDXKcAQH8SemYQEeRgCuhZd8iNwAf2nXwR+X634jjT0Tn5kf
+        Jd3hj0vgj2vgi2swDpdiDLpiOd4RsjXQfCg1mmqUAu1LBKnCvCQiSkbcp9RuBOvGcR9LKxGPPfZYvesU
+        KIHp+2WjJKSqnStw4SX5kUz055K4HYH9clyUQPX18BSoAiRZUfWoVJt6R5NVq1bJPlWYl0423CY52ENJ
+        wIokCZZu4j6GLKj51FeF19eXZFUHfkTwb6qk9XUo+bGgL2v03HPP2frWE6FSNztzltETIW20qj+9LVd9
+        PKiCvkryV+TKQs3qOoMIjxlWZCMR2zEFs0RCvEBHiGqBc0SKtUV0JQ5Rc6zxwjmYgruxHsGSuq28FRY4
+        hm9kIBbbMR/LMBbj0aPZRKhfjDVJ9lz4Wy9HgOl6BJW6ISjrUQQnvI4ZsWOwIvkr/Hl0M1LLYlBkytXs
+        iCLjNmQVfkZQYi23lCC/5ghii/dg86HvMDc2AOMPfoSgpGEIyhuIgIrbEFB9Q+38ccz242qNRmnsMnGW
+        WWB9BH9iOjKxH1VoPrHTzpuDBMRjI/ZgHn7EKwjFbSL1kQD98G8ESCP5Kan8WOZf37pJSM9YnC3q+VX4
+        RPxNDTQfqtCranSU0EsRbCzQS5AI1SJL2xElHpILQxS4z5lEqKCcZSgNsuSQWozVdQTtUbRPUq1ISZIq
+        QkXMtLU5g7JlsloFVZgKerskbWWKWOgZSzUuJTQ1Dqo3CXuJUA9FhEoipK1TeabqJULa+fbu3SvnqA8D
+        NkcSoQKdZNR5ShWtxkIpUEFJtcpuqAfrOap3RJWp/l2qkBiqdFWtRKqKCWWXJJkTyjOVzdHHxcmENiBC
+        DYw9YxWLPViCBXgKvvLFfpqQIjPVNCc4n2TDmoheuACTcB9WIwjh2IxE7EEhsmFqphqSKd/SEYHfsQjf
+        YyRm4HGRRLzFm7KpcTTWtEVckSK3/U3XwL/EBQEZjyE47k1MixqNhbETsDz5K2w9vAJbM1bij6MbEJH/
+        B8LzdmJPzs/YlPE9VqXOx/eJMzAvKhCTIr5AcOybCMp8EoFlPeFvJmGQ+Pgx0VTWmeNtF8EfV8IfV2Mc
+        LoMXLsJ43IwleBp7MBvp2I0cJIpKnGRXjnwJdSjCYSRiC3ZiuhDfJNwuqmd+zHiI48ulkrvWX4iQ99Gr
+        Pe3H0HjjO+NviLGiHjgbQbhJyob9jCAZj4FjAxdKRSIffvihqMlYWZzqS+6j1KK8RSm90HakjnHxVFXq
+        qT6l/YpSm5IaqdpUKlTW1SORqcWVhKW2WYSWRLVjxw5RDapzqLLlebRX8hwSgDPQFqnuy+vYHxvHQBsZ
+        Va4EpTN1HtWuqko8n4lqYY5T7yxCaVcPRYTsl+pLVV2d0ijHzvlkXCb3kSA5BtUX6wZSKqN9Ue2jalKB
+        tjhKyNxPwuYHhrLvkdzYF8eobLCqf71H7AMPPGDrm7ZLvk8WDVb7eL4qAEzJkjZZOtKo4+yTWgG9LZjP
+        eTKjzYhQD0pyUViP9RiLJXgFwbhJqlbQMaI50pgWj0gSuBZB6IkJ6I25eA7L8SW2YpokCKczTBrCJe9o
+        BDZiH5YLCW9FIBbiWYzHnbIYj6uNb9RCEZq+97E1LZmA8jQlKQYU9UFg5qMISH0GAfEvIiD+JQTHvIGQ
+        6HekBce+LvsD44YhMPF5BGU8gcCivvA3XVvridvckAlHTUnZJOrm9lEntfvjUvjjevjgZnjicniiGwIl
+        ScIdmIjbEYrbMQcD8TWGYDp6ww+Xi2Q2Fv+CV62dWLP7XeLA5md/X2dNeSTTYYnepAwlOUfUqXPxJHZg
+        JjIQiVIUGoH/xwF6Lt55550i3RAkPEpi3Pfggw/any5kx2NUN3Kx5t9061fH6OXJffyXNkCCBKPOpTRG
+        BxlKgvptOpYQVJVyP8lAncdQA32xWEegxEqpTF3HtmXLlgaFc2mDU/3zGfTPTjuaflz2nqqKCNk3HW34
+        jHSy0d+D9jVez+flefybRWUJ2vDUPLC98sortusoYbNPNbeU1ijhvfnmm7Y5Wr16tXi3UsXLcXIfpXoF
+        kqLqm8dVoWXa/rhPzSfJTdk9v/zyS+lfXUMipGer6oeepCcz2oUIFagWpNoqHjuwBmNE7UlHmeaQoSIZ
+        Vphg80IXiQ+ktEjJjsHzlAxIslrVjIswDt3hIQvnGaI+OzZCOJ7GjDUq/EJLleZvvQT+5iuk0nxAzb8R
+        UHmjNP+a62v3X4EAC6UmRaYqxZojNXJzGu2u/NjoAh+Roi6ulX6bS0Q8RzvfHxfX2uL4IcG5v1jCGMbh
+        KnjhUnjwXVi6w8fCcAeSJ9Wr+n5Us79H462OAM+XCif+uBbT8SDWwBux2IFSQ/oz0AFQdk5KwwZODrQr
+        EerBDCHp2IOVGIlA3FIbekGyaq6qUluoSaKUPLjgU8Jko9pMy3lKQjke4lNhHt3gLTZLqmnPkjE6rxlo
+        37Rx1klmmhq1ftP2a+rP5hKVfav7UOBc0nFkqsTajcZGBGEu3kQQXOElJbM4N5rU2rAfR005qPBvSopU
+        n9JRhaTHf7nN/ZyTloy9fuNcsAjxOHrpogdm41l8i4+wFyuRg0Mwocb+52TAQLuANjxlY6R6kV61Bk58
+        dBgRElZUIxm7JPQiEDdK1hk22gU1Ymi4SDpv9sRkv938prxYOQ7NDnVmreR5AcbhXIyVZAAqU01Lias1
+        mvoY4Fg5d13gIarUqzEXT0jk5FHE4giSsAfr8CM8MAkDEYg7hBA1Um9JPCLPJzGq1jKJr35TtS0p6VOS
+        vRQhuAtL8Tn+xHLE4A+UG04wBjoYjMtjyAdtql27dpV4PAMnPjqUCBXokZiI3yWXKdO30fHBR9RvXKib
+        K7UcX9MWYZUG7ixxGJkMd3yFwViNL/AHvkYkfkIM1olTxizcCx9cIos2GyWs9hqrJmFyrCRq3vtqTMZA
+        rMRY/IFFiMUvDktg0WnoMOKRiL3YiumYicfgjStl/JoDU3uNn01J29q8U4olkQfjv1iEt/Ez5iMJB1rF
+        U9iAgdYE7XiqGTg50CmIUIEhBMU4ijTsxyYEYQr6wRvnibRzfCpOR02TYlRicN7HF1dKlY0V+BjhWC0x
+        jAXIQA0aGujzcQh78QOW4gPMEWccF3jjQunr2KXZpprmaKLGSvLzxVWYhHvwPUZIAoJMxKP6GOItGciR
+        jXT8hkWYi5cQgP+IxKsRurLZtuZ865uWZo/J2+n44osLMRMDsAFBiMdOFCPfcHwxYMBAu6FTEaEerIfH
+        ygNr4YGJ6CEFgukgQyLQ7FstWaQ1JxZKP5qzDdWCV2Mq7sEP+BB/4htkIuqYYubKUIQ8ZOAgtmAZRmM8
+        3OCF7iKtaWrDlqtoNbsf05xR8qPd7GqE4E58i/fxJ75HJhIYfWg/pGMCHZjykIm9WI0l+BTjJX3ZJeIU
+        U0fqLZlr++fQvD75LFQ1M6PMfDyB3zEL0ViPHKTAbJCfAQMGOgCdlggVmGElA+HYhon4Gs9hPO6QGLc6
+        WyIlOf1CTeJRjht69ZvmREL1WxBukL6+x4f4HfOQhn2ogOZGfDyoQkWtNS4IE+Eu+TPrqkY4k7LsiVIj
+        DT6bsk1OQj/8BB+EYR1SpBSR4zRTxwuqU2mLW41AzMNwqSXJ+5O8tIQIypHJfsyOWl3IA0mVHry+uBZT
+        MACrMQZx+NUIfDdgwECnQKcnQj2YfzQBv+EAVmCpeEHSwYZZRU6HB04TxxYtI43m5KI5uvBfloq6HNPQ
+        T8I2orFZVJusdtGalS4ULDAjA1FC3jPQR9SumiMLiZjkpjXl5aoRNJs2XmZICcCNWIxX8SeWIAtJ7aoq
+        ZP3JfLnrfqzHeEzDIPiILVFJ5MrTlR8hqmnesFrIBt8B/71QpNhQ3Ivv8AV2YwWOItX+dgYMGDDQoTih
+        iFCPUhQgCX/gd8zEOozGEryE2RiISeiJqXDFDPTGTPTHtxiGDfBGGJZJcWGqXNsTuUhCFNZgJ77CCnyB
+        hXgVs/EEZuBBhMIdE3AHpqGP5GedjyfxPT7ANkxBAv6QIPGOBvO80sHmNyzGQryBCeglFR+0DDGXS11K
+        Nqo6WS5pPHpiMu7BQryGdQjBDiwUp5eSTvAsBgwYMOAIJywR6sEqGHlIRQTW4GdMxk58jXCswEGsk7yn
+        7U1+zkB7XgYSEIHfsBfrsB5TsQYB+BNLsR8bkIwwlKDIQTbSjgfzpCZgD5bDD7PwtKS8m4CBCEZ/BKEv
+        JuJBzMQr+AajsRbTEY3fRNXanpKsAQMGDLQEJwURElyoWQGDdicWaWXiZxIg1ZSdCRwPpSza+UgUFSiS
+        5AIcK490RhJUYGpwSql5OIRDiBJ7ZTR+wQFsQAJ2SzJzqlSZ2Jyeto4SjBswYMBAZ8NJQ4QGDBgwYMBA
+        S9BGRKjJZ/z/ExeUZ6jYa93nYF+U/OpadZsU820JODKOyVLbtL/5/B0N7V1QIlXzxr9b870YMGDg1EWb
+        EaGm5juRFyouviSG1l1wtQW9Cubaxr87FxGSbFTjGDtHXk/tF1Up88XGv9vC49eAAQOnHtqICA0YMGDA
+        gIETAwYRGjBgwICBUxr/D2xKu082sIltAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="pictureBox2.Value" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>To Inform</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Ccc</value>
+  </data>
+  <data name="reportParameter7.Text" xml:space="preserve">
+    <value>ማሳሰብያ</value>
+  </data>
+</root>

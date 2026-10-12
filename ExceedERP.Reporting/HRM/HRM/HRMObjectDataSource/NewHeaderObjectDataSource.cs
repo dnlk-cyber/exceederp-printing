@@ -10,7 +10,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class NewHeaderObjectDataSource : List<ExternalApplicantDetail>
+    public class NewHeaderObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -50,5 +50,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             return internalVacancies;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
-    }
+
+}

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    class LaboratoryFormRequestHeadersObjectDataSource
+    class LaboratoryFormRequestHeadersObjectDataSource:IDisposable
     {
 
         private ExceedDbContext db = new ExceedDbContext();
@@ -132,6 +132,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             requesterEmployee.Add(employee);
 
             return requesterEmployee;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

@@ -12,6 +12,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public int LetThemKnowId { get; set; }
         public int OrgStructureId { get; set; }
         public string Name { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeFullName { get; set; }
        
     }
 }

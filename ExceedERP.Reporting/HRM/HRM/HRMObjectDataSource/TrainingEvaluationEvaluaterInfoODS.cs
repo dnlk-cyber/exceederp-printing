@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class TrainingEvaluationEvaluaterInfoODS
+    public class TrainingEvaluationEvaluaterInfoODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -152,6 +152,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             evaluatorInfoList.Add(evaluator);
 
             return evaluatorInfoList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 

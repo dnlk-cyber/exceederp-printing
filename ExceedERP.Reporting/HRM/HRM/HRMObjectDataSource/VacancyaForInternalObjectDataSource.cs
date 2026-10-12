@@ -12,7 +12,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
 
     [DataObject]
-    public class VacancyaForInternalObjectDataSource : List<InternalVacancy>
+    public class VacancyaForInternalObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -44,11 +44,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             internalVacancy.VacancyCode = vacancy.VaccancyCode;
                             if (vacancy.VacancyType == VacancyType.PERMANENT)
                             {
-                                internalVacancy.RecruitmentType = "ቋሚ";
+                               // internalVacancy.RecruitmentType = "ቋሚ";
+                                internalVacancy.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
+
                             }
                             else if (vacancy.VacancyType == VacancyType.CONTRACT)
                             {
-                                internalVacancy.RecruitmentType = "ጊዜያዊ";
+                                // internalVacancy.RecruitmentType = "ጊዜያዊ";
+                                internalVacancy.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+
                             }
 
                             var recPlan = db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
@@ -104,6 +108,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return internalVacancies;
 
 
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

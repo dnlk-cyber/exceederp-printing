@@ -14,11 +14,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Abbreviation { get; set; }
         public string Address { get; set; }
         public Image LogoFileName { get; set; }
-
         public string Date { get; set; }
+        public    Current Currents { get; set; }
+        public Previous Previouses { get; set; }
 
-     public    Current Currents { get; set; }
-     public Previous Previouses { get; set; }
     }
 
     public class Current

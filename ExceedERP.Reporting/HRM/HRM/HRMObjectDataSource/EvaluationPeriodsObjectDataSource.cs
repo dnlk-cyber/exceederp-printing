@@ -4,11 +4,12 @@ using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
+using System;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EvaluationPeriodsObjectDataSource : List<GLPeriod>
+    public class EvaluationPeriodsObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -47,6 +48,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return list;// periods.Select(x=> x.q).ToList ();
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

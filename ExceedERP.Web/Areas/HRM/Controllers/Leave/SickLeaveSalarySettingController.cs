@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -36,9 +36,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             DataSourceResult result = sickLeave.ToDataSourceResult(request, salarySetting => new
             {
                 SickLeaveSalarySettingId = salarySetting.SickLeaveSalarySettingId,
+                Type = salarySetting.Type,
                 FromDays = salarySetting.FromDays,
                 ToDays = salarySetting.ToDays,
                 PayableSalaryInPercent = salarySetting.PayableSalaryInPercent,
+                IsTerminated = salarySetting.IsTerminated,
                 DateCreated = salarySetting.DateCreated,
                 CreatedBy = salarySetting.CreatedBy,
                 LastModified = salarySetting.LastModified,
@@ -59,11 +61,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             }
             if (db.SickLeaveSalarySettings.Any(x => x.FromDays == leave.FromDays
-                                                 || x.ToDays == leave.ToDays))
+                                                  ||x.FromDays==leave.ToDays
+                                                  ||x.ToDays==leave.FromDays
+                                                  || x.ToDays == leave.ToDays))
             {
                 ModelState.AddModelError("", $"we can't have Dublicate values {leave.FromDays} or  {leave.ToDays}");
                 return Json(new[] { leave }.ToDataSourceResult(request, ModelState));
-
             }
             if (ModelState.IsValid)
             {
@@ -95,6 +98,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             }
             if (db.SickLeaveSalarySettings.Any(x=>(x.FromDays==leave.FromDays
+                                    ||x.FromDays==leave.ToDays
+                                    ||x.ToDays==leave.FromDays
                                     ||x.ToDays==leave.ToDays)
                                     &&x.SickLeaveSalarySettingId !=leave.SickLeaveSalarySettingId))
             {
@@ -148,9 +153,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var entity = new SickLeaveSalarySetting
             {
                 SickLeaveSalarySettingId= salarySetting.SickLeaveSalarySettingId,
-                FromDays= salarySetting.FromDays,
+                Type = salarySetting.Type,
+                FromDays = salarySetting.FromDays,
                 ToDays= salarySetting.ToDays,
                 PayableSalaryInPercent= salarySetting.PayableSalaryInPercent,
+                IsTerminated = salarySetting.IsTerminated,
                 DateCreated= salarySetting.DateCreated,
                 CreatedBy= salarySetting.CreatedBy,
                 LastModified= salarySetting.LastModified,

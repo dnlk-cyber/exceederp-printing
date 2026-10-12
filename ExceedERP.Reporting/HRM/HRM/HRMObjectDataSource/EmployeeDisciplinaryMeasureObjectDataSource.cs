@@ -5,12 +5,13 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeeDisciplinaryMeasureObjectDataSource : List<EmployeeDicipline>
+    public class EmployeeDisciplinaryMeasureObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -78,15 +79,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
 
                         employee.IdNumber = person.EmployeeCode;
-
-                        if (person.Gender == 0)
-                        {
-                            employee.Sex = "ወንድ";
-                        }
-                        else
-                        {
-                            employee.Sex = "ሴት";
-                        }
+                       employee.Sex = HrHelper.GetGender(person.Gender);
 
                         var disByMoney = db.DisciplineMeasuerByMoney.FirstOrDefault(x=>x.DisciplinaryCaseId == c.DisciplinaryCaseId);
                         if(disByMoney != null)
@@ -95,7 +88,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
                         else
                         {
-                            employee.PunishmentAmount = "በገንዘብ አልተቀጡም";
+                            //employee.PunishmentAmount = "በገንዘብ አልተቀጡም";
+                            employee.PunishmentAmount = "Not Fined By Cash";
                         }
 
                         var empDisc = db.EmpDisciplineMeasure.FirstOrDefault(x => x.DisciplinaryCaseId == c.DisciplinaryCaseId);
@@ -139,6 +133,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return list;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

@@ -15,6 +15,11 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Helpers.HR;
+using System.Threading.Tasks;
+using ExceedERP.ApplicationServices.HRM;
+using ExceedERP.Core.Domain.Global;
+using System.Reflection;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
@@ -26,25 +31,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         private const string HR_Recruitment_User = "HR_Recruitment_User";
         private const string HR_Admin = "HR_Admin";
         public static List<MainCompanyStructure> AllJobCodes { get; set; }
-        public static int JobCode { get; set; }
-        public string startDate { get; set; }
-        public string endDate { get; set; }
-        public static DateTime StartDate { get; set; }
-        public static DateTime EndDate { get; set; }
-        public static string AmharicStartDate { get; set; }
-        public static string AmharicEndDate { get; set; }
         string ErrorMessage { get; set; }
         public ActionResult Index()
         {
+            GetRank();
+            GetStep();
             PopulateViewData();
+            return View();
+        }
+        public ActionResult VaccancyPrintOut(int id)
+        {
+            ViewBag.id = id;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Vacancy_For_Media, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         private void PopulateViewData()
         {
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
             List<MainCompanyStructure> workUnits = new List<MainCompanyStructure>();
             var periodList = db.GLFiscalYears;
             ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
 
+            ViewData["jobTitle"] = db.Lookups.Where(l => l.LookupType == LookUpTypes.JOB_TITLE|| l.LookupType == LookUpTypes.OLD_JOB_TITLE)
+                .Select(x=>new { x.LookupId, JobTitle=x.LookupId,x.Description}).ToList();
             ViewData["EducationLevel"] = db.Lookups.Where(l => l.LookupType == LookUpTypes.EDUCATION_LEVEL);
 
             ViewData["EducationField"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.MEDIA);
@@ -97,7 +109,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
 
             ViewData["Recruitments"] = planLists;
-
+            ViewData["level"] = db.Lookups
+             .Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL)
+             .Select(x => new
+             {
+                 EducationLevelId = x.LookupId,
+                 x.LookupId,
+                 x.Description
+             }).ToList();
+        }
+        public JsonResult GetRank()
+        {
+            db = new ExceedDbContext();
+            var ranks = db.Ranks.AsQueryable();
+            ViewData["RankList"] = ranks;
+            return Json(ranks.Select(p => new { RankId = p.RankId, RankName = p.RankName }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetStep()
+        {
+            db = new ExceedDbContext();
+            var stepss = db.Steps.AsQueryable();
+            ViewData["StepList"] = stepss;
+            return Json(stepss.Select(p => new { StepId = p.StepId, StepName = p.StepName }), JsonRequestBehavior.AllowGet);
         }
         private bool CheckVacancyValidation(string id)
         {
@@ -128,21 +161,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             #endregion
             return true;
         }
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromVacAm")
-            {
-                AmharicStartDate = value;
-                var splitDate = AmharicStartDate.Split('/');
-                StartDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else if (name == "ToVacAm")
-            {
-                AmharicEndDate = value;
-                var splitDate = AmharicEndDate.Split('/');
-                EndDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-        }
+      
         public JsonResult GetOrganizations()
         {
 
@@ -169,21 +188,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             }
             return null;
         }
+        public bool GetVancyStatus(int id)
+        {
+            var vacancy = db.VaccancyPlans.Find(id);
+            if (vacancy != null)
+            {
+
+                if (vacancy.To<DateTime.Now)
+                {
+                    vacancy.IsActive = false;
+                    vacancy.ModifiedBy = User.Identity.Name;
+                    vacancy.LastModified = DateTime.Now;
+                }
+                else
+                {
+                    vacancy.IsActive = true;
+                    vacancy.ModifiedBy = User.Identity.Name;
+                    vacancy.LastModified = DateTime.Now;
+                }
+                db.Entry(vacancy).State = EntityState.Modified;
+                db.SaveChanges();
+                return vacancy.IsActive;
+            }
+            return false;
+
+        }
 
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult VaccancyPlans_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             IQueryable<Vacancy> vaccancyplans = db.VaccancyPlans.OrderByDescending(x => x.VacancyId);//.Where(x => mybraches.Contains(x.OrgBranchName));
 
             DataSourceResult result = vaccancyplans.ToList().ToDataSourceResult(request, vaccancyPlan => new
             {
                 VacancyId = vaccancyPlan.VacancyId,
+                StepId = vaccancyPlan.StepId,
+                RankId = vaccancyPlan.RankId,
                 VaccancyCode = vaccancyPlan.VaccancyCode,
                 From = vaccancyPlan.From,
                 To = vaccancyPlan.To,
                 BranchId = vaccancyPlan.BranchId,
-                IsActive = vaccancyPlan.IsActive,
+                Isposted = vaccancyPlan.Isposted,
+                IsActive = GetVancyStatus(vaccancyPlan.VacancyId),
                 Remark = vaccancyPlan.Remark,
                 RecruSource = vaccancyPlan.RecruSource,
                 DateCreated = vaccancyPlan.DateCreated,
@@ -198,7 +245,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 JobTitle = vaccancyPlan.JobTitle,
                 Department = vaccancyPlan.Department,
                 NoOfVacant = vaccancyPlan.NoOfVacant,
-
                 Salary = vaccancyPlan.Salary,
                 InterviewSchedule = vaccancyPlan.InterviewSchedule,
                 WrittenExamSchedule = vaccancyPlan.WrittenExamSchedule,
@@ -207,12 +253,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 JobRequirement = vaccancyPlan.JobRequirement,
                 Responsibility = vaccancyPlan.Responsibility,
                 TotalYearOfExperience = vaccancyPlan.TotalYearOfExperience,
-
                 Branch = GetBranch(vaccancyPlan.BranchId),
                 JobtitleName = GetJobtitle(vaccancyPlan.JobTitle),
                 EthioJobsCode = vaccancyPlan.EthioJobsCode,
-                Language = vaccancyPlan.Language,
-                // CurrentStatusTracking = vaccancyPlan.CurrentStatusTracking,
+                ReportsTo = vaccancyPlan.ReportsTo,
                 Gender = vaccancyPlan.Gender
 
 
@@ -323,33 +367,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             #endregion
 
 
-            if (vaccancyPlan.FromVacAm != null)
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
             {
-                var splitDateFrom = vaccancyPlan.FromVacAm.Split('/');
-                vaccancyPlan.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
+                if (string.IsNullOrEmpty(vaccancyPlan.FromVacAm)
+                || string.IsNullOrEmpty(vaccancyPlan.ToVacAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { vaccancyPlan }.ToDataSourceResult(request, ModelState));
+                }
+                vaccancyPlan.From = HrHelper.ParseEthiopicDate(vaccancyPlan.FromVacAm);
+                vaccancyPlan.To = HrHelper.ParseEthiopicDate(vaccancyPlan.ToVacAm);
             }
             else
             {
-                ModelState.AddModelError("", "Start date is required");
+                vaccancyPlan.FromVacAm = XAPI.EthiopicDateTime.GetEthiopicDate(vaccancyPlan.From.Day, vaccancyPlan.From.Month, vaccancyPlan.From.Year);
+                vaccancyPlan.ToVacAm = XAPI.EthiopicDateTime.GetEthiopicDate(vaccancyPlan.To.Day, vaccancyPlan.To.Month, vaccancyPlan.To.Year);
             }
-            if (vaccancyPlan.ToVacAm != null)
-            {
-                var splitDateTo = vaccancyPlan.ToVacAm.Split('/');
-                vaccancyPlan.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "End date is required");
-            }
-
             var vacCheck = db.VaccancyPlans.FirstOrDefault(x => x.BranchId == vaccancyPlan.BranchId && x.To >= vaccancyPlan.From && x.IsActive && x.Department == vaccancyPlan.Department && x.JobTitle == vaccancyPlan.JobTitle);
             if (vacCheck != null)
             {
                 ModelState.AddModelError("", "This vacancy is Posted Before If You Need To Post Again You should close Previos Post First");
+                return Json(new[] { vaccancyPlan }.ToDataSourceResult(request, ModelState));
+
             }
             if (vaccancyPlan.From > vaccancyPlan.To)
             {
                 ModelState.AddModelError("", "Please Check the date range, Start date must be less or equal to End date!!");
+                return Json(new[] { vaccancyPlan }.ToDataSourceResult(request, ModelState));
+
             }
 
             var checkExistance = db.VaccancyPlans.FirstOrDefault(x => x.VaccancyCode == id && x.RecruSource == vaccancyPlan.RecruSource);
@@ -364,6 +410,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 var entity = new Vacancy
                 {
                     VaccancyCode = id,
+                    StepId = vaccancyPlan.StepId,
+                    RankId = vaccancyPlan.RankId,
                     RecruitmentPlanId = vaccancyPlan.RecruitmentPlanId,
                     From = vaccancyPlan.From,
                     BranchId = vaccancyPlan.BranchId,
@@ -372,18 +420,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     //  IsComplete = false,
                     RecruSource = vaccancyPlan.RecruSource,
                     Remark = vaccancyPlan.Remark,
+                    ReportsTo = vaccancyPlan.ReportsTo,
                     DateCreated = DateTime.Now,
                     LastModified = vaccancyPlan.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = vaccancyPlan.ModifiedBy,
-                    FromVacAm = AmharicStartDate,
-                    ToVacAm = AmharicEndDate,
+                    FromVacAm = vaccancyPlan.FromVacAm,
+                    ToVacAm = vaccancyPlan.ToVacAm,
                     VacancyType = vaccancyPlan.VacancyType,
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
                     JobTitle = vaccancyPlan.JobTitle,
                     Department = vaccancyPlan.Department,
                     NoOfVacant = vaccancyPlan.NoOfVacant,
-
                     Salary = vaccancyPlan.Salary,
                     InterviewSchedule = vaccancyPlan.InterviewSchedule,
                     WrittenExamSchedule = vaccancyPlan.WrittenExamSchedule,
@@ -393,7 +441,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     Responsibility = vaccancyPlan.Responsibility,
                     TotalYearOfExperience = vaccancyPlan.TotalYearOfExperience,
                     EthioJobsCode = vaccancyPlan.EthioJobsCode,
-                    Language = vaccancyPlan.Language,
+                    //Language = vaccancyPlan.Language,
                     // CurrentStatusTracking = vaccancyPlan.CurrentStatusTracking,
                     Gender = vaccancyPlan.Gender
 
@@ -403,16 +451,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 db.SaveChanges();
                 vaccancyPlan.VacancyId = entity.VacancyId;
 
-                //var vacancyExistdb = db.VaccancyPlans.Where(x => x.BranchId == vaccancyPlan.BranchId && x.IsActive && x.From != vaccancyPlan.From && x.To != vaccancyPlan.To).ToList();
-                //if (vacancyExistdb.Any())
-                //{
-                //    foreach (var vacancy in vacancyExistdb)
-                //    {
-                //        vacancy.IsActive = false;
-                //        db.Entry(vacancy).State = EntityState.Modified;
-                //        db.SaveChanges();
-                //    }
-                //}
+             
             }
 
 
@@ -425,28 +464,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
             ModelState.Clear();
 
-            if (vaccancyPlan.FromVacAm != null)
+
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
             {
-                var splitDateFrom = vaccancyPlan.FromVacAm.Split('/');
-                vaccancyPlan.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
+                if (string.IsNullOrEmpty(vaccancyPlan.FromVacAm)
+                || string.IsNullOrEmpty(vaccancyPlan.ToVacAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { vaccancyPlan }.ToDataSourceResult(request, ModelState));
+                }
+                vaccancyPlan.From = HrHelper.ParseEthiopicDate(vaccancyPlan.FromVacAm);
+                vaccancyPlan.To = HrHelper.ParseEthiopicDate(vaccancyPlan.ToVacAm);
             }
             else
             {
-                ModelState.AddModelError("", "Start date is required");
-            }
-            if (vaccancyPlan.ToVacAm != null)
-            {
-                var splitDateTo = vaccancyPlan.ToVacAm.Split('/');
-                vaccancyPlan.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "End date is required");
+                vaccancyPlan.FromVacAm = XAPI.EthiopicDateTime.GetEthiopicDate(vaccancyPlan.From.Day, vaccancyPlan.From.Month, vaccancyPlan.From.Year);
+                vaccancyPlan.ToVacAm = XAPI.EthiopicDateTime.GetEthiopicDate(vaccancyPlan.To.Day, vaccancyPlan.To.Month, vaccancyPlan.To.Year);
             }
 
             if (vaccancyPlan.From > vaccancyPlan.To)
             {
                 ModelState.AddModelError("", "Please Check the date range, From must be less or equal to To!!");
+                return Json(new[] { vaccancyPlan }.ToDataSourceResult(request, ModelState));
             }
             if (ModelState.IsValid)
             {
@@ -458,6 +498,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 var entity = new Vacancy
                 {
                     VacancyId = vaccancyPlan.VacancyId,
+                    StepId = vaccancyPlan.StepId,
+                    RankId = vaccancyPlan.RankId,
                     VaccancyCode = vaccancyPlan.VaccancyCode,
                     RecruitmentPlanId = vaccancyPlan.RecruitmentPlanId,
                     From = vaccancyPlan.From,
@@ -471,10 +513,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     LastModified = DateTime.Now,
                     CreatedBy = vaccancyPlan.CreatedBy,
                     ModifiedBy = User.Identity.Name,
-                    FromVacAm = AmharicStartDate,
-                    ToVacAm = AmharicEndDate,
+                    FromVacAm = vaccancyPlan.FromVacAm,
+                    ToVacAm = vaccancyPlan.ToVacAm,
                     VacancyType = vaccancyPlan.VacancyType,
                     OrgBranchName = vaccancyPlan.OrgBranchName,
+                    ReportsTo = vaccancyPlan.ReportsTo,
                     JobTitle = vaccancyPlan.JobTitle,
                     Department = vaccancyPlan.Department,
                     NoOfVacant = vaccancyPlan.NoOfVacant,
@@ -487,8 +530,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     Responsibility = vaccancyPlan.Responsibility,
                     TotalYearOfExperience = vaccancyPlan.TotalYearOfExperience,
                     EthioJobsCode = vaccancyPlan.EthioJobsCode,
-                    Language = vaccancyPlan.Language,
-                    // CurrentStatusTracking = vaccancyPlan.CurrentStatusTracking,
+                    Isposted = vaccancyPlan.Isposted,
                     Gender = vaccancyPlan.Gender
                 };
 
@@ -519,6 +561,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     RecruitmentPlanId = vaccancyPlan.RecruitmentPlanId,
                     From = vaccancyPlan.From,
                     BranchId = vaccancyPlan.BranchId,
+                    ReportsTo = vaccancyPlan.ReportsTo,
                     To = vaccancyPlan.To,
                     IsActive = vaccancyPlan.IsActive,
                     Remark = vaccancyPlan.Remark,
@@ -539,12 +582,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     WrittenExamSchedule = vaccancyPlan.WrittenExamSchedule,
                     Location = vaccancyPlan.Location,
                     ExperienceLevel = vaccancyPlan.ExperienceLevel,
+                    RankId = vaccancyPlan.RankId,
+                    StepId = vaccancyPlan.StepId,
                     JobRequirement = vaccancyPlan.JobRequirement,
                     Responsibility = vaccancyPlan.Responsibility,
                     TotalYearOfExperience = vaccancyPlan.TotalYearOfExperience,
                     EthioJobsCode = vaccancyPlan.EthioJobsCode,
-                    Language = vaccancyPlan.Language,
-                    // CurrentStatusTracking = vaccancyPlan.CurrentStatusTracking,
                     Gender = vaccancyPlan.Gender,
 
                 };
@@ -559,46 +602,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             return Json(new[] { vaccancyPlan }.ToDataSourceResult(request, ModelState));
         }
-        [AcceptVerbs(HttpVerbs.Post)]
+
+        [HttpPost]
         public string Close(int id)
         {
-            var status = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == id);
-            if (status != null)
-            {
-                if (status.IsActive)
-                {
-                    status.IsActive = false;
-                }
-                else
-                {
-                    return "already closed before";
-                }
+            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == id);
 
+            if (vacancy == null)
+                return "Vacancy not found";
 
-                db.Entry(status).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-            return "successfully closed";
+            if (!vacancy.IsActive)
+                return "Already closed before";
+            if (vacancy.To.Date > DateTime.Now.Date)
+                return $"You can't close before: {vacancy.To:MMMM dd, yyyy}"; 
+           
+            vacancy.IsActive = false;
+            db.Entry(vacancy).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return "Successfully closed";
         }
+
         public string ForceOpen(int id)
         {
-            var status = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == id);
-            if (status != null)
-            {
-                if (!status.IsActive)
-                {
-                    status.IsActive = true;
-                }
-                else
-                {
-                    return "already opened before";
-                }
+            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == id);
 
+            if (vacancy == null)
+                return "Vacancy not found";
 
-                db.Entry(status).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-            return "successfully opened";
+            if (vacancy.IsActive)
+                return "Already opened before";
+
+            var tomorrow = DateTime.Now.AddDays(1);
+
+            vacancy.IsActive = true;
+            vacancy.To = tomorrow;
+            vacancy.ToVacAm = XAPI.EthiopicDateTime.GetEthiopicDate(
+                tomorrow.Day, tomorrow.Month, tomorrow.Year
+            );
+
+            db.Entry(vacancy).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return "Successfully opened";
         }
         public ActionResult GetRecruitmentSource()
         {
@@ -609,7 +655,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             return Json(sources.Select(p => new
             {
-                Name = p.ToString(),
+                Name = GetRecruitmentSourceDisplayName(p),
                 Value = (int)p
 
             }), JsonRequestBehavior.AllowGet);
@@ -624,25 +670,71 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             return Json(levels.Select(p => new
             {
-                Name = p.ToString(),
+                Name = GetEmployeementLevelDisplayName(p),
                 Value = (int)p
 
             }), JsonRequestBehavior.AllowGet);
         }
-
         public ActionResult GetVacancyType()
         {
             var levels = Enum.GetValues(typeof(VacancyType))
-                       .Cast<VacancyType>()
-                       .Select(d => (d))
-                       .ToList();
+                .Cast<VacancyType>()
+                .ToList();
 
             return Json(levels.Select(p => new
             {
-                Name = p.ToString(),
-                Value = (int)p
+                Name = GetDisplayName(p),
 
+                Value = (int)p
             }), JsonRequestBehavior.AllowGet);
+        }
+        private string GetDisplayName(VacancyType vacancyType)
+        {
+            FieldInfo fieldInfo = vacancyType.GetType().GetField(vacancyType.ToString());
+            if (fieldInfo != null)
+            {
+                DisplayAttribute displayAttribute = fieldInfo
+                    .GetCustomAttribute<DisplayAttribute>();
+
+                if (displayAttribute != null)
+                {
+                    return displayAttribute.GetName();
+                }
+            }
+
+            return vacancyType.ToString(); // Fallback to raw enum name
+        }
+        private string GetEmployeementLevelDisplayName(ExperienceLevel experienceLevel)
+        {
+            FieldInfo fieldInfo = experienceLevel.GetType().GetField(experienceLevel.ToString());
+            if (fieldInfo != null)
+            {
+                DisplayAttribute displayAttribute = fieldInfo
+                    .GetCustomAttribute<DisplayAttribute>();
+
+                if (displayAttribute != null)
+                {
+                    return displayAttribute.GetName();
+                }
+            }
+
+            return experienceLevel.ToString(); // Fallback to raw enum name
+        }
+        private string GetRecruitmentSourceDisplayName(RecruitmentSource recruitmentSource)
+        {
+            FieldInfo fieldInfo = recruitmentSource.GetType().GetField(recruitmentSource.ToString());
+            if (fieldInfo != null)
+            {
+                DisplayAttribute displayAttribute = fieldInfo
+                    .GetCustomAttribute<DisplayAttribute>();
+
+                if (displayAttribute != null)
+                {
+                    return displayAttribute.GetName();
+                }
+            }
+
+            return recruitmentSource.ToString(); // Fallback to raw enum name
         }
         public ActionResult GetLanguages()
         {
@@ -658,20 +750,130 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             }), JsonRequestBehavior.AllowGet);
         }
-        protected override void Dispose(bool disposing)
+        public decimal GetSalaryAmount(int rank, int step)
         {
-            db.Dispose();
-            base.Dispose(disposing);
+            var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rank && s.StepId == step);
+
+            if (salary != null)
+            {
+                return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+            }
+
+            return 0; //Json(0, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetExperienceAmount(int lookUpId)
+        {
+            var amount = db.EducationLevelDetails
+                .Where(x => x.ExperienceJob.LookupId == lookUpId)
+                .Min(x => (decimal?)x.Experience) ?? 0;
+
+            return Json(amount, JsonRequestBehavior.AllowGet);
+        }
+        
+        public async Task<ActionResult> PostVacancyDetail(int id)
+        {
+            // Try detail + master Vacancy
+            var detail = db.VacancyDetails
+                           .Include(v => v.Vacancy)
+                           .FirstOrDefault(x => x.VacancyId == id);
+
+            VacancyRequest request;
+
+            if (detail != null)
+            {
+                // Map from detail + master
+                request = MapToVacancyRequest(detail);
+            }
+            else
+            {
+                // No detail → fallback to just master Vacancy
+                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == id);
+                if (vacancy == null)
+                    return HttpNotFound();
+                var lookup = db.Lookups.Find(vacancy.JobTitle);
+                request = new VacancyRequest
+                {
+                    title = lookup?.Description??"Job Vaccancy",
+                    description = vacancy.Remark ?? "N/A",
+                    published_date = vacancy.From.ToString("yyyy-MM-dd"),
+                    deadline = vacancy.To.ToString("yyyy-MM-dd"),
+                    employment_type = vacancy.VacancyType.ToString(),
+                    location = "A.A",
+                    salary = vacancy.Salary?.ToString(),
+                    experience = vacancy.TotalYearOfExperience.ToString() ?? "0 years",
+                    available_positions = vacancy.NoOfVacant.ToString(),
+                    job_code = vacancy.VaccancyCode,
+                    qualification = vacancy.JobtitleName ?? "Computer Science",
+                    gpa = vacancy.Remark ?? ">3.0",
+                    education_level = vacancy.Responsibility ?? "Bachelor's Degree",
+                    grade = vacancy.RankId.ToString(),
+                    skills = string.IsNullOrEmpty(vacancy.JobRequirement)? new List<string>()
+                                                                     : vacancy.JobRequirement.Split(',')
+                                                                               .Select(s => s.Trim())
+                                                                               .ToList()
+                };
+            }
+
+            var apiService = new VacancyApiService();
+
+            try
+            {
+                var response = await apiService.PostVacancyAsync(request);
+                var vacancy = db.VaccancyPlans.Find(id);
+                if(vacancy != null)
+                {
+                    vacancy.Isposted = true;
+                    db.Entry(vacancy).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                // Parse response if needed
+                return Json(new { status = "success", response }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        private VacancyRequest MapToVacancyRequest(VacancyDetail detail)
+        {
+            return new VacancyRequest
+            {
+                title = detail.Vacancy?.JobtitleName??"Job Vavancy",
+                description = detail.Decription??"Job Vacancy",
+                published_date = detail.Vacancy?.From.ToString("yyyy-MM-dd"),
+                deadline = detail.Vacancy?.To.ToString("yyyy-MM-dd"),
+                employment_type = detail.Vacancy?.VacancyType.ToString(),
+                location = detail.Vacancy?.BranchName??"A.A",
+                salary = detail.Vacancy?.Salary.ToString(),
+                experience = $"{detail.Experience}+ years",
+                available_positions = detail.Vacancy?.NoOfVacant.ToString(),
+                job_code = detail.Vacancy?.VaccancyCode,
+                qualification = detail.LookupId.ToString(),
+                gpa = detail.Vacancy?.Remark??">3.0",
+                education_level = detail.LookupId.ToString(),
+                grade = detail.Vacancy?.RankId.ToString(),
+                skills = new List<string>() // map if you have skills field
+            };
         }
 
         public ActionResult SummaryReport()
         {
+
             return View();
+
         }
 
         public ActionResult SummaryReportCourt()
         {
+
             return View();
+
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
         }
     }
 
@@ -680,4 +882,5 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public int RecruitmentPlanId { get; set; }
         public string JobTitle { get; set; }
     }
+    
 }

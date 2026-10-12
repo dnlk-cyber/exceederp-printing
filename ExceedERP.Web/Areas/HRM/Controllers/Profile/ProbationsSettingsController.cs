@@ -16,17 +16,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     public class ProbationsSettingsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        // GET: HRM/RetirementSetting
+        // GET: HRM/ProbationsSettings
         public ActionResult Index()
         {
             return View();
+
         }
         private void PopulateViewData()
         {
             var LeaveSetting = Enum.GetValues(typeof(LeaveSetting))
-                .Cast<LeaveSetting>()
-                .Select(v => v.ToString())
-                .ToList();
+                .Cast<LeaveSetting>().Select(v => v.ToString()).ToList();
+
             var LeaveSettings = LeaveSetting.Select(s => new { Text = s.ToString(), Value = s.ToString() });
             ViewData["LeaveSetting"] = LeaveSettings;
         }
@@ -36,12 +36,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             DataSourceResult result = probations.ToDataSourceResult(request, probation => new
             {
                 ProbationsSettingId = probation.ProbationsSettingId,
-                PromotionDays = probation.PromotionDays,
+                ResponsibilityLevel = probation.ResponsibilityLevel,
+                Remark = probation.Remark,
+                ProbationDays = probation.ProbationDays,
                 MinimumFitValue = probation.MinimumFitValue,
                 CreatedBy = probation.CreatedBy,
                 DateCreated = probation.DateCreated,
                 LastModified = probation.LastModified,
-                ModifiedBy = probation.ModifiedBy
+                ModifiedBy = probation.ModifiedBy,
             });
 
             return Json(result);
@@ -50,7 +52,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProbationsSettings_Create([DataSourceRequest]DataSourceRequest request, ProbationsSetting probation)
         {
-            var check =db.ProbationsSettings.FirstOrDefault();
+            var check =db.ProbationsSettings.Where(p=>p.ResponsibilityLevel==probation.ResponsibilityLevel).FirstOrDefault();
             if (check != null)
             {
                 ModelState.AddModelError("", "you can't add more than one records");
@@ -60,7 +62,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             if (ModelState.IsValid)
             {
-
+                probation.CreatedBy = User.Identity.Name;
+                probation.DateCreated = DateTime.Now;
                 var entity = GetMappedObject(probation);
 
                 db.ProbationsSettings.Add(entity);
@@ -77,13 +80,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProbationsSettings_Update([DataSourceRequest]DataSourceRequest request, ProbationsSetting probation)
+        public ActionResult ProbationsSettings_Update([DataSourceRequest]DataSourceRequest request, ProbationsSetting probationsSetting)
         {
+            var check = db.ProbationsSettings.Where(p => p.ResponsibilityLevel == probationsSetting.ResponsibilityLevel
+                                                        &&p.ProbationsSettingId != probationsSetting.ProbationsSettingId)
+                                                        .FirstOrDefault();
+            if (check != null)
+            {
+                ModelState.AddModelError("", "you can't add more than one records");
+                return Json(new[] { probationsSetting }.ToDataSourceResult(request, ModelState));
 
+            }
             if (ModelState.IsValid)
             {
-                
-                var entity = GetMappedObject(probation);
+                probationsSetting.ModifiedBy = User.Identity.Name;
+                probationsSetting.LastModified = DateTime.Now;
+                var entity = GetMappedObject(probationsSetting);
                 db.ProbationsSettings.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -95,7 +107,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 #endregion
             }
 
-            return Json(new[] { probation }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { probationsSetting }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -122,7 +134,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var entity = new ProbationsSetting
             {
                 ProbationsSettingId = probation.ProbationsSettingId,
-                PromotionDays = probation.PromotionDays,
+                ResponsibilityLevel = probation.ResponsibilityLevel,
+                Remark = probation.Remark,
+                ProbationDays = probation.ProbationDays,
                 MinimumFitValue = probation.MinimumFitValue,
                 CreatedBy = probation.CreatedBy,
                 DateCreated = probation.DateCreated,

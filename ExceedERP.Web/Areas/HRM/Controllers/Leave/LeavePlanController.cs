@@ -23,44 +23,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     public class LeavePlanController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        //public static DateTime To { get; set; }
-        //public static string ToAmharic { get; set; }
-        //public static DateTime From { get; set; }
-        //public static string FromAmharic { get; set; }
-        HRMInputs inputs = new HRMInputs();
+        private readonly CacheData CacheData = new CacheData();
+
         public ActionResult Index()
         {
 
-            //GetPeriod();
+            GetPeriod();
             PopulateViewData();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
 
             return View();
         }
 
         private void PopulateViewData()
         {
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
+
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+                  i => new
+                  {
+                      FullNameAmharic = i.AmharicName,
+                      FullNameaEnglish = i.Name,
+                      FullName = i.Name,
+                      FullNameCode = i.Code + " " + i.Name,
+                      EmployeeCode = i.Code,
+                      EmployeeId = i.Id,
+
+                  }).AsQueryable();
+          
             ViewData["Period"] = db.GLPeriods.AsQueryable();
-            ViewData["PeriodList"] = db.GLFiscalYears.AsQueryable();
         }
-        //public void SetDate(string name, string value)
-        //{
-        //    if (name == "FromAmharic")
-        //    {
-        //        FromAmharic = value;
-        //        var splitDate = FromAmharic.Split('/');
-        //        From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-        //    }
-        //    else if (name == "ToAmharic")
-        //    {
-        //        ToAmharic = value;
-        //        var splitDate = ToAmharic.Split('/');
-        //        To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-        //    }
-
-
-        //}
         public JsonResult GetPeriod()
         {
             var periodList = db.GLFiscalYears;
@@ -75,7 +66,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             //List<int> employeeIds = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
             List<int> employeeIds = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId);
-            IQueryable<LeavePlan> leaveplans = db.LeavePlans.Where(x =>( x.EmployeeId==employeeId||employeeIds.Contains(x.EmployeeId))&&x.IsSendForApproval);
+            IQueryable<LeavePlan> leaveplans = db.LeavePlans.Where(x => employeeIds.Contains(x.EmployeeId)&&x.IsSendForApproval);
             DataSourceResult result = leaveplans.ToDataSourceResult(request, leavePlan => new
             {
                 LeavePlanId = leavePlan.LeavePlanId,
@@ -129,6 +120,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
 
             // Check if either both (FromAmharic and ToAmharic Dates) or GLPeriodId are provided
+            bool useEthiopianDate = HrHelper.GetDatePreference();
 
             // Validation
             if ((string.IsNullOrEmpty(leavePlan.FromAmharic) || string.IsNullOrEmpty(leavePlan.ToAmharic)) &&
@@ -152,11 +144,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             else
             {
-               
+                if (useEthiopianDate)
+                {
                     // Convert Amharic (Ethiopian) dates to Gregorian
                     leavePlan.From = HrHelper.ParseEthiopicDate(leavePlan.FromAmharic);
                     leavePlan.To = HrHelper.ParseEthiopicDate(leavePlan.ToAmharic);
-               
+                }
+                else
+                {
+                    // Use already assigned Gregorian dates to set Amharic values
+                    leavePlan.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.From.Day, leavePlan.From.Month, leavePlan.From.Year);
+                    leavePlan.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.To.Day, leavePlan.To.Month, leavePlan.To.Year);
+                }
             }
 
 
@@ -178,7 +177,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             if ((selectedFromYear < currentYear && selectedToYear < currentYear) ||
                 (selectedFromYear > currentYear && selectedToYear > currentYear))
             {
-                ModelState.AddModelError("", "You cannot Plan for other years");
+                ModelState.AddModelError("", "You cannot plan for other years");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
 
@@ -196,11 +195,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 ModelState.AddModelError("", "You cannot plan such an amount of leave!!");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
+
             if (leavePlan.LeaveAmount > totalBalance)
             {
                 ModelState.AddModelError("", "You cannot plan such an amount of leave!!");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
+
             // Check if the requested leave amount exceeds the number of days in the period
             else if (leavePlan.LeaveAmount > (decimal)resultDate)
             {
@@ -211,11 +212,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 leavePlan.LeaveAmount = resultDate;
             }
-
             // Set additional properties for the leave plan
             leavePlan.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-            leavePlan.EmployeeCode = inputs.GetEmployees()
-                .FirstOrDefault(x => x.PersonId == leavePlan.EmployeeId)?.EmployeeCode;
+            leavePlan.EmployeeCode = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leavePlan.EmployeeId)?.EmployeeCode;
             leavePlan.CreatedBy = User.Identity.Name;
             leavePlan.DateCreated = DateTime.Now;
             leavePlan.IsSendForApproval = true;
@@ -252,7 +251,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavePlans_Update([DataSourceRequest]DataSourceRequest request, LeavePlan leavePlan)
         {
-          
+            // Check if either both (FromAmharic and ToAmharic Dates) or GLPeriodId are provided
+            bool useEthiopianDate = HrHelper.GetDatePreference();
 
             // Validation
             if ((string.IsNullOrEmpty(leavePlan.FromAmharic) || string.IsNullOrEmpty(leavePlan.ToAmharic)) &&
@@ -276,11 +276,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             else
             {
-               
+                if (useEthiopianDate)
+                {
                     // Convert Amharic (Ethiopian) dates to Gregorian
                     leavePlan.From = HrHelper.ParseEthiopicDate(leavePlan.FromAmharic);
                     leavePlan.To = HrHelper.ParseEthiopicDate(leavePlan.ToAmharic);
-                
+                }
+                else
+                {
+                    // Use already assigned Gregorian dates to set Amharic values
+                    leavePlan.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.From.Day, leavePlan.From.Month, leavePlan.From.Year);
+                    leavePlan.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(leavePlan.To.Day, leavePlan.To.Month, leavePlan.To.Year);
+                }
             }
                 decimal resultDate = HrHelper.GetLeaveDays(leavePlan.From, leavePlan.To, leavePlan.GlFiscalYearId, leavePlan.Day, LeaveType.ANNUAL, leavePlan.EmployeeId);
            

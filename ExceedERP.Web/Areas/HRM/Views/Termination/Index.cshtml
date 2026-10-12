@@ -5,49 +5,160 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+    var approvalConfigs = ViewData["ApprovalConfigs"] as List<ExceedERP.Core.Domain.HRM.Company.CompanyApprovalSetting>
+                          ?? new List<ExceedERP.Core.Domain.HRM.Company.CompanyApprovalSetting>();
 }
-<Legend>@Resources.NavigatorTermination_Termination</Legend>
+
+<script>
+    // Serialize enabled approval steps ordered by StepOrder for sequential client validation
+    var activeApprovalSteps = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+        approvalConfigs.Select(x => new {
+            Role = x.Role.ToString(),
+            x.StepOrder
+        })
+    ));
+</script>
+
+<div class="termination-page-container">
+    @Html.AntiForgeryToken()
+    <!-- Top Header -->
+    <div class="erp-header-card">
+        <h2 class="erp-page-title">
+            <i class="fa-solid fa-user-xmark text-danger"></i>
+            @Resources.NavigatorTermination_Termination
+        </h2>
+        <div>
+            <a href="javascript:void(0);" onclick="updateEmployeeTermination(this)" class="btn-action-refresh">
+                <i class="fa fa-refresh text-primary"></i>
+                @Resources.ActionButton_Update @Resources.Rpt_Termination
+            </a>
+        </div>
+    </div>
+    <!-- Top Legend Bar -->
+    <div class="erp-legend-card">
+        <div class="erp-legend-items">
+            <span class="text-muted small" style="font-weight: 700;">STATUS:</span>
+            <div class="legend-indicator">
+                <span class="legend-dot approved"></span>
+                <span>Online Approved</span>
+            </div>
+            <div class="legend-indicator">
+                <span class="legend-dot forced"></span>
+                <span>Forcibly Terminated</span>
+            </div>
+            <div class="legend-indicator">
+                <span class="legend-dot pending"></span>
+                <span>Pending Approval</span>
+            </div>
+        </div>
+        <div class="text-muted small">
+            Date Mode: <strong>@(useEthiopian ? "Ethiopic Calendar" : "Gregorian")</strong>
+        </div>
+    </div>
+</div>
+
 @(Html.Kendo().Grid<Termination>()
         .Name("TerminationGrid")
         .Columns(columns =>
         {
-
             columns.Bound(c => c.EmployeeCode).Width(100).Hidden();
-            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Filterable(g=>g.Search(true).Multi(true)).EditorTemplateName("ActiveEmployees").Width(180);
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Filterable(g => g.Search(true).Multi(true)).EditorTemplateName("ActiveEmployees").Width(180);
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
             columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").Filterable(g => g.Search(true).Multi(true)).EditorTemplateName("TerminationType").Width(150);
-            //columns.Bound(c => c.TerminationLevel).Width(120);
-            columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(140);
             columns.Bound(c => c.Reason).Width(100);
+            columns.Bound(c => c.IsEarlyRetirement).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#= IsEarlyRetirement#' " +
+                "# if (IsEarlyRetirement) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Width(140);
+
             columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
-             "<input type='checkbox' disabled = 'true' value='#= IsOnlineApproved#' " +
-             "# if (IsOnlineApproved) { #" +
-             "checked='checked'" +
-             "# } #" +
-             "/>"
-             ).Title("Status").Width(100);
+                "<input type='checkbox' disabled = 'true' value='#= IsOnlineApproved#' " +
+                "# if (IsOnlineApproved) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Title("Status").Width(120);
+
             columns.Bound(c => c.IsForciblyTerminated).ClientTemplate(
-             "<input type='checkbox' disabled = 'true' value='#= IsForciblyTerminated#' " +
-             "# if (IsForciblyTerminated) { #" +
-             "checked='checked'" +
-             "# } #" +
-             "/>"
-             ).Width(150);
-            columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(140);
-            // columns.Bound(c => c.Remark).Width (120);
+                "<input type='checkbox' disabled = 'true' value='#= IsForciblyTerminated#' " +
+                "# if (IsForciblyTerminated) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Width(150);
+
+            if (useEthiopian)
+            {
+                columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(140);
+                columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(140);
+            }
+            else
+            {
+                columns.Bound(c => c.ApplicationDate).Width(140);
+                columns.Bound(c => c.TerminationDate).Width(140);
+            }
+
             columns.Command(command =>
             {
                 if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
                 {
                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                 }
-                if (HttpContext.Current.User.IsInRole("HR_Admin"))
+
+    // 1. Dynamically render optional approval commands based on CompanyApprovalSettings
+    if (approvalConfigs != null && approvalConfigs.Any())
                 {
-                    command.Destroy().Text(Resources.ActionButton_Cancel);
-                    command.Custom(Resources.ActionButton_Approve).Click("terminateEmployee").IconClass("fa fa-check").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve termination", @id = "terminate" });
-                    //command.Custom("").Click("enableOrUnTerminate").Text("UnTerminate").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-primary", @title = "unterminate ", @id = "unterminate" });
-                    command.Custom(Resources.Button_Force_Treminate).Click("forceTerminateEmployee").IconClass("fa fa-check").HtmlAttributes(new { @class = "btn btn-danger", @title = "Force Terminate Employees", @id = "forceTerminate" });
+                    foreach (var config in approvalConfigs)
+                    {
+                        string roleName = config.Role.ToString();
+                        if (HttpContext.Current.User.IsInRole(roleName)||
+                            HttpContext.Current.User.IsInRole("HR_Admin"))
+                        {
+                            command.Custom("cmd-" + roleName)
+                                   .Click("approveDynamicStep('" + roleName + "')")
+                                   .Text("Approve (" + roleName + ")")
+                                   .IconClass("fa fa-check")
+                                   .HtmlAttributes(new { @class = "btn btn-info btn-approval-step", @id = "btn_" + roleName });
+                        }
+                    }
                 }
-            }).Width(400);
+
+    // 2. Final Approval & administrative operations (HR_Admin)
+    if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                {
+                    command.Custom(Resources.ActionButton_Approve)
+                           .Click("terminateEmployee")
+                           .Text("Final Approve")
+                           .IconClass("fa fa-check-circle")
+                           .HtmlAttributes(new
+                           {
+                               @class = "btn btn-success",
+                               @title = "Final Approve the employee termination and process payroll exit",
+                               @id = "terminate"
+                           });
+
+                    command.Custom("").Click("enableOrUnTerminate")
+                           .Text("Un-Terminate")
+                           .IconClass("fa fa-undo")
+                           .HtmlAttributes(new
+                           {
+                               @class = "btn btn-primary",
+                               @title = "Remove the employee from termination pending lists and restore them to active status",
+                               @id = "unterminate"
+                           });
+
+                    command.Custom(Resources.Button_Force_Treminate)
+                           .Click("forceTerminateEmployee")
+                           .IconClass("fa fa-times")
+                           .HtmlAttributes(new { @class = "btn btn-danger", @title = "Force Terminate Employees", @id = "forceTerminate" });
+
+                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                }
+
+            }).Width(480);
 
         })
         .ToolBar(toolbar =>
@@ -56,7 +167,6 @@
             {
                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
             }
-
         })
         .Editable(editable => editable.Mode(GridEditMode.InLine))
         .Selectable(selectable =>
@@ -64,9 +174,7 @@
             selectable.Mode(GridSelectionMode.Single);
             selectable.Type(GridSelectionType.Row);
         })
-
         .Scrollable(h => h.Height(500))
-
         .Sortable(sortable =>
         {
             sortable.SortMode(GridSortMode.SingleColumn);
@@ -79,343 +187,549 @@
             x.Edit("GetDate");
         })
         .Pageable(pageable => pageable
-        .Input(true)
-        .Numeric(false)
-        .Refresh(true)
-        .PageSizes(true)
-        .ButtonCount(5))
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
         .DataSource(dataSource => dataSource
-                .Ajax()
-                .Sort(s=>s.Add(x=>x.TerminationId).Descending())
+            .Ajax()
+            .Sort(s => s.Add(x => x.TerminationId).Descending())
+            .Events(events =>
+            {
+                events.Error("error_handler(\"TerminationGrid\")");
+                events.RequestStart("onRequestStart(\"TerminationGrid\")");
+                events.RequestEnd("onRequestEnd(\"TerminationGrid\")");
+            })
+            .Model(model =>
+            {
+                model.Id(p => p.TerminationId);
+                model.Field(p => p.BranchId).Editable(false);
+                model.Field(p => p.BusinessUnitId).Editable(false);
+                model.Field(p => p.OrgStructureId).Editable(false);
+                model.Field(p => p.IsOnlineApproved).Editable(false);
+                model.Field(p => p.IsForciblyTerminated).Editable(false);
+            })
+            .Read(read => read.Action("Terminations_Read", "Termination").Data("sendForgery"))
+            .Create(create => create.Action("Terminations_Create", "Termination").Data("sendForgery"))
+            .Update(update => update.Action("Terminations_Update", "Termination").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("Terminations_Destroy", "Termination").Data("sendForgery"))
+        ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabstrip_#=TerminationId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                    items.Add().Text(Resources.Details).Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                                    .Name("panelbar_#=TerminationId#")
+                                    .ExpandMode(PanelBarExpandMode.Single)
+                                    .Items(panelbar =>
+                                    {
+                                                panelbar.Add().Text("Status")
+                                                        .Expanded(true)
+                                                        .Content(
+                                                            "<div>" +
+                                                            "<table class='table'>" +
+                                                            "<tr>" +
+                                                            "<td><div class='employee-details'>" +
+                                                            "<ul>" +
+                                                            "<li><label>Created By: &nbsp; </label>#=CreatedBy #</li>" +
+                                                            "<li><label>Created Date: &nbsp; </label>#=DateCreated #</li>" +
+                                                            "<li><label>Modified By: &nbsp; </label>#=ModifiedBy #</li>" +
+                                                            "<li><label>Last Modified Date: &nbsp; </label>#=LastModified #</li>" +
+                                                            "<li><label>Remark: &nbsp; </label>#=Remark #</li>" +
+                                                            "</ul>" +
+                                                            "</div></td>" +
+                                                            "</tr>" +
+                                                            "</table>" +
+                                                            "</div>");
+                                            }).ToClientTemplate()
+                        )
+                    </text>);
+
+                            items.Add().Text(Resources.HR_Upload_File).Content(
+                            @<text>
+                                @(Html.Kendo().Grid<Attachment>()
+                                            .Name("AttachmentGrid_#=TerminationId#")
+                                            .Columns(columns =>
+                                            {
+                                                        columns.Bound(c => c.Description).Width(150);
+                                                        columns.Template(e => { }).ClientTemplate("<a href='/Common/Attachment/DownloadAttachment?attachmentId=\\#=AttachmentId\\#'> <i class='fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(80);
+                                                        columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#/\\#=FileName\\#' target='_blank'> <i class='fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+                                                        columns.Command(command =>
+                                                        {
+                                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                        });
+                                                    })
+                                            .Events(e =>
+                                            {
+                                                        e.Edit("onGridEdit");
+                                                        e.Change("onChange");
+                                                    })
+                                            .ToolBar(toolbar =>
+                                            {
+                                                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                    })
+                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                                            {
+                                                        window.Scrollable(false);
+                                                        window.Title(Resources.HR_Upload_File);
+                                                    }))
+                                            .Scrollable()
+                                            .Selectable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Events(events =>
+                                                {
+                                                            events.Error("error_handler(\"AttachmentGrid_#=TerminationId#\")");
+                                                            events.RequestStart("onRequestStart(\"AttachmentGrid_#=TerminationId#\")");
+                                                            events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=TerminationId#\")");
+                                                        })
+                                                .Model(model => model.Id(p => p.AttachmentId))
+                                                .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }).Data("sendForgery"))
+                                                .Destroy(destroy => destroy.Action("Attachments_Destroy", "Termination").Data("sendForgery"))
+                                            ).ToClientTemplate()
+                                )
+                            </text>);
+
+                                    items.Add().Text(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview).Content(
+                                    @<text>
+                                        @(Html.Kendo().Grid<ExitInterview>()
+                                                    .Name("ExitInterview_#=TerminationId#")
+                                                    .Columns(columns =>
+                                                    {
+                                                                columns.Bound(c => c.ToKeep).Width(150);
+                                                                columns.Bound(c => c.ToRemove).Width(150);
+                                                                columns.Bound(c => c.Reason).Width(150);
+                                                                columns.Bound(c => c.DueToWork).Width(150);
+                                                                columns.Bound(c => c.Sicknees).Width(150);
+                                                                columns.Bound(c => c.MainReason).Width(150);
+                                                                columns.Bound(c => c.OtherReason).Width(150);
+                                                                columns.Bound(c => c.Remark).Width(150);
+                                                                columns.Command(command =>
+                                                                {
+                                                                    if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
+                                                                    {
+                                                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                    }
+                                                                    if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                                                                    {
+                                                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                    }
+                                                                });
+                                                            })
+                                                    .ToolBar(toolbar =>
+                                                    {
+                                                                if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
+                                                                {
+                                                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                }
+                                                            })
+                                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ExitInterview").Window(window => { window.Title(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview); window.Scrollable(false); }))
+                                                    .Selectable(selectable =>
+                                                    {
+                                                                selectable.Mode(GridSelectionMode.Single);
+                                                                selectable.Type(GridSelectionType.Row);
+                                                            })
+                                                    .Scrollable()
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                        .Events(events =>
+                                                        {
+                                                                    events.Error("error_handler(\"ExitInterview_#=TerminationId#\")");
+                                                                    events.RequestStart("onRequestStart(\"ExitInterview_#=TerminationId#\")");
+                                                                    events.RequestEnd("onRequestEnd(\"ExitInterview_#=TerminationId#\")");
+                                                                })
+                                                        .Model(model => model.Id(p => p.ExitIntervId))
+                                                        .Read(read => read.Action("ExitInterviews_Read", "ExitInterview", new { Area = "HRM", id = "#=EmployeeId#" }).Data("sendForgery"))
+                                                        .Create(create => create.Action("ExitInterviews_Create", "ExitInterview", new { Area = "HRM", id = "#=EmployeeId#" }).Data("sendForgery"))
+                                                        .Update(update => update.Action("ExitInterviews_Update", "ExitInterview").Data("sendForgery"))
+                                                        .Destroy(destroy => destroy.Action("ExitInterviews_Destroy", "ExitInterview").Data("sendForgery"))
+                                                    ).ToClientTemplate()
+                                        )
+                                    </text>);
+
+                                            items.Add().Text(Resources.NavigatorLeave_Leave).Content(
+                                            @<text>
+                                                @(Html.Kendo().Grid<LeaveEntitle>()
+                                                            .Name("Leave#=TerminationId#")
+                                                            .Columns(columns =>
+                                                            {
+                                                                        columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYear"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");
+                                                                        columns.Bound(c => c.Balance).Width(150);
+                                                                        columns.Command(command =>
+                                                                        {
+                                                                            command.Custom("Paid")
+                                                                                   .Click("Paid")
+                                                                                   .Text(" Expire")
+                                                                                   .IconClass("fa fa-ban fa4x")
+                                                                                   .HtmlAttributes(new
+                                                                                   {
+                                                                                       @class = "btn btn-warning",
+                                                                                       @title = "Expire this Leave Entitlement Amount",
+                                                                                       @id = "expireLeaveEntitlement"
+                                                                                   });
+                                                                        });
+                                                                    })
+                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                            .Scrollable()
+                                                            .Selectable()
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .Events(events =>
+                                                                {
+                                                                            events.Error("error_handler(\"Leave#=TerminationId#\")");
+                                                                            events.RequestStart("onRequestStart(\"Leave#=TerminationId#\")");
+                                                                            events.RequestEnd("onRequestEnd(\"Leave#=TerminationId#\")");
+                                                                        })
+                                                                .Model(model =>
+                                                                {
+                                                                            model.Id(p => p.LeaveEntitleId);
+                                                                            model.Field(p => p.GlFiscalYearId).Editable(false);
+                                                                            model.Field(p => p.Balance).Editable(false);
+                                                                        })
+                                                                .Read(read => read.Action("LeaveTermination_Read", "LeaveTermination", new { Area = "HRM", id = "#=EmployeeId#" }).Data("sendForgery"))
+                                                                .Create(create => create.Action("LeaveTermination_Create", "LeaveTermination", new { Area = "HRM", id = "#=EmployeeId#" }).Data("sendForgery"))
+                                                                .Destroy(destroy => destroy.Action("LeaveTermination_Destroy", "LeaveTermination").Data("sendForgery"))
+                                                            ).ToClientTemplate()
+                                                )
+                                            </text>);
+
+                                                    items.Add().Text(Resources.NavigatorPayroll_Loan).Content(
+                                                    @<text>
+                                                        @loan()
+                                                    </text>);
+
+                                                            items.Add().Text(Resources.NavigatorSelfCare_FixedAsset).Content(
+                                                            @<text>
+                                                                @fixedAssetYouHave()
+                                                            </text>);
+
+                                                                    items.Add().Text("Guarantor or Surety").Content(
+                                                                    @<text>
+                                                                        @EmployeeGuarantor()
+                                                                    </text>);
+
+                                                                            items.Add().Text("Staff Debtor Balance").Content(
+                                                                            @<text>
+                                                                                @StaffDebtorBalance()
+                                                                            </text>);
+
+                                                                                }).ToClientTemplate())
+</script>
+
+@helper loan()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.Loan>()
+                .Name("Loangrid#=TerminationId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ActiveEmployees").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+                    columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
+                    columns.Bound(c => c.LoanAmount).Width(110);
+                    columns.Bound(c => c.Months).Width(100);
+                    columns.Bound(c => c.MonthlyAmount).Width(120);
+                    columns.Bound(c => c.Balance).Width(100);
+                    columns.Bound(c => c.Description).Visible(false);
+                    columns.Bound(c => c.JumpHoliday).ClientTemplate(
+                        "<input type='checkbox' disabled = 'true' value='\\#= JumpHoliday\\#' " +
+                        "\\# if (JumpHoliday) { \\#" +
+                        "checked='checked'" +
+                        "\\# } \\#" +
+                        "/>"
+                    ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(120);
+                    columns.Bound(c => c.IsActive).ClientTemplate(
+                        "<input type='checkbox' disabled = 'true' value='\\#= IsActive\\#' " +
+                        "\\# if (IsActive) { \\#" +
+                        "checked='checked'" +
+                        "\\# } \\#" +
+                        "/>"
+                    ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(120);
+                    columns.Bound(c => c.Remark);
+                })
+                .Scrollable(h => h.Height(500))
+                .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+                .Filterable()
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add("LoanId").Descending())
                     .Events(events =>
                     {
-                        events.Error("error_handler(\"TerminationGrid\")");
-                        events.RequestStart("onRequestStart(\"TerminationGrid\")");
-                        events.RequestEnd("onRequestEnd(\"TerminationGrid\")");
+                        events.Error("error_handler(\"Loangrid#=TerminationId#\")");
+                        events.RequestStart("onRequestStart(\"Loangrid#=TerminationId#\")");
+                        events.RequestEnd("onRequestEnd(\"Loangrid#=TerminationId#\")");
                     })
                     .Model(model =>
                     {
-                        model.Id(p => p.TerminationId);
-                        model.Field(p => p.IsOnlineApproved).Editable(false);
-                        model.Field(p => p.IsForciblyTerminated).Editable(false);
+                        model.Id(p => p.LoanId);
+                        model.Field(p => p.MonthlyAmount).Editable(false);
+                        model.Field(p => p.Balance).Editable(false);
                     })
-                    .Read(read => read.Action("Terminations_Read", "Termination"))
-                    .Create(create => create.Action("Terminations_Create", "Termination"))
-                    .Update(update => update.Action("Terminations_Update", "Termination"))
-                    .Destroy(destroy => destroy.Action("Terminations_Destroy", "Termination"))
+                    .Read(read => read.Action("Loans_Read_Per_Employee", "Termination", new { Area = "HRM", employeeId = "#=EmployeeId#" }).Data("sendForgery"))
+                ).ToClientTemplate())
+}
 
-                    ).ClientDetailTemplateId("template")
-)
-<script id="template" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-            .Name("tabstrip_#=TerminationId#")
-            .SelectedIndex(0)
-            .Items(items =>
-            {
-
-             items.Add().Text(Resources.Details).Content(
-             @<text>
-
-                @(Html.Kendo().PanelBar()
-                    .Name("panelbar_#=TerminationId#")
-                    .ExpandMode(PanelBarExpandMode.Single)
-                    .Items(panelbar =>
+@helper fixedAssetYouHave()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FixedAsset.UserCard.UserCardItems>()
+                .Name("UserCardItemsgrid#=TerminationId#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Name).Width(140);
+                    columns.Bound(c => c.IssueDate).Width(130);
+                    columns.Bound(c => c.UOM).Width(130);
+                    columns.Bound(c => c.UnitPrice).Width(120);
+                    columns.Bound(c => c.Quanity).Width(100);
+                    columns.Bound(c => c.SerialNo).Width(130);
+                    columns.Bound(c => c.SIVNo).Width(120);
+                    columns.Bound(c => c.GRNDate).Width(120);
+                    columns.Bound(c => c.Active).ClientTemplate(
+                        "<input type='checkbox' disabled = 'true' value='\\#= Active\\#' " +
+                        "\\# if (Active) { \\#" +
+                        "checked='checked'" +
+                        "\\# } \\#" +
+                        "/>"
+                    ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(120);
+                    columns.Bound(c => c.Remark);
+                })
+                .Scrollable(h => h.Height(500))
+                .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+                .Filterable()
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(events =>
                     {
-                        panelbar.Add().Text("Status")
-                            .Expanded(true)
-                            .Content(
+                        events.Error("error_handler(\"UserCardItemsgrid#=TerminationId#\")");
+                        events.RequestStart("onRequestStart(\"UserCardItemsgrid#=TerminationId#\")");
+                        events.RequestEnd("onRequestEnd(\"UserCardItemsgrid#=TerminationId#\")");
+                    })
+                    .Model(model => model.Id(p => p.UserCardItemsID))
+                    .Read(read => read.Action("UserCardItems_Read", "Termination", new { Area = "HRM", employeeId = "#=EmployeeId#" }).Data("sendForgery"))
+                ).ToClientTemplate())
+}
 
-                                 "<div>" +
-                          "<table class='table'>" +
-                          "<tr>" +
-                          "<td>" + "<div class='employee-details'>" +
-                                "<ul>" +
+@helper EmployeeGuarantor()
+{
+    @(Html.Kendo().Grid<GuarantorOrSurety>()
+                .Name("GuarantorOrSuretygrid#=TerminationId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish")
+                        .EditorTemplateName("ActiveEmployees")
+                        .Filterable(ftb => ftb.Multi(true).Search(true))
+                        .Width(250);
+                    columns.Bound(c => c.Remark).Width(150);
+                    columns.Command(command => { });
+                })
+                .ToolBar(toolbar => { })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                .Scrollable(h => h.Height(500))
+                .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+                .Filterable()
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"GuarantorOrSuretygrid#=TerminationId#\")");
+                        events.RequestStart("onRequestStart(\"GuarantorOrSuretygrid#=TerminationId#\")");
+                        events.RequestEnd("onRequestEnd(\"GuarantorOrSuretygrid#=TerminationId#\")");
+                    })
+                    .Model(model =>
+                    {
+                        model.Id(p => p.GuarantorOrSuretyId);
+                        model.Field(p => p.EmployeeId).Editable(false);
+                    })
+                    .Read(read => read.Action("GuarantorOrSurety_Read", "GuarantorOrSureties", new { garanteeEmployeeId = "#=EmployeeId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("GuarantorOrSuretyPerEmployee_Create", "GuarantorOrSureties", new { Area = "HRM", garanteeEmployeeId = "#=EmployeeId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("Update", "GuarantorOrSureties").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("Destroy", "GuarantorOrSureties").Data("sendForgery"))
+                )
+                .ClientDetailTemplateId("GuarantorOrSuretytemplate")
+                .ToClientTemplate()
+    )
+}
 
-                                "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                                "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                                "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                                "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
-                                "<li><label>" + "Remark  " + ": &nbsp; </label>#=Remark #</li>" +
+@helper StaffDebtorBalance()
+{
+    @(Html.Kendo().Grid<StaffDebtorBalance>()
+                .Name("StaffDebtorBalance_#=TerminationId#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.AccountCode).Title("Account Code").Width(120);
+                    columns.Bound(c => c.Description).Title("Description").Width(200);
+                    columns.Bound(c => c.Debit).Title("Debit").Format("{0:n2}").Width(120);
+                    columns.Bound(c => c.Credit).Title("Credit").Format("{0:n2}").Width(120);
+                    columns.Bound(c => c.Balance).Title("Balance").Format("{0:n2}").Width(120);
+                    columns.Bound(c => c.Remark).Title("Remark").Width(150);
+                    columns.Command(command =>
+                    {
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                    });
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height(500))
+                .Filterable()
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .Selectable(s => s.Mode(GridSelectionMode.Single).Type(GridSelectionType.Row))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"StaffDebtorBalance_#=TerminationId#\")");
+                        events.RequestStart("onRequestStart(\"StaffDebtorBalance_#=TerminationId#\")");
+                        events.RequestEnd("onRequestEnd(\"StaffDebtorBalance_#=TerminationId#\")");
+                    })
+                    .Model(model => model.Id(p => p.StaffDebtorBalanceId))
+                    .Read(read => read.Action("StaffDebtorBalances_Read", "StaffDebtorBalance", new { Area = "HRM", employeeId = "#=EmployeeId#", terminationId = "#=TerminationId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("StaffDebtorBalances_Create", "StaffDebtorBalance", new { Area = "HRM", employeeId = "#=EmployeeId#", fileOwner = "#=TerminationId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("StaffDebtorBalances_Update", "StaffDebtorBalance").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("StaffDebtorBalances_Destroy", "StaffDebtorBalance").Data("sendForgery"))
+                ).ToClientTemplate()
+    )
+}
 
-                                "</ul>" +
-                                "</div>" + "<th>" +
+<script id="GuarantorOrSuretytemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabstrip_#=GuarantorOrSuretyId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                    items.Add().Text("Guarantor(Surety)").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<GuarantorOrSuretyDetail>()
+                                    .Name("GuarantorOrSuretyDetailgrid_#=GuarantorOrSuretyId#")
+                                    .Columns(columns =>
+                                    {
+                                                columns.Bound(c => c.FullName).Width(150);
+                                                columns.Bound(c => c.Organiztion).Width(150);
 
-                             "</table>" +
-                           "</div>"
-                            );
+                                                if (useEthiopian)
+                                                {
+                                                    columns.Bound(c => c.FromDateAm).EditorTemplateName("Calander").Width(150);
+                                                    columns.Bound(c => c.ToDateAm).EditorTemplateName("Calander").Width(150);
+                                                }
+                                                else
+                                                {
+                                                    columns.Bound(c => c.FromDate).Width(140);
+                                                    columns.Bound(c => c.ToDate).Width(140);
+                                                }
 
-
-
-
-
-                    }).ToClientTemplate()
-            )
-        </text> );
-
-            //*****************************************************************************************************//
-            //*********************************Clerance*************************************************//
-            items.Add().Text(Resources.HR_EmployeeDetail_Clearance_Clearance).Content(
-            @<text>
-                @(Html.Kendo().Grid<Attachment>()
-                        .Name("AttachmentGrid_#=TerminationId#")
-                        .Columns(columns =>
-                        {
-
-                            columns.Bound(c => c.Description);
-                            columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=TerminationId#" }).ToHtmlString());
-                            //columns.Bound(c => c.FileType).ClientTemplate("<div style=\"text-align:center\"> text=\"Download\"" +
-                            //                                                                  "<a href=\"" + Html.Action("DownloadFile", new { filename = "#=EmployeeId#" }) + "\"><i style=\"padding-right: 8px;\" title=\"Setting\" text=\"DownLoad\"></i></a>" +
-
-                            //                                                                  "</div>").Width(60).Title("Download");
-
-                            columns.Command(command =>
-                            {
-                                command.Destroy().Text(Resources.ActionButton_Cancel);
-                                //command.Custom("Download").Click("DownloadAttachmnets");
-                            }).Width(300);
-
-
-
-
-                        })
-                        .Events(e =>
-                        {
-                            e.Edit("onGridEdit");
-                            e.Change("onChange");
-
-
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-                        })
-                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
-                        {
-                            window.Scrollable(false);
-                            window.Title(Resources.HR_Upload_File);
-
-                        }))
-                        .Scrollable()
-                        .Selectable()
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                            .Events(events =>
-                            {
-                                events.Error("error_handler(\"AttachmentGrid_#=TerminationId#\")");
-                                events.RequestStart("onRequestStart(\"AttachmentGrid_#=TerminationId#\")");
-                                events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=TerminationId#\")");
-
-                            })
-                            .Model(model => model.Id(p => p.AttachmentId))
-                            .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
-                            .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
-                            .Destroy(destroy => destroy.Action("Attachments_Destroy", "Termination"))
-
-                                                  
-                                   
-                            ).ToClientTemplate()
+                                                columns.Bound(c => c.IsActive).ClientTemplate(
+                                                    "<input type='checkbox' disabled = 'true' value='\\#= IsActive\\#' " +
+                                                    "\\# if (IsActive) { \\#" +
+                                                    "checked='checked'" +
+                                                    "\\# } \\#" +
+                                                    "/>"
+                                                ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(130);
+                                                columns.Command(command => { });
+                                            })
+                                    .ToolBar(toolbar => { })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable(h => h.Height(500))
+                                    .Filterable()
+                                    .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(events =>
+                                        {
+                                                    events.Error("error_handler(\"GuarantorOrSuretyDetailgrid_#=GuarantorOrSuretyId#\")");
+                                                    events.RequestStart("onRequestStart(\"GuarantorOrSuretyDetailgrid_#=GuarantorOrSuretyId#\")");
+                                                    events.RequestEnd("onRequestEnd(\"GuarantorOrSuretyDetailgrid_#=GuarantorOrSuretyId#\")");
+                                                })
+                                        .Model(model => model.Id(p => p.GuarantorOrSuretyId))
+                                        .Read(read => read.Action("GuarantorOrSuretyDetails_Read", "GuarantorOrSuretyDetails", new { Area = "HRM", id = "#=GuarantorOrSuretyId#" }).Data("sendForgery"))
+                                        .Create(create => create.Action("GuarantorOrSuretyDetails_Create", "GuarantorOrSuretyDetails", new { Area = "HRM", id = "#=GuarantorOrSuretyId#" }).Data("sendForgery"))
+                                        .Update(update => update.Action("GuarantorOrSuretyDetails_Update", "GuarantorOrSuretyDetails").Data("sendForgery"))
+                                        .Destroy(destroy => destroy.Action("GuarantorOrSuretyDetails_Destroy", "GuarantorOrSuretyDetails").Data("sendForgery"))
+                                    ).ToClientTemplate()
                         )
-
-                    </text>
-                                                         );
-
-              items.Add().Text(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview).Content(
-                @<text>
-               @(Html.Kendo().Grid<ExitInterview>()
-                  .Name("ExitInterview_#=TerminationId#")
-                  .Columns(columns =>
-                  {
-                      //  columns.Bound(c => c.EmployeeId);
-                      columns.Bound(c => c.ToKeep);
-                      columns.Bound(c => c.ToRemove);
-                      columns.Bound(c => c.Reason);
-                      columns.Bound(c => c.DueToWork);
-                      columns.Bound(c => c.Sicknees);
-                      columns.Bound(c => c.MainReason);
-                      columns.Bound(c => c.OtherReason);
-                      columns.Bound(c => c.Remark);
-                      columns.Command(command =>
-                      {
-                          if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
-                          {
-                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                          }
-                          if (HttpContext.Current.User.IsInRole("HR_Admin"))
-                          {
-                              command.Destroy().Text(Resources.ActionButton_Cancel);
-                          }
-                      }).Width(200);
-
-                  })
-                  .ToolBar(toolbar =>
-                  {
-                      if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
-                      {
-                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                      }
-
-                  })
-                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ExitInterview").Window(window => { window.Title(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview); window.Scrollable(false); }))
-                  .Selectable(selectable =>
-                  {
-                      selectable.Mode(GridSelectionMode.Single);
-                      selectable.Type(GridSelectionType.Row);
-
-                  })
-                  .Scrollable()
-                  .DataSource(dataSource => dataSource
-                           .Ajax()
-                           .Events(events =>
-                           {
-                               events.Error("error_handler(\"ExitInterview_#=TerminationId#\")");
-                               events.RequestStart("onRequestStart(\"ExitInterview_#=TerminationId#\")");
-                               events.RequestEnd("onRequestEnd(\"ExitInterview_#=TerminationId#\")");
-
-
-                           })
-
-                           .Model(model => model.Id(p => p.ExitIntervId))
-                           .Read(read => read.Action("ExitInterviews_Read", "ExitInterview", new { Area = "HRM", id = "#=EmployeeId#" }))
-                           .Create(create => create.Action("ExitInterviews_Create", "ExitInterview", new { Area = "HRM", id = "#=EmployeeId#" }))
-                           .Update(update => update.Action("ExitInterviews_Update", "ExitInterview"))
-                           .Destroy(destroy => destroy.Action("ExitInterviews_Destroy", "ExitInterview"))
-                       ).ToClientTemplate()
-                )
-
-            </text>);
-
-
-            items.Add().Text(Resources.NavigatorLeave_Leave).Content(
-            @<text>
-                
-                @(Html.Kendo().Grid<LeaveEntitle>()
-                               .Name("Leave#=TerminationId#")
-                               .Columns(columns =>
-                               {
-
-                                   columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");//.Filterable(ftb => ftb.Multi(true).Search(true));
-                                   columns.Bound(c => c.Balance).Width(150);
-                                   columns.Command(command =>
-                                   {
-                                       // command.Destroy().Text(Resources.ActionButton_Cancel);
-                                       command.Custom("Paid").Text(Resources.Button_Paid).Click("Paid");
-                                   }).Width(300);
-
-
-
-                               })
-
-                                //.ToolBar(toolbar =>
-                                //{
-                                //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                //})
-                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                .Scrollable()
-                                .Selectable()
-                                .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"Leave#=TerminationId#\")");
-                                    events.RequestStart("onRequestStart(\"Leave#=TerminationId#\")");
-                                    events.RequestEnd("onRequestEnd(\"Leave#=TerminationId#\")");
-
-                                })
-                                .Model(model =>
-                                {
-                                    model.Id(p => p.LeaveEntitleId);
-                                    model.Field(p => p.GlFiscalYearId).Editable(false);
-                                    model.Field(p => p.Balance).Editable(false);
-                                })
-                                .Read(read => read.Action("LeaveTermination_Read", "LeaveTermination", new { Area = "HRM", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
-                                .Create(create => create.Action("LeaveTermination_Create", "LeaveTermination", new { Area = "HRM", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
-                                .Destroy(destroy => destroy.Action("LeaveTermination_Destroy", "LeaveTermination"))
-
-                                ).ToClientTemplate()
-                )
-
-             </text>);
-
-
-
-            }).ToClientTemplate())
+                    </text>);
+                        }).ToClientTemplate())
 </script>
 
-<style type="text/css">
-    div.k-edit-form-container {
-        width: 700px;
-    }
-</style>
 <script>
-
     function filterEmployees() {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
-        }
+        };
     }
 
     function Paid() {
-
-
         var Gidd = $("#GlFiscalYearId").data("kendoDropDownList");
         var gid = Gidd.value();
         var Idd = $("#EmployeeId").data("kendoDropDownList");
         var id = Idd.value();
         if (id !== null && gid !== null) {
-
-        $.ajax({
-            url: '@Url.Action("Paid", "LeaveTermination")',
-            //contentType: "application/json; charset=utf-8",
-            data: { id: id, gid:gid},
-            type: 'GET',
-            cache: false,
-            success: function (result) {
-                r = result;
-
-                if (r === true) {
-
-                    alert("Paid successfully");
+            $.ajax({
+                url: '@Url.Action("Paid", "Termination")',
+                data: { employeeId: id, fiscalYearId: gid },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    if (result === true) {
+                        alert("Paid successfully");
+                    } else {
+                        alert("Paid not successfully");
+                    }
                 }
-                if (r === false) {
-                    alert("Paid not successfully");
-                }
-            }
-
             });
-
         }
-
     }
-</script>
-<script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
 
     function sync_handler(e) {
         this.read();
-
     }
+
     function onGridEdit(e) {
         e.container.find(".k-button.k-grid-update").hide();
         e.container.find(".k-button.k-grid-cancel").hide();
-
     }
+
     function onChange(e) {
-        var grid = e.sender;
         var selectedRows = this.select();
         var rowData = this.dataItem(selectedRows[0]);
         var id = rowData.AttachmentID;
@@ -425,17 +739,11 @@
             data: { 'id': id },
             type: 'GET',
             cache: false,
-            success: function (result) {
-                r = result;
-            }
-
+            success: function (result) { }
         });
-
     }
-</script>
-<script>
-    function GetDate() {
 
+    function GetDate() {
         $("#TerminationDateAm").trigger("change");
         $("#ApplicationDateAm").trigger("change");
 
@@ -448,152 +756,430 @@
                 data: { name: y[o].id, value: y[o].date },
                 type: 'GET',
                 cache: false,
-                success: function (result) {
-                    r = result;
-                }
-
+                success: function (result) { }
             });
         }
     }
 
-</script>
-<script>
     function AssignDate() {
-        var list = AssignDates();
-        return list;
+        return AssignDates();
     }
 
-</script>
-
-<script>
+    // Final Approval (Original functionality maintained)
     function terminateEmployee(e) {
-         var row = $(e.target).closest("tr");
+        var row = $(e.target).closest("tr");
         var grid = $("#TerminationGrid").data("kendoGrid");
         var dataItem = grid.dataItem(row);
         var id = dataItem.TerminationId;
 
-        if (id.length !== 0 )
-        {
+        if (id) {
+            if (!confirm("Are you sure you want to perform Final Approval for this employee termination?")) {
+                return;
+            }
             $('#loading-image').show();
-
             $.ajax({
                 url: '@Url.Action("TerminateEmployee", "Termination")',
-
-                data: { id: id},
+                data: { id: id },
                 type: 'POST',
                 cache: false,
                 success: function (result) {
-                    r = result;
-                    alert(r.Message);
+                    alert(result.Message);
                     $('#loading-image').hide();
                     grid.dataSource.read();
+                },
+                error: function () {
+                    $('#loading-image').hide();
+                    alert("An error occurred during final approval.");
                 }
             });
-
         }
     }
-</script>
 
+    // Dynamic Step Approval Click Handler
+    function approveDynamicStep(roleName) {
+        return function (e) {
+            e.preventDefault();
+            var row = $(e.target).closest("tr");
+            var grid = $("#TerminationGrid").data("kendoGrid");
+            var dataItem = grid.dataItem(row);
+            var id = dataItem.TerminationId;
 
-<script>
+            if (id) {
+                if (!confirm("Approve step as '" + roleName + "'?")) {
+                    return;
+                }
+                $('#loading-image').show();
+                $.ajax({
+                    url: '@Url.Action("TerminationApprovalStep", "Termination", new { area = "HRM" })',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        roleName: roleName,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (result) {
+                        alert(result.Message);
+                        if (result.Status === "Ok") {
+                            grid.dataSource.read();
+                        }
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseJSON ? xhr.responseJSON.Message : "An error occurred while approving step.");
+                    },
+                    complete: function () {
+                        $('#loading-image').hide();
+                    }
+                });
+            }
+        };
+    }
+
     function forceTerminateEmployee(e) {
-         var row = $(e.target).closest("tr");
+        var row = $(e.target).closest("tr");
         var grid = $("#TerminationGrid").data("kendoGrid");
         var dataItem = grid.dataItem(row);
         var id = dataItem.TerminationId;
-
-        if (id.length !== 0 )
-        {
+        if (id) {
+            if (!confirm("Are you sure you want to forcibly terminate this employee?")) {
+                return;
+            }
             $('#loading-image').show();
-
             $.ajax({
                 url: '@Url.Action("ForceTerminateEmployee", "Termination")',
-
-                data: { id: id},
+                data: { id: id },
                 type: 'POST',
                 cache: false,
                 success: function (result) {
-                    r = result;
-                    alert(r.Message);
+                    alert(result.Message);
                     $('#loading-image').hide();
                     grid.dataSource.read();
                 }
             });
-
         }
     }
-</script>
 
-<script>
     function onDataBound(e) {
-
         var grid = this;
         var gridRows = grid.tbody.find("tr");
+
         for (var i = 0; i < gridRows.length; i++) {
             var row = $(gridRows[i]);
             var dataItem = grid.dataItem(row);
-            //perform your custom check
+
+            var $terminate = row.find("#terminate");
+            var $unterminate = row.find("#unterminate");
+            var $forceTerminate = row.find("#forceTerminate");
+            var $edit = row.find(".k-grid-edit");
+            var $delete = row.find(".k-grid-delete");
+
+            // Hide action and dynamic buttons by default for this row
+            if ($terminate.length) $terminate.hide();
+            if ($unterminate.length) $unterminate.hide();
+            row.find("[id^='btn_']").hide();
+
+            // 1. Fully finalized / online approved
             if (dataItem.IsOnlineApproved === true) {
-
-                row.find(".k-grid-edit").hide();
-                row.find(".k-grid-delete").hide();
-                row.find("#terminate").hide();
-                row.css("background-color", "gray");
-                row.find("#unterminate").show();
-
+                $edit.hide();
+                $delete.hide();
+                if ($forceTerminate.length) $forceTerminate.hide();
+                row.css("background-color", "#e2e8f0");
+                if ($unterminate.length) $unterminate.show();
+                continue;
             }
+
+            // 2. Direct request checks
             if (dataItem.IsDirect === false) {
-                row.find(".k-grid-edit").hide();
-                row.find(".k-grid-delete").hide();
-                row.find("#terminate").hide();
-                row.find("#unterminate").show();
-
+                $edit.hide();
+                $delete.hide();
+                if ($terminate.length) $terminate.hide();
+                if ($unterminate.length) $unterminate.show();
             }
-            if (dataItem.IsActive === false)
-            {
-                row.find("#forceTerminate").hide();
-                row.find("#unterminate").show();
-
+            if (dataItem.IsActive === false) {
+                if ($forceTerminate.length) $forceTerminate.hide();
+                if ($unterminate.length) $unterminate.show();
             }
             if (dataItem.IsForciblyTerminated === true) {
-                row.find("#forceTerminate").hide();
-                row.find("#unterminate").show();
-
+                if ($forceTerminate.length) $forceTerminate.hide();
+                if ($unterminate.length) $unterminate.show();
+                continue;
             }
-            if (dataItem.IsOnlineApproved === false) {
-                row.find("#unterminate").hide();
 
+            // 3. Sequential optional steps evaluation based on database order
+            var pendingStepRole = null;
+
+            if (activeApprovalSteps && activeApprovalSteps.length > 0) {
+                for (var s = 0; s < activeApprovalSteps.length; s++) {
+                    var step = activeApprovalSteps[s];
+                    var isStepDone = false;
+
+                    switch (step.Role) {
+                        case "ProjectHRAdmin":
+                        case "HROfficer":
+                            isStepDone = dataItem.IsProjectHRApproved;
+                            break;
+                        case "ProjectManager":
+                        case "GM":
+                            isStepDone = dataItem.IsPMApproved;
+                            break;
+                        case "DepartmentHead":
+                        case "DepartmentManager":
+                        case "ProjectDepartmentHead":
+                            isStepDone = dataItem.IsDepartmentHeadApproved;
+                            break;
+                        case "HRManager":
+                        case "HRAdministrationManager":
+                        case "HumanResourceAdmin":
+                            isStepDone = dataItem.IsHRManagerApproved;
+                            break;
+                        case "DailLabour":
+                        case "DGM":
+                            isStepDone = dataItem.IsAdditionalApproved;
+                            break;
+                        default:
+                            isStepDone = dataItem.IsAdditionalApproved;
+                            break;
+                    }
+
+                    // First incomplete predecessor step blocks the remaining ones
+                    if (!isStepDone) {
+                        pendingStepRole = step.Role;
+                        break;
+                    }
+                }
+            }
+
+            if (pendingStepRole) {
+                // Show ONLY the button corresponding to the next pending step
+                var $activeBtn = row.find("#btn_" + pendingStepRole);
+                if ($activeBtn.length) {
+                    $activeBtn.show();
+                }
+            } else {
+                // All configured optional steps are finished (or none configured): unlock Final Approve
+                if ($terminate.length) {
+                    $terminate.show();
+                }
             }
         }
     }
 
     function enableOrUnTerminate(e) {
+        e.preventDefault();
+
         var row = $(e.target).closest("tr");
         var grid = $("#TerminationGrid").data("kendoGrid");
         var dataItem = grid.dataItem(row);
-        var id = dataItem.TerminationId;
-        if (id.length !== 0 )
-        {
-            $('#loading-image').show();
 
-            $.ajax({
-                url: '@Url.Action("UnterminateEmployee", "Termination")',
-
-                data: { id: id},
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                r = result;
-                alert(r.Message);
-                $('#loading-image').hide();
-                grid.dataSource.read();
-                }
-                });
-
-
+        if (!dataItem || !dataItem.TerminationId) {
+            alert("Invalid termination record.");
+            return;
         }
 
+        var id = dataItem.TerminationId;
 
+        if (!confirm("Are you sure you want to un-terminate this employee?")) {
+            return;
+        }
+
+        $('#loading-image').show();
+
+        $.ajax({
+            url: '@Url.Action("UnTerminateEmployee", "Termination", new { area = "HRM" })',
+            type: 'POST',
+            data: {
+                id: id,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status === "OK") {
+                    grid.dataSource.read();
+                }
+            },
+            error: function () {
+                alert("An error occurred while processing the request.");
+            },
+            complete: function () {
+                $('#loading-image').hide();
+            }
+        });
     }
 
+    function updateEmployeeTermination(element) {
+        var $button = $(element);
+        var $icon = $button.find('i');
+        var originalIcon = $icon.attr('class');
+
+        $icon.attr('class', 'fa fa-spinner fa-spin');
+        $button.prop('disabled', true);
+        $('#loading-image').show();
+
+        $.ajax({
+            url: '@Url.Action("DeactivateTerminatedEmployees", "Termination")',
+            type: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                } else {
+                    alert(response.message || 'Operation failed.');
+                }
+            },
+            error: function () {
+                alert('An error occurred while deactivating employees. Please try again.');
+            },
+            complete: function () {
+                $('#loading-image').hide();
+                $icon.attr('class', originalIcon);
+                $button.prop('disabled', false);
+            }
+        });
+    }
 </script>
+
+<style>
+    .termination-page-container {
+        font-family: inherit;
+        color: #1e293b;
+        margin: 10px 0 30px 0;
+    }
+
+        .termination-page-container .erp-header-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 14px 18px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .termination-page-container .erp-page-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .termination-page-container .erp-legend-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .termination-page-container .erp-legend-items {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .termination-page-container .legend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .termination-page-container .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+            .termination-page-container .legend-dot.approved {
+                background-color: #10b981;
+            }
+
+            .termination-page-container .legend-dot.forced {
+                background-color: #ef4444;
+            }
+
+            .termination-page-container .legend-dot.pending {
+                background-color: #f59e0b;
+            }
+
+        .termination-page-container .btn-action-refresh {
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px;
+            font-weight: 600;
+            font-size: 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .termination-page-container .btn-action-refresh:hover {
+                background: #f1f5f9;
+                color: #0f172a;
+            }
+
+        .termination-page-container .k-grid {
+            border-radius: 6px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 12.5px !important;
+        }
+
+        .termination-page-container .k-grid-header th.k-header {
+            background: #f8fafc !important;
+            color: #334155 !important;
+            font-weight: 700 !important;
+            font-size: 11.5px !important;
+            text-transform: uppercase !important;
+            padding: 10px 8px !important;
+            border-color: #e2e8f0 !important;
+        }
+
+        .termination-page-container .k-grid tbody .k-button {
+            border-radius: 4px !important;
+            font-size: 11px !important;
+            padding: 3px 8px !important;
+            margin: 2px !important;
+        }
+
+        .termination-page-container .btn-success {
+            background: #10b981 !important;
+            border-color: #10b981 !important;
+            color: #fff !important;
+        }
+
+        .termination-page-container .btn-primary {
+            background: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+            color: #fff !important;
+        }
+
+        .termination-page-container .btn-info {
+            background: #0284c7 !important;
+            border-color: #0284c7 !important;
+            color: #fff !important;
+        }
+
+        .termination-page-container .btn-danger {
+            background: #ef4444 !important;
+            border-color: #ef4444 !important;
+            color: #fff !important;
+        }
+
+    div.k-edit-form-container {
+        width: 720px;
+    }
+</style>

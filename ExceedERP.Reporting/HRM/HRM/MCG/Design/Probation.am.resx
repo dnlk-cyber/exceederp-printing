@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value> የሙከራ ጊዜ ቅጥርን ይመለከታል፤</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>  ከሠላምታ ጋር</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>ግልባጭ፡</value>
+  </data>
+  <data name="htmlTextBox2.Value" xml:space="preserve">
+    <value>&lt;span lang="EN-US" style="font-size: 12pt; font-family: nyala; line-height: 115%; mso-bidi-font-size: 11.0pt; mso-bidi-font-family: nyala"&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 0pt; line-height: 150%"&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;እርስዎ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ባለዎት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;የትምህርት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ደረጃና&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;የስራ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ልምድ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;በድርጅታችን&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ኤምሲጂ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ኮንስትራክሽን&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ኃላ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt;.&lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;የተ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt;.&lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;የግል&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ማህበር&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ውስጥ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ባለዉ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ክፍት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ሥራ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ቦታ&lt;/span&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;"&gt;በ{Fields.JobTitle}&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;"&gt;&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;/b&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ስራ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;መደብ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ላይ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ተቀጥረዉ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ማገልገል&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;እንዲችሉ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ለሰዉ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ሀይል&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ልማት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;እና&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;አስተዳደር&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;መምሪያ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ባቀረቡት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;የሥራ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ማመልከቻ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;መጠየቅዎ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ይታወሳል፡፡&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 0pt; line-height: 150%"&gt;&lt;/p&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 0pt; line-height: 150%"&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;በዚሁ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;መሠረት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ቀጥታ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ተጠሪነትዎ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ለፕሮጀክት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;መሳሪያዎች&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;አስተዳደርና&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ጥገና&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ኃላፊ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ሆኖ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;በ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; color: #000000; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt;ቢሾፍቱ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; color: #000000; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; color: #000000; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt;ዓለም&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; color: #000000; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; color: #000000; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt;አቀፍ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; color: #000000; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; color: #000000; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt;አውሮፕላን&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; color: #000000; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; color: #000000; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt;ግንባታ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; color: #000000; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; color: #000000; mso-bidi-font-family: nyala; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt;ፕሮጀክት&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; color: #000000; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: en-us"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ላይ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;{Fields.LastAssignmentDate}&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;/b&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ዓ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt;.&lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ም&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ጀምሮ&lt;/span&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;በ{Fields.JobTitle}&lt;/span&gt;&lt;/b&gt;&lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt;&lt;/span&gt;&lt;/b&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;የሥራ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;መደብ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ላይ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;እንዲሰሩ&lt;/span&gt;&lt;span lang="EN-US" style="font-family: &amp;quot;calibri light&amp;quot;,sans-serif; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin; mso-bidi-theme-font: major-latin"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-family: nyala; mso-bidi-font-family: nyala"&gt;ሆኖ&lt;b style="mso-bidi-font-weight: normal"&gt;፤&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/span&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 0pt; line-height: 150%"&gt;&lt;span lang="EN-US" style="font-size: 12pt; font-family: &amp;quot;cambria&amp;quot;,serif; line-height: 115%; mso-bidi-font-family: &amp;quot;power geez unicode1&amp;quot;; mso-ascii-theme-font: major-latin; mso-hansi-theme-font: major-latin"&gt;&lt;p&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 0pt; line-height: 150%"&gt;&lt;/p&gt;&lt;p class="MsoNormal" style="text-align: left; margin: 0in 0in 0pt; line-height: 150%"&gt;&lt;/p&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;&lt;p style="text-align: left"&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>ቦታ</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>ቀን፣</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>ቁጥር:___________</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>የወር ደመወዝ ብር:</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>ደረጃ እና እርከን</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>   አዲስ አበባ</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>ለአቶ/ወይ/ {Fields.FullName}
+    አዲስ አበባ</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>ጉዳዩ፡-</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>ተከፍላ/ሎ ለ60 የስራ ቀናት የሙከራ ጊዜ መቀጠራቸው  እየገለፅን፤የተመደቡት ሥራ ከፍተኛ ጥንቃቄ የሚጠይቅ በመሆኑ፤የተረከቡትን ንብረት ደህንነትና ማንኛዉንም የድርጅቱን ሚስጥር በመጠበቅ፤ ለድርጅቱ ሥራ ስኬታማነት የበኩልዎን እንዲወጡ እያሳወቅን የድርጅታችንም ፋይናንስና አካውንትስ መምሪያ ከሠራተኛው የወር ደመወዝ ክፍያ መጠን ላይ አስፈላጊውን የመንግስት የስራ ግብር እና የሰራተኛውን የጡረታ መዋጮ ግብር ተቀናሽ አድርጎ እንዲከፍል ግልባጭ ተደርጎል፡፡ 
+ተጠቃሹ ሠራተኛ በሙከራ ጊዜ የሚያሳዩትን የስራ አፈፃፀም ሁኔታ ተከታትሎ በመገምገም ውጤቱ የሙከራ ጊዜው ከማለቁ በፊት በ50ኛ የስራ ቀናቸው ላይ ለሰው ኃይል ልማትና አስተዳደር መምሪያ መቅረብ አለበት፡፡ 
+</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>ተከፍለው  ለ{Fields.ProbationPeriod} የስራ ቀናት የሙከራ ጊዜ መቀጠራቸው እየገለፅን፤የተቀጠሩ ሥራ ክፍተኛ  ጥንቃቄ የሚጠይቅ በመሆኑ፤የተረከቡትን ንብረት ደህንነትና ማንኛዉንም የድርጅቱን ሚስጥር በመጠበቅ፤ ለድርጅቱ ሥራ ስኬታማነት የበኩልዎን እንዲወጡ እያሳወቅን የድርጅታችንም ፋይናንስና አካውንትስ መምሪያ ከሠራተኛው የወር ደመወዝ ክፍያ መጠን ላይ አስፈላጊውን የመንግስት የስራ ግብር እና የሰራተኛውን የጡረታ መዋጮ ግብር ተቀናሽ አድርጎ እንዲከፍል ግልባጭ ተደርጎል፡፡ </value>
+  </data>
+</root>

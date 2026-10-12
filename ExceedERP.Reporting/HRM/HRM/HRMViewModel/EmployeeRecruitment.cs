@@ -8,6 +8,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string FullName { get; set; }
         public string Sex { get; set; }
         public string Departement { get; set; }
+        public string BusinessUnit { get; set; }
         public string Branch { get; set; }
         public string JobTitle { get; set; }        
         public decimal Salary { get; set; }

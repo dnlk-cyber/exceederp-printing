@@ -12,72 +12,92 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class MyEmployeePerformanceODS
+    public class MyEmployeePerformanceODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeePerformanceVM> GetMyPerformance(string id, string quarterId, string criteriaId)
+        public List<EmployeePerformanceVM> GetMyPerformance(string id,string quarterLegnth, string quarterId, string criteriaId)
         {
             List<EmployeePerformanceVM> employeePerformanceList = new List<EmployeePerformanceVM>();
-            var empPerformance = new EmployeePerformanceVM();
 
-            var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+            //var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
 
-            if (organization != null)
-            {
-                empPerformance.Name = organization.TradeName;
-                empPerformance.AmharicName = organization.AmharicName;
-                empPerformance.Abbreviation = organization.Abbreviation;
+            //if (organization != null)
+            //{
+            //    empPerformance.Name = organization.TradeName;
+            //    empPerformance.AmharicName = organization.AmharicName;
+            //    empPerformance.Abbreviation = organization.Abbreviation;
 
-                var address =
-               db.Addresses.Where(
-                       a =>
-                       a.Reference == organization.MainCompanyId.ToString() &&
-                       a.ReferenceType.ToLower() == "company").ToList();
-                if (address.Any())
-                {
-                    foreach (var a in address)
-                    {
-                        if (a.Category == AddressType.KIFLEKETEMA)
-                        {
-                            empPerformance.Address = "Subcity: " + a.Value + " ";
-                        }
-                        if (a.Category == AddressType.KEBELE)
-                        {
-                            empPerformance.Address += "Kebele: " + a.Value + " ";
-                        }
-                        if (a.Category == AddressType.CITYPROVINCE)
-                        {
-                            if (empPerformance.Address == null)
-                            {
-                                empPerformance.Address += a.Value + " -Ethiopia";
-                            }
-                        }
-                    }
-                }
+            //    var address =
+            //   db.Addresses.Where(
+            //           a =>
+            //           a.Reference == organization.MainCompanyId.ToString() &&
+            //           a.ReferenceType.ToLower() == "company").ToList();
+            //    if (address.Any())
+            //    {
+            //        foreach (var a in address)
+            //        {
+            //            if (a.Category == AddressType.KIFLEKETEMA)
+            //            {
+            //                empPerformance.Address = "Subcity: " + a.Value + " ";
+            //            }
+            //            if (a.Category == AddressType.KEBELE)
+            //            {
+            //                empPerformance.Address += "Kebele: " + a.Value + " ";
+            //            }
+            //            if (a.Category == AddressType.CITYPROVINCE)
+            //            {
+            //                if (empPerformance.Address == null)
+            //                {
+            //                    empPerformance.Address += a.Value + " -Ethiopia";
+            //                }
+            //            }
+            //        }
+            //    }
 
-                var logo =
-                    db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
-                            a.ReferenceType == AttachmentType.LOGO);
-                if (logo != null)
-                {
-                    empPerformance.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
-                }
-            }
+            //    var logo =
+            //        db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
+            //                a.ReferenceType == AttachmentType.LOGO);
+            //    if (logo != null)
+            //    {
+            //        empPerformance.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
+            //    }
+            //}
 
-            empPerformance.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            //empPerformance.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
 
 
-            if (id != null)
+            if (!string.IsNullOrEmpty(id))
             {
                 int.TryParse(id, out int empId);
-                int.TryParse(quarterId, out int quartId);
-                int.TryParse(criteriaId, out int evaluationCriteriaId);
-
-                var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == empId && x.GlPeriodId == quartId && x.EvaluationCriteriaTypeId == evaluationCriteriaId && x.IsApproved);
-
-                if (employeePerformance != null)
+                var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId == empId && x.IsSecondLevelApproved).ToList();
+                if (!string.IsNullOrEmpty(quarterLegnth))
                 {
+                    int.TryParse(quarterLegnth, out int quarterLengthId);
+                    var GlFiscalYearIds = db.QuarterLengths.Where(x => x.QuarterLengthId == quarterLengthId).Select(x => x.GlFiscalYearId);
+                    if (GlFiscalYearIds.Any())
+                    {
+                        employeePerformances = employeePerformances.Where(x => GlFiscalYearIds.Contains(x.GlFiscalYearId)).ToList();
+                    }
+                }
+                if (!string.IsNullOrEmpty(quarterId))
+                {
+                    int.TryParse(quarterId, out int quartId);
+
+                    employeePerformances = employeePerformances.Where(x => x.GlPeriodId == quartId).ToList();
+                }
+                if (!string.IsNullOrEmpty(criteriaId))
+                {
+                    int.TryParse(criteriaId, out int evaluationCriteriaId);
+
+                    employeePerformances = employeePerformances.Where(x => x.EvaluationCriteriaTypeId == evaluationCriteriaId).ToList();
+                }
+
+                //var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == empId && x.GlPeriodId == quartId && x.EvaluationCriteriaTypeId == evaluationCriteriaId && x.IsApproved);
+                foreach(var employeePerformance in employeePerformances)
+                {
+                    var empPerformance = new EmployeePerformanceVM();
+
                     var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeePerformance.EmployeeId);
                     if (person != null)
                     {
@@ -148,15 +168,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
 
                         empPerformance.EmployeeMeasurmentList.Add(employeeMeasure);
-                    }                    
+                    }
+                    employeePerformanceList.Add(empPerformance);
+
                 }
-                employeePerformanceList.Add(empPerformance);
             }
 
             return employeePerformanceList;
         }
 
-        public decimal GetEmployeeMeasurment(int empMeasurmentId)
+        private decimal GetEmployeeMeasurment(int empMeasurmentId)
         {
             var performanceScores = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == empMeasurmentId).ToList();
 
@@ -168,7 +189,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return 0;
         }
 
-        public decimal GetPerformanceScore(int empPerformanceId)
+        private decimal GetPerformanceScore(int empPerformanceId)
         {
             decimal totalScore = 0;
 
@@ -185,6 +206,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return totalScore;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
 
     }

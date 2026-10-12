@@ -6,25 +6,55 @@
 }
 <legend>@Resources.NavigatorLeave_LeavePaidInCash</legend>
 @(Html.Kendo().Grid<LeavePaid>()
-          .Name("LeavePaid")
+      .Name("LeavePaid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.EmployeeCode).Width(150);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
-          columns.Bound(c => c.Amount).Width(200);
+          columns.Bound(c => c.PaymentRequestId).Title("P.Request Id").Width(80);
+          columns.Bound(c => c.EmployeeCode).Width(100);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameWithOutCode")
+                                                    .EditorTemplateName("ActiveEmployees")
+                                                    .Filterable(ftb => ftb.Multi(true).Search(true))
+                                                    .Width(160);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name")
+                                                    .EditorTemplateName("GLFPeriod")
+                                                    .Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+
+          columns.Bound(c => c.Amount).Width(100);
+          columns.Bound(c => c.AccumulatedLeaveDays).Width(130);
+          columns.Bound(c => c.TotalPayableDays).Width(130);
+          columns.Bound(c => c.BasicSalary).Width(100);
+          columns.Bound(c => c.DailyRate).Width(100);
+          columns.Bound(c => c.GrossAmount).Width(100);
+          columns.Bound(c => c.TaxPayable).Width(100);
+          columns.Bound(c => c.NetPay).Width(100);
           columns.Bound(c => c.Remark).Width(100);
           columns.Command(command =>
           {
+
               if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
               {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
               }
+              command.Custom("cmd-calc").Click("calculateAmountInBirr")
+                                        .Text("Re-calculate")
+                                        .IconClass("fa fa-calculator fa-2x")
+                                        .HtmlAttributes(new
+                                        {
+                                            @class = "btn btn-info",
+                                            title = "Calculate total leave amount in Birr"
+
+                                        });
+
+              command.Custom("cmd-pay").Click("sendToFinance")
+                                                 .Text("Send")
+                                                 .IconClass("fa fa-money fa-2x")
+                                                 .HtmlAttributes(new { @class = "btn btn-primary", title = "Click here to send this item to Payment request" });
+
               if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
               {
                   command.Destroy().Text(Resources.ActionButton_Cancel);
               }
-          }).Width(200);
+          }).Width(370);
       })
       .ToolBar(toolbar =>
       {
@@ -33,22 +63,25 @@
               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           }
           if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
-          
+
           {
               toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
               toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
           }
       })
-            .Excel(excel => excel
-                                            .FileName(Resources.NavigatorLeave_LeavePaidInCash + ".xlsx")
-                                .Filterable(true)
-                                    .AllPages(true)
-                                                    .ProxyURL(Url.Action("Excel_Export_Save", "LeavePaid"))
-                            )
-                                 .Pdf(pdf => pdf
+       .Events(ev =>
+       {
+           ev.DataBound("onDataBound");
+
+       })
+      .Excel(excel => excel.FileName(Resources.NavigatorLeave_LeavePaidInCash + ".xlsx")
+                                 .Filterable(true)
+                                 .AllPages(true)
+                                 .ProxyURL(Url.Action("Excel_Export_Save", "LeavePaid")))
+                                .Pdf(pdf => pdf
                                 .AllPages()
-                                                .FileName(Resources.NavigatorLeave_LeavePaidInCash + ".pdf")
-                                                    .ProxyURL(Url.Action("Pdf_Export_Save", "LeavePaid"))
+                                .FileName(Resources.NavigatorLeave_LeavePaidInCash + ".pdf")
+                                .ProxyURL(Url.Action("Pdf_Export_Save", "LeavePaid"))
                             )
         .Editable(editable => editable.Mode(GridEditMode.InLine))
         .Scrollable(h => h.Height(500))
@@ -65,40 +98,208 @@
                     .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(sort => sort.Add(x => x.LeavePaidId).Descending())
               .Events(events =>
-     {
-         events.Error("error_handler(\"LeavePaid\")");
-         events.RequestStart("onRequestStart(\"LeavePaid\")");
-         events.RequestEnd("onRequestEnd(\"LeavePaid\")");
-     })
-                     
-          .Model(model => { model.Id(p => p.LeavePaidId);
-           model.Field(p => p.EmployeeCode).Editable (false);})
-          .Read(read => read.Action("LeavePaid_Read", "LeavePaid"))
-          .Create(create => create.Action("LeavePaid_Create", "LeavePaid"))
-          .Update(update => update.Action("LeavePaid_Update", "LeavePaid"))
-          .Destroy(destroy => destroy.Action("LeavePaid_Destroy", "LeavePaid"))
-      )
+              {
+                  events.Error("error_handler(\"LeavePaid\")");
+                  events.RequestStart("onRequestStart(\"LeavePaid\")");
+                  events.RequestEnd("onRequestEnd(\"LeavePaid\")");
+              })
+
+          .Model(model => 
+          {
+              model.Id(p => p.LeavePaidId);
+              model.Field(p => p.EmployeeCode).Editable (false);
+              model.Field(p => p.PaymentRequestId).Editable (false);
+          })
+          .Read(read => read.Action("LeavePaid_Read", "LeavePaid").Data("sendForgery"))
+          .Create(create => create.Action("LeavePaid_Create", "LeavePaid").Data("sendForgery"))
+          .Update(update => update.Action("LeavePaid_Update", "LeavePaid").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeavePaid_Destroy", "LeavePaid").Data("sendForgery"))
+      ).ClientDetailTemplateId("LeavePaid_Detail_Template")
 )
+<script id="LeavePaid_Detail_Template" type="text/kendo-tmpl">
+
+
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=LeavePaidId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+
+
+            items.Add().Text(Resources.Details).Content(
+            @<text>
+            @(Html.Kendo().PanelBar()
+                        .Name("panelbar_#=LeavePaidId#")
+                        .ExpandMode(PanelBarExpandMode.Single)
+                        .Items(panelbar =>
+                        {
+
+                            panelbar.Add().Text("Status")
+                            .Expanded(true)
+                            .Content("<div>" +
+                                  "<table class='table'>" +
+                                  "<tr>" +
+                                  "<td>" + "<div class='employee-details'>" +
+                                        "<ul>" +
+
+                                        "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                                        // "<li><label>Title:  </label>#=Title #</li>" +
+                                        "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                                        "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                                        "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+
+                                        "</ul>" +
+                                        "</div>" + "<th>" +
+                                  // "<td>" + EmployeeChartsResult() + "<th>" +
+
+                                  "</table>" +
+                                  "</div>"
+                                    );
+
+                        }).ToClientTemplate() )
+                         <a href="@Url.Action("PrintFinalLeavePaid", "LeavePaid")/#=LeavePaidId#"
+                               target="_blank"
+                               class="btn btn-default btn-sm"
+                               title="Print Final Settlement Sheet">
+                                <i class="fa fa-print"></i> Print
+                            </a>             
+                    </text> );
+
+
+          }).ToClientTemplate()
+          )
+
+
+
+
+
+</script>
 <script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
-
+   
     function sync_handler(e) {
         this.read();
 
     }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSentToFinance) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-close").hide();
+                row.find(".k-grid-cmd-pay").hide();
+                row.find(".k-grid-cmd-calc").hide();
+                row.css("background-color", "gray");
+            }
+            
+
+
+        }
+
+    }
+    function calculateAmountInBirr(e)
+    {
+
+        e.preventDefault();
+        var grid = $("#LeavePaid").data("kendoGrid"); // change Grid to your actual grid ID
+        var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.LeavePaidId;
+
+        if (!id) {
+            alert("Invalid Leave paind in cash ID.");
+            return;
+        }
+
+        $('#loading-image').show();
+
+        $.ajax({
+            url: '@Url.Action("CalculateLeaveBirrAmount", "LeavePaid")',
+            type: 'POST',
+            data: { id: id },
+            success: function (result) {
+                // Assumes server returns JSON like { Success: true, AmountInBirr: 15400.50, Days: 5 }
+                if (result.Status === "OK")
+                {
+
+                    alert(result.Message);
+                    grid.dataSource.read();
+
+                }
+                else
+                {
+                    alert("Error: " + result.Message);
+                }
+
+            },
+            error: function (xhr)
+            {
+                alert("Calculation failed:");
+            },
+            complete: function () {
+                $('#loading-image').hide();
+            }
+        });
+
+    }
+
+   function sendToFinance(e) {
+    e.preventDefault();
+
+
+       var grid = $("#LeavePaid").data("kendoGrid"); // change Grid to your actual grid ID
+
+
+       var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+       var id = dataItem.LeavePaidId;
+
+        if (!id) {
+            alert("Invalid Leave Payable ID.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to send to finance?")) {
+            return;
+        }
+
+        $('#loading-image').show();
+
+        var button = $(e.currentTarget);
+        button.prop("disabled", true);
+
+        $.ajax({
+            url: '@Url.Action("SendToFinance", "LeavePaid")',
+            type: 'POST',
+            data: { id: id },
+            cache: false,
+
+            success: function (result) {
+
+                if (result.Status === "OK") {
+
+                    alert(result.Message);
+                    grid.dataSource.read();
+
+                }
+                else {
+                    alert(result.Message || "Unable to send to finance.");
+                }
+            },
+
+            error: function (xhr) {
+                alert("Error: " + (xhr.responseText || "Something went wrong."));
+            },
+
+            complete: function () {
+                $('#loading-image').hide();
+                button.prop("disabled", false);
+            }
+        });
+
+   }
 </script>

@@ -11,7 +11,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
    
     [DataObject]
-    public class EmployeeForWarrantyODS : List<WarrantyLetterViewModel>
+    public class EmployeeForWarrantyODS : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -42,6 +42,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return warrantyList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

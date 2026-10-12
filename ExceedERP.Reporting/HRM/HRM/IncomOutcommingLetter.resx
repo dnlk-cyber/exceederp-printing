@@ -117,4 +117,121 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>= Fields.Folder</value>
+  </data>
+  <data name="DateHead.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.Type</value>
+  </data>
+  <data name="Subject.Value" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="Folder.Value" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>= Fields.Row</value>
+  </data>
+  <data name="EmpInst.Value" xml:space="preserve">
+    <value>Employee/Institution </value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="NoOfAtt.Value" xml:space="preserve">
+    <value>No Of Attachment</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>= Parameters.from.Label</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>= Parameters.type.Label</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Today()</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Fields.Sheleve</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="EmpInstName.Value" xml:space="preserve">
+    <value>Employee/Institution Name</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.InstEmpName</value>
+  </data>
+  <data name="Shelve.Value" xml:space="preserve">
+    <value>Shelve</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.OwnerName</value>
+  </data>
+  <data name="Type.Value" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.NoOfAttachment</value>
+  </data>
+  <data name="LetterReport.Value" xml:space="preserve">
+    <value>Letter Report</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Fields.Subject</value>
+  </data>
+  <data name="RefNo.Value" xml:space="preserve">
+    <value>Reference No</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.Date</value>
+  </data>
+  <data name="Row.Value" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>= Parameters.to.Label</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.ReferenceNo</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
 </root>

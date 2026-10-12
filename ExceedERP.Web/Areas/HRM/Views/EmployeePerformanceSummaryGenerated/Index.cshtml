@@ -5,156 +5,151 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>@Resources.NavigatorPerformance_PerformanceSummary with Bonus</legend>
+<div class="perf-summary-header">
+    <i class="fa fa-line-chart"></i>
+    <legend>@Resources.Performance_Summary_Generated</legend>
+</div>
 
-<div class="row">
-    <div class="col-md-12">
-           
-    <div class="cards-container">
-        <div class="k-card k-card-horizontal">
-                   
-            <div class="k-vbox k-column">
-                       
-                <div class="k-card-body">
-                           
-                    <div class="row">
+<div class="perf-summary-toolbar">
+    <div class="row">
 
+        <div class="col-md-2 col-sm-6 col-xs-12">
 
+            <label class="control-label">Year</label>
 
-                        <div class="col-md-1">
+            @(Html.Kendo().DropDownListFor(m => m)
+                .Name("GlFiscalYearId")
+                .OptionLabel(Resources.Select)
+                .Filter("contains")
+                .DataTextField("Name")
+                .DataValueField("GlFiscalYearId")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                        .ServerFiltering(false);
+                })
+                .HtmlAttributes(new { style = "width: 100%;" })
+            )
 
-                            <label class="category-label" @*for="Period"*@>Year</label>
-
-                            <br />
-
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("GlFiscalYearId")
-                                        //.Placeholder("Period")
-                                        .OptionLabel(Resources.Select)
-                                        .Filter("contains")
-                                        .DataTextField("Name")
-                                        .DataValueField("GlFiscalYearId")
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery"))
-                                                .ServerFiltering(false);
-                                        })
-
-                                        .HtmlAttributes(new { style = "width: 120px;" })
-
-                            )
-
-                        </div>
-
-                        <div class="col-md-1">
-
-                            <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
-
-                            <br />
-
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("Period")
-                                        //.Placeholder("Period")
-                                        .OptionLabel(Resources.Select)
-                                        .Filter("contains")
-                                        .CascadeFrom("GlFiscalYearId")
-                                        .DataTextField("Name")
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
-                                            .ServerFiltering(true);
-                                        })
-                                    .DataValueField("QuarterId")
-                                    .AutoBind(false)
-                                    .Events(e => e.Change("Period"))
-                                    .HtmlAttributes(new { style = "width: 120px;" })
-
-                            )
-
-                        </div>
-
-                        <div class="col-md-1">
-
-                            <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
-                            <br />
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("EmployeeId")
-                                        .OptionLabel(Resources.Select)
-                                        .Filter("contains")
-                                        .DataTextField("FullNameaEnglish")
-                                        .DataValueField("EmployeeId")
-                                        .Events(e => e.Change("EmployeeId"))
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
-                                            .ServerFiltering(true);
-
-                                        })
-
-                                                .HtmlAttributes(new { style = "width: 150px;" })
-                            )
-
-                        </div>
-                        
-
-
-                        <div class="col-md-1">
-
-                            <br />
-
-                            @(Html.Kendo().Button()
-                                        .Name("btnRefresh")
-                                        .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width: 150px;height:40px" })
-                                        .Events(e => e.Click("generateEmployeePerformanceSummary"))
-                                        .Content("Generate"))
-                            &nbsp; &nbsp;
-                            &nbsp; &nbsp;
-                            &nbsp;  &nbsp;
-
-                           
-
-                        </div>
-                    </div>
-                         
-                </div>
-                       
-            </div>
         </div>
 
-    </div>
-    </div>
-    </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
 
-      
-<br />
+            <label class="control-label">@Resources.Rpt_Branch</label>
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("Branch")
+                        .OptionLabel(Resources.Select)
+                        .Filter("contains")
+                        .DataTextField("Name")
+                        .DataValueField("BranchId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetAllBranchs", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                            .ServerFiltering(false);
+                        })
+                    .AutoBind(false)
+                    .HtmlAttributes(new { style = "width: 100%;" })
+            )
+
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+
+            <label class="control-label">Business Unit</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                    .Name("businessUnit")
+                    .OptionLabel(Resources.Select)
+                    .Filter("contains")
+                    .DataTextField("Name")
+                    .DataValueField("Code")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetAllBusinessUnits", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                        .ServerFiltering(false);
+                    })
+                    .HtmlAttributes(new { style = "width: 100%;" })
+            )
+
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+
+            <label class="control-label">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("EmployeeId")
+                        .OptionLabel(Resources.Select)
+                        .Filter("contains")
+                        .DataTextField("FullNameaEnglish")
+                        .DataValueField("EmployeeId")
+                        .Events(e => e.Change("EmployeeId"))
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
+                            .ServerFiltering(true);
+
+                        })
+                        .HtmlAttributes(new { style = "width: 100%;" })
+            )
+
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+
+            <label class="control-label">&nbsp;</label>
+            @(Html.Kendo().Button()
+                    .Name("btnRefresh")
+                    .HtmlAttributes(new { type = "button", @class = "k-primary perf-summary-btn" })
+                    .Events(e => e.Click("generateEmployeePerformanceSummary"))
+                    .Content("Generate"))
+
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+
+            <label class="control-label">&nbsp;</label>
+             @(Html.Kendo().Button()
+                    .Name("btnrefresh")
+                    .HtmlAttributes(new { type = "button", @class = "k-primary perf-summary-btn" })
+                    .Events(e => e.Click("refreshPerformanceData"))
+                    .Content(Resources.Ecabinet_DashBoard_RefreshData))
+
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+
+            <label class="control-label">&nbsp;</label>
+            @(Html.Kendo().Button()
+                    .Name("btnExportExcel")
+                    .HtmlAttributes(new { type = "button", @class = "k-primary perf-summary-btn" })
+                    .Events(e => e.Click("exportPerformanceSummaryExcel"))
+                    .Content(Resources.ActionButton_ExportExcel))
+
+        </div>
+    </div>
+</div>
 
     <div class="row">
 
         <div class="col-md-12">
 
+            <div class="perf-summary-grid-wrapper">
             @(Html.Kendo().Grid<EmployeePerformanceSummary>()
                   .Name("grid")
                   .Columns(columns =>
                   {
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").Width(140).Title(Resources.Common_PersonEmployee_EmployeeCode).Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(160).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(150);
-                      columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                      //columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                      columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                      columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                      columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                      columns.Bound(c => c.ResponsibilityLevel).Width(120);
                       columns.Bound(c => c.Weight).Width(80);
                       columns.Bound(c => c.Result).Width(80);
                       columns.Bound(c => c.Bonus).Width(80);
-                      columns.Bound(c => c.Remark).Width(50);
+                      columns.Bound(c => c.TotalDays).Width(140);
+                      columns.Bound(c => c.Remark).Width(100);
 
                   })
 
-                   .ToolBar(toolbar =>
-                   {
-                      
-                      
-                     
-                           toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                      
-
-                   })
                    .Excel(excel => excel
                     .FileName("EmployeePerformanceSummaryWithBonus" + ".xlsx")
                     .Filterable(true)
@@ -194,6 +189,7 @@
 
                   .Read(read => read.Action("EmployeePerformanceSummary_Read", "EmployeePerformanceSummaryGenerated").Data("sendForgery").Data("filterdata"))
                             ))
+            </div>
      
 
        
@@ -216,10 +212,151 @@
 
 
 <style>
+    .perf-summary-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+        .perf-summary-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .perf-summary-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .perf-summary-toolbar {
+        padding: 15px 15px 5px;
+        background: #f8f9fa;
+        border: 1px solid #e2e6ea;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+        .perf-summary-toolbar .col-md-2 {
+            margin-bottom: 12px;
+        }
+
+    @@media (min-width: 992px) {
+        .perf-summary-toolbar .row {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+            .perf-summary-toolbar .row:before,
+            .perf-summary-toolbar .row:after {
+                content: none;
+            }
+
+            .perf-summary-toolbar .row > .col-md-2 {
+                flex: 1 1 0;
+                width: auto;
+                min-width: 0;
+            }
+    }
+
+        .perf-summary-toolbar .control-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #444;
+        }
+
+    .perf-summary-btn {
+        width: 100%;
+        height: 34px;
+    }
+
+    #grid.k-grid {
+        border: 1px solid #e3e6ea;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #grid.k-grid .k-grid-header {
+            background-color: #f8f9fb;
+        }
+
+        #grid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #333;
+        }
+
+        #grid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #grid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+
+        #grid .k-grid-toolbar {
+            background-color: #fff;
+            padding: 10px;
+        }
+
     #approveButtonStyle {
         border-radius: 5%;
         padding-top: 1px;
         padding-bottom: 1px;
+    }
+
+    .perf-summary-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @@media (max-width: 767px) {
+        .perf-summary-header {
+            margin-bottom: 8px;
+        }
+
+            .perf-summary-header i {
+                font-size: 17px;
+            }
+
+            .perf-summary-header legend {
+                font-size: 18px;
+            }
+
+        .perf-summary-toolbar {
+            padding: 12px 12px 2px;
+        }
+
+            .perf-summary-toolbar .col-md-2,
+            .perf-summary-toolbar .col-sm-6,
+            .perf-summary-toolbar .col-xs-12 {
+                margin-bottom: 14px;
+            }
+
+            .perf-summary-toolbar .control-label {
+                font-size: 12px;
+            }
+
+        .perf-summary-btn {
+            height: 38px;
+        }
+
+        #grid .k-grid-toolbar .pull-right {
+            float: none !important;
+            display: block;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        #grid .k-grid-toolbar .btn {
+            width: 100%;
+        }
+
+        #grid.k-grid {
+            font-size: 12px;
+        }
     }
     /*#grid .k-grid-toolbar {
         padding: .6em 1.3em;
@@ -244,18 +381,25 @@
 
     var EmployeePerformanceId_Global = 0;
 
+    function exportPerformanceSummaryExcel() {
+        $("#grid").data("kendoGrid").saveAsExcel();
+    }
+
     function generateEmployeePerformanceSummary()
     {
         var employeeId = $("#EmployeeId").data("kendoDropDownList").value();
         var yearId = $("#GlFiscalYearId").data("kendoDropDownList").value();
-        var periodId = $("#Period").data("kendoDropDownList").value();
-        if (!yearId || !periodId) {
+        //var periodId = $("#Period").data("kendoDropDownList").value();
+        var branchId = $("#Branch").data("kendoDropDownList").value();
+        var code = $("#businessUnit").data("kendoDropDownList").value();
+
+        if (!yearId /*|| !periodId*/) {
             alert("Please select Fiscal Year, and Period.");
             return;
         }
          $.ajax({
              url: '@Url.Action("GenerateEmployeePerformanceSummary", "EmployeePerformanceSummaryGenerated",new { area="HRM"})',
-             data: { empId: employeeId, fiscalYearId: yearId, periodId: periodId },
+             data: { empId: employeeId, fiscalYearId: yearId/*, periodId: periodId*/, branchId:branchId,code:code, },
             type: 'POST',
             cache: false,
             success: function (result) {
@@ -283,14 +427,14 @@
 
         var empId = $("#EmployeeId").data("kendoDropDownList").value();
         var fiscalYearId = $("#GlFiscalYearId").data("kendoDropDownList").value();
-        var periodId = $("#Period").data("kendoDropDownList").value();
+        //var periodId = $("#Period").data("kendoDropDownList").value();
         //var evaluationCriteriaId = $("#EvaluationCriteriaId").data("kendoDropDownList").value();
         //var criteriaCategoryId = $("#CriteriaCategoryId").data("kendoDropDownList").value();
 
         return {
             empId: empId,
             fiscalYearId: fiscalYearId,
-            periodId: periodId,
+            //periodId: periodId,
             //evaluationCriteriaId: evaluationCriteriaId,
             //criteriaCategoryId: criteriaCategoryId
         };
@@ -304,6 +448,8 @@
     
     function Employee() {
         var employees = $("#EmployeeId").data("kendoComboBox");
+        //var employeeId = $("#EmployeeId").data("kendoDropDownList").value();
+
         var employee = employees.value();
        
         $.ajax({
@@ -425,3 +571,33 @@
         margin-top: 20px;
     }
 </style>
+<script>
+    function onChangeGrid(e) {
+        var grid = $("#grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function refreshPerformanceData()
+    {
+
+        var yearId = $("#GlFiscalYearId").data("kendoDropDownList").value();
+        if (yearId == "") {
+            alert("Please select the Fiscal year first!!");
+        }
+        $('#loading-image').show();
+        $.ajax({
+            url: '@Url.Action("RefreshPerformanceData", "EmployeePerformanceSummaryGenerated")',
+            data: { yearId: yearId},
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+
+                alert(result.Message);
+                $('#loading-image').hide();
+                var grid = $("#grid").data("kendoGrid");
+                grid.dataSource.read();
+            }
+
+        });
+    }
+</script>

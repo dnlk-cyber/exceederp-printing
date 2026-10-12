@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -10,15 +10,14 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Hubs;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    [AuthorizeRoles(HrmConstants.HRPerformanceAdmin, 
-                    HrmConstants.HRPerformanceUser,
-                    HrmConstants.HRDepartmentHead, 
-                    HrmConstants.HRPerformanceReport,
-                    HrmConstants.HREmployeeSelfService)]
+    [AuthorizeRoles(HrmConstants.HRPerformanceAdmin,HrmConstants.HRPerformanceUser,HrmConstants.HRDepartmentHead, 
+                        HrmConstants.HRPerformanceReport,HrmConstants.HREmployeeSelfService)]
     public class EmployeePerformanceController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -102,19 +101,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 ModelState.AddModelError("", "Score can't exceed the weight");
             }
 
-            //var criteriaType = db.EvaluationCriteriaActionTypes.FirstOrDefault(x => x.IsActive);
-            //if (criteriaType != null && criteriaType.PerformanceCriteriaActionType == PerformanceCriteriaActionType.Open)
-            //{
-            //    //var revertOther = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeePerformanceScore.EmployeeMeasurementId && x.EmployeePerformanceScoreId != employeePerformanceScore.EmployeePerformanceScoreId).ToList();
-            //    //foreach (var rev in revertOther)
-            //    //{
-            //        //rev.IsChecked = false;
-            //        //rev.Score = 0;
+            var allowedScores = db.PerformanceAllowedScores.Select(x => x.ScoreValue).OrderBy(x => x).ToList();
 
-            //        db.Entry(rev).State = EntityState.Modified;
-            //        db.SaveChanges();
-            ////    }
-            //}
+            if (allowedScores.Any() && !allowedScores.Contains(employeePerformanceScore.Score))
+            {
+                var allowedValuesText = string.Join(", ", allowedScores);
+
+                ModelState.AddModelError("Score",
+                    $"Invalid score. Allowed values are: {allowedValuesText}. " +
+                    "Please contact HR to modify the evaluation score configuration if needed.");
+
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+            }
 
             if (ModelState.IsValid)
             {
@@ -177,22 +175,108 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             }), JsonRequestBehavior.AllowGet);
         }
-        public string ApproveEvaluation(int year, int period, int employee, int evaluationCriteria, int criteriaCategoryId)
+        [HttpPost]
+        public JsonResult ApproveEvaluation(
+    int year,
+    int period,
+    int employee,
+    int evaluationCriteria,
+    int criteriaCategoryId,
+    string remark = null,
+    string specialAccomplishments = null,
+    string strengths = null,
+    string areasNeedingImprovement = null)
         {
-            var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.GlFiscalYearId == year && x.GlPeriodId == period && x.EmployeeId == employee && x.EvaluationCriteriaTypeId == evaluationCriteria&&x.CriteriaCategoryId==criteriaCategoryId);
+            var employeePerformance = db.EmployeePerformances.FirstOrDefault(x =>
+                x.GlFiscalYearId == year &&
+                x.GlPeriodId == period &&
+                x.EmployeeId == employee &&
+                x.EvaluationCriteriaTypeId == evaluationCriteria &&
+                x.CriteriaCategoryId == criteriaCategoryId);
 
-            if (employeePerformance != null)
+            if (employeePerformance == null)
             {
+                return Json(new
+                {
+                    Success = false,
+                    Message = "Evaluation record not found for the selected parameters."
+                });
+            }
+
+            try
+            {
+                var now = DateTime.Now;
+                var currentUser = User?.Identity?.Name ?? "System";
+
+                // Level 1 Submission / Approval Flags
                 employeePerformance.IsApproved = true;
+                employeePerformance.Date = now;
+                employeePerformance.LastModified = now;
+                employeePerformance.ModifiedBy = currentUser;
+
+                // Item 607: Persist Structured Evaluator Remarks
+                employeePerformance.Remark = remark;
+                employeePerformance.SpecialAccomplishments = specialAccomplishments;
+                employeePerformance.Strengths = strengths;
+                employeePerformance.AreasNeedingImprovement = areasNeedingImprovement;
+
+                // Item 606: Reset 2nd level rejection status on resubmission
+                if (employeePerformance.IsSecondLevelRejected)
+                {
+                    employeePerformance.IsSecondLevelRejected = false;
+                    employeePerformance.ReasonFor2ndRejection = null;
+                }
 
                 db.Entry(employeePerformance).State = EntityState.Modified;
                 db.SaveChanges();
 
-                return "true";
-            }
+                // Notify Employee of Submission
+                if (employee != 0)
+                {
+                    var targetUserId = UserInformationHelper.GetEmployeeUserId(employee);
+                    if (!string.IsNullOrEmpty(targetUserId))
+                    {
+                        Notify.NotifyUser(new NotifModels
+                        {
+                            UserId = targetUserId,
+                            Title = "Performance Evaluation Submitted",
+                            Message = "Your quarterly performance evaluation has been submitted and is ready for your review.",
+                            URL = "/HRM/EmployeePerformanceSummaries/"
+                        });
+                    }
+                }
 
-            return "false";
+                return Json(new
+                {
+                    Success = true,
+                    Message = "Evaluation successfully submitted and forwarded."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    Message = "An error occurred while saving the evaluation: " + ex.Message
+                });
+            }
         }
+        //public string ApproveEvaluation(int year, int period, int employee, int evaluationCriteria, int criteriaCategoryId)
+        //{
+        //    var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.GlFiscalYearId == year && x.GlPeriodId == period && x.EmployeeId == employee && x.EvaluationCriteriaTypeId == evaluationCriteria&&x.CriteriaCategoryId==criteriaCategoryId);
+
+        //    if (employeePerformance != null)
+        //    {
+        //        employeePerformance.IsApproved = true;
+
+        //        db.Entry(employeePerformance).State = EntityState.Modified;
+        //        db.SaveChanges();
+
+        //        return "true";
+        //    }
+
+        //    return "false";
+        //}
         //public JsonResult GetEvaluationWeightandResult(int evaluationCriteriaId, int employeeId, int yearId, int periodId)
         //{
         //    decimal result = 0;
@@ -424,7 +508,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 var placement = db.Placements.Where(x => x.isCurrent)
                                              .Where(x => x.EmployeeId == empId)
                                              .FirstOrDefault();
-            
+            var performanceSetting = db.PerformanceSettings.FirstOrDefault();
+            decimal deadLine = performanceSetting?.Value ?? 10;
             if (Performance == null && placement != null)
             {
                 var entity = new EmployeePerformance
@@ -449,7 +534,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     Comment = User.Identity.Name,
                     Remark = User.Identity.Name,
                     EmployeeRemark = User.Identity.Name,
-                    DeadLine = 0,
+                    DeadLine = deadLine,
                     IsAcceptedByEmployee = false,
                     IsApproved = false,
                     IsSecondLevelApproved = false,
@@ -530,6 +615,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 //  Performance.DirectBossId = placement.HeadId != null ? (int)placement.HeadId : 0,
                 Performance.DirectBossId = placement.HeadId ?? 0;
                 Performance.ResponsibilityLevel = placement.ResponsibilityLevel;
+                Performance.DeadLine = deadLine;
                 Performance.Result = Performance.Result;
                 Performance.ModifiedBy = User.Identity.Name;
                 Performance.LastModified = DateTime.Now;
@@ -618,6 +704,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return performanceId;
         }
 
+        public JsonResult GetEmployee(int id)
+        {
+            var person = db.Person_Employee.Find(id);
+
+            if (person == null)
+            {
+                return Json(new
+                {
+                    Message = "The employee record does not exist.",
+                    Status = "Not-Ok"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            int daysSinceHired = (DateTime.Now - person.HiredDate).Days + 1;
+
+            if (daysSinceHired < 90)
+            {
+                return Json(new
+                {
+                    Message = $"The employee must have at least three months of experience, but they have only been employed for {daysSinceHired} days.",
+                    Status = "Not-Ok"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new
+            {
+                Message = "The employee is eligible for evaluation.",
+                Status = "Ok"
+            }, JsonRequestBehavior.AllowGet);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

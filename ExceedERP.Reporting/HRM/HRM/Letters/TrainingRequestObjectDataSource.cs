@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Reporting.HRM.HRM;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using ExceedERP.Reporting.SharedDataSources;
-using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     
     [DataObject]
-    public class TrainingRequestObjectDataSource
+    public class TrainingRequestObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -115,6 +107,14 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     EmployeeInfo.Department = depo.Name;
                 }
                 EmployeeInfo.Date = trainingRequest.DateAmharic;
+                EmployeeInfo.NoOfTrainee = trainingRequest.NoofTrainee;
+
+                var lookup = db.Lookups.Find(trainingRequest.LookupId);
+                if (lookup != null)
+                {
+                    EmployeeInfo.CourseName = lookup.Description;
+                }
+
                 //var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == trainingRequest.GlFiscalYearId);
                 //if (year != null)
                 //{
@@ -210,5 +210,11 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return EmployeeInfoList;
         }
+ 
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        
     }
 }

@@ -35,7 +35,7 @@
                                           .ServerFiltering(true)
                                           .ServerPaging(true)
                                           .Type("aspnetmvc-ajax")
-                                          .Transport(transport => transport.Read(r => r.Action("GetEmployees", "Leave")))
+                                          .Transport(transport => transport.Read(r => r.Action("GetEmployees", "Leave").Data("sendForgery")))
                                           .Schema(schema =>
                                           {
                                               schema.Data("Data")

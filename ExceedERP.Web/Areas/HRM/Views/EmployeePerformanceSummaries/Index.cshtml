@@ -3,18 +3,22 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-
 }
-<legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+<div class="eps-page-header">
+    <i class="fa fa-bar-chart"></i>
+    <legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+</div>
+<div class="eps-grid-wrapper">
 @(Html.Kendo().Grid<EmployeePerformance>()
       .Name("EmployeePerformancegrid")
       .Columns(columns =>
       {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").Width(140).Title(Resources.Common_PersonEmployee_EmployeeCode).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
           columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
           columns.Bound(c => c.IsCurrent).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsCurrent ? checked='checked' :'' # >").Width(130);
-
+          columns.Bound(c => c.Date).Width(120);
           columns.Bound(c => c.ReasonFor2ndRejection).Width(140);
           columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
                      "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
@@ -52,14 +56,26 @@
                         "checked='checked'" +
                         "# } #" +
                         "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+          columns.Bound(c => c.EmployeeRemark).Width(160);
+          columns.Bound(c => c.Remark).Width(130);
+
           columns.Command(command =>
           {
-              command.Custom("cmd-approval-request").IconClass("fa fa-check ").Text("1st Level Approval").Click("immidiateApproval").HtmlAttributes(new { @class = "btn btn-success" });
-              if (HttpContext.Current.User.IsInRole("Performance_Second_Level_Approval")
-                  || HttpContext.Current.User.IsInRole("Performance_2nd_Level_Approval"))
+              command.Custom("cmd-approval-request").IconClass("fa fa-check ").Text("Approve (Level 1)").Click("immidiateApproval").HtmlAttributes(new { @class = "btn btn-success" });
+              if (HttpContext.Current.User.IsInRole("Performance_Second_Level_Approval")|| HttpContext.Current.User.IsInRole("Performance_2nd_Level_Approval"))
               {
-                  command.Custom("cmd-secondlevelapproval-request").IconClass("fa fa-check ").Text("2nd Approval").Click("secondLevelApproval").HtmlAttributes(new { @class = "btn btn-primary" });
 
+                  command.Custom("cmd-secondlevelapproval-request")
+                        .IconClass("fa fa-check ")
+                        .Text("Approve (Level 2)")
+                        .Click("secondLevelApproval")
+                        .HtmlAttributes(new { @class = "btn btn-primary" });
+
+                  command.Custom("cmd-secondlevelreject-request")
+                    .IconClass("fa fa-times")
+                    .Text("Reject (L2)")
+                    .Click("secondLevelRejection")
+                    .HtmlAttributes(new { @class = "btn btn-danger" });
               }
 
           }).Width(200);
@@ -68,30 +84,39 @@
       .Filterable()
       .Scrollable(h => h.Height("auto"))
       .Events(ev => ev.DataBound("onDataBound"))
+
       .Pageable(pageable => pageable
-            .Refresh(true))
-            .DataSource(dataSource => dataSource
-                .Ajax()
-                .Events(events =>
-                {
-                    events.Error("error_handler(\"EmployeePerformancegrid\")");
-                    events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
-                    events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5)
+                        .Enabled(true))
+
+     .DataSource(dataSource => dataSource
+        .Ajax()
+        .Events(events =>
+        {
+            events.Error("error_handler(\"EmployeePerformancegrid\")");
+            events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
+            events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
 
 
-                })
-                .Model(model =>
-                {
-                    model.Id(p => p.EmployeePerformanceId);
-                    model.Field(p => p.Result).Editable(false);
+        })
+        .Model(model =>
+        {
+            model.Id(p => p.EmployeePerformanceId);
+            model.Field(p => p.Result).Editable(false);
 
 
 
-                })
-                .Read(read => read.Action("EmployeePerformanceSummaries_Read", "EmployeePerformanceSummaries").Data("sendForgery"))
-                       
-                ).ClientDetailTemplateId("employee_performance_template")
+
+        })
+        .Read(read => read.Action("EmployeePerformanceSummaries_Read", "EmployeePerformanceSummaries").Data("sendForgery"))
+
+        ).ClientDetailTemplateId("employee_performance_template")
 )
+</div>
 
 <script id="employee_performance_template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
@@ -105,7 +130,24 @@
                     <div>
                         <hr>
                         <dl class="dl-horizontal">
-                           
+                            <dt>
+                                Special Accomplishments
+                            </dt>
+                            <dd>
+                                #= SpecialAccomplishments ? SpecialAccomplishments : '-' #
+                            </dd>
+                            <dt>
+                                Strengths
+                            </dt>
+                            <dd>
+                                #= Strengths ? Strengths : '-' #
+                            </dd>
+                            <dt>
+                                Areas Needing Improvement
+                            </dt>
+                            <dd>
+                                #= AreasNeedingImprovement ? AreasNeedingImprovement : '-' #
+                            </dd>
                             <dt>
                                 CreatedOn
                             </dt>
@@ -145,7 +187,19 @@
                                 <snap id="new_user_name_display"></snap>
                             </dd>
                         </dl>
-                        # } #
+                        # } else{#
+                        <dl class="h6">
+                            <dt>
+                                Next Approver
+                            </dt>
+                            <dd>
+                                <snap id="user_name_display"></snap>
+                                <a onclick='displayUserName("#=EmployeeId#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                @*<a onclick='SelectNextApprover("#=EmployeeId#")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>*@
+                                <snap id="new_user_name_display"></snap>
+                            </dd>
+                        </dl>
+                        #}#
                     </div>
 
 
@@ -161,15 +215,25 @@
                                 columns.ForeignKey(c => c.EvaluationCriteriaTypeId, (IEnumerable)ViewData["EvalutionCrateria"], "MeasurementDefinitionId", "Name").Width(200);
                                 //columns.Bound(c => c.Weight).Width(80);
                                 //columns.Bound(c => c.Result).Width(80);
-                                columns.Bound(c => c.Weight).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                columns.Bound(c => c.Result).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                columns.Bound(c => c.Date).Width(120);
+
+                                columns.Bound(c => c.Weight).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ").Width(100);
+                                columns.Bound(c => c.Result).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ").Width(100);
+
+                                columns.Bound(c => c.IsImmediateSuppurvisorApproved).ClientTemplate(
+                                         "<input type='checkbox' disabled = 'true' value='\\#=IsImmediateSuppurvisorApproved\\#' " +
+                                         "\\#if(IsImmediateSuppurvisorApproved) { \\#" +
+                                         "checked='checked'" +
+                                         "\\# } \\#" +
+                                         "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
                                 //columns.Bound(c => c.IsImmediateSuppurvisorApproved).ClientTemplate(
                                 //           "<input type='checkbox' disabled = 'true' value='#=IsImmediateSuppurvisorApproved#' " +
                                 //           "#if(IsImmediateSuppurvisorApproved) { #" +
                                 //           "checked='checked'" +
                                 //           "# } #" +
                                 //           "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                                columns.Bound(c => c.Remark).Width(50);
+                                columns.Bound(c => c.EvalutionType).Width(120);
+                                columns.Bound(c => c.Remark).Width(120);
 
 
                             })
@@ -177,12 +241,12 @@
                             .ClientDetailTemplateId("Action")
                             .Editable(editable => editable.Mode(GridEditMode.InLine))
                             .Scrollable(h => h.Height("auto"))
-                                .Pageable(pageable => pageable
-                                    //.Input(true)
-                                    // .Numeric(false)
+                            .Pageable(pageable => pageable
+                                    .Input(true)
+                                     .Numeric(false)
                                     .Refresh(true)
-                                    //.PageSizes(true)
-                                    // .ButtonCount(5)
+                                    .PageSizes(true)
+                                     .ButtonCount(5)
                                     )
 
                             .DataSource(dataSource => dataSource
@@ -244,11 +308,11 @@
                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                         .Scrollable(h => h.Height("auto"))
                             .Pageable(pageable => pageable
-                                //.Input(true)
-                                // .Numeric(false)
+                                .Input(true)
+                                 .Numeric(false)
                                 .Refresh(true)
-                                //.PageSizes(true)
-                                // .ButtonCount(5)
+                                .PageSizes(true)
+                                 .ButtonCount(5)
                                 )
                         .DataSource(dataSource => dataSource
                         .Ajax()
@@ -367,6 +431,59 @@
         padding-top: 1px;
         padding-bottom: 1px;
     }
+
+    .eps-page-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+        .eps-page-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .eps-page-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .eps-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #EmployeePerformancegrid.k-grid {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #EmployeePerformancegrid.k-grid .k-grid-header {
+            background-color: #f9fafb;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+
+    @@media (max-width: 767px) {
+        #EmployeePerformancegrid.k-grid {
+            font-size: 12px;
+        }
+    }
 </style>
 
 
@@ -375,21 +492,33 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function (e) {
             var model = grid.dataItem(this);
-            if (!model.IsImmediateSuppurvisorApproved) {
+            if (model.IsImmediateSuppurvisorApproved === false) {
                 $(this).find(".k-grid-cmd-approval-request").show();
                 $(this).find(".k-grid-cmd-secondlevelapproval-request").hide();
+                $(this).find(".k-grid-cmd-secondlevelreject-request").hide();
 
             }
-            if (model.IsImmediateSuppurvisorApproved) {
+            else if (model.IsImmediateSuppurvisorApproved) {
                 $(this).find(".k-grid-cmd-approval-request").hide();
                 $(this).find(".k-grid-cmd-secondlevelapproval-request").show();
+                $(this).find(".k-grid-cmd-secondlevelreject-request").show();
 
             }
-
-            if (model.IsSecondLevelApproved) {
+            else if (model.IsSecondLevelApproved) {
                 $(this).find(".k-grid-cmd-approval-request").hide();
                 $(this).find(".k-grid-cmd-secondlevelapproval-request").hide();
+                $(this).find(".k-grid-cmd-secondlevelreject-request").hide();
             }
+            else if (model.IsSecondLevelRejected) {
+                $(this).find(".k-grid-cmd-approval-request").hide();
+                $(this).find(".k-grid-cmd-secondlevelapproval-request").hide();
+                $(this).find(".k-grid-cmd-secondlevelreject-request").hide();
+            }
+            
+            
+          
+
+         
 
         });
 
@@ -399,14 +528,109 @@
 
 </script>
 
+<div class="modal fade" id="l1EvalModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Level 1 Approver Remarks</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="l1_year" />
+                <input type="hidden" id="l1_period" />
+                <input type="hidden" id="l1_employee" />
+                <input type="hidden" id="l1_empPerformanceId" />
+
+                <div class="form-group">
+                    <label>Employee Special Accomplishments</label>
+                    <textarea id="l1_accomplishments" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Employee Strengths</label>
+                    <textarea id="l1_strengths" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Areas Needing Improvement</label>
+                    <textarea id="l1_improvements" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>General Remark</label>
+                    <textarea id="l1_remark" class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="confirmL1Approval()">Submit & Approve</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-   function immidiateApproval(e) {
+    function immidiateApproval(e) {
+    e.preventDefault();
+    var grid = this,
+        dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+
+    $('#l1_year').val(dataItem.GlFiscalYearId);
+    $('#l1_period').val(dataItem.GlPeriodId);
+    $('#l1_employee').val(dataItem.EmployeeId);
+    $('#l1_empPerformanceId').val(dataItem.EmployeePerformanceId);
+
+    $('#l1_accomplishments').val(dataItem.SpecialAccomplishments || '');
+    $('#l1_strengths').val(dataItem.Strengths || '');
+    $('#l1_improvements').val(dataItem.AreasNeedingImprovement || '');
+    $('#l1_remark').val(dataItem.Remark || '');
+
+    $('#l1EvalModal').modal('show');
+}
+
+    function confirmL1Approval()
+    {
+        $('#l1EvalModal').modal('hide');
+        $('#loading-image').show();
+
+        $.ajax({
+            url: '@Url.Action("ApproveEvaluation", "EmployeePerformanceSummaries")',
+            type: 'POST',
+            data: {
+                year: $('#l1_year').val(),
+                period: $('#l1_period').val(),
+                employee: $('#l1_employee').val(),
+                empPerformanceId: $('#l1_empPerformanceId').val(),
+                remark: $('#l1_remark').val(),
+                specialAccomplishments: $('#l1_accomplishments').val(),
+                strengths: $('#l1_strengths').val(),
+                areasNeedingImprovement: $('#l1_improvements').val()
+            },
+            cache: false,
+            success: function (result) {
+                if (typeof result === "object") {
+                    alert(result.Message);
+                } else if (result === "true") {
+                    alert("Successfully Approved and forwarded to Level 2.");
+                } else {
+                    alert("Approval cannot be granted. The individual must first Accept or Reject all the evaluations.");
+                }
+                $("#EmployeePerformancegrid").data("kendoGrid").dataSource.read();
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred: " + error);
+            },
+            complete: function () {
+                $('#loading-image').hide();
+            }
+        });
+    }
+   @*function immidiateApproval(e) {
     var grid = this,
         dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-    var year = dataItem.GlFiscalYearId;
-    var period = dataItem.GlPeriodId;
-    var employee = dataItem.EmployeeId;
+
+       var year = dataItem.GlFiscalYearId;
+       var period = dataItem.GlPeriodId;
+       var employee = dataItem.EmployeeId;
        var empPerformanceId = dataItem.EmployeePerformanceId;
+       var approvalRemark = prompt("you can provide  remark (optional):");
+
     var conf = confirm("Are you sure you want to approve this quarter performance evaluation");
     if (conf === true) {
         $('#loading-image').show();
@@ -414,7 +638,7 @@
         $.ajax({
             url: '@Url.Action("ApproveEvaluation", "EmployeePerformanceSummaries")',
             //contentType: "application/json; charset=utf-8",
-            data: { year: year, period: period, employee: employee, empPerformanceId: empPerformanceId },
+            data: { year: year, period: period, employee: employee, empPerformanceId: empPerformanceId, remark: approvalRemark },
             type: 'POST',
             cache: false,
             success: function (result) {
@@ -423,8 +647,9 @@
                 if (r == "true") {
                     alert("Successfully Approved");
                     // Reload the page to reflect the changes
-                    location.reload();
-                } else {
+                    grid.dataSource.read();
+                }
+                else {
                     alert("Approval cannot be granted. The individual must first Accept or Reject All the evaluations.");
                     grid.dataSource.read();
                 }
@@ -435,7 +660,7 @@
             }
         });
     }
-}
+}*@
 
 
     function secondLevelApproval(e) {
@@ -454,15 +679,11 @@
                 type: 'POST',
                 cache: false,
                 success: function (result) {
-                    r = result;
-                    if (r == "true") {
-                        alert("Successfully Approved");
-                        grid.dataSource.read();
-                    }
-                    else {
-                        alert("Approval cannot be granted until the 1st level evaluation is approved");
-                        grid.dataSource.read();
-                    }
+                   
+                    alert(result.Message);
+                    grid.dataSource.read();
+                   
+                   
 
                 }
 
@@ -472,6 +693,44 @@
 
 
     }
+
+    function secondLevelRejection(e) {
+    e.preventDefault();
+    var grid = this,
+        dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+
+    var year = dataItem.GlFiscalYearId;
+    var period = dataItem.GlPeriodId;
+    var employee = dataItem.EmployeeId;
+
+    var reason = prompt("Please provide a reason for rejecting this evaluation (will be returned to the 1st Evaluator):");
+    if (reason === null) {
+        return; // User canceled prompt
+    }
+
+    if ($.trim(reason) === "") {
+        alert("A rejection reason is required.");
+        return;
+    }
+
+    $('#loading-image').show();
+    $.ajax({
+        url: '@Url.Action("RejectEvaluation", "EmployeePerformanceSummaries")',
+        data: { year: year, period: period, employee: employee, rejectionReason: reason },
+        type: 'POST',
+        cache: false,
+        success: function (result) {
+            alert(result.Message);
+            grid.dataSource.read();
+        },
+        error: function (xhr, status, error) {
+            alert("An error occurred while rejecting the evaluation: " + error);
+        },
+        complete: function () {
+            $('#loading-image').hide();
+        }
+    });
+}
 </script>
 <script>
 

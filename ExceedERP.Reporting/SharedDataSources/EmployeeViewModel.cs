@@ -9,6 +9,8 @@ namespace ExceedERP.Reporting.SharedDataSources
     public class EmployeeViewModel
     {
         public int EmpId { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeCode { get; set; }
         public string FullName { get; set; }
         public string FullAmharicName { get; set; }
         public string EmpCodeWithName { get; set; }

@@ -17,9 +17,19 @@
           columns.Bound(c => c.LeaveRequestId).Title("Request Id").Width(100);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ReturnEmployees").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
-          columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(150);
-          columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(150);
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(150);
+              columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(150);
+          }
+          else
+          {
+              columns.Bound(c => c.From).Width(100);
+              columns.Bound(c => c.To).Width(100);
+          }
+
           columns.Bound(c => c.Amount).Width(100);
+          columns.Bound(c => c.Reason).Width(150);
           columns.Bound(c => c.Remark).Width(120);
           columns.Command(command =>
           {
@@ -38,7 +48,7 @@
           }
       })
 
-      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Events(events => events.DetailExpand("onDetailExpandUser"))
       .Scrollable(h => h.Height(500))
       .Sortable(sortable =>
@@ -49,8 +59,8 @@
       .Filterable()
       .Events(e =>
       {
-          e.Save("GetDate");
-          e.Edit("GetDate");
+          //e.Save("GetDate");
+          //e.Edit("GetDate");
 
       })
       .Events(e =>
@@ -59,7 +69,7 @@
 
       })
       .Pageable(pageable => pageable
-                                        .Input(true)
+                      .Input(true)
                       .Numeric(false)
                       .Refresh(true)
                       .PageSizes(true)
@@ -100,16 +110,21 @@
                  .Name("RequestesStatusgrid_#=LeaveReturnId#")
                  .Columns(columns =>
                  {
-                     //columns.Bound(c => c.RequestId);
-                     columns.Bound(c => c.DateReqStatAm).EditorTemplateName("Calander").Width(120);
+                     if (useEthiopian)
+                     {
+                         columns.Bound(c => c.DateReqStatAm).EditorTemplateName("Calander").Width(150);
+                     }
+                     else
+                     {
+                         columns.Bound(c => c.Date).Width(100);
+                     }
                      columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutWaitingForApprovalAndApprove").Width(200);
-                     //columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["UserName"], "EmployeeId", "UserName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                      columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                      columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true)); columns.Bound(c => c.Remark).Width(100);
                      columns.Command(command =>
                      {
                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                        // command.Destroy().Text(Resources.ActionButton_Cancel);
+                         // command.Destroy().Text(Resources.ActionButton_Cancel);
 
                      }).Width(400);
                  })
@@ -137,9 +152,9 @@
                     {
                         model.Id(p => p.RequestStatusId);
                         model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                        model.Field(p => p.DateReqStatAm).Editable(false);
                         model.Field(p => p.ApproverId).Editable(false);
                         model.Field(p => p.ApproverDepartment).Editable(false);
-                        model.Field(p => p.DateReqStatAm).Editable(false);
 
                     })
                     .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }).Data("sendForgery"))
@@ -149,14 +164,9 @@
                 ).ToClientTemplate()
               )
 
-                               @*<a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
-                            </text>
-                            );
-
-
-         //*****************************************************************************************************//
-
-
+                           
+        </text>);
+         
      }).ToClientTemplate())
 </script>
 <style type="text/css">
@@ -208,7 +218,7 @@
     }
 </script>
 <script>
-    function GetDate() {
+    @*function GetDate() {
 
         var x = AssignDate();
         var y = x;
@@ -226,7 +236,7 @@
                 }
 
             });
-        }
+        }*@
 
         /////////////////////////////////////////////////////////
 
@@ -488,18 +498,26 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
-            if (dataItem.IsApproved === true || dataItem.IsDepartmentOnlineApproved) {
+            if (dataItem.IsSendForApproval) {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").remove();
+            }
+            if (dataItem.IsDepartmentOnlineApproved)
+            {
+                row.css("background-color", "lightgreen");
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+            }
+            if (dataItem.IsApproved === true
+                || dataItem.IsOnlineApproved)
+            {
 
                 row.css("background-color", "darkgrey");
                 row.find(".k-grid-edit").remove();
                 row.find(".k-grid-delete").remove();
             }
-            else if (dataItem.IsSendForApproval) {
-
-                row.css("background-color", "lightgreen");
-                row.find(".k-grid-delete").remove();
-
-            }
+           
 
 
         }

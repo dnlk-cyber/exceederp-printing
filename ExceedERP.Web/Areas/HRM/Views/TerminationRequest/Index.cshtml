@@ -1,4 +1,5 @@
 ﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
 @using ExceedERP.Core.Domain.HRM.EmployeeDetail
 @using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Localization
@@ -12,23 +13,24 @@
       .Columns(columns =>
       {
 
-          columns.Bound(c => c.EmployeeCode).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+          //columns.Bound(c => c.EmployeeCode).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.HR_Prohibition_Prohibition_EmployeeCode).Width(100);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
           if (useEthiopian)
           {
               columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(120);
               columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(120);
+
           }
           else
           {
               columns.Bound(c => c.ApplicationDate).Width(120);
               columns.Bound(c => c.TerminationDate).Width(120);
           }
-
           columns.Bound(c => c.Reason).Width(300);
-
           // columns.Bound(c => c.Remark).Width (120);
+
           columns.Command(command =>
           {
               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -147,12 +149,142 @@
                 )
 
 
-            </text>
-                  );
-              //*****************************************************************************************************//
-
+            </text>);
+              items.Add().Text(Resources.NavigatorSelfCare_FixedAsset).Content(
+            @<text>
+                @fixedAssetYouHave()
+            </text>);
+                items.Add().Text(Resources.UploadFile).Content(
+            @<text>
+                @TerminationFileAttachment()
+            </text>);
           }).ToClientTemplate())
+
 </script>
+
+
+@helper fixedAssetYouHave()
+{ 
+     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FixedAsset.UserCard.UserCardItems>()
+          .Name("UserCardItemsgrid#=TerminationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name).Width (140);
+              columns.Bound(c => c.IssueDate).Width (130);
+              columns.Bound(c => c.UOM).Width (130);
+              columns.Bound(c => c.UnitPrice).Width(120);
+              columns.Bound(c => c.Quanity).Width (100);
+              columns.Bound(c => c.SerialNo).Width(130);
+              columns.Bound(c => c.SIVNo).Width(120);
+              columns.Bound(c => c.GRNDate).Width(120);
+              columns.Bound(c => c.Active).ClientTemplate(
+                     "<input type='checkbox' disabled = 'true' value='\\#= Active\\#' " +
+                     "\\# if (Active) { \\#" +
+                     "checked='checked'" +
+                     "\\# } \\#" +
+                     "/>"
+                     ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(120);
+
+              columns.Bound(c => c.Remark);
+          })
+
+          .Scrollable(h => h.Height(500))
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+
+          })
+          .Filterable()
+          .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+           .Sort(sort => sort.Add("LoanId").Descending())
+           .Events(events =>
+           {
+               events.Error("error_handler(\"UserCardItemsgrid#=TerminationId#\")");
+               events.RequestStart("onRequestStart(\"UserCardItemsgrid#=TerminationId#\")");
+               events.RequestEnd("onRequestEnd(\"UserCardItemsgrid#=TerminationId#\")");
+
+           })
+          .Model(model =>
+          {
+              model.Id(p => p.UserCardItemsID);
+          })
+          .Read(read => read.Action("UserCardItems_Read", "Termination", new { Area = "HRM", employeeId = "#=EmployeeId#" }).Data("sendForgery"))
+
+      ).ToClientTemplate())
+}
+
+@helper TerminationFileAttachment() { 
+    @(Html.Kendo().Grid<Attachment>()
+           .Name("AttachmentGrid_#=TerminationId#")
+           .Columns(columns =>
+           {
+
+               columns.Bound(c => c.Description).Width(150);
+               columns.Template(e => { }).ClientTemplate("<a href='/Common/Attachment/DownloadAttachment?attachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(80);
+               columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+
+               // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=TerminationId#" }).ToHtmlString()).Width(150);
+               columns.Command(command =>
+               {
+                   command.Destroy().Text(Resources.ActionButton_Cancel);
+                   //command.Custom("Download").Click("DownloadAttachmnets");
+               });
+           })
+           .ToolBar(toolbar =>
+           {
+
+                toolbar.Template(@<text>
+                            @Html.Kendo().Upload().Name("file").Async(a => a.Save("AttachmentTemplateFiles_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" })).Events(e => e.Complete("onUploadSuccess1")
+                                                                                                                        .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 2 * 1024 * 1024); }")
+                                                                            .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
+                        </text>);
+
+
+
+
+           })
+           .Events(e =>
+            {
+                e.Edit("onGridEdit");
+                e.Change("onChange");
+            })
+                //.ToolBar(toolbar =>
+                //{
+                //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                //})
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                {
+                    window.Scrollable(false);
+                    window.Title(Resources.HR_Upload_File);
+
+                }))
+                .Scrollable()
+                .Selectable()
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"AttachmentGrid_#=TerminationId#\")");
+                        events.RequestStart("onRequestStart(\"AttachmentGrid_#=TerminationId#\")");
+                        events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=TerminationId#\")");
+
+                    })
+                    .Model(model => model.Id(p => p.AttachmentId))
+                    .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }).Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("Attachments_Destroy", "Termination").Data("sendForgery"))
+
+                    ).ToClientTemplate()
+                )
+    }
 
 <style type="text/css">
     div.k-edit-form-container {
@@ -160,6 +292,33 @@
     }
 </style>
 <script>
+    function onUploadSuccess1(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#AttachmentGrid_" + masterId).data("kendoGrid").dataSource.read();
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            url: '@Url.Action("Download", "Termination")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
     function DownloadAttachmnets(e) {
 
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
@@ -237,6 +396,8 @@
 
         }
     }
+
+    var masterId = 0;
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 

@@ -12,13 +12,13 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(150);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
-          columns.Bound(c => c.EndDateAm).EditorTemplateName ("Calander").Width (200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ActiveEmployees").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.Bound(c => c.EndDateAm).EditorTemplateName ("Calander").Width (150);
           columns.Bound(c => c.LookupId ).EditorTemplateName("Enum").Width (150);
           columns.Bound(c => c.EvaluationResult).Width (150);
-          columns.ForeignKey(c => c.Decision, (IEnumerable)ViewData["Decistion"], "LookupId", "Description").EditorTemplateName("ProbationType").Width(200);
+          columns.ForeignKey(c => c.Decision, (IEnumerable)ViewData["Decistion"], "LookupId", "Description").EditorTemplateName("ProbationType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
 
-          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.Remark).Width(120);
           columns.Command(command =>
           {
               if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
@@ -29,7 +29,7 @@
               {
                   command.Destroy().Text(Resources.ActionButton_Cancel);
               }
-          }).Width(200);
+          })/*.Width(200)*/;
       })
       .ToolBar(toolbar =>
       {
@@ -68,10 +68,10 @@
 
               .Model(model => { model.Id(p => p.ProhibitionId);
                   model.Field(p => p.EmployeeCode).Editable (false);})
-                              .Read(read => read.Action("Prohibitions_Read", "EmployeeProbation", new { Area = "HRM", id = "#=EmployeeId#" }))
-                              .Create(create => create.Action("Prohibitions_Create", "EmployeeProbation", new { Area = "HRM", id = "#=EmployeeId#" }))
-                  .Update(update => update.Action("Prohibitions_Update", "EmployeeProbation"))
-                  .Destroy(destroy => destroy.Action("Prohibitions_Destroy", "EmployeeProbation"))
+                              .Read(read => read.Action("Prohibitions_Read", "EmployeeProbation", new { Area = "HRM", id = "#=EmployeeId#" }).Data("sendForgery"))
+                              .Create(create => create.Action("Prohibitions_Create", "EmployeeProbation", new { Area = "HRM", id = "#=EmployeeId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("Prohibitions_Update", "EmployeeProbation").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("Prohibitions_Destroy", "EmployeeProbation").Data("sendForgery"))
       ))
 
 <style type="text/css">

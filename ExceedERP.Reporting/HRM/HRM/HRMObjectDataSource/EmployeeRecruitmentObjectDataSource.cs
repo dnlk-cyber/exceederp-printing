@@ -3,131 +3,233 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeeRecruitmentObjectDataSource : List<EmployeeRecruitment>
+    public class EmployeeRecruitmentObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeRecruitment> GetEmployeeRecruitment(string dept, DateTime from, DateTime to, string branchId, string assignment)
+        public List<EmployeeRecruitment> GetEmployeeRecruitment(string dept, DateTime? from, DateTime? to, string branchId, string assignment, bool isCurrent)
         {
-            List<EmployeeRecruitment> EmployeeInfoList = new List<EmployeeRecruitment>();
-            EmployeeRecruitment EmployeeInfo = new EmployeeRecruitment();
+            var query = db.Placements.AsQueryable();
 
-            DateTime dateTo = new DateTime(to.Year, to.Month, to.Day);
-            DateTime dateFrom = new DateTime(from.Year, from.Month, from.Day);
-
-            List<Placement> placements = db.Placements.ToList();
-
-            if (branchId != null)
+            if (!string.IsNullOrEmpty(branchId))
             {
                 int.TryParse(branchId, out int braId);
-                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+                query = query.Where(x => x.BranchId == braId);
             }
-            if (dept != null)
+
+            if (!string.IsNullOrEmpty(dept))
             {
                 int.TryParse(dept, out int orgId);
-                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
-            }
-            if (assignment != null)
-            {
-                var assign = GetAssignemtType(assignment);
-                placements = placements.Where(x => x.AssignmentType == assign).ToList();
+                query = query.Where(x => x.OrgStructureId == orgId);
             }
 
-            if (from <= to)
+            if (!string.IsNullOrEmpty(assignment))
             {
-                placements = placements.Where(x => x.AssignmentDate >= dateFrom && x.AssignmentDate <= dateTo).ToList();
+                query = query.Where(x => x.AssignmentType.ToString().ToLower() == assignment.ToLower());
             }
 
-            placements = placements.Where(x => x.isCurrent).ToList();
+            if (from.HasValue)
+            {
+                query = query.Where(x => x.AssignmentDate >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                query = query.Where(x => x.AssignmentDate <= to.Value);
+            }
+
+            if (isCurrent)
+            {
+                query = query.Where(x => x.isCurrent);
+            }
+
+            var placements = query.ToList();
+
+            // Preload related data (avoid DB calls in loop)
+            var employeeIds = placements.Select(x => x.EmployeeId).Distinct().ToList();
+            var branchIds = placements.Select(x => x.BranchId).Distinct().ToList();
+            var lookupIds = placements.Select(x => x.LookupId).Distinct().ToList();
+            var deptIds = placements.Select(x => x.OrgStructureId).Distinct().ToList();
+            var unitIds = placements.Select(x => x.BusinessUnitId).Distinct().ToList();
+
+            var employees = db.Person_Employee
+                .Where(x => employeeIds.Contains(x.EmployeeId))
+                .ToDictionary(x => x.EmployeeId);
+
+            var branches = db.Branch
+                .Where(x => branchIds.Contains(x.BranchId))
+                .ToDictionary(x => x.BranchId);
+
+            var jobTitles = db.Lookups
+                .Where(x => lookupIds.Contains(x.LookupId))
+                .ToDictionary(x => x.LookupId);
+
+            var departments = db.MainCompanyStructures
+                .Where(x => deptIds.Contains(x.OrgStructureId))
+                .ToDictionary(x => x.OrgStructureId);
+            var businessUnits = db.BusinessUnits
+                .Where(x => unitIds.Contains(x.BusinessUnitId))
+                .ToDictionary(x => x.BusinessUnitId);
+
+            var result = new List<EmployeeRecruitment>();
 
             foreach (var l in placements)
             {
-                db = new ExceedDbContext();
+                var EmployeeInfo = new EmployeeRecruitment();
 
-                EmployeeInfo = new EmployeeRecruitment();
-
-                var e = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == l.EmployeeId);
-
-                if (e != null)
+                if (employees.TryGetValue(l.EmployeeId, out var e))
                 {
                     EmployeeInfo.EmployeeId = e.EmployeeCode;
-                    //EmployeeInfo.Sex = e.Gender;
-                    if (e.Gender == Gender.MALE)
-                    {
-                        EmployeeInfo.Sex = "ወንድ";
-                    }
-                    else
-                    {
-                        EmployeeInfo.Sex = "ሴት";
-                    }
-
-                    EmployeeInfo.FullName = e.FullNameAmharic;
-                    //EmployeeInfo.HireDate = e.HiredDate.ToShortDateString();
+                    EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
+                    EmployeeInfo.FullName = $"{e.FirstNameEnglish} {e.MiddleNameEnglish} {e.LastNameEnglish}";
                     EmployeeInfo.HireDate = e.HiredDateAmharic;
                 }
 
-                var place = db.Placements.Where(x => x.EmployeeId == l.EmployeeId && !x.isCurrent).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
-                if (place != null)
-                {
-                    var fromBranch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
-                    if (fromBranch != null)
-                    {
-                        if (l.AssignmentType == AssignmentType.TRANSFER)
-                        {
-                            EmployeeInfo.FromBranch = fromBranch.AmharicName;
-                        }
-                        else
-                        {
-                            EmployeeInfo.ToBranch = "--";
-                        }
-                    }
-                }
-
-                var branch = db.Branch.FirstOrDefault(x => x.BranchId == l.BranchId);
-                if (branch != null)
+                if (branches.TryGetValue(l.BranchId, out var branch))
                 {
                     EmployeeInfo.Branch = branch.AmharicName;
+
                     if (l.AssignmentType == AssignmentType.TRANSFER)
-                    {
-                        EmployeeInfo.ToBranch = branch.AmharicName;
-                    }
+                        EmployeeInfo.ToBranch = branch.AmharicName ?? branch.Name;
                     else
-                    {
                         EmployeeInfo.ToBranch = "--";
-                    }
-
                 }
-                var jobTitle = db.Lookups.FirstOrDefault(x => x.LookupId == l.LookupId);
-                if (jobTitle != null)
+
+                if (jobTitles.TryGetValue(l.LookupId, out var jobTitle))
                 {
-                    EmployeeInfo.JobTitle = jobTitle.Description;
+                    EmployeeInfo.JobTitle = jobTitle.Description ?? jobTitle.DescriptionEng;
                 }
 
-                EmployeeInfo.Salary = l.Salary;
-                var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == l.OrgStructureId);
-                if (deptt != null)
+                if (departments.TryGetValue(l.OrgStructureId, out var deptt))
                 {
                     EmployeeInfo.Departement = deptt.Name;
                 }
+                if (businessUnits.TryGetValue(l.BusinessUnitId, out var unit))
+                {
+                    EmployeeInfo.BusinessUnit = unit.Name;
+                }
 
+                EmployeeInfo.Salary = l.Salary;
                 EmployeeInfo.AssignmentType = l.AssignmentType.ToString();
 
-                EmployeeInfoList.Add(EmployeeInfo);
+                result.Add(EmployeeInfo);
             }
 
-
-            return EmployeeInfoList;
+            return result;
         }
+        //public List<EmployeeRecruitment> GetEmployeeRecruitment(string dept, DateTime? from, DateTime? to, string branchId, string assignment,bool isCurrent)
+        //{
+        //    List<EmployeeRecruitment> EmployeeInfoList = new List<EmployeeRecruitment>();
+        //    EmployeeRecruitment EmployeeInfo = new EmployeeRecruitment();
+
+
+
+        //    List<Placement> placements = db.Placements.ToList();
+
+        //    if (!string.IsNullOrEmpty(branchId))
+        //    {
+        //        int.TryParse(branchId, out int braId);
+        //        placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+        //    }
+        //    if (!string.IsNullOrEmpty(dept))
+        //    {
+        //        int.TryParse(dept, out int orgId);
+        //        placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+        //    }
+        //    if (!string.IsNullOrEmpty(assignment))
+        //    {
+        //        placements = placements.Where(x => x.AssignmentType.ToString().ToLower() == assignment.ToLower()).ToList();
+        //    }
+
+        //    if (from.HasValue)
+        //    {
+        //        placements = placements.Where(x => x.AssignmentDate.Date.Date >= from.Value.Date).ToList();
+        //    }
+        //    if (to.HasValue)
+        //    {
+        //        placements = placements.Where(x =>  x.AssignmentDate.Date <= to.Value.Date).ToList();
+        //    }
+        //    if(isCurrent)
+        //        placements = placements.Where(x => x.isCurrent).ToList();
+
+        //    foreach (var l in placements)
+        //    {
+        //        db = new ExceedDbContext();
+
+        //        EmployeeInfo = new EmployeeRecruitment();
+
+        //        var e = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == l.EmployeeId);
+
+        //        if (e != null)
+        //        {
+        //            EmployeeInfo.EmployeeId = e.EmployeeCode;
+        //            //EmployeeInfo.Sex = e.Gender;
+        //            EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
+        //            EmployeeInfo.FullName = e.FullNameaEnglish;
+        //            //EmployeeInfo.HireDate = e.HiredDate.ToShortDateString();
+        //            EmployeeInfo.HireDate = e.HiredDateAmharic;
+        //        }
+
+
+        //        var fromBranch = db.Branch.FirstOrDefault(x => x.BranchId == l.BranchId);
+        //        if (fromBranch != null)
+        //        {
+        //            if (l.AssignmentType == AssignmentType.TRANSFER)
+        //            {
+        //                EmployeeInfo.FromBranch = fromBranch.AmharicName;
+        //            }
+        //            else
+        //            {
+        //                EmployeeInfo.ToBranch = "--";
+        //            }
+        //        }
+
+
+        //        var branch = db.Branch.FirstOrDefault(x => x.BranchId == l.BranchId);
+        //        if (branch != null)
+        //        {
+        //            EmployeeInfo.Branch = branch.AmharicName;
+        //            if (l.AssignmentType == AssignmentType.TRANSFER)
+        //            {
+        //                EmployeeInfo.ToBranch = branch.AmharicName??branch.Name;
+        //            }
+        //            else
+        //            {
+        //                EmployeeInfo.ToBranch = "--";
+        //            }
+
+        //        }
+        //        var jobTitle = db.Lookups.FirstOrDefault(x => x.LookupId == l.LookupId);
+        //        if (jobTitle != null)
+        //        {
+        //            EmployeeInfo.JobTitle = jobTitle.Description??jobTitle.DescriptionEng;
+        //        }
+
+        //        EmployeeInfo.Salary = l.Salary;
+        //        var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == l.OrgStructureId);
+        //        if (deptt != null)
+        //        {
+        //            EmployeeInfo.Departement = deptt.Name;
+        //        }
+
+        //        EmployeeInfo.AssignmentType = l.AssignmentType.ToString();
+
+        //        EmployeeInfoList.Add(EmployeeInfo);
+        //    }
+
+
+        //    return EmployeeInfoList;
+        //}
 
         public AssignmentType GetAssignemtType(string assignment)
         {
@@ -167,6 +269,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
             return assigne;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

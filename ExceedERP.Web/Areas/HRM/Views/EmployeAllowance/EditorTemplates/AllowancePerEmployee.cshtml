@@ -1,0 +1,72 @@
+﻿@using System.Collections
+@model ExceedERP.Core.Domain.HRM.Allowance.AllowancePerEmployee
+
+
+
+<div class="allowance-popup-container">
+    @Html.HiddenFor(model => model.AllowanceId)
+
+    <!-- Section 1: Target Information -->
+    <div class="allowance-card">
+        <div class="allowance-field">
+            @Html.LabelFor(model => model.EmployeeId, "Employee Selection")
+            @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                        .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                        .OptionLabel("-- Select Employee --")
+                        .Filter("contains")
+                        .ValuePrimitive(true) //
+                        .BindTo((IEnumerable)ViewData["EmployeeList"])
+                        .HtmlAttributes(new { style = "width:100%" })
+            )
+            @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger small" })
+        </div>
+
+        <div class="allowance-field" style="margin-top: 12px;">
+            @Html.LabelFor(model => model.AllowanceDefinationIds, "Allowance Definitions (Multi-Select)")
+            @(Html.Kendo().MultiSelectFor(model => model.AllowanceDefinationIds)
+                        .DataValueField("AllowanceDefinationId")
+                        .DataTextField("AllowanceName")
+                        .Placeholder("Select multiple allowances...")
+                        .Filter("contains")
+                        .ValuePrimitive(true) //
+                        .BindTo((IEnumerable)ViewData["AllowanceList"])
+                        .HtmlAttributes(new { style = "width:100%" })
+            )
+            @Html.ValidationMessageFor(model => model.AllowanceDefinationIds, "", new { @class = "text-danger small" })
+        </div>
+    </div>
+
+    <!-- Section 2: Date and Status Configuration -->
+    <div class="allowance-card">
+        <div class="row" style="display: flex; gap: 15px; margin: 0;">
+            <div class="col-xs-6 allowance-field" style="flex: 1; padding: 0;">
+                @Html.LabelFor(model => model.From, "Valid From")
+                @(Html.Kendo().DatePickerFor(model => model.From).HtmlAttributes(new { style = "width:100%" }))
+                @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger small" })
+            </div>
+            <div class="col-xs-6 allowance-field" style="flex: 1; padding: 0;">
+                @Html.LabelFor(model => model.To, "Valid To")
+                @(Html.Kendo().DatePickerFor(model => model.To).HtmlAttributes(new { style = "width:100%" }))
+                @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger small" })
+            </div>
+        </div>
+
+        <div class="allowance-field" style="margin-top: 15px;">
+            <div class="checkbox-inline-wrapper">
+                @Html.EditorFor(model => model.Pend)
+                <label for="Pend">Pend Status (Temporarily Hold Allowance)</label>
+            </div>
+            @Html.ValidationMessageFor(model => model.Pend, "", new { @class = "text-danger small" })
+        </div>
+    </div>
+
+    <!-- Section 3: Additional Notes -->
+    <div class="allowance-card">
+        <div class="allowance-field">
+            @Html.LabelFor(model => model.Remark, "Remark / Notes")
+            @Html.TextAreaFor(model => model.Remark, new { @class = "form-control", rows = 2, placeholder = "Enter optional remarks..." })
+            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger small" })
+        </div>
+    </div>
+</div>

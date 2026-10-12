@@ -14,5 +14,11 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         [Display(Name = "Include Current Fiscal Year Days")]
         public bool IncludeCurrentFiscalYearDays { get; set; }
 
+        // Some companies pay leave-in-lieu using Basic Salary + a separate Taxable Allowance
+        // (see the "Payment in Lieu of Leave" form). Off by default so existing companies see
+        // no change to the grid or the calculation.
+        [Display(Name = "Enable Taxable Allowance")]
+        public bool EnableTaxableAllowance { get; set; }
+
     }
 }

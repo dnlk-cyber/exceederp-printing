@@ -1,31 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeeExperienceObjectDataSource : List<EmployeeExperience>
+    public class EmployeeExperienceObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeExperience> GetEmployeeExperience(string dept, string branchId, string id, string type, string fromE, string toE, string status)
+        public List<EmployeeExperience> GetEmployeeExperience(string dept, string branchId,string businessUnitId, string id, string type, string fromE, string toE, string status)
         {
             List<Person_Employee> employees = db.Person_Employee.ToList();
-
             var placements = db.Placements.ToList();
-
             if(branchId != null)
             {
                 int.TryParse(branchId, out int braId);
                var placeEmpIds = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).Select(x=>x.EmployeeId).ToList();
+                employees = employees.Where(x=>placeEmpIds.Contains(x.EmployeeId)).ToList();
+            }
+            if (businessUnitId != null)
+            {
+                int.TryParse(businessUnitId, out int bussUnitId);
+               var placeEmpIds = placements.Where(x=>x.BusinessUnitId == bussUnitId).Select(x=>x.EmployeeId).ToList();
                 employees = employees.Where(x=>placeEmpIds.Contains(x.EmployeeId)).ToList();
             }
             if(dept != null)
@@ -51,35 +55,34 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             if (type == "External")
             {
-                return GetExperiences.GetExternalExperience(employees);
+                return GetExternalExperience(employees);
             }
             else if (type == "Internal")
             {
-                return GetExperiences.GetInternalExperience(employees);
+                return GetInternalExperience(employees);
             }
             else
             {
-                return GetExperiences.GetBothExperience(employees);
+                return GetBothExperience(employees);
             }
         }
-    }
-
-    public static class GetExperiences
-    {
-        static ExceedDbContext db = new ExceedDbContext();
-        public static List<EmployeeExperience> GetExternalExperience(List<Person_Employee> employees)
+    
+        
+        public  List<EmployeeExperience> GetExternalExperience(List<Person_Employee> employees)
         {
             List<EmployeeExperience> experienceList = new List<EmployeeExperience>();
 
             foreach (var emp in employees)
             {
-                var experience = new EmployeeExperience();
-                experience.EmployeeExperienceList = new List<EmployeeExperienceList>();
-                experience.EmployeeEducationList = new List<EmployeeEducationList>();
+                var experience = new EmployeeExperience
+                {
+                    EmployeeExperienceList = new List<EmployeeExperienceList>(),
+                    EmployeeEducationList = new List<EmployeeEducationList>(),
 
-                experience.EmployeeId = emp.EmployeeCode;
-                experience.FullName = emp.FullNameaEnglish;
-                experience.Sex = emp.Gender.ToString();
+                    EmployeeId = emp.EmployeeCode,
+                    FullName = emp.FullNameaEnglish,
+                    Sex = HrHelper.GetLocalizedGender(emp.Gender)
+                };
 
                 var department = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
                 if (department != null)
@@ -102,15 +105,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     extExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(exp.From.Day, exp.From.Month, exp.From.Year);
                     extExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(exp.To.Day, exp.To.Month, exp.To.Year);
                     extExp.Responsibility = exp.Responsibility;
-                    extExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(exp.To.Date.Subtract(exp.From.Date).Days));
-
-                    totalExperience = totalExperience + (exp.To - exp.From).Days;
-
+                    extExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(exp.To.Date.Subtract(exp.From.Date).Days));
+                    totalExperience =(exp.To - exp.From).Days;
+                    extExp.TotalExperince = (exp.To - exp.From).Days; ;
                     experience.EmployeeExperienceList.Add(extExp);
                 }
 
-                experience.TotalExp = EmployeeHelper.GetDaystoWordsAmharic(totalExperience);
-
+                //experience.TotalExp = EmployeeHelper.GetDaystoWords(totalExperience);
                 var educations = db.Education.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
                 foreach (var edu in educations)
                 {
@@ -139,26 +140,28 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     experience.EmployeeEducationList.Add(education);
                 }
+                experience.TotalExpreince = experience.EmployeeExperienceList.Sum(x => x.TotalExperince);
+                experience.TotalExp = EmployeeHelper.GetDaystoWords(experience.TotalExpreince);
                 experienceList.Add(experience);
+
             }
 
             return experienceList;
         }
 
-        public static List<EmployeeExperience> GetInternalExperience(List<Person_Employee> employees)
+        public  List<EmployeeExperience> GetInternalExperience(List<Person_Employee> employees)
         {
             List<EmployeeExperience> experienceList = new List<EmployeeExperience>();
-
-
+            var allLookups = db.Lookups.ToList();
+            string GetResponsibility(int? lookupId) => allLookups.FirstOrDefault(x => x.LookupId == lookupId)?.Description;
             foreach (var emp in employees)
             {
+               
                 var experience = new EmployeeExperience();
                 experience.EmployeeExperienceList = new List<EmployeeExperienceList>();
-
                 experience.EmployeeId = emp.EmployeeCode;
                 experience.FullName = emp.FullNameaEnglish;
-                experience.Sex = emp.Gender.ToString();
-
+                experience.Sex = HrHelper.GetLocalizedGender(emp.Gender);
                 var department = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
                 if (department != null)
                 {
@@ -168,23 +171,25 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         experience.Departement = org.Name;
                     }
                 }
-
                 // this placement history is the experience before they begin using the system
                 var placementHistories = db.PlacementHistories.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
-
                 double totalExperience = 0;
-
                 foreach (var place in placementHistories)
                 {
-                    var intExp = new EmployeeExperienceList();
 
+                    var intExp = new EmployeeExperienceList();
+                    intExp.Responsibility = place.JobTitle;
+                    var jobtitle = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId );
+                    if (jobtitle != null)
+                    {
+                        intExp.Responsibility = GetResponsibility(place.LookupId) ?? place.JobTitle;
+
+                    }
                     intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(place.From.Day, place.From.Month, place.From.Year);
                     intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(place.To.Day, place.To.Month, place.To.Year);
-                    intExp.Responsibility = place.JobTitle;
-                    intExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
-
+                    intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
                     totalExperience = totalExperience + (place.To - place.From).Days;
-
+                    intExp.TotalExperince = totalExperience;
                     experience.EmployeeExperienceList.Add(intExp);
                 }
 
@@ -201,7 +206,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (placements[i].isCurrent)
                     {
-                        intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i].AssignmentDate.Day, placements[i].AssignmentDate.Month, placements[i].AssignmentDate.Year);
+                        intExp.From =  placements[i].AssignmentDateAmharic;
                         intExp.To = "Present";
 
                         from = placements[i].AssignmentDate;
@@ -209,28 +214,25 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     }
                     else if (i < placements.Count - 1)
                     {
-                        intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i].AssignmentDate.Day, placements[i].AssignmentDate.Month, placements[i].AssignmentDate.Year);
-                        intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i + 1].AssignmentDate.Day, placements[i + 1].AssignmentDate.Month, placements[i + 1].AssignmentDate.Year);
+                        intExp.From = placements[i].AssignmentDateAmharic;
+                        intExp.To = placements[i + 1].AssignmentDateAmharic;
 
                         from = placements[i].AssignmentDate;
                         to = placements[i + 1].AssignmentDate;
                     }
                     int lookUpId = placements[i].LookupId;
-                    var job = db.Lookups.FirstOrDefault(x => x.LookupId == lookUpId && x.LookupType == LookUpTypes.JOB_TITLE);
+                    var job = db.Lookups.Find(lookUpId);
                     if (job != null)
                     {
                         intExp.Responsibility = job.Description;
                     }
+                    intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(to.Subtract(from).Days));
 
-                    intExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(to.Subtract(from).Days));
-
-                    totalExperience = totalExperience + (to - from).Days;                    
-
+                    totalExperience = totalExperience + (to - from).Days;
+                    intExp.TotalExperince = totalExperience;
                     experience.EmployeeExperienceList.Add(intExp);
                 }
-
-                experience.TotalExp = EmployeeHelper.GetDaystoWordsAmharic(totalExperience);
-
+                experience.TotalExp = EmployeeHelper.GetDaystoWords(totalExperience);
                 var educations = db.Education.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
                 foreach (var edu in educations)
                 {
@@ -259,135 +261,128 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     experience.EmployeeEducationList.Add(education);
                 }
-
                 experienceList.Add(experience);
             }
 
             return experienceList;
         }
-
-        public static List<EmployeeExperience> GetBothExperience(List<Person_Employee> employees)
+        public List<EmployeeExperience> GetBothExperience(List<Person_Employee> employees)
         {
             List<EmployeeExperience> experienceList = new List<EmployeeExperience>();
 
+            // Preload data to reduce repetitive DB calls
+            var employeeIds = employees.Select(e => e.EmployeeId).ToList();
 
+            var allPlacements = db.Placements.Where(x => employeeIds.Contains(x.EmployeeId)).OrderBy(x => x.AssignmentDate).ToList();
+            var allHistories = db.PlacementHistories.Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
+            var allExperiences = db.Experiences.Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
+            var allEducations = db.Education.Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
+            var allLookups = db.Lookups.ToList();
+            var allOrgs = db.MainCompanyStructures.ToList();
+            string GetEthDate(DateTime date) => XAPI.EthiopicDateTime.GetEthiopicDate(date.Day, date.Month, date.Year);
+            string GetResponsibility(int? lookupId) => allLookups.FirstOrDefault(x => x.LookupId == lookupId)?.Description;
             foreach (var emp in employees)
             {
-                var experience = new EmployeeExperience();
-                experience.EmployeeExperienceList = new List<EmployeeExperienceList>();
-
-                experience.EmployeeId = emp.EmployeeCode;
-                experience.FullName = emp.FullNameaEnglish;
-                experience.Sex = emp.Gender.ToString();
-
-                var department = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
-                if (department != null)
+                var experience = new EmployeeExperience
                 {
-                    var org = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == department.OrgStructureId);
-                    if (org != null)
-                    {
-                        experience.Departement = org.Name;
-                    }
+                    EmployeeId = emp.EmployeeCode,
+                    FullName = emp.FullNameaEnglish,
+                    Sex = HrHelper.GetLocalizedGender(emp.Gender),
+                    EmployeeExperienceList = new List<EmployeeExperienceList>(),
+                    EmployeeEducationList = new List<EmployeeEducationList>()
+                };
+
+                // Department info
+                var currentPlacement = allPlacements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
+                if (currentPlacement != null)
+                {
+                    experience.Departement = allOrgs.FirstOrDefault(x => x.OrgStructureId == currentPlacement.OrgStructureId)?.Name;
                 }
 
                 // External Experience
-                var experiences = db.Experiences.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
-
-                foreach (var exp in experiences)
+                foreach (var ext in allExperiences.Where(x => x.EmployeeId == emp.EmployeeId))
                 {
-                    var extExp = new EmployeeExperienceList();
-
-                    extExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(exp.From.Day, exp.From.Month, exp.From.Year);
-                    extExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(exp.To.Day, exp.To.Month, exp.To.Year);
-                    extExp.Responsibility = exp.Responsibility;
-                    extExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(exp.To.Date.Subtract(exp.From.Date).Days));
-
-                    experience.EmployeeExperienceList.Add(extExp);
+                    experience.EmployeeExperienceList.Add(new EmployeeExperienceList
+                    {
+                        From = GetEthDate(ext.From),
+                        To = GetEthDate(ext.To),
+                        Responsibility = GetResponsibility(ext.JobTitleId) ?? ext.Responsibility,
+                        Totalyear = EmployeeHelper.GetDaystoWords((ext.To - ext.From).TotalDays),
+                        TotalExperince = (ext.To - ext.From).Days
+                    });
+                }
+                // Internal Experience (Placement History)
+                foreach (var hist in allHistories.Where(x => x.EmployeeId == emp.EmployeeId))
+                {
+                    var from = hist.From;
+                    var to = hist.To;
+                    experience.EmployeeExperienceList.Add(new EmployeeExperienceList
+                    {
+                        From = GetEthDate(from),
+                        To = GetEthDate(to),
+                        Responsibility = GetResponsibility(hist.LookupId) ?? hist.JobTitle,
+                        Totalyear = EmployeeHelper.GetDaystoWords((to - from).TotalDays),
+                        TotalExperince = (to - from).Days
+                    });
                 }
 
-
-                // this placement history is the experience before they begin using the system
-                var placementHistories = db.PlacementHistories.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
-
-                foreach (var place in placementHistories)
+                // Internal Experience (Placements after system use)
+                var placements = allPlacements.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
+                for (int i = 0; i < placements.Count; i++)
                 {
-                    var intExp = new EmployeeExperienceList();
-
-                    intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(place.From.Day, place.From.Month, place.From.Year);
-                    intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(place.To.Day, place.To.Month, place.To.Year);
-                    intExp.Responsibility = place.JobTitle;
-                    intExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
-
-                    experience.EmployeeExperienceList.Add(intExp);
-                }
-
-                //this is after they begin using the system
-                var placements = db.Placements.Where(x => x.EmployeeId == emp.EmployeeId).OrderBy(x => x.AssignmentDate).ToList();
-
-                for (int i = 0; i < placements.Count(); i++)
-                {
-                    var intExp = new EmployeeExperienceList();
-
-                    // this date is used for calculate experience
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
-
+                    var from = placements[i].AssignmentDate;
+                    DateTime to;
+                    string toStr;
                     if (placements[i].isCurrent)
                     {
-                        intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i].AssignmentDate.Day, placements[i].AssignmentDate.Month, placements[i].AssignmentDate.Year);
-                        intExp.To = "Present";
-
-                        from = placements[i].AssignmentDate;
                         to = DateTime.Now;
+                        toStr = "Present";
                     }
                     else if (i < placements.Count - 1)
                     {
-                        intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i].AssignmentDate.Day, placements[i].AssignmentDate.Month, placements[i].AssignmentDate.Year);
-                        intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i + 1].AssignmentDate.Day, placements[i + 1].AssignmentDate.Month, placements[i + 1].AssignmentDate.Year);
-
-                        from = placements[i].AssignmentDate;
                         to = placements[i + 1].AssignmentDate;
+                        toStr = GetEthDate(to);
                     }
-                    int lookUpId = placements[i].LookupId;
-                    var job = db.Lookups.FirstOrDefault(x => x.LookupId == lookUpId && x.LookupType == LookUpTypes.JOB_TITLE);
-                    if (job != null)
+                    else continue;
+
+                    experience.EmployeeExperienceList.Add(new EmployeeExperienceList
                     {
-                        intExp.Responsibility = job.Description;
-                    }
-
-                    intExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(to.Subtract(from).Days));
-
-                    experience.EmployeeExperienceList.Add(intExp);
+                        From = GetEthDate(from),
+                        To = toStr,
+                        Responsibility = GetResponsibility(placements[i].LookupId)?? placements[i].JobTitleName,
+                        Totalyear = EmployeeHelper.GetDaystoWords((to - from).TotalDays),
+                        TotalExperince = (to - from).Days
+                    });
                 }
 
-                var educations = db.Education.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
-                foreach (var edu in educations)
+                // Education Info
+                foreach (var edu in allEducations.Where(x => x.EmployeeId == emp.EmployeeId))
                 {
-                    var education = new EmployeeEducationList();
-
-                    if (edu.From != null)
+                    var eduList = new EmployeeEducationList
                     {
-                        education.From = XAPI.EthiopicDateTime.GetEthiopicDate(edu.From.Value.Day, edu.From.Value.Month, edu.From.Value.Year);
-                    }
-                    if (edu.To != null)
-                    {
-                        education.To = XAPI.EthiopicDateTime.GetEthiopicDate(edu.To.Day, edu.To.Month, edu.To.Year);
-                    }
-
-                    var level = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EduLevel);
-                    if (level != null)
-                    {
-                        education.Level = level.Description;
-                    }
-
-                    var field = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EduField);
-                    if (field != null)
-                    {
-                        education.Department = field.Description;
-                    }
-
-                    experience.EmployeeEducationList.Add(education);
+                        From = edu.From.HasValue ? GetEthDate(edu.From.Value) : null,
+                        To = GetEthDate(edu.To),
+                        Level = GetResponsibility(edu.EduLevel),
+                        Department = GetResponsibility(edu.EduField)
+                    };
+                    experience.EmployeeEducationList.Add(eduList);
                 }
+
+                // Total experience
+                double internalExpDays = emp.HiredDate != null ? DateTime.Now.Subtract(emp.HiredDate).TotalDays : 0;
+
+                foreach (var hist in allHistories.Where(x => x.EmployeeId == emp.EmployeeId))
+                {
+                    internalExpDays += (hist.To - hist.From).TotalDays;
+                }
+
+                double externalExpDays = allExperiences
+                    .Where(x => x.EmployeeId == emp.EmployeeId)
+                    .Sum(x => (x.To - x.From).TotalDays);
+
+                experience.TotalExpreince = experience.EmployeeExperienceList.Sum(x => x.TotalExperince);
+                //experience.TotalExp = EmployeeHelper.GetDaystoWords(internalExpDays + externalExpDays);
+                experience.TotalExp = EmployeeHelper.GetDaystoWords(experience.TotalExpreince);
 
                 experienceList.Add(experience);
             }
@@ -395,5 +390,158 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return experienceList;
         }
 
+
+        //public  List<EmployeeExperience> GetBothExperience(List<Person_Employee> employees)
+        //{
+        //    List<EmployeeExperience> experienceList = new List<EmployeeExperience>();
+
+
+        //    foreach (var emp in employees)
+        //    {
+        //        var experience = new EmployeeExperience();
+        //        experience.EmployeeExperienceList = new List<EmployeeExperienceList>();
+
+        //        experience.EmployeeId = emp.EmployeeCode;
+        //        experience.FullName = emp.FullNameaEnglish;
+        //        experience.Sex = HrHelper.GetLocalizedGender(emp.Gender);
+
+        //        var department = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
+        //        if (department != null)
+        //        {
+        //            var org = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == department.OrgStructureId);
+        //            if (org != null)
+        //            {
+        //                experience.Departement = org.Name;
+        //            }
+        //        }
+
+        //        // External Experience
+        //        var experiences = db.Experiences.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
+
+        //        foreach (var exp in experiences)
+        //        {
+        //            var extExp = new EmployeeExperienceList();
+
+        //            extExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(exp.From.Day, exp.From.Month, exp.From.Year);
+        //            extExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(exp.To.Day, exp.To.Month, exp.To.Year);
+        //            extExp.Responsibility = exp.Responsibility;
+        //            extExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(exp.To.Date.Subtract(exp.From.Date).Days));
+        //            extExp.TotalExperince = exp.To.Date.Subtract(exp.From.Date).Days;
+        //            experience.EmployeeExperienceList.Add(extExp);
+        //        }
+        //        // this placement history is the experience before they begin using the system
+        //        var placementHistories = db.PlacementHistories.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
+
+        //        foreach (var place in placementHistories)
+        //        {
+
+        //            var intExp = new EmployeeExperienceList();
+        //            intExp.Responsibility = place.JobTitle;
+        //            var jobtitle = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
+        //            if(jobtitle != null)
+        //            {
+        //                intExp.Responsibility = jobtitle.Description;
+
+        //            }
+
+        //            intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(place.From.Day, place.From.Month, place.From.Year);
+        //            intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(place.To.Day, place.To.Month, place.To.Year);
+        //            intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
+        //            intExp.TotalExperince = place.To.Date.Subtract(place.From.Date).Days;
+        //            experience.EmployeeExperienceList.Add(intExp);
+        //        }
+        //        //this is after they begin using the system
+        //        var placements = db.Placements.Where(x => x.EmployeeId == emp.EmployeeId).OrderBy(x => x.AssignmentDate).ToList();
+
+        //        for (int i = 0; i < placements.Count(); i++)
+        //        {
+        //            var intExp = new EmployeeExperienceList();
+
+        //            // this date is used for calculate experience
+        //            DateTime from = DateTime.Now;
+        //            DateTime to = DateTime.Now;
+
+        //            if (placements[i].isCurrent)
+        //            {
+        //                intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i].AssignmentDate.Day, placements[i].AssignmentDate.Month, placements[i].AssignmentDate.Year);
+        //                intExp.To = "Present";
+
+        //                from = placements[i].AssignmentDate;
+        //                to = DateTime.Now;
+        //            }
+        //            else if (i < placements.Count - 1)
+        //            {
+        //                intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i].AssignmentDate.Day, placements[i].AssignmentDate.Month, placements[i].AssignmentDate.Year);
+        //                intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(placements[i + 1].AssignmentDate.Day, placements[i + 1].AssignmentDate.Month, placements[i + 1].AssignmentDate.Year);
+
+        //                from = placements[i].AssignmentDate;
+        //                to = placements[i + 1].AssignmentDate;
+        //            }
+        //            int lookUpId = placements[i].LookupId;
+        //            var job = db.Lookups.FirstOrDefault(x => x.LookupId == lookUpId && x.LookupType == LookUpTypes.JOB_TITLE);
+        //            if (job != null)
+        //            {
+        //                intExp.Responsibility = job.Description;
+        //            }
+
+        //            intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(to.Subtract(from).Days));
+        //            intExp.TotalExperince = to.Date.Subtract(from.Date).Days;
+
+        //            experience.EmployeeExperienceList.Add(intExp);
+        //        }
+
+        //        var educations = db.Education.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
+        //        foreach (var edu in educations)
+        //        {
+        //            var education = new EmployeeEducationList();
+
+        //            if (edu.From != null)
+        //            {
+        //                education.From = XAPI.EthiopicDateTime.GetEthiopicDate(edu.From.Value.Day, edu.From.Value.Month, edu.From.Value.Year);
+        //            }
+        //            if (edu.To != null)
+        //            {
+        //                education.To = XAPI.EthiopicDateTime.GetEthiopicDate(edu.To.Day, edu.To.Month, edu.To.Year);
+        //            }
+
+        //            var level = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EduLevel);
+        //            if (level != null)
+        //            {
+        //                education.Level = level.Description;
+        //            }
+
+        //            var field = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EduField);
+        //            if (field != null)
+        //            {
+        //                education.Department = field.Description;
+        //            }
+
+        //            experience.EmployeeEducationList.Add(education);
+        //        }
+
+        //        experience.TotalExpreince = experience.EmployeeExperienceList.Sum(x => x.TotalExperince);
+        //        double totalInternalDays = DateTime.Now.Subtract(emp.HiredDate).TotalDays;
+        //        foreach (var ex in placementHistories)
+        //        {
+        //            totalInternalDays += ex.To.Subtract(ex.From).Days;
+        //        }
+        //        var empExtExps = db.Experiences.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
+        //        double externalExp = 0;
+        //        foreach (var ex in empExtExps)
+        //        {
+        //            externalExp = externalExp + (ex.To - ex.From).Days;
+        //        }
+
+        //        //experience.TotalExp = EmployeeHelper.GetDaystoWords(experience.TotalExpreince);
+        //        experience.TotalExp = EmployeeHelper.GetDaystoWords(externalExp+ totalInternalDays);
+        //        experienceList.Add(experience);
+        //    }
+
+        //    return experienceList;
+        //}
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 }

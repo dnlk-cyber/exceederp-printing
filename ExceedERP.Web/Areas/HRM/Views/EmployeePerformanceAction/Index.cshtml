@@ -1,5 +1,12 @@
 ﻿@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
 
+<div class="epa-page-header">
+    <i class="fa fa-tasks"></i>
+    <legend>@Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction</legend>
+</div>
+
+<div class="epa-grid-wrapper">
 @(Html.Kendo().Grid<EmployeePerformanceAction>()
       .Name("grid")
       .Columns(columns =>
@@ -17,3 +24,53 @@
           .Read(read => read.Action("EmployeePerformanceAction_Read", "EmployeePerformanceAction").Data("sendForgery"))
       )
 )
+</div>
+
+<style>
+    .epa-page-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+        .epa-page-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .epa-page-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .epa-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #grid.k-grid {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #grid.k-grid .k-grid-header {
+            background-color: #f9fafb;
+        }
+
+        #grid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        #grid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #grid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+</style>

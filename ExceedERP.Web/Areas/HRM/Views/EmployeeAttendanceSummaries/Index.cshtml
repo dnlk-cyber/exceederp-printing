@@ -1,0 +1,698 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Attendance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
+
+<div class="attendance-summary-page-container">
+    <span id="attendanceNotification"></span>
+
+    <div class="erp-header-card">
+        <div class="erp-header-left">
+            <h2 class="erp-page-title">
+                <i class="fa fa-calendar-check-o text-primary"></i>
+                @Resources.Attendance
+            </h2>
+            <span class="summary-status-pill">
+                <i class="fa fa-file-text-o text-primary"></i> Monthly Attendance Summary &amp; Payroll Integrations
+            </span>
+        </div>
+        <div class="erp-header-right">
+            <span class="erp-mode-pill">
+                Calendar Mode: <strong>@(useEthiopian ? "Ethiopic (E.C.)" : "Gregorian (G.C.)")</strong>
+            </span>
+        </div>
+    </div>
+
+    @(Html.Kendo().Grid<EmployeeAttendanceSummary>()
+                  .Name("EmployeeAttendanceSummarygrid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.EmployeeAttendanceSummaryId).Title("#").Width(90);
+                      columns.Bound(c => c.EmployeeCode).Title("Emp Code").Width(150);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameEnglish")
+                             .Title("Employee Name")
+                             .EditorTemplateName("ActiveEmployees")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(200);
+                      columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name")
+                             .Title("Branch")
+                             .EditorTemplateName("BranchSelector")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(160);
+                      columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name")
+                             .Title("Work Unit")
+                             .EditorTemplateName("Department")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(160);
+                      columns.Bound(c => c.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(150);
+                      columns.Bound(c => c.Day).Title("Day").Width(120);
+                      columns.Bound(c => c.CheckInTime).Title("In").Width(110)
+                             .ClientTemplate("#= attTime(CheckInTime) #")
+                             .HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.CheckOutTime).Title("Out").Width(110)
+                             .ClientTemplate("#= attTime(CheckOutTime) #")
+                             .HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.Absent).Title("Absent (Days)").Width(130)
+                             .ClientTemplate("#= attAbsent(Absent) #")
+                             .HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.Leave).Title("Leave (Days)").Width(130)
+                             .ClientTemplate("#= attLeave(Leave) #")
+                             .HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.LateComing).Title("Late (Days)").Width(130)
+                             .ClientTemplate("#= attLate(LateComing) #")
+                             .HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.TotalHrs).Title("Total Hrs").Width(130).HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.TotalDays).Title("Worked Days").Width(130).HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.OvertimeHours).Title("OT (Hrs)").Width(130).HtmlAttributes(new { style = "text-align:center;" });
+                      columns.Bound(c => c.OvertimeDays).Title("OT (Days)").Width(130).HtmlAttributes(new { style = "text-align:center;" });
+
+                      columns.Command(command =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Attendance_User") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }
+                      }).Title("Actions").Width(250);
+                  })
+                 .ToolBar(toolbar =>
+                 {
+                     toolbar.Template(@<text>
+                        <div class="attendance-summary-toolbar">
+                            <div class="toolbar-controls-left">
+                                <div class="filter-field-shell">
+                                    <span class="field-prefix-icon"><i class="fa fa-calendar text-muted"></i></span>
+                                    <label class="toolbar-label" for="Period">Period:</label>
+                                    @(Html.Kendo().ComboBox()
+                                                  .Placeholder(Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId)
+                                                  .Name("Period")
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                                         dataSource.Read(read => read.Action("GetCurrentYearPeriods", "EmployeeAttendanceSummaries", new { area = "HRM" }).Data("sendForgery"))
+                                                                                   .ServerFiltering(false);
+                                                                     })
+                                                  .DataTextField("Name")
+                                                  .DataValueField("GLPeriodId")
+                                                  .AutoBind(false)
+                                                  .HtmlAttributes(new { style = "width: 155px;" })
+                                    )
+                                </div>
+
+                                <div class="filter-field-shell">
+                                    <span class="field-prefix-icon"><i class="fa fa-building text-muted"></i></span>
+                                    <label class="toolbar-label" for="BranchName">Branch:</label>
+                                    @(Html.Kendo().ComboBox()
+                                                  .Placeholder("Filter by Branch")
+                                                  .Name("BranchName")
+                                                  .BindTo((IEnumerable)ViewData["branches"])
+                                                  .DataTextField("Name")
+                                                  .DataValueField("BranchId")
+                                                  .Events(x => x.Change("Branch"))
+                                                  .AutoBind(false)
+                                                  .HtmlAttributes(new { style = "width: 170px;" })
+                                    )
+                                </div>
+
+                                <div class="date-picker-shell">
+                                    <label class="toolbar-label" for="FromDate">From:</label>
+                                    @if (useEthiopian)
+                                                {
+                                    <div class="ethiopian-picker-wrap">
+                                        @Html.TextBox("FromDate", "", new { disabled = "disabled", @class = "et-popup-picker inline-picker-input" })<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                                    </div>
+
+                                    }
+                                    else
+                                    {
+                                        @(Html.Kendo().DatePicker()
+                                                      .Name("FromDateGorg")
+                                                      .HtmlAttributes(new { @class = "gorg-picker-input" })
+                                        )
+
+                                    }
+                                    
+                                </div>
+
+                                <div class="date-picker-shell">
+                                    <label class="toolbar-label" for="ToDate">To:</label>
+                                    @if (useEthiopian)
+                                                {
+                                    <div class="ethiopian-picker-wrap">
+                                        @Html.TextBox("ToDate", "", new { disabled = "disabled", @class = "et-popup-picker inline-picker-input" })<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                                    </div>
+                                                }
+                                                else
+                                                {
+                                        @(Html.Kendo().DatePicker()
+                                                      .Name("ToDateGorg")
+                                                      .HtmlAttributes(new { @class = "gorg-picker-input" })
+                                        )
+                                                }
+                                   
+                                </div>
+                            </div>
+
+                            <div class="toolbar-controls-right">
+                                @(Html.Kendo().Button()
+                                              .Name("btnRefresh")
+                                              .HtmlAttributes(new { type = "button", @class = "btn-erp-action btn-generate", title = "Import Biometric Summary" })
+                                              .Events(e => e.Click("generateAttendanceSummary"))
+                                              .Content("<i class='fa fa-refresh'></i> Generate Attendance"))
+
+                                @(Html.Kendo().Button()
+                                              .Name("btnAttendanceSummary")
+                                              .HtmlAttributes(new { type = "button", @class = "btn-erp-action btn-payroll-summary", title = "Calculate & Sync Monthly Payroll Days" })
+                                              .Events(e => e.Click("monthlyAttendanceSummary"))
+                                              .Content("<i class='fa fa-calculator'></i> " + Resources.NavigatorPayrollReport_PayrollSummary))
+                            </div>
+                        </div>
+                    </text>);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(520))
+                        .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+                        .Filterable()
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(new int[] { 10, 20, 30, 50, 100 })
+                            .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Sort(x => x.Add(s => s.EmployeeAttendanceSummaryId).Descending())
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"EmployeeAttendanceSummarygrid\")");
+                                events.RequestStart("onRequestStart(\"EmployeeAttendanceSummarygrid\")");
+                                events.RequestEnd("onRequestEnd(\"EmployeeAttendanceSummarygrid\")");
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.EmployeeAttendanceSummaryId);
+                                model.Field(p => p.EmployeeAttendanceSummaryId).Editable(false);
+                                model.Field(p => p.Day).Editable(false);
+                            })
+                            .Read(read => read.Action("EmployeeAttendanceSummaries_Read", "EmployeeAttendanceSummaries").Data("sendForgery"))
+                            .Create(create => create.Action("EmployeeAttendanceSummaries_Create", "EmployeeAttendanceSummaries").Data("sendForgery"))
+                            .Update(update => update.Action("EmployeeAttendanceSummaries_Update", "EmployeeAttendanceSummaries").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("EmployeeAttendanceSummaries_Destroy", "EmployeeAttendanceSummaries").Data("sendForgery"))
+                        )
+                        .ClientDetailTemplateId("EmployeeAttendanceSummaryTemplate")
+    )
+</div>
+
+<script id="EmployeeAttendanceSummaryTemplate" type="text/kendo-tmpl">
+    <div class="nested-summary-wrapper">
+        @(Html.Kendo().TabStrip()
+                      .Name("tabstrip_#=EmployeeAttendanceSummaryId#")
+                      .SelectedIndex(0)
+                      .Items(items =>
+                      {
+                          items.Add().Text(Resources.Details).Content(
+                            @<text>
+                                <div class="summary-status-panel">
+                                    <table class="status-summary-table">
+                                        <tr>
+                                            <td>
+                                                <div class="employee-meta-list">
+                                                    <ul>
+                                                        <li><label>Created By:</label> <span>#= attText(CreatedBy) #</span></li>
+                                                        <li><label>Created Date:</label> <span>#= attDateTime(DateCreated) #</span></li>
+                                                        <li><label>Modified By:</label> <span>#= attText(ModifiedBy) #</span></li>
+                                                        <li><label>Last Modified:</label> <span>#= attDateTime(LastModified) #</span></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </text>);
+                          }).ToClientTemplate())
+    </div>
+</script>
+
+<script>
+    $(function () {
+        if (kendo.ui.Notification) {
+            $("#attendanceNotification").kendoNotification({
+                position: { pinned: true, top: 80, right: 30 },
+                autoHideAfter: 6000,
+                stacking: "down"
+            });
+        }
+    });
+
+    function attText(value) {
+        return value ? value : "-";
+    }
+
+    function attTime(value) {
+        return value ? kendo.toString(value, "HH:mm") : "-";
+    }
+
+    function attDateTime(value) {
+        return value ? kendo.toString(value, "yyyy-MM-dd HH:mm") : "-";
+    }
+
+    function attBadge(value, cssClass) {
+        if (!(value > 0)) {
+            return '<span class="att-muted">-</span>';
+        }
+        return '<span class="att-badge ' + cssClass + '">' + kendo.toString(value, "n2") + '</span>';
+    }
+
+    function attAbsent(value) { return attBadge(value, "att-badge-danger"); }
+    function attLeave(value) { return attBadge(value, "att-badge-info"); }
+    function attLate(value) { return attBadge(value, "att-badge-warning"); }
+
+    function notify(message, type) {
+        var widget = $("#attendanceNotification").data("kendoNotification");
+        if (widget) {
+            widget.show(message, type || "info");
+        } else {
+            alert(message);
+        }
+    }
+
+    function sync_handler(e) {
+        this.read();
+    }
+
+    function Branch() {
+        var value = this.value(),
+            grid = $("#EmployeeAttendanceSummarygrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "BranchId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+
+    function generateAttendanceSummary() {
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+        var fromDateGorg = $("#FromDateGorg").val();
+        var toDateGorg = $("#ToDateGorg").val();
+
+        if ((!fromDate && !toDate) && (!fromDateGorg && !toDateGorg)) {
+            notify("Please select both From and To dates together.", "warning");
+            return;
+        }
+
+        $('#loading-image').show();
+
+        $.ajax({
+            url: '@Url.Action("ImportBioAttendanceDailyAsync", "EmployeeAttendanceSummaries")',
+            type: 'POST',
+            data: {
+                from: fromDate,
+                to: toDate,
+                fromGorg: fromDateGorg,
+                toGorg: toDateGorg
+            },
+            cache: false,
+            success: function (result) {
+                $('#loading-image').hide();
+                notify(result.message, result.success ? "success" : "error");
+
+                if (result.success) {
+                    var grid = $("#EmployeeAttendanceSummarygrid").data("kendoGrid");
+                    if (grid) {
+                        grid.dataSource.read();
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                $('#loading-image').hide();
+                notify("An unexpected error occurred: " + error, "error");
+            }
+        });
+    }
+
+    function monthlyAttendanceSummary() {
+        var period = $("#Period").data("kendoComboBox")?.value();
+
+        if (!period) {
+            notify("Please select a period first.", "warning");
+            return;
+        }
+
+        var branch = $("#BranchName").data("kendoComboBox")?.value();
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+        var fromDateGorg = $("#FromDateGorg").val();
+        var toDateGorg = $("#ToDateGorg").val();
+
+        if ((!fromDate && !toDate) && (!fromDateGorg && !toDateGorg)) {
+            notify("Please select both From and To dates together.", "warning");
+            return;
+        }
+
+        var btn = $("#btnAttendanceSummary");
+        btn.prop("disabled", true);
+        $('#loading-image').show();
+
+        $.ajax({
+            url: '@Url.Action("AttendanceMonthlySummary", "EmployeeAttendanceSummaries")',
+            type: 'POST',
+            data: {
+                period: period,
+                branchId: branch,
+                from: fromDate,
+                to: toDate,
+                fromGorg: fromDateGorg,
+                toGorg: toDateGorg
+            },
+            success: function (result) {
+                notify(result.message, result.success ? "success" : "error");
+                if (result.success) {
+                    $("#EmployeeAttendanceSummarygrid").data("kendoGrid")?.dataSource.read();
+                }
+            },
+            error: function () {
+                notify("Failed to generate monthly payroll attendance summary.", "error");
+            },
+            complete: function () {
+                $('#loading-image').hide();
+                btn.prop("disabled", false);
+            }
+        });
+    }
+</script>
+
+<style>
+    .attendance-summary-page-container {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: #1e293b;
+        margin-top: 10px;
+    }
+
+        /* Master Card Header */
+        .attendance-summary-page-container .erp-header-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 14px 20px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .attendance-summary-page-container .erp-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .attendance-summary-page-container .erp-page-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attendance-summary-page-container .summary-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #bfdbfe;
+        }
+
+        .attendance-summary-page-container .erp-mode-pill {
+            font-size: 12px;
+            color: #475569;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* Master Toolbar Layout */
+        .attendance-summary-page-container .k-grid-toolbar {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            padding: 10px 14px !important;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .attendance-summary-page-container .attendance-summary-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .attendance-summary-page-container .toolbar-controls-left,
+        .attendance-summary-page-container .toolbar-controls-right {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Filter Controls Shells */
+        .attendance-summary-page-container .filter-field-shell {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px 8px;
+        }
+
+        .attendance-summary-page-container .field-prefix-icon {
+            font-size: 12px;
+        }
+
+        .attendance-summary-page-container .date-picker-shell {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 3px 8px;
+        }
+
+        .attendance-summary-page-container .toolbar-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            margin: 0;
+        }
+
+        .attendance-summary-page-container .ethiopian-picker-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .attendance-summary-page-container .inline-picker-input {
+            width: 110px !important;
+            height: 28px !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #ffffff !important;
+            padding: 2px 8px !important;
+            border-radius: 4px !important;
+            font-weight: 600;
+            color: #0f172a !important;
+            font-size: 12px;
+        }
+
+        .attendance-summary-page-container .picker-addon-btn {
+            height: 28px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border-color: #cbd5e1;
+        }
+
+        .attendance-summary-page-container .gorg-picker-input {
+            width: 130px !important;
+            height: 28px !important;
+            font-size: 12px !important;
+        }
+
+        /* Professional Action Buttons */
+        .attendance-summary-page-container .btn-erp-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none !important;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .attendance-summary-page-container .btn-generate {
+            background-color: #0284c7 !important;
+            color: #ffffff !important;
+            border-color: #0369a1 !important;
+        }
+
+            .attendance-summary-page-container .btn-generate:hover {
+                background-color: #0369a1 !important;
+            }
+
+        .attendance-summary-page-container .btn-payroll-summary {
+            background-color: #059669 !important;
+            color: #ffffff !important;
+            border-color: #047857 !important;
+        }
+
+            .attendance-summary-page-container .btn-payroll-summary:hover {
+                background-color: #047857 !important;
+            }
+
+        /* Master Grid Frame & High-Contrast Header */
+        .attendance-summary-page-container #EmployeeAttendanceSummarygrid {
+            border-radius: 8px !important;
+            border: 1px solid #cbd5e1 !important;
+            font-size: 12.5px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+            .attendance-summary-page-container #EmployeeAttendanceSummarygrid .k-grid-header {
+                background-color: #e2e8f0 !important;
+                border-bottom: 2px solid #cbd5e1 !important;
+            }
+
+                .attendance-summary-page-container #EmployeeAttendanceSummarygrid .k-grid-header th.k-header {
+                    background-color: #e2e8f0 !important;
+                    padding: 7px 10px !important;
+                    border-color: #cbd5e1 !important;
+                    vertical-align: middle !important;
+                }
+
+                    .attendance-summary-page-container #EmployeeAttendanceSummarygrid .k-grid-header th.k-header,
+                    .attendance-summary-page-container #EmployeeAttendanceSummarygrid .k-grid-header th.k-header .k-link {
+                        color: #0f172a !important;
+                        font-weight: 800 !important;
+                        font-size: 12px !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 0.6px !important;
+                        line-height: 1.4 !important;
+                    }
+
+                        .attendance-summary-page-container #EmployeeAttendanceSummarygrid .k-grid-header th.k-header .k-grid-filter {
+                            color: #334155 !important;
+                            opacity: 0.85 !important;
+                        }
+
+                            .attendance-summary-page-container #EmployeeAttendanceSummarygrid .k-grid-header th.k-header .k-grid-filter:hover {
+                                color: #0284c7 !important;
+                                opacity: 1 !important;
+                            }
+
+            /* Row Styling */
+            .attendance-summary-page-container #EmployeeAttendanceSummarygrid tbody td {
+                padding: 5px 10px !important;
+                border-color: #f1f5f9 !important;
+                color: #1e293b !important;
+            }
+
+            .attendance-summary-page-container #EmployeeAttendanceSummarygrid tbody tr:hover {
+                background-color: #f8fafc !important;
+            }
+
+            /* Command Buttons in Grid Rows */
+            .attendance-summary-page-container #EmployeeAttendanceSummarygrid tbody .k-button {
+                font-size: 11px !important;
+                padding: 3px 8px !important;
+                border-radius: 4px !important;
+                margin: 1px !important;
+            }
+
+    /* Detail Hierarchy Styling */
+    .nested-summary-wrapper {
+        padding: 12px 16px;
+        background-color: #f8fafc;
+        border-left: 4px solid #0284c7;
+    }
+
+    .status-summary-table {
+        width: 100%;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 12px;
+    }
+
+    .employee-meta-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 8px;
+    }
+
+    .employee-meta-list li {
+        font-size: 12px;
+        color: #475569;
+    }
+
+    .employee-meta-list label {
+        font-weight: 700;
+        color: #0f172a;
+        margin-right: 4px;
+    }
+
+    /* Status badges in grid cells */
+    .attendance-summary-page-container .att-badge {
+        display: inline-block;
+        min-width: 42px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 11.5px;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+    .attendance-summary-page-container .att-badge-danger {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .attendance-summary-page-container .att-badge-warning {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .attendance-summary-page-container .att-badge-info {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .attendance-summary-page-container .att-muted {
+        color: #94a3b8;
+    }
+
+    div.k-edit-form-container {
+        width: 720px;
+    }
+</style>

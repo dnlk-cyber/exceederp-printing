@@ -32,11 +32,10 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public DateTime? From { get; set; }
         [Display(Name = "HR_TrainingEducation_Training_From", ResourceType = typeof(Localization.Resources))]
         public string FromTrAm { get; set; }
-        [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "HR_TrainingEducation_Training_To", ResourceType = typeof(Localization.Resources))]
-        public DateTime To { get; set; }
+        public DateTime? To { get; set; }
         [Display(Name = "HR_TrainingEducation_Training_To", ResourceType = typeof(Localization.Resources))]
         public string ToTraAm { get; set; }
         [Display(Name = "HR_TrainingEducation_Training_Score", ResourceType = typeof(Localization.Resources))]

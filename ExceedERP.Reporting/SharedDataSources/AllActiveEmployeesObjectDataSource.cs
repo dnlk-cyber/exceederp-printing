@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.DataAccess.Context;
@@ -14,6 +14,7 @@ namespace ExceedERP.Reporting.SharedDataSources
             List<EmployeeViewModel> list = new List<EmployeeViewModel>();
 
             var employees = db.Person_Employee.Where(x => x.IsActive);
+
             foreach (var employee in employees)
             {
                 var employeeList = new EmployeeViewModel();

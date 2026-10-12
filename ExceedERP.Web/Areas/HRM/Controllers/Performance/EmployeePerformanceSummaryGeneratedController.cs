@@ -20,6 +20,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
     public class EmployeePerformanceSummaryGeneratedController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
 
         public ActionResult Index()
         {
@@ -27,21 +28,47 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return View();
         }
+       
         private void PopulateViewData()
         {
+            ViewData["fiscalYearList"] = CacheData.GetFiscalYearCaches().Select(
+              i => new
+              {
+                  Name = i.Name,
+                  GlFiscalYearId = i.Id,
+              }).AsQueryable();
 
-            var fiscalYearList = db.GLFiscalYears.ToList();
-            ViewData["fiscalYearList"] = fiscalYearList;// != null ? periodList.ToList() : new List<GlFiscalYear>();
-            ViewData["EmployeeList"] = db.Person_Employee.Select(x=>new { x.EmployeeId,
-                              FullNameAmharic = x.EmployeeCode+"-"+x.FirstName+" "+x.MiddleName+" "+x.LastName}).AsQueryable();
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+              i => new
+              {
+                  FullNameAmharic = i.AmharicName,
+                  FullNameaEnglish = i.Name,
+                  EmployeeId = i.Id,
+                  EmployeeCode = i.Code,
+              }).AsQueryable();
+            ViewData["branches"] = CacheData.GetBranchCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BranchId = i.Id,
+               }).AsQueryable(); ;
+
+            ViewData["businessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BusinessUnitId = i.Id,
+               }).AsQueryable(); ; ;
+            ViewData["workunits"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+               }).AsQueryable();
            
-            ViewData["Period"] = db.Quarters.Select(x=>new { x.QuarterId,x.Name}).ToList();
-            var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["branches"] = branches;
-            var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["businessUnits"] = businessUnits;
-            var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
-            ViewData["workunits"] = workunits;
+            ViewData["Period"] = db.Quarters.Select(x => new { x.QuarterId, x.Name }).ToList();
+
+            
 
         }
         public string GetEvaluationTypeName(int lookupId)
@@ -53,7 +80,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
             return "";
         }
-        
         public ActionResult UpdatePerformance()
         {
             var empPerformances = db.EmployeePerformances.ToList();
@@ -93,7 +119,62 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
             return View("Success");
         }
-     
+        public JsonResult RefreshPerformanceData(int yearId)
+        {
+            // Get performance summaries for the given year
+            var empPerformances = db.EmployeePerformanceSummary
+                .Where(x => x.GlFiscalYearId == yearId)
+                .ToList();
+
+            if (!empPerformances.Any())
+            {
+                return Json(new
+                {
+                    Message = "No performance records found for the selected year.",
+                    Status = "NoData"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Get employee IDs from performance summaries
+            var employeeIds = empPerformances.Select(x => x.EmployeeId).Distinct().ToList();
+
+            // Get placements only for those employees
+            var placements = db.Placements
+                .Where(x => employeeIds.Contains(x.EmployeeId))
+                .OrderByDescending(x => x.isCurrent)
+                .ThenByDescending(x => x.PlacementId)
+                .ToList();
+
+            // Group placements by EmployeeId for quick lookup
+            var placementLookup = placements
+                .GroupBy(p => p.EmployeeId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.FirstOrDefault(x => x.isCurrent) ?? g.FirstOrDefault()
+                );
+
+            // Update performance summaries
+            foreach (var empPerformance in empPerformances)
+            {
+                if (placementLookup.TryGetValue(empPerformance.EmployeeId, out var placement) && placement != null)
+                {
+                    empPerformance.OrgStructureId = placement.OrgStructureId;
+                    empPerformance.BranchId = placement.BranchId;
+                    empPerformance.BusinessUnitId = placement.BusinessUnitId;
+                    empPerformance.ResponsibilityLevel = placement.ResponsibilityLevel;
+
+                    db.Entry(empPerformance).State = EntityState.Modified;
+                }
+            }
+
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Message = "Employee performance records have been updated successfully.",
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult EmployeePerformanceSummary_Read([DataSourceRequest] DataSourceRequest request)
         {
 
@@ -107,6 +188,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 GlPeriodId = employeePerformance.GlPeriodId,
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
+                ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
                 OrgStructureId = employeePerformance.OrgStructureId,
                 Result = employeePerformance.Result,
                 Weight = employeePerformance.Weight,
@@ -121,14 +203,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return Json(result);
         }
-
         ////////////////
         ///////////////
-        
         public JsonResult GetFiscalYear()
         {
 
-            var fiscalYear = db.GLFiscalYears.ToList();
+            var fiscalYear = db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
 
             return Json(fiscalYear.Select(p =>
             new
@@ -209,142 +289,186 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return result;
         }
-        public JsonResult GenerateEmployeePerformanceSummary(string empId, int fiscalYearId, int periodId,string branchId,string code)
+        public JsonResult GenerateEmployeePerformanceSummary(string empId, int fiscalYearId, string branchId, string code)
         {
-            decimal datesServedInThisFiscalYear = 0;
-            decimal bonus = 0;
-            var employeePerformances = db.EmployeePerformances.Where(x=>x.GlFiscalYearId == fiscalYearId && x.GlPeriodId == periodId && x.IsHRApproved).ToList();
+            var query = db.EmployeePerformances.Where(x => x.GlFiscalYearId == fiscalYearId && x.IsHRApproved);
 
-            if (!string.IsNullOrEmpty(empId)&&int.TryParse(empId,out int employeeId))
+            if (int.TryParse(empId, out int employeeId))
             {
-                employeePerformances = employeePerformances.Where(x => x.EmployeeId == employeeId).ToList();
+                query = query.Where(x => x.EmployeeId == employeeId);
             }
-            if (!string.IsNullOrEmpty(branchId)&&int.TryParse(branchId,out int brachIdParded))
+            if (int.TryParse(branchId, out int branchIdParsed))
             {
-                employeePerformances = employeePerformances.Where(x => x.BranchId == brachIdParded).ToList();
+                query = query.Where(x => x.BranchId == branchIdParsed);
             }
-            if (!string.IsNullOrEmpty(code)&&int.TryParse(code,out int businessUnitId))
+            if (int.TryParse(code, out int businessUnitId))
             {
-                employeePerformances = employeePerformances.Where(x => x.BusinessUnitId == businessUnitId).ToList();
+                query = query.Where(x => x.BusinessUnitId == businessUnitId);
             }
-            
+
+            var employeePerformances = query.OrderBy(x => x.EmployeePerformanceId).ToList();
+
             if (!employeePerformances.Any())
             {
                 return Json(new
                 {
-                    Message = "No employee performance records have been approved by HR at this time. Please ensure that records are submitted and approved before proceeding.",
+                    Message = "No employee performance records have been approved by HR for this Fiscal year. Please ensure that records are submitted and approved before proceeding.",
                     Status = "Not-OK"
                 }, JsonRequestBehavior.AllowGet);
             }
-            var distictemployeePerformances = employeePerformances
-                               .Where(x => x.IsHRApproved).DistinctBy(x => new
-                               {
-                                   x.EmployeeId,
-                                   x.GlFiscalYearId,
-                                   x.GlPeriodId,
-                               }).OrderByDescending(x => x.GlFiscalYearId).ToList();
-            foreach (var empPerformance in distictemployeePerformances)
+
+            // Weight/score totals per evaluation, computed in one query instead of per-row queries
+            var totals = (from m in db.EmployeeMeasurement
+                          join s in db.EmployeePerformanceScores on m.EmpMeasurementId equals s.EmployeeMeasurementId
+                          join p in query on m.EmployeePerformanceId equals p.EmployeePerformanceId
+                          group s by m.EmployeePerformanceId into g
+                          select new { PerformanceId = g.Key, Weight = g.Sum(x => x.Weight), Score = g.Sum(x => x.Score) })
+                         .ToDictionary(x => x.PerformanceId);
+
+            var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == fiscalYearId);
+
+            var persons = db.Person_Employee
+                .Where(p => query.Any(q => q.EmployeeId == p.EmployeeId))
+                .Select(p => new { p.EmployeeId, p.EmployeeCode, p.HiredDate })
+                .ToDictionary(p => p.EmployeeId);
+
+            var existingSummaries = db.EmployeePerformanceSummary
+                .Where(s => s.GlFiscalYearId == fiscalYearId && query.Any(q => q.EmployeeId == s.EmployeeId))
+                .ToList()
+                .GroupBy(s => new { s.EmployeeId, s.GlPeriodId })
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var now = DateTime.Now;
+            var userName = User.Identity.Name;
+            var ranks = db.PerformanceRank.OrderBy(x => x.Minimum).ToList();
+            int generated = 0;
+            var skipped = new List<string>();
+
+            foreach (var employeeGroup in employeePerformances.GroupBy(x => x.EmployeeId))
             {
-                var person = db.Person_Employee.Find(empPerformance.EmployeeId);
+                var evaluations = employeeGroup.ToList();
+                var first = evaluations[0];
+                persons.TryGetValue(first.EmployeeId, out var person);
+                var label = person?.EmployeeCode ?? first.EmployeeId.ToString();
 
-                var allEvalutionsPerEmployee = employeePerformances
-                                                        .Where(x => x.EmployeeId == empPerformance.EmployeeId
-                                                        && x.GlFiscalYearId == fiscalYearId
-                                                        && x.GlPeriodId == periodId ).ToList();
-
-                decimal weight = allEvalutionsPerEmployee
-               .Sum(performance => GetPerformanceWeight(performance.EmployeePerformanceId));
-                // Calculate total performance score, ensuring that GetPerformanceWeight is not null
-                decimal score = allEvalutionsPerEmployee
-               .Sum(performance => GetPerformanceResult(performance.EmployeePerformanceId));
-                var fiscalyear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == empPerformance.GlFiscalYearId);
-                if (fiscalyear != null)
+                foreach (var evaluation in evaluations)
                 {
-                    if (fiscalyear != null && person != null)
+                    var result = totals.TryGetValue(evaluation.EmployeePerformanceId, out var t) ? t.Score : 0m;
+                    if (evaluation.Result != result)
                     {
-                        DateTime startDate = fiscalyear.DateFrom < person.HiredDate ? person.HiredDate : fiscalyear.DateFrom;
-                        datesServedInThisFiscalYear = (decimal)(fiscalyear.DateTo - startDate).TotalDays;
+                        evaluation.Result = result;
                     }
-                    else
-                    {
-                        datesServedInThisFiscalYear = (decimal)(fiscalyear.DateTo - fiscalyear.DateFrom).TotalDays;
+                }
 
-                    }
-                   
-                }
-                if (datesServedInThisFiscalYear > 360)
+                // Sum per period, then average across periods
+                var periodTotals = evaluations
+                    .GroupBy(x => x.GlPeriodId)
+                    .Select(g => new
+                    {
+                        Weight = g.Sum(p => totals.TryGetValue(p.EmployeePerformanceId, out var t) ? t.Weight : 0m),
+                        Score = g.Sum(p => totals.TryGetValue(p.EmployeePerformanceId, out var t) ? t.Score : 0m)
+                    })
+                    .ToList();
+
+                decimal weight = periodTotals.Average(g => g.Weight);
+                decimal score = periodTotals.Average(g => g.Score);
+
+                decimal daysServed = 0;
+                if (fiscalYear != null)
                 {
-                    datesServedInThisFiscalYear = 360;
+                    var startDate = person != null && fiscalYear.DateFrom < person.HiredDate ? person.HiredDate : fiscalYear.DateFrom;
+                    daysServed = Math.Min((decimal)(fiscalYear.DateTo - startDate).TotalDays, 360m);
                 }
-               
-                if (score > 100 && weight !=0)
+
+                if (score > 100 && weight != 0)
                 {
-                    score = score * 100 / weight;
+                    score = Math.Round(score * 100 / weight, 2);
                 }
                 if (weight > 100)
                 {
                     weight = 100;
                 }
-                // Check if the total weight is 100
-                if (weight == 100 && score>0)
-                {
-                    bonus =  CalculateBonus(datesServedInThisFiscalYear, score)*100;
-                    var employeesummary = db.EmployeePerformanceSummary
-                                            .FirstOrDefault(x=>x.GlFiscalYearId==empPerformance.GlFiscalYearId
-                                            &&x.GlPeriodId==empPerformance.GlPeriodId
-                                            &&x.EmployeeId==empPerformance.EmployeeId);
-                    if(employeesummary == null)
-                    {
-                        var entity = new EmployeePerformanceSummary
-                        {
-                            EmployeeId = empPerformance.EmployeeId,
-                            GlFiscalYearId = empPerformance.GlFiscalYearId,
-                            GlPeriodId = empPerformance.GlPeriodId,
-                            OrgStructureId = empPerformance.OrgStructureId,
-                            BranchId = empPerformance.BranchId,
-                            BusinessUnitId = empPerformance.BusinessUnitId,
-                            CreatedBy = User.Identity.Name,
-                            DateCreated = DateTime.Now,
-                            Weight = weight,
-                            Result = Math.Round(score, 2),
-                            TotalDays = datesServedInThisFiscalYear,
-                            Bonus = bonus
-                        };
-                        db.EmployeePerformanceSummary.Add(entity);
-                    }
-                    else
-                    {
-                        employeesummary.OrgStructureId = empPerformance.OrgStructureId;
-                        employeesummary.BranchId = empPerformance.BranchId;
-                        employeesummary.BusinessUnitId = empPerformance.BusinessUnitId;
-                        employeesummary.Weight = weight;
-                        employeesummary.Result =Math.Round(score,2);
-                        employeesummary.TotalDays = datesServedInThisFiscalYear;
-                        employeesummary.Bonus = bonus;
-                        employeesummary.LastModified = DateTime.Now;
-                        employeesummary.ModifiedBy = User.Identity.Name;
-                        db.Entry(employeesummary).State = EntityState.Modified;
-                    }
-                   
-                    db.SaveChanges();
-                }
-             
 
+                if (weight != 100)
+                {
+                    skipped.Add($"{label}: total weight is {weight:0.##} (must be 100)");
+                    continue;
+                }
+                if (score <= 0)
+                {
+                    skipped.Add($"{label}: total score is {score:0.##} (must be greater than 0)");
+                    continue;
+                }
+
+                var bonus = CalculateBonus(daysServed, score, ranks);
+
+                if (!existingSummaries.TryGetValue(new { first.EmployeeId, first.GlPeriodId }, out var summary))
+                {
+                    db.EmployeePerformanceSummary.Add(new EmployeePerformanceSummary
+                    {
+                        EmployeeId = first.EmployeeId,
+                        GlFiscalYearId = first.GlFiscalYearId,
+                        GlPeriodId = first.GlPeriodId,
+                        OrgStructureId = first.OrgStructureId,
+                        BranchId = first.BranchId,
+                        BusinessUnitId = first.BusinessUnitId,
+                        ResponsibilityLevel = first.ResponsibilityLevel,
+                        CreatedBy = userName,
+                        DateCreated = now,
+                        Weight = weight,
+                        Result = Math.Round(score, 2),
+                        TotalDays = daysServed,
+                        Bonus = bonus
+                    });
+                }
+                else
+                {
+                    summary.OrgStructureId = first.OrgStructureId;
+                    summary.BranchId = first.BranchId;
+                    summary.BusinessUnitId = first.BusinessUnitId;
+                    summary.Weight = weight;
+                    summary.ResponsibilityLevel = first.ResponsibilityLevel;
+                    summary.Result = Math.Round(score, 2);
+                    summary.TotalDays = daysServed;
+                    summary.Bonus = bonus;
+                    summary.LastModified = now;
+                    summary.ModifiedBy = userName;
+                }
+                generated++;
             }
+
+            db.SaveChanges();
+
+            var message = $"{generated} employee performance summaries generated/updated.";
+            if (skipped.Count > 0)
+            {
+                message += $"\n\n{skipped.Count} approved employee(s) skipped:\n" + string.Join("\n", skipped.Take(25));
+                if (skipped.Count > 25)
+                {
+                    message += $"\n... and {skipped.Count - 25} more";
+                }
+            }
+
             return Json(new
             {
-                Message = "Employee performance summaries have been successfully generated and updated.",
-                Status = "OK"
+                Message = message,
+                Status = generated > 0 ? "OK" : "Not-OK",
+                Generated = generated,
+                Skipped = skipped
             }, JsonRequestBehavior.AllowGet);
         }
-        decimal CalculateBonus(decimal K6, decimal J6)
+
+        // BonusRate in Performance Rank is a percentage; the bonus is pro-rated by days served over 360.
+        private static decimal CalculateBonus(decimal daysServed, decimal score, IEnumerable<PerformanceRank> ranks)
         {
-            return (K6 >= 180)
-                ? (J6 < 75 ? 0m
-                    : (J6 <= 80 ? 0.8m * (K6 / 360m)
-                        : (J6 <= 90 ? 0.9m * (K6 / 360m)
-                            : 1m * (K6 / 360m))))
-                : 0m;
+            const decimal minimumDaysForBonus = 180m;
+            if (daysServed < minimumDaysForBonus)
+            {
+                return 0m;
+            }
+
+            var rank = ranks.FirstOrDefault(x => x.Minimum <= score && x.Maximum >= score);
+            return rank == null ? 0m : rank.BonusRate * (daysServed / 360m);
         }
 
         [HttpPost]

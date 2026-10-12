@@ -31,14 +31,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         private void PopulateViewData()
         {
-            ViewData["FisicalYear"] = db.GLFiscalYears.ToList();
+            ViewData["FisicalYear"] = db.GLFiscalYears.AsQueryable();
             var LeaveSetting = Enum.GetValues(typeof(LeaveSetting))
                 .Cast<LeaveSetting>()
                 .Select(v => v.ToString())
                 .ToList();
             var LeaveSettings = LeaveSetting.Select(s => new { Text = s.ToString(), Value = s.ToString() });
             ViewData["LeaveSetting"] = LeaveSettings;
-            ViewData["FiscalYeaer"] = db.GLFiscalYears.ToList();
+            ViewData["FiscalYeaer"] = db.GLFiscalYears.AsQueryable();
         }
         public void GenerateLeaveStartDateSetting()
         {

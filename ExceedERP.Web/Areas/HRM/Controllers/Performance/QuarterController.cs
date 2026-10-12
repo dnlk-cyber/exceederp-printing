@@ -1,22 +1,15 @@
-﻿﻿using System;
-using System.Collections.Generic;
-
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
  using ExceedERP.Core.Domain;
- using ExceedERP.Core.Domain.Common;
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
-using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
  using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
  using ExceedERP.Web.Helpers;
+using System;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -39,6 +32,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 Name = quarter.Name,
                 AmharicName = quarter.AmharicName,
                 Sequence = quarter.Sequence,
+                DateFrom = quarter.DateFrom,
+                DateTo = quarter.DateTo,
+                IsClosed = quarter.IsClosed,
+                Remark = quarter.Remark,
+                DateCreated = quarter.DateCreated,
+                LastModified = quarter.LastModified,
+                CreatedBy = quarter.CreatedBy,
+                ModifiedBy = quarter.ModifiedBy,
             });
 
             return Json(result);
@@ -47,21 +48,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Quarter_Create([DataSourceRequest]DataSourceRequest request, Quarter quarter, int quarterLId)
         {
-            
-          
-                if (ModelState.IsValid)
-            {
-               
-                    var entity = new Quarter
-                    {
-                        QuarterLengthId = quarterLId,
-                        Name = quarter.Name,
-                        AmharicName = quarter.AmharicName,
-                        Sequence = quarter.Sequence,
-                    };
 
-                    db.Quarters.Add(entity);
-                    db.SaveChanges();
+
+            quarter.QuarterLengthId = quarterLId;
+            quarter.CreatedBy = User.Identity.Name;
+            quarter.DateCreated = DateTime.Now;
+            if (ModelState.IsValid)
+            {
+                
+                var entity = GetMappedObject(quarter);
+                db.Quarters.Add(entity);
+                db.SaveChanges();
+
                 quarter.QuarterId = entity.QuarterId;
                 
             }
@@ -72,18 +70,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Quarter_Update([DataSourceRequest]DataSourceRequest request, Quarter quarter)
         {
+            quarter.ModifiedBy = User.Identity.Name;
+            quarter.LastModified = DateTime.Now;
             if (ModelState.IsValid)
             {
-                var entity = new Quarter
-                {
-                    QuarterLengthId = quarter.QuarterLengthId,
-                    Name = quarter.Name,
-                    AmharicName = quarter.AmharicName,
-                    Sequence = quarter.Sequence,
-                    QuarterId = quarter.QuarterId,
-
-                };
-
+                var entity = GetMappedObject(quarter);
                 db.Quarters.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -97,15 +88,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         {
             if (ModelState.IsValid)
             {
-                var entity = new Quarter
-                {
-                    QuarterId = quarter.QuarterId,
-                    QuarterLengthId = quarter.QuarterLengthId,
-                    Name = quarter.Name,
-                    AmharicName = quarter.AmharicName,
-                    Sequence = quarter.Sequence,
-
-                };
+                var entity = GetMappedObject(quarter);
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted quarter  Id " + quarter.QuarterId);
                 #endregion
@@ -117,6 +100,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { quarter }.ToDataSourceResult(request, ModelState));
         }
 
+        private Quarter GetMappedObject(Quarter quarter)
+        {
+            var entity = new Quarter
+            {
+                QuarterId = quarter.QuarterId,
+                QuarterLengthId = quarter.QuarterLengthId,
+                Name = quarter.Name,
+                AmharicName = quarter.AmharicName,
+                Sequence = quarter.Sequence,
+                DateFrom = quarter.DateFrom,
+                DateTo = quarter.DateTo,
+                IsClosed = quarter.IsClosed,
+                Remark = quarter.Remark,
+                DateCreated = quarter.DateCreated,
+                LastModified = quarter.LastModified,
+                CreatedBy = quarter.CreatedBy,
+                ModifiedBy = quarter.ModifiedBy,
+
+            };
+            return entity;
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

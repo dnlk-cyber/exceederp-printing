@@ -7,6 +7,31 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
 {
+    public class EmployeePerformanceHeaderVM
+    {
+        public string FullName { get; set; }
+        public string Branch { get; set; }
+        public string Department { get; set; }
+        public string BussinessUnit { get; set; }
+        public string Jobtitle { get; set; }
+        public string ImmidiateApprover { get; set; }
+        public string SecondLevelApproverApprover { get; set; }
+        public string SecondLevelApproverBy { get; set; }
+        public string SecondLevelApproverDate { get; set; }
+        public string Year { get; set; }
+        public string Period { get; set; }
+        public string Name { get; set; }
+        public string AmharicName { get; set; }
+        public string Abbreviation { get; set; }
+        public string Address { get; set; }
+        public Image LogoFileName { get; set; }
+        public string Date { get; set; }
+        public List<EmployeePerformanceVM> EmployeePerformanceLists { get; set; }
+
+
+    }
+
+
     public class EmployeePerformanceVM
     {
         public string FullName { get; set; }
@@ -20,6 +45,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Role { get; set; }
         public decimal Weight { get; set; }
         public decimal Result { get; set; }
+        public decimal TotalResult { get; set; }
+        public decimal TotalWeight { get; set; }
+        public decimal TotalOut100 { get; set; }
         public string Approval { get; set; }
         public List<EmployeeMeasurementVM> EmployeeMeasurmentList { get; set; }
 

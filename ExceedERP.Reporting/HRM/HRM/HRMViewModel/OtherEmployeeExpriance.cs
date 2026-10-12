@@ -4,8 +4,11 @@
     {
 
         public string JobTitleName { get; set; }
+        public string JobTitleNameEnglish { get; set; }
         public string From { get; set; }
         public string To { get; set; }
+        public string FromAm { get; set; }
+        public string ToAm { get; set; }
         public string Year { get; set; }
         public string CompanyName { get; set; }
         public decimal Salary { get; set; }

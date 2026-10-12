@@ -237,7 +237,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
         public ActionResult RemovePlacementOfEmployees_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
             int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
 
@@ -297,7 +297,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                
                 foreach (var place in placements)
                 {
-                    if (place.Check)
+                    if (place.CheckCEO)
                     {
                         place.isCurrent = false;
 

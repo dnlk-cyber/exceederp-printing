@@ -117,4 +117,106 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox41.Value" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="textBox37.Value" xml:space="preserve">
+    <value>Employee Name</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>Employee Code</value>
+  </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>= Fields.Type</value>
+  </data>
+  <data name="textBox38.Value" xml:space="preserve">
+    <value>= Fields.EmployeeName</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Fields.EmployeeCode</value>
+  </data>
+  <data name="textBox43.Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="textBox39.Value" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="textBox33.Value" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="textBox44.Value" xml:space="preserve">
+    <value>= Fields.CommitmentValue</value>
+  </data>
+  <data name="textBox40.Value" xml:space="preserve">
+    <value>= Fields.CommitmentEndDate</value>
+  </data>
+  <data name="textBox35.Value" xml:space="preserve">
+    <value>= Fields.CommitmentStartDate</value>
+  </data>
+  <data name="textBox46.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>Cosign Type</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Agreement Sign Date</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Birth Place</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Work Organization</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Today()</value>
+  </data>
+  <data name="textBox32.Value" xml:space="preserve">
+    <value>Cosign</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>= Fields.Reason</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.CosignType</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.AgreementSignDate</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.BirthPlace</value>
+  </data>
+  <data name="textBox45.Value" xml:space="preserve">
+    <value>= Fields.WorkOrganization</value>
+  </data>
+  <data name="textBox48.Value" xml:space="preserve">
+    <value>= RowNumber("table2")</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>{PageNumber}</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>id</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Header</value>
+  </data>
 </root>

@@ -2,19 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Reporting.SharedDataSources
 {
-   
+
     [DataObject]
     public class PeriodDataSource
     {
@@ -23,15 +16,14 @@ namespace ExceedERP.Reporting.SharedDataSources
         public IEnumerable<GlPeriodVm> GetPeriods()
         {
            return db.GLPeriods.Select(x=> new GlPeriodVm
-               {
+           {
                     GLPeriodId= x.GLPeriodId,
                     GlFiscalYearId = x.GlFiscalYearId,
-                    Name =x.Name,DateFrom=x.DateFrom,
+                    Name =x.Name,
+                    DateFrom =x.DateFrom,
                     DateTo=x.DateTo
-               })
-                .OrderByDescending(x => x.DateFrom)
-                .ToList();
-           
+
+           }).OrderByDescending(x=>x.GLPeriodId).ToList();
         }
 
     }

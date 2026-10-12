@@ -14,7 +14,7 @@ using ExceedERP.Reporting.SharedDataSources;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-    public class PromotionObjectDataSource : PromotionVM
+    public class PromotionObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -163,7 +163,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                         }
                     }
 
-                    EmployeeInfo.Diffrence = CurrentSalary - PreviousSalary;
+                    EmployeeInfo.Diffrence = EmployeeInfo.CurrentSalary - EmployeeInfo.PreviousSalary;
                     EmployeeInfo.DiffrenceAmount = XAPI.NumberExtensions.toWords((int)EmployeeInfo.Diffrence);
                     EmployeeInfo.CurrentAmount = XAPI.NumberExtensions.toWords((int)EmployeeInfo.CurrentSalary);
 
@@ -225,6 +225,12 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return promotionLetterList;
         }
+      
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        
     }
 
     public class PromotionLetterVM

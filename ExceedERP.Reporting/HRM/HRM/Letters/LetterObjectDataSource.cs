@@ -26,7 +26,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
     #region Termination
 
     [DataObject]
-    public class EmployeeTerminationObjectDataSource : List<EmployeeTerminationLetter>
+    public class EmployeeTerminationObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -225,7 +225,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                             {
                                 //EmployeeInfo.ApplicationDate = termination.ApplicationDate.ToShortDateString();
                                 EmployeeInfo.ApplicationDate = XAPI.EthiopicDateTime.GetEthiopicYear(termination.ApplicationDate.Day, termination.ApplicationDate.Month, termination.ApplicationDate.Year).ToString();
-                                EmployeeInfo.TerminationDate = termination.TerminationDate.ToShortDateString();
+                                EmployeeInfo.TerminationDate = termination.TerminationDate.Value.ToShortDateString();
                                 EmployeeInfo.TerminationReason = jobs.Where(x => x.LookupId == termination.LookupId)
                                         .FirstOrDefault()
                                         .Description;
@@ -242,7 +242,12 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return EmployeeInfoList;
         }
-
+      
+            public void Dispose()
+            {
+                db.Dispose();
+            }
+        
     }
 
 
@@ -251,7 +256,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
     #region Recruitment
     [DataObject]
-    public class EmployeeRecruitmentExterVaccLetterObjectDataSource : List<EmployeeRecruitmentExternalVaccLetter>
+    public class EmployeeRecruitmentExterVaccLetterObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -426,7 +431,12 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return recruitmentList;
         }
-
+     
+            public void Dispose()
+            {
+                db.Dispose();
+            }
+        
 
     }
 
@@ -504,7 +514,9 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
             foreach (var recruitmentVacancy in recruitementVacancies)
             {
                 var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId && x.IsActive);
-                if (vacancy != null && vacancy.RecruSource == RecruitmentSource.INTERNAL)
+                if (vacancy != null&&( vacancy.RecruSource == RecruitmentSource.INTERNAL
+                    ||vacancy.RecruSource == RecruitmentSource.INTERNALPROMOTION
+                    ||vacancy.RecruSource == RecruitmentSource.INTERNALTRANSFER))
                 {
                     recruit = new RecruitmentVacancy();
                     recruit.MediaVacancyCode = recruitmentVacancy.MediaVacancyCode;
@@ -536,7 +548,9 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
             foreach (var recruitmentVacancy in recruitementVacancies)
             {
                 var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId);
-                if (vacancy != null && vacancy.RecruSource == RecruitmentSource.INTERNAL)
+                if (vacancy != null && (vacancy.RecruSource == RecruitmentSource.INTERNAL
+                      || vacancy.RecruSource == RecruitmentSource.INTERNALPROMOTION
+                      || vacancy.RecruSource == RecruitmentSource.INTERNALTRANSFER))
                 {
                     recruit = new RecruitmentVacancy();
                     recruit.MediaVacancyCode = recruitmentVacancy.MediaVacancyCode;

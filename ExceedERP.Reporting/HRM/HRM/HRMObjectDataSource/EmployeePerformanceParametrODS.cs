@@ -11,7 +11,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
 
     [DataObject]
-    public class EmployeePerformanceParametrODS : List<Person_Employee>
+    public class EmployeePerformanceParametrODS :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -22,5 +22,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return employees;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
     }
 }

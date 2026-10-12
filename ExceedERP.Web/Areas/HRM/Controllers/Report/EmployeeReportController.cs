@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
-using Microsoft.Owin.Security.Provider;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Models;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Core.Domain.Common;
@@ -89,7 +86,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
 
         public ActionResult TerminationReasonSummary()
         {
-            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Termination_Reason_Summary, out string title, out string number);
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Termination_Summary, out string title, out string number);
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();

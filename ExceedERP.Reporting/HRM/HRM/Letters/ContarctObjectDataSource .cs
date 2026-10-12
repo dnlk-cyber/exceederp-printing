@@ -12,7 +12,7 @@ using ExceedERP.Reporting.SharedDataSources;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-    public class ContarctObjectDataSource : PromotionVM
+    public class ContarctObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -108,6 +108,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     }
                 }
                 EmployeeInfo.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
             }
             if (employee != null)
             {
@@ -144,5 +145,11 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return EmployeeInfo;
         }
+      
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        
     }
 }

@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -12,6 +11,7 @@ using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -19,10 +19,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     public class ComptencyController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static string FromAmharic { get; set; }
-        public static string ToAmharic { get; set; }
-        public static DateTime From { get; set; }
-        public static DateTime To { get; set; }
+     
         public ActionResult Index()
         {
             return View();
@@ -31,15 +28,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             if (name == "FromComAm")
             {
-                FromAmharic = value;
+                var FromAmharic = value;
                 var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
             else if (name == "ToCompAm")
             {
-                ToAmharic = value;
+                var ToAmharic = value;
                 var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
 
         }
@@ -75,46 +72,60 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Competencies_Create([DataSourceRequest]DataSourceRequest request, Competency competency, int id)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrWhiteSpace(competency?.FromComAm) ||
+                    string.IsNullOrWhiteSpace(competency?.ToCompAm))
+                {
+                    ModelState.AddModelError("", "from, To and   Clearance Date fields are mandatory");
+                    return Json(new[] { competency }.ToDataSourceResult(request, ModelState));
+                }
+
+                competency.From = HrHelper.ParseEthiopicDate(competency.FromComAm);
+                competency.To = HrHelper.ParseEthiopicDate(competency.ToCompAm);
+            }
+            else
+            {
+                competency.FromComAm = XAPI.EthiopicDateTime.GetEthiopicDate(competency.From.Day,
+                                                                                        competency.From.Month,
+                                                                                        competency.From.Year);
+                competency.ToCompAm = XAPI.EthiopicDateTime.GetEthiopicDate(competency.To.Day,
+                                                                                    competency.To.Month,
+                                                                                    competency.To.Year);
+            }
+            if (competency.From.Date > competency.To.Date)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to end date!!");
+                return Json(new[] { competency }.ToDataSourceResult(request, ModelState));
+            }
+
             if (ModelState.IsValid)
             {
-                var checkexistance = db.Competencies.Where(x => x.LookupId == competency.LookupId && x.EmployeeId == id).FirstOrDefault();
-                //if (checkexistance != null)
-                //{
-                //    ModelState.AddModelError("", "This skill type is already registered!!");
-                //}
-                if (FromAmharic == null || ToAmharic == null)
-                {
-                    ModelState.AddModelError("", "Date values are mandatory!!");
-                }
-                else if (From.Date > To.Date)
-                {
-
-                    ModelState.AddModelError("", "Start date should be less or equal to end date!!");
-                }
-                else
-                {
-                    var entity = new Competency
-                    {
+                
+                  var entity = new Competency
+                  {
                         EmployeeId = id,
                         Level = competency.Level,
                         LookupId = competency.LookupId,
                         Status = competency.Status,
-                        From = From,
-                        To = To,
+                        From = competency.From,
+                        To = competency.To,
                         Organization = competency.Organization,
                         Remark = competency.Remark,
                         DateCreated = DateTime.Now,
                         LastModified = competency.LastModified,
                         CreatedBy = User.Identity.Name,
                         ModifiedBy = competency.ModifiedBy,
-                        FromComAm = FromAmharic,
-                        ToCompAm = ToAmharic,
-                    };
+                        FromComAm = competency.FromComAm,
+                        ToCompAm = competency.ToCompAm,
 
-                    db.Competencies.Add(entity);
-                    db.SaveChanges();
-                    competency.CompetencyId = entity.CompetencyId;
-                }
+                  };
+                db.Competencies.Add(entity);
+                db.SaveChanges();
+                competency.CompetencyId = entity.CompetencyId;
+                
             }
 
             return Json(new[] { competency }.ToDataSourceResult(request, ModelState));
@@ -125,50 +136,62 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Competencies_Update([DataSourceRequest]DataSourceRequest request, Competency competency)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrWhiteSpace(competency?.FromComAm) ||
+                    string.IsNullOrWhiteSpace(competency?.ToCompAm))
+                {
+                    ModelState.AddModelError("", "from, To and   Clearance Date fields are mandatory");
+                    return Json(new[] { competency }.ToDataSourceResult(request, ModelState));
+                }
+
+                competency.From = HrHelper.ParseEthiopicDate(competency.FromComAm);
+                competency.To = HrHelper.ParseEthiopicDate(competency.ToCompAm);
+            }
+            else
+            {
+                competency.FromComAm = XAPI.EthiopicDateTime.GetEthiopicDate(competency.From.Day,
+                                                                                        competency.From.Month,
+                                                                                        competency.From.Year);
+                competency.ToCompAm = XAPI.EthiopicDateTime.GetEthiopicDate(competency.To.Day,
+                                                                                    competency.To.Month,
+                                                                                    competency.To.Year);
+            }
+            if (competency.From.Date > competency.To.Date)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to end date!!");
+                return Json(new[] { competency }.ToDataSourceResult(request, ModelState));
+            }
+
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
+               
+                
+                var entity = new Competency
                 {
-                    FromAmharic = competency.FromComAm;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (ToAmharic == null)
-                {
-                    ToAmharic = competency.ToCompAm;
-                    var splitDate = FromAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (From.Date > To.Date)
-                {
+                    CompetencyId = competency.CompetencyId,
+                    Level = competency.Level,
+                    LookupId = competency.LookupId,
+                    Status = competency.Status,
+                    From = competency.From,
+                    To = competency.To,
+                    Organization = competency.Organization,
+                    Remark = competency.Remark,
+                    EmployeeId = competency.EmployeeId,
+                    DateCreated = competency.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = competency.CreatedBy,
+                    ModifiedBy = User.Identity.Name,
+                    FromComAm = competency.FromComAm,
+                    ToCompAm = competency.ToCompAm ,
+                };
 
-                    ModelState.AddModelError("", "Start date should be less or equal to end date!!");
-                }
-                else
-                {
-                    var entity = new Competency
-                    {
-                        CompetencyId = competency.CompetencyId,
-                        Level = competency.Level,
-                        LookupId = competency.LookupId,
-                        Status = competency.Status,
-                        From = From,
-                        To = To,
-                        Organization = competency.Organization,
-                        Remark = competency.Remark,
-                        EmployeeId = competency.EmployeeId,
-                        DateCreated = competency.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = competency.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        FromComAm = FromAmharic,
-                        ToCompAm = ToAmharic,
-                    };
-
-                    db.Competencies.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
+                db.Competencies.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+                
             }
 
             return Json(new[] { competency }.ToDataSourceResult(request, ModelState));

@@ -19,50 +19,49 @@ using ExceedERP.Core.Domain.HRM.Payroll;
 using ExceedERP.Core.Domain.Archive;
 using ExceedERP.Core.Domain.HRM.Severance;
 using System;
+using ExceedERP.Core.Domain.HRM.Payroll.Setting;
+using ExceedERP.Core.Domain.HRM.HRMLoans;
 
 namespace ExceedERP.DataAccess
 {
 
     #region HRM
-    //public class EmployeeMeasurementDefinitionEntityTypeConfiguration : EntityTypeConfiguration<EmployeeMeasurementDefinition>
-    //{
-
-    //    public EmployeeMeasurementDefinitionEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("EmployeeMeasurementDefinition", "Performance");
-    //        this.HasKey<int>(o => o.EmpMeasurementDefinitionId);
-    //    }
-    //}
-
-
-    //public class EmployeePerformanceActionEntityTypeConfiguration : EntityTypeConfiguration<EmployeePerformanceAction>
-    //{
-
-    //    public EmployeePerformanceActionEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("EmployeePerformanceAction", "Performance");
-    //        this.HasKey<int>(o => o.EmpActionId);
-    //    }
-    //}
-
-    public class EmployeePerformanceSummaryEntityTypeConfiguration : EntityTypeConfiguration<EmployeePerformanceSummary>
+   
+   
+    public class DatePreferenceSettingEntityTypeConfiguration : EntityTypeConfiguration<DatePreferenceSetting>
     {
 
-        public EmployeePerformanceSummaryEntityTypeConfiguration()
+        public DatePreferenceSettingEntityTypeConfiguration()
         {
-            this.ToTable("EmployeePerformanceSummary", "Performance");
-            this.HasKey<int>(o => o.EmployeePerformanceSummaryId);
-        }
-    }
-    public class EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeePeerToPeerAndInternalCustomerPerformanceSetting>
-    {
-        public EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration()
-        {
-            this.ToTable("EmployeePeerToPeerAndInternalCustomerPerformanceSettings", "HRM");
-            this.HasKey<int>(o => o.EmployeePeerToPeerAndInternalCustomerPerformanceSettingId);
+            this.ToTable("DatePreferenceSetting", "Performance");
+            this.HasKey<int>(o => o.DatePreferenceSettingId);
         }
     }
 
+
+    public class EmployeeExternalFundingEntityTypeConfiguration : EntityTypeConfiguration<EmployeeExternalFunding>
+    {
+
+        public EmployeeExternalFundingEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeeExternalFundings", "HRM");
+            this.HasKey<int>(o => o.EmployeeExternalFundingId);
+        }
+    }
+
+    public class ExternalSalaryEntityTypeConfiguration : EntityTypeConfiguration<ExternalSalary>
+    {
+        public ExternalSalaryEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalSalaries", "HRM");
+            this.HasKey<int>(o => o.ExternalSalaryId);
+            this.Property(o => o.Salary).HasPrecision(18, 5);
+        }
+    }
+
+
+
+   
     public class EmployeeProbationSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeeProbationSetting>
     {
 
@@ -93,14 +92,15 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.WaterMarkId);
         }
     }
-   
-   
+
+  
     public class EmpPayrollNoDaysWorkedEntityTypeConfiguration : EntityTypeConfiguration<EmpPayrollNoDaysWorked>
     {
         public EmpPayrollNoDaysWorkedEntityTypeConfiguration()
         {
             this.ToTable("EmpPayrollNoDaysWorked", "Payroll");
             this.HasKey<int>(o => o.EmpPayrollNoDaysWorkedId);
+            this.Property(o => o.Days).HasPrecision(10, 5);
         }
     }
     public class EmployeeCodeSequenceSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeeCodeSequenceSetting>
@@ -110,6 +110,16 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("EmployeeCodeSequenceSetting", "HRM");
             this.HasKey<int>(o => o.EmployeeCodeSequenceSettingId);
+
+        }
+    }
+    public class EmployeeSalaryIncrementSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeeSalaryIncrementSetting>
+    {
+
+        public EmployeeSalaryIncrementSettingEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeeSalaryIncrementSettings", "HRM");
+            this.HasKey<int>(o => o.EmployeeSalaryIncrementSettingId);
 
         }
     }
@@ -142,15 +152,15 @@ namespace ExceedERP.DataAccess
     /// <remarks>  modifid and Added New Features by Kibrom Abera, 12/01/2021 - Today. </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //public class AllowanceSettingEntityTypeConfiguration : EntityTypeConfiguration<AllowanceSetting>
-    //{
+    public class AllowanceSettingEntityTypeConfiguration : EntityTypeConfiguration<AllowanceSetting>
+    {
 
-    //    public AllowanceSettingEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("AllowanceSettings", "HRM");
-    //        this.HasKey<int>(o => o.AllowanceSettingId);
-    //    }
-    //}
+        public AllowanceSettingEntityTypeConfiguration()
+        {
+            this.ToTable("AllowanceSettings", "HRM");
+            this.HasKey<int>(o => o.AllowanceSettingId);
+        }
+    }
     public class AllowanceDefinationEntityTypeConfiguration : EntityTypeConfiguration<AllowanceDefination>
     {
 
@@ -179,6 +189,15 @@ namespace ExceedERP.DataAccess
         }
     }
 
+    public class DelegationStepIncrementSettingEntityTypeConfiguration : EntityTypeConfiguration<DelegationStepIncrementSetting>
+    {
+
+        public DelegationStepIncrementSettingEntityTypeConfiguration()
+        {
+            this.ToTable("DelegationStepIncrementSettings", "HRM");
+            this.HasKey<int>(o => o.DelegationStepIncrementSettingId);
+        }
+    }
     public class DelegationEntityTypeConfiguration : EntityTypeConfiguration<Delegation>
     {
 
@@ -186,6 +205,15 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("Delegation", "HRM");
             this.HasKey<int>(o => o.DelegationId);
+        }
+    }
+    public class OverTimeSettingEntityTypeConfiguration : EntityTypeConfiguration<OverTimeSetting>
+    {
+
+        public OverTimeSettingEntityTypeConfiguration()
+        {
+            this.ToTable("OverTimeSettings", "HRM");
+            this.HasKey<int>(o => o.OverTimeSettingId);
         }
     }
     public class DelegationReasonEntityTypeConfiguration : EntityTypeConfiguration<DelegationReason>
@@ -206,6 +234,8 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.AllowanceId);
         }
     }
+   
+   
     public class ActingEntityTypeConfiguration : EntityTypeConfiguration<Acting>
     {
 
@@ -242,6 +272,15 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.GuarantorOrSuretyDetailId);
         }
     }
+    public class GuarantorOrSuretyAttachmentEntityTypeConfiguration : EntityTypeConfiguration<GuarantorOrSuretyAttachment>
+    {
+
+        public GuarantorOrSuretyAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("GuarantorOrSuretyAttachments", "HRM");
+            this.HasKey<int>(o => o.GuarantorOrSuretyAttachmentId);
+        }
+    }
 
     public class PromotionYearSettingEntityTypeConfiguration : EntityTypeConfiguration<PromotionYearSetting>
     {
@@ -259,6 +298,25 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("Attendance", "HRM");
             this.HasKey<int>(o => o.AttendanceId);
+        }
+    }
+    public class AttendanceExceptionEntityTypeConfiguration : EntityTypeConfiguration<AttendanceException>
+    {
+
+        public AttendanceExceptionEntityTypeConfiguration()
+        {
+            this.ToTable("AttendanceExceptions", "HRM");
+            this.HasKey<int>(o => o.AttendanceExceptionId);
+        }
+    }
+
+    public class DailyAttendanceSettingEntityTypeConfiguration : EntityTypeConfiguration<DailyAttendanceSetting>
+    {
+
+        public DailyAttendanceSettingEntityTypeConfiguration()
+        {
+            this.ToTable("DailyAttendanceSettings", "HRM");
+            this.HasKey<int>(o => o.DailyAttendanceSettingId);
         }
     }
 
@@ -348,11 +406,19 @@ namespace ExceedERP.DataAccess
     }
     public class LeaveEntitlementSettingEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitlementSetting>
     {
-
         public LeaveEntitlementSettingEntityTypeConfiguration()
         {
             this.ToTable("LeaveEntitlementSettings", "HRM");
             this.HasKey<int>(o => o.LeaveEntitlementSettingId);
+        }
+    }
+    public class LeaveEntitlementHistoryEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitlementHistory>
+    {
+
+        public LeaveEntitlementHistoryEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveEntitlementHistories", "HRM");
+            this.HasKey<int>(o => o.LeaveEntitlementHistoryId);
 
         }
     }
@@ -362,19 +428,20 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("LeaveEntitle", "HRM");
             this.HasKey<int>(o => o.LeaveEntitleId);
+            //this.HasIndex(u => new { u.GlFiscalYearId, u.EmployeeId }).IsUnique(true);
         }
 
-      
+
     }
-    public class LeaveEntitlementHistoryEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitlementHistory>
+    public class LeaveTypeSettingEntityTypeConfiguration : EntityTypeConfiguration<LeaveTypeSetting>
     {
-        public LeaveEntitlementHistoryEntityTypeConfiguration()
+        public LeaveTypeSettingEntityTypeConfiguration()
         {
-            this.ToTable("LeaveEntitlementHistories", "HRM");
-            this.HasKey<int>(o => o.LeaveEntitlementHistoryId);
+            this.ToTable("LeaveTypeSetting", "HRM");
+            this.HasKey<int>(o => o.LeaveTypeSettingId);
         }
 
-      
+
     }
 
     public class LeaveEntityTypeConfiguration : EntityTypeConfiguration<Leave>
@@ -467,6 +534,17 @@ namespace ExceedERP.DataAccess
         }
     }
 
+    public class PlacementWorkflowSettingEntityTypeConfiguration : EntityTypeConfiguration<PlacementWorkflowSetting>
+    {
+
+        public PlacementWorkflowSettingEntityTypeConfiguration()
+        {
+            this.ToTable("PlacementWorkflowSettings", "HRM");
+            this.HasKey<int>(o => o.PlacementWorkflowSettingId);
+
+        }
+    }
+
     public class PlacementAfterSystemtEntityTypeConfiguration : EntityTypeConfiguration<PlacementAfterSystem>
     {
 
@@ -498,7 +576,7 @@ namespace ExceedERP.DataAccess
         }
     }
 
-   
+
 
     public class TerminationEntityTypeConfiguration : EntityTypeConfiguration<Termination>
     {
@@ -508,7 +586,25 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.TerminationId);
         }
     }
+    public class TerminationPMValidationEntityTypeConfiguration : EntityTypeConfiguration<TerminationPMValidation>
+    {
+        public TerminationPMValidationEntityTypeConfiguration()
+        {
+            this.ToTable("TerminationPMValidations", "HRM");
+            this.HasKey<int>(o => o.TerminationPMValidationId);
+        }
+    }
 
+    public class TerminationHRManagerValidationEntityTypeConfiguration : EntityTypeConfiguration<TerminationHRManagerValidation>
+    {
+        public TerminationHRManagerValidationEntityTypeConfiguration()
+        {
+            this.ToTable("TerminationHRManagerValidations", "HRM");
+            this.HasKey<int>(o => o.TerminationHRManagerValidationId);
+        }
+    }
+
+   
     public class StepEntityTypeConfiguration : EntityTypeConfiguration<Step>
     {
 
@@ -527,6 +623,7 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.RankId);
         }
     }
+   
     public class SalaryEntityTypeConfiguration : EntityTypeConfiguration<Salary>
     {
 
@@ -552,6 +649,16 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("NeedAssessment", "HRM");
             this.HasKey<int>(o => o.AssesmentId);
+        }
+    }
+
+    public class NeedAssessmentAttachmentEntityTypeConfiguration : EntityTypeConfiguration<NeedAssessmentAttachment>
+    {
+
+        public NeedAssessmentAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("NeedAssessmentAttachments", "HRM");
+            this.HasKey<int>(o => o.NeedAssessmentAttachmentId);
         }
     }
 
@@ -614,6 +721,16 @@ namespace ExceedERP.DataAccess
         }
     }
 
+    public class ProvidedTrainingEntityTypeConfiguration : EntityTypeConfiguration<ProvidedTraining>
+    {
+
+        public ProvidedTrainingEntityTypeConfiguration()
+        {
+            this.ToTable("ProvidedTrainings", "HRM");
+            this.HasKey<int>(o => o.ProvidedTrainingId);
+        }
+    }
+
     public class EmployeeEntityTypeConfiguration : EntityTypeConfiguration<Person_Employee>
     {
 
@@ -624,6 +741,18 @@ namespace ExceedERP.DataAccess
 
         }
     }
+    public class LegacyEmployeeEntityTypeConfiguration : EntityTypeConfiguration<LegacyEmployee>
+    {
+
+        public LegacyEmployeeEntityTypeConfiguration()
+        {
+            this.ToTable("LegacyEmployees", "HRM");
+            this.HasKey<int>(o => o.LegacyEmployeeId);
+
+        }
+    }
+
+   
 
     public class MainCompanyStructureEntityTypeConfiguration : EntityTypeConfiguration<MainCompanyStructure>
     {
@@ -644,7 +773,7 @@ namespace ExceedERP.DataAccess
         }
     }
 
-   
+
     public class RegionNationEntityTypeConfiguration : EntityTypeConfiguration<RegionNation>
     {
 
@@ -683,6 +812,15 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.LeavePlanValidationId);
         }
     }
+    public class LeavePlanFinalValidationEntityTypeConfiguration : EntityTypeConfiguration<LeavePlanFinalValidation>
+    {
+
+        public LeavePlanFinalValidationEntityTypeConfiguration()
+        {
+            this.ToTable("LeavePlanFinalValidation", "HRM");
+            this.HasKey<int>(o => o.LeavePlanFinalValidationId);
+        }
+    }
     public class TrainingPlanEntityTypeConfiguration : EntityTypeConfiguration<TrainingPlan>
     {
 
@@ -692,8 +830,8 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.TrainingPlanId);
         }
     }
-  
-   
+
+
     public class ExitInterviewEntityTypeConfiguration : EntityTypeConfiguration<ExitInterview>
     {
 
@@ -705,11 +843,28 @@ namespace ExceedERP.DataAccess
     }
     public class LeavePaidEntityTypeConfiguration : EntityTypeConfiguration<LeavePaid>
     {
-
         public LeavePaidEntityTypeConfiguration()
         {
             this.ToTable("LeavePaid", "HRM");
             this.HasKey<int>(o => o.LeavePaidId);
+
+            // Set precision/scale for all decimal properties
+            this.Property(p => p.AmountInBirr).HasPrecision(18, 2);
+            this.Property(p => p.BasicSalary).HasPrecision(18, 2);
+            this.Property(p => p.DailyRate).HasPrecision(18, 2);
+            this.Property(p => p.GrossAmount).HasPrecision(18, 2);
+            this.Property(p => p.TaxPayable).HasPrecision(18, 2);
+            this.Property(p => p.NetPay).HasPrecision(18, 2);
+        }
+    }
+    public class LeavePaidDeductionDetailEntityTypeConfiguration : EntityTypeConfiguration<LeavePaidDeductionDetail>
+    {
+        public LeavePaidDeductionDetailEntityTypeConfiguration()
+        {
+            this.ToTable("LeavePaidDeductionDetails", "HRM");
+            this.HasKey<int>(o => o.LeavePaidDeductionDetailId);
+
+            this.Property(p => p.DeductedDays).HasPrecision(18, 2);
         }
     }
     public class SalaryJobTitleEntityTypeConfiguration : EntityTypeConfiguration<SalaryJobTitle>
@@ -726,8 +881,26 @@ namespace ExceedERP.DataAccess
 
         public OtherBenefitEntityTypeConfiguration()
         {
-            this.ToTable("OtherBenefit", "HRM");
+            this.ToTable("OtherBenefits", "HRM");
             this.HasKey<int>(o => o.OtherBenefitId);
+        }
+    }
+    public class EmployeeBenefitEntityTypeConfiguration : EntityTypeConfiguration<EmployeeBenefit>
+    {
+
+        public EmployeeBenefitEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeeBenefits", "HRM");
+            this.HasKey<int>(o => o.EmployeeBenefitId);
+        }
+    }
+    public class EmployeeBenefitDetailEntityTypeConfiguration : EntityTypeConfiguration<EmployeeBenefitDetail>
+    {
+
+        public EmployeeBenefitDetailEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeeBenefitDetails", "HRM");
+            this.HasKey<int>(o => o.EmployeeBenefitDetailId);
         }
     }
     public class DisciplineMeasuresEntityTypeConfiguration : EntityTypeConfiguration<DisciplineMeasures>
@@ -757,6 +930,8 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.DisciplineMeasuerByMoneyId);
         }
     }
+   
+   
     public class CommitteeEntityTypeConfiguration : EntityTypeConfiguration<Committee>
     {
 
@@ -852,6 +1027,18 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.AbsenceId);
         }
     }
+    public class EmployeeAttendanceSummaryEntityTypeConfiguration : EntityTypeConfiguration<EmployeeAttendanceSummary>
+    {
+        public EmployeeAttendanceSummaryEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeeAttendanceSummary", "HRM");
+            this.HasKey<int>(o => o.EmployeeAttendanceSummaryId);
+            this.Property(o => o.LateComing).HasPrecision(8, 6);
+            this.Property(o => o.Absent).HasPrecision(8, 6);
+            this.Property(o => o.OvertimeDays).HasPrecision(8, 6);
+            this.Property(o => o.OvertimeHours).HasPrecision(8, 6);
+        }
+    }
     public class LateCommingEntityTypeConfiguration : EntityTypeConfiguration<LateComming>
     {
         public LateCommingEntityTypeConfiguration()
@@ -866,6 +1053,8 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("LateComingSummary", "HRM");
             this.HasKey<int>(o => o.LateComingSummaryId);
+            // matches Payroll.EmpPayrollNoDaysWorked.Days precision so the source TotalDays isn't rounded before deduction
+            this.Property(o => o.TotalDays).HasPrecision(10, 5);
         }
     }
 
@@ -877,6 +1066,14 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("AllowanceTypeRule", "HRM");
             this.HasKey<int>(o => o.AllowanceTypeRuleId);
+        }
+    }
+    public class AllowanceGenerationSettingEntityTypeConfiguration : EntityTypeConfiguration<AllowanceGenerationSetting>
+    {
+        public AllowanceGenerationSettingEntityTypeConfiguration()
+        {
+            this.ToTable("AllowanceGenerationSettings", "HRM");
+            this.HasKey<int>(o => o.AllowanceGenerationSettingId);
         }
     }
 
@@ -902,15 +1099,15 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.RequestStatusId);
         }
     }
-    //public class PromotionRequestEntityTypeConfiguration : EntityTypeConfiguration<PromotionRequest >
-    //{
-    //    public PromotionRequestEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("PromotionRequest", "HRM");
-    //        this.HasKey<int>(o => o.PromotionRequestId);
-    //    }
-    //}
- 
+    public class PromotionRequestEntityTypeConfiguration : EntityTypeConfiguration<PromotionRequest>
+    {
+        public PromotionRequestEntityTypeConfiguration()
+        {
+            this.ToTable("PromotionRequest", "HRM");
+            this.HasKey<int>(o => o.PromotionRequestId);
+        }
+    }
+
 
     public class ApplicantTrainingEntityTypeConfiguration : EntityTypeConfiguration<ApplicantTraining>
     {
@@ -920,8 +1117,24 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.ApplicantTrainingId);
         }
     }
+    public class TrainingApplicantAttachmentEntityTypeConfiguration : EntityTypeConfiguration<TrainingApplicantAttachment>
+    {
+        public TrainingApplicantAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("TrainingApplicantAttachments", "HRM");
+            this.HasKey<int>(o => o.TrainingApplicantAttachmentId);
+        }
+    }
+    public class TrainingApplicantSecondValidationEntityTypeConfiguration : EntityTypeConfiguration<TrainingApplicantSecondValidation>
+    {
+        public TrainingApplicantSecondValidationEntityTypeConfiguration()
+        {
+            this.ToTable("TrainingApplicantSecondValidations", "HRM");
+            this.HasKey<int>(o => o.TrainingApplicantSecondValidationId);
+        }
+    }
 
-   
+
     public class LeaveRequestEntityTypeConfiguration : EntityTypeConfiguration<LeaveRequest>
     {
         public LeaveRequestEntityTypeConfiguration()
@@ -930,6 +1143,32 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.LeaveRequestId);
         }
     }
+    public class LeaveRequestAttachementEntityTypeConfiguration : EntityTypeConfiguration<LeaveRequestAttachement>
+    {
+        public LeaveRequestAttachementEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveRequestAttachements", "HRM");
+            this.HasKey<int>(o => o.LeaveRequestAttachementId);
+        }
+    }
+
+    public class LeaveRequestPMValidationEntityTypeConfiguration : EntityTypeConfiguration<LeaveRequestPMValidation>
+    {
+        public LeaveRequestPMValidationEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveRequestPMValidations", "HRM");
+            this.HasKey<int>(o => o.LeaveRequestPMValidationId);
+        }
+    }
+    public class LeaveRequestHRManagerValidationEntityTypeConfiguration : EntityTypeConfiguration<LeaveRequestHRManagerValidation>
+    {
+        public LeaveRequestHRManagerValidationEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveRequestHRManagerValidations", "HRM");
+            this.HasKey<int>(o => o.LeaveRequestHRManagerValidationId);
+        }
+    }
+
     public class ExperienceRequestEntityTypeConfiguration : EntityTypeConfiguration<ExperienceRequest>
     {
         public ExperienceRequestEntityTypeConfiguration()
@@ -956,6 +1195,16 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.EducationRequestId);
         }
     }
+    public class EducationRequestAttachementEntityTypeConfiguration : EntityTypeConfiguration<EducationRequestAttachement>
+    {
+
+        public EducationRequestAttachementEntityTypeConfiguration()
+        {
+            this.ToTable("EducationRequestAttachement", "HRM");
+            this.HasKey<int>(o => o.EducationRequestAttachementId);
+        }
+    }
+   
     public class OverTimeRequestEntityTypeConfiguration : EntityTypeConfiguration<OverTimeRequest>
     {
 
@@ -963,6 +1212,10 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("OverTimeRequest", "HRM");
             this.HasKey<int>(o => o.OverTimeRequestId);
+            this.Property(o => o.TotalHours).HasPrecision(18, 5);
+            this.Property(o => o.TotalDays).HasPrecision(18, 5);
+            this.Property(o => o.GrandTotalHours).HasPrecision(18, 5);
+            this.Property(o => o.ConvertedTotalDays).HasPrecision(18, 5);
         }
     }
     public class OverTimeRequestEmployeeEntityTypeConfiguration : EntityTypeConfiguration<OverTimeRequestEmployee>
@@ -1020,6 +1273,15 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("EmployeePerformance", "Performance");
             this.HasKey<int>(o => o.EmployeePerformanceId);
+        }
+    }
+    public class EmployeePerformanceSummaryEntityTypeConfiguration : EntityTypeConfiguration<EmployeePerformanceSummary>
+    {
+
+        public EmployeePerformanceSummaryEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeePerformanceSummary", "Performance");
+            this.HasKey<int>(o => o.EmployeePerformanceSummaryId);
         }
     }
 
@@ -1182,7 +1444,11 @@ namespace ExceedERP.DataAccess
         }
     }
     #endregion
+
+
     #region Company
+  
+    
     public class JobTitleAndRankMappingEntityTypeConfiguration : EntityTypeConfiguration<JobTitleAndRankMapping>
     {
 
@@ -1193,6 +1459,7 @@ namespace ExceedERP.DataAccess
             // this.HasRequired<int>(s => s.JobTitle);
         }
     }
+   
     public class HolidayEntityTypeConfiguration : EntityTypeConfiguration<Holiday>
     {
 
@@ -1213,7 +1480,6 @@ namespace ExceedERP.DataAccess
             // this.HasRequired<int>(s => s.JobTitle);
         }
     }
-
     public class WeekendExceptionEntityTypeConfiguration : EntityTypeConfiguration<WeekendException>
     {
 
@@ -1234,7 +1500,7 @@ namespace ExceedERP.DataAccess
             // this.HasRequired<int>(s => s.JobTitle);
         }
     }
-
+   
     public class JobTitleMappingTempEntityTypeConfiguration : EntityTypeConfiguration<JobTitleMappingTemp>
     {
 
@@ -1299,12 +1565,165 @@ namespace ExceedERP.DataAccess
     }
     #endregion
     #region Recruitment
+
+    public class ScreeningSettingEntityTypeConfiguration : EntityTypeConfiguration<ScreeningSetting>
+    {
+        public ScreeningSettingEntityTypeConfiguration()
+        {
+            this.ToTable("ScreeningSettings", "HRM");
+            this.HasKey<int>(o => o.ScreeningSettingId);
+        }
+    }
+    public class InternalApplicantsEntityTypeConfiguration : EntityTypeConfiguration<InternalApplicants>
+    {
+        public InternalApplicantsEntityTypeConfiguration()
+        {
+            this.ToTable("InternalApplicants", "HRM");
+            this.HasKey<int>(o => o.InternalApplicantsId);
+        }
+    }
+    public class InternalApplicantExamResultEntityTypeConfiguration : EntityTypeConfiguration<InternalApplicantExamResult>
+    {
+        public InternalApplicantExamResultEntityTypeConfiguration()
+        {
+            this.ToTable("InternalApplicantExamResults", "HRM");
+            this.HasKey<int>(o => o.InternalApplicantExamResultId);
+        }
+    }
+    public class InternalApplicantScreeningEntityTypeConfiguration : EntityTypeConfiguration<InternalApplicantScreening>
+    {
+        public InternalApplicantScreeningEntityTypeConfiguration()
+        {
+            this.ToTable("InternalApplicantScreenings", "HRM");
+            this.HasKey<int>(o => o.InternalApplicantScreeningId);
+        }
+    }
+    public class InternalApplicantScreeningResultEntityTypeConfiguration : EntityTypeConfiguration<InternalApplicantScreeningResult>
+    {
+        public InternalApplicantScreeningResultEntityTypeConfiguration()
+        {
+            this.ToTable("InternalApplicantScreeningResults", "HRM");
+            this.HasKey<int>(o => o.InternalApplicantScreeningResultId);
+        }
+    }
+    public class ApplicantScreeningResultAttachmentEntityTypeConfiguration : EntityTypeConfiguration<ApplicantScreeningResultAttachment>
+    {
+        public ApplicantScreeningResultAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("ApplicantScreeningResultAttachments", "HRM");
+            this.HasKey<int>(o => o.ApplicantScreeningResultAttachmentId);
+        }
+    }
     public class RecruitmentRequestEntityTypeConfiguration : EntityTypeConfiguration<RecruitmentRequest>
     {
         public RecruitmentRequestEntityTypeConfiguration()
         {
             this.ToTable("RecruitmentRequest", "HRM");
-            this.HasKey<int>(o => o.RecruitmentRequestId);
+            this.HasKey(o => o.RecruitmentRequestId);
+
+         
+
+           
+
+            // Hierarchy Validation Navigation Mappings
+            this.HasMany(e => e.RecruitmentRequestProjectHRValidations)
+                .WithRequired(v => v.RecruitmentRequest)
+                .HasForeignKey(v => v.RecruitmentRequestId)
+                .WillCascadeOnDelete(true);
+
+            this.HasMany(e => e.RecruitmentRequestPMValidations)
+                .WithRequired(v => v.RecruitmentRequest)
+                .HasForeignKey(v => v.RecruitmentRequestId)
+                .WillCascadeOnDelete(true);
+
+            this.HasMany(e => e.RecruitmentRequestDepartmentValidations)
+                .WithRequired(v => v.RecruitmentRequest)
+                .HasForeignKey(v => v.RecruitmentRequestId)
+                .WillCascadeOnDelete(true);
+
+            this.HasMany(e => e.RecruitmentRequestHRValidations)
+                .WithRequired(v => v.RecruitmentRequest)
+                .HasForeignKey(v => v.RecruitmentRequestId)
+                .WillCascadeOnDelete(true);
+
+            this.HasMany(e => e.RecruitmentRequestDGMValidations)
+                .WithRequired(v => v.RecruitmentRequest)
+                .HasForeignKey(v => v.RecruitmentRequestId)
+                .WillCascadeOnDelete(true);
+
+            this.HasMany(e => e.RecruitmentRequestGMValidations)
+                .WithRequired(v => v.RecruitmentRequest)
+                .HasForeignKey(v => v.RecruitmentRequestId)
+                .WillCascadeOnDelete(true);
+
+            // Legacy Table
+            this.HasMany(e => e.RecruitmentRequestSecondValidations)
+                .WithRequired(v => v.RecruitmentRequest)
+                .HasForeignKey(v => v.RecruitmentRequestId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class RecruitmentRequestProjectHRValidationConfiguration : EntityTypeConfiguration<RecruitmentRequestProjectHRValidation>
+    {
+        public RecruitmentRequestProjectHRValidationConfiguration()
+        {
+            this.ToTable("RecruitmentRequestProjectHRValidation", "HRM");
+            this.HasKey(o => o.RecruitmentRequestProjectHRValidationId);
+        }
+    }
+
+    public class RecruitmentRequestPMValidationConfiguration : EntityTypeConfiguration<RecruitmentRequestPMValidation>
+    {
+        public RecruitmentRequestPMValidationConfiguration()
+        {
+            this.ToTable("RecruitmentRequestPMValidation", "HRM");
+            this.HasKey(o => o.RecruitmentRequestPMValidationId);
+        }
+    }
+
+    public class RecruitmentRequestDepartmentValidationConfiguration : EntityTypeConfiguration<RecruitmentRequestDepartmentValidation>
+    {
+        public RecruitmentRequestDepartmentValidationConfiguration()
+        {
+            this.ToTable("RecruitmentRequestDepartmentValidation", "HRM");
+            this.HasKey(o => o.RecruitmentRequestDepartmentValidationId);
+        }
+    }
+
+    public class RecruitmentRequestHRValidationConfiguration : EntityTypeConfiguration<RecruitmentRequestHRValidation>
+    {
+        public RecruitmentRequestHRValidationConfiguration()
+        {
+            this.ToTable("RecruitmentRequestHRValidation", "HRM");
+            this.HasKey(o => o.RecruitmentRequestHRValidationId);
+        }
+    }
+
+    public class RecruitmentRequestDGMValidationConfiguration : EntityTypeConfiguration<RecruitmentRequestDGMValidation>
+    {
+        public RecruitmentRequestDGMValidationConfiguration()
+        {
+            this.ToTable("RecruitmentRequestDGMValidation", "HRM");
+            this.HasKey(o => o.RecruitmentRequestDGMValidationId);
+        }
+    }
+
+    public class RecruitmentRequestGMValidationConfiguration : EntityTypeConfiguration<RecruitmentRequestGMValidation>
+    {
+        public RecruitmentRequestGMValidationConfiguration()
+        {
+            this.ToTable("RecruitmentRequestGMValidation", "HRM");
+            this.HasKey(o => o.RecruitmentRequestGMValidationId);
+        }
+    }
+
+    public class RecruitmentRequestSecondValidationConfiguration : EntityTypeConfiguration<RecruitmentRequestSecondValidation>
+    {
+        public RecruitmentRequestSecondValidationConfiguration()
+        {
+            this.ToTable("RecruitmentRequestSecondValidation", "HRM");
+            this.HasKey(o => o.RecruitmentRequestSecondValidationId);
         }
     }
     public class ApplicantExperienceEntityTypeConfiguration : EntityTypeConfiguration<ApplicantExperience>
@@ -1341,6 +1760,49 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.VacancyId);
         }
     }
+    public class VacancyDetailEntityTypeConfiguration : EntityTypeConfiguration<VacancyDetail>
+    {
+
+        public VacancyDetailEntityTypeConfiguration()
+        {
+            this.ToTable("VacancyDetails", "HRM");
+            this.HasKey<int>(o => o.VacancyDetailId);
+        }
+    }
+    public class VacancyLanguageEntityTypeConfiguration
+    : EntityTypeConfiguration<VacancyLanguage>
+    {
+        public VacancyLanguageEntityTypeConfiguration()
+        {
+            // Table
+            ToTable("VacancyLanguages", "HRM");
+
+            // Primary Key
+            HasKey(x => x.VacancyLanguageId);
+
+            // Properties
+            Property(x => x.LanguageName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            Property(x => x.Description)
+                .IsOptional()
+                .HasMaxLength(500);
+
+            Property(x => x.ProficiencyLevel)
+                .IsOptional()
+                .HasMaxLength(50);
+
+            Property(x => x.IsRequired)
+                .IsRequired();
+
+            // Relationship
+            HasRequired(x => x.Vacancy)
+                .WithMany(x => x.VacancyLanguages)
+                .HasForeignKey(x => x.VacancyId)
+                .WillCascadeOnDelete(true);
+        }
+    }
     public class RecruitmentPlanEntityTypeConfiguration : EntityTypeConfiguration<RecruitmentPlan>
     {
         public RecruitmentPlanEntityTypeConfiguration()
@@ -1365,12 +1827,28 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.RecruitmentId);
         }
     }
+    public class InternalRecruitmentCriteriaTypeSettingEntityTypeConfiguration : EntityTypeConfiguration<InternalRecruitmentCriteriaTypeSetting>
+    {
+        public InternalRecruitmentCriteriaTypeSettingEntityTypeConfiguration()
+        {
+            this.ToTable("InternalRecruitmentCriteriaTypeSettings", "HRM");
+            this.HasKey<int>(o => o.InternalRecruitmentCriteriaTypeSettingId);
+        }
+    }
     public class ApplicantExamResultEntityTypeConfiguration : EntityTypeConfiguration<ApplicantExamResult>
     {
         public ApplicantExamResultEntityTypeConfiguration()
         {
             this.ToTable("ApplicantExamResult", "HRM");
             this.HasKey<int>(o => o.ApplicantResultId);
+        }
+    }
+    public class ApplicantScreenResultEntityTypeConfiguration : EntityTypeConfiguration<ApplicantScreenResult>
+    {
+        public ApplicantScreenResultEntityTypeConfiguration()
+        {
+            this.ToTable("ApplicantScreenResults", "HRM");
+            this.HasKey<int>(o => o.ApplicantScreenResultId);
         }
     }
     public class RecruitmentVacancyEntityTypeConfiguration : EntityTypeConfiguration<RecruitmentVacancy>
@@ -1389,12 +1867,29 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.EmployeeTransferRequestId);
         }
     }
+    public class InternalVacancyEligibilitySettingEntityTypeConfiguration : EntityTypeConfiguration<InternalVacancyEligibilitySetting>
+    {
+        public InternalVacancyEligibilitySettingEntityTypeConfiguration()
+        {
+            this.ToTable("InternalVacancyEligibilitySettings", "HRM");
+            this.HasKey<int>(o => o.InternalVacancyEligibilitySettingId);
+        }
+    }
     public class TransferRequestDetailEntityTypeConfiguration : EntityTypeConfiguration<TransferRequestDetail>
     {
         public TransferRequestDetailEntityTypeConfiguration()
         {
             this.ToTable("TransferRequestDetails", "HRM");
             this.HasKey<int>(o => o.TransferRequestDetailId);
+        }
+    }
+
+    public class CompanyApprovalSettingEntityTypeConfiguration : EntityTypeConfiguration<CompanyApprovalSetting>
+    {
+        public CompanyApprovalSettingEntityTypeConfiguration()
+        {
+            this.ToTable("CompanyApprovalSettings", "HRM");
+            this.HasKey<int>(o => o.CompanyApprovalSettingId);
         }
     }
     public class TransferRequestValidationEntityTypeConfiguration : EntityTypeConfiguration<TransferRequestValidation>
@@ -1405,6 +1900,22 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.TransferRequestValidationId);
         }
     }
+    public class TransferRequestGMValidationEntityTypeConfiguration : EntityTypeConfiguration<TransferRequestGMValidation>
+    {
+        public TransferRequestGMValidationEntityTypeConfiguration()
+        {
+            this.ToTable("TransferRequestGMValidations", "HRM");
+            this.HasKey<int>(o => o.TransferRequestGMValidationId);
+        }
+    }
+    public class TransferRequestDGMValidationEntityTypeConfiguration : EntityTypeConfiguration<TransferRequestDGMValidation>
+    {
+        public TransferRequestDGMValidationEntityTypeConfiguration()
+        {
+            this.ToTable("TransferRequestDGMValidations", "HRM");
+            this.HasKey<int>(o => o.TransferRequestDGMValidationId);
+        }
+    }
     public class TransferRequestDepartmentValidationEntityTypeConfiguration : EntityTypeConfiguration<TransferRequestDepartmentValidation>
     {
         public TransferRequestDepartmentValidationEntityTypeConfiguration()
@@ -1413,9 +1924,57 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.TransferRequestDepartmentValidationId);
         }
     }
+    public class EmployeeTransferAttachmentEntityTypeConfiguration : EntityTypeConfiguration<EmployeeTransferAttachment>
+    {
+        public EmployeeTransferAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeeTransferAttachments", "HRM");
+            this.HasKey<int>(o => o.EmployeeTransferAttachmentId);
+        }
+    }
+    public class ExperienceJobTitleDetailEntityTypeConfiguration : EntityTypeConfiguration<ExperienceJobTitleDetail>
+    {
+        public ExperienceJobTitleDetailEntityTypeConfiguration()
+        {
+            this.ToTable("ExperienceJobTitleDetails", "HRM");
+            this.HasKey<int>(o => o.ExperienceJobTitleDetailId);
+        }
+    }
+    public class EducationFieldDetailEntityTypeConfiguration : EntityTypeConfiguration<EducationFieldDetail>
+    {
+        public EducationFieldDetailEntityTypeConfiguration()
+        {
+            this.ToTable("EducationFieldDetails", "HRM");
+            this.HasKey<int>(o => o.EducationFieldDetailId);
+        }
+    }
+    public class RelatedEducationFieldDetailEntityTypeConfiguration : EntityTypeConfiguration<RelatedEducationFieldDetail>
+    {
+        public RelatedEducationFieldDetailEntityTypeConfiguration()
+        {
+            this.ToTable("RelatedEducationFieldDetails", "HRM");
+            this.HasKey<int>(o => o.RelatedEducationFieldDetailId);
+        }
+    }
+    public class EducationLevelDetailEntityTypeConfiguration : EntityTypeConfiguration<EducationLevelDetail>
+    {
+        public EducationLevelDetailEntityTypeConfiguration()
+        {
+            this.ToTable("EducationLevelDetail", "HRM");
+            this.HasKey<int>(o => o.EducationLevelDetailId);
+        }
+    }
+    public class ExperienceJobTitleEntityTypeConfiguration : EntityTypeConfiguration<ExperienceJobTitle>
+    {
+        public ExperienceJobTitleEntityTypeConfiguration()
+        {
+            this.ToTable("ExperienceJobTitles", "HRM");
+            this.HasKey<int>(o => o.ExperienceJobTitleId);
+        }
+    }
     #endregion
 
-
+    #region leave ,Benefit, Others
     public class MonthlyLeavePlanEntityTypeConfiguration : EntityTypeConfiguration<MonthlyLeavePlan>
     {
         public MonthlyLeavePlanEntityTypeConfiguration()
@@ -1433,14 +1992,6 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.MonthlyLeavePlanDetailId);
         }
     }
-    public class LeavePlanFinalValidationEntityTypeConfiguration : EntityTypeConfiguration<LeavePlanFinalValidation>
-    {
-        public LeavePlanFinalValidationEntityTypeConfiguration()
-        {
-            this.ToTable("LeavePlanFinalValidation", "HRM");
-            this.HasKey<int>(o => o.LeavePlanFinalValidationId);
-        }
-    }
     public class EmployeePerformanceActionsEntityTypeConfiguration : EntityTypeConfiguration<EmployeePerformanceScore>
     {
         public EmployeePerformanceActionsEntityTypeConfiguration()
@@ -1455,6 +2006,38 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("ProbationPerformanceSetting", "HRM");
             this.HasKey<int>(o => o.ProbationPerformanceSettingId);
+        }
+    }
+    public class PerformanceEvaluationSettingEntityTypeConfiguration : EntityTypeConfiguration<PerformanceEvaluationSetting>
+    {
+        public PerformanceEvaluationSettingEntityTypeConfiguration()
+        {
+            this.ToTable("PerformanceEvaluationSettings", "HRM");
+            this.HasKey<int>(o => o.PerformanceEvaluationSettingId);
+        }
+    }
+    public class PerformanceAllowedScoreEntityTypeConfiguration : EntityTypeConfiguration<PerformanceAllowedScore>
+    {
+        public PerformanceAllowedScoreEntityTypeConfiguration()
+        {
+            this.ToTable("PerformanceAllowedScores", "HRM");
+            this.HasKey<int>(o => o.PerformanceAllowedScoreId);
+        }
+    }
+    public class PerformanceEvaluationSettingsEntityTypeConfiguration : EntityTypeConfiguration<PerformanceEvaluationSetting>
+    {
+        public PerformanceEvaluationSettingsEntityTypeConfiguration()
+        {
+            this.ToTable("PerformanceEvaluationSettings", "HRM");
+            this.HasKey<int>(o => o.PerformanceEvaluationSettingId);
+        }
+    }
+    public class EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeePeerToPeerAndInternalCustomerPerformanceSetting>
+    {
+        public EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeePeerToPeerAndInternalCustomerPerformanceSettings", "HRM");
+            this.HasKey<int>(o => o.EmployeePeerToPeerAndInternalCustomerPerformanceSettingId);
         }
     }
 
@@ -1484,12 +2067,21 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.BusinessUnitId);
         }
     }
+   
     public class SickLeaveSettingEntityTypeConfiguration : EntityTypeConfiguration<SickLeaveSetting>
     {
         public SickLeaveSettingEntityTypeConfiguration()
         {
             this.ToTable("SickLeaveSetting", "HRM");
             this.HasKey<int>(o => o.SickLeaveSettingId);
+        }
+    }
+    public class CompanyLeaveWorkflowSettingEntityTypeConfiguration : EntityTypeConfiguration<CompanyLeaveWorkflowSetting>
+    {
+        public CompanyLeaveWorkflowSettingEntityTypeConfiguration()
+        {
+            this.ToTable("CompanyLeaveWorkflowSettings", "HRM");
+            this.HasKey<int>(o => o.CompanyLeaveWorkflowSettingId);
         }
     }
     public class LeavePayableSettingEntityTypeConfiguration : EntityTypeConfiguration<LeavePayableSetting>
@@ -1514,6 +2106,21 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("LeavePayableDetails", "HRM");
             this.HasKey<int>(o => o.LeavePayableDetailId);
+            this.Property(d => d.BasicSalary).HasPrecision(18, 6);
+            this.Property(d => d.Balance).HasPrecision(18, 6);
+            this.Property(d => d.PayableDays).HasPrecision(18, 6);
+            this.Property(d => d.Year1).HasPrecision(18, 6);
+            this.Property(d => d.Year2).HasPrecision(18, 6);
+            this.Property(d => d.AnnualLeavePerMonth).HasPrecision(18, 6);
+            this.Property(d => d.Balance).HasPrecision(18, 6);
+            this.Property(d => d.AgregateIncomeTax).HasPrecision(18, 6);
+            this.Property(d => d.AgregateTaxableAmount).HasPrecision(18, 6);
+            this.Property(d => d.AgregateIncomeTax).HasPrecision(18, 6);
+            this.Property(d => d.BasicSalaryIncomeTax).HasPrecision(18, 6);
+            this.Property(d => d.TaxDifference).HasPrecision(18, 6);
+            this.Property(d => d.NetPayment).HasPrecision(18, 6);
+
+
         }
     }
     public class LeavePayableWithDetailFiscalYearEntityTypeConfiguration : EntityTypeConfiguration<LeavePayableWithDetailFiscalYear>
@@ -1522,27 +2129,38 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("LeavePayableWithDetailFiscalYears", "HRM");
             this.HasKey<int>(d => d.LeavePayableWithDetailFiscalYearId);
-           
-        }
-    }
-    public class LeaveTypeSettingEntityTypeConfiguration : EntityTypeConfiguration<LeaveTypeSetting>
-    {
-        public LeaveTypeSettingEntityTypeConfiguration()
-        {
-            this.ToTable("LeaveTypeSetting", "HRM");
-            this.HasKey<int>(o => o.LeaveTypeSettingId);
-        }
 
-
+        }
     }
     #region Severance
+    public class SeverancePayableSettingEntityTypeConfiguration : EntityTypeConfiguration<SeverancePayableSetting>
+    {
+        public SeverancePayableSettingEntityTypeConfiguration()
+        {
+            this.ToTable("SeverancePayableSettings", "HRM");
+            this.HasKey<int>(o => o.SeverancePayableSettingId);
+            this.Property(d => d.SalaryValue).HasPrecision(18, 6);
+
+        }
+    }
+    public class SeveranceCalculationSettingEntityTypeConfiguration: EntityTypeConfiguration<SeveranceCalculationSetting>
+    {
+        public SeveranceCalculationSettingEntityTypeConfiguration()
+        {
+            ToTable("SeveranceCalculationSettings", "HRM");
+            HasKey(x => x.SeveranceCalculationSettingId);
+            Property(x => x.Description).HasMaxLength(500);
+            Property(x => x.FormulaType).IsRequired();
+            Property(x => x.IsActive).IsRequired();
+        }
+    }
     public class SeverancePayableEntityTypeConfiguration : EntityTypeConfiguration<SeverancePayable>
     {
         public SeverancePayableEntityTypeConfiguration()
         {
             this.ToTable("SeverancePayables", "HRM");
             this.HasKey<int>(o => o.SeverancePayableId);
-            
+
         }
     }
     public class SeverancePayableDetailEntityTypeConfiguration : EntityTypeConfiguration<SeverancePayableDetail>
@@ -1551,6 +2169,26 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("SeverancePayableDetail", "HRM");
             this.HasKey<int>(o => o.SeverancePayableDetailId);
+            this.Property(d => d.BasicSalary).HasPrecision(18, 6);
+            this.Property(d => d.SpecialSalaryDeduction).HasPrecision(18, 6);
+            this.Property(d => d.Balance).HasPrecision(18, 6);
+            this.Property(d => d.TaxWithheldComTax).HasPrecision(18, 6);
+            this.Property(d => d.NoneTaxableTotal).HasPrecision(18, 6);
+            this.Property(d => d.TotalDeductions).HasPrecision(18, 6);
+            this.Property(d => d.TaxWithheldIncomeTax).HasPrecision(18, 6);
+            this.Property(d => d.GrossComponsation).HasPrecision(18, 6);
+            this.Property(d => d.GrossCompensationPayment).HasPrecision(18, 6);
+            this.Property(d => d.CompensationPaymentT).HasPrecision(18, 6);
+            this.Property(d => d.TotalServiceMonths).HasPrecision(18, 6);
+            this.Property(d => d.TaxDifference).HasPrecision(18, 6);
+            this.Property(d => d.TaxDifference).HasPrecision(18, 6);
+            this.Property(d => d.AccTaxDifference).HasPrecision(18, 6);
+            this.Property(d => d.TaxOnMonthlySalaryAndCompensation).HasPrecision(18, 6);
+            this.Property(d => d.Months).HasPrecision(18, 6);
+            this.Property(d => d.Years).HasPrecision(18, 6);
+            this.Property(d => d.Days).HasPrecision(18, 6);
+            this.Property(d => d.Months).HasPrecision(18, 6);
+            this.Property(d => d.NetPay).HasPrecision(18, 6);
         }
     }
     public class SeveranceWithProbabilityEntityTypeConfiguration : EntityTypeConfiguration<SeveranceWithProbability>
@@ -1572,25 +2210,6 @@ namespace ExceedERP.DataAccess
             this.Property(d => d.TotalEV).HasPrecision(18, 6);
         }
     }
-    public class SeverancePayableSettingEntityTypeConfiguration : EntityTypeConfiguration<SeverancePayableSetting>
-    {
-        public SeverancePayableSettingEntityTypeConfiguration()
-        {
-            this.ToTable("SeverancePayableSettings", "HRM");
-            this.HasKey<int>(o => o.SeverancePayableSettingId);
-            this.Property(d => d.SalaryValue).HasPrecision(18, 6);
-
-        }
-    }
-    public class SeveranceCalculationSettingEntityTypeConfiguration : EntityTypeConfiguration<SeveranceCalculationSetting>
-    {
-        public SeveranceCalculationSettingEntityTypeConfiguration()
-        {
-            this.ToTable("SeveranceCalculationSettings", "HRM");
-            this.HasKey<int>(o => o.SeveranceCalculationSettingId);
-
-        }
-    }
     #endregion
     public class ComplainDetailEntityTypeConfiguration : EntityTypeConfiguration<ComplainDetail>
     {
@@ -1609,6 +2228,16 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.ProbationPerformanceDetailId);
         }
     }
+
+    public class ProbationPerformanceValidationEntityTypeConfiguration : EntityTypeConfiguration<ProbationPerformanceValidation>
+    {
+        public ProbationPerformanceValidationEntityTypeConfiguration()
+        {
+            this.ToTable("ProbationPerformanceValidations", "HRM");
+            this.HasKey<int>(o => o.ProbationPerformanceValidationId);
+        }
+    }
+
     public class ProbationPerformanceEntityTypeConfiguration : EntityTypeConfiguration<ProbationPerformance>
     {
         public ProbationPerformanceEntityTypeConfiguration()
@@ -1682,6 +2311,7 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.TemplateId);
         }
     }
+
     public class TemplateTypeSettingEntityTypeConfiguration : EntityTypeConfiguration<TemplateTypeSetting>
     {
         public TemplateTypeSettingEntityTypeConfiguration()
@@ -1690,12 +2320,60 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.TemplateTypeSettingId);
         }
     }
+    public class LoanRequestEntityTypeConfiguration : EntityTypeConfiguration<LoanRequest>
+    {
+        public LoanRequestEntityTypeConfiguration()
+        {
+            this.ToTable("LoanRequest", "HRM");
+            this.HasKey<int>(o => o.LoanRequestId);
+        }
+    }
+    public class LoanRequestDetailEntityTypeConfiguration : EntityTypeConfiguration<LoanRequestDetail>
+    {
+        public LoanRequestDetailEntityTypeConfiguration()
+        {
+            this.ToTable("LoanRequestDetails", "HRM");
+            this.HasKey<int>(o => o.LoanRequestDetailId);
+        }
+    }
+    public class LoanRequestAttachmentEntityTypeConfiguration : EntityTypeConfiguration<LoanRequestAttachment>
+    {
+        public LoanRequestAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("LoanRequestAttachments", "HRM");
+            this.HasKey<int>(o => o.LoanRequestAttachmentId);
+        }
+    }
+    public class LoanRequestDepartmentValidationEntityTypeConfiguration : EntityTypeConfiguration<LoanRequestDepartmentValidation>
+    {
+        public LoanRequestDepartmentValidationEntityTypeConfiguration()
+        {
+            this.ToTable("LoanRequestDepartmentValidations", "HRM");
+            this.HasKey<int>(o => o.LoanRequestDepartmentValidationId);
+        }
+    }
+    public class LoanRequestValidationEntityTypeConfiguration : EntityTypeConfiguration<LoanRequestValidation>
+    {
+        public LoanRequestValidationEntityTypeConfiguration()
+        {
+            this.ToTable("LoanRequestValidations", "HRM");
+            this.HasKey<int>(o => o.LoanRequestValidationId);
+        }
+    }
     public class ComplainEntityTypeConfiguration : EntityTypeConfiguration<Complain>
     {
         public ComplainEntityTypeConfiguration()
         {
             this.ToTable("Complain", "HRM");
             this.HasKey<int>(o => o.ComplainId);
+        }
+    }
+    public class ComplainAttachementEntityTypeConfiguration : EntityTypeConfiguration<ComplainAttachement>
+    {
+        public ComplainAttachementEntityTypeConfiguration()
+        {
+            this.ToTable("ComplainAttachement", "HRM");
+            this.HasKey<int>(o => o.ComplainAttachementId);
         }
     }
     public class AppealEntityTypeConfiguration : EntityTypeConfiguration<Appeal>
@@ -1708,7 +2386,7 @@ namespace ExceedERP.DataAccess
 
         }
     }
-   
+
     public class TrainingStatusEntityTypeConfiguration : EntityTypeConfiguration<TrainingStatus>
     {
 
@@ -1761,7 +2439,7 @@ namespace ExceedERP.DataAccess
 
         }
     }
-  
+
 
     public class PerformanceRankEntityTypeConfiguration : EntityTypeConfiguration<PerformanceRank>
     {
@@ -1790,6 +2468,16 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("AnnouncmentDetail", "HRM");
             this.HasKey<int>(o => o.AnnouncDetailId);
+
+        }
+    }
+    public class AnnouncmentAttachmentEntityTypeConfiguration : EntityTypeConfiguration<AnnouncmentAttachment>
+    {
+
+        public AnnouncmentAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("AnnouncmentAttachments", "HRM");
+            this.HasKey<int>(o => o.AnnouncmentAttachmentId);
 
         }
     }
@@ -1933,6 +2621,14 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.ProbationsSettingId);
         }
     }
+    public class TerminationSettingEntityTypeConfiguration : EntityTypeConfiguration<TerminationSetting>
+    {
+        public TerminationSettingEntityTypeConfiguration()
+        {
+            this.ToTable("TerminationSettings", "HRM");
+            this.HasKey<int>(o => o.TerminationSettingId);
+        }
+    }
     public class SickLeaveSalarySettingEntityTypeConfiguration : EntityTypeConfiguration<SickLeaveSalarySetting>
     {
         public SickLeaveSalarySettingEntityTypeConfiguration()
@@ -1941,7 +2637,6 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.SickLeaveSalarySettingId);
         }
     }
-
     public class EmployeeCardEntityTypeConfiguration : EntityTypeConfiguration<EmployeeCard>
     {
         public EmployeeCardEntityTypeConfiguration()
@@ -1959,7 +2654,13 @@ namespace ExceedERP.DataAccess
         }
     }
    
+    public class DelegationBenefitSettingEntityTypeConfiguration : EntityTypeConfiguration<DelegationBenefitSetting>
+    {
+        public DelegationBenefitSettingEntityTypeConfiguration()
+        {
+            this.ToTable("DelegationBenefitSettings", "HRM");
+            this.HasKey<int>(o => o.DelegationBenefitSettingId);
+        }
+    }
+    #endregion
 }
-
-
-

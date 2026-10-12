@@ -1,6 +1,9 @@
 ﻿@using Kendo.Mvc.UI
 @using ExceedERP.Core.Localization
 @model ExceedERP.Core.Domain.Common.HRM.Person_Employee
+@{
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
 <div class="form">
 
     <div class="row fullrow">
@@ -89,7 +92,7 @@
                               .ValuePrimitive(true)
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetPersonTitle", "HRMDataProvider", new { area = "HRM" }))
+                                  dataSource.Read(read => read.Action("GetPersonTitle", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                       .ServerFiltering(false);
                               })
 
@@ -129,7 +132,7 @@
                               .ValuePrimitive(true)
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetCountry", "HRMDataProvider"))
+                                  dataSource.Read(read => read.Action("GetCountry", "HRMDataProvider").Data("sendForgery"))
                                       .ServerFiltering(true);
                               }))
                 </div>
@@ -146,7 +149,7 @@
                               .ValuePrimitive(true)
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetNation", "HRMDataProvider"))
+                                  dataSource.Read(read => read.Action("GetNation", "HRMDataProvider").Data("sendForgery"))
                                       .ServerFiltering(true);
                               }))
                 </div>

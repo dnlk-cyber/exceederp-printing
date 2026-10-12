@@ -1,17 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
-
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
 using System;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile

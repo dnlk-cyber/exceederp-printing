@@ -1,137 +1,141 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using XAPI;
 using ExceedERP.Helpers.Common;
+using PerformanceEntity = ExceedERP.Core.Domain.HRM.PerformanceManagment.EmployeePerformance;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeePerforObjectDataSource : List<EmployeePerfromanceVM>
+    public class EmployeePerforObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeePerfromanceVM> GetEmployeePerformance(string branchId, string orgStructureId, string year, string status, string empId)
+        public List<EmployeePerfromanceVM> GetEmployeePerformance(string branchId, string orgStructureId, string year, string quarterId, string status, string empId,string businessUnit)
         {
-            List<EmployeePerfromanceVM> employeePerformanceList = new List<EmployeePerfromanceVM>();
+            var employeePerformanceList = new List<EmployeePerfromanceVM>();
+
+            if (string.IsNullOrEmpty(year))
+            {
+                return employeePerformanceList;
+            }
 
             int.TryParse(year, out int yearId);
 
-            decimal totalResult = 0;
+            var approved = db.EmployeePerformances.Where(x => x.IsHRApproved);
+            var fiscalYearIds = db.QuarterLengths.Where(x => x.QuarterLengthId == yearId).Select(x => x.GlFiscalYearId).ToList();
+            if (fiscalYearIds.Any())
+            {
+                approved = approved.Where(x => fiscalYearIds.Contains(x.GlFiscalYearId));
+            }
 
-            var placements = db.Placements.Where(x => x.isCurrent).ToList();
-
+            IEnumerable<PerformanceEntity> filtered = approved.ToList();
+            if (!string.IsNullOrEmpty(quarterId))
+            {
+                int.TryParse(quarterId, out int quartId);
+                filtered = filtered.Where(x => x.GlPeriodId == quartId);
+            }
             if (branchId != null)
             {
                 int.TryParse(branchId, out int braId);
-                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).OrderByDescending(x => x.AssignmentDate).ToList();
+                filtered = filtered.Where(x => x.BranchId == braId);
             }
-
             if (orgStructureId != null)
             {
                 int.TryParse(orgStructureId, out int orgId);
-                placements = EmployeeHelper.GetEmployees_ByDepartment_FromPlacement(placements, orgId).OrderByDescending(x => x.AssignmentDate).ToList();
+                filtered = filtered.Where(x => x.OrgStructureId == orgId);
             }
-
             if (empId != null)
             {
                 int.TryParse(empId, out int employeeId);
-                placements = placements.Where(x => x.EmployeeId == employeeId).ToList();
+                filtered = filtered.Where(x => x.EmployeeId == employeeId);
+            }
+            if (businessUnit != null)
+            {
+                int.TryParse(businessUnit, out int businessUnitId);
+                filtered = filtered.Where(x => x.BusinessUnitId == businessUnitId);
+            }
+            if (!string.IsNullOrEmpty(status))
+            {
+                filtered = filtered.Where(x => x.ResponsibilityLevel.ToString() == status);
             }
 
-
-            foreach (var place in placements)
+            var empPerformances = filtered.ToList();
+            var uniqueEmployeePerformances = empPerformances.DistinctByField(x => x.EmployeeId).ToList();
+            if (!uniqueEmployeePerformances.Any())
             {
-                totalResult = 0;
+                return employeePerformanceList;
+            }
 
+            var employeeIds = uniqueEmployeePerformances.Select(x => x.EmployeeId).ToList();
+            var orgIds = uniqueEmployeePerformances.Select(x => x.OrgStructureId).Distinct().ToList();
+            var branchIds = uniqueEmployeePerformances.Select(x => x.BranchId).Distinct().ToList();
+            var criteriaIds = empPerformances.Select(x => x.EvaluationCriteriaTypeId).Distinct().ToList();
+            var periodIds = empPerformances.Select(x => x.GlPeriodId).Distinct().ToList();
+
+            var persons = db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId)).ToDictionary(x => x.EmployeeId);
+            var departments = db.MainCompanyStructures.Where(x => orgIds.Contains(x.OrgStructureId)).ToDictionary(x => x.OrgStructureId, x => x.Name);
+            var branches = db.Branch.Where(x => branchIds.Contains(x.BranchId)).ToDictionary(x => x.BranchId, x => x.Name);
+            var criteriaLookup = db.MeasurementDefinitions.Where(x => criteriaIds.Contains(x.MeasurementDefinitionId)).ToDictionary(x => x.MeasurementDefinitionId);
+            var quarters = db.Quarters.Where(x => periodIds.Contains(x.QuarterId)).ToDictionary(x => x.QuarterId, x => x.Name);
+            var totals = PerformanceReportLookup.LoadTotals(db, empPerformances.Select(x => x.EmployeePerformanceId).ToList());
+            var performancesByEmployee = empPerformances.ToLookup(x => x.EmployeeId);
+
+            foreach (var place in uniqueEmployeePerformances)
+            {
                 var empPerformance = new EmployeePerfromanceVM();
 
-                var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.EmployeeId);
-                if (emp != null)
+                if (persons.TryGetValue(place.EmployeeId, out var emp))
                 {
                     empPerformance.EmployeeId = emp.EmployeeCode;
                     empPerformance.FullName = emp.FullNameaEnglish;
                     empPerformance.Sex = emp.Gender.ToString();
                 }
-
-                var mainCompany = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
-                if (mainCompany != null)
+                if (departments.TryGetValue(place.OrgStructureId, out var departmentName))
                 {
-                    empPerformance.Department = mainCompany.Name;
+                    empPerformance.Department = departmentName;
                 }
-                var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
-                if (branch != null)
+                if (branches.TryGetValue(place.BranchId, out var branchName))
                 {
-                    empPerformance.Branch = branch.Name;
+                    empPerformance.Branch = branchName;
                 }
 
-                var quarterLength = db.QuarterLengths.FirstOrDefault(x => x.GlFiscalYearId == yearId);
-                if (quarterLength != null)
+                empPerformance.PerformanceResults = new List<PerformanceResultVM>();
+                foreach (var performance in performancesByEmployee[place.EmployeeId].DistinctByField(x => x.EvaluationCriteriaTypeId))
                 {
-                    empPerformance.PerformanceResults = new List<PerformanceResultVM>();
-
-                    var quarters = db.Quarters.Where(x => x.QuarterLengthId == quarterLength.QuarterLengthId).ToList();
-
-                    foreach (var quar in quarters)
+                    if (!criteriaLookup.TryGetValue(performance.EvaluationCriteriaTypeId, out var criteria))
                     {
-                        var quarter = new PerformanceResultVM();
-
-                        quarter.Period = quar.Name;
-
-                        var performance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.GlPeriodId == quar.QuarterId);
-
-                        if (performance != null)
-                        {
-                            quarter.Score = GetPerformanceScore(performance.EmployeePerformanceId);
-                            totalResult = totalResult + quarter.Score;
-                        }
-
-                        empPerformance.PerformanceResults.Add(quarter);
+                        continue;
                     }
+
+                    var quarter = new PerformanceResultVM();
+                    if (quarters.TryGetValue(performance.GlPeriodId, out var quarterName))
+                    {
+                        quarter.Period = quarterName;
+                    }
+                    quarter.Criteria = criteria.EvaluationCriteria + "-" + criteria.Role.ToString();
+                    if (totals.TryGetValue(performance.EmployeePerformanceId, out var total))
+                    {
+                        quarter.Weight = total.Weight;
+                        quarter.Score = total.Score;
+                    }
+                    empPerformance.PerformanceResults.Add(quarter);
                 }
 
-                if (status == "Reviewed" && totalResult > 0)
-                {
-                    employeePerformanceList.Add(empPerformance);
-                }
-                else if (status == "Not Reviewed" && totalResult == 0)
-                {
-                    employeePerformanceList.Add(empPerformance);
-                }
-                else if (status == null)
-                {
-                    employeePerformanceList.Add(empPerformance);
-                }
+                employeePerformanceList.Add(empPerformance);
             }
 
             return employeePerformanceList;
         }
 
-        public decimal GetPerformanceScore(int empPerformanceId)
+        public void Dispose()
         {
-            decimal totalScore = 0;
-
-            var empMeasurs = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == empPerformanceId).ToList();
-
-            foreach (var em in empMeasurs)
-            {
-                var scores = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId).ToList();
-
-                if (scores.Any())
-                {
-                    totalScore = totalScore + scores.Sum(x => x.Score);
-                }
-            }
-
-            return totalScore;
+            db.Dispose();
         }
     }
 }

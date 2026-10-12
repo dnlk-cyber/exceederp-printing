@@ -5,57 +5,118 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+    var isManual = ViewData["isManual"] != null && (bool)ViewData["isManual"];
 }
 <legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
 <div class="row">
     <p>
-        <span class="fa fa-circle" style="color:yellow;"></span>&nbsp;&nbsp;@Resources.Enum_RequestStatus_PEND,&nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:gray;"></span>&nbsp;&nbsp;@Resources.HR_Allowance_AllowancePerEmployee_Pend,&nbsp;&nbsp;
         <span class="fa fa-circle" style="color:olive;"></span>&nbsp;&nbsp;@Resources.Rpt_RetirementNotification &nbsp;&nbsp;
-        <span class="fa fa-circle" style="color:#FF842D;"></span>&nbsp;&nbsp;Employee Not Yet Approved &nbsp;&nbsp;
-
+        <span class="fa fa-circle" style="color:darkorange;"></span>&nbsp;&nbsp; @Resources.Unapproved_Employees &nbsp;&nbsp;
+        <a href="javascript:void(0);"
+           onclick="updateEmployeeAge(this)"
+           class="btn btn-link btn-xs">
+            <i class="fa fa-refresh"></i>
+            @Resources.ActionButton_Update @Resources.Age
+        </a>
+        <a href="javascript:void(0);"
+           onclick="updateEmployeeSalary(this)"
+           class="btn btn-link btn-xs">
+            <i class="fa fa-refresh"></i> @Resources.ActionButton_Update @Resources.Rpt_Salary
+        </a>
     </p>
 </div>
 @(Html.Kendo().Grid<Placement>()
     .Name("PlacementGrid")
     .Columns(columns =>
     {
-        // columns.ForeignKey(c => c.EmployeeCode, (IEnumerable)ViewData["EmployeeCode"], "EmployeeCode", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
-        //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
-
+        columns.Bound(c => c.EmployeeCode).Width(120);
         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
-        columns.ForeignKey(c => c.HeadId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-        //columns.Bound(c => c.FullName).Width(150);
-        //columns.Bound(c => c.Boss).Width(150);
+        columns.ForeignKey(c => c.HeadId, (IEnumerable)ViewData["EmployeeList"], "HeadId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+        columns.ForeignKey(c => c.ParentOrgStructureId, (System.Collections.IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(170);
         columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-        //columns.ForeignKey(c => c.ParentOrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
-        columns.Bound(c => c.IsHead).ClientTemplate(
-          "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
-          "# if (IsHead) { #" +
-          "checked='checked'" +
-          "# } #" +
-          "/>"
-          ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["AllJobTitles"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+        columns.Bound(c => c.IsHead).ClientTemplate("<input type='checkbox' disabled = 'true' value='#=IsHead#' " +
+                                                                 "# if (IsHead) { #" +
+                                                                 "checked='checked'" +
+                                                                 "# } #" +
+                                                                 "/>").Width(130);
 
-        columns.Bound(c => c.HireDate).Width(100);
-        columns.Bound(c => c.AssignmentDateAmharic).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(100);
-        columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(70);
-        columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(65);
+        if (useEthiopian)
+        {
+            columns.Bound(c => c.HireDate).Width(120);
+            columns.Bound(c => c.AssignmentDateAmharic).Width(160);
+            columns.Bound(c => c.SalarChangeDateAmharic).Width(100);
+            columns.Bound(c => c.NextSalaryChangeDateAmharic).Width(100);
+        }
+        else
+        {
+            columns.Bound(c => c.HireDateGorg).Width(100);
+            columns.Bound(c => c.AssignmentDate).Width(160);
+            columns.Bound(c => c.SalarChangeDate).Width(100);
+            columns.Bound(c => c.NextSalaryChangeDate).Width(100);
+        }
+        columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+        columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
         columns.Bound(c => c.Salary).Width(80);
-        columns.Bound(c => c.AssignmentType).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(120);
-        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
-        columns.Bound(c => c.EmployementType).Width(100);
+        columns.Bound(c => c.AssignmentType).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+        columns.Bound(c => c.EmployementType).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
         columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
-        columns.Bound(c => c.IsPend).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPend #' " + " # if (IsPend) { #" + "checked='checked'" + "# } #" + " />").Width(100).Visible(false);
         columns.Bound(c => c.IsApprove).ClientTemplate(
-        "<input type='checkbox' disabled = 'true' value='#= IsApprove#' " +
-        "# if (IsApprove) { #" +
-        "checked='checked'" +
-        "# } #" +
-        "/>"
-        ).Width(100);
+            "<input type='checkbox' disabled = 'true' value='#= IsApprove#' " +
+            "# if (IsApprove) { #" +
+            "checked='checked'" +
+            "# } #" +
+            "/>").Width(100);
+        columns.Bound(c => c.IsPend).ClientTemplate(
+            "<input type='checkbox' disabled = 'true' value='#= IsPend#' " +
+            "# if (IsPend) { #" +
+            "checked='checked'" +
+            "# } #" +
+            "/>").Width(100);
+        columns.Bound(c => c.ResponsibilityLevel).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+        columns.Bound(c => c.Age).ClientTemplate("#= Math.floor(Age) #").Width(100);
+        columns.Bound(c => c.Gender).Format("{0:0}").Width(100);
         columns.Bound(c => c.Remark).Width(100);
+
+        //// columns.ForeignKey(c => c.EmployeeCode, (IEnumerable)ViewData["EmployeeCode"], "EmployeeCode", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+        ////columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+        //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+        //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
+        //columns.ForeignKey(c => c.HeadId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+        ////columns.Bound(c => c.FullName).Width(150);
+        ////columns.Bound(c => c.Boss).Width(150);
+        //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+        ////columns.ForeignKey(c => c.ParentOrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+        //columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+        //columns.Bound(c => c.IsHead).ClientTemplate(
+        //  "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
+        //  "# if (IsHead) { #" +
+        //  "checked='checked'" +
+        //  "# } #" +
+        //  "/>"
+        //  ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+        //columns.Bound(c => c.HireDate).Width(100);
+        //columns.Bound(c => c.AssignmentDateAmharic).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(100);
+        //columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(70);
+        //columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(65);
+        //columns.Bound(c => c.Salary).Width(80);
+        //columns.Bound(c => c.AssignmentType).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(120);
+        //columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+        //columns.Bound(c => c.EmployementType).Width(100);
+        //columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+        //columns.Bound(c => c.IsPend).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPend #' " + " # if (IsPend) { #" + "checked='checked'" + "# } #" + " />").Width(100).Visible(false);
+        //columns.Bound(c => c.IsApprove).ClientTemplate(
+        //"<input type='checkbox' disabled = 'true' value='#= IsApprove#' " +
+        //"# if (IsApprove) { #" +
+        //"checked='checked'" +
+        //"# } #" +
+        //"/>").Width(100);
+        //columns.Bound(c => c.Remark).Width(100);
         columns.Command(command =>
         {
             if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
@@ -131,10 +192,9 @@
         e.Save("GetDate");
         e.Edit("GetDate");
         e.DataBound("onDataBound");
+        e.DetailExpand("onDetailExpandUser");
         e.Cancel("onCancel");
         //e.Edit("onEdit");
-
-
     })
     .Pageable(pageable => pageable
         .Input(true)
@@ -163,10 +223,10 @@
 
 
             })
-            .Read(read => read.Action("Placements_Read", "EmployeePlacmentManual"))
-            .Create(create => create.Action("Placements_Create", "EmployeePlacmentManual"))
-            .Update(update => update.Action("Placements_Update", "EmployeePlacmentManual"))
-            .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentManual"))
+            .Read(read => read.Action("Placements_Read", "EmployeePlacmentManual").Data("sendForgery"))
+            .Create(create => create.Action("Placements_Create", "EmployeePlacmentManual").Data("sendForgery"))
+            .Update(update => update.Action("Placements_Update", "EmployeePlacmentManual").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentManual").Data("sendForgery"))
             ).ClientDetailTemplateId("template")
 
 )
@@ -209,7 +269,7 @@
 
 
                             .Model(model => model.Id(p => p.EmployeesUnderBossId))
-                            .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+                            .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }).Data("sendForgery"))
 
                             ).ToClientTemplate()
                     )
@@ -225,9 +285,29 @@
                           .Columns(columns =>
                           {
 
-                              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
-                              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
-                              columns.Bound(c => c.JobTitle).Width(120); //, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
+                              if (useEthiopian)
+                              {
+                                  columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
+                                  columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
+                              }
+                              else
+                              {
+                                  columns.Bound(c => c.From).Width(100);
+                                  columns.Bound(c => c.To).Width(100);
+                              }
+                              if (isManual)
+                              {
+                                  columns.Bound(c => c.JobTitle).Title("Job Title").Width(160);
+                              }
+                              else
+                              {
+                                  columns.ForeignKey(c => c.LookupId,
+                                         (IEnumerable)ViewData["AllJobTitles"],
+                                         "LookupId",
+                                         "Description")
+                             .EditorTemplateName("JobTitles")
+                             .Width(160);
+                              }
                               columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(120);
                               columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
                               columns.Bound(c => c.Step).Width(70); //, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
@@ -282,10 +362,10 @@
              })
 
              .Model(model => model.Id(p => p.PlacementHistoryId))
-             .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory", new { Area = "HRM", empId = "#=EmployeeId#" }))
-                    .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory", new { Area = "HRM", empIdT = "#=EmployeeId#" }))
-                    .Update(update => update.Action("PlacementHistories_Update", "EmployeePlacmentHistory"))
-                    .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory"))
+             .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory", new { Area = "HRM", empId = "#=EmployeeId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory", new { Area = "HRM", empIdT = "#=EmployeeId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("PlacementHistories_Update", "EmployeePlacmentHistory").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory").Data("sendForgery"))
                 ).ToClientTemplate()
 
                     )
@@ -337,8 +417,8 @@
                            })
 
                             .Model(model => model.Id(p => p.PlaceId))
-                            .Read(read => read.Action("Placements_History_Read", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }))
-                            .Update(update => update.Action("Placements_History_Update", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }))
+                            .Read(read => read.Action("Placements_History_Read", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("Placements_History_Update", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }).Data("sendForgery"))
 
 
 
@@ -384,12 +464,13 @@
 
 
 
-                    }).ToClientTemplate()
-                        )
+                    }).ToClientTemplate())
                         <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                    </text>
-               );
-
+                    </text>);
+                     items.Add().Text("Attachments").Content(
+                    @<text>
+                         @documentAttachment()
+                    </text>);
                }).ToClientTemplate())
 
 
@@ -398,7 +479,54 @@
 
 
 
+@helper documentAttachment() { 
+     @*<button onclick='UploadFile(#=EmployeeId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>*@
 
+      @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
+            .Name("AttachmentGrid#=PlacementId#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/EmployeePlacmentWithOJ/DownloadAttachment?attachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                // columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
+                columns.Bound(c => c.Description).Width(100);
+                columns.Template(e => { }).ClientTemplate("<a href='/HRM/EmployeePlacmentWithOJ/DownloadAttachment?attachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(80);
+                columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+                columns.Command(command =>
+                {
+                    command.Destroy().Text("Delete");
+
+                }).Width(300);
+
+            })
+            .ToolBar(toolbar =>
+            {
+               toolbar.Template(@<text>
+                @Html.Kendo().Upload().Name("file").Async(a => a.Save("AttachmentTemplateFiles_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" })).Events(e => e.Complete("onUploadSuccess")
+                                                                                                          .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 2 * 1024 * 1024); }")
+                                                             .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
+               </text>);
+            })
+            .Scrollable(h => h.Height("auto"))
+            //.Events(ev=>
+            //{
+            //    ev.DataBound("onAttachmentDataBound");
+            //})
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(sort => sort.Add(c => c.AttachmentId).Descending())
+            .Events(events =>
+            {
+                events.Error("error_handler(\"AttachmentGrid#=PlacementId#\")");
+                events.RequestStart("onRequestStart(\"AttachmentGrid#=PlacementId#\")");
+                events.RequestEnd("onRequestEnd(\"AttachmentGrid#=PlacementId#\")");
+            })
+            .Model(model => model.Id(p => p.AttachmentId))
+                .Model(model => model.Id(p => p.AttachmentId))
+                .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }).Data("sendForgery"))
+                .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }).Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile").Data("sendForgery"))
+            ).ToClientTemplate())
+    }
 
 <style type="text/css">
     div.k-edit-form-container {
@@ -778,4 +906,126 @@
         }
     }
 
+</script>
+<script>
+    var masterId = 0;
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#PlacementGrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.PlacementId;
+
+
+    }
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#AttachmentGrid" + masterId).data("kendoGrid").dataSource.read();
+    }
+
+     function updateEmployeeAge(element) {
+        var $button = $(element);
+        var $icon = $button.find('i');
+        var originalIcon = $icon.attr('class');
+
+        // Show loading spinner
+        $icon.attr('class', 'fa fa-spinner fa-spin');
+        $button.prop('disabled', true);
+        $('#loading-image').show();
+        $.ajax({
+            url: '@Url.Action("UpdateEmployeeAge", "EmployeePlacmentWithOJ")',
+            type: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                alert(response.message);
+                $('#loading-image').hide();
+                $button.prop('disabled', false);
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred while updating age. Please try again.');
+                $('#loading-image').hide();
+                $button.prop('disabled', false);
+            },
+            complete: function () {
+                // Restore original button state
+                $icon.attr('class', originalIcon);
+                $button.prop('disabled', false);
+            }
+        });
+    }
+
+    function updateEmployeeSalary(element)
+    {
+        var $button = $(element);
+        var $icon = $button.find('i');
+        var originalIcon = $icon.attr('class');
+
+        if (!confirm("Are you sure you want to refresh salary?")) {
+            return;
+        }
+
+        // Spinner ON
+        $icon.attr('class', 'fa fa-spinner fa-spin');
+        $button.prop('disabled', true);
+        $('#loading-image').show();
+        $.ajax({
+            url: '@Url.Action("UpdateEmployeeSalary", "EmployeePlacmentWithOJ")',
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                alert(response.Message);
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText); // <=== will show anti-forgery error message
+                alert('An error occurred while refreshing salary. Please try again.');
+            },
+            complete: function () {
+                $('#loading-image').hide();
+                $icon.attr('class', originalIcon);
+                $button.prop('disabled', false);
+            }
+        });
+    }
+
+
+    function autoCompleteHeadOnChange()
+    {
+        var employeeId = $("#EmployeeId").data("kendoDropDownList").value();
+        var branchId = $("#BranchId").data("kendoDropDownList").value();
+        var orgId = $("#OrgStructureId").data("kendoDropDownList").value();
+        var businessId = $("#BusinessUnitId").data("kendoDropDownList").value();
+
+        if (employeeId && orgId && branchId && businessId) {
+            $.ajax({
+                url: '@Url.Action("AutoCompleteHead", "EmployeePlacmentManual")',
+                type: 'GET',
+                data: {
+                    employeeId: employeeId,
+                    orgId: orgId,
+                    branId: branchId,
+                    businUinitId: businessId
+                },
+                success: function (result) {
+                    var headDropDown = $("#HeadId").data("kendoDropDownList");
+
+                    if (result && result.headId) {
+                        headDropDown.value(result.headId);
+                        headDropDown.text(result.fullName);
+                    } else {
+                        headDropDown.value("");
+                        headDropDown.text("");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching head info:", error);
+                }
+            });
+
+        }
+
+    }
 </script>

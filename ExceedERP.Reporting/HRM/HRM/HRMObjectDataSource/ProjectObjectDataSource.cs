@@ -11,7 +11,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
  
     [DataObject]
-    public class ProjectObjectDataSource : List<Branch>
+    public class ProjectObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -41,6 +41,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return branchList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

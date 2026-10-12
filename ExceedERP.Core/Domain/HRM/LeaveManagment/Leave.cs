@@ -9,6 +9,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
     /// <summary>   A leave. </summary>
     ///
     /// <remarks>   Mekanehiwot, 10/31/2016. </remarks>
+    /// <remarks>  Modified By  Kibrom Abera, 10/31/2022. </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public class Leave:TrackUserOperation  //About Le

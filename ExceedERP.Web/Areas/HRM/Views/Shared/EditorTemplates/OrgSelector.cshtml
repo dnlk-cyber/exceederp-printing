@@ -5,10 +5,13 @@
 .OptionLabel( Resources.Select)
       .DataTextField("Name")
       .DataValueField("OrgStructureId")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider", new { area = "HRM" }))
-                                                    .ServerFiltering(false);
-                          })
-                         .ValuePrimitive(true)
+      .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                .ServerFiltering(false);
+
+
+      })
+      .ValuePrimitive(true)
 )

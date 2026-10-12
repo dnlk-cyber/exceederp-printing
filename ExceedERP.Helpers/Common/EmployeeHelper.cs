@@ -12,7 +12,24 @@ namespace ExceedERP.Helpers.Common
 	public static class EmployeeHelper
 	{
 
-		public static int GetHeadId(int empid)
+        public static int? GetSupervisorEmployeeId(int employeeId, int workId, int branchId, int businessUnitId)
+        {
+
+            using (var db = new ExceedDbContext())
+            {
+                var placement = db.Placements.FirstOrDefault(x => x.OrgStructureId == workId
+                                                               && x.BranchId == branchId
+                                                               && x.BusinessUnitId == businessUnitId
+                                                               && x.EmployeeId != employeeId
+                                                               && x.isCurrent
+                                                               && x.IsHead);
+
+                // Return the EmployeeId if a match is found, otherwise null
+                return placement?.EmployeeId;
+            }
+        }
+
+        public static int GetHeadId(int empid)
 		{
 			using (ExceedDbContext db = new ExceedDbContext())
 			{
@@ -746,7 +763,48 @@ namespace ExceedERP.Helpers.Common
 			}
 
 		}
-		public static string GetDaystoWords(double totalday)
+
+        public static string GetDaystoWordsEnglish(double totalday)
+        {
+            //int totalday = (int)days;
+            int months = 0;
+            int year = 0;
+            string words = "";
+            if (totalday < 30)
+            {
+                words = words + totalday + " Days ";
+            }
+            else if ((totalday >= 30) && (totalday <= 365))
+            {
+                months = (int)(totalday / 30);
+                words = words + months + " Months ";
+                double monthremainder = totalday % 30;
+                if (monthremainder < 30)
+                {
+                    words = words + "From " + (int)monthremainder + " Day ";
+                }
+            }
+            else if (totalday >= 365)
+            {
+                year = (int)(totalday / 365);
+                words = words + year + " Year ";
+                double yearremainder = totalday % 365;
+                if ((yearremainder >= 30) && (yearremainder <= 365))
+                {
+                    months = (int)(yearremainder / 30);
+                    words = words + "From " + months + " Month ";
+                    double monthremainder = yearremainder % 30;
+                    if (monthremainder < 30)
+                    {
+                        words = words + "From " + (int)monthremainder + " Day ";
+                    }
+                }
+            }
+
+            return words;
+        }
+
+        public static string GetDaystoWords(double totalday)
 		{
 			//int totalday = (int)days;
 			int months = 0;
@@ -873,8 +931,118 @@ namespace ExceedERP.Helpers.Common
 
 			return words;
 		}
+        public static string ToWordEnglish(this int number)
+        {
+            if (number == 0)
+                return "Zero";
 
-		public static int GetEmployeePlacementBranch(int empid)
+            if (number < 0)
+                return "- " + Math.Abs(number).ToWordAmharic();
+
+            string words = "";
+
+            if ((number / 1000000) > 0)
+            {
+                words += (number / 1000000).ToWordAmharic().TrimEnd() + " Million ";
+                number %= 1000000;
+            }
+
+            if ((number / 1000) > 0)
+            {
+                words += (number / 1000).ToWordAmharic().TrimEnd() + "Thousand  ";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                words += (number / 100).ToWordAmharic().TrimEnd() + " Hundred";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (words != "")
+                    words += " ";
+
+                var unitsMap = new[] { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "eleven", "Tweleve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "seventeen", "Eighteen", "Twenty" };
+                var tensMap = new[] { "Zero", "Ten", "Tweenty", "Thirty", "Fourty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+
+                if (number < 20)
+                    words += unitsMap[number];
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += " " + unitsMap[number % 10];
+                }
+            }
+
+            return words;
+        }
+
+        public static string ToWordAfaanOromo(this int number)
+        {
+            if (number == 0)
+                return "Sifira"; // or "Zero" if you prefer English form
+
+            if (number < 0)
+                return "Netee " + Math.Abs(number).ToWordAfaanOromo(); // “Netee” = negative
+
+            string words = "";
+
+            if ((number / 1000000) > 0)
+            {
+                words += (number / 1000000).ToWordAfaanOromo().TrimEnd() + " Miliyoona ";
+                number %= 1000000;
+            }
+
+            if ((number / 1000) > 0)
+            {
+                words += (number / 1000).ToWordAfaanOromo().TrimEnd() + " Kuma ";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                words += (number / 100).ToWordAfaanOromo().TrimEnd() + " Dhibba ";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (words != "")
+                    words += " ";
+
+                var unitsMap = new[]
+                {
+                    "Sifira", "Tokko", "Lama", "Sadii", "Afur", "Shan", "Jaha",
+                    "Torba", "Saddeet", "Sagaltama", "Kudhan",
+                    "Kudha Tokko", "Kudha Lama", "Kudha Sadii", "Kudha Afur",
+                    "Kudha Shan", "Kudha Jaha", "Kudha Torba", "Kudha Saddeet", "Kudha Sagaltama"
+
+                };
+
+                var tensMap = new[]
+                {
+                    "Sifira", "Kudhan", "Digdama", "Soddoma", "Afurtama", "Shantama",
+                    "Jaatama", "Torbatama", "Saddeettama", "Sagaltama"
+
+                };
+
+                if (number < 20)
+                    words += unitsMap[number];
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += " " + unitsMap[number % 10];
+                }
+            }
+
+            return words.Trim();
+        }
+
+        public static int GetEmployeePlacementBranch(int empid)
 		{
 			using (ExceedDbContext db = new ExceedDbContext())
 			{

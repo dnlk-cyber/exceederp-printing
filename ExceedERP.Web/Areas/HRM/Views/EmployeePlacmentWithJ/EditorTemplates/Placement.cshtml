@@ -33,8 +33,8 @@
 
                                        .DataSource(source =>
                                        {
-                                                   //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
-                                                   source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                                                   //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider").Data("sendForgery"));
+                                                   source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
                                           .ServerFiltering(true);
                                        })
                                       .ValuePrimitive(true)
@@ -61,7 +61,7 @@
                                   .ServerFiltering(true)
                                   .ServerPaging(true)
                                   .Type("aspnetmvc-ajax")
-                                  .Transport(transport => transport.Read(r => r.Action("GetEmployeesForPlacement", "HRMDataProvider")))
+                                  .Transport(transport => transport.Read(r => r.Action("GetEmployeesForPlacement", "HRMDataProvider").Data("sendForgery")))
                                   .Schema(schema =>
                                   {
                                       schema.Data("Data")
@@ -102,7 +102,7 @@
                                                   .Filter("contains")
                                                   .DataSource(dataSource =>
                                                    {
-                                                       dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }))
+                                                       dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                                                              .ServerFiltering(false);
                                                    })
                     )
@@ -122,7 +122,7 @@
                               .ValuePrimitive(true)
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("filterBranch"))
+                                  dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterBranch"))
                                       .ServerFiltering(true);
                               })
                     )
@@ -148,8 +148,8 @@
                               })
                                .DataSource(source =>
                                {
-                                       // source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
-                                       source.Read(read => read.Action("GetDepartmentsByBranchFromManPowerPlanning", "HRMDataProvider")
+                                       // source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider").Data("sendForgery"));
+                                       source.Read(read => read.Action("GetDepartmentsByBranchFromManPowerPlanning", "HRMDataProvider").Data("sendForgery")
                                  .Data("filterDepartment")).ServerFiltering(true);
                                })
                             // .BindTo((IEnumerable)ViewData["organization"])
@@ -201,10 +201,10 @@
 
                                            .DataSource(source =>
                                            {
-                                               source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }))
+                                               source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                .ServerFiltering(false);
-                                                       // //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
-                                                       // source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }))
+                                                       // //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider").Data("sendForgery"));
+                                                       // source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                        //.ServerFiltering(false);
                                                    })
                                           .ValuePrimitive(true)
@@ -245,9 +245,9 @@
                                       .ValuePrimitive(true)
                                       .DataSource(dataSource =>
                                       {
-                                          //dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" })); Changed
-                                          //dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider"));
-                                          dataSource.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider").Data("filterReportToStructure"))
+                                          //dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery")); Changed
+                                          //dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider").Data("sendForgery"));
+                                          dataSource.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider").Data("sendForgery").Data("filterReportToStructure"))
                                           .ServerFiltering(true);
 
 
@@ -318,7 +318,7 @@
                                 .Events(e => e.Change("GetSalary"))
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetRank", "HRMDataProvider"));
+                                    dataSource.Read(read => read.Action("GetRank", "HRMDataProvider").Data("sendForgery"));
 
                                 }))
                 </div>
@@ -342,7 +342,7 @@
                             .Events(e => e.Change("GetSalary"))
                             .DataSource(dataSource =>
                             {
-                                dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
+                                dataSource.Read(read => read.Action("GetStep", "HRMDataProvider").Data("sendForgery"));
 
 
                             }))

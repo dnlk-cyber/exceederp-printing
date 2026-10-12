@@ -22,7 +22,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     public class LeaveSettingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        string ErrorMessage = "";
         public ActionResult Index()
         {
 
@@ -146,7 +145,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
 
             return Json(new[] { configuration
-    }.ToDataSourceResult(request, ModelState));
+
+            }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -193,40 +193,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));
         }
-        private bool CheckLeaveValidation(int id)
+       
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Configurations_Destroy([DataSourceRequest]DataSourceRequest request, Configuration configuration)
         {
-            ErrorMessage = "";
-
-
-            #region leave
-            var leave = db.Configurations.Where(x => x.ConfigurationId == id && x.Category == "Leave" && x.Reference == "Leave").FirstOrDefault();
+            ModelState.Clear();
+            var leave = db.Configurations.Where(x => x.ConfigurationId == configuration.ConfigurationId && x.Category == "Leave" && x.Reference == "Leave").FirstOrDefault();
             if (leave != null)
             {
                 var entitle = db.LeavesEntitle;
                 if (entitle.Any())
                 {
-                    ErrorMessage = "You cannot delete this Setting. It already processed by employee leave entitlment.";
-                    return false;
+                    ModelState.AddModelError("", "You cannot delete this Setting. It already processed by employee leave entitlment.");
+                    return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));
+
                 }
 
             }
-            #endregion
-
-
-            return true;
-        }
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Configurations_Destroy([DataSourceRequest]DataSourceRequest request, Configuration configuration)
-        {
-            ModelState.Clear();
             if (ModelState.IsValid)
             {
-                if (!CheckLeaveValidation(configuration.ConfigurationId))
-                {
-                    ModelState.AddModelError("", ErrorMessage);
-                }
-                else
-                {
+              
+                
                     var entity = new Configuration
                     {
                         ConfigurationId = configuration.ConfigurationId,
@@ -248,7 +235,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     db.Configurations.Attach(entity);
                     db.Configurations.Remove(entity);
                     db.SaveChanges();
-                }
+                
             }
 
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));

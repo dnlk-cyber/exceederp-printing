@@ -12,7 +12,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     
     [DataObject]
-    public class PersonTitleObjectDataSource : List<PersonTitleViewModel>
+    public class PersonTitleObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -32,6 +32,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             
             return personTitleList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

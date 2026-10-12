@@ -117,4 +117,157 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox33.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="IdNumber.Value" xml:space="preserve">
+    <value>Employee Id</value>
+  </data>
+  <data name="FullName.Value" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Sex.Value" xml:space="preserve">
+    <value>Sex</value>
+  </data>
+  <data name="Department.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>Business Unit</value>
+  </data>
+  <data name="Branch.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="JobTitle.Value" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>Assignment Type</value>
+  </data>
+  <data name="Salary.Value" xml:space="preserve">
+    <value>Salary</value>
+  </data>
+  <data name="HireDate.Value" xml:space="preserve">
+    <value>Hire Date</value>
+  </data>
+  <data name="textBox36.Value" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="textBox39.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>=Today()</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.JobTitle</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= IIf(Fields.Sex="Male","Male","Female")</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.Salary</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.HireDate</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Fields.EmployeeId</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.Departement</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Fields.Branch</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Count(Fields.FullName)</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>= Sum(Fields.Salary)</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Fields.AssignmentType</value>
+  </data>
+  <data name="textBox34.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="textBox37.Value" xml:space="preserve">
+    <value>= Fields.FromBranch</value>
+  </data>
+  <data name="textBox40.Value" xml:space="preserve">
+    <value>= Fields.ToBranch</value>
+  </data>
+  <data name="textBox42.Value" xml:space="preserve">
+    <value>= Fields.BusinessUnit</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>= Parameters.to.value.ToString("dd-MM-yyyy")</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Parameters.branchId.Label</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>= Parameters.dept.Label</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>Assignement</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>= Parameters.assignment.Label</value>
+  </data>
+  <data name="textBox32.Value" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>= Parameters.from.value.ToString("dd-MM-yyyy")</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Recruitment.Value" xml:space="preserve">
+    <value>Recruitment By Assignment Type</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Assignment Type</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="reportParameter5.Text" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="reportParameter6.Text" xml:space="preserve">
+    <value>Is current Employee</value>
+  </data>
 </root>

@@ -3,7 +3,7 @@
 @(Html.Kendo().DropDownListFor(x=> x)
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetRelationshipList", "HRMDataProvider", new { area = "HRM" }))
+          dataSource.Read(read => read.Action("GetRelationshipList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
               .ServerFiltering(false);
       })
 .OptionLabel(Resources.Select)

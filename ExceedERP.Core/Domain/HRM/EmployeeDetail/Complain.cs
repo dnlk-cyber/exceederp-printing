@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 {
-    public class Complain
+    public class Complain: DepartmentNewOperations
     {
         [Key ]
         public int ComplainId{get;set;}
@@ -32,4 +33,17 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         //public int CC { get; set; }
         public int SendTo { get; set; }
     }
+    public class ComplainAttachement
+    {
+        public int ComplainAttachementId { get; set; }
+        public int ComplainId { get; set; }
+        public Complain Request { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+        //attachment
+    }
+
 }

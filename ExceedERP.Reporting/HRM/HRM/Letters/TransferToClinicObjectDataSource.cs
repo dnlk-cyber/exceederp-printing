@@ -18,7 +18,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-    public class TransferToClinicObjectDataSource : List<TransferToClinic>
+    public class TransferToClinicObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -146,5 +146,11 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return transferList;
         }
+     
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        
     }
 }

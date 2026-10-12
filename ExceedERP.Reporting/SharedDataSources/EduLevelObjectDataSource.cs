@@ -10,21 +10,42 @@ namespace ExceedERP.Reporting.SharedDataSources
     [DataObject]
     public class EduLevelObjectDataSource
     {
+
         private ExceedDbContext db = new ExceedDbContext();
+
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<Lookup> GetEduLevel()
         {
-            List<Lookup> list = new List<Lookup> { };
-
-
-            var eduLevels = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL && x.IsActive).ToList();
-            if (!eduLevels.Any())
+            var list = new List<Lookup>
             {
-                return list;
-            }
+                new Lookup
+                {
+                    LookupId = 0,
+                    Description = "No Education"
+                }
+            };
 
-            return eduLevels;
+            var eduLevels = db.Lookups
+                .Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL && x.IsActive)
+                .ToList();
+
+            list.AddRange(eduLevels);
+
+            return list;
         }
+        //public List<Lookup> GetEduLevel()
+        //{
+        //    List<Lookup> list = new List<Lookup> { };
+
+
+        //    var eduLevels = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL && x.IsActive).ToList();
+        //    if (!eduLevels.Any())
+        //    {
+        //        return list;
+        //    }
+
+        //    return eduLevels;
+        //}
     }
 }

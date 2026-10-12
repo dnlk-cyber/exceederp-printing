@@ -10,12 +10,16 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Helpers.HR;
+using System.Data.Entity;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
     public class InActiveEmployeesController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
+        HRMInputs inputs = new HRMInputs();
 
         public ActionResult Index()
         {
@@ -47,7 +51,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         }
         public ActionResult InActiveEmployees_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Person_Employee> person_employee = db.Person_Employee.Where(x=>!x.IsActive);
+            //List<int> employees = inputs.GetUserBranchAndBusinessUnitEmployees(User.Identity.Name);
+
+            IQueryable<Person_Employee> person_employee = db.Person_Employee/*.Where(x=>employees.Contains(x.EmployeeId))*/.Where(x=>!x.IsActive);
             DataSourceResult result = person_employee.ToDataSourceResult(request, person_Employee => new {
                 EmployeeId = person_Employee.EmployeeId,
                 EmployeeCode = person_Employee.EmployeeCode,
@@ -76,6 +82,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 LastNameEnglish = person_Employee.LastNameEnglish,
                 IsInsured = person_Employee.IsInsured,
                 BranchId = person_Employee.BranchId,
+                EmployeeExperience = 0,
+                EmployeeAge = 0,
+                RemainingContractDays = HrHelper.GetRemainingContractDays(person_Employee.EmployeeId),
                 OrgBranchName = person_Employee.OrgBranchName,
                 DateCreated = person_Employee.DateCreated,
                 LastModified = person_Employee.LastModified,
@@ -85,9 +94,73 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(result,JsonRequestBehavior.AllowGet);
         }
-        public ActionResult NotPlaced_Employees_Read([DataSourceRequest]DataSourceRequest request)
+
+        public ActionResult NotPlaced_Employees_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var person_employee = db.Person_Employee.Where(x => x.IsActive && !x.IsPlaced).ToList();
+            var today = DateTime.Now.Date;
+
+            var query = from emp in db.Person_Employee
+                        where emp.IsActive && !emp.IsPlaced
+                        join con in db.Contract
+                            .Where(c => c.To >= today)
+                            on emp.EmployeeId equals con.EmployeeId into empContracts
+                        from contract in empContracts
+                            .OrderByDescending(c => c.To)
+                            .Take(1)
+                            .DefaultIfEmpty()
+                        select new
+                        {
+                            emp.EmployeeId,
+                            emp.EmployeeCode,
+                            emp.Title,
+                            emp.FirstName,
+                            emp.MiddleName,
+                            emp.LastName,
+                            emp.Nationality,
+                            emp.DateOfBirth,
+                            emp.DateOfBirthAm,
+                            emp.Gender,
+                            emp.CategoryID,
+                            emp.IsActive,
+                            emp.MothersFullName,
+                            emp.BirthPlace,
+                            emp.Nation,
+                            emp.Region,
+                            emp.Religion,
+                            emp.MartialStatus,
+                            emp.Status,
+                            emp.HiredDate,
+                            emp.HiredDateAmharic,
+                            emp.Remark,
+                            emp.FirstNameEnglish,
+                            emp.MiddleNameEnglish,
+                            emp.LastNameEnglish,
+                            emp.IsInsured,
+                            emp.BranchId,
+                            emp.IsBiometricRegistered,
+                            emp.BiometricEmployeeId,
+                            EmployeeExperience = 0,
+                            EmployeeAge = 0,
+
+                            // ✅ Computed in SQL (NO extra queries)
+                            RemainingContractDays = contract != null
+                                ? (int?)DbFunctions.DiffDays(today, contract.To): 0,
+
+                            emp.OrgBranchName,
+                            emp.DateCreated,
+                            emp.LastModified,
+                            emp.CreatedBy,
+                            emp.ModifiedBy
+                        };
+
+            var result = query.ToDataSourceResult(request);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult NotPlaced_Employees_Read_existed([DataSourceRequest] DataSourceRequest request)
+        {
+            IQueryable<Person_Employee> person_employee = db.Person_Employee.Where(x => x.IsActive && !x.IsPlaced);
             DataSourceResult result = person_employee.ToDataSourceResult(request, person_Employee => new {
                 EmployeeId = person_Employee.EmployeeId,
                 EmployeeCode = person_Employee.EmployeeCode,
@@ -116,6 +189,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 LastNameEnglish = person_Employee.LastNameEnglish,
                 IsInsured = person_Employee.IsInsured,
                 BranchId = person_Employee.BranchId,
+                IsBiometricRegistered=person_Employee.IsBiometricRegistered,
+                BiometricEmployeeId=person_Employee.BiometricEmployeeId,
+                EmployeeExperience = 0,
+                EmployeeAge = 0,
+                RemainingContractDays = HrHelper.GetRemainingContractDays(person_Employee.EmployeeId),
                 OrgBranchName = person_Employee.OrgBranchName,
                 DateCreated = person_Employee.DateCreated,
                 LastModified = person_Employee.LastModified,
@@ -123,8 +201,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 ModifiedBy = person_Employee.ModifiedBy
             });
 
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
+            
         }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult InActiveEmployees_Create([DataSourceRequest]DataSourceRequest request, Person_Employee person_Employee)
         {
@@ -201,12 +281,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Status = person_Employee.Status,
                     HiredDate = person_Employee.HiredDate,
                     HiredDateAmharic = person_Employee.HiredDateAmharic,
-                    Remark = person_Employee.Remark,
                     FirstNameEnglish = person_Employee.FirstNameEnglish,
                     MiddleNameEnglish = person_Employee.MiddleNameEnglish,
                     LastNameEnglish = person_Employee.LastNameEnglish,
                     IsInsured = person_Employee.IsInsured,
                     BranchId = person_Employee.BranchId,
+                    Remark = person_Employee.Remark,
                     OrgBranchName = person_Employee.OrgBranchName,
                     DateCreated = person_Employee.DateCreated,
                     LastModified = person_Employee.LastModified,

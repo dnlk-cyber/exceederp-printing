@@ -1,8 +1,6 @@
 ﻿﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -10,6 +8,9 @@ using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Web.Hubs;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -19,7 +20,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         HrmConstants.HRDepartmentHead, 
         HrmConstants.HREmployeeSelfService)]
 
-    public class InternalCustomersController : Controller
+    public class InternalCustomersController : BaseController
     {
 
         private ExceedDbContext db = new ExceedDbContext();
@@ -32,6 +33,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 EmployeeId = internalCustomer.EmployeeId,
                 IsConfirmed = internalCustomer.IsConfirmed,
                 TobeEvalutedEmployeeId = internalCustomer.TobeEvalutedEmployeeId,
+                Remark = internalCustomer.Remark,
                 InternalCustomerPerformanceEvaluationId = internalCustomer.InternalCustomerPerformanceEvaluationId
 
 
@@ -55,6 +57,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             if (employee.Where(x => x.EmployeeId == internalCustomer.EmployeeId&&x.TobeEvalutedEmployeeId == internalCustomer.TobeEvalutedEmployeeId&& x.InternalCustomerPerformanceEvaluationId == iCId).Any())
             {
                 ModelState.AddModelError("", $"The Employee already assigned select another!!");
+                return Json(new[] { internalCustomer }.ToDataSourceResult(request, ModelState), JsonRequestBehavior.AllowGet);
 
             }
             if (ModelState.IsValid)
@@ -75,6 +78,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             if (db.InternalCustomers.Where(x => x.EmployeeId == internalCustomer.EmployeeId && x.TobeEvalutedEmployeeId == internalCustomer.TobeEvalutedEmployeeId && x.InternalCustomerPerformanceEvaluationId == internalCustomer.InternalCustomerPerformanceEvaluationId).Any())
             {
                 ModelState.AddModelError("", $"The Employee already assigned select another!!");
+                return Json(new[] { internalCustomer }.ToDataSourceResult(request, ModelState));
 
             }
             if (ModelState.IsValid)
@@ -111,6 +115,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 EmployeeId = internalCustomer.EmployeeId,
                 TobeEvalutedEmployeeId = internalCustomer.TobeEvalutedEmployeeId,
                 IsConfirmed = internalCustomer.IsConfirmed,
+                Remark = internalCustomer.Remark,
                 InternalCustomerPerformanceEvaluationId = internalCustomer.InternalCustomerPerformanceEvaluationId
 
             };
@@ -118,41 +123,53 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public JsonResult InternalCustomerConfirmation(int id)
         {
+            // Find the evaluator with the provided ID
             var evaluator = db.InternalCustomers.Find(id);
-            if (evaluator != null)
-            {
-                if (evaluator.IsConfirmed)
-                {
-                    var formattedData = new
-                    {
-                        Message = "You can't approve again, it is already approved.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    // Approve the assignment here
-                    evaluator.IsConfirmed = true;
-                    db.Entry(evaluator).State = EntityState.Modified;
-                    db.SaveChanges();  // Make sure to save the changes in the database
 
-                    var formattedData = new
-                    {
-                        Message = "You successfully approved .",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-            }
-            else
+            if (evaluator == null)
             {
-                var formattedData = new
+                // Return error if no evaluation record found
+                return Json(new { Message = "The internal customer record with the provided ID was not found. Please check the ID and try again.", Status = "Error" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Check if the assignment has already been confirmed
+            if (evaluator.IsConfirmed)
+            {
+                // If already confirmed, return message indicating that no further approval is needed
+                return Json(new { Message = "This evaluation has already been confirmed. No further approval is required.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                // Approve the assignment and save the changes
+                evaluator.IsConfirmed = true;
+                db.Entry(evaluator).State = EntityState.Modified;
+                db.SaveChanges();
+                // Fetch the employees who need to be evaluated
+                var employeesToBeEvaluated = db.InternalCustomerDetails
+                    .Where(x => x.InternalCustomerId == evaluator.InternalCustomerId);
+
+                foreach (var employee in employeesToBeEvaluated)
                 {
-                    Message = "No evaluation found for the provided ID.",
-                    Status = "Error"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
+                    // Prepare and send notifications for each employee to be evaluated
+                    var notif = new NotifModels
+                    {
+                        UserId = UserInformationHelper.GetEmployeeUserId(evaluator.EmployeeId),
+                        Title = "New Evaluation Assigned",
+                        Message = $"You have been assigned to evaluate the performance of {UserInformationHelper.GetEmployeeFullNameById(employee.TobeEvalutedEmployeeId)}. Please complete the evaluation within the specified timeframe.",
+                        URL = "/HRM/InternalCustomerEmployeePerformance"
+                    };
+
+                    Notify.NotifyUser(notif);
+                }
+
+                // Return success message after approval and notification
+                return Json(new { Message = "Evaluation Assignation is  successfully approved and notifications sent.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                // Return a detailed error message if something goes wrong
+                return Json(new { Message = $"An error occurred while processing the request: {ex.Message}. Please try again later or contact support if the issue persists.", Status = "Error" }, JsonRequestBehavior.AllowGet);
             }
         }
 

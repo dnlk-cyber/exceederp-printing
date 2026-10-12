@@ -16,7 +16,6 @@ namespace XAPI
         public static string maxUploadSizeinDbError = "The document size cannot be more than 10 Mega Byte";
 
         public static CultureInfo exceedculture = new CultureInfo("am-ET");
-
         public static string RemoveSpecialChars(string str)
         {
             if (str == null)
@@ -24,7 +23,7 @@ namespace XAPI
                 return "";
             }
             //string newstr= Regex.Replace(str, "[^0-9A-Za-z _-]", "");
-            string newstr= Regex.Replace(str, "[^0-9A-Za-z '_\"-./@$?%*]", "");
+            string newstr = Regex.Replace(str, "[^0-9A-Za-z '_\"-./@$?%*]", "");
             return newstr;
         }
         public static string GetConcatenatedYearMonthDay(DateTime From, DateTime To)
@@ -62,11 +61,11 @@ namespace XAPI
                 years += (months % 12);
             }
 
-            return years + " ዓመት " + months + " ወር";
+            return years + " Years " + months + " Months";
         }
         public static string GetConcatinatedValue(string year, string month, string days)
         {
-            return year + " ዓመት " + month + " ወር " + days + " ቀን ";
+            return year + " Years " + month + " Months " + days + " Days ";
         }
         public static string getDaystoWordsamharic(float totalday)
         {
@@ -184,7 +183,6 @@ namespace XAPI
             {
                 return "0 ???";
             }
-            return "";
         }
 
     }
@@ -384,5 +382,165 @@ namespace XAPI
            
             return words;
         }
+        public static string toWordsAmharic(this double number)
+        {
+
+            long intPart = (long)number;
+            double fractionalPart = number - intPart;
+            bool hasCents = fractionalPart > 0;
+            string words = covertToWordsAmharic(intPart, hasCents);
+
+            if (fractionalPart > 0)
+            {
+                if (words != "")
+                    words += " እና " + Math.Round(fractionalPart, 2) * 100 + " ሳንቲም";
+            }
+
+            return words;
+        }
+        public static string ToWordsAfaanOromo(this double number)
+        {
+            long intPart = (long)number;
+            double fractionalPart = number - intPart;
+            bool hasCents = fractionalPart > 0;
+
+            // Convert integer part first
+            string words = ConvertToWordsAfaanOromo(intPart, hasCents);
+
+            if (fractionalPart > 0)
+            {
+                // Convert fractional part (e.g. .75 → 75)
+                int cents = (int)Math.Round(fractionalPart * 100);
+
+                if (!string.IsNullOrEmpty(words))
+                    words += " fi "; // “and” in Afaan Oromo
+
+                words += ConvertToWordsAfaanOromo(cents, true) + " Senti"; // “cents”
+            }
+
+            return words.Trim();
+        }
+
+
+        private static string covertToWordsAmharic(this long number, bool hasCents)
+        {
+            if (number == 0)
+                return "ዜሮ";
+
+            if (number < 0)
+                return "አሉታ " + Math.Abs(number).covertToWordsAmharic(hasCents);
+
+            string words = "";
+
+            if ((number / 1000000000) > 0)
+            {
+                words += (number / 1000000000).covertToWordsAmharic(hasCents).TrimEnd() + " ቢሊዮን ";
+                number %= 1000000000;
+            }
+            if ((number / 1000000) > 0)
+            {
+                words += (number / 1000000).covertToWordsAmharic(hasCents).TrimEnd() + " ሚሊዮን ";
+                number %= 1000000;
+            }
+
+            if ((number / 1000) > 0)
+            {
+                words += (number / 1000).covertToWordsAmharic(hasCents).TrimEnd() + " ሺ ";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                words += (number / 100).covertToWordsAmharic(hasCents).TrimEnd() + " መቶ ";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (words != ""&&!hasCents)
+              // words += "and ";
+               words += "";
+
+                var unitsMap = new[] { "ዜሮ", "አንድ", "ሁለት", "ሶስት", "አራት", "አምስት", "ስድስት", "ሰባት", "ስምንት", "ዘጠኝ", "አስር","አስራ አንድ","አስራ ሁለት", "አስራ ሶስት", "አስራ አራት", "አስራ አምስት", "አስራ ስድስት", "አስራ ሰባት", "አስራ ስምንት", "አስራ ዘጠኝ" };
+                var tensMap = new[] { "ዜሮ", "አስር", "ሃያ", "ሰላሳ", "አርባ", "ሃምሳ", "ስልሳ", "ሰባ", "ሰማንያ", "ሀጠና" };
+
+                if (number < 20)
+                    words += unitsMap[number];
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += " " + unitsMap[number % 10];
+                }
+            }
+
+           
+            return words;
+        }
+        private static string ConvertToWordsAfaanOromo(this long number, bool hasCents)
+        {
+            if (number == 0)
+                return "Zero"; // or "Sifira" if you prefer pure Oromo form
+
+            if (number < 0)
+                return "Netee " + Math.Abs(number).ConvertToWordsAfaanOromo(hasCents);
+
+            string words = "";
+
+            if ((number / 1000000000) > 0)
+            {
+                words += (number / 1000000000).ConvertToWordsAfaanOromo(hasCents).TrimEnd() + " Biliyoona ";
+                number %= 1000000000;
+            }
+
+            if ((number / 1000000) > 0)
+            {
+                words += (number / 1000000).ConvertToWordsAfaanOromo(hasCents).TrimEnd() + " Miliyoona ";
+                number %= 1000000;
+            }
+
+            if ((number / 1000) > 0)
+            {
+                words += (number / 1000).ConvertToWordsAfaanOromo(hasCents).TrimEnd() + " Kuma ";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                words += (number / 100).ConvertToWordsAfaanOromo(hasCents).TrimEnd() + " Dhibba ";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (words != "" && !hasCents)
+                    words += "";
+
+                var unitsMap = new[]
+                {
+            "Zero", "Tokko", "Lama", "Sadi", "Afur", "Shan", "Jaha", "Torbá", "Saddeet", "Sagaltama",
+            "Kudhan", "Kudha Tokko", "Kudha Lama", "Kudha Sadi", "Kudha Afur", "Kudha Shan",
+            "Kudha Jaha", "Kudha Torba", "Kudha Saddeet", "Kudha Sagaltama"
+        };
+
+                var tensMap = new[]
+                {
+            "Zero", "Kudhan", "Digdama", "Soddoma", "Afurtama", "Shantama",
+            "Jaatama", "Torbatama", "Saddeettama", "Sagaltama"
+        };
+
+                if (number < 20)
+                    words += unitsMap[number];
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += " " + unitsMap[number % 10];
+                }
+            }
+
+            return words.Trim();
+        }
+
     }
 }

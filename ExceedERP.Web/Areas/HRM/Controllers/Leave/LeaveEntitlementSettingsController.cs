@@ -20,11 +20,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         private ExceedDbContext db = new ExceedDbContext();
 
         // GET: HRM/LeaveEntitlementSetting
-        public ActionResult Index()
-        {
-            return View();
-        }
-
+       
         #region Read
         public ActionResult LeaveEntitlementSettings_Read([DataSourceRequest] DataSourceRequest request)
         {
@@ -36,6 +32,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 x.GlFiscalYearId,
                 x.IsGenerated,
                 x.IsRegeneratingAllowed,
+                x.LeaveIncrementAmount,
                 x.Remark,
                 x.CreatedBy,
                 x.DateCreated,
@@ -138,6 +135,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 GlFiscalYearId = x.GlFiscalYearId,
                 IsGenerated = x.IsGenerated,
                 IsRegeneratingAllowed = x.IsRegeneratingAllowed,
+                LeaveIncrementAmount = x.LeaveIncrementAmount,
                 Remark = x.Remark,
                 CreatedBy = x.CreatedBy,
                 DateCreated = x.DateCreated,

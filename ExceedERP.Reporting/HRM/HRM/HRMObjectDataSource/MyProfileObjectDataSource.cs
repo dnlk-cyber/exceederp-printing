@@ -10,358 +10,410 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using System.Data.Entity;
 using System.Windows.Forms;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
+using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
-
-
     [DataObject]
-    public class MyProfileObjectDataSource : List<PromotedEmployee>
+    public class MyProfileObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
         private ApplicationContext userdetail = new ApplicationContext();
+        string cultureName = GlobalHelper.GetCurrentCulture();
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PromotedEmployee> GetPromotedEmployee(string id)
         {
+            if (!int.TryParse(id, out int employeeId))
+                return new List<PromotedEmployee>();
 
+            var datePref = db.DatePreferenceSettings.AsNoTracking().FirstOrDefault();
+            bool useEthDate = datePref?.UseEthiopianDate ?? true;
 
+            var lookups = db.Lookups.AsNoTracking().ToList();
+            var jobTitles = lookups
+                .Where(x => x.LookupType == Core.Domain.Common.LookUpTypes.Jobtitle_External_Experience
+                         || x.LookupType == Core.Domain.Common.LookUpTypes.JOB_TITLE
+                         || x.LookupType == Core.Domain.Common.LookUpTypes.OLD_JOB_TITLE)
+                .ToDictionary(x => x.LookupId);
 
-            List<PromotedEmployee> PromotedEmployees = new List<PromotedEmployee>();
+            var branches = db.Branch.AsNoTracking().ToDictionary(x => x.BranchId);
 
-            var lookups = db.Lookups;
-            var employees = from e in db.Person_Employee
-                            join p in db.Placements
-                                on e.EmployeeId equals p.EmployeeId
-                            join b in db.Branch
-                                on p.BranchId equals b.BranchId
-                            join m in db.MainCompanyStructures
-                                on p.OrgStructureId equals m.OrgStructureId
-                            where e.IsActive && p.isCurrent
-                            select (new { e, p });
-            var otherexpriances = db.Experiences.ToList();
-            var currentex = db.Placements.ToList();
+            var educations = db.Education.AsNoTracking()
+                .Where(e => e.EmployeeId == employeeId).ToList();
 
-            int TotalYear = 0;
-            int TotalMonth = 0;
-            int TotalDays = 0;
-            var educations = db.Education.ToList();
+            var experiences = db.Experiences.AsNoTracking()
+                .Where(e => e.EmployeeId == employeeId).ToList();
 
+            var placements = db.Placements.AsNoTracking()
+                .Where(p => p.EmployeeId == employeeId).ToList();
 
-            if (id != null)
+            var histories = db.PlacementHistories.OrderByDescending(x=>x.To).AsNoTracking()
+                .Where(h => h.EmployeeId == employeeId).ToList();
+
+            var employee = (from e in db.Person_Employee
+                            join p in db.Placements on e.EmployeeId equals p.EmployeeId
+                            where e.EmployeeId == employeeId && e.IsActive && p.isCurrent
+                            select new { e, p }).FirstOrDefault();
+
+            if (employee == null)
+                return new List<PromotedEmployee>();
+
+            var empPerformance = db.EmployeePerformanceSummary.AsNoTracking()
+                .Where(x => x.EmployeeId == employeeId)
+                .OrderByDescending(x => x.EmployeePerformanceSummaryId)
+                .FirstOrDefault();
+
+            var leaveEntitles = db.LeavesEntitle.AsNoTracking()
+                .Where(x => x.EmployeeId == employeeId && !x.IsExpired)
+                .OrderByDescending(x => x.GlFiscalYearId)
+                .ToList();
+
+            var fiscalYears = db.GLFiscalYears.AsNoTracking()
+                .ToDictionary(x => x.GlFiscalYearId);
+
+            int totalInternalDays = 0;
+            int totalExternalDays = 0;
+            int totalExperienceDays = 0;
+
+            var result = new PromotedEmployee
             {
-                var list = employees.Where(x => x.e.EmployeeId.ToString() == id).ToList();
+                No = 1,
+                ApplicantName = $"{employee.e.FirstNameEnglish} {employee.e.MiddleNameEnglish} {employee.e.LastNameEnglish}",
+                DateOfBirth = employee.e.DateOfBirth.ToString("dd.MM.yyyy"),
+                Age = employee.e.DateOfBirth != null ? employee.e.DateOfBirth.GetAge().ToString() : "0",
+                Perfromance = (empPerformance?.Result ?? 0).ToString(),
+                RecruitmentType = HrHelper.GetEmployeeStatus(employee.e.Status),
+                LeaveBalance = new List<LeaveBalanceViewModel> (),
+                Educations = new List<EmployeeEducation> (),
+                Expriance = new List<CurrentEmployeeExpriance> (),
+                OtherExpriance = new List<OtherEmployeeExpriance> ()
+            };
 
-
-                var PromotedEmployee = new PromotedEmployee();
-
-                foreach (var r in list)
+            // Leave Balance
+            foreach (var le in leaveEntitles)
+            {
+                if (fiscalYears.TryGetValue(le.GlFiscalYearId, out var fy))
                 {
-                    EmployeeEducation edu;
-                    OtherEmployeeExpriance otherexplist;
-                    CurrentEmployeeExpriance currentEmployeeExpriance;
-
-                    PromotedEmployee = new PromotedEmployee();
-                    TotalYear = 0;
-                    TotalMonth = 0;
-                    TotalDays = 0;
-                    PromotedEmployee.LeaveBalance = new List<LeaveBalanceViewModel>();
-                    var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == r.e.EmployeeId && !x.IsExpired);
-                    foreach (var le in leaveEntitles)
+                    result.LeaveBalance.Add(new LeaveBalanceViewModel
                     {
-                        LeaveBalanceViewModel leaveBalance = new LeaveBalanceViewModel();
-                        var fisicalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == le.GlFiscalYearId);
-                        if (fisicalYear != null)
-                        {
-                            leaveBalance.Year = fisicalYear.DateTo.Year.ToString();
-                            leaveBalance.Balance = le.Balance;
-
-                            PromotedEmployee.LeaveBalance.Add(leaveBalance);
-                        }
-                    }
-                    // PromotedEmployee.RecruitmentType = r.RecruitmentType;
-
-                    PromotedEmployee.No = PromotedEmployees.Count + 1;
-
-                    PromotedEmployee.ApplicantName = r.e.FirstName + " " + r.e.MiddleName + " " +
-                                                     r.e.LastName;
-
-                    var empPerformances = db.MeasurementDefinitions.Where(x => x.EmployeeId.ToString() == id).ToList();
-                    decimal addPerfor = 0;
-                    foreach (var empPerformance in empPerformances)
-                    {
-                        // EmployeePerformances empPerform = new EmployeePerformances();
-                        //var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == empPerformance.LookupId);
-                        //if (lookup != null)
-                        //{
-                        //    empPerform.Type = lookup.Description;
-                        //}
-                        // empPerform.EvaluationCriteria = empPerformance.EvaluationCriteria;
-                        addPerfor = addPerfor + empPerformance.Result??0;
-
-
-
-                    }
-                    PromotedEmployee.Perfromance = addPerfor.ToString();
-                    PromotedEmployee.Educations = new List<EmployeeEducation>();
-
-                    var empEdu = educations.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
-                    foreach (var e in empEdu)
-                    {
-                        edu = new EmployeeEducation();
-                        if (e.From != null) edu.From = e.From.Value.ToShortDateString();
-                        edu.To = e.To.ToShortDateString();
-                        var firstOrDefault = lookups.FirstOrDefault(x => x.LookupId == e.EduField);
-                        if (firstOrDefault != null)
-                            edu.EduField =
-                                firstOrDefault.Description;
-                        edu.OrgName = e.OrganizationName;
-                        var orDefault = lookups.FirstOrDefault(x => x.LookupId == e.EduLevel);
-                        if (orDefault != null)
-                            edu.EduLevel =
-                                orDefault.Description;
-                        PromotedEmployee.Educations.Add(edu);
-                    }
-                    #region Other
-                    PromotedEmployee.OtherExpriance = new List<OtherEmployeeExpriance>();
-                    var empOtherEx = otherexpriances.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
-                    foreach (var e in empOtherEx)
-                    {
-                        otherexplist = new OtherEmployeeExpriance();
-                        otherexplist.From = e.From.ToShortDateString();
-                        otherexplist.To = e.To.ToShortDateString();
-                        otherexplist.CompanyName = e.Organozation;
-                        otherexplist.JobTitleName = e.Responsibility;
-                        var fromc = new DateTime(e.From.Year, e.From.Month, e.From.Day);
-                        var toc = new DateTime(e.To.Year, e.To.Month, e.To.Day);
-
-                        var totalmonths = (toc.Year - fromc.Year) * 12 + toc.Month - fromc.Month;
-                        totalmonths += toc.Day < fromc.Day ? -1 : 0;
-
-                        var years = totalmonths / 12;
-                        var months = totalmonths % 12;
-                        var dayss = fromc.Subtract(toc.AddMonths(totalmonths)).Days;
-
-                        int year = years;
-                        int month = months;
-                        int days = dayss;
-                        otherexplist.Year = XAPI.Common.GetYearMonthDay(e.From, e.To);
-
-                        string val = XAPI.Common.GetConcatenatedYearMonthDay(e.From, e.To);
-                        otherexplist.DYear = Convert.ToInt32(val.Split('-')[0]);
-                        otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
-                        otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
-
-                        otherexplist.ExpExtSingle = EmployeeHelper.GetDaystoWordsAmharic(e.To.Subtract(e.From).Days);
-
-                        PromotedEmployee.OtherExpriance.Add(otherexplist);
-
-                    }
-
-
-                    int TotalOtherYear = PromotedEmployee.OtherExpriance.Sum(x => x.DYear);
-
-                    int TotalOtherMonth = PromotedEmployee.OtherExpriance.Sum(x => x.DMonth);
-                    PromotedEmployee.OtherMonth = TotalOtherMonth;
-                    PromotedEmployee.OtherYear = TotalOtherYear;
-                    if (TotalOtherMonth >= 12)
-                    {
-                        PromotedEmployee.OtherMonth = PromotedEmployee.OtherMonth % 12;
-                        PromotedEmployee.OtherYear += TotalOtherMonth / 12;
-
-
-                    }
-                    //  var extExp = otherexpriances.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
-
-                    var extExpeiences = otherexpriances.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
-
-                    double extTotalDays = 0;
-                    foreach (var ex in extExpeiences)
-                    {
-                        extTotalDays = extTotalDays + ex.To.Subtract(ex.From).Days;
-                    }
-
-
-
-                    PromotedEmployee.ExtExp = EmployeeHelper.GetDaystoWordsAmharic(extTotalDays);
-
-
-                    #endregion
-                    #region Current
-                    PromotedEmployee.Expriance = new List<CurrentEmployeeExpriance>();
-                    #region Current
-                    var empCurrrEx =
-                        currentex.Where(x => x.EmployeeId == r.e.EmployeeId)
-                            .OrderByDescending(x => x.PlacementId)
-                            .ToList();
-                    for (int e = 0; e < empCurrrEx.Count(); e++)
-                    {
-                        currentEmployeeExpriance = new CurrentEmployeeExpriance();
-
-
-                        int year = 0;
-                        int month;
-                        int days;
-                        if (e >= 1)
-                        {
-                            var from = new DateTime(empCurrrEx[e].AssignmentDate.Year, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Day);
-                            var to = new DateTime(empCurrrEx[e - 1].AssignmentDate.Year, empCurrrEx[e - 1].AssignmentDate.Month, empCurrrEx[e - 1].AssignmentDate.Day);
-
-                            var totalmonths = (to.Year - from.Year) * 12 + to.Month - from.Month;
-                            totalmonths += to.Day < from.Day ? -1 : 0;
-
-                            var years = totalmonths / 12;
-                            var months = totalmonths % 12;
-                            var dayss = from.Subtract(to.AddMonths(totalmonths)).Days;
-
-                            year = years;
-                            month = months;
-                            days = dayss;
-                            currentEmployeeExpriance.From = empCurrrEx[e].AssignmentDate.Date.ToShortDateString();
-                            currentEmployeeExpriance.To = empCurrrEx[e - 1].AssignmentDate.Date.ToShortDateString();
-                            currentEmployeeExpriance.FromString = XAPI.EthiopicDateTime.GetEthiopicDate(empCurrrEx[e].AssignmentDate.Day, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Year).ToString();
-                            currentEmployeeExpriance.ToString = XAPI.EthiopicDateTime.GetEthiopicDate(empCurrrEx[e - 1].AssignmentDate.Day, empCurrrEx[e - 1].AssignmentDate.Month, empCurrrEx[e - 1].AssignmentDate.Year).ToString();
-                            currentEmployeeExpriance.Year = XAPI.Common.GetYearMonthDay(empCurrrEx[e].AssignmentDate, empCurrrEx[e - 1].AssignmentDate);
-                            string val = XAPI.Common.GetConcatenatedYearMonthDay(empCurrrEx[e].AssignmentDate, empCurrrEx[e - 1].AssignmentDate);
-                            currentEmployeeExpriance.DYear = Convert.ToInt32(val.Split('-')[0].ToString());
-                            currentEmployeeExpriance.DMonth = Convert.ToInt32(val.Split('-')[1].ToString());
-                            currentEmployeeExpriance.IntExpSingle = EmployeeHelper.GetDaystoWordsAmharic(empCurrrEx[e - 1].AssignmentDate.Subtract(empCurrrEx[e].AssignmentDate).Days);
-
-
-                        }
-                        else
-                        {
-                            currentEmployeeExpriance.From = empCurrrEx[e].AssignmentDate.Date.ToShortDateString();
-
-                            currentEmployeeExpriance.To = DateTime.Now.Date.ToShortDateString();
-
-                            var from = new DateTime(empCurrrEx[e].AssignmentDate.Year, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Day);
-                            var to = new DateTime(DateTime.Now.Date.Year, DateTime.Now.Date.Month, DateTime.Now.Date.Day);
-
-                            var totalmonths = (to.Year - from.Year) * 12 + to.Month - from.Month;
-                            totalmonths += to.Day < from.Day ? -1 : 0;
-
-                            var years = totalmonths / 12;
-                            var months = totalmonths % 12;
-                            var dayss = from.Subtract(to.AddMonths(totalmonths)).Days;
-
-                            year = years;
-                            month = months;
-                            days = dayss;
-                            string val = XAPI.Common.GetConcatenatedYearMonthDay(empCurrrEx[e].AssignmentDate, DateTime.Now);
-                            currentEmployeeExpriance.DYear = Convert.ToInt32(val.Split('-')[0].ToString());
-                            currentEmployeeExpriance.DMonth = Convert.ToInt32(val.Split('-')[1].ToString());
-
-                            currentEmployeeExpriance.Year = XAPI.Common.GetYearMonthDay(empCurrrEx[e].AssignmentDate, DateTime.Now);
-                            currentEmployeeExpriance.FromString = XAPI.EthiopicDateTime.GetEthiopicDate(empCurrrEx[e].AssignmentDate.Day, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Year).ToString();
-                            currentEmployeeExpriance.ToString = " አሁን";
-                        }
-
-                        currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
-
-
-
-                        //currentEmployeeExpriance.Description = currentEmployeeExpriance.Year;
-                        PromotedEmployee.Expriance.Add(currentEmployeeExpriance);
-                    }
-                    #endregion
-                    #region History
-                    var empHistory =
-                        db.PlacementHistories.Where(x => x.EmployeeId == r.e.EmployeeId)
-                            .OrderByDescending(x => x.PlacementHistoryId)
-                            .ToList();
-                    for (int e = 0; e < empHistory.Count(); e++)
-                    {
-                        currentEmployeeExpriance = new CurrentEmployeeExpriance();
-
-
-                        int year = 0;
-                        int month;
-                        int days;
-
-                        var from = new DateTime(empHistory[e].From.Year, empHistory[e].From.Month, empHistory[e].From.Day);
-                        var to = new DateTime(empHistory[e].To.Year, empHistory[e].To.Month, empHistory[e].To.Day);
-
-                        var totalmonths = (to.Year - from.Year) * 12 + to.Month - from.Month;
-                        totalmonths += to.Day < from.Day ? -1 : 0;
-
-                        var years = totalmonths / 12;
-                        var months = totalmonths % 12;
-                        var dayss = from.Subtract(to.AddMonths(totalmonths)).Days;
-
-                        year = years;
-                        month = months;
-                        days = dayss;
-                        currentEmployeeExpriance.From = empHistory[e].From.Date.ToShortDateString();
-                        currentEmployeeExpriance.To = empHistory[e].To.Date.ToShortDateString();
-                        currentEmployeeExpriance.FromString = XAPI.EthiopicDateTime.GetEthiopicDate(empHistory[e].From.Year, empHistory[e].From.Month, empHistory[e].From.Day).ToString();
-                        currentEmployeeExpriance.ToString = XAPI.EthiopicDateTime.GetEthiopicDate(empHistory[e].To.Year, empHistory[e].To.Month, empHistory[e].To.Day).ToString();
-                        currentEmployeeExpriance.Year = XAPI.Common.GetYearMonthDay(empHistory[e].From, empHistory[e].To);
-                        string val = XAPI.Common.GetConcatenatedYearMonthDay(empHistory[e].From, empHistory[e].To);
-                        currentEmployeeExpriance.DYear = Convert.ToInt32(val.Split('-')[0].ToString());
-                        currentEmployeeExpriance.DMonth = Convert.ToInt32(val.Split('-')[1].ToString());
-                        currentEmployeeExpriance.JobTitleName = empHistory[e].JobTitle;
-                        // currentEmployeeExpriance.IntExp = EmployeeHelper.GetDaystoWordsAmharic(empHistory[e].To.Subtract(empHistory[e].From).Days);
-                        PromotedEmployee.Expriance.Add(currentEmployeeExpriance);
-                    }
-                    #endregion
-                    int TotalCurrentear = PromotedEmployee.Expriance.Sum(x => x.DYear);
-
-                    int TotalCurrentMonth = PromotedEmployee.Expriance.Sum(x => x.DMonth);
-                    PromotedEmployee.DMonth = TotalCurrentMonth;
-                    PromotedEmployee.DYear = TotalCurrentear;
-                    PromotedEmployee.IntExp = EmployeeHelper.GetDaystoWordsAmharic((DateTime.Today.Subtract(r.e.HiredDate)).Days);
-                    if (TotalCurrentMonth >= 12)
-                    {
-                        PromotedEmployee.DMonth = PromotedEmployee.DMonth % 12;
-                        PromotedEmployee.DYear += TotalCurrentMonth / 12;
-                    }
-
-                    #endregion
-                    var activePlacment = currentex.FirstOrDefault(x => x.EmployeeId == r.e.EmployeeId && x.isCurrent);
-                    if (activePlacment != null)
-                    {
-                        PromotedEmployee.CurrentSalary = activePlacment.Salary;
-                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == activePlacment.BranchId);
-                        if (branch != null)
-                        {
-                            PromotedEmployee.Branch = branch.AmharicName;
-                        }
-
-                    }
-
-
-                    TotalYear = PromotedEmployee.DYear + PromotedEmployee.OtherYear;
-                    TotalMonth = PromotedEmployee.DMonth + PromotedEmployee.OtherMonth;
-                    if (TotalMonth >= 12)
-                    {
-                        TotalYear += TotalMonth / 12;
-                        TotalMonth = TotalMonth % 12;
-
-                    }
-                    //PromotedEmployee.TotalYear = TotalYear.ToString();
-
-                    // double allExperienceDaySum = 0;
-
-                    var extExps = otherexpriances.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
-                    double extTotal = 0;
-                    foreach (var ex in extExps)
-                    {
-                        extTotal = extTotal + ex.To.Subtract(ex.From).Days;
-                    }
-
-
-                    double intTotal = DateTime.Today.Subtract(r.e.HiredDate).Days;
-                    double totalExp = extTotal + intTotal;
-
-                    PromotedEmployee.TotalMonth = EmployeeHelper.GetDaystoWordsAmharic(totalExp);//TotalMonth.ToString();
-                    PromotedEmployee.TotalYear = EmployeeHelper.GetDaystoWordsAmharic(totalExp); //TotalYear.ToString();                                                         //PromotedEmployee.TotalMonth = TotalDays.ToString();
-                    PromotedEmployee.RecruitmentType = HrHelper.GetEmployeeStatus(r.e.Status);
-
-                    PromotedEmployees.Add(PromotedEmployee);
+                        Year = useEthDate ? HrHelper.GetECDate(fy.DateTo).ToString() : fy.DateTo.Year.ToString(),
+                        Balance = le.Balance
+                    });
                 }
             }
-            return PromotedEmployees.OrderBy(x => x.No).ToList();
+
+            // Education
+            foreach (var e in educations.OrderByDescending(X=>X.To))
+            {
+                result.Educations.Add(new EmployeeEducation
+                {
+                    From = useEthDate ? e.FromEAmharic : e.From?.ToString("dd.MM.yyyy"),
+                    To = useEthDate ? e.ToEAmharic : e.To.ToString("dd.MM.yyyy"),
+                    OrgName = e.OrganizationName,
+                    EduField = lookups.FirstOrDefault(l => l.LookupId == e.EduField)?.Description,
+                    EduLevel = lookups.FirstOrDefault(l => l.LookupId == e.EduLevel)?.Description
+                });
+            }
+
+            // External Experience
+            foreach (var ex in experiences.Where(x => x.From != null && x.To != null))
+            {
+                var days = (ex.To - ex.From).Days;
+                totalExternalDays += days;
+                totalExperienceDays += days;
+
+                jobTitles.TryGetValue(ex.JobTitleId , out var jt);
+
+                result.OtherExpriance.Add(new OtherEmployeeExpriance
+                {
+                    From = useEthDate ? ex.FromExAmharic : ex.From.ToString("dd.MM.yyyy"),
+                    To = useEthDate ? ex.ToExAmharic : ex.To.ToString("dd.MM.yyyy"),
+                    CompanyName = ex.Organozation,
+                    JobTitleName = jt?.Description ?? ex.Responsibility,
+                    ExpExtSingle = GetLocalizedExperienceText(days)
+                });
+            }
+
+            // Internal Experience
+            var sortedPlacements = placements.OrderByDescending(x => x.AssignmentDate).ToList();
+
+            for (int i = 0; i < sortedPlacements.Count; i++)
+            {
+                var current = sortedPlacements[i];
+                var nextDate = (i == 0) ? DateTime.Now : sortedPlacements[i - 1].AssignmentDate;
+
+                var days = Math.Abs((nextDate - current.AssignmentDate).Days);
+                totalInternalDays += days;
+                totalExperienceDays += days;
+
+                jobTitles.TryGetValue(current.LookupId, out var jt);
+
+                result.Expriance.Add(new CurrentEmployeeExpriance
+                {
+                    From = useEthDate ? current.AssignmentDateAmharic : current.AssignmentDate.ToString("dd.MM.yyyy"),
+                    To = useEthDate ? XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
+                                   : DateTime.Now.ToString("dd.MM.yyyy"),
+                    JobTitleName = jt?.Description ?? current.JobTitleName ?? "-",
+                    IntExpSingle = GetLocalizedExperienceText(days)
+                });
+            }
+
+            // Histories
+            foreach (var h in histories)
+            {
+                var days = (h.To - h.From).Days;
+                totalInternalDays += days;
+                totalExperienceDays += days;
+
+                jobTitles.TryGetValue(h.LookupId, out var jt);
+
+                result.Expriance.Add(new CurrentEmployeeExpriance
+                {
+                    From = useEthDate ? h.FromAmharic : h.From.ToString("dd.MM.yyyy"),
+                    To = useEthDate ? h.ToAmharic : h.To.ToString("dd.MM.yyyy"),
+                    JobTitleName = jt?.Description ?? h.JobTitle ?? "-",
+                    IntExpSingle = GetLocalizedExperienceText(days)
+                });
+            }
+
+            // Branch & Salary
+            var activePlacement = placements.FirstOrDefault(x => x.isCurrent);
+            if (activePlacement != null && branches.TryGetValue(activePlacement.BranchId, out var branch))
+            {
+                result.Branch = branch?.Name ?? branch?.AmharicName;
+                result.CurrentSalary = activePlacement.Salary;
+            }
+
+            result.ExtExp = GetLocalizedExperienceText(totalExternalDays);
+            result.IntExp = GetLocalizedExperienceText(totalInternalDays);
+            result.TotalYear = GetLocalizedExperienceText(totalExperienceDays);
+
+            return new List<PromotedEmployee> { result };
         }
 
+        public List<PromotedEmployee> GetPromotedEmployeeExisted(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id) || !int.TryParse(id, out int employeeId))
+                return new List<PromotedEmployee>();
+
+            // Cache lookup and static tables once
+            var lookups = db.Lookups.AsNoTracking().ToList();
+            var branches = db.Branch.AsNoTracking().ToDictionary(z=>z.BranchId);
+            var educations = db.Education.AsNoTracking().Where(e => e.EmployeeId == employeeId).ToList();
+            var experiences = db.Experiences.AsNoTracking().Where(e => e.EmployeeId == employeeId).ToList();
+            var placements = db.Placements.AsNoTracking().Where(p => p.EmployeeId == employeeId).ToList();
+            var placementHistories = db.PlacementHistories.AsNoTracking().Where(h => h.EmployeeId == employeeId).ToList();
+
+            // Employee and placement info
+            var employees = (from e in db.Person_Employee
+                             join p in db.Placements on e.EmployeeId equals p.EmployeeId
+                             where e.IsActive && p.isCurrent && e.EmployeeId == employeeId
+                             select new { e, p }).ToList();
+
+            // Leave entitlements & fiscal years
+            var leaveEntitles = db.LeavesEntitle
+                .AsNoTracking()
+                .Where(x => x.EmployeeId == employeeId && !x.IsExpired)
+                .OrderByDescending(x => x.GlFiscalYearId)
+                .ToList();
+            var fiscalYears = db.GLFiscalYears.AsNoTracking().ToDictionary(x => x.GlFiscalYearId);
+
+            // Performance
+            var empPerformance = db.EmployeePerformanceSummary
+                .AsNoTracking()
+                .Where(x => x.EmployeeId == employeeId)
+                .OrderByDescending(x => x.EmployeePerformanceSummaryId)
+                .FirstOrDefault();
+
+            var promotedEmployees = new List<PromotedEmployee>();
+            int totalInternalDays = 0, totalExternalDays = 0, totalExperienceDays = 0;
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            var jobTitles = lookups.Where(x => x.LookupType == Core.Domain.Common.LookUpTypes.Jobtitle_External_Experience
+                                       || x.LookupType == Core.Domain.Common.LookUpTypes.JOB_TITLE
+                                       || x.LookupType == Core.Domain.Common.LookUpTypes.OLD_JOB_TITLE).ToList();
+
+            foreach (var r in employees)
+            {
+               
+             
+                var promoted = new PromotedEmployee
+                {
+                    LeaveBalance = new List<LeaveBalanceViewModel>(),
+                    Educations = new List<EmployeeEducation>(),
+                    OtherExpriance = new List<OtherEmployeeExpriance>(),
+                    Expriance = new List<CurrentEmployeeExpriance>(),
+                    No = promotedEmployees.Count + 1,
+                    ApplicantName = $"{r.e.FirstNameEnglish} {r.e.MiddleNameEnglish} {r.e.LastNameEnglish}",
+                    DateOfBirth = r.e.DateOfBirth.ToString("dd.MM.yyyy"),
+                    Age = r.e.DateOfBirth.GetAge().ToString(),
+                    Perfromance = (empPerformance?.Result ?? 0).ToString(),
+                    RecruitmentType = HrHelper.GetEmployeeStatus(r.e.Status)
+                };
+
+                // --- LEAVE BALANCE ---
+                foreach (var le in leaveEntitles)
+                {
+                    if (fiscalYears.TryGetValue(le.GlFiscalYearId, out var fy))
+                    {
+                        promoted.LeaveBalance.Add(new LeaveBalanceViewModel
+                        {
+                            Year = datePreference ? HrHelper.GetECDate(fy.DateTo).ToString(): fy.DateTo.Year.ToString(),
+                            Balance = le.Balance
+                        });
+                    }
+                }
+
+                // --- EDUCATION ---
+                foreach (var e in educations.OrderByDescending(x => x.From).ThenByDescending(x => x.To))
+                {
+                    promoted.Educations.Add(new EmployeeEducation
+                    {
+                        From = datePreference?e?.FromEAmharic:e.From.HasValue?e.From.Value.ToString("dd.MM.yyyy"):null,
+                        To = datePreference?e?.ToEAmharic:e.To.ToString("dd.MM.yyyy"),
+                        OrgName = e?.OrganizationName,
+                        EduField = lookups?.FirstOrDefault(l => l.LookupId == e.EduField)?.Description,
+                        EduLevel = lookups?.FirstOrDefault(l => l.LookupId == e.EduLevel)?.Description
+                    });
+                }
+
+                // --- EXTERNAL EXPERIENCE ---
+                foreach (var ex in experiences.OrderByDescending(x => x.From))
+                {
+                    var durationDays = (ex.To - ex.From).Days;
+                    totalExternalDays += durationDays;
+                    totalExperienceDays += durationDays;
+                    var jobTitle = jobTitles.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
+
+                    var parts = XAPI.Common.GetConcatenatedYearMonthDay(ex.From, ex.To).Split('-');
+                    promoted.OtherExpriance.Add(new OtherEmployeeExpriance
+                    {
+                        From = datePreference? ex.FromExAmharic:ex.From.ToString("dd.MM.yyyy"),
+                        To = datePreference ? ex.ToExAmharic:ex.To.ToString("dd.MM.yyyy"),
+                        CompanyName = ex.Organozation,
+                        JobTitleName = jobTitle?.Description??ex.Responsibility,
+                        Year =  XAPI.Common.GetYearMonthDay(ex.From, ex.To),
+                        DYear =  Convert.ToInt32(parts[0]),
+                        DMonth = Convert.ToInt32(parts[1]),
+                        ExpExtSingle = GetLocalizedExperienceText(durationDays)
+                    });
+                }
+
+                promoted.OtherYear = promoted.OtherExpriance.Sum(x => x.DYear);
+                promoted.OtherMonth = promoted.OtherExpriance.Sum(x => x.DMonth);
+                int otherYear = promoted.OtherYear;
+                int otherMonth = promoted.OtherMonth;
+                NormalizeMonths(ref otherYear, ref otherMonth);
+
+                promoted.ExtExp = GetLocalizedExperienceText(totalExternalDays);
+                // --- INTERNAL EXPERIENCE (Placements + Histories) ---
+                ComputeInternalExperience(promoted, placements, placementHistories, jobTitles, ref totalInternalDays, ref totalExperienceDays);
+
+                promoted.IntExp = GetLocalizedExperienceText(totalInternalDays);
+
+                // --- BRANCH & SALARY ---
+                var activePlacement = placements.FirstOrDefault(x => x.isCurrent);
+                if (activePlacement != null)
+                {
+                    branches.TryGetValue(activePlacement.BranchId, out var branch);
+                    promoted.CurrentSalary = activePlacement.Salary;
+                    promoted.Branch =branch?.Name??branch?.AmharicName;
+                }
+
+                // --- TOTAL EXPERIENCE ---
+                var totalYear = promoted.DYear + promoted.OtherYear;
+                var totalMonth = promoted.DMonth + promoted.OtherMonth;
+                NormalizeMonths(ref totalYear, ref totalMonth);
+
+                promoted.TotalMonth = totalMonth.ToString();
+                promoted.TotalYear = GetLocalizedExperienceText(totalExperienceDays);
+
+                promotedEmployees.Add(promoted);
+            }
+
+            return promotedEmployees.OrderBy(x => x.No).ToList();
+        }
+
+        private void NormalizeMonths(ref int years, ref int months)
+        {
+            if (months >= 12)
+            {
+                years += months / 12;
+                months %= 12;
+            }
+        }
+
+        private string GetLocalizedExperienceText(int days)
+        {
+            switch (cultureName.ToLower())
+            {
+                case "am":
+                case "am-et":
+                    return EmployeeHelper.GetDaystoWordsAmharic(days);
+                default:
+                    return EmployeeHelper.GetDaystoWords(days);
+            }
+        }
+
+        private void ComputeInternalExperience(PromotedEmployee promoted, List<Placement> placements,  List<PlacementHistory> histories, List<Lookup> jobTitles,
+            ref int totalInternalDays, ref int totalExperienceDays)
+        {
+
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            var sortedPlacements = placements.OrderByDescending(x => x.PlacementId).ToList();
+
+            for (int i = 0; i < sortedPlacements.Count; i++)
+            {
+                var loockpId = sortedPlacements[i].LookupId;
+                var current = sortedPlacements[i];
+                var nextDate = (i == 0) ? DateTime.Now : sortedPlacements[i - 1].AssignmentDate;
+                var days = Math.Abs((nextDate - current.AssignmentDate).Days);
+                totalInternalDays += days;
+                totalExperienceDays += days;
+                var jobTitle = jobTitles.FirstOrDefault(x => x.LookupId == loockpId);
+                promoted.Expriance.Add(new CurrentEmployeeExpriance
+                {
+                    From = datePreference ? current.AssignmentDateAmharic : current.AssignmentDate.ToString("dd.MM.yyyy"),
+                    To = (i == 0)? datePreference
+                                        ? XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
+                                        : DateTime.Now.ToString("dd.MM.yyyy")
+                                    : datePreference
+                                        ? sortedPlacements[i - 1].AssignmentDateAmharic
+                                        : sortedPlacements[i - 1].AssignmentDate.ToString("dd.MM.yyyy"),
+                    JobTitleName =  jobTitle.Description?? current.JobTitleName ??"-",
+                    IntExpSingle = GetLocalizedExperienceText(days)
+                });
+            }
+
+            // Add histories
+            foreach (var h in histories.OrderByDescending(x => x.PlacementHistoryId))
+            {
+                var days = (h.To - h.From).Days;
+                totalInternalDays += days;
+                totalExperienceDays += days;
+                var jobTitle = jobTitles.FirstOrDefault(x => x.LookupId == h.LookupId);
+
+                promoted.Expriance.Add(new CurrentEmployeeExpriance
+                {
+                    From = datePreference ? h.FromAmharic : h.From.ToString("dd.MM.yyyy"),
+                    To = datePreference ? h.ToAmharic : h.To.ToString("dd.MM.yyyy"),
+                    JobTitleName = jobTitle.Description ?? h.JobTitle ?? "-",
+                    IntExpSingle = GetLocalizedExperienceText(days)
+                });
+            }
+
+            promoted.DYear = promoted.Expriance.Sum(x => x.DYear);
+            promoted.DMonth = promoted.Expriance.Sum(x => x.DMonth);
+            int proYear = promoted.DYear;
+            int proMonth = promoted.DMonth;
+
+            NormalizeMonths(ref proYear, ref proMonth);
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 }

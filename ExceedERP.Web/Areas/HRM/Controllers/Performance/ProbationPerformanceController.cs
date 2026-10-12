@@ -9,17 +9,19 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using ExceedERP.Core.Domain.Global;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
     [AuthorizeRoles(HrmConstants.HRDepartmentHead,
-        HrmConstants.HRPerformanceUser,
-        HrmConstants.HRPerformanceAdmin,
-        HrmConstants.HREmployeeSelfService)]
-    public class ProbationPerformanceController : Controller
+                    HrmConstants.HRPerformanceUser, 
+                    HrmConstants.HRPerformanceAdmin,
+                    HrmConstants.HREmployeeSelfService)]
+    public class ProbationPerformanceController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/ProbationPerformance
@@ -30,10 +32,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public void PopulateViewData()
         {
-            ViewData["Employees"] = db.Person_Employee.ToList();
+            ViewData["Employees"] = db.Person_Employee.Select(x=>new
+            {
+                EmployeeId =x.EmployeeId,
+                FullNameaEnglish = x.EmployeeCode+"-"+x.FirstNameEnglish+" "+x.MiddleNameEnglish+" "+x.LastNameEnglish
+            }).ToList();
+
             ViewData["Org"] = db.MainCompanyStructures.ToList();
             ViewData["Jobtitle"] = db.Lookups.ToList();
             ViewData["Measurments"] = db.Lookups.Where(x=>x.LookupType == Core.Domain.Common.LookUpTypes.PROBATION_MEASUREMENT).ToList();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
         }
         public ActionResult ProbationPerformanceEvaluation_Read([DataSourceRequest]DataSourceRequest request, int empId)
         {
@@ -42,6 +51,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 ProbationPerformanceId = probation.ProbationPerformanceId,
                 EmployeeId = probation.EmployeeId,
+                EmployeeStatus = probation.EmployeeStatus,
                 Result = probation.Result,
                 ResultType = probation.ResultType,
                 HireDate = probation.HireDate,
@@ -67,7 +77,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 probation.HireDate = person.HiredDate;
                 probation.HireDateAm = person.HiredDateAmharic;
-                probation.Status = person.Status;
+                probation.EmployeeStatus = person.Status;
 
             }
             var place = db.Placements.FirstOrDefault(x=>x.EmployeeId == empId && x.isCurrent);
@@ -86,17 +96,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 #region operation log
                 var person1 = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == entity.EmployeeId);
-                if(person1 != null)
-                {
-                    if(person1 != null)
-                    {
-                       
-                            UserHelper.OperationLog(Request.UserHostAddress, "Probation Performance ", "Success", User.Identity.Name, User.Identity.Name + " add Probation Performance for " + person1.FullNameaEnglish + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
+                UserHelper.OperationLog(Request.UserHostAddress, "Probation Performance ", "Success", User.Identity.Name, User.Identity.Name + " add Probation Performance for " + person1?.FullNameaEnglish??null + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
                         
-                    }
-
-                }
-
                 #endregion
 
             }
@@ -104,13 +105,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { probation }.ToDataSourceResult(request, ModelState));
         }
 
-        public ActionResult ProbationPerformance_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult ProbationPerformance_Read([DataSourceRequest] DataSourceRequest request)
         {
-            IQueryable<ProbationPerformance> probations = db.ProbationPerformances;
-            DataSourceResult result = probations.ToDataSourceResult(request, probation => new {
+            var probations = db.ProbationPerformances.AsNoTracking();
 
+            var result = probations.ToDataSourceResult(request, probation => new 
+            {
                 ProbationPerformanceId = probation.ProbationPerformanceId,
                 EmployeeId = probation.EmployeeId,
+                EmployeeStatus = probation.EmployeeStatus,
                 Result = probation.Result,
                 ResultType = probation.ResultType,
                 HireDate = probation.HireDate,
@@ -119,10 +122,43 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = probation.OrgStructureId,
                 ProbationEndDate = probation.ProbationEndDate,
                 ProbationEndDateAm = probation.ProbationEndDateAm,
-                Status = probation.Status
+
+                DepartmentOnlineApprovedBy = probation.DepartmentOnlineApprovedBy,
+                DepartmentSendForApprovalBy = probation.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = probation.DepartmentSendForApprovalTime,
+                IsDepartmentSendForApproval = probation.IsDepartmentSendForApproval,
+                DepartmentOnlineApprovedTime = probation.DepartmentOnlineApprovedTime,
+                IsDepartmentOnlineApproved = probation.IsDepartmentOnlineApproved,
+                OnlineApprovedBy = probation.OnlineApprovedBy,
+                OnlineApprovedTime = probation.OnlineApprovedTime,
+                IsOnlineApproved = probation.IsOnlineApproved,
+                IsSendForApproval = probation.IsSendForApproval,
+                SendForApprovalBy = probation.SendForApprovalBy,
+                SendForApprovalTime = probation.SendForApprovalTime,
+                Status = probation.Status,
+
+                IsOnlineTransferred = probation.IsOnlineTransferred,
+                IsOnlineTransferredBy = probation.IsOnlineTransferredBy,
+                OnlineTransferredTime = probation.OnlineTransferredTime,
+
+                CurrentApprovalStep = probation.CurrentApprovalStep,
+                ForwardedFrom = probation.ForwardedFrom,
+                ForwardedTo = probation.ForwardedTo,
+                Remark = probation.Remark,
+                OrgBranchName = probation.OrgBranchName,
+                IsFinalApproval = probation.IsFinalApproval,
+
+                ModifiedBy = probation.ModifiedBy,
+                LastModified = probation.LastModified,
+                CreatedBy = probation.CreatedBy,
+                DateCreated = probation.DateCreated,
+
+                IsVoid = probation.IsVoid,
+                VoidBy = probation.VoidBy,
+                VoidTime = probation.VoidTime
             });
 
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -255,6 +291,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 ProbationPerformanceId = probation.ProbationPerformanceId,
                 EmployeeId = probation.EmployeeId,
+                EmployeeStatus = probation.EmployeeStatus,
                 Result = probation.Result,
                 ResultType = probation.ResultType,
                 HireDate = probation.HireDate,
@@ -263,10 +300,431 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = probation.OrgStructureId,
                 ProbationEndDate = probation.ProbationEndDate,
                 ProbationEndDateAm = probation.ProbationEndDateAm,
-                Status = probation.Status
+
+                IsOnlineTransferred = probation.IsOnlineTransferred,
+                IsOnlineTransferredBy = probation.IsOnlineTransferredBy,
+                OnlineTransferredTime = probation.OnlineTransferredTime,
+
+                CurrentApprovalStep = probation.CurrentApprovalStep,
+                ForwardedFrom = probation.ForwardedFrom,
+                ForwardedTo = probation.ForwardedTo,
+                Remark = probation.Remark,
+                OrgBranchName = probation.OrgBranchName,
+                IsFinalApproval = probation.IsFinalApproval,
+
+                DepartmentOnlineApprovedBy = probation.DepartmentOnlineApprovedBy,
+                DepartmentSendForApprovalBy = probation.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = probation.DepartmentSendForApprovalTime,
+                IsDepartmentSendForApproval = probation.IsDepartmentSendForApproval,
+                DepartmentOnlineApprovedTime = probation.DepartmentOnlineApprovedTime,
+                IsDepartmentOnlineApproved = probation.IsDepartmentOnlineApproved,
+                OnlineApprovedBy = probation.OnlineApprovedBy,
+                OnlineApprovedTime = probation.OnlineApprovedTime,
+                IsOnlineApproved = probation.IsOnlineApproved,
+                IsSendForApproval = probation.IsSendForApproval,
+                SendForApprovalBy = probation.SendForApprovalBy,
+                SendForApprovalTime = probation.SendForApprovalTime,
+                Status = probation.Status,
+
+                ModifiedBy = probation.ModifiedBy,
+                LastModified = probation.LastModified,
+                CreatedBy = probation.CreatedBy,
+                DateCreated = probation.DateCreated,
+
+                IsVoid = probation.IsVoid,
+                VoidBy = probation.VoidBy,
+                VoidTime = probation.VoidTime
             };
             return entity;
         }
+
+        public JsonResult GetEmployeesUnderLogedInUserDepartment()
+        {
+            var today = DateTime.Today;
+            int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            var subordinates = EmployeeHelper.GetSubordinatesOfSubortinates_FilteredByHead(empId);
+            subordinates.Add(empId);
+
+            // Fetch active employees under the logged-in user's purview in a single query
+            var employees = db.Person_Employee
+                .AsNoTracking()
+                .Where(x => subordinates.Contains(x.EmployeeId) && x.IsActive)
+                .Select(x => new
+                {
+                    x.EmployeeId,
+                    x.EmployeeCode,
+                    x.FirstNameEnglish,
+                    x.MiddleNameEnglish,
+                    x.LastNameEnglish,
+                    x.HiredDate,
+                    x.Status
+                })
+                .ToList();
+
+            var employeeIds = employees.Select(x => x.EmployeeId).ToList();
+
+            // Placements (bulk loaded into a dictionary)
+            var placements = db.Placements
+                .Where(p => employeeIds.Contains(p.EmployeeId) && p.isCurrent)
+                .GroupBy(p => p.EmployeeId)
+                .ToDictionary(g => g.Key, g => g.FirstOrDefault());
+
+            // Probation settings
+            var probationSettings = db.ProbationsSettings.ToList();
+
+            // Holidays
+            var holidays = new HashSet<DateTime>(
+                db.Holidays.Select(x => x.Date).ToList()
+            );
+
+            var result = employees
+                .Where(emp =>
+                {
+                    placements.TryGetValue(emp.EmployeeId, out var placement);
+
+                    int probationDays = probationSettings.FirstOrDefault()?.ProbationDays ?? 90;
+
+                    if (placement != null)
+                    {
+                        var setting = probationSettings.FirstOrDefault(x => x.ResponsibilityLevel == placement.ResponsibilityLevel);
+                        if (setting != null && setting.ProbationDays > 0)
+                        {
+                            probationDays = setting.ProbationDays;
+                        }
+                    }
+
+                    int workedDays = CalculateWorkingDays(emp.HiredDate.Date, today, holidays);
+
+                    return emp.Status == EmployeeStatus.PROBATION || workedDays < probationDays;
+                })
+                .Select(p => new
+                {
+                    EmployeeId = p.EmployeeId,
+                    FullNameaEnglish = (p.EmployeeCode ?? "") + " - " +
+                                       (p.FirstNameEnglish ?? "") + " " +
+                                       (p.MiddleNameEnglish ?? "") + " " +
+                                       (p.LastNameEnglish ?? "")
+                })
+                .OrderBy(x => x.FullNameaEnglish)
+                .ToList();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllActiveProbationEmployees()
+        {
+            var today = DateTime.Now.Date;
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            var subordinates = EmployeeHelper
+                .GetSubordinatesOfSubortinates_FilteredByHead(id);
+
+            subordinates.Add(id);
+
+            // Employees under me
+            var employees = db.Person_Employee
+                .AsNoTracking()
+                .Where(x =>
+                    subordinates.Contains(x.EmployeeId)&& 
+                    x.IsActive )
+                .Select(x => new
+                {
+                    x.EmployeeId,
+                    x.EmployeeCode,
+                    x.FirstNameEnglish,
+                    x.MiddleNameEnglish,
+                    x.LastNameEnglish,
+                    x.HiredDate,
+                    x.Status
+                })
+                .ToList();
+
+            var employeeIds = employees
+                .Select(x => x.EmployeeId)
+                .ToList();
+
+            // Placements
+            var placements = db.Placements
+                    .Where(p => employeeIds.Contains(p.EmployeeId) && p.isCurrent)
+                    .GroupBy(p => p.EmployeeId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.FirstOrDefault()
+                    );
+
+            // Probation settings
+            var probationSettings = db.ProbationsSettings
+                .ToList();
+
+            // Holidays
+            var holidays = new HashSet<DateTime>(
+                db.Holidays
+                  .Select(x => x.Date)
+                  .ToList()
+            );
+
+            var result = employees
+                .Where(emp =>
+                {
+                    placements.TryGetValue(emp.EmployeeId, out var placement);
+
+            // Default probation days
+            int probationDays =
+                        probationSettings.FirstOrDefault()?.ProbationDays ?? 60;
+
+            // Responsibility level based probation
+            if (placement != null)
+                    {
+                        var setting = probationSettings.FirstOrDefault(x =>
+                            x.ResponsibilityLevel == placement.ResponsibilityLevel);
+
+                        if (setting != null && setting.ProbationDays > 0)
+                        {
+                            probationDays = setting.ProbationDays;
+                        }
+                    }
+
+            // Working days calculation
+            int workedDays = CalculateWorkingDays(
+                        emp.HiredDate.Date,
+                        today,
+                        holidays);
+
+            // Rule:
+            // Include employee if:
+            // 1. Status is PROBATION
+            // OR
+            // 2. Employee has NOT completed probation days yet
+
+            return emp.Status == Core.Domain.Common.EmployeeStatus.PROBATION
+                           || workedDays < probationDays;
+                })
+                .Select(emp => new
+                {
+                    EmployeeId = emp.EmployeeId,
+                    FullNameaEnglish =
+                        emp.EmployeeCode + " - " +
+                        emp.FirstNameEnglish + " " +
+                        emp.MiddleNameEnglish + " " +
+                        emp.LastNameEnglish
+                })
+                .OrderBy(x => x.FullNameaEnglish)
+                .ToList();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        private int CalculateWorkingDays( DateTime startDate,DateTime endDate, HashSet<DateTime> holidays)
+        {
+            int workingDays = 0;
+
+            for (var date = startDate.AddDays(1); date <= endDate; date = date.AddDays(1))
+            {
+                // Skip Sunday
+                if (date.DayOfWeek == DayOfWeek.Sunday)
+                    continue;
+
+                // Skip holiday
+                if (holidays.Contains(date.Date))
+                    continue;
+
+                workingDays++;
+            }
+
+            return workingDays;
+        }
+
+
+        [HttpPost]
+        public JsonResult CheckFitUnfit(int id)
+        {
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var probationPerformance = db.ProbationPerformances.FirstOrDefault(x => x.ProbationPerformanceId == id);
+                    if (probationPerformance == null)
+                        return Json(new { Message = "Master probation record not found.", Status = false });
+
+                    if (!probationPerformance.IsOnlineApproved)
+                        return Json(new { Message = "Cannot update: Record has to be approved first.", Status = false });
+
+                    if (probationPerformance.ResultType == EvaluateProbation.Fit
+                        || probationPerformance.ResultType == EvaluateProbation.UnFit)
+                            return Json(new { Message = $"Cannot update: Record has already {probationPerformance.ResultType.ToString()} .", Status = false });
+
+                    var details = db.ProbationPerformanceDetails.Where(x => x.ProbationPerformanceId == id).ToList();
+                    if (!details.Any())
+                        return Json(new { Message = "No evaluation details found to process.", Status = false });
+
+                    var weightEarned = details.Sum(x => x.Score);
+
+                    var probationSettings = db.ProbationPerformanceSettings.FirstOrDefault();
+                    if (probationSettings == null)
+                        return Json(new { Message = "Please set probation performance settings first.", Status = false });
+
+                    // Corrected check: fail if placement IS NULL
+                    var placement = db.Placements.Where(x => x.EmployeeId == probationPerformance.EmployeeId).OrderByDescending(x=>x.AssignmentDate).FirstOrDefault();
+                    if (placement == null)
+                        return Json(new { Message = "Please make placement first.", Status = false });
+
+                    // Corrected check: fail if employee IS NULL
+                    var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == probationPerformance.EmployeeId);
+                    if (employee == null)
+                        return Json(new { Message = "The Employee record was not found or is inactive.", Status = false });
+
+                    // Update score result on master probation record
+                    probationPerformance.Result = weightEarned;
+
+                    // UNFIT: Score is lower than required threshold
+                    if (weightEarned < probationSettings.IntialWeight)
+                    {
+                        probationPerformance.ResultType = EvaluateProbation.UnFit;
+
+                        placement.isCurrent = false;
+                        employee.IsActive = false;
+
+                        db.Entry(probationPerformance).State = EntityState.Modified;
+                        db.Entry(placement).State = EntityState.Modified;
+                        db.Entry(employee).State = EntityState.Modified;
+
+                        var terminationTypeLookup = db.Lookups.FirstOrDefault(x => x.LookupType == Core.Domain.Common.LookUpTypes.TERMINATIONTYPE);
+
+                        var terminationEntity = new Core.Domain.HRM.EmployeeDetail.Termination
+                        {
+                            EmployeeId = employee.EmployeeId,
+                            BranchId = placement.BranchId,
+                            BusinessUnitId = placement.BusinessUnitId,
+                            OrgStructureId = placement.OrgStructureId,
+                            LookupId = terminationTypeLookup != null ? terminationTypeLookup.LookupId : 0,
+                            Reason = "Probation Unfit",
+                            ApplicationDate = DateTime.UtcNow,
+                            TerminationDate = DateTime.UtcNow,
+                            Remark = "Probation Unfit",
+                            ApplicationDateAm = HrHelper.GetECDate(DateTime.UtcNow),
+                            TerminationDateAm = HrHelper.GetECDate(DateTime.UtcNow),
+                            DateCreated = DateTime.Now,
+                            LastModified = DateTime.Now,
+                            CreatedBy = User.Identity.Name,
+                            IsOnlineApproved = true,
+                            IsSendForApproval = true,
+                            IsDirect = true,
+                            IsEarlyRetirement = false,
+                            IsApplied = true,
+                            EmployeeCode = employee.EmployeeCode,
+                            OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
+                        };
+
+                        db.Terminations.Add(terminationEntity);
+                    }
+                    // FIT: Score meets or exceeds threshold
+                    else
+                    {
+                        probationPerformance.ResultType = EvaluateProbation.Fit;
+
+                        placement.EmployementType = Core.Domain.Common.EmployeeStatus.PERMANENT;
+                        employee.Status = Core.Domain.Common.EmployeeStatus.PERMANENT;
+                        employee.IsProbationEnd = true;
+                        employee.ProhabitionState = 0; // clears the grid's stale "in probation" (yellow) background
+
+                        db.Entry(probationPerformance).State = EntityState.Modified;
+                        db.Entry(placement).State = EntityState.Modified;
+                        db.Entry(employee).State = EntityState.Modified;
+                    }
+
+                    db.SaveChanges();
+                    transaction.Commit();
+
+                    return Json(new
+                    {
+                        Message = $"Probation performance evaluation {probationPerformance.ResultType.ToString()} processed successfully .",
+                        Status = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return Json(new
+                    {
+                        Message = "An error occurred while updating the records: " + ex.Message,
+                        Status = false
+                    });
+                }
+            }
+        }
+
+
+        //public JsonResult GetAllActiveProbationEmployees()
+        //{
+        //    var myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+        //    var today = DateTime.Now.Date;
+        //    var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+        //    var subordinates = EmployeeHelper.GetSubordinatesOfSubortinates_FilteredByHead(id);
+        //    subordinates.Add(id);
+        //    // Step 1: Filter in DB (IMPORTANT)
+        //    var employees = db.Person_Employee
+        //        .AsNoTracking()
+        //        .ToList()
+        //        .Where(x => subordinates.Contains(x.EmployeeId) 
+        //                    && myBranches.Contains(x.BranchId)
+        //                    && x.IsActive
+        //                    && x.IsPlaced)
+        //                    .Where(x => ((today - x.HiredDate.Date).TotalDays < 90)||x.Status==Core.Domain.Common.EmployeeStatus.PROBATION)
+        //        .Select(x => new
+        //        {
+        //            x.EmployeeId,
+        //            x.EmployeeCode,
+        //            x.FirstNameEnglish,
+        //            x.MiddleNameEnglish,
+        //            x.LastNameEnglish,
+        //            x.HiredDate
+        //        })
+        //        .ToList();
+
+        //    // Step 2: Get holidays as HashSet (FAST lookup)
+        //    var holidays = new HashSet<DateTime>(
+        //        db.Holidays.Select(x => x.Date)
+        //    );
+
+        //    // Step 3: Process probation logic
+        //    var result = employees
+        //        .Where(emp => IsInProbationRange(emp.HiredDate, holidays, today))
+        //        .Select(p => new
+        //        {
+        //            EmployeeId = p.EmployeeId,
+        //            FullNameaEnglish = p.EmployeeCode + "-" +
+        //                               p.FirstNameEnglish + " " +
+        //                               p.MiddleNameEnglish + " " +
+        //                               p.LastNameEnglish
+        //        })
+        //        .ToList();
+
+        //    return Json(result, JsonRequestBehavior.AllowGet);
+        //}
+        //private bool IsInProbationRange(DateTime hiredDate, HashSet<DateTime> holidays, DateTime today)
+        //{
+        //    int probationDays = 0;
+        //    DateTime date = hiredDate;
+
+        //    while (date < today && probationDays < 90)
+        //    {
+        //        date = date.AddDays(1);
+
+        //        if (date.DayOfWeek != DayOfWeek.Sunday && !holidays.Contains(date))
+        //        {
+        //            probationDays++;
+        //        }
+
+        //        if (probationDays >= 60 && probationDays < 90)
+        //        {
+        //            return true;
+        //        }
+        //    }
+
+        //    return false;
+        //}
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

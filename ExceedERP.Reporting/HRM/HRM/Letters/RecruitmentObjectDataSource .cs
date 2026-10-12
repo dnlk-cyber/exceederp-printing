@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
@@ -12,7 +11,7 @@ using ExceedERP.Reporting.SharedDataSources;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-    public class RecruitmentObjectDataSource : PromotionVM
+    public class RecruitmentObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -146,5 +145,11 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return EmployeeInfo;
         }
+      
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        
     }
 }

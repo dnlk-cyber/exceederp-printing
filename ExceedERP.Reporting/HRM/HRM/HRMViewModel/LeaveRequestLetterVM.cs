@@ -29,6 +29,22 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Date { get; set; }
         public string LeaveType { get; set; }
         public string Approver { get; set; }
+        public Image ApproverSign { get; set; }
         public string DepApprover { get; set; }
+        public Image DepApproverSign { get; set; }
+        public decimal TotalLeaveBalance { get; set; }
+        public decimal TotalLeaveTaken { get; set; }
+        public decimal RemainingBalance { get; set; }
+        public string Remark { get; set; }
+        public List<LeaveRequestDetails> RequestDetails { get; set; }
+
+
+    }
+
+    public class LeaveRequestDetails
+    {
+        public string FiscalYear { get; set; }
+        public decimal Balance { get; set; }
+
     }
 }

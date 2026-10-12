@@ -1,5 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
-
+using ExceedERP.Core.Domain.Health;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -14,7 +14,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
    
     [DataObject]
-    public class ReferalSheetObjectDataSource : List<ReferalSheetVM>
+    public class ReferalSheetObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -141,6 +141,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return referalSheets;
 
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

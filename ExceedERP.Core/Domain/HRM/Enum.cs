@@ -42,7 +42,8 @@ namespace ExceedERP.Core.Domain.HRM
     }
     public enum EmployeeIdAttribute
     {
-        Auto_Generate
+        Auto_Generate,
+        Manual
     }
 
     public enum ProbationMeasurement
@@ -59,7 +60,17 @@ namespace ExceedERP.Core.Domain.HRM
         With_Plan,
         Forced
     }
+    public enum BiometricEmployeeAutoRegistration
+    {
+        BiometricEmployeeAutoRegistration,
+        Manual
+    }
 
+    public enum BiometricEmployeeAutoExempt
+    {
+        BiometricEmployeeAutoExempt,
+        BiometricEmployeeAutoNotExempt
+    }
     public enum TemplateTypes
     {
         [Display(Name = "Enum_Template_Type_Experiance_Amharic", ResourceType = typeof(Localization.Resources))]

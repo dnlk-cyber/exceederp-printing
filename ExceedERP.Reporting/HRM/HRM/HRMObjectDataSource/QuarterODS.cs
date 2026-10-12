@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.HRM.PerformanceManagment;
+﻿using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class QuarterODS
+    public class QuarterODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -21,6 +21,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             var quarter = db.Quarters.Where(x => x.QuarterLengthId == quarterLengthId).ToList();
 
             return quarter;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

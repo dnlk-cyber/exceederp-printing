@@ -71,7 +71,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin, HrmConstants.HRProfileUser)]
         public ActionResult Commitments_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             IQueryable<Commitment> commitments = db.Commitments;//.Where(x => mybraches.Contains(x.OrgBranchName));
             DataSourceResult result = commitments.ToDataSourceResult(request, commitment => new
             {

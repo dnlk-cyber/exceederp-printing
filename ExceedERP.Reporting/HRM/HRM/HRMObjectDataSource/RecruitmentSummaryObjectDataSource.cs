@@ -11,17 +11,17 @@ using ExceedERP.Core.Domain.Finance.GL;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class RecruitmentSummaryObjectDataSource : List<RecruitmentSummary>
+    public class RecruitmentSummaryObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<RecruitmentSummary> GetRecruitmentSummary(string vacancyId)
+        public List<RecruitmentSummary> GetRecruitmentSummary(string vacancyId, string type)
         {
             List<InternalApplicantDetail> internalVacancies = new List<InternalApplicantDetail>();
             List<RecruitmentSummary> summaries = new List<RecruitmentSummary>();
 
-            if (vacancyId != null)
+            if (!string.IsNullOrEmpty(vacancyId))
             {
                 int.TryParse(vacancyId, out int vacId);
                 var applicantScreening = db.ApplicantScreenResults.FirstOrDefault(x => x.VacancyId == vacId);
@@ -75,6 +75,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             }
 
                             var applicantExams = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == screen.ApplicantScreeningId).ToList();
+                            if (!string.IsNullOrEmpty(type))
+                            {
+                                applicantExams = applicantExams.Where(x => x.ExamType.ToString() == type).ToList();
+                            }
                             decimal totalSetting = 0;
                             foreach (var appExam in applicantExams)
                             {
@@ -92,10 +96,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                         recruitment.Interview = appExam.CurrentResult;
                                         totalSetting = totalSetting + appExam.SettingValue;
                                         break;
+                                    default:
+                                        recruitment.OtherResult += appExam.CurrentResult;
+                                        recruitment.Remark += $"ExamType: {appExam.ExamType.ToString()} : {appExam.CurrentResult} out of {appExam.SettingValue}";
+                                        totalSetting = totalSetting + appExam.SettingValue;
+                                        break;
+
+
                                 }
                             }
 
-                            recruitment.Total = recruitment.TheoryExam + recruitment.PracticalExam + recruitment.Interview;
+                            recruitment.Total = recruitment.TheoryExam + recruitment.PracticalExam + recruitment.Interview + recruitment.OtherResult;
 
                             var passMark = db.RecruitmentApplicantPassSettings.FirstOrDefault(x => x.VacancyId == vacId);
 
@@ -104,11 +115,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 var pass = (passMark.PassScore * Convert.ToDouble(totalSetting)) / passMark.TotalValue;
                                 if (recruitment.Total >= Convert.ToDecimal(pass))
                                 {
-                                    recruitment.RecruitmentResult = "አልፈዋል";
+                                   // recruitment.RecruitmentResult = "አልፈዋል";
+                                    recruitment.RecruitmentResult = "Passed";
                                 }
                                 else
                                 {
-                                    recruitment.RecruitmentResult = "አላለፉም";
+                                   // recruitment.RecruitmentResult = "አላለፉም";
+                                    recruitment.RecruitmentResult = "Fail";
                                 }
 
                                 summaries.Add(recruitment);
@@ -169,11 +182,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             foreach (var ex in appExps)
                             {
-                                var look = db.Lookups.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
-                                if (look != null)
-                                {
-                                    recruitment.RelevantExperience = recruitment.RelevantExperience + look.Description + ", ";
-                                }
+                                //var look = db.Lookups.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
+                                //if (look != null)
+                                //{
+                                    recruitment.RelevantExperience = recruitment.RelevantExperience + ex.Responsibility + ", ";
+                                //}
                             }
 
                             var applicantExams = db.InternalApplicantExamResults.Where(x => x.InternalApplicantScreeningId == screen.InternalApplicantScreeningId).ToList();
@@ -206,11 +219,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 var pass = (passMark.PassScore * Convert.ToDouble(totalSetting)) / passMark.TotalValue;
                                 if (recruitment.Total >= Convert.ToDecimal(pass))
                                 {
-                                    recruitment.RecruitmentResult = "አልፈዋል";
+                                    recruitment.RecruitmentResult = "Passed";
                                 }
                                 else
                                 {
-                                    recruitment.RecruitmentResult = "አላለፉም";
+                                    recruitment.RecruitmentResult = "Failed";
                                 }
 
                                 summaries.Add(recruitment);
@@ -230,20 +243,37 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return summaries;
         }
 
-        public string GetGender(Gender gender)
+        private string GetGender(Gender gender)
         {
             if (gender == Gender.MALE)
             {
-                return "ወንድ";
+                return "Male";
             }
             else if (gender == Gender.FEMALE)
             {
-                return "ሴት";
+                return "Female";
             }
 
             return null;
         }
 
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<Vacancy> GetVacancyCodForRecruitmentSummary()
+        {
+            List<int> ids = new List<int>();
+            var vacancyIds = db.ApplicantScreenResults.Select(x => x.VacancyId).Distinct();
+            ids.AddRange(vacancyIds);
+            var intVacancyIds = db.InternalApplicantScreeningResults.Select(x => x.VacancyId).Distinct();
+            ids.AddRange(intVacancyIds);
+            return db.VaccancyPlans.Where(x=> ids.Contains(x.VacancyId)).ToList();
+
+
+           
+        }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -7,7 +8,7 @@ using ExceedERP.DataAccess.Context;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class FiscalYearObjectDataSource : List<GlFiscalYear>
+    public class FiscalYearObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -24,6 +25,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return periods;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

@@ -493,6 +493,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Branch Rank Mapping.
+        /// </summary>
+        public static string Branch_Rank_Mapping {
+            get {
+                return ResourceManager.GetString("Branch_Rank_Mapping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Budget.
         /// </summary>
         public static string Budget {
@@ -624,6 +633,15 @@ namespace ExceedERP.Core.Localization {
         public static string CerteficateType {
             get {
                 return ResourceManager.GetString("CerteficateType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CGPA.
+        /// </summary>
+        public static string CGPA {
+            get {
+                return ResourceManager.GetString("CGPA", resourceCulture);
             }
         }
         
@@ -822,6 +840,15 @@ namespace ExceedERP.Core.Localization {
         public static string Common_Company_MainCompany_Abbrevation {
             get {
                 return ResourceManager.GetString("Common_Company_MainCompany_Abbrevation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Afan Oromo Name.
+        /// </summary>
+        public static string Common_Company_MainCompany_AfanOromoName {
+            get {
+                return ResourceManager.GetString("Common_Company_MainCompany_AfanOromoName", resourceCulture);
             }
         }
         
@@ -1330,6 +1357,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current Location.
+        /// </summary>
+        public static string Common_PersonEmployee_CurrentPlace {
+            get {
+                return ResourceManager.GetString("Common_PersonEmployee_CurrentPlace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date Of Birth.
         /// </summary>
         public static string Common_PersonEmployee_DateOfBirth {
@@ -1375,11 +1411,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Height (cm).
+        /// </summary>
+        public static string Common_PersonEmployee_Height {
+            get {
+                return ResourceManager.GetString("Common_PersonEmployee_Height", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hired Date.
         /// </summary>
         public static string Common_PersonEmployee_HiredDate {
             get {
                 return ResourceManager.GetString("Common_PersonEmployee_HiredDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to House Number.
+        /// </summary>
+        public static string Common_PersonEmployee_HouseNo {
+            get {
+                return ResourceManager.GetString("Common_PersonEmployee_HouseNo", resourceCulture);
             }
         }
         
@@ -1398,6 +1452,15 @@ namespace ExceedERP.Core.Localization {
         public static string Common_PersonEmployee_IsInsured {
             get {
                 return ResourceManager.GetString("Common_PersonEmployee_IsInsured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Placed.
+        /// </summary>
+        public static string Common_PersonEmployee_IsPlaced {
+            get {
+                return ResourceManager.GetString("Common_PersonEmployee_IsPlaced", resourceCulture);
             }
         }
         
@@ -1492,7 +1555,16 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Status.
+        ///   Looks up a localized string similar to Shoe Size.
+        /// </summary>
+        public static string Common_PersonEmployee_ShoeSize {
+            get {
+                return ResourceManager.GetString("Common_PersonEmployee_ShoeSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employment Type.
         /// </summary>
         public static string Common_PersonEmployee_Status {
             get {
@@ -1506,6 +1578,15 @@ namespace ExceedERP.Core.Localization {
         public static string Common_PersonEmployee_Title {
             get {
                 return ResourceManager.GetString("Common_PersonEmployee_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uniform Size.
+        /// </summary>
+        public static string Common_PersonEmployee_UniformSize {
+            get {
+                return ResourceManager.GetString("Common_PersonEmployee_UniformSize", resourceCulture);
             }
         }
         
@@ -1555,6 +1636,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contract Employees &lt;30 days left.
+        /// </summary>
+        public static string Contract_Employees_Less_Than_30 {
+            get {
+                return ResourceManager.GetString("Contract_Employees_Less_Than_30", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contract Hirement.
         /// </summary>
         public static string Contract_Hirement {
@@ -1578,6 +1668,15 @@ namespace ExceedERP.Core.Localization {
         public static string Corporate_Sector_Performance_Evalution {
             get {
                 return ResourceManager.GetString("Corporate_Sector_Performance_Evalution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cost Sharing.
+        /// </summary>
+        public static string Cost_Sharing {
+            get {
+                return ResourceManager.GetString("Cost_Sharing", resourceCulture);
             }
         }
         
@@ -1632,6 +1731,15 @@ namespace ExceedERP.Core.Localization {
         public static string Date_Converter {
             get {
                 return ResourceManager.GetString("Date_Converter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date Preference Settings.
+        /// </summary>
+        public static string Date_Preference_Settings {
+            get {
+                return ResourceManager.GetString("Date_Preference_Settings", resourceCulture);
             }
         }
         
@@ -2770,6 +2878,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 8th.
+        /// </summary>
+        public static string Eighth {
+            get {
+                return ResourceManager.GetString("Eighth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Employee Master.
         /// </summary>
         public static string Employe_Master_Report {
@@ -3076,6 +3193,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable editing.
+        /// </summary>
+        public static string Enable_Editing {
+            get {
+                return ResourceManager.GetString("Enable_Editing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop or End Delegation.
+        /// </summary>
+        public static string End_Delegation {
+            get {
+                return ResourceManager.GetString("End_Delegation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HIGH.
         /// </summary>
         public static string Enum_AccidentLevel_HIGH {
@@ -3094,7 +3229,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MEDIUM.
+        ///   Looks up a localized string similar to Medium.
         /// </summary>
         public static string Enum_AccidentLevel_MEDIUM {
             get {
@@ -3103,7 +3238,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CRASH.
+        ///   Looks up a localized string similar to Crash.
         /// </summary>
         public static string Enum_AccidentType_CRASH {
             get {
@@ -3112,7 +3247,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to REVERSE.
+        ///   Looks up a localized string similar to Reverse.
         /// </summary>
         public static string Enum_AccidentType_REVERSE {
             get {
@@ -3121,7 +3256,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACCOUNTING_PERIOD.
+        ///   Looks up a localized string similar to Accounting Period.
         /// </summary>
         public static string Enum_ACCOUNTING_PERIOD {
             get {
@@ -3130,7 +3265,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NON_TAXABLE.
+        ///   Looks up a localized string similar to None Taxable.
         /// </summary>
         public static string Enum_AdditionTaxType_NON_TAXABLE {
             get {
@@ -3139,7 +3274,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TAXABLE.
+        ///   Looks up a localized string similar to Taxable.
         /// </summary>
         public static string Enum_AdditionTaxType_TAXABLE {
             get {
@@ -3148,7 +3283,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FAX.
+        ///   Looks up a localized string similar to Fax.
         /// </summary>
         public static string Enum_AddressType_FAX {
             get {
@@ -3157,7 +3292,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to KEBELE.
+        ///   Looks up a localized string similar to Kebelle.
         /// </summary>
         public static string Enum_AddressType_KEBELE {
             get {
@@ -3166,7 +3301,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to KIFLEKETEMA.
+        ///   Looks up a localized string similar to Kifle ketema.
         /// </summary>
         public static string Enum_AddressType_KIFLEKETEMA {
             get {
@@ -3175,7 +3310,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CITYPROVINCE.
+        ///   Looks up a localized string similar to City-Pronvice.
         /// </summary>
         public static string Enum_AddressType_OFFICE_CITYPROVINCE {
             get {
@@ -3184,7 +3319,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CONTACT_PERSON.
+        ///   Looks up a localized string similar to Contact Person.
         /// </summary>
         public static string Enum_AddressType_OFFICE_CONTACT_PERSON {
             get {
@@ -3193,7 +3328,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COUNTRY.
+        ///   Looks up a localized string similar to Country.
         /// </summary>
         public static string Enum_AddressType_OFFICE_COUNTRY {
             get {
@@ -3202,7 +3337,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FACEBOOK.
+        ///   Looks up a localized string similar to Facebook.
         /// </summary>
         public static string Enum_AddressType_OFFICE_FACEBOOK {
             get {
@@ -3211,7 +3346,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOME_PHONE.
+        ///   Looks up a localized string similar to Home_Phone.
         /// </summary>
         public static string Enum_AddressType_OFFICE_HOME_PHONE {
             get {
@@ -3220,7 +3355,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOUSE_NO.
+        ///   Looks up a localized string similar to House No_.
         /// </summary>
         public static string Enum_AddressType_OFFICE_HOUSE_NO {
             get {
@@ -3229,7 +3364,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LINKEDIN.
+        ///   Looks up a localized string similar to LinkedIn.
         /// </summary>
         public static string Enum_AddressType_OFFICE_LINKEDIN {
             get {
@@ -3238,7 +3373,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOBILE_PHONE_1.
+        ///   Looks up a localized string similar to Mobile Phone 1.
         /// </summary>
         public static string Enum_AddressType_OFFICE_MOBILE_PHONE_1 {
             get {
@@ -3247,7 +3382,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOBILE_PHONE_2.
+        ///   Looks up a localized string similar to Mobile Phone_2.
         /// </summary>
         public static string Enum_AddressType_OFFICE_MOBILE_PHONE_2 {
             get {
@@ -3256,7 +3391,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OFFICE_EMAIL.
+        ///   Looks up a localized string similar to Office Email.
         /// </summary>
         public static string Enum_AddressType_OFFICE_OFFICE_EMAIL {
             get {
@@ -3265,7 +3400,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PERSONAL_EMAIL.
+        ///   Looks up a localized string similar to Personal Email.
         /// </summary>
         public static string Enum_AddressType_OFFICE_PERSONAL_EMAIL {
             get {
@@ -3274,7 +3409,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OFFICE_PHONE.
+        ///   Looks up a localized string similar to Office Phone.
         /// </summary>
         public static string Enum_AddressType_OFFICE_PHONE {
             get {
@@ -3292,7 +3427,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to REGION.
+        ///   Looks up a localized string similar to Region .
         /// </summary>
         public static string Enum_AddressType_OFFICE_REGION {
             get {
@@ -3301,7 +3436,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SKYPE.
+        ///   Looks up a localized string similar to Skype.
         /// </summary>
         public static string Enum_AddressType_OFFICE_SKYPE {
             get {
@@ -3310,7 +3445,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SPECIAL_LOCATION.
+        ///   Looks up a localized string similar to Special Location.
         /// </summary>
         public static string Enum_AddressType_OFFICE_SPECIAL_LOCATION {
             get {
@@ -3319,7 +3454,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STREET.
+        ///   Looks up a localized string similar to Street.
         /// </summary>
         public static string Enum_AddressType_OFFICE_STREET {
             get {
@@ -3328,7 +3463,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TWITTER.
+        ///   Looks up a localized string similar to Twitter.
         /// </summary>
         public static string Enum_AddressType_OFFICE_TWITTER {
             get {
@@ -3337,7 +3472,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WEBSITE.
+        ///   Looks up a localized string similar to Website.
         /// </summary>
         public static string Enum_AddressType_OFFICE_WEBSITE {
             get {
@@ -3346,7 +3481,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WORADA.
+        ///   Looks up a localized string similar to Worada.
         /// </summary>
         public static string Enum_AddressType_OFFICE_WORADA {
             get {
@@ -3355,7 +3490,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DESERT.
+        ///   Looks up a localized string similar to Desert.
         /// </summary>
         public static string Enum_AllowanceType_DESERT {
             get {
@@ -3364,7 +3499,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOME.
+        ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Enum_AllowanceType_HOME {
             get {
@@ -3373,7 +3508,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to POSITION.
+        ///   Looks up a localized string similar to Position.
         /// </summary>
         public static string Enum_AllowanceType_POSITION {
             get {
@@ -3382,7 +3517,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROFESSIONAL.
+        ///   Looks up a localized string similar to Professional .
         /// </summary>
         public static string Enum_AllowanceType_PROFESSIONAL {
             get {
@@ -3391,7 +3526,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROJECT.
+        ///   Looks up a localized string similar to Project.
         /// </summary>
         public static string Enum_AllowanceType_PROJECT {
             get {
@@ -3400,7 +3535,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RESPONSIBILITY.
+        ///   Looks up a localized string similar to Responsibiliy .
         /// </summary>
         public static string Enum_AllowanceType_RESPONSIBILITY {
             get {
@@ -3409,7 +3544,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TELEPHONE.
+        ///   Looks up a localized string similar to Telephone .
         /// </summary>
         public static string Enum_AllowanceType_TELEPHONE {
             get {
@@ -3418,7 +3553,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TOP_UP.
+        ///   Looks up a localized string similar to Top Up.
         /// </summary>
         public static string Enum_AllowanceType_TOP_UP {
             get {
@@ -3427,7 +3562,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRANSPORT.
+        ///   Looks up a localized string similar to Transport .
         /// </summary>
         public static string Enum_AllowanceType_TRANSPORT {
             get {
@@ -3436,7 +3571,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROMOTION.
+        ///   Looks up a localized string similar to Promotion .
         /// </summary>
         public static string Enum_ApplicationType_PROMOTION {
             get {
@@ -3445,7 +3580,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRANSFER.
+        ///   Looks up a localized string similar to Transfer.
         /// </summary>
         public static string Enum_ApplicationType_TRANSFER {
             get {
@@ -3454,7 +3589,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACTING.
+        ///   Looks up a localized string similar to Acting .
         /// </summary>
         public static string Enum_AssignmentType_ACTING {
             get {
@@ -3472,7 +3607,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ASSIGNMENT.
+        ///   Looks up a localized string similar to Assignment .
         /// </summary>
         public static string Enum_AssignmentType_ASSIGNMENT {
             get {
@@ -3481,7 +3616,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DEMOTION.
+        ///   Looks up a localized string similar to Demotion .
         /// </summary>
         public static string Enum_AssignmentType_DEMOTION {
             get {
@@ -3490,7 +3625,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOUSE_OF_REPRESENTATIVE.
+        ///   Looks up a localized string similar to House of Representative .
         /// </summary>
         public static string Enum_AssignmentType_HOUSE_OF_REPRESENTATIVE {
             get {
@@ -3499,7 +3634,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to JUDGES_ADMINISTRATION_OFFICE.
+        ///   Looks up a localized string similar to Judges Administration Office .
         /// </summary>
         public static string Enum_AssignmentType_JUDGES_ADMINISTRATION_OFFICE {
             get {
@@ -3508,7 +3643,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NEW.
+        ///   Looks up a localized string similar to New.
         /// </summary>
         public static string Enum_AssignmentType_NEW {
             get {
@@ -3517,7 +3652,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROMOTION.
+        ///   Looks up a localized string similar to Promotion .
         /// </summary>
         public static string Enum_AssignmentType_PROMOTION {
             get {
@@ -3526,7 +3661,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RECOMENDATION.
+        ///   Looks up a localized string similar to Recomendation.
         /// </summary>
         public static string Enum_AssignmentType_RECOMENDATION {
             get {
@@ -3535,7 +3670,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SCALE PROMOTION.
+        ///   Looks up a localized string similar to Scale Promotion .
         /// </summary>
         public static string Enum_AssignmentType_SCALE_PROMOTION {
             get {
@@ -3544,7 +3679,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STRUCTURE_CHANGE.
+        ///   Looks up a localized string similar to Structure Change .
         /// </summary>
         public static string Enum_AssignmentType_STRUCTURE_CHANGE {
             get {
@@ -3553,7 +3688,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TEMPORARY.
+        ///   Looks up a localized string similar to Temporary .
         /// </summary>
         public static string Enum_AssignmentType_TEMPORARY {
             get {
@@ -3562,7 +3697,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to JOB TITLE CHANGE.
+        ///   Looks up a localized string similar to Job Title Change .
         /// </summary>
         public static string Enum_AssignmentType_TEMPORARY_Job_Title_Change {
             get {
@@ -3571,7 +3706,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to REHIRE.
+        ///   Looks up a localized string similar to Re-hire.
         /// </summary>
         public static string Enum_AssignmentType_TEMPORARY_REHIRE {
             get {
@@ -3580,7 +3715,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRANSFER.
+        ///   Looks up a localized string similar to Transfer.
         /// </summary>
         public static string Enum_AssignmentType_TRANSFER {
             get {
@@ -3589,7 +3724,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to YEARLY_PROMOTION.
+        ///   Looks up a localized string similar to Yearly Promotion.
         /// </summary>
         public static string Enum_AssignmentType_YEARLY_PROMOTION {
             get {
@@ -3598,7 +3733,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREDIT.
+        ///   Looks up a localized string similar to Credit.
         /// </summary>
         public static string Enum_AssocationType_CREDIT {
             get {
@@ -3607,7 +3742,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LABOUR.
+        ///   Looks up a localized string similar to Labour.
         /// </summary>
         public static string Enum_AssocationType_LABOUR {
             get {
@@ -3616,7 +3751,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OTHER.
+        ///   Looks up a localized string similar to Other.
         /// </summary>
         public static string Enum_AssocationType_OTHER {
             get {
@@ -3625,7 +3760,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SPORT_FEE.
+        ///   Looks up a localized string similar to Sport Fee.
         /// </summary>
         public static string Enum_AssocationType_SPORT_FEE {
             get {
@@ -3634,7 +3769,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CHILD.
+        ///   Looks up a localized string similar to Child.
         /// </summary>
         public static string Enum_AssociationType_CHILD {
             get {
@@ -3643,7 +3778,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FATHER.
+        ///   Looks up a localized string similar to Father.
         /// </summary>
         public static string Enum_AssociationType_FATHER {
             get {
@@ -3652,7 +3787,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HUSBAND.
+        ///   Looks up a localized string similar to Husband.
         /// </summary>
         public static string Enum_AssociationType_HUSBAND {
             get {
@@ -3661,7 +3796,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOTHER.
+        ///   Looks up a localized string similar to Mother.
         /// </summary>
         public static string Enum_AssociationType_MOTHER {
             get {
@@ -3670,7 +3805,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OTHER.
+        ///   Looks up a localized string similar to Other.
         /// </summary>
         public static string Enum_AssociationType_OTHER {
             get {
@@ -3679,7 +3814,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WIFE.
+        ///   Looks up a localized string similar to Wife.
         /// </summary>
         public static string Enum_AssociationType_WIFE {
             get {
@@ -3688,7 +3823,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREDIT.
+        ///   Looks up a localized string similar to Credit.
         /// </summary>
         public static string Enum_BankAccountType_CREDIT {
             get {
@@ -3697,7 +3832,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PAYROLL.
+        ///   Looks up a localized string similar to Payroll.
         /// </summary>
         public static string Enum_BankAccountType_PAYROLL {
             get {
@@ -3706,7 +3841,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SAVING.
+        ///   Looks up a localized string similar to Saving.
         /// </summary>
         public static string Enum_BankAccountType_SAVING {
             get {
@@ -3715,7 +3850,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NON_TAXABLE.
+        ///   Looks up a localized string similar to Non-Taxable.
         /// </summary>
         public static string Enum_BenefittAtribute_NONTAXABLE {
             get {
@@ -3724,7 +3859,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TAXABLE.
+        ///   Looks up a localized string similar to Taxable.
         /// </summary>
         public static string Enum_BenefittAtribute_TAXABLE {
             get {
@@ -3733,7 +3868,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MULTIPLIER.
+        ///   Looks up a localized string similar to Multiplier.
         /// </summary>
         public static string Enum_BonusAttribute_EMPLOYEE_MULTIPLIER {
             get {
@@ -3742,7 +3877,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROFIT.
+        ///   Looks up a localized string similar to Profit.
         /// </summary>
         public static string Enum_BonusType_From_PROFIT {
             get {
@@ -3751,7 +3886,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WITH_OUT_PERFORMANCE.
+        ///   Looks up a localized string similar to With Out Performance.
         /// </summary>
         public static string Enum_BonusType_WITH_OUT_PERFORMANCE {
             get {
@@ -3760,7 +3895,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WITH_PERFORMANCE.
+        ///   Looks up a localized string similar to With Performance.
         /// </summary>
         public static string Enum_BonusType_WITH_PERFORMANCE {
             get {
@@ -3769,7 +3904,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HEAD_OFFICE.
+        ///   Looks up a localized string similar to Head Office .
         /// </summary>
         public static string Enum_BranchTypes_Branch {
             get {
@@ -3778,7 +3913,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROJECT.
+        ///   Looks up a localized string similar to Project.
         /// </summary>
         public static string Enum_BranchTypes_Project {
             get {
@@ -3787,7 +3922,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EDUCATION.
+        ///   Looks up a localized string similar to Education.
         /// </summary>
         public static string Enum_CommitmentType_EDUCATION {
             get {
@@ -3796,7 +3931,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRAINING.
+        ///   Looks up a localized string similar to Training.
         /// </summary>
         public static string Enum_CommitmentType_TRAINING {
             get {
@@ -3805,7 +3940,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DISCIPLINE.
+        ///   Looks up a localized string similar to Discipline.
         /// </summary>
         public static string Enum_CommitteType_DISCIPLINE {
             get {
@@ -3814,7 +3949,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OBSERVANT.
+        ///   Looks up a localized string similar to Observant.
         /// </summary>
         public static string Enum_CommitteType_OBSERVANT {
             get {
@@ -3823,7 +3958,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PERFORMANCE.
+        ///   Looks up a localized string similar to Performance.
         /// </summary>
         public static string Enum_CommitteType_PERFORMANCE {
             get {
@@ -3832,7 +3967,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROMOTION.
+        ///   Looks up a localized string similar to Promotion.
         /// </summary>
         public static string Enum_CommitteType_PROMOTION {
             get {
@@ -3841,7 +3976,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RECRUITMENT.
+        ///   Looks up a localized string similar to Recruitment.
         /// </summary>
         public static string Enum_CommitteType_RECRUITMENT {
             get {
@@ -3850,7 +3985,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FIXED.
+        ///   Looks up a localized string similar to Fixed.
         /// </summary>
         public static string Enum_ContributionCategory_FIXED {
             get {
@@ -3859,7 +3994,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to REGULAR.
+        ///   Looks up a localized string similar to Regular.
         /// </summary>
         public static string Enum_ContributionCategory_REGULAR {
             get {
@@ -3877,7 +4012,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CONTRACT.
+        ///   Looks up a localized string similar to Contract .
         /// </summary>
         public static string Enum_EmployeeStatus_CONTRACT {
             get {
@@ -3886,7 +4021,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FREELANCER.
+        ///   Looks up a localized string similar to Freelancer.
         /// </summary>
         public static string Enum_EmployeeStatus_FREELANCER {
             get {
@@ -3895,7 +4030,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NO_STATUS.
+        ///   Looks up a localized string similar to No Status .
         /// </summary>
         public static string Enum_EmployeeStatus_NO_STATUS {
             get {
@@ -3904,7 +4039,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NOT SELECTED.
+        ///   Looks up a localized string similar to Not Selected  .
         /// </summary>
         public static string Enum_EmployeeStatus_NOTSELECTED {
             get {
@@ -3913,7 +4048,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PERMANENT.
+        ///   Looks up a localized string similar to Permannent .
         /// </summary>
         public static string Enum_EmployeeStatus_PERMANENT {
             get {
@@ -3922,7 +4057,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROBATION.
+        ///   Looks up a localized string similar to Probation .
         /// </summary>
         public static string Enum_EmployeeStatus_PROBATION {
             get {
@@ -3931,7 +4066,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EVALUATION_PERIOD.
+        ///   Looks up a localized string similar to Evaluation Period .
         /// </summary>
         public static string Enum_EVALUATION_PERIOD {
             get {
@@ -4030,7 +4165,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FISCAL_YEAR.
+        ///   Looks up a localized string similar to Fiscal Year.
         /// </summary>
         public static string Enum_FISCAL_YEAR {
             get {
@@ -4039,7 +4174,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AMOUNT.
+        ///   Looks up a localized string similar to Amount .
         /// </summary>
         public static string Enum_FixedContAmtType_AMOUNT {
             get {
@@ -4048,7 +4183,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FROM_BASIC.
+        ///   Looks up a localized string similar to From basic .
         /// </summary>
         public static string Enum_FixedContAmtType_GROSS {
             get {
@@ -4057,7 +4192,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FROM_NET.
+        ///   Looks up a localized string similar to From Net.
         /// </summary>
         public static string Enum_FixedContAmtType_NET {
             get {
@@ -4066,7 +4201,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PERCENT.
+        ///   Looks up a localized string similar to Percent .
         /// </summary>
         public static string Enum_FixedContAmtType_PERCENT {
             get {
@@ -4075,7 +4210,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOLIDAY.
+        ///   Looks up a localized string similar to Holiday .
         /// </summary>
         public static string Enum_HOLIDAY {
             get {
@@ -4084,7 +4219,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BIOMETRIC_ID.
+        ///   Looks up a localized string similar to Biometric Id.
         /// </summary>
         public static string Enum_IdentificationType_BIOMETRIC_ID {
             get {
@@ -4093,7 +4228,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DRIVING_LICENSE.
+        ///   Looks up a localized string similar to Driving License .
         /// </summary>
         public static string Enum_IdentificationType_DRIVING_LICENSE {
             get {
@@ -4111,7 +4246,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LICENSE_NUMBER.
+        ///   Looks up a localized string similar to License Number I.
         /// </summary>
         public static string Enum_IdentificationType_LICENSE_NUMBER {
             get {
@@ -4120,7 +4255,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PASSPORT.
+        ///   Looks up a localized string similar to Passport .
         /// </summary>
         public static string Enum_IdentificationType_PASSPORT {
             get {
@@ -4129,7 +4264,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PENSION_NO.
+        ///   Looks up a localized string similar to Pension No_ .
         /// </summary>
         public static string Enum_IdentificationType_PENSION_NO {
             get {
@@ -4138,7 +4273,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROVIDENT_FUND.
+        ///   Looks up a localized string similar to Provident Fund.
         /// </summary>
         public static string Enum_IdentificationType_PROVIDENT_FUND {
             get {
@@ -4147,7 +4282,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RESIDENTIAL_ID.
+        ///   Looks up a localized string similar to Residential ID .
         /// </summary>
         public static string Enum_IdentificationType_RESIDENTIAL_ID {
             get {
@@ -4156,7 +4291,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SMART_CARD.
+        ///   Looks up a localized string similar to SMart Card.
         /// </summary>
         public static string Enum_IdentificationType_SMART_CARD {
             get {
@@ -4165,7 +4300,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STUDENT_ID.
+        ///   Looks up a localized string similar to Student ID.
         /// </summary>
         public static string Enum_IdentificationType_STUDENT_ID {
             get {
@@ -4183,7 +4318,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VAT_NUMBER.
+        ///   Looks up a localized string similar to VAT NUmber.
         /// </summary>
         public static string Enum_IdentificationType_VAT_NUMBER {
             get {
@@ -4201,7 +4336,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WORK_ID.
+        ///   Looks up a localized string similar to Work ID.
         /// </summary>
         public static string Enum_IdentificationType_WORK_ID {
             get {
@@ -4210,7 +4345,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AUTOMOTIVE.
+        ///   Looks up a localized string similar to Automotive .
         /// </summary>
         public static string Enum_IndustryType_AUTOMOTIVE {
             get {
@@ -4219,7 +4354,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BOOK_AND_PUBLICATION.
+        ///   Looks up a localized string similar to Book  and Publication .
         /// </summary>
         public static string Enum_IndustryType_BOOK_AND_PUBLICATION {
             get {
@@ -4228,7 +4363,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CAFEE.
+        ///   Looks up a localized string similar to Cafee.
         /// </summary>
         public static string Enum_IndustryType_CAFEE {
             get {
@@ -4237,7 +4372,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CLINIC.
+        ///   Looks up a localized string similar to Clinic .
         /// </summary>
         public static string Enum_IndustryType_CLINIC {
             get {
@@ -4246,7 +4381,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CONSTRUCTION.
+        ///   Looks up a localized string similar to Construction.
         /// </summary>
         public static string Enum_IndustryType_CONSTRUCTION {
             get {
@@ -4255,7 +4390,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ELECTRONICS.
+        ///   Looks up a localized string similar to Electronics.
         /// </summary>
         public static string Enum_IndustryType_ELECTRONICS {
             get {
@@ -4264,7 +4399,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GARMENT.
+        ///   Looks up a localized string similar to Garment .
         /// </summary>
         public static string Enum_IndustryType_GARMENT {
             get {
@@ -4273,7 +4408,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOSPITAL.
+        ///   Looks up a localized string similar to Hospital .
         /// </summary>
         public static string Enum_IndustryType_HOSPITAL {
             get {
@@ -4282,7 +4417,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOSPITALITY.
+        ///   Looks up a localized string similar to Hospitality .
         /// </summary>
         public static string Enum_IndustryType_HOSPITALITY {
             get {
@@ -4291,7 +4426,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MANUFACTURING.
+        ///   Looks up a localized string similar to Manufacturing .
         /// </summary>
         public static string Enum_IndustryType_MANUFACTURING {
             get {
@@ -4300,7 +4435,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PHARMACY.
+        ///   Looks up a localized string similar to Pharmacy .
         /// </summary>
         public static string Enum_IndustryType_PHARMACY {
             get {
@@ -4309,7 +4444,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to REAL STATE.
+        ///   Looks up a localized string similar to Real State.
         /// </summary>
         public static string Enum_IndustryType_REAL_STATE {
             get {
@@ -4318,7 +4453,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RESTAURANT.
+        ///   Looks up a localized string similar to Restaurant .
         /// </summary>
         public static string Enum_IndustryType_RESTAURANT {
             get {
@@ -4327,7 +4462,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RETAIL.
+        ///   Looks up a localized string similar to Retail .
         /// </summary>
         public static string Enum_IndustryType_RETAIL {
             get {
@@ -4336,7 +4471,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WHOLE SALES.
+        ///   Looks up a localized string similar to Whole Sales .
         /// </summary>
         public static string Enum_IndustryType_WHOLESALES {
             get {
@@ -4345,7 +4480,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CHILDREN.
+        ///   Looks up a localized string similar to Children .
         /// </summary>
         public static string Enum_InsuranceAttribute_CHILDREN {
             get {
@@ -4354,7 +4489,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to JUDGE.
+        ///   Looks up a localized string similar to Judge .
         /// </summary>
         public static string Enum_InsuranceAttribute_JUDGE {
             get {
@@ -4363,7 +4498,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MAXIMUM_AGE.
+        ///   Looks up a localized string similar to Maximum Age .
         /// </summary>
         public static string Enum_InsuranceAttribute_MAXAGE {
             get {
@@ -4372,7 +4507,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MINIMUM_AGE.
+        ///   Looks up a localized string similar to Minimum Age.
         /// </summary>
         public static string Enum_InsuranceAttribute_MINAGE {
             get {
@@ -4381,7 +4516,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WIFE_OR_HUSBAND.
+        ///   Looks up a localized string similar to Wfe or Husband .
         /// </summary>
         public static string Enum_InsuranceAttribute_WIFE_OR_HUSBAND {
             get {
@@ -4390,7 +4525,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BOUNDED.
+        ///   Looks up a localized string similar to Bounded .
         /// </summary>
         public static string Enum_JobTitlePlan_BOUNDED {
             get {
@@ -4399,7 +4534,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UNBOUNDED.
+        ///   Looks up a localized string similar to Unbounded .
         /// </summary>
         public static string Enum_JobTitlePlan_UNBOUNDED {
             get {
@@ -4453,7 +4588,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INTERNATIONAL LANGUAGE.
+        ///   Looks up a localized string similar to International Language.
         /// </summary>
         public static string Enum_LanguageType_INTERNATIONAL_LANGUAGE {
             get {
@@ -4462,7 +4597,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LOCAL LANGUAGE.
+        ///   Looks up a localized string similar to Local Language .
         /// </summary>
         public static string Enum_LanguageType_LOCAL_LANGUAGE {
             get {
@@ -4498,7 +4633,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LEAVE PERIOD.
+        ///   Looks up a localized string similar to Leave Period .
         /// </summary>
         public static string Enum_LEAVE_PERIOD {
             get {
@@ -4516,7 +4651,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LEAVE FOR LEADRES.
+        ///   Looks up a localized string similar to Leave for Leaders .
         /// </summary>
         public static string Enum_LeaveSetting_LEAVE_FOR_LEADRES {
             get {
@@ -4525,7 +4660,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LEAVE FOR PERFORMERS.
+        ///   Looks up a localized string similar to Leave for Performers .
         /// </summary>
         public static string Enum_LeaveSetting_LEAVE_FOR_PERFORMERS {
             get {
@@ -4534,7 +4669,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ANNUAL.
+        ///   Looks up a localized string similar to Annual .
         /// </summary>
         public static string Enum_LeaveType_ANNUAL {
             get {
@@ -4588,7 +4723,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MARRIAGE.
+        ///   Looks up a localized string similar to Marriage .
         /// </summary>
         public static string Enum_LeaveType_MARRIAGE {
             get {
@@ -4597,7 +4732,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MATERNITY.
+        ///   Looks up a localized string similar to Maternity .
         /// </summary>
         public static string Enum_LeaveType_MATERNITY {
             get {
@@ -4606,7 +4741,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OTHER.
+        ///   Looks up a localized string similar to Other .
         /// </summary>
         public static string Enum_LeaveType_OTHER {
             get {
@@ -4615,7 +4750,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PATERNITY.
+        ///   Looks up a localized string similar to Paternity .
         /// </summary>
         public static string Enum_LeaveType_PATERNITY {
             get {
@@ -4624,7 +4759,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SICK_LEAVE.
+        ///   Looks up a localized string similar to Sick Leave .
         /// </summary>
         public static string Enum_LeaveType_SICK_LEAVE {
             get {
@@ -4633,7 +4768,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ORGANIZATION.
+        ///   Looks up a localized string similar to Organization .
         /// </summary>
         public static string Enum_LetterOwner_ORGANIZATION {
             get {
@@ -4642,7 +4777,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PRIVATE.
+        ///   Looks up a localized string similar to Private .
         /// </summary>
         public static string Enum_LetterOwner_PRIVATE {
             get {
@@ -4651,7 +4786,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ANSWERED.
+        ///   Looks up a localized string similar to Answered .
         /// </summary>
         public static string Enum_LettersStatus_ANSWERED {
             get {
@@ -4660,7 +4795,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NEW.
+        ///   Looks up a localized string similar to New .
         /// </summary>
         public static string Enum_LettersStatus_NEW {
             get {
@@ -4669,7 +4804,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRANSFERED.
+        ///   Looks up a localized string similar to Transfered .
         /// </summary>
         public static string Enum_LettersStatus_TRANSFERED {
             get {
@@ -4678,7 +4813,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INCOMING.
+        ///   Looks up a localized string similar to Incoming .
         /// </summary>
         public static string Enum_LetterType_INCOMING {
             get {
@@ -4687,7 +4822,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OUTGOING.
+        ///   Looks up a localized string similar to OutGoung .
         /// </summary>
         public static string Enum_LetterType_OUTGOING {
             get {
@@ -4696,7 +4831,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ADDITION TYPE.
+        ///   Looks up a localized string similar to Addition Type.
         /// </summary>
         public static string Enum_LookUpTypes_ADDITION_TYPE {
             get {
@@ -4705,7 +4840,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CLEARANCE TYPE.
+        ///   Looks up a localized string similar to CLearance Type .
         /// </summary>
         public static string Enum_LookUpTypes_CLEARANCE_TYPE {
             get {
@@ -4714,7 +4849,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COMMITMENT TYPE.
+        ///   Looks up a localized string similar to Commitment Type .
         /// </summary>
         public static string Enum_LookUpTypes_COMMITMENT_TYPE {
             get {
@@ -4723,7 +4858,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COMMITTEE TYPE.
+        ///   Looks up a localized string similar to Committee Type .
         /// </summary>
         public static string Enum_LookUpTypes_COMMITTEE_TYPE {
             get {
@@ -4732,7 +4867,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COMPLAIN TYPE.
+        ///   Looks up a localized string similar to Complain Type .
         /// </summary>
         public static string Enum_LookUpTypes_COMPLAIN_TYPE {
             get {
@@ -4741,7 +4876,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CONSTRUCTION_TYPE.
+        ///   Looks up a localized string similar to Construction Type .
         /// </summary>
         public static string Enum_LookUpTypes_CONSTRUCTION_TYPE {
             get {
@@ -4750,7 +4885,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CONTRIBUTION_TYPE.
+        ///   Looks up a localized string similar to Contribution Type .
         /// </summary>
         public static string Enum_LookUpTypes_CONTRIBUTION_TYPE {
             get {
@@ -4759,7 +4894,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COSIGN_TYPE.
+        ///   Looks up a localized string similar to Cosign Type .
         /// </summary>
         public static string Enum_LookUpTypes_COSIGN_TYPE {
             get {
@@ -4768,7 +4903,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COURSE.
+        ///   Looks up a localized string similar to Course.
         /// </summary>
         public static string Enum_LookUpTypes_COURSE {
             get {
@@ -4777,7 +4912,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DOCUMENT_TYPE.
+        ///   Looks up a localized string similar to Document Type .
         /// </summary>
         public static string Enum_LookUpTypes_DOCUMENT_TYPE {
             get {
@@ -4786,7 +4921,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EDUCATION_FIELD.
+        ///   Looks up a localized string similar to Education Field .
         /// </summary>
         public static string Enum_LookUpTypes_EDUCATION_FIELD {
             get {
@@ -4795,7 +4930,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EDUCATION_LEVEL.
+        ///   Looks up a localized string similar to Education Level .
         /// </summary>
         public static string Enum_LookUpTypes_EDUCATION_LEVEL {
             get {
@@ -4804,7 +4939,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EVALUATION_TYPE.
+        ///   Looks up a localized string similar to Evaluation Type .
         /// </summary>
         public static string Enum_LookUpTypes_EVALUATION_TYPE {
             get {
@@ -4813,7 +4948,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSURANCE_CLASS_OF_BUSINESS.
+        ///   Looks up a localized string similar to Insurance Class of Business .
         /// </summary>
         public static string Enum_LookUpTypes_INSURANCE_CLASS_OF_BUSINESS {
             get {
@@ -4822,7 +4957,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to JOB_TITLE.
+        ///   Looks up a localized string similar to Job Title .
         /// </summary>
         public static string Enum_LookUpTypes_JOB_TITLE {
             get {
@@ -4831,7 +4966,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MEDIA.
+        ///   Looks up a localized string similar to Media.
         /// </summary>
         public static string Enum_LookUpTypes_MEDIA {
             get {
@@ -4840,7 +4975,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NATION.
+        ///   Looks up a localized string similar to Nation .
         /// </summary>
         public static string Enum_LookUpTypes_NATION {
             get {
@@ -4849,7 +4984,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OLD_JOB_TITLE.
+        ///   Looks up a localized string similar to Old Job Title .
         /// </summary>
         public static string Enum_LookUpTypes_OLD_JOB_TITLE {
             get {
@@ -4858,7 +4993,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OTHER_BENEFIT.
+        ///   Looks up a localized string similar to Other Benefit .
         /// </summary>
         public static string Enum_LookUpTypes_OTHER_BENEFIT {
             get {
@@ -4867,7 +5002,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OVERTIME_TYPE.
+        ///   Looks up a localized string similar to Over time .
         /// </summary>
         public static string Enum_LookUpTypes_OVERTIME_TYPE {
             get {
@@ -4894,7 +5029,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROBATION_STATUS.
+        ///   Looks up a localized string similar to Pobation Status.
         /// </summary>
         public static string Enum_LookUpTypes_PROBATION_STATUS {
             get {
@@ -4912,7 +5047,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROJECT_TYPE.
+        ///   Looks up a localized string similar to Project Type.
         /// </summary>
         public static string Enum_LookUpTypes_PROJECT_TYPE {
             get {
@@ -4921,7 +5056,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RELATIONSHIP.
+        ///   Looks up a localized string similar to Relation ship .
         /// </summary>
         public static string Enum_LookUpTypes_RELATIONSHIP {
             get {
@@ -4930,7 +5065,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ROW_DATA.
+        ///   Looks up a localized string similar to Row Data .
         /// </summary>
         public static string Enum_LookUpTypes_ROW_DATA {
             get {
@@ -4939,7 +5074,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SKILL_TYPE.
+        ///   Looks up a localized string similar to Skill Type .
         /// </summary>
         public static string Enum_LookUpTypes_SKILL_TYPE {
             get {
@@ -4948,7 +5083,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TARGET_GROUP.
+        ///   Looks up a localized string similar to Target Group.
         /// </summary>
         public static string Enum_LookUpTypes_TARGET_GROUP {
             get {
@@ -4957,7 +5092,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TERMINATIONTYPE.
+        ///   Looks up a localized string similar to Termination Type .
         /// </summary>
         public static string Enum_LookUpTypes_TERMINATIONTYPE {
             get {
@@ -4966,7 +5101,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRAINING_TYPE.
+        ///   Looks up a localized string similar to Traing Type .
         /// </summary>
         public static string Enum_LookUpTypes_TRAINING_TYPE {
             get {
@@ -4984,7 +5119,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WORK_ITEM.
+        ///   Looks up a localized string similar to Work Item .
         /// </summary>
         public static string Enum_LookUpTypes_WORK_ITEM {
             get {
@@ -5002,7 +5137,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DIVORCED.
+        ///   Looks up a localized string similar to Divorced .
         /// </summary>
         public static string Enum_MartialStatus_DIVORCED {
             get {
@@ -5011,7 +5146,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DIVORCED.
+        ///   Looks up a localized string similar to Divorced .
         /// </summary>
         public static string Enum_MartialStatus_DIVORCEDF {
             get {
@@ -5020,7 +5155,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MARRIED.
+        ///   Looks up a localized string similar to Married .
         /// </summary>
         public static string Enum_MartialStatus_MARRIED {
             get {
@@ -5029,7 +5164,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MARRIED.
+        ///   Looks up a localized string similar to Married .
         /// </summary>
         public static string Enum_MartialStatus_MARRIEDF {
             get {
@@ -5047,7 +5182,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SEPARATED.
+        ///   Looks up a localized string similar to Separated .
         /// </summary>
         public static string Enum_MartialStatus_SEPARATED {
             get {
@@ -5056,7 +5191,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SEPARATED.
+        ///   Looks up a localized string similar to Separated .
         /// </summary>
         public static string Enum_MartialStatus_SEPARATEDF {
             get {
@@ -5065,7 +5200,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SINGLE.
+        ///   Looks up a localized string similar to Single .
         /// </summary>
         public static string Enum_MartialStatus_SINGLE {
             get {
@@ -5074,7 +5209,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SINGLE.
+        ///   Looks up a localized string similar to Single .
         /// </summary>
         public static string Enum_MartialStatus_SINGLEF {
             get {
@@ -5083,7 +5218,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COEFFICIENT.
+        ///   Looks up a localized string similar to Cofficient .
         /// </summary>
         public static string Enum_OverTimeAttribute_COEFFICIENT {
             get {
@@ -5092,7 +5227,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HOLIDAY_RATE.
+        ///   Looks up a localized string similar to Holiday Rate .
         /// </summary>
         public static string Enum_OverTimeAttribute_HOLIDAY_RATE {
             get {
@@ -5101,7 +5236,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NIGHT_RATE.
+        ///   Looks up a localized string similar to Night Rate .
         /// </summary>
         public static string Enum_OverTimeAttribute_NIGHT_RATE {
             get {
@@ -5110,7 +5245,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NORMAL_RATE.
+        ///   Looks up a localized string similar to Normal Rate .
         /// </summary>
         public static string Enum_OverTimeAttribute_NORMAL_RATE {
             get {
@@ -5119,7 +5254,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RESTDAY_RATE.
+        ///   Looks up a localized string similar to Rest Day Rate .
         /// </summary>
         public static string Enum_OverTimeAttribute_RESTDAY_RATE {
             get {
@@ -5128,7 +5263,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PAYROLL_PERIOD.
+        ///   Looks up a localized string similar to Payroll Period .
         /// </summary>
         public static string Enum_PAYROLL_PERIOD {
             get {
@@ -5137,7 +5272,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ADDITIONS.
+        ///   Looks up a localized string similar to Addition .
         /// </summary>
         public static string Enum_PayrollAccountType_ADDITIONS {
             get {
@@ -5146,7 +5281,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ADVANCE.
+        ///   Looks up a localized string similar to Advanced .
         /// </summary>
         public static string Enum_PayrollAccountType_ADVANCE {
             get {
@@ -5155,7 +5290,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ASSOCIATION.
+        ///   Looks up a localized string similar to Association .
         /// </summary>
         public static string Enum_PayrollAccountType_ASSOCIATION {
             get {
@@ -5164,7 +5299,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BASIC_SALARY_CONRACT.
+        ///   Looks up a localized string similar to Basic Salary Contract .
         /// </summary>
         public static string Enum_PayrollAccountType_BASIC_SALARY_CONRACT {
             get {
@@ -5173,7 +5308,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BASIC_SALARY_PERMANENT.
+        ///   Looks up a localized string similar to Basic Salary Permanent .
         /// </summary>
         public static string Enum_PayrollAccountType_BASIC_SALARY_PERMANENT {
             get {
@@ -5182,7 +5317,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INCOME_TAX.
+        ///   Looks up a localized string similar to Income Tax .
         /// </summary>
         public static string Enum_PayrollAccountType_INCOME_TAX {
             get {
@@ -5191,7 +5326,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LABOR_UNION.
+        ///   Looks up a localized string similar to Labor Union .
         /// </summary>
         public static string Enum_PayrollAccountType_LABOR_UNION {
             get {
@@ -5200,7 +5335,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LOAN.
+        ///   Looks up a localized string similar to Loan .
         /// </summary>
         public static string Enum_PayrollAccountType_LOAN {
             get {
@@ -5209,7 +5344,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NET_PAY.
+        ///   Looks up a localized string similar to Net Pay.
         /// </summary>
         public static string Enum_PayrollAccountType_NET_PAY {
             get {
@@ -5218,7 +5353,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OVER_TIME.
+        ///   Looks up a localized string similar to Over Time.
         /// </summary>
         public static string Enum_PayrollAccountType_OVER_TIME {
             get {
@@ -5227,7 +5362,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PENSION_COMPANY.
+        ///   Looks up a localized string similar to Pension Company .
         /// </summary>
         public static string Enum_PayrollAccountType_PENSION_COMPANY {
             get {
@@ -5236,7 +5371,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PENSION_EXPENSE.
+        ///   Looks up a localized string similar to Pension Expense.
         /// </summary>
         public static string Enum_PayrollAccountType_PENSION_EXPENSE {
             get {
@@ -5245,7 +5380,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PENSION_PAYABLE.
+        ///   Looks up a localized string similar to Pension Payable .
         /// </summary>
         public static string Enum_PayrollAccountType_PENSION_PAYABLE {
             get {
@@ -5254,7 +5389,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BENEFIT_ZERO _THRESHOLD.
+        ///   Looks up a localized string similar to Benefit Zero Threshold .
         /// </summary>
         public static string Enum_PayrollSettingCategories_BENEFIT {
             get {
@@ -5263,7 +5398,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BONUS.
+        ///   Looks up a localized string similar to Bonus .
         /// </summary>
         public static string Enum_PayrollSettingCategories_BONUS {
             get {
@@ -5272,7 +5407,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OVERTIME.
+        ///   Looks up a localized string similar to Over Time .
         /// </summary>
         public static string Enum_PayrollSettingCategories_OVERTIME {
             get {
@@ -5281,7 +5416,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PENSION.
+        ///   Looks up a localized string similar to Pension  .
         /// </summary>
         public static string Enum_PayrollSettingCategories_PENSION {
             get {
@@ -5290,7 +5425,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROVIDENT_FUND.
+        ///   Looks up a localized string similar to Provident Fund .
         /// </summary>
         public static string Enum_PayrollSettingCategories_PROVIDENT_FUND {
             get {
@@ -5299,7 +5434,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EMPLOYEE_PENALITY.
+        ///   Looks up a localized string similar to Employee Penality .
         /// </summary>
         public static string Enum_PenalityType_PENALITY {
             get {
@@ -5308,7 +5443,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COMPANY_CONTRIBUTION.
+        ///   Looks up a localized string similar to Company Contribution .
         /// </summary>
         public static string Enum_PensionAttribute_COMPANY_CONTRIBUTION {
             get {
@@ -5317,7 +5452,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EMPLOYEE_CONTRIBUTION.
+        ///   Looks up a localized string similar to Employee Contribution .
         /// </summary>
         public static string Enum_PensionAttribute_EMPLOYEE_CONTRIBUTION {
             get {
@@ -5326,7 +5461,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROBATION_DAY_LENGTH.
+        ///   Looks up a localized string similar to Probation  Day Length .
         /// </summary>
         public static string Enum_PensionAttribute_PROBATION_DAY_LENGTH {
             get {
@@ -5335,7 +5470,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RETIREMENT_AGE.
+        ///   Looks up a localized string similar to Retirement Age .
         /// </summary>
         public static string Enum_PensionAttribute_RETIREMENT_AGE {
             get {
@@ -5362,7 +5497,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CLOSED.
+        ///   Looks up a localized string similar to Closed .
         /// </summary>
         public static string Enum_PeriodStatusList_CLOSED {
             get {
@@ -5371,7 +5506,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NEW.
+        ///   Looks up a localized string similar to New.
         /// </summary>
         public static string Enum_PeriodStatusList_NEW {
             get {
@@ -5380,7 +5515,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROCESSING.
+        ///   Looks up a localized string similar to Processing .
         /// </summary>
         public static string Enum_PeriodStatusList_PROCESSING {
             get {
@@ -5389,7 +5524,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRANSFERRED.
+        ///   Looks up a localized string similar to Transferred .
         /// </summary>
         public static string Enum_PeriodStatusList_TRANSFERRED {
             get {
@@ -5398,7 +5533,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AMBASADOR.
+        ///   Looks up a localized string similar to Ambasador .
         /// </summary>
         public static string Enum_PersonTitle_AMBASADOR {
             get {
@@ -5407,7 +5542,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ATO.
+        ///   Looks up a localized string similar to Ato.
         /// </summary>
         public static string Enum_PersonTitle_ATO {
             get {
@@ -5416,7 +5551,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BISHOP.
+        ///   Looks up a localized string similar to Bishop .
         /// </summary>
         public static string Enum_PersonTitle_BISHOP {
             get {
@@ -5425,7 +5560,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BRIGADIER.
+        ///   Looks up a localized string similar to Brigadier .
         /// </summary>
         public static string Enum_PersonTitle_BRIGADIER {
             get {
@@ -5434,7 +5569,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CAPITAIN.
+        ///   Looks up a localized string similar to Captitain .
         /// </summary>
         public static string Enum_PersonTitle_CAPITAIN {
             get {
@@ -5443,7 +5578,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CRENEL.
+        ///   Looks up a localized string similar to Crenel .
         /// </summary>
         public static string Enum_PersonTitle_CRENEL {
             get {
@@ -5452,7 +5587,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DIPLOMAT.
+        ///   Looks up a localized string similar to Diplomat .
         /// </summary>
         public static string Enum_PersonTitle_DIPLOMAT {
             get {
@@ -5461,7 +5596,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DR.
+        ///   Looks up a localized string similar to Dr..
         /// </summary>
         public static string Enum_PersonTitle_DR {
             get {
@@ -5470,7 +5605,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ENGINEER.
+        ///   Looks up a localized string similar to Engineer .
         /// </summary>
         public static string Enum_PersonTitle_ENGINEER {
             get {
@@ -5479,7 +5614,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GENERAL.
+        ///   Looks up a localized string similar to General .
         /// </summary>
         public static string Enum_PersonTitle_GENERAL {
             get {
@@ -5488,7 +5623,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HISEXCELLENCY.
+        ///   Looks up a localized string similar to His Excellency .
         /// </summary>
         public static string Enum_PersonTitle_HISEXCELLENCY {
             get {
@@ -5497,7 +5632,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HONORABLE.
+        ///   Looks up a localized string similar to Honorable .
         /// </summary>
         public static string Enum_PersonTitle_HONORABLE {
             get {
@@ -5506,7 +5641,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LOWRET.
+        ///   Looks up a localized string similar to Lowret .
         /// </summary>
         public static string Enum_PersonTitle_LOWRET {
             get {
@@ -5515,7 +5650,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MAJOR.
+        ///   Looks up a localized string similar to Major .
         /// </summary>
         public static string Enum_PersonTitle_MAJOR {
             get {
@@ -5524,7 +5659,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MR.
+        ///   Looks up a localized string similar to Mr.
         /// </summary>
         public static string Enum_PersonTitle_MR {
             get {
@@ -5533,7 +5668,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MRS.
+        ///   Looks up a localized string similar to Mrs.
         /// </summary>
         public static string Enum_PersonTitle_MRS {
             get {
@@ -5542,7 +5677,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PASTER.
+        ///   Looks up a localized string similar to Paster .
         /// </summary>
         public static string Enum_PersonTitle_PASTER {
             get {
@@ -5551,7 +5686,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to POPE.
+        ///   Looks up a localized string similar to Pope .
         /// </summary>
         public static string Enum_PersonTitle_POPE {
             get {
@@ -5560,7 +5695,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROFFESOR.
+        ///   Looks up a localized string similar to Proffesor .
         /// </summary>
         public static string Enum_PersonTitle_PROFFESOR {
             get {
@@ -5569,7 +5704,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SHEK.
+        ///   Looks up a localized string similar to Shek .
         /// </summary>
         public static string Enum_PersonTitle_SHEK {
             get {
@@ -5578,7 +5713,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SIR.
+        ///   Looks up a localized string similar to Sir .
         /// </summary>
         public static string Enum_PersonTitle_SIR {
             get {
@@ -5587,7 +5722,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to W_RO.
+        ///   Looks up a localized string similar to W.RO.
         /// </summary>
         public static string Enum_PersonTitle_W_RO {
             get {
@@ -5596,7 +5731,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to W_T.
+        ///   Looks up a localized string similar to W.T.
         /// </summary>
         public static string Enum_PersonTitle_W_T {
             get {
@@ -5605,7 +5740,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EXCELLENT.
+        ///   Looks up a localized string similar to Excellent .
         /// </summary>
         public static string Enum_Proficiency_EXCELLENT {
             get {
@@ -5614,7 +5749,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GOOD.
+        ///   Looks up a localized string similar to Good .
         /// </summary>
         public static string Enum_Proficiency_GOOD {
             get {
@@ -5623,7 +5758,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to POOR.
+        ///   Looks up a localized string similar to Poor .
         /// </summary>
         public static string Enum_Proficiency_POOR {
             get {
@@ -5632,7 +5767,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VERY_GOOD.
+        ///   Looks up a localized string similar to Very Good .
         /// </summary>
         public static string Enum_Proficiency_VERY_GOOD {
             get {
@@ -5641,7 +5776,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROMOTION_PER_YEAR.
+        ///   Looks up a localized string similar to Promotion Per Year .
         /// </summary>
         public static string Enum_PromotionSetting_PROMOTION_PER_YEAR {
             get {
@@ -5650,7 +5785,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VACANCY_LIFE_TIME_INDAY.
+        ///   Looks up a localized string similar to Vacancy life time in day .
         /// </summary>
         public static string Enum_PromotionSetting_VACANCY_LIFE_TIME_INDAY {
             get {
@@ -5659,7 +5794,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PASS_MARK.
+        ///   Looks up a localized string similar to Pass Mark .
         /// </summary>
         public static string Enum_PromotionSetting_VACANCY_PASS_MARK {
             get {
@@ -5668,7 +5803,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to YEARLY_PROMOTION_PER_YEAR.
+        ///   Looks up a localized string similar to Yearly Promotion Per year .
         /// </summary>
         public static string Enum_PromotionSetting_YEARLY_PROMOTION_PER_YEAR {
             get {
@@ -5677,7 +5812,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ADDITIONAL_COMPANY_CONTRIBUTION.
+        ///   Looks up a localized string similar to Additional Company Contribution .
         /// </summary>
         public static string Enum_ProvidentAttribute_ADDITIONAL_COMPANY_CONTRIBUTION {
             get {
@@ -5686,7 +5821,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ADDITIONAL_EMPLOYEE_CONTRIBUTION.
+        ///   Looks up a localized string similar to Additional Employee Contribution  .
         /// </summary>
         public static string Enum_ProvidentAttribute_ADDITIONAL_EMPLOYEE_CONTRIBUTION {
             get {
@@ -5695,7 +5830,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COMPANY_CONTRIBUTION.
+        ///   Looks up a localized string similar to Company Contribution .
         /// </summary>
         public static string Enum_ProvidentAttribute_COMPANY_CONTRIBUTION {
             get {
@@ -5704,7 +5839,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EMPLOYEE_CONTRIBUTION.
+        ///   Looks up a localized string similar to Employee Contribution .
         /// </summary>
         public static string Enum_ProvidentAttribute_EMPLOYEE_CONTRIBUTION {
             get {
@@ -5713,7 +5848,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to QUARTER.
+        ///   Looks up a localized string similar to Quarter .
         /// </summary>
         public static string Enum_QUARTER {
             get {
@@ -5722,7 +5857,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RECRUITMENT.
+        ///   Looks up a localized string similar to Recruitment .
         /// </summary>
         public static string Enum_RECRUITMENT {
             get {
@@ -5731,7 +5866,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FAIL.
+        ///   Looks up a localized string similar to Fail .
         /// </summary>
         public static string Enum_RecruitmentResult_FAIL {
             get {
@@ -5740,7 +5875,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PASS.
+        ///   Looks up a localized string similar to Pass .
         /// </summary>
         public static string Enum_RecruitmentResult_PASS {
             get {
@@ -5749,7 +5884,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DISABILITY.
+        ///   Looks up a localized string similar to Disability .
         /// </summary>
         public static string Enum_RecruitmentSetting_DISABILITY {
             get {
@@ -5758,7 +5893,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DISCIPLINE.
+        ///   Looks up a localized string similar to Discipline .
         /// </summary>
         public static string Enum_RecruitmentSetting_DISCIPLINE {
             get {
@@ -5767,7 +5902,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EDUCATION_LEVEL.
+        ///   Looks up a localized string similar to Education  Level .
         /// </summary>
         public static string Enum_RecruitmentSetting_EDUCATION_LEVEL {
             get {
@@ -5776,7 +5911,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EDUCATIONAL_FIELD.
+        ///   Looks up a localized string similar to Education Field .
         /// </summary>
         public static string Enum_RecruitmentSetting_EDUCATIONAL_FIELD {
             get {
@@ -5785,7 +5920,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GENDER.
+        ///   Looks up a localized string similar to Gender .
         /// </summary>
         public static string Enum_RecruitmentSetting_GENDER {
             get {
@@ -5794,7 +5929,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INTERVIEW.
+        ///   Looks up a localized string similar to Interview .
         /// </summary>
         public static string Enum_RecruitmentSetting_INTERVIEW {
             get {
@@ -5803,7 +5938,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NATION.
+        ///   Looks up a localized string similar to Nation .
         /// </summary>
         public static string Enum_RecruitmentSetting_NATION {
             get {
@@ -5812,7 +5947,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PRACTICAL_EXAM.
+        ///   Looks up a localized string similar to Practical Exam .
         /// </summary>
         public static string Enum_RecruitmentSetting_PRACTICAL_EXAM {
             get {
@@ -5821,7 +5956,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROFILE.
+        ///   Looks up a localized string similar to Profile .
         /// </summary>
         public static string Enum_RecruitmentSetting_PROFILE {
             get {
@@ -5848,7 +5983,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to THEORY_EXAM.
+        ///   Looks up a localized string similar to Theory Exam.
         /// </summary>
         public static string Enum_RecruitmentSetting_THEORY_EXAM {
             get {
@@ -5857,7 +5992,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRAINING.
+        ///   Looks up a localized string similar to Training .
         /// </summary>
         public static string Enum_RecruitmentSetting_TRAINING {
             get {
@@ -5866,7 +6001,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EXTERNAL.
+        ///   Looks up a localized string similar to External .
         /// </summary>
         public static string Enum_RecruitmentSource_EXTERNAL {
             get {
@@ -5875,7 +6010,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INTERNAL.
+        ///   Looks up a localized string similar to Internal .
         /// </summary>
         public static string Enum_RecruitmentSource_INTERNAL {
             get {
@@ -5893,7 +6028,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AFAR.
+        ///   Looks up a localized string similar to Afar .
         /// </summary>
         public static string Enum_Region_AFAR {
             get {
@@ -5902,7 +6037,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AMHARA.
+        ///   Looks up a localized string similar to Amhara .
         /// </summary>
         public static string Enum_Region_AMHARA {
             get {
@@ -5911,7 +6046,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BENSHANGUL_GUMUZ.
+        ///   Looks up a localized string similar to Benshangul Gumuz .
         /// </summary>
         public static string Enum_Region_BENSHANGUL_GUMUZ {
             get {
@@ -5929,7 +6064,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GAMBELLA.
+        ///   Looks up a localized string similar to Gambella .
         /// </summary>
         public static string Enum_Region_GAMBELLA {
             get {
@@ -5938,7 +6073,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HARRARI.
+        ///   Looks up a localized string similar to Harrari .
         /// </summary>
         public static string Enum_Region_HARRARI {
             get {
@@ -5947,7 +6082,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OROMIYA.
+        ///   Looks up a localized string similar to Oromiya .
         /// </summary>
         public static string Enum_Region_OROMO {
             get {
@@ -5965,7 +6100,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SOMALIA.
+        ///   Looks up a localized string similar to Somalia.
         /// </summary>
         public static string Enum_Region_SOMALIA {
             get {
@@ -5974,7 +6109,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SOUTH_NATION_AND_NATIONALITIES.
+        ///   Looks up a localized string similar to South Nation and Nationalities .
         /// </summary>
         public static string Enum_Region_SOUTH_NATION_AND_NATIONALITIES {
             get {
@@ -5983,7 +6118,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TIGRAY.
+        ///   Looks up a localized string similar to Tigray .
         /// </summary>
         public static string Enum_Region_TIGRAY {
             get {
@@ -5992,7 +6127,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CATHOLIC.
+        ///   Looks up a localized string similar to Catholic .
         /// </summary>
         public static string Enum_ReligionList_CATHOLIC {
             get {
@@ -6001,7 +6136,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MUSLIM.
+        ///   Looks up a localized string similar to Muslim .
         /// </summary>
         public static string Enum_ReligionList_MUSLIM {
             get {
@@ -6010,7 +6145,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ORTHODOX.
+        ///   Looks up a localized string similar to Orthodox .
         /// </summary>
         public static string Enum_ReligionList_ORTHODOX {
             get {
@@ -6019,7 +6154,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OTHER.
+        ///   Looks up a localized string similar to Other .
         /// </summary>
         public static string Enum_ReligionList_OTHER {
             get {
@@ -6028,7 +6163,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PROTESTANT.
+        ///   Looks up a localized string similar to Protestant .
         /// </summary>
         public static string Enum_ReligionList_PROTESTANT {
             get {
@@ -6037,7 +6172,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WAAQEFFATAA.
+        ///   Looks up a localized string similar to Waqeffataa .
         /// </summary>
         public static string Enum_ReligionList_WAAQEFFATAA {
             get {
@@ -6046,7 +6181,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to APPROVE.
+        ///   Looks up a localized string similar to Approve .
         /// </summary>
         public static string Enum_RequestStatus_APPROVE {
             get {
@@ -6055,7 +6190,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DEPARTMENT_APPROVAL.
+        ///   Looks up a localized string similar to Department Approval .
         /// </summary>
         public static string Enum_RequestStatus_DEPARTMENT_APPROVAL {
             get {
@@ -6064,7 +6199,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PEND.
+        ///   Looks up a localized string similar to Pend .
         /// </summary>
         public static string Enum_RequestStatus_PEND {
             get {
@@ -6073,7 +6208,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to REJECT.
+        ///   Looks up a localized string similar to Reject .
         /// </summary>
         public static string Enum_RequestStatus_REJECT {
             get {
@@ -6082,7 +6217,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WAITING_FOR_APPROVAL.
+        ///   Looks up a localized string similar to Waiting for Approval .
         /// </summary>
         public static string Enum_RequestStatus_WAITING_FOR_APPROVAL {
             get {
@@ -6091,7 +6226,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CHIEF_JUDGE.
+        ///   Looks up a localized string similar to Chief Judge .
         /// </summary>
         public static string Enum_ResponsibilityLevel_CHIEF_JUDGE {
             get {
@@ -6100,7 +6235,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to COORDINATOR_JUDGE.
+        ///   Looks up a localized string similar to Coordinator Judge .
         /// </summary>
         public static string Enum_ResponsibilityLevel_COORDINATOR {
             get {
@@ -6109,7 +6244,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DIRECTIVE_CURATOR.
+        ///   Looks up a localized string similar to Directive Curator.
         /// </summary>
         public static string Enum_ResponsibilityLevel_DIRECTIVE_CURATOR {
             get {
@@ -6118,7 +6253,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DIRECTOR.
+        ///   Looks up a localized string similar to Director.
         /// </summary>
         public static string Enum_ResponsibilityLevel_DIRECTOR {
             get {
@@ -6127,7 +6262,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HIGHER_CURATOR.
+        ///   Looks up a localized string similar to Higher Curator .
         /// </summary>
         public static string Enum_ResponsibilityLevel_HIGHER_CURATOR {
             get {
@@ -6136,7 +6271,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to JUDGE.
+        ///   Looks up a localized string similar to Judge .
         /// </summary>
         public static string Enum_ResponsibilityLevel_JUDGE {
             get {
@@ -6145,7 +6280,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LOW_MANAGMENT.
+        ///   Looks up a localized string similar to Low Managment.
         /// </summary>
         public static string Enum_ResponsibilityLevel_LOW_MANAGMENT {
             get {
@@ -6154,7 +6289,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MEDIUM_MANAGMENT.
+        ///   Looks up a localized string similar to Medium Managment .
         /// </summary>
         public static string Enum_ResponsibilityLevel_MEDIUM_MANAGMENT {
             get {
@@ -6163,7 +6298,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OFFICE_CURATOR.
+        ///   Looks up a localized string similar to Office Curator .
         /// </summary>
         public static string Enum_ResponsibilityLevel_OFFICE_CURATOR {
             get {
@@ -6172,7 +6307,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PRESIDENT.
+        ///   Looks up a localized string similar to President .
         /// </summary>
         public static string Enum_ResponsibilityLevel_PRESIDENT {
             get {
@@ -6181,7 +6316,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STAFF.
+        ///   Looks up a localized string similar to Staff.
         /// </summary>
         public static string Enum_ResponsibilityLevel_STAFF {
             get {
@@ -6190,7 +6325,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TEAM_LEADER.
+        ///   Looks up a localized string similar to Team Leader .
         /// </summary>
         public static string Enum_ResponsibilityLevel_TEAM_LEADER {
             get {
@@ -6199,7 +6334,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TOP_MANAGMENT.
+        ///   Looks up a localized string similar to Top Managment .
         /// </summary>
         public static string Enum_ResponsibilityLevel_TOP_MANAGMENT {
             get {
@@ -6226,7 +6361,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SEASON.
+        ///   Looks up a localized string similar to Season.
         /// </summary>
         public static string Enum_SEASON {
             get {
@@ -6262,7 +6397,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SEMI_ANNUAL.
+        ///   Looks up a localized string similar to Semi-Annual.
         /// </summary>
         public static string Enum_SEMI_ANNUAL {
             get {
@@ -6478,7 +6613,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EXTERNAL.
+        ///   Looks up a localized string similar to External .
         /// </summary>
         public static string Enum_TrainingLocation_EXTERNAL {
             get {
@@ -6487,7 +6622,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EXTERNAL.
+        ///   Looks up a localized string similar to External.
         /// </summary>
         public static string Enum_TrainingLocation_EXTERNAL_TRAINING {
             get {
@@ -6496,7 +6631,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INTERNAL.
+        ///   Looks up a localized string similar to Internal .
         /// </summary>
         public static string Enum_TrainingLocation_INTERNAL {
             get {
@@ -6505,7 +6640,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INTERNAL.
+        ///   Looks up a localized string similar to Internal .
         /// </summary>
         public static string Enum_TrainingLocation_INTERNALTRAINING {
             get {
@@ -6514,7 +6649,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LONG.
+        ///   Looks up a localized string similar to Long .
         /// </summary>
         public static string Enum_TrainingTerm_LONG {
             get {
@@ -6523,7 +6658,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SHORT.
+        ///   Looks up a localized string similar to Short .
         /// </summary>
         public static string Enum_TrainingTerm_SHORT {
             get {
@@ -6532,7 +6667,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EDUCATION.
+        ///   Looks up a localized string similar to Education .
         /// </summary>
         public static string Enum_TrainingType_EDUCATION {
             get {
@@ -6541,7 +6676,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TRAINING.
+        ///   Looks up a localized string similar to Training .
         /// </summary>
         public static string Enum_TrainingType_TRAINING {
             get {
@@ -6550,7 +6685,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CONTRACT.
+        ///   Looks up a localized string similar to Contract .
         /// </summary>
         public static string Enum_VacancyType_CONTRACT {
             get {
@@ -6559,7 +6694,16 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PERMANENT.
+        ///   Looks up a localized string similar to Part-Time.
+        /// </summary>
+        public static string Enum_VacancyType_PART_TIME {
+            get {
+                return ResourceManager.GetString("Enum_VacancyType_PART_TIME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Permanent .
         /// </summary>
         public static string Enum_VacancyType_PERMANENT {
             get {
@@ -6568,7 +6712,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SATURDAY.
+        ///   Looks up a localized string similar to Saturday .
         /// </summary>
         public static string Enum_Weekend_SATURDAY {
             get {
@@ -6577,7 +6721,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SUNDAY.
+        ///   Looks up a localized string similar to Sunday .
         /// </summary>
         public static string Enum_Weekend_SUNDAY {
             get {
@@ -6586,7 +6730,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WEEKLY.
+        ///   Looks up a localized string similar to Weekly .
         /// </summary>
         public static string Enum_WEEKLY {
             get {
@@ -6730,6 +6874,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expiring Soon.
+        /// </summary>
+        public static string Expiring_Soon {
+            get {
+                return ResourceManager.GetString("Expiring_Soon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to External Applicant Screening.
         /// </summary>
         public static string External_Applicant_Screening {
@@ -6793,6 +6946,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 5th.
+        /// </summary>
+        public static string Fifth {
+            get {
+                return ResourceManager.GetString("Fifth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FileName.
         /// </summary>
         public static string FileName {
@@ -6829,6 +6991,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1st.
+        /// </summary>
+        public static string First {
+            get {
+                return ResourceManager.GetString("First", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fiscal Year.
         /// </summary>
         public static string Fiscal_Year {
@@ -6861,6 +7032,15 @@ namespace ExceedERP.Core.Localization {
         public static string For {
             get {
                 return ResourceManager.GetString("For", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4th.
+        /// </summary>
+        public static string Fourth {
+            get {
+                return ResourceManager.GetString("Fourth", resourceCulture);
             }
         }
         
@@ -7023,6 +7203,15 @@ namespace ExceedERP.Core.Localization {
         public static string GLPeriod_Name {
             get {
                 return ResourceManager.GetString("GLPeriod_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GPA.
+        /// </summary>
+        public static string GPA {
+            get {
+                return ResourceManager.GetString("GPA", resourceCulture);
             }
         }
         
@@ -7639,7 +7828,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Receiver.
+        ///   Looks up a localized string similar to CC.
         /// </summary>
         public static string HR_ArchiveManagement_LetterSender_Receiver {
             get {
@@ -8818,7 +9007,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Quantity.
+        ///   Looks up a localized string similar to Head Count.
         /// </summary>
         public static string HR_Company_JobTitleMapping_Quntity {
             get {
@@ -10456,7 +10645,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step.
+        ///   Looks up a localized string similar to Step/Scale.
         /// </summary>
         public static string HR_EmployeeDetail_Placement_Step {
             get {
@@ -10519,7 +10708,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step.
+        ///   Looks up a localized string similar to Step/Scale.
         /// </summary>
         public static string HR_EmployeeDetail_PlacementHistory_Step {
             get {
@@ -11950,7 +12139,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Leave Period.
+        ///   Looks up a localized string similar to Leave Year.
         /// </summary>
         public static string HR_LeaveManagment_LeaveEntitle_LeavePeriod {
             get {
@@ -14362,7 +14551,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Recruitment Type.
+        ///   Looks up a localized string similar to Employment Type.
         /// </summary>
         public static string HR_RecruitmentManagment_Vacancy_VacancyType {
             get {
@@ -14470,7 +14659,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step.
+        ///   Looks up a localized string similar to Step/Scale.
         /// </summary>
         public static string HR_SalaryStructure_Salary_StepId {
             get {
@@ -14515,6 +14704,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Salary Structure Version.
+        /// </summary>
+        public static string HR_SalaryStructure_SalaryJobTitle_SalaryStructureVersionId {
+            get {
+                return ResourceManager.GetString("HR_SalaryStructure_SalaryJobTitle_SalaryStructureVersionId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Salary Job Title Id.
         /// </summary>
         public static string HR_SalaryStructure_SalaryJobTitle_SalJobTiId {
@@ -14524,7 +14722,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step.
+        ///   Looks up a localized string similar to Step/scale.
         /// </summary>
         public static string HR_SalaryStructure_SalaryJobTitle_StepId {
             get {
@@ -14533,7 +14731,16 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step Id.
+        ///   Looks up a localized string similar to Salary Structure Version Name.
+        /// </summary>
+        public static string HR_SalaryStructure_SalaryStructureVersion_StructureVersionName {
+            get {
+                return ResourceManager.GetString("HR_SalaryStructure_SalaryStructureVersion_StructureVersionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Step/Scale Id.
         /// </summary>
         public static string HR_SalaryStructure_Step_StepId {
             get {
@@ -14542,7 +14749,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step Name.
+        ///   Looks up a localized string similar to Step/Scale Name.
         /// </summary>
         public static string HR_SalaryStructure_Step_StepName {
             get {
@@ -14551,7 +14758,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step Sequence.
+        ///   Looks up a localized string similar to Step/Scale Sequence.
         /// </summary>
         public static string HR_SalaryStructure_Step_StepSequence {
             get {
@@ -15793,7 +16000,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Job Requirement.
+        ///   Looks up a localized string similar to Qualification Requirements.
         /// </summary>
         public static string JobRequirement {
             get {
@@ -17044,6 +17251,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loan Request.
+        /// </summary>
+        public static string Loan_Request {
+            get {
+                return ResourceManager.GetString("Loan_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Location.
         /// </summary>
         public static string Location {
@@ -17350,7 +17566,16 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Steps.
+        ///   Looks up a localized string similar to Salary Structure Versions.
+        /// </summary>
+        public static string Navigator_Company_SalaryStructureVersions {
+            get {
+                return ResourceManager.GetString("Navigator_Company_SalaryStructureVersions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Steps/Scales.
         /// </summary>
         public static string Navigator_Company_Steps {
             get {
@@ -17377,7 +17602,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Experience After System.
+        ///   Looks up a localized string similar to System Auto Experience.
         /// </summary>
         public static string Navigator_Employee__Experience_After_System {
             get {
@@ -17386,7 +17611,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Experience Before System.
+        ///   Looks up a localized string similar to Manual Experience.
         /// </summary>
         public static string Navigator_Employee__Experience_Before_System {
             get {
@@ -17440,7 +17665,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Employee Profile(Active and Placed).
+        ///   Looks up a localized string similar to Employee Profile.
         /// </summary>
         public static string Navigator_Employee_EmployeeProfile {
             get {
@@ -17485,7 +17710,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Inactive  Employees.
+        ///   Looks up a localized string similar to Inactive  .
         /// </summary>
         public static string Navigator_Employee_Inactive_Employee {
             get {
@@ -17503,7 +17728,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not Placed Employees.
+        ///   Looks up a localized string similar to Not Placed.
         /// </summary>
         public static string Navigator_Employee_Not_Placed_Employee {
             get {
@@ -20014,7 +20239,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Termination Reason.
+        ///   Looks up a localized string similar to Termination Type.
         /// </summary>
         public static string NavigatorReport_Summary_TerminationReason {
             get {
@@ -20185,7 +20410,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Termination Request.
+        ///   Looks up a localized string similar to Resignation.
         /// </summary>
         public static string NavigatorTermination_TerminationRequest {
             get {
@@ -20194,7 +20419,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Termination Requests.
+        ///   Looks up a localized string similar to Resignations.
         /// </summary>
         public static string NavigatorTermination_TerminationRequestes {
             get {
@@ -20347,6 +20572,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 9th.
+        /// </summary>
+        public static string Ninth {
+            get {
+                return ResourceManager.GetString("Ninth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No of current staff.
         /// </summary>
         public static string NoOfCurrentStaff {
@@ -20478,6 +20712,15 @@ namespace ExceedERP.Core.Localization {
         public static string PassSetting {
             get {
                 return ResourceManager.GetString("PassSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password Reset Requests.
+        /// </summary>
+        public static string Password_Reset_Requests {
+            get {
+                return ResourceManager.GetString("Password_Reset_Requests", resourceCulture);
             }
         }
         
@@ -20617,7 +20860,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Head Name.
+        ///   Looks up a localized string similar to Immediate Supervisor.
         /// </summary>
         public static string Placement_Boss {
             get {
@@ -20743,6 +20986,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Probation.
+        /// </summary>
+        public static string Probation {
+            get {
+                return ResourceManager.GetString("Probation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Probation-Eligible.
         /// </summary>
         public static string Probation_Eligible {
@@ -20766,6 +21018,15 @@ namespace ExceedERP.Core.Localization {
         public static string Probation_Performance_Setting {
             get {
                 return ResourceManager.GetString("Probation_Performance_Setting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probation_Settings.
+        /// </summary>
+        public static string Probation_Settings {
+            get {
+                return ResourceManager.GetString("Probation_Settings", resourceCulture);
             }
         }
         
@@ -20838,6 +21099,15 @@ namespace ExceedERP.Core.Localization {
         public static string Promotion_Eligible {
             get {
                 return ResourceManager.GetString("Promotion_Eligible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Promotion Settings.
+        /// </summary>
+        public static string Promotion_Settings {
+            get {
+                return ResourceManager.GetString("Promotion_Settings", resourceCulture);
             }
         }
         
@@ -20977,11 +21247,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Responsiblity Level Summary Report.
+        /// </summary>
+        public static string Responsiblity_Level_Summary_Report {
+            get {
+                return ResourceManager.GetString("Responsiblity_Level_Summary_Report", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Result.
         /// </summary>
         public static string Result {
             get {
                 return ResourceManager.GetString("Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retirement Eligibility (180 Days).
+        /// </summary>
+        public static string Retirement_Eligibility_180_Days {
+            get {
+                return ResourceManager.GetString("Retirement_Eligibility_180_Days", resourceCulture);
             }
         }
         
@@ -21454,7 +21742,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From Step.
+        ///   Looks up a localized string similar to From Step/Scale.
         /// </summary>
         public static string Rpt_FromStep {
             get {
@@ -22264,7 +22552,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to To Step.
+        ///   Looks up a localized string similar to To Step/Scale.
         /// </summary>
         public static string Rpt_ToStep {
             get {
@@ -22507,6 +22795,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 2nd.
+        /// </summary>
+        public static string Second {
+            get {
+                return ResourceManager.GetString("Second", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select.
         /// </summary>
         public static string Select {
@@ -22570,6 +22867,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Service Requests.
+        /// </summary>
+        public static string Service_Requests {
+            get {
+                return ResourceManager.GetString("Service_Requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         public static string Settings {
@@ -22597,6 +22903,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 7th.
+        /// </summary>
+        public static string Seventh {
+            get {
+                return ResourceManager.GetString("Seventh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Severance Payable with Death Prob..
         /// </summary>
         public static string Severance_with_Death_Prob {
@@ -22620,6 +22935,24 @@ namespace ExceedERP.Core.Localization {
         public static string SickLeaveSetting {
             get {
                 return ResourceManager.GetString("SickLeaveSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 6th.
+        /// </summary>
+        public static string Sixth {
+            get {
+                return ResourceManager.GetString("Sixth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Delegation.
+        /// </summary>
+        public static string Start_Delegation {
+            get {
+                return ResourceManager.GetString("Start_Delegation", resourceCulture);
             }
         }
         
@@ -22705,11 +23038,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 10th.
+        /// </summary>
+        public static string Tenth {
+            get {
+                return ResourceManager.GetString("Tenth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Term Type.
         /// </summary>
         public static string TERM_TYPE {
             get {
                 return ResourceManager.GetString("TERM_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3rd.
+        /// </summary>
+        public static string Third {
+            get {
+                return ResourceManager.GetString("Third", resourceCulture);
             }
         }
         
@@ -22899,6 +23250,15 @@ namespace ExceedERP.Core.Localization {
         public static string TrainingFeedback {
             get {
                 return ResourceManager.GetString("TrainingFeedback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unapproved employees.
+        /// </summary>
+        public static string Unapproved_Employees {
+            get {
+                return ResourceManager.GetString("Unapproved_Employees", resourceCulture);
             }
         }
         

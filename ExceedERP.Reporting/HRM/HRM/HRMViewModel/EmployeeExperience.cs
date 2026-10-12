@@ -9,6 +9,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Sex { get; set; }
         public string Departement { get; set; }
         public bool Assigned { get; set; }
+        public double TotalExpreince { get; set; }
         public string TotalExp { get; set; }
         public ICollection<EmployeeExperienceList> EmployeeExperienceList { get; set; }
         public ICollection<EmployeeEducationList> EmployeeEducationList { get; set; }

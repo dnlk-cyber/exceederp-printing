@@ -23,5 +23,14 @@ namespace ExceedERP.Helpers.HR
                 documentTitle = isoDoc.FormTitle;
             }
         }
+
+        public class CacheData : IDisposable
+        {
+            private readonly ExceedDbContext _db = new ExceedDbContext();
+            public void Dispose()
+            {
+                _db.Dispose();
+            }
+        }
     }
 }

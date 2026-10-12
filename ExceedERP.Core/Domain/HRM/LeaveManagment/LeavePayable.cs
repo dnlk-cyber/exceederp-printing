@@ -61,6 +61,12 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
        
         [Display(Name = "Basic Salary ")]
         public decimal BasicSalary  { get; set; }
+        // Only used/shown when LeavePayableSetting.EnableTaxableAllowance is on; 0 for everyone else,
+        // which keeps AgregateTaxableAmount/BasicSalaryIncomeTax identical to the pre-existing formula.
+        [Display(Name = "Taxable Allowance")]
+        public decimal TaxableAllowance { get; set; }
+        [Display(Name = "Total Taxable Salary")]
+        public decimal TotalTaxableSalary { get; set; }
         [Display(Name = "Agregate taxable Amount ")]
         public decimal AgregateTaxableAmount { get; set; }
         [Display(Name = "Agregate Income Tax")]

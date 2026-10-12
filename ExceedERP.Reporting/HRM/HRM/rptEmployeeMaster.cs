@@ -1,7 +1,10 @@
+using System.Globalization;
+using System.Threading;
+
 namespace ExceedERP.Reporting.HRM.HRMCourt
 {
     /// <summary>
-    /// Summary description for rptEmployeeJobTitle.
+    /// Summary description for rptEmployeeMaster.
     /// </summary>
     public partial class rptEmployeeMaster : Telerik.Reporting.Report
     {
@@ -10,6 +13,9 @@ namespace ExceedERP.Reporting.HRM.HRMCourt
             //
             // Required for telerik Reporting designer support
             //
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
+
             InitializeComponent();
 
             //

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class TrainingAndEducationOneByOneODS
+    public class TrainingAndEducationOneByOneODS:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -228,6 +228,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             ////}
             #endregion
             return teLists;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

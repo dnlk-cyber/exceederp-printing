@@ -19,6 +19,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -27,12 +28,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     public class EmployeeTrainingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-
-        public static string FromAmharic { get; set; }
-        public static string ToAmharic { get; set; }
-        public static DateTime From { get; set; }
-        public static DateTime To { get; set; }
-        // GET: HRM/EmployeeEducation
+        //public static string FromAmharic { get; set; }
+        //public static string ToAmharic { get; set; }
+        //public static DateTime From { get; set; }
+        //public static DateTime To { get; set; }
+        //GET: HRM/EmployeeEducation
         public ActionResult Index()
         {
 
@@ -42,6 +42,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
         private void PopulateViewData()
         {
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
             HRMInputs inputs = new HRMInputs();
             ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
         }
@@ -85,15 +86,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             if (name == "FromTrAm")
             {
-                FromAmharic = value;
+               var FromAmharic = value;
                 var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
             }
             else if (name == "ToTraAm")
             {
-                ToAmharic = value;
+
+                var ToAmharic = value;
                 var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
 
         }
@@ -127,39 +130,56 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(result);
         }
-
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmpTrainingEducations_Create([DataSourceRequest]DataSourceRequest request, Training empTrainingEducation, int idTrTwo)
         {
+
             ModelState.Clear();
 
-            if (empTrainingEducation.ToTraAm != null)
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (datePreference)
             {
-                var splitDate = empTrainingEducation.ToTraAm.Split('/');
-                empTrainingEducation.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (!string.IsNullOrWhiteSpace(empTrainingEducation?.FromTrAm))
+                {
+                    empTrainingEducation.From = HrHelper.ParseEthiopicDate(empTrainingEducation.FromTrAm);
+                }
+                if (!string.IsNullOrWhiteSpace(empTrainingEducation?.ToTraAm))
+                {
+                    empTrainingEducation.To = HrHelper.ParseEthiopicDate(empTrainingEducation.ToTraAm);
+
+                }
+
 
             }
             else
             {
-                ModelState.AddModelError("", "Please Enter End Date");
+               
+                empTrainingEducation.FromTrAm = empTrainingEducation.From.HasValue ? XAPI.EthiopicDateTime.GetEthiopicDate(empTrainingEducation.From.Value.Day,
+                                                                                        empTrainingEducation.From.Value.Month,
+                                                                                        empTrainingEducation.From.Value.Year)
+                                                                                        : null;
+                empTrainingEducation.ToTraAm = empTrainingEducation.To.HasValue ? XAPI.EthiopicDateTime.GetEthiopicDate(empTrainingEducation.To.Value.Day,
+                                                                                    empTrainingEducation.To.Value.Month,
+                                                                                    empTrainingEducation.To.Value.Year):null;
             }
-            if (empTrainingEducation.FromTrAm != null)
-            {
-                var splitDate = empTrainingEducation.FromTrAm.Split('/');
-                empTrainingEducation.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
-            }
-
-            if (empTrainingEducation.From > DateTime.Now.Date)
+            if (empTrainingEducation.From.HasValue && empTrainingEducation.From.Value > DateTime.Now.Date)
             {
 
                 ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+                return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
+
             }
-            else if (empTrainingEducation.From > empTrainingEducation.To)
+            else if (empTrainingEducation.From.HasValue 
+                    && empTrainingEducation.To.HasValue
+                    &&empTrainingEducation.From > empTrainingEducation.To)
             {
 
                 ModelState.AddModelError("", "Start date should be less or equal to end date!!");
+                return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
+
             }
 
 
@@ -204,41 +224,55 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
         }
-
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmpTrainingEducations_Update([DataSourceRequest]DataSourceRequest request, Training empTrainingEducation)
         {
             ModelState.Clear();
 
-            if (empTrainingEducation.ToTraAm != null)
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (datePreference)
             {
-                var splitDate = empTrainingEducation.ToTraAm.Split('/');
-                empTrainingEducation.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (!string.IsNullOrWhiteSpace(empTrainingEducation?.FromTrAm))
+                {
+                    empTrainingEducation.From = HrHelper.ParseEthiopicDate(empTrainingEducation.FromTrAm);
+                }
+                if (!string.IsNullOrWhiteSpace(empTrainingEducation?.ToTraAm))
+                {
+                    empTrainingEducation.To = HrHelper.ParseEthiopicDate(empTrainingEducation.ToTraAm);
+
+                }
+
 
             }
             else
             {
-                ModelState.AddModelError("", "Please Enter End Date");
-            }
-            if (empTrainingEducation.FromTrAm != null)
-            {
-                var splitDate = empTrainingEducation.FromTrAm.Split('/');
-                empTrainingEducation.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
+                empTrainingEducation.FromTrAm = empTrainingEducation.From.HasValue ? XAPI.EthiopicDateTime.GetEthiopicDate(empTrainingEducation.From.Value.Day,
+                                                                                        empTrainingEducation.From.Value.Month,
+                                                                                        empTrainingEducation.From.Value.Year)
+                                                                                        : null;
+                empTrainingEducation.ToTraAm = empTrainingEducation.To.HasValue ? XAPI.EthiopicDateTime.GetEthiopicDate(empTrainingEducation.To.Value.Day,
+                                                                                    empTrainingEducation.To.Value.Month,
+                                                                                    empTrainingEducation.To.Value.Year) : null;
             }
-
-            if (empTrainingEducation.From > DateTime.Now.Date)
+            if (empTrainingEducation.From.HasValue && empTrainingEducation.From.Value > DateTime.Now.Date)
             {
 
                 ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+                return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
+
             }
-            else if (empTrainingEducation.From > empTrainingEducation.To)
+            else if (empTrainingEducation.From.HasValue
+                    && empTrainingEducation.To.HasValue
+                    && empTrainingEducation.From > empTrainingEducation.To)
             {
 
                 ModelState.AddModelError("", "Start date should be less or equal to end date!!");
-            }
+                return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
 
+            }
 
             if (ModelState.IsValid)
             {
@@ -270,21 +304,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 db.SaveChanges();
 
                 #region operation log
-
                 var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                if (person != null)
-                {
-                    UserHelper.OperationLog(Request.UserHostAddress, "Employee Training", "Success", User.Identity.Name, "Training Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
-
-                }
-
+                UserHelper.OperationLog(Request.UserHostAddress, "Employee Training", "Success", User.Identity.Name, "Training Info of " + person?.EmployeeCode??string.Empty + " is Updated By  " + User.Identity.Name, Modules.HRM);
                 #endregion
 
             }
 
             return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
         }
-
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmpTrainingEducations_Destroy([DataSourceRequest]DataSourceRequest request, Training empTrainingEducation)
@@ -323,9 +350,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
         }
+        public ActionResult Attachments_Destroy([DataSourceRequest]DataSourceRequest request, Attachment attachment)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new Attachment
+                {
+                    AttachmentId = attachment.AttachmentId,
+                    ReferenceType = attachment.ReferenceType,
+                    Reference = attachment.Reference,
+                    Description = attachment.Description,
+                    URL = attachment.URL,
+                    BinaryFile = attachment.BinaryFile,
+                    FileType = attachment.FileType,
+                    Index = attachment.Index,
+                    Remark = attachment.Remark
+                };
 
+                db.Attachments.Attach(entity);
+                db.Attachments.Remove(entity);
+                db.SaveChanges();
+            }
 
-
+            return Json(new[] { attachment }.ToDataSourceResult(request, ModelState));
+        }
         public ActionResult Upload(HttpPostedFileBase file)
         {
             try
@@ -372,30 +420,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             HRMInputs.SelectedFile = id;
 
-        }
-        public ActionResult Attachments_Destroy([DataSourceRequest]DataSourceRequest request, Attachment attachment)
-        {
-            if (ModelState.IsValid)
-            {
-                var entity = new Attachment
-                {
-                    AttachmentId = attachment.AttachmentId,
-                    ReferenceType = attachment.ReferenceType,
-                    Reference = attachment.Reference,
-                    Description = attachment.Description,
-                    URL = attachment.URL,
-                    BinaryFile = attachment.BinaryFile,
-                    FileType = attachment.FileType,
-                    Index = attachment.Index,
-                    Remark = attachment.Remark
-                };
-
-                db.Attachments.Attach(entity);
-                db.Attachments.Remove(entity);
-                db.SaveChanges();
-            }
-
-            return Json(new[] { attachment }.ToDataSourceResult(request, ModelState));
         }
         protected override void Dispose(bool disposing)
         {

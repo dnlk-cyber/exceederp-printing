@@ -37,22 +37,26 @@
         //System.Threading.Thread.CurrentThread.CurrentCulture = cultureInfo; 
 
         .Id("reportViewer1")
-        .Id("reportViewer1")
-        .ParameterEditors(
-                                        editors => editors
-                                            .SingleSelectEditor("createSingleSelectEditor")
-                                             .MultiValueEditor("createMultiSelectEditor")) 
-                      
+                  .Id("reportViewer1")
+                  .ParameterEditors(
+                            editors => editors
+                                .SingleSelectEditor("createSingleSelectEditor")
+                                .MultiValueEditor("createMultiSelectEditor"))
+
         // The URL of the service which will serve reports.
         // The URL corresponds to the name of the controller class (ReportsController).
         // For more information on how to configure the service please check http://www.telerik.com/help/reporting/telerik-reporting-rest-conception.html.
         .ServiceUrl(Url.Content("/api/reports/"))
-        // The URL for custom report viewer template. The template can be edited -
-        // new functionalities can be added and unneeded ones can be removed.
-        // For more information please check http://www.telerik.com/help/reporting/html5-report-viewer-templates.html.
-        // 
-        // Strongly typed ReportSource - TypeReportSource or UriReportSource.
-            .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.HRM.HRM.rptEmpAge, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"})
+            // The URL for custom report viewer template. The template can be edited -
+            // new functionalities can be added and unneeded ones can be removed.
+            // For more information please check http://www.telerik.com/help/reporting/html5-report-viewer-templates.html.
+            // 
+            // Strongly typed ReportSource - TypeReportSource or UriReportSource.
+            .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.HRM.HRM.rptEmpAge, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", Parameters = {
+                    new Parameter("FormTitle", ViewBag.FormTitle),
+                    new Parameter("FormNumber", ViewBag.FormNumber)
+                }
+            })
         // Specifies whether the viewer is in interactive or print preview mode.
         // PrintPreview - Displays the paginated report as if it is printed on paper. Interactivity is not enabled.
         // Interactive - Displays the report in its original width and height with no paging. Additionally interactivity is enabled.

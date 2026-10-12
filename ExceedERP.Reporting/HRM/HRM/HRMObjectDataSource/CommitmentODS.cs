@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class CommitmentODS
+    public class CommitmentODS:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -57,7 +57,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     
                     cosVM.AgreementSignDate = cos.AgreementDateAm;
                     cosVM.FullName = cos.FullName;
-                    cosVM.BirthPlace = //cos.BirthPlace;
                     cosVM.WorkOrganization = cos.Workorganization;
 
                     commit.Cosign.Add(cosVM);
@@ -67,6 +66,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return singleCommitment;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

@@ -2,23 +2,17 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Web.Areas.Common.Controllers;
-using System.IO;
-using System.Net;
-using System.Web;
 using ExceedERP.Web.Controllers;
 using System;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -28,47 +22,143 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     {
         // GET: HRM/EmployeeExperience
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime AgreementDate { get; set; }
-        public static string AgreementDateAm { get; set; }
-        HRMInputs inputs = new HRMInputs();
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
             PopulateViewData();
             return View();
         }
+        public ActionResult DashBoard()
+        {
+            return View();
+        }
+        public JsonResult GetEmployeeCardCount()
+        {
+        
+        var New_Placement = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.New_Placement).ToList();
+        var Placement_Change = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.Placement_Change).ToList();
+        var Leave = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.Leave).ToList();
+        var Attendance = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.Attendance).ToList();
+        var Delegation = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.Delegation).ToList();
+        var Accident = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.Accident).ToList();
+        var Temination = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.Temination).ToList();
+        var Others = db.EmployeeCards.Where(x => x.IsActive && x.CardType == EmployeeCardType.Others).ToList();
+                                                                                                                                      
+            var formattedData = new
+            {
+                Data = new int[] { New_Placement.Count(), Placement_Change.Count(), Leave.Count(), Attendance.Count(), Delegation.Count(),Accident.Count(), Temination.Count(), Others.Count() },
+                Labels = new string[] { "New_Placement", "Placement_Change", "Leave", "Attendance", "Delegation", "Accident", "Temination", "Others" }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetCountEmployeeCardActionStatu()
+        {
+            var activeCard = db.EmployeeCards
+                .Where(x => x.IsActive ).ToList();
+            var inactive = db.EmployeeCards
+                .Where(x => !x.IsActive ).ToList();
+         
+
+
+            var formattedData = new
+            {
+                Data = new int[]
+                {
+
+                    activeCard.Count(), inactive.Count(),activeCard.Count()+inactive.Count()
+
+                },
+                Labels = new string[] { "Action Taken Cards", "No action Taken cards",  "Total Cards" }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
         private void PopulateViewData()
         {
-            var employeeIds = db.Placements.Select(x => x.EmployeeId).ToList();
-            ViewData["EmployeeList"] = db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId)).Select(x => new { EmployeeId = x.EmployeeId, ToEmployeeId=x.EmployeeId, HeadId = x.EmployeeId, EmployeeCode = x.EmployeeCode, FullNameAmharic = x.EmployeeCode + " - " + x.FirstName + " " + x.MiddleName + " " + x.LastName, FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish }).ToList();// inputs.GetEmployeesForPlacment(User.Identity.Name);
-            ViewData["jobTitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-            var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["branches"] = branches;
-            var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["businessUnits"] = businessUnits;
-            var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
-            ViewData["workunits"] = workunits;
+
+            var ranks = db.Ranks.AsQueryable();
+            ViewData["RankList"] = CacheData.GetRankCaches().Select(
+               i => new
+               {
+                   RankName = i.Name,
+                   RankId = i.Id,
+               }).AsQueryable(); ;
+            var stepss = db.Steps.AsQueryable();
+            ViewData["StepList"] = CacheData.GetStepCaches().Select(
+               i => new
+               {
+                   StepName = i.Name,
+                   StepId = i.Id,
+
+               }).AsQueryable();
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+               i => new
+               {
+                   FullNameAmharic = i.Code+" "+i.AmharicName,
+                   FullNameaEnglish = i.Code + " "+i.Name,
+                   EmployeeId = i.Id,
+                   ToEmployeeId = i.Id,
+                   HeadId = i.Id
+               }).AsQueryable();
+            ViewData["jobTitle"] = CacheData.GetJobTitlesCaches().Select(
+               i => new
+               {
+                   Description = i.Name,
+                   LookupId = i.Id,
+                   FromLookupId = i.Id,
+               }).AsQueryable();
+            ViewData["branches"] = CacheData.GetBranchCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BranchId = i.Id,
+                   FromBranchId = i.Id,
+               }).AsQueryable(); ;
+
+            ViewData["businessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BusinessUnitId = i.Id,
+                   FromBusinessUnitId = i.Id,
+               }).AsQueryable(); ; ;
+            ViewData["workunits"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+                   FromOrgStructureId = i.Id,
+               }).AsQueryable();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+            ViewData["isManual"] = db.GeneralJobtitleSettings.FirstOrDefault()?.IsManual;
             var alloanceList = db.AllowanceDefinations.AsQueryable();
             ViewData["AllowanceList"] = alloanceList.OrderBy(o => o.AllowanceName);
+
         }
-    
+
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
         public ActionResult EmployeeCards_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<EmployeeCard> employeeCards = db.EmployeeCards.Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<EmployeeCard> employeeCards = db.EmployeeCards.Where(x => mybraches.Contains(x.BranchId));
             DataSourceResult result = employeeCards.ToDataSourceResult(request, employeeCard => new
             {
                 EmployeeCardId = employeeCard.EmployeeCardId,
                 EmployeeId = employeeCard.EmployeeId,
                 ToEmployeeId = employeeCard.ToEmployeeId,
                 OrgStructureId = employeeCard.OrgStructureId,
+                FromBranchId = employeeCard.FromBranchId,
+                FromBusinessUnitId = employeeCard.FromBusinessUnitId,
+                FromOrgStructureId = employeeCard.FromOrgStructureId,
+                FromLookupId = employeeCard.FromLookupId,
+                ActionTakenDate = employeeCard.ActionTakenDate,
+                ActionTaken = employeeCard.ActionTaken,
+                ActionTakenBy = employeeCard.ActionTakenBy,
                 LookupId = employeeCard.LookupId,
                 BranchId = employeeCard.BranchId,
                 BusinessUnitId = employeeCard.BusinessUnitId,
                 EachPrimaryId = employeeCard.EachPrimaryId,
                 CardType = employeeCard.CardType,
                 IsActive = employeeCard.IsActive,
-                ActionTaken = employeeCard.ActionTaken,
                 Salary = employeeCard.Salary,
                 Remark = employeeCard.Remark,
                 FromDate = employeeCard.FromDate,
@@ -89,25 +179,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeCards_Create([DataSourceRequest]DataSourceRequest request, EmployeeCard employeeCard)
         {
-            if (!string.IsNullOrEmpty(employeeCard.FromDateAm))
-            {
-                var splitDate = employeeCard.FromDateAm.Split('/');
-                employeeCard.FromDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            if (!string.IsNullOrEmpty(employeeCard.ToDateTimeAm))
-            {
-                var splitDate = employeeCard.ToDateTimeAm.Split('/');
-                employeeCard.ToDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            if (employeeCard.FromDate > employeeCard.ToDate)
-            {
 
-                ModelState.AddModelError("", "from date should be less or equal to the to date!!");
+            ModelState.Clear();
+
+            bool useEthiopianDate = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (useEthiopianDate)
+            {
+                employeeCard.FromDate = string.IsNullOrWhiteSpace(employeeCard?.FromDateAm)
+                    ? (DateTime?)null
+                    : HrHelper.ParseEthiopicDate(employeeCard.FromDateAm);
+
+                employeeCard.ToDate = string.IsNullOrWhiteSpace(employeeCard?.ToDateTimeAm)
+                    ? (DateTime?)null
+                    : HrHelper.ParseEthiopicDate(employeeCard.ToDateTimeAm);
             }
+            else
+            {
+                if (employeeCard.FromDate.HasValue)
+                {
+                    var from = employeeCard.FromDate.Value;
+                    employeeCard.FromDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(from.Day, from.Month, from.Year);
+                }
+
+                if (employeeCard.ToDate.HasValue)
+                {
+                    var to = employeeCard.ToDate.Value;
+                    employeeCard.ToDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(to.Day, to.Month, to.Year);
+                }
+            }
+
+
+
+            if (employeeCard.FromDate is DateTime fromDate &&
+                employeeCard.ToDate is DateTime toDate &&
+                fromDate > toDate)
+            {
+                ModelState.AddModelError("", "From date should be less than or equal to the to date.");
+                return Json(new[] { employeeCard }.ToDataSourceResult(request, ModelState));
+
+            }
+
             if (ModelState.IsValid)
             {
-                
-                
                 employeeCard.CreatedBy = User.Identity.Name;
                 employeeCard.DateCreated = DateTime.Now;
                 employeeCard.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
@@ -133,20 +247,43 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeCards_Update([DataSourceRequest]DataSourceRequest request, EmployeeCard employeeCard)
         {
-            if (!string.IsNullOrEmpty(employeeCard.FromDateAm))
-            {
-                var splitDate = employeeCard.FromDateAm.Split('/');
-                employeeCard.FromDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            if (!string.IsNullOrEmpty(employeeCard.ToDateTimeAm))
-            {
-                var splitDate = employeeCard.ToDateTimeAm.Split('/');
-                employeeCard.ToDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            if (employeeCard.FromDate > employeeCard.ToDate)
-            {
+            ModelState.Clear();
 
-                ModelState.AddModelError("", "from date should be less or equal to the to date!!");
+            bool useEthiopianDate = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (useEthiopianDate)
+            {
+                employeeCard.FromDate = string.IsNullOrWhiteSpace(employeeCard?.FromDateAm)
+                    ? (DateTime?)null
+                    : HrHelper.ParseEthiopicDate(employeeCard.FromDateAm);
+
+                employeeCard.ToDate = string.IsNullOrWhiteSpace(employeeCard?.ToDateTimeAm)
+                    ? (DateTime?)null
+                    : HrHelper.ParseEthiopicDate(employeeCard.ToDateTimeAm);
+            }
+            else
+            {
+                if (employeeCard.FromDate.HasValue)
+                {
+                    var from = employeeCard.FromDate.Value;
+                    employeeCard.FromDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(from.Day, from.Month, from.Year);
+                }
+
+                if (employeeCard.ToDate.HasValue)
+                {
+                    var to = employeeCard.ToDate.Value;
+                    employeeCard.ToDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(to.Day, to.Month, to.Year);
+                }
+            }
+
+
+            if (employeeCard.FromDate is DateTime fromDate &&
+               employeeCard.ToDate is DateTime toDate &&
+               fromDate > toDate)
+            {
+                ModelState.AddModelError("", "From date should be less than or equal to the to date.");
+                return Json(new[] { employeeCard }.ToDataSourceResult(request, ModelState));
+
             }
             if (ModelState.IsValid)
             {
@@ -195,16 +332,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 EmployeeCardId = employeeCard.EmployeeCardId,
                 EmployeeId = employeeCard.EmployeeId,
                 ToEmployeeId = employeeCard.ToEmployeeId,
+                FromBranchId = employeeCard.FromBranchId,
+                FromBusinessUnitId = employeeCard.FromBusinessUnitId,
+                FromOrgStructureId = employeeCard.FromOrgStructureId,
+                FromLookupId = employeeCard.FromLookupId,
+                ActionTakenDate = employeeCard.ActionTakenDate,
+                ActionTaken = employeeCard.ActionTaken,
+                ActionTakenBy = employeeCard.ActionTaken,
                 OrgStructureId = employeeCard.OrgStructureId,
                 LookupId = employeeCard.LookupId,
                 BranchId = employeeCard.BranchId,
                 BusinessUnitId = employeeCard.BusinessUnitId,
                 EachPrimaryId = employeeCard.EachPrimaryId,
                 CardType = employeeCard.CardType,
-                IsActive = employeeCard.IsActive,
-                ActionTaken = employeeCard.ActionTaken,
-                Salary = employeeCard.Salary,
                 Remark = employeeCard.Remark,
+                IsActive = employeeCard.IsActive,
+                Salary = employeeCard.Salary,
                 FromDate = employeeCard.FromDate,
                 FromDateAm = employeeCard.FromDateAm,
                 ToDate = employeeCard.ToDate,
@@ -218,6 +361,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             return entity;
         }
 
+        public ActionResult EnableEployeeCardAction(int id)
+        {
+            // Find the incoming letter by ID
+            var employeeCard = db.EmployeeCards.Find(id);
+            if (employeeCard == null)
+            {
+                // Return JSON response for record not found
+                return Json(new
+                {
+                    Message = "Record not found.",
+                    Status = "Error"
+                }, JsonRequestBehavior.AllowGet);
+            }
+            employeeCard.IsActive = true;
+            employeeCard.LastModified = DateTime.Now;
+            employeeCard.ModifiedBy = User.Identity.Name;
+            db.Entry(employeeCard).State = EntityState.Modified;
+            db.SaveChanges();
+            // Return JSON response for success
+            return Json(new
+            {
+                Message = "You have successfully enabled this card.",
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
+        {
+            var fileContents = Convert.FromBase64String(base64);
+            #region export log
+            UserHelper.ExportLog(Request.UserHostAddress, "Excel-Export", "Success", User.Identity.Name, "Exported employee placment");
+            #endregion
+            return File(fileContents, contentType, fileName);
+        }
+        [HttpPost]
+        public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
+        {
+            var fileContents = Convert.FromBase64String(base64);
+            #region export log
+            UserHelper.ExportLog(Request.UserHostAddress, "PDF-Export", "Success", User.Identity.Name, "Exported employee placment");
+            #endregion
+            return File(fileContents, contentType, fileName);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

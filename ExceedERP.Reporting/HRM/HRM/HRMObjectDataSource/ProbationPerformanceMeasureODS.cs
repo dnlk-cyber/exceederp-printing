@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-   public class ProbationPerformanceMeasureODS
+   public class ProbationPerformanceMeasureODS:IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -99,6 +99,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
             return measureLists;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

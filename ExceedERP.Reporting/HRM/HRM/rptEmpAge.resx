@@ -121,7 +121,7 @@
     <value>No</value>
   </data>
   <data name="textBox45.Value" xml:space="preserve">
-    <value>Age range</value>
+    <value>Age</value>
   </data>
   <data name="NoOfMaleEmployee.Value" xml:space="preserve">
     <value>No Of Male Employee</value>
@@ -129,35 +129,32 @@
   <data name="NoOfFemaleEmployee.Value" xml:space="preserve">
     <value>No Of Female Employee</value>
   </data>
+  <data name="NoOfUnspecifiedGenderEmployee.Value" xml:space="preserve">
+    <value>ያልተገለጸ / Unspecified</value>
+  </data>
   <data name="TotalEmployee.Value" xml:space="preserve">
     <value>Total Employee</value>
   </data>
-  <data name="txtOrgName.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="textBox25.Value" xml:space="preserve">
-    <value>= Fields.AmharicName</value>
-  </data>
-  <data name="Date.Value" xml:space="preserve">
-    <value>Date:</value>
-  </data>
-  <data name="textBox17.Value" xml:space="preserve">
-    <value>= Fields.Date</value>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
   </data>
   <data name="textBox2.Value" xml:space="preserve">
     <value>= Fields.SummaryName</value>
   </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.NumberOfMaleEmployee</value>
+  </data>
   <data name="textBox4.Value" xml:space="preserve">
     <value>= Fields.NumberOfFemaleEmployee</value>
+  </data>
+  <data name="textBoxUnspecifiedDetail.Value" xml:space="preserve">
+    <value>= Fields.NumberOfUnspecifiedGenderEmployee</value>
   </data>
   <data name="textBox6.Value" xml:space="preserve">
     <value>= Fields.TotalEmployee</value>
   </data>
-  <data name="textBox8.Value" xml:space="preserve">
-    <value>= Fields.NumberOfMaleEmployee</value>
-  </data>
-  <data name="Total.Value" xml:space="preserve">
-    <value>Total</value>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>ድምር / Total</value>
   </data>
   <data name="textBox9.Value" xml:space="preserve">
     <value>= Sum(Fields.NumberOfMaleEmployee)</value>
@@ -165,20 +162,11 @@
   <data name="textBox10.Value" xml:space="preserve">
     <value>= Sum(Fields.NumberOfFemaleEmployee)</value>
   </data>
+  <data name="textBoxUnspecifiedTotal.Value" xml:space="preserve">
+    <value>= Sum(Fields.NumberOfUnspecifiedGenderEmployee)</value>
+  </data>
   <data name="textBox11.Value" xml:space="preserve">
     <value>= Sum(Fields.TotalEmployee)</value>
-  </data>
-  <data name="textBox19.Value" xml:space="preserve">
-    <value>= RowNumber("tblEmployeeSumm")</value>
-  </data>
-  <data name="textBox16.Value" xml:space="preserve">
-    <value>=PageNumber</value>
-  </data>
-  <data name="Page.Value" xml:space="preserve">
-    <value>Page:</value>
-  </data>
-  <data name="EmployeeSummarybyAge.Value" xml:space="preserve">
-    <value>Employee Summary by Age</value>
   </data>
   <data name="textBox3.Value" xml:space="preserve">
     <value>Branch</value>
@@ -204,6 +192,18 @@
   <data name="textBox14.Value" xml:space="preserve">
     <value>= Parameters.status.Label</value>
   </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Employement Type:</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Parameters.employementType.Label</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -225,7 +225,7 @@
   <data name="reportParameter6.Text" xml:space="preserve">
     <value>Columns</value>
   </data>
-  <data name="reportParameter7.Text" xml:space="preserve">
-    <value>Employeement Type</value>
+  <data name="reportParameter9.Text" xml:space="preserve">
+    <value>Employement Type</value>
   </data>
 </root>

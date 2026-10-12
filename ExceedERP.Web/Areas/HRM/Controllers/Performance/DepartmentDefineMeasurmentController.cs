@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -25,7 +21,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                    HrmConstants.HRDepartmentHead,
                    HrmConstants.HRPerformanceReport,
                    HrmConstants.HREmployeeSelfService)]
-    public class DepartmentDefineMeasurmentController : Controller
+    public class DepartmentDefineMeasurmentController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         string ErrorMessage = "";
@@ -49,32 +45,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         {
             ErrorMessage = "";
 
-            #region Action
-            var Action = db.PerformanceActions.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
-            if (Action != null)
+            // Check for existing performance actions
+            bool hasActions = db.PerformanceActions.Any(x => x.MeasurementDefinitionId == id);
+            if (hasActions)
             {
-                ErrorMessage = "You cannot delete this Measurment Defination. Please Delete Performance action information first.";
+                ErrorMessage = "You cannot delete this Measurement Definition. Please delete the related Performance Actions first.";
                 return false;
             }
-            #endregion
 
-            #region Measurement
-            var Measurement = db.Measurements.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
-            if (Measurement != null)
+            // Check for employee performance records
+            bool hasPerformance = db.EmployeePerformances.Any(x => x.EvaluationCriteriaTypeId == id);
+            if (hasPerformance)
             {
-                ErrorMessage = "You cannot delete this Measurment Defination. Please Delete Measurement information first.";
+                ErrorMessage = "You cannot delete this Measurement Definition. Employees have already been evaluated using this criteria.";
                 return false;
             }
-            #endregion
 
-            //#region EmployeeMeasurement
-            //var EmployeeMeasurement = db.EmployeeMeasurementDefinition.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
-            //if (EmployeeMeasurement != null)
-            //{
-            //    ErrorMessage = "You cannot delete this Measurment Defination. Employees are evaluated by this definition.";
-            //    return false;
-            //}
-            //#endregion
+            // Check for measurements
+            bool hasMeasurements = db.Measurements.Any(x => x.MeasurementDefinitionId == id);
+            if (hasMeasurements)
+            {
+                ErrorMessage = "You cannot delete this Measurement Definition. Please delete the related Measurements first.";
+                return false;
+            }
+
+            
 
             return true;
         }
@@ -88,13 +83,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 Description = p.Description,
             }), JsonRequestBehavior.AllowGet);
         }
-        public ActionResult DepartmentDefineMeasurment_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult DepartmentDefineMeasurment_Read([DataSourceRequest]DataSourceRequest request,string lookupId)
         {
             var user = User.Identity.Name;
             var orgId = UserInformationHelper.GetEmployeeDepartmentId(user);
             IQueryable<MeasurementDefinition> departmentLevelCriterias = db.MeasurementDefinitions
                                                                 .Where(x=>x.OrgStuructureId==orgId||x.CreatedBy==user)
                                                                 .Where(x=>x.IsDepartmentLevel);
+            if (!string.IsNullOrEmpty(lookupId) && int.TryParse(lookupId, out int lookId))
+            {
+                departmentLevelCriterias = departmentLevelCriterias
+                    .Where(x => x.LookupId == lookId);
+            }
             DataSourceResult result = departmentLevelCriterias.ToDataSourceResult(request, departmentLevelCriteria => new {
                 MeasurementDefinitionId = departmentLevelCriteria.MeasurementDefinitionId,
                 EmployeeId = departmentLevelCriteria.EmployeeId,
@@ -208,28 +208,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult DepartmentDefineMeasurment_Destroy([DataSourceRequest]DataSourceRequest request, MeasurementDefinition departmentLevelCriteria)
+        public ActionResult DepartmentDefineMeasurment_Destroy([DataSourceRequest] DataSourceRequest request, MeasurementDefinition departmentLevelCriteria)
         {
             if (!CheckPerformanceValidation(departmentLevelCriteria.MeasurementDefinitionId))
             {
                 ModelState.AddModelError("", ErrorMessage);
             }
+
             if (ModelState.IsValid)
             {
-               
-                
                 var entity = GetMappedObject(departmentLevelCriteria);
-                #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted performance measurement definition information of evaluation criteria" + departmentLevelCriteria.EvaluationCriteria);
-                #endregion
+
+                // Log deletion
+                UserHelper.DeleteLog(
+                    Request.UserHostAddress,
+                    "Delete",
+                    "Success",
+                    User.Identity.Name,
+                    $"Deleted performance measurement definition: {departmentLevelCriteria.EvaluationCriteria}");
+
                 db.MeasurementDefinitions.Attach(entity);
                 db.MeasurementDefinitions.Remove(entity);
                 db.SaveChanges();
-              
             }
 
             return Json(new[] { departmentLevelCriteria }.ToDataSourceResult(request, ModelState));
         }
+
 
         private MeasurementDefinition GetMappedObject(MeasurementDefinition departmentLevelCriteria)
         {
@@ -256,6 +261,127 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             };
             return entity;
         }
+
+        public JsonResult AddCriteriaPerResponsiblityLevel(string evalutionTypeId)
+        {
+            var user = User.Identity.Name;
+            var orgId = UserInformationHelper.GetEmployeeDepartmentId(user);
+
+            // Validate LookupId input
+            if (!int.TryParse(evalutionTypeId, out int lookUpId))
+            {
+                return Json(new { Message = "Invalid Evaluation Type ID", status = "NOT-Ok" });
+            }
+
+            // Check if lookup exists
+            var lookUp = db.Lookups.Find(lookUpId);
+            if (lookUp == null)
+            {
+                return Json(new { Message = "Evaluation Type not found", status = "NOT-Ok" });
+            }
+
+            // Disallowed Evaluation Types
+            var disallowedTypes = new[]
+            {
+                EvaluationType.Sector_Result,
+                EvaluationType.Corporate_Result,
+                EvaluationType.Companylevel,
+                EvaluationType.Project_Manager
+
+            };
+
+            if (disallowedTypes.Contains(lookUp.EvalutionType))
+            {
+                return Json(new { Message = "You cannot add criteria for this Evaluation Type.", status = "NOT-Ok" });
+            }
+            var sourceDefinition = db.MeasurementDefinitions.Where(x => x.IsDepartmentLevel).FirstOrDefault(x => x.LookupId == lookUpId);
+            if (sourceDefinition == null)
+            {
+                return Json(new { Message = "Please select Evaluation Type", status = "NOT-Ok" });
+            }
+
+            // Get all existing roles for this LookupId
+            var existingRoles = db.MeasurementDefinitions
+                                  .Where(x => x.IsDepartmentLevel)
+                                  .Where(x => x.LookupId == lookUpId)
+                                  .Select(x => x.Role)
+                                  .ToList().Distinct();
+
+            // Loop through all enum values except already existing
+            foreach (ResponsibilityLevel level in Enum.GetValues(typeof(ResponsibilityLevel)))
+            {
+                if (level == ResponsibilityLevel.NOTSELECTED || existingRoles.Contains(level))
+                    continue;
+
+                var newDefinition = new MeasurementDefinition
+                {
+                    EvaluationCriteria = sourceDefinition.EvaluationCriteria,
+                    DefnPercentageofWeight = sourceDefinition.DefnPercentageofWeight,
+                    LookupId = sourceDefinition.LookupId,
+                    OrgStuructureId = orgId,
+                    CriteriaCategoryId = sourceDefinition.CriteriaCategoryId,
+                    EvalutionType = sourceDefinition.EvalutionType,
+                    Result = sourceDefinition.Result,
+                    Role = level,
+                    Remark = sourceDefinition.Remark,
+                    EmployeeId = sourceDefinition.EmployeeId,
+                    IsMainCompanyLevel = sourceDefinition.IsMainCompanyLevel,
+                    DateCreated = DateTime.Now,
+                    LastModified = sourceDefinition.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    IsDepartmentLevel = true,
+                    ModifiedBy = sourceDefinition.ModifiedBy
+                };
+
+                db.MeasurementDefinitions.Add(newDefinition);
+                db.SaveChanges(); // Save to get ID
+
+                // Clone Measurements
+                var sourceMeasurements = db.Measurements
+                                           .Where(x => x.MeasurementDefinitionId == sourceDefinition.MeasurementDefinitionId)
+                                           .ToList();
+
+                foreach (var measurement in sourceMeasurements)
+                {
+                    var newMeasurement = new Measurement
+                    {
+                        MeasurementName = measurement.MeasurementName,
+                        MesPercentageofWeight = measurement.MesPercentageofWeight,
+                        MeasurementDefinitionId = newDefinition.MeasurementDefinitionId,
+                        Remark = measurement.Remark,
+                        Result = measurement.Result
+                    };
+
+                    db.Measurements.Add(newMeasurement);
+                    db.SaveChanges();
+
+                    // Clone Performance Actions
+                    var sourceActions = db.PerformanceActions
+                                          .Where(x => x.MeasurementId == measurement.MeasurementId)
+                                          .ToList();
+
+                    foreach (var action in sourceActions)
+                    {
+                        var newAction = new PerformanceAction
+                        {
+                            ActionName = action.ActionName,
+                            AcPercentageofWeight = action.AcPercentageofWeight,
+                            Result = action.AcPercentageofWeight,
+                            MeasurementDefinitionId = newDefinition.MeasurementDefinitionId,
+                            MeasurementId = newMeasurement.MeasurementId,
+                            Remark = action.Remark
+                        };
+
+                        db.PerformanceActions.Add(newAction);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+
+            return Json(new { Message = "Successfully created for other roles", status = "Ok" });
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

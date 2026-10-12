@@ -5,9 +5,10 @@
 .OptionLabel( Resources.Select)
          .DataTextField("Name")
                     .DataValueField("GlFiscalYearId")
+                     .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                     .ServerFiltering(false);
                           })
                          .ValuePrimitive(true)

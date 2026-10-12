@@ -442,7 +442,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 
             if (ModelState.IsValid)
             {
-                var diff = (termination.TerminationDate - termination.ApplicationDate).Days;
+                var diff = (termination.TerminationDate.Value - termination.ApplicationDate).Days;
 
                 var entity = new Core.Domain.HRM.EmployeeDetail.Termination
                 {
@@ -603,7 +603,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                         EmployeeId = termination.EmployeeId,
                         LookupId = termination.LookupId,
                         Reason = termination.Reason,
-                        ApplicationDate = new DateTime(termination.TerminationDate.Year, termination.TerminationDate.Month, termination.TerminationDate.Day),
+                        ApplicationDate = new DateTime(termination.TerminationDate.Value.Year, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Day),
                         TerminationDate = termination.TerminationDate,
                         Remark = termination.Remark,
                         DateCreated = termination.DateCreated,

@@ -11,12 +11,12 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class TerminationObjectDataSource : List<EmployeeSummary>
+    public class TerminationObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetTerminationSummary(DateTime from, DateTime to, string branchId, string orgStructureId)
+        public List<EmployeeSummary> GetTerminationSummary(DateTime? from, DateTime? to, string branchId, string orgStructureId)
         {
             List<EmployeeSummary> list = new List<EmployeeSummary>();
             var employee = new EmployeeSummary();
@@ -27,18 +27,26 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             if (branchId != null)
             {
                 int.TryParse(branchId, out int braId);
+
                 var empIds = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).Select(x => x.EmployeeId);
                 terminations = terminations.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-            if (orgStructureId != null)
+            if (!string.IsNullOrEmpty(orgStructureId) && int.TryParse(orgStructureId, out int orgId))
             {
-                int.TryParse(orgStructureId, out int orgId);
-                var empIds = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId).Select(x => x.EmployeeId);
+                var empIds = placements
+                    .Where(x => x.OrgStructureId == orgId)
+                    .Select(x => x.EmployeeId)
+                    .Distinct();
+
                 terminations = terminations.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-            if (from.Date <= to.Date)
+            if (from.HasValue)
             {
-                terminations = terminations.Where(x => x.TerminationDate.Date >= from.Date && x.TerminationDate.Date <= to.Date).ToList();
+                terminations = terminations.Where(x => x.TerminationDate.Value.Date >= from.Value.Date ).ToList();
+            }
+            if (to.HasValue)
+            {
+                terminations = terminations.Where(x => x.TerminationDate.Value.Date <= to.Value.Date).ToList();
             }
 
             var males = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId);
@@ -52,6 +60,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             list.Add(employee);
             
             return list;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

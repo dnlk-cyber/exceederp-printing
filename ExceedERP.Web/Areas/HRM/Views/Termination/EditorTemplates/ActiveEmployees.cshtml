@@ -2,14 +2,15 @@
 @using ExceedERP.Core.Domain.Common
 @using ExceedERP.Core.Localization
 @(Html.Kendo().DropDownListFor(m => m)
-                .DataTextField("FullNameAmharic")
-                    .DataValueField("EmployeeId")
-                    .Filter("contains")
-                    .OptionLabel(Resources.Select)
-                .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
-                                  .ServerFiltering(false);
-                          })
-                     .ValuePrimitive(true)
+        .DataTextField("FullNameaEnglish")
+        .DataValueField("EmployeeId")
+        .Filter("contains")
+        .OptionLabel(Resources.Select)
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
+                .ServerFiltering(false);
+
+        })
+        .ValuePrimitive(true)
 )

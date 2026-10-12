@@ -27,7 +27,7 @@
                             .HtmlAttributes(new { style = "width:100%" })
                                              .DataSource(source =>
                                                                 {
-                                                                    source.Read(read => read.Action("GetEmployees", "HRMDataProvider"));
+                                                                    source.Read(read => read.Action("GetEmployees", "HRMDataProvider").Data("sendForgery"));
 
 
                                                                 })
@@ -118,7 +118,7 @@
                                    .ValuePrimitive(true)
                   .DataSource(dataSource =>
                   {
-                      dataSource.Read(read => read.Action("GetEducationFieldList", "HRMDataProvider", new { area = "HRM" }))
+                      dataSource.Read(read => read.Action("GetEducationFieldList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                           .ServerFiltering(false);
                   })
                            .ValuePrimitive(true)))
@@ -150,7 +150,7 @@
                                    .ValuePrimitive(true)
                   .DataSource(dataSource =>
                   {
-                      dataSource.Read(read => read.Action("GetEducationLevelList", "HRMDataProvider", new { area = "HRM" }))
+                      dataSource.Read(read => read.Action("GetEducationLevelList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                           .ServerFiltering(false);
                   })
                         .ValuePrimitive(true))

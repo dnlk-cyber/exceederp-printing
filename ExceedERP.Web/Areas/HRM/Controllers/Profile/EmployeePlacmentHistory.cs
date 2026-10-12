@@ -3,10 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.Common.Controllers;
-using ExceedERP.Web.Areas.HRM.Controllers.Company;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -16,6 +13,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -24,21 +22,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     public class EmployeePlacmentHistoryController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime From { get; set; }
-        public static DateTime To { get; set; }
-        public static string FromAmharic { get; set; }
-        public static string ToAmharic { get; set; }
         HRMInputs inputs = new HRMInputs();
         // GET: HRM/EmployeePlacmentHistories
         public ActionResult Index()
         {
             PopulateViewData();
-            GetOrganizations();
             return View();
         }
         private void PopulateViewData()
         {
             ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
+            var organizationUnits = db.MainCompanyStructures.Select(x=>new {
+                x.OrgStructureId,
+                x.Name
+            }).AsQueryable();
+            ViewData["organizationUnits"] = organizationUnits;
         }
         public void SetEmployeeId(string fullName)
         {
@@ -68,7 +66,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
         public ActionResult PlacementHistoriesCollections_Read([DataSourceRequest]DataSourceRequest request, int empId)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             IQueryable<PlacementHistory> placementhistories = db.PlacementHistories.Where(x => x.EmployeeId == empId);
             DataSourceResult result = placementhistories.ToDataSourceResult(request, placementHistory => new
             {
@@ -81,6 +78,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 Step = placementHistory.Step,
                 Salary = placementHistory.Salary,
                 LookupId = placementHistory.LookupId,
+                BranchId = placementHistory.BranchId,
                 Remark = placementHistory.Remark,
                 DateCreated = placementHistory.DateCreated,
                 LastModified = placementHistory.LastModified,
@@ -98,29 +96,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
         public ActionResult PlacementHistories_Read([DataSourceRequest]DataSourceRequest request, int empId)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+
             IQueryable<PlacementHistory> placementhistories = db.PlacementHistories.Where(x => x.EmployeeId == empId);
             DataSourceResult result = placementhistories.ToDataSourceResult(request, placementHistory => new
             {
                 PlacementHistoryId = placementHistory.PlacementHistoryId,
                 EmployeeId = placementHistory.EmployeeId,
-                From = placementHistory.From,
-                To = placementHistory.To,
-                JobTitle = placementHistory.JobTitle,
-                Rank = placementHistory.Rank,
-                Step = placementHistory.Step,
-                Salary = placementHistory.Salary,
+                BranchId = placementHistory.BranchId,
                 LookupId = placementHistory.LookupId,
-                Remark = placementHistory.Remark,
-                DateCreated = placementHistory.DateCreated,
-                LastModified = placementHistory.LastModified,
-                CreatedBy = placementHistory.CreatedBy,
-                ModifiedBy = placementHistory.ModifiedBy,
+                JobTitle = placementHistory.JobTitle,
                 FromAmharic = placementHistory.FromAmharic,
                 ToAmharic = placementHistory.ToAmharic,
                 EmployeeCode = placementHistory.EmployeeCode,
                 OrgBranchName = placementHistory.OrgBranchName,
-                EmployementType = placementHistory.EmployementType
+                EmployementType = placementHistory.EmployementType,
+                From = placementHistory.From,
+                To = placementHistory.To,
+                Rank = placementHistory.Rank,
+                Step = placementHistory.Step,
+                Salary = placementHistory.Salary,
+                Remark = placementHistory.Remark,
+                DateCreated = placementHistory.DateCreated,
+                LastModified = placementHistory.LastModified,
+                CreatedBy = placementHistory.CreatedBy,
+                ModifiedBy = placementHistory.ModifiedBy
+               
             });
 
             return Json(result);
@@ -134,46 +134,61 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             placementHistory.EmployeeId = empIdT;
 
-            if (placementHistory.FromAmharic != null)
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (datePreference)
             {
-                var splitDate = placementHistory.FromAmharic.Split('/');
-                placementHistory.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (string.IsNullOrWhiteSpace(placementHistory?.FromAmharic) ||
+                    string.IsNullOrWhiteSpace(placementHistory?.ToAmharic))
+                {
+                    ModelState.AddModelError("", "Both from and To Date fields are mandatory");
+                    return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+                }
+
+                placementHistory.From = HrHelper.ParseEthiopicDate(placementHistory.FromAmharic);
+                placementHistory.To = HrHelper.ParseEthiopicDate(placementHistory.ToAmharic);
             }
             else
             {
-                ModelState.AddModelError("", "From Date is required");
-            }
-            if (placementHistory.ToAmharic != null)
-            {
-                var splitDate = placementHistory.ToAmharic.Split('/');
-                placementHistory.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "To date is required");
+                placementHistory.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate( placementHistory.From.Day, 
+                                                                                        placementHistory.From.Month, 
+                                                                                        placementHistory.From.Year);
+                placementHistory.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(placementHistory.To.Day, 
+                                                                                    placementHistory.To.Month, 
+                                                                                    placementHistory.To.Year);
             }
 
-            if (placementHistory.From > placementHistory.To)
+
+            if (placementHistory.From.Date > placementHistory.To.Date)
             {
-                ModelState.AddModelError("", "Please check the date range, The year of experience should be non negative!!");
+                ModelState.AddModelError("",
+                        "Invalid date range: the 'From' date cannot be later than the 'To' date. Please enter a valid experience period.");
+                return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
             }
-            else if (placementHistory.From > DateTime.Now)
+            else if (placementHistory.From.Date > DateTime.Now.Date)
             {
 
                 ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+                return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
             }
-            else if (placementHistory.To > DateTime.Now)
+            else if (placementHistory.To.Date > DateTime.Now.Date)
             {
 
                 ModelState.AddModelError("", "End date should be less or equal to the current date!!");
+                return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
             }
-            
+
             var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == placementHistory.EmployeeId);
             if(person != null)
             {
-                if(placementHistory.From < person.HiredDate && !person.IsReHired)
+                if(placementHistory.From.Date < person.HiredDate.Date && !person.IsReHired)
                 {
-                    ModelState.AddModelError("","Internal Experience date should be after hire date");
+                    ModelState.AddModelError("",$"Internal Experience date should be after hire date ({person.HiredDate:dd.MM.yyyy})");
+                    return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
                 }
             }
 
@@ -183,9 +198,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 DateTime firstAssignment = placements.Select(x => x.AssignmentDate).Min();
                 if (firstAssignment.Year != 1 && person !=null && !person.IsReHired)
                 {
-                    if (placementHistory.From >= firstAssignment || placementHistory.To >= firstAssignment)
+                    if (placementHistory.From.Date >= firstAssignment.Date || placementHistory.To.Date >= firstAssignment.Date)
                     {
-                        ModelState.AddModelError("", "you can register only the experience before the system starts");
+                        ModelState.AddModelError("",
+                            $"You can register only experiences that occurred before the system start date ({firstAssignment:dd.MM.yyyy}). Please ensure both From and To dates are earlier than this date.");
+                        return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
                     }
                 }
             }
@@ -204,6 +222,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             if (histories.Any())
             {
                 ModelState.AddModelError("", "you have already Registered");
+                return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
 
             }
             if (ModelState.IsValid)
@@ -220,6 +240,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Step = placementHistory.Step,
                     Salary = placementHistory.Salary,
                     LookupId = placementHistory.LookupId,
+                    BranchId = placementHistory.BranchId,
                     Remark = placementHistory.Remark,
                     DateCreated = DateTime.Now,
                     LastModified = placementHistory.LastModified,
@@ -245,31 +266,39 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult PlacementHistories_Update([DataSourceRequest]DataSourceRequest request, PlacementHistory placementHistory)
         {
             ModelState.Clear();
-            if (placementHistory.FromAmharic != null)
+
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (datePreference)
             {
-                var splitDate = placementHistory.FromAmharic.Split('/');
-                placementHistory.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (string.IsNullOrWhiteSpace(placementHistory?.FromAmharic) ||
+                    string.IsNullOrWhiteSpace(placementHistory?.ToAmharic))
+                {
+                    ModelState.AddModelError("", "Both from and To Date fields are mandatory");
+                    return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+                }
+
+                placementHistory.From = HrHelper.ParseEthiopicDate(placementHistory.FromAmharic);
+                placementHistory.To = HrHelper.ParseEthiopicDate(placementHistory.ToAmharic);
             }
             else
             {
-                ModelState.AddModelError("", "From Date is required");
-            }
-            if (placementHistory.ToAmharic != null)
-            {
-                var splitDate = placementHistory.ToAmharic.Split('/');
-                placementHistory.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "To date is required");
+                placementHistory.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(placementHistory.From.Day,
+                                                                                        placementHistory.From.Month,
+                                                                                        placementHistory.From.Year);
+                placementHistory.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(placementHistory.To.Day,
+                                                                                    placementHistory.To.Month,
+                                                                                    placementHistory.To.Year);
             }
 
             var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placementHistory.EmployeeId);
             if (person != null&& !person.IsReHired)
             {
-                if (placementHistory.From < person.HiredDate)
+                if (placementHistory.From.Date < person.HiredDate.Date)
                 {
                     ModelState.AddModelError("", "Internal Experience date should be after hire date");
+                    return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
                 }
             }
 
@@ -279,9 +308,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 DateTime firstAssignment = placements.Select(x => x.AssignmentDate).Min();
                 if (firstAssignment.Year != 1)
                 {
-                    if (placementHistory.From >= firstAssignment || placementHistory.To >= firstAssignment && person != null && !person.IsReHired)
+                    if (placementHistory.From.Date >= firstAssignment.Date || placementHistory.To.Date >= firstAssignment.Date && person != null && !person.IsReHired)
                     {
-                        ModelState.AddModelError("", "you can register only the experience before the system starts");
+                        ModelState.AddModelError("",
+                            $"You can register only experiences that occurred before the system start date ({firstAssignment:dd.MM.yyyy}). Please ensure both From and To dates are earlier than this date.");
+                        return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
+
                     }
                 }
             }
@@ -311,6 +343,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Step = placementHistory.Step,
                     Salary = placementHistory.Salary,
                     LookupId = placementHistory.LookupId,
+                    BranchId = placementHistory.BranchId,
                     Remark = placementHistory.Remark,
                     DateCreated = placementHistory.DateCreated,
                     LastModified = DateTime.Now,
@@ -349,6 +382,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Step = placementHistory.Step,
                     Salary = placementHistory.Salary,
                     LookupId = placementHistory.LookupId,
+                    BranchId = placementHistory.BranchId,
                     Remark = placementHistory.Remark,
                     DateCreated = placementHistory.DateCreated,
                     LastModified = placementHistory.LastModified,
@@ -371,21 +405,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             return Json(new[] { placementHistory }.ToDataSourceResult(request, ModelState));
         }
 
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromAmharic")
-            {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else if (name == "ToAmharic")
-            {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-        }
+      
+      
         public JsonResult GetOrganizations()
         {
 

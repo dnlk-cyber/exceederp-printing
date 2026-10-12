@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
@@ -10,7 +11,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class LeaveOneByOneDetailObjectDataSource : List<LeaveOneByOne>
+    public class LeaveOneByOneDetailObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -42,8 +43,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         var entitlew =
                             db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == period && x.EmployeeId == id);
                         var taken =
-                            db.Leaves.Where(
-                                    x => x.GlFiscalYearId == period && x.EmployeeId == id /*&& x.LeaveType == LeaveType.ANNUAL*/)
+                            db.LeaveRequest.Where(
+                                    x => x.GlFiscalYearId == period 
+                                    && x.EmployeeId == id 
+                                    && !x.IsVoid
+                                    && x.Type == LeaveType.ANNUAL
+                                    && x.IsOnlineApproved)
                                 .ToList();
                         var employees = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
                         //ListOfEmployeeIdView.GetEmployees().FirstOrDefault(x => x.PersonId == id);
@@ -92,7 +97,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         //var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired).ToList();
 
 
-                        var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == id && x.GlFiscalYearId == period).ToList();
+                        var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == id && x.GlFiscalYearId == period).OrderBy(x=>x.LeaveEntitleId).ToList();
                         if (leaveEntitles.Any())
                         {
                             foreach (var leaveEntitle in leaveEntitles)
@@ -123,8 +128,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var t in taken)
                         {
                             var takenDetail = new LeaveTakenDetail();
-                            takenDetail.LeaveTakenAmount = t.Amount;
-                            takenDetail.LeaveType = t.LeaveType.ToString();
+                            takenDetail.LeaveTakenAmount = t.LeaveDays;
+                            takenDetail.LeaveType = t.Type.ToString();
                             var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == t.GlFiscalYearId);
                             if (year != null)
                             {
@@ -133,19 +138,30 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             takenDetail.LeaveTakenDateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(t.From.Day, t.From.Month, t.From.Year);//t.From.ToShortDateString();
                             takenDetail.LeaveTakenDateTo = XAPI.EthiopicDateTime.GetEthiopicDate(t.To.Day, t.To.Month, t.To.Year);//t.To.ToShortDateString();
-                            if (t.RequestId != null)
-                            {
-                                //var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.RequestId && x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave");
-                                //if (requestStatus != null)
-                                //{
-                                //    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == requestStatus.ApproverId);
-                                //    if (person != null)
-                                //    {
-                                //        takenDetail.Approver = person.FullNameaEnglish;
-                                //    }
-                                //}
+                          
+                                var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.LeaveRequestId
+                                && x.Status == RequestStatus.DEPARTMENT_APPROVAL
+                                && x.ReferenceType == "Leave");
+                                if (requestStatus != null)
+                                {
+                                 
+                                    takenDetail.DepartmentApprover = GetEmployeeFullName(requestStatus.ApproverId??0);
+                               
+                                  
+                                }
 
-                            }
+                            var requestStatusFinalApprove = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.LeaveRequestId
+                                && x.Status == RequestStatus.APPROVE
+                                && x.ReferenceType == "Leave");
+                                if (requestStatusFinalApprove != null)
+                                {
+                                 
+                                    takenDetail.Approver = GetEmployeeFullName(requestStatusFinalApprove.ApproverId ?? 0);
+                               
+                                  
+                                }
+
+                           
                             //var requestStatus = db.RequestesStatus.FirstOrDefault(x=>x. == );
 
                             sum.LeaveTakenDetails.Add(takenDetail);
@@ -157,6 +173,19 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
             }
             return summaries;
+        }
+        private string GetEmployeeFullName(int empid)
+        {
+            var person = db.Person_Employee.Find(empid);
+            if (person != null)
+            {
+                return person.FullNameaEnglish;
+            }
+            return null;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

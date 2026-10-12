@@ -8,6 +8,7 @@
         public decimal TotalAmountTaken { get; set; }
         public decimal Balance { get; set; }
         public decimal PainInCash { get; set; }
+        public decimal Salary { get; set; }
 
     }
 }

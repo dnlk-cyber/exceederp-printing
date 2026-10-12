@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -14,6 +14,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -24,7 +25,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         HrmConstants.HRDepartmentHead,
                         HrmConstants.HRPerformanceReport,
                         HrmConstants.HREmployeeSelfService)]
-    public class EvaluationCriteriaSecondDetailController : Controller
+    public class EvaluationCriteriaSecondDetailController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         string ErrorMessage = "";
@@ -128,23 +129,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 if (performanceAction.AcPercentageofWeight > measurement.MesPercentageofWeight)
                 {
-                    ModelState.AddModelError("", "The performance action weight should be less or equal to measurement weight!!");
+                    ModelState.AddModelError("", $"The performance action weight ={performanceAction.AcPercentageofWeight} should be less or equal to measurement weight{measurement.MesPercentageofWeight}!!");
+                    return Json(new[] { performanceAction }.ToDataSourceResult(request, ModelState));
+
                 }
-
-                var criteriaType = db.EvaluationCriteriaActionTypes.FirstOrDefault(x => x.IsActive);
-                if (criteriaType != null && criteriaType.PerformanceCriteriaActionType == PerformanceCriteriaActionType.Sum_Of_Actions)
+                var performanceAct = db.PerformanceActions.Where(x => x.MeasurementId == measurement.MeasurementId && x.ActionId != performanceAction.ActionId).ToList();
+                if (performanceAct.Any())
                 {
-                    var performanceAct = db.PerformanceActions.Where(x => x.MeasurementId == measurement.MeasurementId && x.ActionId != performanceAction.ActionId).ToList();
-                    if (performanceAct.Any())
-                    {
-                        var performanceActWeightSum = performanceAct.Sum(x => x.AcPercentageofWeight) + performanceAction.AcPercentageofWeight;
+                    var performanceActWeightSum = performanceAct.Sum(x => x.AcPercentageofWeight) + performanceAction.AcPercentageofWeight;
 
-                        if (performanceActWeightSum > measurement.MesPercentageofWeight)
-                        {
-                            ModelState.AddModelError("", "sum of your measurment weight can't exceed the paret weight");
-                        }
+                    if (performanceActWeightSum > measurement.MesPercentageofWeight)
+                    {
+                        ModelState.AddModelError("", $"sum of your measurment weight {measurement.MesPercentageofWeight} can't exceed the paret weight ={performanceActWeightSum}");
+                        return Json(new[] { performanceAction }.ToDataSourceResult(request, ModelState));
+
                     }
                 }
+                
             }
 
             if (ModelState.IsValid)

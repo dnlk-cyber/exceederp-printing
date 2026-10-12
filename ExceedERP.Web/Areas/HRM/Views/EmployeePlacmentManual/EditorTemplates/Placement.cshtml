@@ -5,7 +5,9 @@
 @using ExceedERP.Web.Areas.HRM.Controllers.Company
 @using Kendo.Mvc.UI
 @model ExceedERP.Core.Domain.HRM.EmployeeDetail.Placement
-
+@{
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
 <div class="form">
 
     <div class="row fullrow">
@@ -24,21 +26,21 @@
 
                     <div id="EmpIdDropdown_Id">
                         @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                                                      //  .Name("EmployeeId")
-                                                      .DataValueField("EmployeeId")
-                                                      .DataTextField("FullNameaEnglish")
-                                                      .OptionLabel(Resources.Select)
-                                                      .Filter("contains")
-                                                      // .MinLength(2)
-                                                      .HtmlAttributes(new { style = "width:240px" })
+                                        //  .Name("EmployeeId")
+                                        .DataValueField("EmployeeId")
+                                        .DataTextField("FullNameaEnglish")
+                                        .OptionLabel(Resources.Select)
+                                        .Filter("contains")
+                                        // .MinLength(2)
+                                        .HtmlAttributes(new { style = "width:240px" })
+                                        .Events(ev => ev.Change("autoCompleteHeadOnChange"))
+                                        .DataSource(source =>
+                                        {
 
-                                                       .DataSource(source =>
-                                                       {
-                                                                   //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
-                                                                   source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
-                                                          .ServerFiltering(true);
-                                                       })
-                                                      .ValuePrimitive(true)
+                                            source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
+                                            .ServerFiltering(true);
+                                        })
+                                        .ValuePrimitive(true)
                         )
                     </div>
 
@@ -61,7 +63,7 @@
                                   .ServerFiltering(true)
                                   .ServerPaging(true)
                                   .Type("aspnetmvc-ajax")
-                                  .Transport(transport => transport.Read(r => r.Action("GetEmployeesForPlacement", "HRMDataProvider")))
+                                  .Transport(transport => transport.Read(r => r.Action("GetEmployeesForPlacement", "HRMDataProvider").Data("sendForgery")))
                                   .Schema(schema =>
                                   {
                                       schema.Data("Data")
@@ -93,18 +95,19 @@
                 @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(m => m.BusinessUnitId)
-                                                          .ValuePrimitive(true)
-                                                          .AutoBind(false)
-                                                          .OptionLabel("Select Business Unit...")
-                                                          .DataTextField("Name")
-                                                          .DataValueField("Code")
-                                                          .HtmlAttributes(new { style = "width:240px" })
-                                                          .Filter("contains")
-                                                          .DataSource(dataSource =>
-                                                           {
-                                                               dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }))
-                                                                                     .ServerFiltering(false);
-                                                           })
+                                                                  .ValuePrimitive(true)
+                                                                  .AutoBind(false)
+                                                                  .OptionLabel("Select Business Unit...")
+                                                                  .DataTextField("Name")
+                                                                  .DataValueField("Code")
+                                                                  .HtmlAttributes(new { style = "width:240px" })
+                                                                  .Filter("contains")
+                                                                  .Events(ev => ev.Change("autoCompleteHeadOnChange"))
+                                                                  .DataSource(dataSource =>
+                                                                   {
+                                                                       dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
+                                                                                             .ServerFiltering(false);
+                                                                   })
                     )
                     @Html.ValidationMessageFor(model => model.BusinessUnitId, "", new { @class = "text-danger" })
                 </div>
@@ -114,18 +117,19 @@
                 @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(m => m.BranchId)
-                                              .DataTextField("Name")
-                                              .HtmlAttributes(new { style = "width:240px" })
-                                              .DataValueField("BranchId")
-                                              .Filter("contains")
-                                              .OptionLabel(Resources.Select)
-                                              //.CascadeFrom("BranchId")
-                                              .ValuePrimitive(true)
-                                              .DataSource(dataSource =>
-                                              {
-                                                  dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("filterBranch"))
-                                                      .ServerFiltering(true);
-                                              })
+                                                      .DataTextField("Name")
+                                                      .HtmlAttributes(new { style = "width:240px" })
+                                                      .DataValueField("BranchId")
+                                                      .Filter("contains")
+                                                      .OptionLabel(Resources.Select)
+                                                      //.CascadeFrom("BranchId")
+                                                      .Events(ev => ev.Change("autoCompleteHeadOnChange"))
+                                                      .ValuePrimitive(true)
+                                                      .DataSource(dataSource =>
+                                                      {
+                                                          dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterBranch"))
+                                                              .ServerFiltering(true);
+                                                      })
                     )
                 </div>
             </div>
@@ -134,24 +138,25 @@
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                                                .Filter("contains")
-                                                .OptionLabel(Resources.Select)
-                                                .MinLength(2)
-                                                .CascadeFrom("BranchId")
-                                                .DataTextField("Name")
-                                                .DataValueField("OrgStructureId")
-                                                .HtmlAttributes(new { style = "width:240px" })
-                                                .ValuePrimitive(true)
-                                                .Events(ev =>
-                                                {
-                                                    ev.DataBound("onDepartmentDataBound");
-                                                })
-                                                .DataSource(source =>
-                                                {
-                                                        // source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
-                                                        source.Read(read => read.Action("GetDepartmentsByBranchFromManPowerPlanning", "HRMDataProvider")
-                                                 .Data("filterDepartment")).ServerFiltering(true);
-                                                })
+                                                        .Filter("contains")
+                                                        .OptionLabel(Resources.Select)
+                                                        .MinLength(2)
+                                                        .CascadeFrom("BranchId")
+                                                        .DataTextField("Name")
+                                                        .DataValueField("OrgStructureId")
+                                                        .HtmlAttributes(new { style = "width:240px" })
+                                                        .Events(ev => ev.Change("autoCompleteHeadOnChange"))
+                                                        .ValuePrimitive(true)
+                                                        .Events(ev =>
+                                                        {
+                                                            ev.DataBound("onDepartmentDataBound");
+                                                        })
+                                                        .DataSource(source =>
+                                                        {
+                                                                // source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider").Data("sendForgery"));
+                                                                source.Read(read => read.Action("GetDepartmentsByBranchFromManPowerPlanning", "HRMDataProvider").Data("sendForgery")
+                                                         .Data("filterDepartment")).ServerFiltering(true);
+                                                        })
                             // .BindTo((IEnumerable)ViewData["organization"])
 
 
@@ -163,26 +168,26 @@
                 @Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(m => m.LookupId)
-                                                          .DataTextField("Description")
-                                                          .DataValueField("LookupId")
-                                                          .Filter("contains")
-                                                          .OptionLabel(Resources.Select)
-                                                          .HtmlAttributes(new { style = "width:240px" })
-                                                          .MinLength(2)
-                                                           .Events(e => e.Change("GetSalary"))
-                                                          .DataSource(source =>
-                                                          {
-                                                              source.Read(read =>
-                                                              {
-                                                                  read.Action("GetJobTitles", "HRMDataProvider")
-                                                                      .Data("filterCategories");
-                                                              })
-                                                                  .ServerFiltering(true);
-                                                          })
-                                                          // .Events(e => e.Change("GetSalary"))
-                                                          .CascadeFrom("OrgStructureId")
-                                                          .AutoBind(false)
-                                                          .Enable(false)
+                                                                  .DataTextField("Description")
+                                                                  .DataValueField("LookupId")
+                                                                  .Filter("contains")
+                                                                  .OptionLabel(Resources.Select)
+                                                                  .HtmlAttributes(new { style = "width:240px" })
+                                                                  .MinLength(2)
+                                                                   .Events(e => e.Change("GetSalary"))
+                                                                  .DataSource(source =>
+                                                                  {
+                                                                      source.Read(read =>
+                                                                      {
+                                                                          read.Action("GetJobTitles", "HRMDataProvider")
+                                                                              .Data("filterCategories");
+                                                                      })
+                                                                          .ServerFiltering(true);
+                                                                  })
+                                                                  // .Events(e => e.Change("GetSalary"))
+                                                                  .CascadeFrom("OrgStructureId")
+                                                                  .AutoBind(false)
+                                                                  .Enable(false)
                     )
                     @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
                 </div>
@@ -195,24 +200,29 @@
                 <div class="col-md-6">
 
                     @(Html.Kendo().DropDownListFor(model => model.HeadId)
-                                                  //  .Name("EmployeeId")
-                                                  .DataValueField("HeadId")
-                                                  .DataTextField("FullNameaEnglish")
-                                                  .OptionLabel(Resources.Select)
-                                                  .Filter("contains")
-                                                  // .MinLength(2)
-                                                  .HtmlAttributes(new { style = "width:240px" })
+                                                          //  .Name("EmployeeId")
+                                                          .DataValueField("HeadId")
+                                                          .DataTextField("FullNameaEnglish")
+                                                          .OptionLabel(Resources.Select)
+                                                          .Filter("contains")
+                                                          // .MinLength(2)
+                                                          .HtmlAttributes(new { style = "width:240px" })
 
-                                                   .DataSource(source =>
-                                                   {
-                                                       source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }))
-                                                       .ServerFiltering(false);
-                                                           // //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
-                                                           // source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }))
-                                                           //.ServerFiltering(false);
-                                                       })
-                                                  .ValuePrimitive(true)
+                                                           .DataSource(source =>
+                                                           {
+                                                               source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                                               .ServerFiltering(false);
+
+                                                           })
+                                                          .ValuePrimitive(true)
                     )
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.CheckCEO)
+                    @Html.ValidationMessageFor(model => model.CheckCEO, "", new { @class = "text-danger" })
 
                 </div>
             </div>
@@ -220,7 +230,7 @@
         </div>
 
         <div class="col-md-4 ro1">
-           <div class="form-group">
+            <div class="form-group">
                 <div class="col-md-6">
                     @Html.Kendo().CheckBoxFor(model => model.IsHead).HtmlAttributes(new { @onClick = "onHeadCheckBox(this.checked)" })
                     @Html.ValidationMessageFor(model => model.IsHead, "", new { @class = "text-danger" })
@@ -231,7 +241,7 @@
             <div class="form-group">
                 <div class="col-md-6">
                     @Html.Kendo().CheckBoxFor(model => model.isCurrent).Enable(false)
-                    @Html.ValidationMessageFor(model => model.isCurrent, "", new {  @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.isCurrent, "", new { @class = "text-danger" })
 
                 </div>
             </div>
@@ -239,23 +249,23 @@
                 @Html.LabelFor(model => model.ReportsTo, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(m => m.ReportsTo)
-                                      .DataTextField("Name")
-                                      .DataValueField("OrgStructureId")
-                                      .OptionLabel(Resources.Select)
-                                      .HtmlAttributes(new { style = "width:230px" })
-                                      .CascadeFrom("OrgStructureId")
-                                      .Filter("contains")
-                                      .Events(x=>x.Change("filterReportToStructurechange"))
-                                      .ValuePrimitive(true)
-                                      .DataSource(dataSource =>
-                                      {
-                                          //dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" })); Changed
-                                          //dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider"));
-                                          dataSource.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider").Data("filterReportToStructure"))
-                                          .ServerFiltering(true);
+                                              .DataTextField("Name")
+                                              .DataValueField("OrgStructureId")
+                                              .OptionLabel(Resources.Select)
+                                              .HtmlAttributes(new { style = "width:230px" })
+                                              .CascadeFrom("OrgStructureId")
+                                              .Filter("contains")
+                                              .Events(x => x.Change("filterReportToStructurechange"))
+                                              .ValuePrimitive(true)
+                                              .DataSource(dataSource =>
+                                              {
+                                                      //dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery")); Changed
+                                                      //dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider").Data("sendForgery"));
+                                                      dataSource.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider").Data("sendForgery").Data("filterReportToStructure"))
+                                                  .ServerFiltering(true);
 
 
-                                      })
+                                              })
 
                     )
                     @Html.ValidationMessageFor(model => model.ReportsTo, "", new { @class = "text-danger" })
@@ -283,15 +293,53 @@
 
                 </div>
             </div>
-            <div class="form-group">
-
-                @Html.LabelFor(model => model.AssignmentDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.AssignmentDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker", @style = "width: 200px"}) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
-                    @Html.ValidationMessageFor(model => model.AssignmentDateAmharic, "", new { @class = "text-danger" })
+            @if (useEthiopian)
+            {
+                <div class="form-group date-picker-container">
+                    @Html.LabelFor(model => model.AssignmentDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.AssignmentDateAmharic, new
+                        {
+                            disabled = "disabled",
+                            @class = "et-popup-picker",
+                            style = "width: 200px"
+                        })
+                        <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                        @Html.ValidationMessageFor(model => model.AssignmentDateAmharic, "", new { @class = "text-danger" })
+                    </div>
                 </div>
-            </div>
-           
+                <div class="form-group date-picker-container">
+                    @Html.LabelFor(model => model.SalarChangeDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.SalarChangeDateAmharic, new
+                        {
+                            disabled = "disabled",
+                            @class = "et-popup-picker",
+                            style = "width: 200px"
+                        })
+                        <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                        @Html.ValidationMessageFor(model => model.SalarChangeDateAmharic, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group gregorian-date-group">
+                    @Html.LabelFor(model => model.AssignmentDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-10">
+                        @Html.Kendo().DatePickerFor(model => model.AssignmentDate)
+                        @Html.ValidationMessageFor(model => model.AssignmentDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group gregorian-date-group">
+                    @Html.LabelFor(model => model.SalarChangeDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-10">
+                        @Html.Kendo().DatePickerFor(model => model.SalarChangeDate)
+                        @Html.ValidationMessageFor(model => model.SalarChangeDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            }
+
 
             <div class="row"></div>
         </div>
@@ -312,7 +360,7 @@
                                           .Events(e => e.Change("GetSalary"))
                                           .DataSource(dataSource =>
                                           {
-                                              dataSource.Read(read => read.Action("GetRank", "HRMDataProvider"));
+                                              dataSource.Read(read => read.Action("GetRank", "HRMDataProvider").Data("sendForgery"));
 
                                           }))
                 </div>
@@ -334,7 +382,7 @@
                           .Events(e => e.Change("GetSalary"))
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
+                              dataSource.Read(read => read.Action("GetStep", "HRMDataProvider").Data("sendForgery"));
 
 
                           }))

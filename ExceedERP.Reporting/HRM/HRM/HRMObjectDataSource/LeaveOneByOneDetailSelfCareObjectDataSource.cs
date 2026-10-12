@@ -11,7 +11,7 @@ using ExceedERP.Core.Domain.Common;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class LeaveOneByOneDetailSelfCareObjectDataSource : List<LeaveOneByOne>
+    public class LeaveOneByOneDetailSelfCareObjectDataSource : IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
 
@@ -20,8 +20,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<LeaveOneByOne> summaries = new List<LeaveOneByOne>();
             LeaveOneByOne sum = new LeaveOneByOne();
-
-            var personEmployee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId.ToString() == id);
+            int.TryParse(id, out int employeeId);
+            var personEmployee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeeId);
             if (personEmployee != null)
             {
                 if (periodNs != null)
@@ -42,9 +42,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                         var entitlew =
                             db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == period && x.EmployeeId == personEmployee.EmployeeId);
+                        //var taken =
+                        //    db.Leaves.Where(
+                        //            x => x.GlFiscalYearId == period && x.EmployeeId == personEmployee.EmployeeId/* && x.LeaveType == LeaveType.ANNUAL*/)
+                        //        .ToList();
                         var taken =
-                            db.Leaves.Where(
-                                    x => x.GlFiscalYearId == period && x.EmployeeId == personEmployee.EmployeeId/* && x.LeaveType == LeaveType.ANNUAL*/)
+                            db.LeaveRequest.Where(
+                                    x => x.GlFiscalYearId == period 
+                                    && x.IsOnlineApproved
+                                    && !x.IsVoid
+                                    && x.EmployeeId == personEmployee.EmployeeId 
+                                    && x.Type == LeaveType.ANNUAL)
                                 .ToList();
                         var employees = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == personEmployee.EmployeeId);
                            // ListOfEmployeeIdView.GetEmployees().FirstOrDefault(x => x.PersonId == personEmployee.EmployeeId);
@@ -77,7 +85,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             totalEntitle = entitles.Sum(x => x.Balance);
                         }
                         if (entitlew != null) sum.Entitlment = totalEntitle;// entitlew.Amount;
-                        sum.TotalAmountTaken = taken.Where(x => x.LeaveType == LeaveType.ANNUAL).Sum(x => x.Amount);
+                        sum.TotalAmountTaken = taken.Where(x => x.Type == LeaveType.ANNUAL).Sum(x => x.LeaveDays);
                         decimal subtract = sum.TotalAmountTaken + sum.LeavePaidInCash;
                         sum.Balance = totalEntitle;
 
@@ -113,8 +121,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var t in taken)
                         {
                             var takenDetail = new LeaveTakenDetail();
-                            takenDetail.LeaveTakenAmount = t.Amount;
-                            takenDetail.LeaveType = t.LeaveType.ToString();
+                            takenDetail.LeaveTakenAmount = t.LeaveDays;
+                            takenDetail.LeaveType = t.Type.ToString();
                             var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == t.GlFiscalYearId);
                             if (year != null)
                             {
@@ -122,20 +130,31 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             }
 
                             takenDetail.LeaveTakenDateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(t.From.Day, t.From.Month, t.From.Year);//t.From.ToShortDateString();
-                            takenDetail.LeaveTakenDateTo = XAPI.EthiopicDateTime.GetEthiopicDate(t.To.Day, t.To.Month, t.To.Year);//t.To.ToShortDateString();
-                            if (t.RequestId != null)
+                            takenDetail.LeaveTakenDateTo = XAPI.EthiopicDateTime.GetEthiopicDate(t.To.Day, t.To.Month, t.To.Year);//t.To.ToShortDateString();            
+                            var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.LeaveRequestId
+                               && x.Status == RequestStatus.DEPARTMENT_APPROVAL
+                               && x.ReferenceType == "Leave");
+                            if (requestStatus != null)
                             {
-                                var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.RequestId && x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave");
-                                if (requestStatus != null)
-                                {
-                                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == requestStatus.ApproverId);
-                                    if (person != null)
-                                    {
-                                        takenDetail.Approver = person.FullNameaEnglish;
-                                    }
-                                }
+
+                                takenDetail.DepartmentApprover = GetEmployeeFullName(requestStatus.ApproverId ?? 0);
+
 
                             }
+
+                            var requestStatusFinalApprove = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.LeaveRequestId
+                                && x.Status == RequestStatus.APPROVE
+                                && x.ReferenceType == "Leave");
+                            if (requestStatusFinalApprove != null)
+                            {
+
+                                takenDetail.Approver = GetEmployeeFullName(requestStatusFinalApprove.ApproverId ?? 0);
+
+
+                            }
+
+
+
                             //var requestStatus = db.RequestesStatus.FirstOrDefault(x=>x. == );
 
                             sum.LeaveTakenDetails.Add(takenDetail);
@@ -148,6 +167,19 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             }
             return summaries;
+        }
+        private string GetEmployeeFullName(int empid)
+        {
+            var person = db.Person_Employee.Find(empid);
+            if (person != null)
+            {
+                return person.FullNameaEnglish;
+            }
+            return null;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

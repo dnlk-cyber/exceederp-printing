@@ -105,6 +105,14 @@
     <Compile Include="Migrations\202610011359581_LiveEntitlementChangesMigration.Designer.cs">
       <DependentUpon>202610011359581_LiveEntitlementChangesMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610121415426_HRMChangesMigration.cs" />
+    <Compile Include="Migrations\202610121415426_HRMChangesMigration.Designer.cs">
+      <DependentUpon>202610121415426_HRMChangesMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202610121604099_HRMChangesMigration1.cs" />
+    <Compile Include="Migrations\202610121604099_HRMChangesMigration1.Designer.cs">
+      <DependentUpon>202610121604099_HRMChangesMigration1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -135,6 +143,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610011359581_LiveEntitlementChangesMigration.resx">
       <DependentUpon>202610011359581_LiveEntitlementChangesMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610121415426_HRMChangesMigration.resx">
+      <DependentUpon>202610121415426_HRMChangesMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610121604099_HRMChangesMigration1.resx">
+      <DependentUpon>202610121604099_HRMChangesMigration1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

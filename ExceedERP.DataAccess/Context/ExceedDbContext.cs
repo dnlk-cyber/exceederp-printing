@@ -133,6 +133,7 @@ using ExceedERP.Core.Domain.InfoDesk.ChangeManagement;
 using ExceedERP.Core.Domain.CRM.TenderManagement;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.Core.Domain.HRM.Payroll.BackPays;
+using ExceedERP.Core.Domain.HRM.HRMLoans;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -592,98 +593,134 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region HRM
-            modelBuilder.Configurations.Add(new EmployeePerformanceSummaryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new SalarySettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeExternalFundingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalSalaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DatePreferenceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeProbationSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmpPayrollNoDaysWorkedEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AllowanceGenerationSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AllowanceTypeRuleEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementAfterSystemtEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeaveEntitlementSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeaveEntitleStartingDateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new OverTimeSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DelegationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DelegationStepIncrementSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeavePlanValidationEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeavePlanFinalValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeePerformanceActionsEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ProbationPerformanceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeePerformanceSummaryEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new PerformanceEvaluationSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SubjectTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeCodeSequenceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeSalaryIncrementSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeCodeSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DeligationCCEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DelegationReasonEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ManPowerPlanningRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BusinessUnitEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SickLeaveSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new CompanyLeaveWorkflowSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ComplainDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ComplainCCEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProbationPerformanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProbationPerformanceValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProbationPerformanceDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveReturnEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveNewAwajStartYearEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RetirementSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TemplateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TemplateTypeSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LoanRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LoanRequestDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LoanRequestAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LoanRequestDepartmentValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LoanRequestValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ComplainResponseEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AppealEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CompanyEmailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ComplainEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new OverTimeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new OverTimeTransferEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new OverTimeTrasferDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new OverTimePerDayEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LoanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new RegularContributionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FixedContributionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new AssociationEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new AdditionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ComplainAttachementEntityTypeConfiguration());
+           
+            modelBuilder.Configurations.Add(new AllowanceSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AllowanceDefinationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AllowanceMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CourtAllowanceMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AllowancePerEmployeeEntityTypeConfiguration());
+           
             modelBuilder.Configurations.Add(new AttendanceNewEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AttendanceBioEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AttendanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AttendanceExceptionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DailyAttendanceSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WeeklyAttendanceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExperienceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CommitmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CompetencyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleCodeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TerminationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TerminationPMValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TerminationHRManagerValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PlacementWorkflowSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementHistoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveEntitleEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveEntitlementHistoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeaveTransferEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveEntitleStartingDateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveEntitlementSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveTypeSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new IncommingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OutgoingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new IncommingStatusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OutgoingStatusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProhibitionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RankEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new RecruitmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new StepEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SalaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmpTrainingEducationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new NeedAssessmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new NeedAssessmentAttachmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeesInAssessmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DisabilityEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CourseTrackingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingEvaluationCriteriaCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingEvaluationCriteriaEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingEvaluationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingNeedRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MainCompanyEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProvidedTrainingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MainCompanyStructureEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CosignEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantionFormEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ClearanceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new AdvanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LegacyEmployeeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeavePlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePlanValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePlanFinalValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableWithDetailFiscalYearEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeverancePayableSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeveranceCalculationSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeverancePayableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeverancePayableDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeveranceWithProbabilityEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new TrainingPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new RecruitmentPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new VacancyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new VacancyDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new VacancyLanguageEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExitInterviewEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeavePaidEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePaidDeductionDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SalaryJobTitleEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OtherBenefitEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeBenefitEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeBenefitDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DisciplineMeasuresEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DisciplineRecordEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CommitteeEntityTypeConfiguration());
@@ -697,40 +734,23 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new EmergencyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DisciplineMeasuresTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AbsenceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeAttendanceSummaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LateCommingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LateComingSummaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingStatusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeAssociationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PerformanceRankEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new DepartmentDefineMeasurmentEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new DepartmentMeasurmentEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new DepartmentPerformanceActionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeCourtAssociationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DisciplineMeasuerByMoneyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new QuarterLengthEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new QuarterEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeaveNewAwajStartYearEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeavePayableSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeavePayableEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeavePayableDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeavePayableWithDetailFiscalYearEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LeaveTypeSettingEntityTypeConfiguration());
-
-            modelBuilder.Configurations.Add(new SeveranceCalculationSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new SeverancePayableSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new SeverancePayableEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new SeverancePayableDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new SeveranceWithProbabilityEntityTypeConfiguration());
             #region Payroll Process
             modelBuilder.Configurations.Add(new BonusSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollProcessLongTermDeductionsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProvidentFundEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmpPayrollServiceChargeViewModelEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PeriodStatusEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EmpPayrollNoDaysWorkedEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollEmployeeCostCenterEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new AllowanceTypeRuleEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollProcessAllowancesEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollProcessAdditionsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmpPayrollDeductionEntityTypeConfiguration());
@@ -746,7 +766,6 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PayrollAccountsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OverTimeJobResultEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PerdimeSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new DelegationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ContributionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BonusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BackPaymentEntityTypeConfiguration());
@@ -754,30 +773,99 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new BackPaymentDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BackPaymentDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollPeriodEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EmployeeTypeEntityTypeConfiguration());
 
             #endregion
-
-
+            modelBuilder.Configurations.Add(new EmployeeTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SalarySettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new NeedAssessmentSummaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new NeedAssessmentSummaryDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingEvaluationBeforeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingEvaluationAfterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ActingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ActingAllowanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new GuarantorOrSuretyEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new GuarantorOrSuretyDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new GuarantorOrSuretyAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PromotionYearSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProbationsSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TerminationSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SickLeaveSalarySettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeCardEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeRewardEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DelegationBenefitSettingEntityTypeConfiguration());
             #region Performance
-
+            modelBuilder.Configurations.Add(new MainCompanyEvalutionSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeePerformanceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MeasurementDefinitionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MeasurementEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PerformanceActionEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new EmployeeMeasurementDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new CriteriaCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeMeasurementEntityTypeConfiguration());
-            // modelBuilder.Configurations.Add(new EmployeePerformanceActionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PerformanceRequestPeriodEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalCustomerPerformanceEvaluationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalCustomerEmployeePerformanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalCustomerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalCustomerEmployeeMeasurementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalCustomerEmployeePerformanceScoreEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PeerToPeerPerformanceEvaluationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PeerToPeerEmployeePerformanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PeerEmployeeMeasurementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PeerToPeerEmployeePerformanceScoreEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalCustomerDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ScreeningSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalApplicantsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalApplicantExamResultEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalApplicantScreeningEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalApplicantScreeningResultEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ApplicantScreeningResultAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PerformanceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProbationPerformanceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PerformanceAllowedScoreEntityTypeConfiguration());
+
             #endregion
+
             #region Recruitment
+            modelBuilder.Configurations.Add(new RecruitmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantRegistrationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantExamResultEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new ApplicantScreeningResultEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ClearanceProviderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ApplicantScreenResultEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalRecruitmentCriteriaTypeSettingEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new RecruitmentVacancyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantEducationEntityTypeConfiguration());
+            //recrutment 
+            modelBuilder.Configurations.Add(new RecruitmentRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentRequestProjectHRValidationConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentRequestPMValidationConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentRequestDepartmentValidationConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentRequestHRValidationConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentRequestDGMValidationConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentRequestGMValidationConfiguration());
+            modelBuilder.Configurations.Add(new RecruitmentRequestSecondValidationConfiguration());
+
+            modelBuilder.Configurations.Add(new InternalVacancyEligibilitySettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeTransferRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new CompanyApprovalSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TransferRequestDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TransferRequestValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TransferRequestGMValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TransferRequestDGMValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TransferRequestDepartmentValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeTransferAttachmentEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExperienceJobTitleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExperienceJobTitleDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EducationFieldDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RelatedEducationFieldDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EducationLevelDetailEntityTypeConfiguration());
+
             #endregion
+
             #region Company
+           
+            modelBuilder.Configurations.Add(new JobTitleAndRankMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingMianEntityTypeConfiguration());
@@ -787,33 +875,47 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new RegionNationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AnnouncmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AnnouncmentDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AnnouncmentAttachmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BranchCostCenterEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HolidayEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WeekendEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WeekendExceptionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ClearanceProviderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ClearanceProviderDetailEntityTypeConfiguration());
             #endregion
 
-            #region SelfCare
 
+
+            #region SelfCare
+            modelBuilder.Configurations.Add(new LeaveRequestAttachementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveRequestPMValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveRequestHRManagerValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExperienceRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingApplicantEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EducationRequestEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new RecruitmentRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EducationRequestAttachementEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantTrainingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingApplicantAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingApplicantSecondValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantExperienceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RequestesStatusEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new PromotionRequestEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExprianceRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OverTimeRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OverTimeRequestEmployeeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ClearanceRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ClearanceRequestApproverEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ClearanceRequestStatusEntityTypeConfiguration());
+
             #endregion
             modelBuilder.Configurations.Add(new EducationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BranchEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new StructureEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TraineeEntityTypeConfiguration());
-
+        
+           
             #endregion
-
             #region payroll
 
             modelBuilder.Entity<Association>().Property(e => e.Amount).HasPrecision(18, 4);
@@ -2775,46 +2877,56 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region HRM
-        public System.Data.Entity.DbSet<WeekendException> WeekendExceptions { get; set; }
-        public System.Data.Entity.DbSet<EmployeePerformanceSummary> EmployeePerformanceSummary { get; set; }
-        public System.Data.Entity.DbSet<LeavePayableSetting> LeavePayableSettings { get; set; }
-        public System.Data.Entity.DbSet<LeavePayable> LeavePayables { get; set; }
-        public System.Data.Entity.DbSet<LeavePayableDetail> LeavePayableDetails { get; set; }
-        public System.Data.Entity.DbSet<SeveranceWithProbability> SeveranceWithProbabilities { get; set; }
-        public System.Data.Entity.DbSet<SeverancePayableDetail> SeverancePayableDetails { get; set; }
-        public System.Data.Entity.DbSet<SeverancePayable> SeverancePayables { get; set; }
-        public System.Data.Entity.DbSet<SeverancePayableSetting> SeverancePayableSettings { get; set; }
-        public System.Data.Entity.DbSet<SeveranceCalculationSetting> SeveranceCalculationSettings { get; set; }
-        public System.Data.Entity.DbSet<LeaveTypeSetting> LeaveTypeSettings { get; set; }
-
-
         #region Company
-        public System.Data.Entity.DbSet<ClearanceProviderDetail> ClearanceProviderDetails { get; set; }
-        public System.Data.Entity.DbSet<ClearanceRequest> ClearanceRequests { get; set; }
-        public System.Data.Entity.DbSet<ClearanceRequestApprover> ClearanceRequestApprovers { get; set; }
-        public System.Data.Entity.DbSet<ClearanceRequestStatus> ClearanceRequestStatus { get; set; }
-        public System.Data.Entity.DbSet<SalarySetting> SalarySettings { get; set; }
-        public System.Data.Entity.DbSet<WaterMark> WaterMarks { get; set; }
-        public System.Data.Entity.DbSet<ManPowerPlanningRequest> ManPowerPlanningRequests { get; set; }
-        public System.Data.Entity.DbSet<BusinessUnit> BusinessUnits { get; set; }
-        public System.Data.Entity.DbSet<MainCompany> Companies { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.Common.HRM.CompanyEmail> CompanyEmails { get; set; }
-        public System.Data.Entity.DbSet<MainCompanyStructure> MainCompanyStructures { get; set; }
-        public System.Data.Entity.DbSet<Branch> Branch { get; set; }
-        public System.Data.Entity.DbSet<JobTitleMappingDetail> JobTitleMappingDetail { get; set; }
-        public System.Data.Entity.DbSet<JobTitleMappingMain> JobTitleMappingMian { get; set; }
-        public System.Data.Entity.DbSet<JobTitleMappingDetailTemp> JobTitleMappingDetailTemp { get; set; }
-        public System.Data.Entity.DbSet<JobTitleMappingMainTemp> JobTitleMappingMainTemp { get; set; }
-        public System.Data.Entity.DbSet<RegionNation> RegionNation { get; set; }
-        public System.Data.Entity.DbSet<BranchCostCenter> BranchCostCenter { get; set; }
-        public System.Data.Entity.DbSet<Announcment> Announcmentes { get; set; }
-        public System.Data.Entity.DbSet<AnnouncmentDetail> AnnouncmentDetails { get; set; }
-        public System.Data.Entity.DbSet<Holiday> Holidays { get; set; }
-        public System.Data.Entity.DbSet<Weekend> Weekends { get; set; }
-        public System.Data.Entity.DbSet<QuarterLength> QuarterLengths { get; set; }
-        public System.Data.Entity.DbSet<Quarter> Quarters { get; set; }
-        public System.Data.Entity.DbSet<DatePreferenceSetting> DatePreferenceSettings { get; set; }
-        #endregion
+       
+        public DbSet<JobTitleAndRankMapping> JobTitleAndRankMappings { get; set; }
+        public DbSet<ManPowerPlanningRequest> ManPowerPlanningRequests { get; set; }
+        public DbSet<BusinessUnit> BusinessUnits { get; set; }
+        public DbSet<MainCompany> Companies { get; set; }
+        public DbSet<ProvidedTraining> ProvidedTrainings { get; set; }
+        public DbSet<ExceedERP.Core.Domain.Common.HRM.CompanyEmail> CompanyEmails { get; set; }
+        public DbSet<MainCompanyStructure> MainCompanyStructures { get; set; }
+        public DbSet<Branch> Branch { get; set; }
+        public DbSet<JobTitleMappingDetail> JobTitleMappingDetail { get; set; }
+        public DbSet<JobTitleMappingMain> JobTitleMappingMian { get; set; }
+        public DbSet<JobTitleMappingDetailTemp> JobTitleMappingDetailTemp { get; set; }
+        public DbSet<JobTitleMappingMainTemp> JobTitleMappingMainTemp { get; set; }
+        public DbSet<RegionNation> RegionNation { get; set; }
+        public DbSet<BranchCostCenter> BranchCostCenter { get; set; }
+        public DbSet<Announcment> Announcmentes { get; set; }
+        public DbSet<AnnouncmentDetail> AnnouncmentDetails { get; set; }
+        public DbSet<AnnouncmentAttachment> AnnouncmentAttachments { get; set; }
+        public DbSet<Holiday> Holidays { get; set; }
+        public DbSet<Weekend> Weekends { get; set; }
+        public DbSet<WeekendException> WeekendExceptions { get; set; }
+        public DbSet<QuarterLength> QuarterLengths { get; set; }
+        public DbSet<Quarter> Quarters { get; set; }
+        public DbSet<SalarySetting> SalarySettings { get; set; }
+        #endregion       
+        #region Allowance
+        public DbSet<AllowanceSetting> AllowanceSettings { get; set; }
+        public DbSet<AllowanceDefination> AllowanceDefinations { get; set; }
+        public DbSet<AllowanceMapping> AllowanceMappings { get; set; }
+        public DbSet<CourtAllowanceMapping> CourtAllowanceMappings { get; set; }
+        public DbSet<AllowancePerEmployee> AllowancePerEmployees { get; set; }
+        public DbSet<OtherBenefit> OtherBenefits { get; set; }
+        public DbSet<EmployeeBenefit> EmployeeBenefits { get; set; }
+        public DbSet<EmployeeBenefitDetail> EmployeeBenefitDetails { get; set; }
+        public DbSet<TrainingEvaluationBefore> TrainingEvaluationBefores { get; set; }
+        public DbSet<TrainingEvaluationAfter> TrainingEvaluationAfters { get; set; }
+        public DbSet<Acting> Actings { get; set; }
+        public DbSet<ActingAllowance> ActingAllowances { get; set; }
+        public DbSet<GuarantorOrSurety> GuarantorOrSureties { get; set; }
+        public DbSet<GuarantorOrSuretyDetail> GuarantorOrSuretyDetails { get; set; }
+        public DbSet<GuarantorOrSuretyAttachment> GuarantorOrSuretyAttachments { get; set; }
+        public DbSet<PromotionYearSetting> PromotionYearSettings { get; set; }
+        public DbSet<ProbationsSetting> ProbationsSettings { get; set; }
+        public DbSet<TerminationSetting> TerminationSettings { get; set; }
+        public DbSet<SickLeaveSalarySetting> SickLeaveSalarySettings { get; set; }
+        public DbSet<EmployeeCard> EmployeeCards { get; set; }
+        public DbSet<EmployeeReward> EmployeeRewards { get; set; }
+        public DbSet<EmployeeProbationSetting> EmployeeProbationSettings { get; set; }
+
         #region Payroll
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2902,86 +3014,113 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Setting.PayrollEmployeeAccount> PayrollEmployeeAccounts { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Setting.PayrollAccounts> PayrollAccounts { get; set; }
         public System.Data.Entity.DbSet<Delegation> Delegations { get; set; }
+        public System.Data.Entity.DbSet<DelegationStepIncrementSetting> DelegationStepIncrementSettings { get; set; }
 
         #endregion
-        #region Allowance
-        public System.Data.Entity.DbSet<AllowanceDefination> AllowanceDefinations { get; set; }
-        public System.Data.Entity.DbSet<AllowanceMapping> AllowanceMappings { get; set; }
-        public System.Data.Entity.DbSet<CourtAllowanceMapping> CourtAllowanceMappings { get; set; }
-        public System.Data.Entity.DbSet<AllowancePerEmployee> AllowancePerEmployees
-        {
-            get;
-            set;
-        }
-        public System.Data.Entity.DbSet<OtherBenefit> OtherBenefits { get; set; }
-        #endregion
 
+
+        #endregion
+       
         #region Attendance
-        public System.Data.Entity.DbSet<Attendance> Attendances { get; set; }
-        public System.Data.Entity.DbSet<WeeklyAttendance> WeeklyAttendances { get; set; }
-        public System.Data.Entity.DbSet<LateComming> LateCommings { get; set; }
-        public System.Data.Entity.DbSet<LateComingSummary> LateComingSummaries { get; set; }
-        public System.Data.Entity.DbSet<Absence> Absence { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<WeeklyAttendance> WeeklyAttendances { get; set; }
+        public DbSet<LateComming> LateCommings { get; set; }
+        public DbSet<LateComingSummary> LateComingSummaries { get; set; }
+        public DbSet<Absence> Absence { get; set; }
+        public DbSet<EmployeeAttendanceSummary> EmployeeAttendanceSummaries { get; set; }
+        public DbSet<AttendanceBio> AttendanceBios { get; set; }
+        public DbSet<AttendanceException> AttendanceExceptions { get; set; }
+        public DbSet<DailyAttendanceSetting> DailyAttendanceSettings { get; set; }
         #endregion
-
         #region Employee Detail
-        public System.Data.Entity.DbSet<EmployeeType> EmployeeTypes { get; set; }
-        public System.Data.Entity.DbSet<EmployeeCodeSequenceSetting> EmployeeCodeSequenceSettings { get; set; }
-        public System.Data.Entity.DbSet<EmployeeCodeSetting> EmployeeCodeSettings { get; set; }
-        public System.Data.Entity.DbSet<ComplainResponse> ComplainResponses { get; set; }
-        public System.Data.Entity.DbSet<Person_Employee> Person_Employee { get; set; }
-        public System.Data.Entity.DbSet<Complain> Complains { get; set; }
+       
+        public DbSet<EmployeeCodeSequenceSetting> EmployeeCodeSequenceSettings { get; set; }
+        public DbSet<EmployeeCodeSetting> EmployeeCodeSettings { get; set; }
+        public DbSet<EmployeeSalaryIncrementSetting> EmployeeSalaryIncrementSettings { get; set; }
+        public DbSet<ComplainResponse> ComplainResponses { get; set; }
+        public DbSet<Person_Employee> Person_Employee { get; set; }
+        public DbSet<LegacyEmployee> LegacyEmployees { get; set; }
+        public DbSet<EmployeeExternalFunding> EmployeeExternalFundings { get; set; }
+        public DbSet<ExternalSalary> ExternalSalaries { get; set; }
+        public DbSet<Complain> Complains { get; set; }
+        public DbSet<ComplainAttachement> ComplainAttachements { get; set; }
 
-        public System.Data.Entity.DbSet<Experience> Experiences { get; set; }
-        public System.Data.Entity.DbSet<Commitment> Commitments { get; set; }
-        public System.Data.Entity.DbSet<Competency> Competencies { get; set; }
-        public System.Data.Entity.DbSet<JobTitleCode> JobTitleCodes { get; set; }
-        public System.Data.Entity.DbSet<Termination> Terminations { get; set; }
-        public System.Data.Entity.DbSet<ExitInterview> ExitInterviews { get; set; }
-        public System.Data.Entity.DbSet<Disability> Disabilities { get; set; }
-        public System.Data.Entity.DbSet<Placement> Placements { get; set; }
-        public System.Data.Entity.DbSet<PlacementHistory> PlacementHistories { get; set; }
-        public System.Data.Entity.DbSet<PlacementAfterSystem> PlacementAfterSystems { get; set; }
-        public System.Data.Entity.DbSet<Cosign> Cosigns { get; set; }
-        public System.Data.Entity.DbSet<Committee> Committees { get; set; }
-        public System.Data.Entity.DbSet<CommitteeMember> CommitteeMembers { get; set; }
-        public System.Data.Entity.DbSet<CommitteMinute> CommitteMinutes { get; set; }
-        public System.Data.Entity.DbSet<Clearance> Clearances { get; set; }
-        public System.Data.Entity.DbSet<ApplicantionForm> ApplicantionFormes { get; set; }
+        public DbSet<Experience> Experiences { get; set; }
+        public DbSet<Commitment> Commitments { get; set; }
+        public DbSet<Competency> Competencies { get; set; }
+        public DbSet<JobTitleCode> JobTitleCodes { get; set; }
+        public DbSet<Termination> Terminations { get; set; }
 
-        public System.Data.Entity.DbSet<Emergency> Emergencies { get; set; }
-        public System.Data.Entity.DbSet<Contract> Contract { get; set; }
-        public System.Data.Entity.DbSet<EmployeeAssociation> EmployeeAssociation { get; set; }
-        public System.Data.Entity.DbSet<EmployeeCourtAssociation> EmployeeCourtAssociation { get; set; }
+        public DbSet<TerminationPMValidation> TerminationPMValidations { get; set; }
+
+        public DbSet<TerminationHRManagerValidation> TerminationHRManagerValidations { get; set; }
+
+        public DbSet<ExitInterview> ExitInterviews { get; set; }
+        public DbSet<Disability> Disabilities { get; set; }
+        public DbSet<Placement> Placements { get; set; }
+        public DbSet<PlacementWorkflowSetting> PlacementWorkflowSettings { get; set; }
+        public DbSet<PlacementHistory> PlacementHistories { get; set; }
+        public DbSet<PlacementAfterSystem> PlacementAfterSystems { get; set; }
+        public DbSet<Cosign> Cosigns { get; set; }
+        public DbSet<Committee> Committees { get; set; }
+        public DbSet<CommitteeMember> CommitteeMembers { get; set; }
+        public DbSet<CommitteMinute> CommitteMinutes { get; set; }
+        public DbSet<Clearance> Clearances { get; set; }
+        public DbSet<ApplicantionForm> ApplicantionFormes { get; set; }
+        public DbSet<Emergency> Emergencies { get; set; }
+        public DbSet<Contract> Contract { get; set; }
+        public DbSet<EmployeeAssociation> EmployeeAssociation { get; set; }
+        public DbSet<EmployeeCourtAssociation> EmployeeCourtAssociation { get; set; }
+        public DbSet<EmployeeType> EmployeeTypes { get; set; }
         #endregion
-
         #region Leave Management
-        public System.Data.Entity.DbSet<LeaveEntitlementSetting> LeaveEntitlementSettings { get; set; }
-        public System.Data.Entity.DbSet<LeaveEntitleStartingDate> LeaveEntitleStartingDates { get; set; }
-        public System.Data.Entity.DbSet<LeaveNewAwajStartYear> LeaveNewAwajStartYears { get; set; }
-        public System.Data.Entity.DbSet<MonthlyLeavePlan> MonthlyLeavePlans { get; set; }
-        public System.Data.Entity.DbSet<MonthlyLeavePlanDetail> MonthlyLeavePlanDetails { get; set; }
-        public System.Data.Entity.DbSet<Leave> Leaves { get; set; }
-        public System.Data.Entity.DbSet<LeaveEntitle> LeavesEntitle { get; set; }
+        public DbSet<LeaveEntitleStartingDate> LeaveEntitleStartingDates { get; set; }
+        public DbSet<LeaveEntitlementSetting> LeaveEntitlementSettings { get; set; }
+        public DbSet<LeaveTypeSetting> LeaveTypeSettings { get; set; }
+        public DbSet<MonthlyLeavePlan> MonthlyLeavePlans { get; set; }
+        public DbSet<MonthlyLeavePlanDetail> MonthlyLeavePlanDetails { get; set; }
+        public DbSet<Leave> Leaves { get; set; }
+        public DbSet<LeaveEntitle> LeavesEntitle { get; set; }
         public DbSet<LeaveEntitlementHistory> LeaveEntitlementHistories { get; set; }
+        public DbSet<LeavePayableSetting> LeavePayableSettings { get; set; }
+        public DbSet<LeavePayable> LeavePayables { get; set; }
+        public DbSet<LeavePayableDetail> LeavePayableDetails { get; set; }
+        public DbSet<LeavePayableWithDetailFiscalYear> LeavePayableWithDetailFiscalYears { get; set; }
+        public DbSet<LeaveReturn> LeaveReturns { get; set; }
+        public DbSet<LeavePaid> LeavePaid { get; set; }
+        public DbSet<LeavePaidDeductionDetail> LeavePaidDeductionDetails { get; set; }
+        public DbSet<LeaveUsageTrackingForVoid> LeaveUsageTrackingForVoids { get; set; }
+        public DbSet<LeaveNewAwajStartYear> LeaveNewAwajStartYears { get; set; }
 
         public System.Data.Entity.DbSet<LeaveTransfer> LeaveTransfer { get; set; }
-        public System.Data.Entity.DbSet<LeavePaid> LeavePaid { get; set; }
-        public System.Data.Entity.DbSet<LeaveUsageTrackingForVoid> LeaveUsageTrackingForVoids { get; set; }
         #endregion
+        #region Severance
+        public DbSet<SeverancePayableSetting> SeverancePayableSettings { get; set; }
+        public DbSet<SeveranceCalculationSetting> SeveranceCalculationSettings { get; set; }
+        public DbSet<SeverancePayable> SeverancePayables { get; set; }
+        public DbSet<SeverancePayableDetail> SeverancePayableDetails { get; set; }
+        public DbSet<SeveranceWithProbability> SeveranceWithProbabilities { get; set; }
 
+        #endregion
         #region Lettres
-        public System.Data.Entity.DbSet<Incomming> Incomming { get; set; }
-        public System.Data.Entity.DbSet<Outgoing> Outgoing { get; set; }
-        public System.Data.Entity.DbSet<OutgoingStatus> OutgoingStatus { get; set; }
-        public System.Data.Entity.DbSet<IncommingStatus> IncommingStatus { get; set; }
+        public DbSet<Incomming> Incomming { get; set; }
+        public DbSet<Outgoing> Outgoing { get; set; }
+        public DbSet<OutgoingStatus> OutgoingStatus { get; set; }
+        public DbSet<IncommingStatus> IncommingStatus { get; set; }
         #endregion
-
         #region PerformanceManagment
         public DbSet<MainCompanyEvalutionSetting> MainCompanyEvalutionSettings { get; set; }
-        public System.Data.Entity.DbSet<PerformanceSetting> PerformanceSettings { get; set; }
-        public System.Data.Entity.DbSet<CriteriaCategory> CriteriaCategories { get; set; }
-        public System.Data.Entity.DbSet<InternalCustomerDetail> InternalCustomerDetails { get; set; }
+        public DbSet<EmployeePerformanceScore> EmployeePerformanceScores { get; set; }
+
+        public DbSet<MeasurementDefinition> MeasurementDefinitions { get; set; }
+        public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<PerformanceAction> PerformanceActions { get; set; }
+        public DbSet<EmployeePerformance> EmployeePerformances { get; set; }
+        public DbSet<EmployeePerformanceSummary> EmployeePerformanceSummary { get; set; }
+
+        public System.Data.Entity.DbSet<EmployeeMeasurement> EmployeeMeasurement { get; set; }
+        public DbSet<PerformanceRank> PerformanceRank { get; set; }
+        public DbSet<EvaluationCriteriaActionType> EvaluationCriteriaActionTypes { get; set; }
         public DbSet<PerformanceRequestPeriod> PerformanceRequestPeriods { get; set; }
         public DbSet<PeerToPeerPerformanceEvaluation> PeerToPeerPerformanceEvaluations { get; set; }
         public DbSet<InternalCustomerPerformanceEvaluation> InternalCustomerPerformanceEvaluations { get; set; }
@@ -2992,104 +3131,112 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PeerToPeerEmployeePerformance> PeerToPeerEmployeePerformances { get; set; }
         public DbSet<PeerEmployeeMeasurement> PeerEmployeeMeasurements { get; set; }
         public DbSet<PeerToPeerEmployeePerformanceScore> PeerToPeerEmployeePerformanceScores { get; set; }
-        public DbSet<EvaluationCriteriaActionType> EvaluationCriteriaActionTypes { get; set; }
-        public DbSet<EmployeePerformanceScore> EmployeePerformanceScores { get; set; }
+        public DbSet<InternalCustomerDetail> InternalCustomerDetails { get; set; }
+        public DbSet<CriteriaCategory> CriteriaCategories { get; set; }
         public DbSet<ProbationPerformanceSetting> ProbationPerformanceSettings { get; set; }
-        public DbSet<EmployeeProbationSetting> EmployeeProbationSettings { get; set; }
-        public DbSet<MeasurementDefinition> MeasurementDefinitions { get; set; }
-        public DbSet<Measurement> Measurements { get; set; }
-        public DbSet<PerformanceAction> PerformanceActions { get; set; }
-        public DbSet<EmployeePerformance> EmployeePerformances { get; set; }
+        public DbSet<PerformanceAllowedScore> PerformanceAllowedScores { get; set; }
+        public DbSet<PerformanceSetting> PerformanceSettings { get; set; }
+        public DbSet<PerformanceEvaluationSetting> PerformanceEvaluationSettings { get; set; }
+        public DbSet<EmployeePeerToPeerAndInternalCustomerPerformanceSetting> EmployeePeerToPeerAndInternalCustomerPerformanceSettings { get; set; }
         public DbSet<EmployeeMeasurementDefinition> EmployeeMeasurementDefinition { get; set; }
-        public DbSet<EmployeeMeasurement> EmployeeMeasurement { get; set; }
         public DbSet<EmployeePerformanceAction> EmployeePerformanceAction { get; set; }
-        public DbSet<PerformanceRank> PerformanceRank { get; set; }
-        //public DbSet<DepartmentDefineMeasurment> DepartmentDefineMeasurments { get; set; }
-        //public DbSet<DepartmentMeasurment> DepartmentMeasurments { get; set; }
-        //public DbSet<DepartmentPerformanceAction> DepartmentPerformanceActions { get; set; }
-        public System.Data.Entity.DbSet<EmployeePeerToPeerAndInternalCustomerPerformanceSetting> EmployeePeerToPeerAndInternalCustomerPerformanceSettings { get; set; }
+
 
         #endregion
-
         #region Plan
-        public DbSet<TrainingNeedRequest> TrainingNeedRequests { get; set; }
 
-        public System.Data.Entity.DbSet<LeavePlan> LeavePlans { get; set; }
-        public System.Data.Entity.DbSet<LeavePlanValidation> LeavePlanValidation { get; set; }
-        public System.Data.Entity.DbSet<LeavePlanFinalValidation> LeavePlanFinalValidation { get; set; }
+        public DbSet<LeavePlan> LeavePlans { get; set; }
+        public DbSet<LeavePlanValidation> LeavePlanValidation { get; set; }
+        public DbSet<LeavePlanFinalValidation> LeavePlanFinalValidation { get; set; }
 
-        public System.Data.Entity.DbSet<RecruitmentPlan> RecruitmentPlans { get; set; }
-        public System.Data.Entity.DbSet<TrainingPlan> TrainingPlans { get; set; }
-        public System.Data.Entity.DbSet<Vacancy> VaccancyPlans { get; set; }
-
-        public System.Data.Entity.DbSet<ApplicantDetail> ApplicantDetails { get; set; }
+        public DbSet<TrainingPlan> TrainingPlans { get; set; }
         public System.Data.Entity.DbSet<ExamTypeSetting> ExamTypeSettings { get; set; }
-        public System.Data.Entity.DbSet<CheckUp> CheckUps { get; set; }
-        public System.Data.Entity.DbSet<ApplicantRegistration> ApplicantRegistration { get; set; }
-        public System.Data.Entity.DbSet<ApplicantExamResult> ApplicantExamResult { get; set; }
-        //public System.Data.Entity.DbSet<ApplicantScreeningResult> ApplicantScreeningResult { get; set; }
-        public System.Data.Entity.DbSet<ApplicantScreenResult> ApplicantScreenResults { get; set; }
-        public System.Data.Entity.DbSet<InternalApplicantScreening> InternalApplicantScreenings { get; set; }
-        public System.Data.Entity.DbSet<InternalApplicantScreeningResult> InternalApplicantScreeningResults { get; set; }
-        public System.Data.Entity.DbSet<InternalApplicantExamResult> InternalApplicantExamResults { get; set; }
 
-        public System.Data.Entity.DbSet<ApplicantScreening> ApplicantScreenings { get; set; }
+
+
         #endregion
-
         #region Prohibition
-        public System.Data.Entity.DbSet<Prohibition> Prohibitions { get; set; }
+        public DbSet<Prohibition> Prohibitions { get; set; }
         #endregion
-
         #region Range
 
         #endregion
 
         #region RecruitmentManagment
-        public System.Data.Entity.DbSet<EmployeeTransferRequest> EmployeeTransferRequests { get; set; }
-        public System.Data.Entity.DbSet<TransferRequestDetail> TransferRequestDetails { get; set; }
-        public System.Data.Entity.DbSet<TransferRequestValidation> TransferRequestValidations { get; set; }
-        public System.Data.Entity.DbSet<TransferRequestDepartmentValidation> TransferRequestDepartmentValidations { get; set; }
+
+        public DbSet<ApplicantDetail> ApplicantDetails { get; set; }
+        public DbSet<InternalRecruitmentCriteriaTypeSetting> InternalRecruitmentCriteriaTypeSettings { get; set; }
+        public DbSet<CheckUp> CheckUps { get; set; }
+        public DbSet<ApplicantRegistration> ApplicantRegistration { get; set; }
+        public DbSet<ApplicantExamResult> ApplicantExamResult { get; set; }
+        public DbSet<ApplicantScreenResult> ApplicantScreenResults { get; set; }
+        public DbSet<InternalApplicantScreening> InternalApplicantScreenings { get; set; }
+        public DbSet<InternalApplicantScreeningResult> InternalApplicantScreeningResults { get; set; }
+        public DbSet<ApplicantScreeningResultAttachment> ApplicantScreeningResultAttachments { get; set; }
+        public DbSet<InternalApplicantExamResult> InternalApplicantExamResults { get; set; }
+        public DbSet<ApplicantScreening> ApplicantScreenings { get; set; }
+        public DbSet<Vacancy> VaccancyPlans { get; set; }
+        public DbSet<VacancyLanguage> VacancyLanguages { get; set; }
+        public DbSet<VacancyDetail> VacancyDetails { get; set; }
+        //recruitment
+        // DbSets
+        public DbSet<RecruitmentRequest> RecruitmentRequest { get; set; }
+        public DbSet<RecruitmentRequestProjectHRValidation> RecruitmentRequestProjectHRValidations { get; set; }
+        public DbSet<RecruitmentRequestPMValidation> RecruitmentRequestPMValidations { get; set; }
+        public DbSet<RecruitmentRequestDepartmentValidation> RecruitmentRequestDepartmentValidations { get; set; }
+        public DbSet<RecruitmentRequestHRValidation> RecruitmentRequestHRValidations { get; set; }
+        public DbSet<RecruitmentRequestDGMValidation> RecruitmentRequestDGMValidations { get; set; }
+        public DbSet<RecruitmentRequestGMValidation> RecruitmentRequestGMValidations { get; set; }
+        public DbSet<RecruitmentRequestSecondValidation> RecruitmentRequestSecondValidations { get; set; }
+
+        public DbSet<RecruitmentPlan> RecruitmentPlans { get; set; }
         public DbSet<Recruitment> Recruitments { get; set; }
+        public DbSet<InternalVacancyEligibilitySetting> InternalVacancyEligibilitySettings { get; set; }
         public DbSet<RecruitmentVacancy> RecruitmentVacancy { get; set; }
         public DbSet<ClearanceProvider> ClearanceProvideres { get; set; }
+        public DbSet<ClearanceProviderDetail> ClearanceProviderDetails { get; set; }
+
         public DbSet<ApplicantEducation> ApplicantEducation { get; set; }
-
-
         public DbSet<RecruitmetnInterviewerPerseon> RecruitmetnInterviewerPerseons { get; set; }
-
         public DbSet<ExperienceOrganizationTypeSetting> ExperienceOrganizationTypeSettings { get; set; }
         public DbSet<ScreeningSetting> ScreeningSettings { get; set; }
         public DbSet<ExperienceJobTitle> ExperienceJobTitles { get; set; }
-
+        public DbSet<ExperienceJobTitleDetail> ExperienceJobTitleDetails { get; set; }
+        public DbSet<EducationFieldDetail> EducationFieldDetails { get; set; }
+        public DbSet<RelatedEducationFieldDetail> RelatedEducationFieldDetails { get; set; }
+        public DbSet<EducationLevelDetail> EducationLevelDetails { get; set; }
         public DbSet<ScreeningEducationLevel> ScreeningEducationLevels { get; set; }
         public DbSet<ScreeningEducationField> ScreeningEducationFields { get; set; }
         public DbSet<ScreeningExperienceJobtitle> ScreeningExperienceJobtitles { get; set; }
         public DbSet<ScreeningExperienceJobtitleForInternal> ScreeningExperienceJobtitleForInternals { get; set; }
         public DbSet<ApplicantCertefication> ApplicantCertefications { get; set; }
         public DbSet<RecruitmentApplicantPassSetting> RecruitmentApplicantPassSettings { get; set; }
-
         public DbSet<InternalApplicants> InternalApplicants { get; set; }
-        //public DbSet<InternalApplicantEducation> InternalApplicantEducations { get; set; }
-        //public DbSet<InternalApplicantExperience> InternalApplicantExperiences { get; set; }
-        #endregion
+        public DbSet<EmployeeTransferRequest> EmployeeTransferRequests { get; set; }
+        public DbSet<CompanyApprovalSetting> CompanyApprovalSettings { get; set; }
+        public DbSet<TransferRequestDetail> TransferRequestDetails { get; set; }
+        public DbSet<TransferRequestValidation> TransferRequestValidations { get; set; }
+        public DbSet<TransferRequestDGMValidation> TransferRequestDGMValidations { get; set; }
+        public DbSet<TransferRequestGMValidation> TransferRequestGMValidations { get; set; }
+        public DbSet<TransferRequestDepartmentValidation> TransferRequestDepartmentValidations { get; set; }
+        public DbSet<EmployeeTransferAttachment> EmployeeTransferAttachments { get; set; }
+        #endregion 
         #region Salary Structure
-        public System.Data.Entity.DbSet<Rank> Ranks { get; set; }
-        public System.Data.Entity.DbSet<Step> Steps { get; set; }
+        public DbSet<Rank> Ranks { get; set; }
+        public DbSet<Step> Steps { get; set; }
 
-        public System.Data.Entity.DbSet<Salary> Salaries { get; set; }
-        public System.Data.Entity.DbSet<SalaryJobTitle> SalariesJobTitles { get; set; }
+        public DbSet<Salary> Salaries { get; set; }
+        public DbSet<SalaryJobTitle> SalariesJobTitles { get; set; }
 
         #endregion
-
         #region Training and Education
-        public DbSet<TrainingEvaluationBefore> TrainingEvaluationBefores { get; set; }
-        public DbSet<TrainingEvaluationAfter> TrainingEvaluationAfters { get; set; }
-        public System.Data.Entity.DbSet<NeedAssessmentSummary> NeedAssessmentSummary { get; set; }
-        public System.Data.Entity.DbSet<NeedAssessmentSummaryDetail> NeedAssessmentSummaryDetails { get; set; }
         public DbSet<Training> EmpTrainingEducations { get; set; }
         public DbSet<NeedAssessment> NeedAssessments { get; set; }
+        // F
+        public DbSet<NeedAssessmentAttachment> NeedAssessmentAttachments { get; set; }
         public DbSet<EmployeesInAssessment> EmployeesInAssessments { get; set; }
         public DbSet<CourseTracking> CourseTrackings { get; set; }
+        public DbSet<TrainingNeedRequest> TrainingNeedRequests { get; set; }
         public DbSet<Education> Education { get; set; }
         public DbSet<Trainee> Trainee { get; set; }
         public DbSet<TrainingStatus> TrainingStatuses { get; set; }
@@ -3097,57 +3244,76 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<TrainingEvaluationCriteriaCategory> TrainingEvaluationCriteriaCategories { get; set; }
         public DbSet<TrainingEvaluationCriteria> TrainingEvaluationCriterias { get; set; }
         public DbSet<TrainingEvaluation> TrainingEvaluations { get; set; }
+        public DbSet<NeedAssessmentSummary> NeedAssessmentSummary { get; set; }
+        public DbSet<NeedAssessmentSummaryDetail> NeedAssessmentSummaryDetails { get; set; }
         #endregion
-
         #region Discipline
 
-        public System.Data.Entity.DbSet<DisciplineMeasures> DisciplineMeasures { get; set; }
-        public System.Data.Entity.DbSet<Appeal> Appeal { get; set; }
-        public System.Data.Entity.DbSet<DisciplineMeasuresDetail> DisciplineMeasuresDetail { get; set; }
-        public System.Data.Entity.DbSet<DisciplineRecord> DisciplineRecord { get; set; }
-        public System.Data.Entity.DbSet<DisciplineMeasuresType> DisciplineMeasuresType { get; set; }
-        public System.Data.Entity.DbSet<EmpDisciplinaryHearing> EmpDisciplinaryHearing { get; set; }
-        public System.Data.Entity.DbSet<EmpDisciplineMeasure> EmpDisciplineMeasure { get; set; }
-        public System.Data.Entity.DbSet<DisciplinaryCase> DisciplinaryCases { get; set; }
-        public System.Data.Entity.DbSet<DisciplineMeasuerByMoney> DisciplineMeasuerByMoney { get; set; }
+        public DbSet<DisciplineMeasures> DisciplineMeasures { get; set; }
+        public DbSet<Appeal> Appeal { get; set; }
+        public DbSet<DisciplineMeasuresDetail> DisciplineMeasuresDetail { get; set; }
+        public DbSet<DisciplineRecord> DisciplineRecord { get; set; }
+        public DbSet<DisciplineMeasuresType> DisciplineMeasuresType { get; set; }
+        public DbSet<EmpDisciplinaryHearing> EmpDisciplinaryHearing { get; set; }
+        public DbSet<EmpDisciplineMeasure> EmpDisciplineMeasure { get; set; }
+        public DbSet<DisciplinaryCase> DisciplinaryCases { get; set; }
+        public DbSet<DisciplineMeasuerByMoney> DisciplineMeasuerByMoney { get; set; }
         #endregion
-
-
         #region Self Care
         public DbSet<TrainingApplicant> TrainingApplicants { get; set; }
         public DbSet<EducationRequest> EducationRequests { get; set; }
-        public DbSet<MedicalRequest> MedicalRequest { get; set; }
+        public DbSet<EducationRequestAttachement> EducationRequestAttachements { get; set; }
         public DbSet<LeaveRequest> LeaveRequest { get; set; }
         public DbSet<LeaveRequestAttachement> LeaveRequestAttachements { get; set; }
-        public DbSet<RecruitmentRequest> RecruitmentRequest { get; set; }
+        public DbSet<LeaveRequestPMValidation> LeaveRequestPMValidations { get; set; }
+        public DbSet<LeaveRequestHRManagerValidation> LeaveRequestHRManagerValidations { get; set; }
         public DbSet<RequestesStatus> RequestesStatus { get; set; }
         public DbSet<ApplicantExperience> ApplicantExperience { get; set; }
         public DbSet<ApplicantTraining> ApplicantTraining { get; set; }
-        ///publty.DbSet<PromotionRequest> PromotionRequest { get; set; }
+        public DbSet<TrainingApplicantAttachment> TrainingApplicantAttachments { get; set; }
+        public DbSet<TrainingApplicantSecondValidation> TrainingApplicantSecondValidations { get; set; }
         public DbSet<OverTimeRequest> OverTimeRequest { get; set; }
         public DbSet<OverTimeRequestEmployee> OverTimeRequestEmployee { get; set; }
-        #endregion
+        public DbSet<PromotionRequest> PromotionRequest { get; set; }
+        public DbSet<ClearanceRequest> ClearanceRequests { get; set; }
+        public DbSet<ClearanceRequestApprover> ClearanceRequestApprovers { get; set; }
+        public DbSet<ClearanceRequestStatus> ClearanceRequestStatus { get; set; }
 
+        #endregion
         #region Company
-        public System.Data.Entity.DbSet<JobTitleMapping> JobTitleMapping { get; set; }
-        public System.Data.Entity.DbSet<JobTitleMappingTemp> JobTitleMappingTemp { get; set; }
-        public System.Data.Entity.DbSet<Structure> Structure { get; set; }
-        #endregion
+        public DbSet<WaterMark> WaterMarks { get; set; }
+        public DbSet<JobTitleMapping> JobTitleMapping { get; set; }
+        public DbSet<JobTitleMappingTemp> JobTitleMappingTemp { get; set; }
+        public DbSet<Structure> Structure { get; set; }
+        public DbSet<DelegationBenefitSetting> DelegationBenefitSettings { get; set; }
+        public DbSet<DelegationReason> DelegationReasons { get; set; }
+        public DbSet<DeligationCC> DelegationCCs { get; set; }
+        public DbSet<SickLeaveSetting> SickLeaveSettings { get; set; }
+        public DbSet<CompanyLeaveWorkflowSetting> CompanyLeaveWorkflowSettings { get; set; }
 
-        public System.Data.Entity.DbSet<DelegationReason> DelegationReasons { get; set; }
-        public System.Data.Entity.DbSet<DeligationCC> DelegationCCs { get; set; }
-        public System.Data.Entity.DbSet<SickLeaveSetting> SickLeaveSettings { get; set; }
-        public System.Data.Entity.DbSet<ComplainDetail> ComplainDetails { get; set; }
-        public System.Data.Entity.DbSet<ComplainCC> ComplainCCs { get; set; }
-        public System.Data.Entity.DbSet<ProbationPerformance> ProbationPerformances { get; set; }
-        public System.Data.Entity.DbSet<ProbationPerformanceDetail> ProbationPerformanceDetails { get; set; }
-        public System.Data.Entity.DbSet<LeaveReturn> LeaveReturns { get; set; }
+        public DbSet<ComplainDetail> ComplainDetails { get; set; }
+        public DbSet<ComplainCC> ComplainCCs { get; set; }
+        public DbSet<ProbationPerformance> ProbationPerformances { get; set; }
+        public DbSet<ProbationPerformanceValidation> ProbationPerformanceValidations { get; set; }
+        public DbSet<ProbationPerformanceDetail> ProbationPerformanceDetails { get; set; }
         public DbSet<RetirementSetting> RetirementSettings { get; set; }
-        public System.Data.Entity.DbSet<Template> Templates { get; set; }
-        public System.Data.Entity.DbSet<TemplateTypeSetting> TemplateTypeSettings { get; set; }
-        public System.Data.Entity.DbSet<ExperienceRequest> ExprianceRequests { get; set; }
-
-        public System.Data.Entity.DbSet<OverTimeJobResult> OverTimeJobResults { get; set; }
+        public DbSet<Template> Templates { get; set; }
+        public DbSet<TemplateTypeSetting> TemplateTypeSettings { get; set; }
+        public DbSet<LoanRequest> LoanRequests { get; set; }
+        public DbSet<LoanRequestDetail> LoanRequestDetails { get; set; }
+        public DbSet<LoanRequestAttachment> LoanRequestAttachments { get; set; }
+        public DbSet<LoanRequestValidation> LoanRequestValidations { get; set; }
+        public DbSet<LoanRequestDepartmentValidation> LoanRequestDepartmentValidations { get; set; }
+        public DbSet<ExperienceRequest> ExprianceRequests { get; set; }
+        public DbSet<OverTimeJobResult> OverTimeJobResults { get; set; }
+        public DbSet<DelegationTempoRole> DelegationTempoRoles { get; set; }
+        public DbSet<AllowanceGenerationSetting> AllowanceGenerationSettings { get; set; }
+        public DbSet<HolidayGiftRateSetting> HolidayGiftRateSettings { get; set; }
+        public DbSet<HolidayGiftEmployee> HolidayGiftEmployees { get; set; }
+        public DbSet<DatePreferenceSetting> DatePreferenceSettings { get; set; }
+        public DbSet<GeneralJobtitleSetting> GeneralJobtitleSettings { get; set; }
+        #endregion
+      
         #endregion
 
         #region Archive Management
@@ -3191,12 +3357,8 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region APTS
-        public System.Data.Entity.DbSet<DrugToTransferTemporaryLists> DrugToTransferTemporaryLists { get; set; }
-        public System.Data.Entity.DbSet<DrugStoreTransfer> DrugStoreTransfers { get; set; }
-        // public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
-        //public DbSet<LaboratoryTests> LaboratoryTests { get; set; }
-        // public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
-        //public DbSet<LaboratoryTestPatientCard> LaboratoryTestPatientCards { get; set; }
+        public DbSet<DrugToTransferTemporaryLists> DrugToTransferTemporaryLists { get; set; }
+        public DbSet<DrugStoreTransfer> DrugStoreTransfers { get; set; }
         public DbSet<LaboratoryDrugRequest> LaboratoryDrugRequests { get; set; }
         public DbSet<LaboratoryDrugRequestItem> LaboratoryDrugRequestItems { get; set; }
         public DbSet<EmergencyDrugRequest> EmergencyDrugRequests { get; set; }
@@ -4551,6 +4713,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Health
+        public DbSet<MedicalRequest> MedicalRequest { get; set; }
         public System.Data.Entity.DbSet<MedicalAttachment> MedicalAttachments { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValue> HealthRankAndValues { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValueValidation> HealthRankAndValueValidation { get; set; }
@@ -4823,7 +4986,6 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PurchaseRequisitionSecondValidation> PurchaseRequisitionSecondValidations { get; set; }
 
         public DbSet<ArSalesOrderPartialPrint> ArSalesOrderPartialPrints { get; set; }
-        public System.Data.Entity.DbSet<DelegationTempoRole> DelegationTempoRoles { get; set; }
 
     }
 }

@@ -53,19 +53,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new EmployeeType
-                {
-                    EmployeeTypeId = employeeType.EmployeeTypeId,
-                    Name = employeeType.Name,
-                    Remark = employeeType.Remark,
-                    DateCreated = DateTime.Now,
-                    LastModified = employeeType.LastModified,
-                    CreatedBy = User.Identity.Name,
-                    ModifiedBy = employeeType.ModifiedBy
-                };
+                //var entity = new EmployeeType
+                //{
+                //    EmployeeTypeId = employeeType.EmployeeTypeId,
+                //    Name = employeeType.Name,
+                //    Remark = employeeType.Remark,
+                //    DateCreated = DateTime.Now,
+                //    LastModified = employeeType.LastModified,
+                //    CreatedBy = User.Identity.Name,
+                //    ModifiedBy = employeeType.ModifiedBy
+                //};
 
-                db.EmployeeTypes.Add(entity);
-                db.SaveChanges();
+                //db.EmployeeTypes.Add(entity);
+                //db.SaveChanges();
+                //employeeType.EmployeeTypeId = entity.EmployeeTypeId;
+                EmployeeType entity;
+                int generatedId;
+                do
+                {
+                    entity = new EmployeeType
+                    {
+                        Name = employeeType.Name,
+                        Remark = employeeType.Remark,
+                        DateCreated = DateTime.Now,
+                        CreatedBy = User.Identity.Name
+                    };
+
+                    db.EmployeeTypes.Add(entity);
+                    db.SaveChanges(); 
+
+                    generatedId = entity.EmployeeTypeId;
+
+                    // If ID == 2 => delete and try again
+                    if (generatedId == 2)
+                    {
+                        db.EmployeeTypes.Remove(entity);
+                        db.SaveChanges();
+                    }
+
+                } while (generatedId == 2);//if generated Id is 2 it regenerate it again untill id !=2
+
                 employeeType.EmployeeTypeId = entity.EmployeeTypeId;
             }
 

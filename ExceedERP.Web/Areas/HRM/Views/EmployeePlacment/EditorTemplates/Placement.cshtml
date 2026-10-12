@@ -36,7 +36,7 @@
                                   .ServerFiltering(true)
                                   .ServerPaging(true)
                                   .Type("aspnetmvc-ajax")
-                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "EmployeePlacmentWithOJ")))
+                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "EmployeePlacmentWithOJ").Data("sendForgery")))
                                   .Schema(schema =>
                                   {
                                       schema.Data("Data")
@@ -74,7 +74,7 @@
                           .ValuePrimitive(true)
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       }))
                   
@@ -140,7 +140,7 @@
 
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       }))
 
@@ -279,7 +279,7 @@
                                                       .ValuePrimitive(true)
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetAllBranch", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetAllBranch", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       }))
 

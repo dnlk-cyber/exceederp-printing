@@ -123,7 +123,7 @@ namespace ExceedERP.Core.Domain.Common
         Long_Term_Education,
         Employee_Summary,
         Termination_Summary,
-        Termination_Reason_Summary,
+        Termination_Type_Summary,
         Job_Title,
         Discipline_Measure_Summary,
         Retirement_Notification,
@@ -143,6 +143,7 @@ namespace ExceedERP.Core.Domain.Common
         Employee_Promotion_PerYear,
         Work_and_Cost_Summary,
         Employee_to_be_Promoted,
+        Employee_Master_Report,
         Employee_Health_and_Value_Payment,
         Employee_Health_and_Value_Payment_selfCare,
         Education_and_Training_One_By_One,
@@ -154,17 +155,24 @@ namespace ExceedERP.Core.Domain.Common
         Monthly_Salary_Per_Period,
         Employee_Profile_Report,
         Attendance_Letter,
+        Employment_Contract_Termination_Letter,
+        Rehirement_Letter,
         Training_Evaluation,
         Change_Of_Payroll,
         Payable_Leave,
         Leave_Plan,
         Internal_Vacancy_For_SelfCare,
+        Job_Vacancy_Announcement,
         Internal_Applicant,
         External_Applicant,
         Vacancy_For_Media,
         Day_Absent_And_Late_Coming_Report,
         Leave_Payable_Report,
+        Annual_Leave_Report,
         Leave_Request_Status,
+        Employee_Leave_Summary,
+        Employee_In_Leave,
+        Leave_Summary,
         Severance_Payable_Report,
         Over_Time_Hours,
         Commitment_report,
@@ -176,10 +184,63 @@ namespace ExceedERP.Core.Domain.Common
         Contract_Employee,
         Employee_Summary_By_Business_Unit,
         Employee_Termination_Summary_By_Business_Unit,
-        Training_Action_Plan,
         Training_Need_Report,
-        Employee_Master_Report
+        Training_Action_Plan,
+        Employee_Promation_Summay,
+        Employee_Bonus_Summary,
+        Employee_Bonus_Summary_For_Manager,
+        Employee_Bonus_Summary_For_Sector,
+        Employee_Bonus_Summary_For_Project_Manager,
+        Contract_Hirement,
+        Temination_For_Manager,
+        Temination_Letter,
+        New_Assignment_for_Manager,
+        Tranfer_Letter_for_Manager,
+        Transfer_Letter,
+        Anunal_Increement_letter,
+        Promotion_Letter,
+        Termination_Warning_Letter,
+        Assignment_Letter,
+        Recruitment_Letter,
+        Probation_Letter,
+        Employee_Transfer,
+        Internal_Applicants,
+        Permanent_Letter,
+        Clearance_Letter,
+        Clearance_Report,
+        Education_Opportunity_Report,
+        Education_Opportunity_Summary_Report,
+        Daily_Labor_Report,
+        Daily_Labor_Payroll_Sheet_Report,
+        Daily_Labourer_Income_Tax,
+        Daily_Labourers_Montly_Pension,
+        Daily_Labourer_Daynamic_Payroll_Detail,
+        Training_Report,
+        Employee_Cosign,
+        Employee_Guarant_or_Surety_Report,
+        Employee_Responsiblity_Level_Summary,
+        Employee_JobTitle_Summary,
+        BusinessUnit_Branch_Summary,
+        Employee_Fixed_Asset,
+        Salary_Summary,
+        Employee_Attendance_Summary,
+        Employee_National_ID,
+        Employee_Recruitment,
+        Employee_Religion,
+        Leave_Usage_Report,
+        Employee_Holiday_Gift_Report,
+        Employee_Assignment_Summary,
+        Natinal_Bank_General_Summary,
+        Staff_Education_Qualification_Summary,
+        Gender_Percentage_Summary,
+        Promotion_and_Salary_Adjustment,
+        Template_Letter,
+        Employee_Identification,
+        Employee_Payroll_Summary,
+        Day_Absent_Summary
+
     }
+
     public enum ProcurementModuleReportType
     {
         
@@ -373,7 +434,6 @@ namespace ExceedERP.Core.Domain.Common
 
     public enum AttachmentType
     {
-
         PHOTO,
         EXPERIENCE,
         TRAINING,
@@ -388,9 +448,9 @@ namespace ExceedERP.Core.Domain.Common
         COSIGN,
         MINUTE,
         DOCUMENT,
-        PROJECT_DOCUMENT
-
-
+        PROJECT_DOCUMENT,
+        ISO_LOGO,
+        STAMP
     }
 
     public enum AccountRequirementDefinition
@@ -545,10 +605,15 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_AllowanceType_PROJECT", ResourceType = typeof(Resources))]
         PROJECT,
         [Display(Name = "Enum_AllowanceType_RESPONSIBILITY", ResourceType = typeof(Resources))]
-        RESPONSIBILITY
-
+        RESPONSIBILITY,
+        DISTURBANCE,
+        REFRESHMENT,
+        HARDSHIP,
+        PERDIEM_TAXABLE,
+        PERDIEM_NON_TAXABLE,
 
     }
+
     public enum OrganizationUnitDefinitionType
     {
         PROCESS_COUNCIL,
@@ -639,7 +704,6 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_IdentificationType_PENSION_NO", ResourceType = typeof(Resources))]
         PENSION_NO,
         [Display(Name = "Enum_IdentificationType_STUDENT_ID", ResourceType = typeof(Resources))]
-
         STUDENT_ID,
         [Display(Name = "Enum_IdentificationType_WORK_ID", ResourceType = typeof(Resources))]
         WORK_ID,
@@ -660,7 +724,10 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_IdentificationType_LICENSE_NUMBER", ResourceType = typeof(Resources))]
         LICENSE_NUMBER,
         [Display(Name = "Enum_IdentificationType_PROVIDENT_FUND", ResourceType = typeof(Resources))]
-        PROVIDENT_FUND
+        PROVIDENT_FUND,
+        [Display(Name = "Enum_IdentificationType_Fayda_ID_Or_National_ID", ResourceType = typeof(Resources))]
+        Fayda_ID_Or_National_ID
+
 
     }
 
@@ -1158,7 +1225,8 @@ namespace ExceedERP.Core.Domain.Common
         FREELANCER,
         [Display(Name = "Enum_EmployeeStatus_NO_STATUS", ResourceType = typeof(Resources))]
         NO_STATUS,
-        SPECIAL
+        SPECIAL,
+        TEMPORARY
 
 
 
@@ -1267,16 +1335,20 @@ namespace ExceedERP.Core.Domain.Common
 
 
 
-
     public enum RecruitmentSource
     {
         Select,
-        [Display(Name = "Enum_RecruitmentSource_INTERNAL", ResourceType = typeof(Resources))]
-        INTERNAL,
+        [Display(Name = "INTERNAL")]
+        INTERNAL = 1,
+        [Display(Name = "INTERNAL PROMOTION")]
+        INTERNALPROMOTION = 2,
+        [Display(Name = "INTERNAL TRANSFER")]
+        INTERNALTRANSFER = 3,
         [Display(Name = "Enum_RecruitmentSource_EXTERNAL", ResourceType = typeof(Resources))]
-        EXTERNAL
+        EXTERNAL = 4
 
     }
+  
     public enum VacancyType
     {
         [Display(Name = "Enum_VacancyType_CONTRACT", ResourceType = typeof(Resources))]

@@ -2,91 +2,68 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
    
     [DataObject]
-    public class AllDepartmentsListODS : List<MainCompanyStructure>
+    public class AllDepartmentsListODS :  IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<MainCompanyStructure> GetDepartments()
         {
-            List<MainCompanyStructure> allDepartment = new List<MainCompanyStructure>();
-            var departments = db.MainCompanyStructures.FirstOrDefault(x => x.Parent == 0);
-            if (departments != null)
+            var allStructures = db.MainCompanyStructures
+                                  .AsNoTracking()
+                                  .ToList();
+
+            var result = new List<MainCompanyStructure>();
+
+            // Group by Parent for fast lookup
+            var lookup = allStructures
+                .GroupBy(x => x.Parent)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var added = new HashSet<int>();
+
+            // Find true roots:
+            // (items whose Parent doesn't exist as a valid OrgStructureId OR Parent == null/0)
+            var allIds = new HashSet<int>( allStructures.Select(x => x.OrgStructureId));
+
+            var roots = allStructures
+                .Where(x => x.Parent == 0 || !allIds.Contains(x.Parent))
+                .ToList();
+
+            foreach (var root in roots)
             {
-                var deptlevelOne = db.MainCompanyStructures.Where(x => x.Parent == departments.OrgStructureId).ToList();
-                if (deptlevelOne.Any())
-                {
-                    foreach (var a in deptlevelOne)
-                    {
-                        var departmentLevelTwo = db.MainCompanyStructures.Where(x => x.Parent == a.OrgStructureId).ToList();
-                        if (departmentLevelTwo.Any())
-                        {
-                            foreach (var b in departmentLevelTwo)
-                            {
-                                var departmentLevelThree = db.MainCompanyStructures.Where(x => x.Parent == b.OrgStructureId).DistinctByField(x => x.OrgStructureId);
-                                if (departmentLevelThree.Any())
-                                {
-                                    foreach (var c in departmentLevelThree)
-                                    {
-                                        var departmentLevelFour = db.MainCompanyStructures.Where(x => x.Parent == c.OrgStructureId).DistinctByField(x => x.OrgStructureId);
-
-                                        foreach(var d in departmentLevelFour)
-                                        {
-                                            var departmentLevelFive = db.MainCompanyStructures.Where(x => x.Parent == d.OrgStructureId).DistinctByField(x => x.OrgStructureId);
-                                            if(departmentLevelFive.Any())
-                                            {
-                                                foreach (var e in departmentLevelFive)
-                                                {
-                                                    var departmentLevelsix = db.MainCompanyStructures.Where(x => x.Parent == e.OrgStructureId).DistinctByField(x => x.OrgStructureId);
-                                                    if(departmentLevelsix.Any())
-                                                    {
-                                                        foreach(var f in departmentLevelsix)
-                                                        {
-                                                            var departmentLevelseven = db.MainCompanyStructures.Where(x => x.Parent == f.OrgStructureId).DistinctByField(x => x.OrgStructureId);
-                                                            if(departmentLevelseven.Any())
-                                                            {
-                                                                foreach(var g in departmentLevelseven)
-                                                                {
-                                                                    allDepartment.Add(g);
-                                                                }
-                                                            }
-                                                            allDepartment.Add(f);
-                                                        }
-                                                    }
-                                                    allDepartment.Add(e);
-                                                }
-                                            }
-                                            allDepartment.Add(d);
-                                        }
-
-                                        allDepartment.Add(c);
-                                    }
-
-                                }
-
-                                allDepartment.Add(b);
-                            }
-                        }
-
-                        allDepartment.Add(a);
-                    }
-                }
+                Traverse(root, lookup, result, added);
             }
 
-            return allDepartment;
-
+            return result;
         }
+        private void Traverse(MainCompanyStructure node,Dictionary<int, List<MainCompanyStructure>> lookup,List<MainCompanyStructure> result,HashSet<int> added)
+        {
+            if (!added.Add(node.OrgStructureId))
+                return;
+
+            result.Add(node);
+
+            if (lookup.TryGetValue(node.OrgStructureId, out var children))
+            {
+                foreach (var child in children)
+                {
+                    Traverse(child, lookup, result, added);
+                }
+            }
+        }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+       
     }
 }
 

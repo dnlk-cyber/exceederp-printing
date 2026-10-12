@@ -117,4 +117,103 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>Training</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>Total Cost</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>Employees</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.Year</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Fields.Training</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= RowNumber("tblTrainingAndEducation")</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>= Fields.Provider</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Fields.Cost</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>= Fields.EmployeeName</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Fields.Branch</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Fields.WorkUnit</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>Total  {= Count(EmployeeName)}</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>= Fields.Status</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>= Fields.CostSingle</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>Training Type : {= Parameters.trainingType.Label}</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>Period : {= Parameters.year.Label}</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>Course : {= Parameters.training.Label}</value>
+  </data>
+  <data name="textBox32.Value" xml:space="preserve">
+    <value> {PageNumber}</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Training Type</value>
+  </data>
+  <data name="reportParameter5.Text" xml:space="preserve">
+    <value>Training</value>
+  </data>
+  <data name="reportParameter6.Text" xml:space="preserve">
+    <value>Provider</value>
+  </data>
 </root>

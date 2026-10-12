@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-   public class ChangeOfPayrollBenefitObjectDataSource
+   public class ChangeOfPayrollBenefitObjectDataSource:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<ChangeOfPayrollBenefitVM> GetBenefits(string id)
         {
             List<ChangeOfPayrollBenefitVM> changeOfPayrollBenefits = new List<ChangeOfPayrollBenefitVM>();
-            if (!String.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id))
             {
                 int did = int.Parse(id);
                 var placement = db.Placements.Find(did);
@@ -35,13 +35,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             allowance.Name = allowanceDefinition.AllowanceName;
                             allowance.MeasureType = allowanceDefinition.AmtPercent.ToString();
                             allowance.Amount = allowanceDefinition.Amount;
-
                             changeOfPayrollBenefits.Add(allowance);
+
                         }
                     }
                 }
             }
             return changeOfPayrollBenefits;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

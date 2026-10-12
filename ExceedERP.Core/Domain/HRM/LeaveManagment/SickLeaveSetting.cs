@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Localization;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,6 +18,9 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
     public class SickLeaveSalarySetting: TrackUserOperation
     {
         public int SickLeaveSalarySettingId { get; set; }
+        [Display(Name = "Type")]
+        public MedicalLeaveType? Type { get; set; }
+
         [Display(Name = "From Days")]
         public int FromDays { get; set; }
         [Display(Name = "To Days")]
@@ -27,5 +30,13 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public decimal PayableSalaryInPercent { get; set; }
         [Display(Name = "Is Terminated")]
         public bool IsTerminated { get; set; }
+
     }
+    public enum MedicalLeaveType
+    {
+        Illness = 1,
+        Accident = 2,
+        Others = 2
+    }
+
 }

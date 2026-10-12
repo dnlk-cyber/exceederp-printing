@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-    public class TerminationAcceptanceLetterObjectDataSource
+    public class TerminationAcceptanceLetterObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -174,6 +174,12 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return terminationAcceptanceList;
         }
+   
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        
     }
 
     public class TerminationAcceptanceVM

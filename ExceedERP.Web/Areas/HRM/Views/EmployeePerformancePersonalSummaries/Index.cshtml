@@ -5,12 +5,17 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+<div class="epps-page-header">
+    <i class="fa fa-bar-chart"></i>
+    <legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+</div>
+<div class="epps-grid-wrapper">
 @(Html.Kendo().Grid<EmployeePerformance>()
             .Name("EmployeePerformancegrid")
             .Columns(columns =>
             {
                 columns.Bound(c => c.EmployeePerformanceId).Title("#").Width(80);
+                columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").Width(140).Title(Resources.Common_PersonEmployee_EmployeeCode).Filterable(ftb => ftb.Multi(true).Search(true));
                 columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                 columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("GLYearSelector").Width(120);
                 columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
@@ -37,7 +42,8 @@
                     "checked='checked'" +
                     "# } #" +
                     "/>").Title("Is Rejected").Width(120);
-                columns.Bound(c => c.Remark).Width(80);
+                columns.Bound(c => c.EmployeeRemark).Width(160);
+                columns.Bound(c => c.Remark).Width(140);
 
 
                 columns.Command(command =>
@@ -54,16 +60,18 @@
             .Filterable()
             .Scrollable(h => h.Height("auto"))
             .Events(ev => ev.DataBound("onDataBound"))
+
             .Pageable(pageable => pageable
-                //.Input(true)
-                // .Numeric(false)
-                .Refresh(true)
-                //.PageSizes(true)
-                // .ButtonCount(5)
-                )
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5)
+                        .Enabled(true))
 
             .DataSource(dataSource => dataSource
                 .Ajax()
+                .Sort(x=>x.Add(srt=>srt.EmployeePerformanceId).Descending())
                 .Events(events =>
                 {
                     events.Error("error_handler(\"EmployeePerformancegrid\")");
@@ -81,6 +89,7 @@
             .Read(read => read.Action("EmployeePerformancePersonalSummaries_Read", "EmployeePerformancePersonalSummaries").Data("sendForgery"))
             ).ClientDetailTemplateId("employee_performance_template")
 )
+</div>
 
 @*<script id="employee_performance_template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
@@ -265,8 +274,6 @@
              </text>);
 
 
-
-
             }).ToClientTemplate())
 </script>
 
@@ -314,6 +321,59 @@
         border-radius: 5%;
         padding-top: 1px;
         padding-bottom: 1px;
+    }
+
+    .epps-page-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+        .epps-page-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .epps-page-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .epps-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #EmployeePerformancegrid.k-grid {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #EmployeePerformancegrid.k-grid .k-grid-header {
+            background-color: #f9fafb;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+
+    @@media (max-width: 767px) {
+        #EmployeePerformancegrid.k-grid {
+            font-size: 12px;
+        }
     }
     /*#grid .k-grid-toolbar {
                 padding: .6em 1.3em;

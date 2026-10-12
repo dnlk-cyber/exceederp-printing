@@ -1,0 +1,19 @@
+﻿
+
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Helpers.Common
+
+@(
+        Html.Kendo().AutoCompleteFor(m => m)
+            .Filter("contains")
+            .Placeholder("Select or type language...")
+            .MinLength(1)
+            .BindTo(
+                EnumExtension.EnumToSelectList(typeof(Languages))
+                    .Select(x => x.Text)
+                    .ToList()
+            )
+)
+
+
+

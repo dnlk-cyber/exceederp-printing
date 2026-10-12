@@ -1,10 +1,10 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
 {
-    public class ProbationPerformance
+    public class ProbationPerformance: DepartmentNewOperations
     {
         public int ProbationPerformanceId { get; set; }
         public int EmployeeId { get; set; }
@@ -20,9 +20,18 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ProbationEndDate { get; set; }
         public string ProbationEndDateAm { get; set; }
-        public EmployeeStatus Status { get; set; }
+        public EmployeeStatus EmployeeStatus { get; set; }
         public EvaluateProbation ResultType { get; set; }
         public decimal Result { get; set; }
+
+
+    }
+    public class ProbationPerformanceValidation : VoucherValidation
+    {
+        public int ProbationPerformanceValidationId { get; set; }
+        public int ProbationPerformanceId { get; set; }
+        public virtual ProbationPerformance Probation { get; set; }
+
     }
     public enum EvaluateProbation
     {

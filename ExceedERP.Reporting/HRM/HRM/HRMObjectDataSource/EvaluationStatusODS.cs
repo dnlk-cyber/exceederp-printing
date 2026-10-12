@@ -11,7 +11,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
     [DataObject]
     public class EvaluationStatusODS
     {
-        private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> GetEvaluationStatus()

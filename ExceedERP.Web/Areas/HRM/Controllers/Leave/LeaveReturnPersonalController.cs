@@ -16,6 +16,7 @@ using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Helpers.HR;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -25,7 +26,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     {
         // GET: HRM/LeaveReturn
         private ExceedDbContext db = new ExceedDbContext();
-        static ApplicationDbContext dbApplication = new ApplicationDbContext();
+        private ApplicationDbContext dbApplication = new ApplicationDbContext();
 
       
         HRMInputs inputs = new HRMInputs();
@@ -36,27 +37,38 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult Index()
         {
 
-            GetStatusType();
-            GetPeriod();
+            //GetStatusType();
+            //GetPeriod();
             PopulateViewData();
 
             return View();
         }
         private void PopulateViewData()
         {
-            EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var list = UserInformationHelper.GetEmployeesByReportsTo(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
-            reportsToEmployee = list.Select(x => x.PersonId.ToString()).ToList();
-            reportsToEmployee.Add(EmployeeId.ToString());
+            //EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            //var list = UserInformationHelper.GetEmployeesByReportsTo(User.Identity.Name);
+            ViewData["EmployeeList"] = db.Person_Employee.Select(emp => new
+                                                          {
+                                                              EmployeeId = emp.EmployeeId,
+                                                              PersonId = emp.EmployeeId, // If this is correct, otherwise adjust if you meant PersonId column
+                                                              EmployeeCode = emp.EmployeeCode,
+                                                              FullNameWithOutCode = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName,
+                                                              FullName = emp.EmployeeCode + "- " + emp.FirstName + " " + emp.MiddleName + " " + emp.LastName,
+                                                              IsActive = emp.IsActive
+                                                          }).AsQueryable();
 
-            var employeName = db.Person_Employee.ToList();
-            ViewData["EmployeeName"] = employeName;
+            //ViewData["EmployeeList"] = list.Where(x => x.IsActive);
+            //reportsToEmployee = list.Select(x => x.PersonId.ToString()).ToList();
+            //reportsToEmployee.Add(EmployeeId.ToString());
 
+            //var employeName = db.Person_Employee.ToList();
+            ViewData["EmployeeName"] = db.Person_Employee.AsQueryable();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
 
-            ViewData["UserName"] = dbApplication.Users.ToList();
+            ViewData["UserName"] = dbApplication.Users.AsQueryable();
             ViewData["Department"] = db.MainCompanyStructures.AsQueryable();
-
+            ViewData["RequestStatus"] = Enum.GetValues(typeof(RequestStatus)).Cast<RequestStatus>().Select(s => new { Text = s.ToString(), Value = s.ToString() }).ToList();
+            ViewData["PeriodList"] = db.GLFiscalYears.Select(x => new { x.GlFiscalYearId, x.Name }).AsQueryable();
         }
         public int SetEmployee(string x)
         {
@@ -344,7 +356,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 }
             }
 
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var headId = EmployeeHelper.GetHeadId(empId);
+            if (headId != 0)
+            {
+                NotifModels notif = new NotifModels
+                {
+                    UserId = UserInformationHelper.GetEmployeeUserId(headId),
+                    Title = "Leave Return Request",
+                    Message = $"{User.Identity.Name} has Submitted and sent a Leave Return Request  that requires your approval.",
+                    URL = "~/HRM/LeaveReturn"
+                };
 
+                Notify.NotifyUser(notif);
+            }
             var formattedData1 = new
             {
                 Message = "Request successfully sent.",
@@ -533,6 +558,45 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return noOfWeek;
         }
 
+        public ActionResult LeaveReturn_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var employeesId = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId).ToList();
+            employeesId.Add(employeeId);
+            //List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId)).OrderBy(x => x.RequestDate);
+            //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => x.EmployeeId == employeeid || x.RequesterId == employeeid).OrderBy(x => x.RequestDate);
+            IQueryable<LeaveReturn> leaveReturns = db.LeaveReturns.Where(x => employeesId.Contains(x.EmployeeId));
+
+            DataSourceResult result = leaveReturns.ToDataSourceResult(request, leaveReturn => new
+            {
+                LeaveReturnId = leaveReturn.LeaveReturnId,
+                LeaveRequestId = leaveReturn.LeaveRequestId,
+                EmployeeId = leaveReturn.EmployeeId,
+                GlFiscalYearId = leaveReturn.GlFiscalYearId,
+                Amount = leaveReturn.Amount,
+                IsApproved = CheckStatusForBackColor(leaveReturn.LeaveReturnId),
+                From = leaveReturn.From,
+                To = leaveReturn.To,
+                FromAm = leaveReturn.FromAm,
+                ToAm = leaveReturn.ToAm,
+                Reason = leaveReturn.Reason,
+                DepartmentSendForApprovalBy = leaveReturn.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = leaveReturn.DepartmentSendForApprovalTime,
+                IsDepartmentSendForApproval = leaveReturn.IsDepartmentSendForApproval,
+                DepartmentOnlineApprovedBy = leaveReturn.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = leaveReturn.DepartmentOnlineApprovedTime,
+                IsDepartmentOnlineApproved = leaveReturn.IsDepartmentOnlineApproved,
+                OnlineApprovedBy = leaveReturn.OnlineApprovedBy,
+                OnlineApprovedTime = leaveReturn.OnlineApprovedTime,
+                IsOnlineApproved = leaveReturn.IsOnlineApproved,
+                IsSendForApproval = leaveReturn.IsSendForApproval,
+                 IsForOther = leaveReturn.IsForOther
+
+            });
+
+            return Json(result);
+        }
         public ActionResult LeaveReturnPersonal_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -574,7 +638,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
           
 
             
-            bool datePreference =  true;
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
             if (datePreference)
             {
                 if (string.IsNullOrEmpty(leaveReturn.FromAm)
@@ -668,6 +732,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     To = leaveReturn.To,
                     FromAm = leaveReturn.FromAm,
                     ToAm = leaveReturn.ToAm,
+                    Reason = leaveReturn.Reason,
+                    Remark = leaveReturn.Remark,
                     Status = RequestStatus.WAITING_FOR_APPROVAL.ToString(),
                     IsSendForApproval = true
                 };
@@ -700,7 +766,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            bool datePreference = true;
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
             if (datePreference)
             {
                 if (string.IsNullOrEmpty(leaveReturn.FromAm)
@@ -768,6 +834,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     To = leaveReturn.To,
                     FromAm = leaveReturn.FromAm,
                     ToAm = leaveReturn.ToAm,
+                    Reason = leaveReturn.Reason,
+                    Remark = leaveReturn.Remark,
                     IsSendForApproval = leaveReturn.IsSendForApproval
                 };
 
@@ -795,7 +863,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     To = leaveReturn.To,
                     FromAm = leaveReturn.FromAm,
                     ToAm = leaveReturn.ToAm,
-                    // IsForOther = leaveReturn.IsForOther
+                    Reason = leaveReturn.Reason,
+                    Remark = leaveReturn.Remark,
+                    IsForOther = leaveReturn.IsForOther
                 };
                 #region delete log
 
@@ -879,7 +949,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             decimal leaveDays = 0;
 
             decimal holiday = GetHolidays(from, to, glFiscalYearId);
-            var weekDays = HrHelper.GetWeekDays(from, to);
+            var weekDays = HrHelper.GetWeekDays(from, to,0);
             if (leaveType == LeaveType.ANNUAL)
             {
                 leaveDays = to.Subtract(from).Days + 1 - holiday;
@@ -944,7 +1014,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                             }
                         }
                     }
-                    weekDays = HrHelper.GetWeekDays(f, t);
+                    weekDays = HrHelper.GetWeekDays(f, t,0);
                 }
 
 

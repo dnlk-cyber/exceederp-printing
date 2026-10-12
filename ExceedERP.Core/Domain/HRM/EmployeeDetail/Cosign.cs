@@ -5,14 +5,14 @@ using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 {
-    public class Cosign:TrackUserOperation 
+    public class Cosign : TrackUserOperation
     {
         [Key]
         public int CosignId { get; set; }
         [Display(Name = "Common_PersonEmployee_EmployeeCode", ResourceType = typeof(Localization.Resources))]
         public string EmployeeCode { get; set; }
         [Required]
-        [ Display(Name = "HR_EmployeeDetail_Cosign_PersonEmployee", ResourceType = typeof(Localization.Resources))]
+        [Display(Name = "HR_EmployeeDetail_Cosign_PersonEmployee", ResourceType = typeof(Localization.Resources))]
         public int EmployeeId { get; set; }
         public virtual Person_Employee Employee { get; set; }
         [Required]
@@ -20,10 +20,11 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "HR_SelfCare_OverTimeRequest_FromDate", ResourceType = typeof(Localization.Resources))]
         public DateTime AgreementDate { get; set; }
+        //[Display(Name = "Date of agreement")]
         [Display(Name = "HR_SelfCare_OverTimeRequest_FromDate", ResourceType = typeof(Localization.Resources))]
         [Required]
         public string AgreementDateAm { get; set; }
-        [Required ]
+        [Required]
         [Display(Name = "HR_EmployeeDetail_Cosign_FullName", ResourceType = typeof(Localization.Resources))]
         public string FullName { get; set; }
         //[Required]
@@ -40,6 +41,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public string Remark { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_Salary", ResourceType = typeof(Localization.Resources))]
         public decimal? Salary { get; set; }
-
+        [Display(Name = "Common_PersonEmployee_IsActive", ResourceType = typeof(Localization.Resources))]
+        public bool IsActive { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
     [DataObject]
-    public class VacancyIdInternalObjectDataSource : List<Vacancy>
+    public class VacancyIdInternalObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -44,12 +44,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return list;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 
 
 
     [DataObject]
-    public class VacancyIdExternalObjectDataSource : List<Vacancy>
+    public class VacancyIdExternalObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -79,11 +83,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return list;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 
 
     [DataObject]
-    public class VacancyIdRecruitmentSummaryObjectDataSource : List<Vacancy>
+    public class VacancyIdRecruitmentSummaryObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -116,6 +124,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             var vacant = db.VaccancyPlans.Where(x => x.IsActive).ToList();
           
             return vacant;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 

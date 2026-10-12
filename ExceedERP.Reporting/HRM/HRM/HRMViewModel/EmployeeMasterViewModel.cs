@@ -7,9 +7,19 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string EmployeeCode { get; set; }
         public int EmployeeId { get; set; }
         public string FullName { get; set; }
+        public string EmployeeType { get; set; }
         public string Gender { get; set; }
         public int Age { get; set; }
-       // public string EduLevel { get; set; }
+
+        public string PhoneNo { get; set; }
+        public string AccountNo { get; set; }
+        public decimal ResponsibilityAllowance { get; set; }
+        public decimal ProfessionalAllowance { get; set; }
+        public decimal ProjectAllowance { get; set; }
+        public decimal DesertAllowance { get; set; }
+        public decimal TransportAllowance { get; set; }
+        public decimal NetPay { get; set; }
+        // public string EduLevel { get; set; }
         public string DateOfBirth { get; set; }
         public string RetirementDate { get; set; }
         public string HireDate { get; set; }
@@ -17,6 +27,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string MartialStatus { get; set; }
         public string PensionDate { get; set; }
         public string Expiriance { get; set; }
+        public string ExpirianceDetails { get; set; }
         public string PensionNo { get; set; }
         // public string EducationField { get; set; }
         public List<EmployeeEductaionList> Education { get; set; }
@@ -27,6 +38,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Rank { get; set; }
         public string Religion { get; set; }
         public string InternalExpriance { get; set; }
+        public string InternalExprianceDetail { get; set; }
         public string ExpTotalSum { get; set; }
         public decimal TotalLeave { get; set; }
         public string BranchName { get; set; }

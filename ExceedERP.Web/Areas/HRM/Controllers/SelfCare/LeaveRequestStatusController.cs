@@ -26,7 +26,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         private ExceedDbContext db = new ExceedDbContext();
         private readonly CacheData CacheData = new CacheData();
 
-
         public ActionResult Index()
         {
             PopulateViewData();
@@ -36,24 +35,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
         private void PopulateViewData()
         {
-           
+
             ViewData["PeriodList"] = CacheData.GetFiscalYearCaches().Select(
                              i => new
                              {
                                  Name = i.Name,
                                  GlFiscalYearId = i.Id,
                              }).AsQueryable();
-            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
-          i => new
-          {
-              FullNameAmharic = i.AmharicName,
-              FullNameaEnglish = i.Name,
-              FullName = i.Name,
-              FullNameCode = i.Code + " " + i.Name,
-              EmployeeCode = i.Code,
-              EmployeeId = i.Id,
 
-          }).AsQueryable();
+
+
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+                  i => new
+                  {
+                      FullNameAmharic = i.AmharicName,
+                      FullNameaEnglish = i.Name,
+                      FullName = i.Name,
+                      FullNameCode = i.Code + " " + i.Name,
+                      EmployeeCode = i.Code,
+                      EmployeeId = i.Id,
+
+                  }).AsQueryable();
+
             ViewData["branches"] = CacheData.GetBranchCaches().Select(
               i => new
               {
@@ -80,7 +83,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                   Description = i.Name,
                   LookupId = i.Id,
               }).AsQueryable();
-           
 
         }
         public JsonResult UpdateLeaveRequestinfo()
@@ -148,21 +150,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
         }
 
-        private JsonResult GetPeriod()
-        {
-            var periodList = db.GLFiscalYears;
-            ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
-
-            return Json(periodList.Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
-        }
-        private void GetStatusType()
-        {
-            var ststus = Enum.GetValues(typeof(RequestStatus))
-                .Cast<RequestStatus>().ToList();
-
-            var ststuses = ststus.Select(s => new { Text = s.ToString(), Value = s.ToString() });
-            ViewData["RequestStatus"] = ststuses;
-        }
         public string CheckStatus(int masterId)
         {
             var reques = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave").FirstOrDefault();
@@ -182,111 +169,45 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return "false";
         }
-        public ActionResult UpdateLeaveReturnStatus()
-        {
-            var leaveReturns = db.LeaveReturns.Where(x=>x.IsOnlineApproved);
-            foreach (var leaveReturn in leaveReturns)
-            {
-                var leaveRequests = db.LeaveRequest
-                    .Where(x=>x.IsOnlineApproved
-                    &&!x.IsVoid).ToList()
-                    .Where(x => x.EmployeeId==leaveReturn.EmployeeId)
-                    .Where(x => x.LeaveRequestId == leaveReturn.LeaveRequestId
-                    ||(x.From<=leaveReturn.From&&x.To>=leaveReturn.To));
-                foreach (var leaveRequest in leaveRequests)
-                {
 
-                    leaveRequest.IsVoid = true;
-                    leaveRequest.VoidBy = User.Identity.Name;
-                    leaveRequest.VoidTime = DateTime.Now;
-                    leaveReturn.LeaveRequestId= leaveRequest.LeaveRequestId;
-                    db.Entry(leaveReturn).State = EntityState.Modified;
-                    db.Entry(leaveRequest).State = EntityState.Modified;
-                   
-                }
-                db.SaveChanges();
-            }
-            return View("Success");
-        }
-
-        public bool CheckStatusForBackColor(int leaveId)
-        {
-            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId 
-                                                    &&x.ReferenceType == "Leave")
-                                                    .OrderByDescending(x=>x.RequestStatusId)
-                                                    .FirstOrDefault();
-            if (status != null&& status.Status == RequestStatus.DEPARTMENT_APPROVAL)
-            {
-
-
-                return true;
-            }
-            return false;
-        }
-        public bool CheckPendStatusForBackColor(int leaveId)
-        {
-            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId 
-                                                    &&x.ReferenceType == "Leave")
-                                                    .OrderByDescending(x=>x.RequestStatusId)
-                                                    .FirstOrDefault();
-            if (status != null&& status.Status == RequestStatus.PEND)
-            {
-
-
-                return true;
-            }
-            return false;
-        }
-        public bool CheckRejectStatusForBackColor(int leaveId)
-        {
-            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId 
-                                                    &&x.ReferenceType == "Leave")
-                                                    .OrderByDescending(x=>x.RequestStatusId)
-                                                    .FirstOrDefault();
-            if (status != null&& status.Status == RequestStatus.REJECT)
-            {
-
-
-                return true;
-            }
-            return false;
-        }
-        public string GetEmployeeCode(int id)
-        {
-            string code = "";
-            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
-            if (person != null)
-            {
-                code = person.EmployeeCode;
-            }
-            return code;
-        }
-        private decimal GetTotalLeaveBalance(int id)
-        {
-            var leaveEntitlements = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired);
-            return leaveEntitlements.Any() ? leaveEntitlements.Sum(x => x.Balance) : 0;
-        }
         public ActionResult LeaveRequest_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            // join LeaveRequest with the latest RequestStatus for each Leave
+            // company workflow setting
+            var workflowSetting = db.CompanyLeaveWorkflowSettings.FirstOrDefault();
+
+            bool useProjectManagerApproval = workflowSetting != null && workflowSetting.UseProjectManagerApproval;
+
+            // base query
+            var leaveRequests = db.LeaveRequest.Where(lr =>
+                myBranches.Contains(lr.BranchId) &&
+                lr.IsDepartmentOnlineApproved);
+
+            // if company uses PM approval,
+            // only show PM approved requests for final HR approval
+            if (useProjectManagerApproval)
+            {
+                leaveRequests = leaveRequests.Where(lr =>
+                    lr.IsProjectManagerApproved == true);
+            }
+            var hrManagerSetting = db.CompanyApprovalSettings.FirstOrDefault(x => x.IsEnabled &&x.Module==Core.Domain.HRM.Company.ApprovalModule.Leave&& x.Role == Core.Domain.HRM.Company.ApprovalRole.HRManager);
+
+            bool hrManagerEabled = hrManagerSetting != null;
+            if (hrManagerEabled)
+            {
+                leaveRequests = leaveRequests.Where(lr =>
+                    lr.IsHRManagerApproved == true);
+            }
+
+            // targeted correlated subquery instead of grouping the whole RequestesStatus table (was very slow on first load)
             var query =
-                from lr in db.LeaveRequest
-                where myBranches.Contains(lr.BranchId) && lr.IsDepartmentOnlineApproved
-                join rs in
-                    (
-                        from r in db.RequestesStatus
-                        where r.ReferenceType == "Leave"
-                        group r by r.RequestId into g
-                        select new
-                        {
-                            RequestId = g.Key,
-                            LatestStatus = g.OrderByDescending(x => x.RequestStatusId).FirstOrDefault()
-                        }
-                    )
-                    on lr.LeaveRequestId equals rs.RequestId into rsGroup
-                from rs in rsGroup.DefaultIfEmpty()
+                from lr in leaveRequests
+                let latestStatus = db.RequestesStatus
+                    .Where(r => r.ReferenceType == "Leave" && r.RequestId == lr.LeaveRequestId)
+                    .OrderByDescending(r => r.RequestStatusId)
+                    .Select(r => (RequestStatus?)r.Status)
+                    .FirstOrDefault()
                 orderby lr.RequestDate descending
                 select new
                 {
@@ -308,9 +229,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     ToAmharic = lr.ToAmharic,
 
                     // ✅ compute all 3 statuses in SQL
-                    IsApproved = rs.LatestStatus != null && rs.LatestStatus.Status == RequestStatus.DEPARTMENT_APPROVAL,
-                    IsPending = rs.LatestStatus != null && rs.LatestStatus.Status == RequestStatus.PEND,
-                    IsRejected = rs.LatestStatus != null && rs.LatestStatus.Status == RequestStatus.REJECT,
+                    IsApproved = latestStatus == RequestStatus.DEPARTMENT_APPROVAL,
+                    IsPending = latestStatus == RequestStatus.PEND,
+                    IsRejected = latestStatus == RequestStatus.REJECT,
 
                     EmployeeCode = lr.Employee.EmployeeCode, // use navigation property instead of separate query
                    Day = lr.Day,
@@ -321,6 +242,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     DepartmentOnlineApprovedBy = lr.DepartmentOnlineApprovedBy,
                     DepartmentOnlineApprovedTime = lr.DepartmentOnlineApprovedTime,
                     IsDepartmentOnlineApproved = lr.IsDepartmentOnlineApproved,
+                    IsProjectManagerApproved = lr.IsProjectManagerApproved,
+                    ProjectManagerApprovedBy = lr.ProjectManagerApprovedBy,
+                    ProjectManagerApprovedDate = lr.ProjectManagerApprovedDate,
                     OnlineApprovedBy = lr.OnlineApprovedBy,
                     OnlineApprovedTime = lr.OnlineApprovedTime,
                     IsOnlineApproved = lr.IsOnlineApproved,
@@ -334,213 +258,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        //public ActionResult LeaveRequest_Read([DataSourceRequest]DataSourceRequest request)
-        //{
-
-        //    // var leaverequest = db.LeaveRequest.ToList();
-        //    //List<LeaveRequest> leaves = new List<LeaveRequest>();
-        //    //foreach (var m in leaverequest)
-        //    //{
-        //    //    db = new ExceedDbContext();
-        //    //    var status = db.RequestesStatus.FirstOrDefault(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.RequestId == m.LeaveRequestId && x.ReferenceType == "Leave");
-        //    //    if (status != null)
-        //    //    {
-        //    //        leaves.Add(m);
-        //    //    }
-
-        //    //}
-
-        //    //var leaveRequestIds = db.RequestesStatus.Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave").Select(x => x.RequestId);
-        //    //var leaveRequests = db.LeaveRequest.Where(x=> leaveRequestIds.Contains(x.LeaveRequestId)).ToList();
-
-        //    List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
-
-        //    //var placements = db.Placements.Where(x => branches.Contains(x.BranchId.ToString())).Select(x => x.EmployeeId).ToList();
-
-        //    var leaveRequests = db.LeaveRequest.Where(x =>  myBranches.Contains(x.BranchId)&&x.IsDepartmentOnlineApproved).OrderByDescending(x=>x.RequestDate).AsQueryable();
-
-        //    DataSourceResult result = leaveRequests.ToDataSourceResult(request, leaveRequest => new
-        //    {
-        //        LeaveRequestId = leaveRequest.LeaveRequestId,
-        //        EmployeeId = leaveRequest.EmployeeId,
-        //        BranchId = leaveRequest.BranchId,
-        //        BusinessUnitId = leaveRequest.BusinessUnitId,
-        //        From = leaveRequest.From,
-        //        GlFiscalYearId = leaveRequest.GlFiscalYearId,
-        //        To = leaveRequest.To,
-        //        LeaveDays = leaveRequest.LeaveDays,
-        //        //LeaveBalance = GetTotalLeaveBalance(leaveRequest.EmployeeId),
-        //        LeaveBalance = leaveRequest.LeaveBalance,
-        //        Type = leaveRequest.Type,
-        //        Reason = leaveRequest.Reason,
-        //        Remark = leaveRequest.Remark,
-        //        RequestDate = leaveRequest.RequestDate,
-        //        FromAmharic = leaveRequest.FromAmharic,
-        //        ToAmharic = leaveRequest.ToAmharic,
-        //        //LeaveBalance = leaveRequest.LeaveBalance,
-        //        IsApproved = CheckStatusForBackColor(leaveRequest.LeaveRequestId),
-        //        IsPending = CheckPendStatusForBackColor(leaveRequest.LeaveRequestId),
-        //        IsRejected = CheckRejectStatusForBackColor(leaveRequest.LeaveRequestId),
-        //        EmployeeCode = GetEmployeeCode(leaveRequest.EmployeeId),
-        //        Day = leaveRequest.Day,
-        //        Status = leaveRequest.Status,
-        //        DepartmentSendForApprovalBy = leaveRequest.DepartmentSendForApprovalBy,
-        //        DepartmentSendForApprovalTime = leaveRequest.DepartmentSendForApprovalTime,
-        //        IsDepartmentSendForApproval = leaveRequest.IsDepartmentSendForApproval,
-        //        DepartmentOnlineApprovedBy = leaveRequest.DepartmentOnlineApprovedBy,
-        //        DepartmentOnlineApprovedTime = leaveRequest.DepartmentOnlineApprovedTime,
-        //        IsDepartmentOnlineApproved = leaveRequest.IsDepartmentOnlineApproved,
-        //        OnlineApprovedBy = leaveRequest.OnlineApprovedBy,
-        //        OnlineApprovedTime = leaveRequest.OnlineApprovedTime,
-        //        IsOnlineApproved = leaveRequest.IsOnlineApproved,
-        //        IsVoid = leaveRequest.IsVoid,
-        //        VoidBy = leaveRequest.VoidBy,
-        //        VoidTime = leaveRequest.VoidTime,
-        //    });
-
-        //    return Json(result);
-        //}
-
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeaveRequest_Create([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
-        {
-            if (leaveRequest.EmployeeId != 0)
-            {
-                var placemnt = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
-                if (placemnt != null)
-                {
-                    leaveRequest.BranchId = placemnt.BranchId;
-                    leaveRequest.BusinessUnitId = placemnt.BusinessUnitId;
-                }
-                else
-                {
-                    ModelState.AddModelError("placement", "Employee has not current placemnt");
-                }
-            }
-            if (ModelState.IsValid)
-            {
-
-                var entity = new LeaveRequest
-                {
-                    EmployeeId = leaveRequest.EmployeeId,
-                    BranchId = leaveRequest.BranchId,
-                    BusinessUnitId = leaveRequest.BusinessUnitId,
-                    From = leaveRequest.From,
-                    To = leaveRequest.To,
-                    LeaveDays = leaveRequest.LeaveDays,
-                    Type = leaveRequest.Type,
-                    Reason = leaveRequest.Reason,
-                    Remark = leaveRequest.Remark,
-                    GlFiscalYearId = leaveRequest.GlFiscalYearId,
-                    RequestDate = DateTime.Now,
-                };
-                          
-                db.LeaveRequest.Add(entity);
-                db.SaveChanges();
-                leaveRequest.LeaveRequestId = entity.LeaveRequestId;
-               
-            }
-
-            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-        }
-
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeaveRequest_Update([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
-        {
-            if (leaveRequest.EmployeeId != 0)
-            {
-                var placemnt = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
-                if (placemnt != null)
-                {
-                    leaveRequest.BranchId = placemnt.BranchId;
-                    leaveRequest.BusinessUnitId = placemnt.BusinessUnitId;
-                }
-                else
-                {
-                    ModelState.AddModelError("placement", "Employee has not current placemnt");
-                }
-            }
-            if (ModelState.IsValid)
-            {
-
-                var entity = new LeaveRequest
-                {
-                    LeaveRequestId = leaveRequest.LeaveRequestId,
-                    EmployeeId = leaveRequest.EmployeeId,
-                    BranchId = leaveRequest.BranchId,
-                    BusinessUnitId = leaveRequest.BusinessUnitId,
-                    From = leaveRequest.From,
-                    To = leaveRequest.To,
-                    LeaveDays = UpdateLeaveDays(leaveRequest.LeaveRequestId, leaveRequest.Type, leaveRequest.LeaveDays),
-                    Type = leaveRequest.Type,
-                    Reason = leaveRequest.Reason,
-                    Remark = leaveRequest.Remark,
-                    GlFiscalYearId = leaveRequest.GlFiscalYearId,
-                    RequestDate = DateTime.Now,
-                };
-
-                db.LeaveRequest.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-
-            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-        }
-        public decimal UpdateLeaveDays(int id, LeaveType type, decimal Amount)
-        {
-            if (type == LeaveType.ANNUAL)
-            {
-                var leaverequest = db.LeaveRequest.Where(x => x.LeaveRequestId == id).FirstOrDefault();
-                if (leaverequest != null)
-                {
-                    return leaverequest.LeaveDays;
-                }
-
-            }
-            else
-            {
-                return Amount;
-            }
-            return Amount;
-
-        }
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeaveRequest_Destroy([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
-        {
-            if (leaveRequest.IsOnlineApproved)
-            {
-                ModelState.AddModelError("", "you can't delete approved requestes");
-            }
-            else
-            {
-                if (ModelState.IsValid)
-                {
-                    var entity = new LeaveRequest
-                    {
-                        LeaveRequestId = leaveRequest.LeaveRequestId,
-                        EmployeeId = leaveRequest.EmployeeId,
-                        BranchId = leaveRequest.BranchId,
-                        BusinessUnitId = leaveRequest.BusinessUnitId,
-                        From = leaveRequest.From,
-                        To = leaveRequest.To,
-                        LeaveDays = leaveRequest.LeaveDays,
-                        Type = leaveRequest.Type,
-                        Reason = leaveRequest.Reason,
-                        Remark = leaveRequest.Remark,
-                        GlFiscalYearId = leaveRequest.GlFiscalYearId,
-                        RequestDate = leaveRequest.RequestDate,
-                    };
-                    #region delete log
-                    UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted leave request of employee code  " + leaveRequest.EmployeeCode);
-                    #endregion
-                    db.LeaveRequest.Attach(entity);
-                    db.LeaveRequest.Remove(entity);
-                    db.SaveChanges();
-                }
-            }
-
-            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-        }
         public ActionResult UploadDocument(int leaveRequestId, HttpPostedFileBase file, string txtValue)
         {
             try
@@ -594,6 +311,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 return RedirectToAction("Upload");
             }
         }
+
         public ActionResult DownloadDoument(string filename, string attachId)
         {
             int.TryParse(attachId, out int attachmentId);
@@ -620,6 +338,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             return RedirectToAction("Index");
 
         }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

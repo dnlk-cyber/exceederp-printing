@@ -17,7 +17,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public string Grade { get; set; }
         public string Step { get; set; }
         public string AssignmentDate { get; set; }
-        public DateTime Date { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "HR_EmployeeDetail_Experience_From", ResourceType = typeof(Core.Localization.Resources))]
+        public DateTime? FromDate { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "HR_EmployeeDetail_Experience_To", ResourceType = typeof(Core.Localization.Resources))]
+        public DateTime? ToDate { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "HR_EmployeeDetail_Experience_From", ResourceType = typeof(Core.Localization.Resources))]
+        public string  From { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "HR_EmployeeDetail_Experience_To", ResourceType = typeof(Core.Localization.Resources))]
+        public string  To { get; set; }
         public bool IsHead { get; set; }
         public bool IsCurrent { get; set; }
         public decimal Salary { get; set; }

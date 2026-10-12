@@ -10,12 +10,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Department { get; set; }
         public string Branch { get; set; }
         public string JobTitle { get; set; }           
+        public string Role { get; set; }           
         public decimal Total { get; set; }
+        public decimal Totalweight { get; set; }
+        public decimal TotaOutOf100 { get; set; }
         public List<QurterList> QurterList { get; set; }
     }
 
     public class QurterList
     {
+        public string Criateria { get; set; }
+        public decimal Weight { get; set; }
         public decimal Score { get; set; }
         public string PeriodName { get; set; }
     }

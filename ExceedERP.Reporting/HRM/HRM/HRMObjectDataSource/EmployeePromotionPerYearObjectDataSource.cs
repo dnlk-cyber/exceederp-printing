@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeePromotionPerYearObjectDataSource : List<EmployeePromotion>
+    public class EmployeePromotionPerYearObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeePromotion> GetEmployeePromotionPerYer(string dept, string branchId)
+        public List<EmployeePromotion> GetEmployeePromotionPerYer(string dept, string branchId,string yearId,string status)
         {
             List<EmployeePromotion> EmployeeInfoList = new List<EmployeePromotion>();
             EmployeePromotion EmployeeInfo = new EmployeePromotion();
@@ -30,7 +30,31 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             var placements = db.Placements.Where(x => x.AssignmentType == AssignmentType.PROMOTION).ToList();
+            if (!string.IsNullOrEmpty(status))
+            {
+                IQueryable<int> empIdsQuery = null;
 
+                if (status == "Active")
+                {
+                    empIdsQuery = db.Person_Employee.Where(x => x.IsActive).Select(x => x.EmployeeId);
+                    placements = placements.Where(x => empIdsQuery.Contains(x.EmployeeId) && x.isCurrent).ToList();
+                }
+                else if (status == "InActive")
+                {
+                    empIdsQuery = db.Person_Employee.Where(x => !x.IsActive).Select(x => x.EmployeeId);
+                    placements = placements.Where(x => empIdsQuery.Contains(x.EmployeeId) && !x.isCurrent).ToList();
+                }
+            }
+            if (!string.IsNullOrEmpty(yearId))
+            {
+                int.TryParse(yearId, out int promationYearId);
+                var fiscalyear = db.GLFiscalYears.Find(promationYearId);
+                if(fiscalyear != null)
+                {
+                    placements = placements.Where(x => x.AssignmentDate >= fiscalyear.DateFrom && x.AssignmentDate <= fiscalyear.DateTo).ToList();
+                }
+
+            }
             if (branchId != null)
             {
                 int.TryParse(branchId, out int braId);
@@ -51,16 +75,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     EmployeeInfo = new EmployeePromotion();
 
-                    if (employee.Gender == Gender.MALE)
-                    {
-                        EmployeeInfo.Sex = "ወንድ";
-                    }
-                    else
-                    {
-                        EmployeeInfo.Sex = "ሴት";
-                    }
-
-                    EmployeeInfo.FullName = employee.FullNameAmharic;
+                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
+                    EmployeeInfo.FullName = employee.FullNameaEnglish;
                     EmployeeInfo.EmployeeId = employee.EmployeeCode;
 
                     var previousPlacment = db.Placements.Where(x => x.EmployeeId == e.EmployeeId).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
@@ -122,6 +138,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return EmployeeInfoList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

@@ -45,5 +45,6 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public EmployeeStatus EmployementType { get; set; }
         [Display(Name = "HR_EmployeeDetail_PlacementHistory_JobTitle", ResourceType = typeof(Localization.Resources))]
         public int LookupId { get; set; }
+        public int? BranchId { get; set; }
     }
 }

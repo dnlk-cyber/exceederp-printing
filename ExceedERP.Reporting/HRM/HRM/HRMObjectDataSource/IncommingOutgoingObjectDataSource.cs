@@ -8,7 +8,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class IncommingOutgoingObjectDataSource : List<IncommingOutgoingLetterReport>
+    public class IncommingOutgoingObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -145,6 +145,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             //    }
             //}
             return letters;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
 
     }

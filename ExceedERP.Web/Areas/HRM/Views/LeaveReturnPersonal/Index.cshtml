@@ -5,8 +5,9 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
-<legend>Leave Void</legend>
+<legend>@Resources.Leave_Return</legend>
 @(Html.Kendo().Grid<LeaveReturn>()
     .Name("LeaveReturngrid")
     .Columns(columns =>
@@ -15,13 +16,19 @@
         columns.Bound(c => c.LeaveRequestId).Title("Request Id").Width(100);
         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
         columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
-     
-        columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(100);
-        columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(100);
-       
-       
+        if (useEthiopian)
+        {
+            columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(100);
+            columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(100);
+        }
+        else
+        {
+            columns.Bound(c => c.From).Width(100);
+            columns.Bound(c => c.To).Width(100);
+        }
+
         columns.Bound(c => c.Amount).Width(100);
-        //columns.Bound(c => c.LeaveRequestId);
+        columns.Bound(c => c.Reason).Width(150);
         columns.Command(command =>
         {
             command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -80,7 +87,7 @@
                   model.Field(p => p.LeaveReturnId).Editable(false);
                   model.Field(p => p.LeaveRequestId).Editable(false);
               })
-             .Read(read => read.Action("LeaveReturnPersonal_Read", "LeaveReturnPersonal").Data("sendForgery"))
+             .Read(read => read.Action("LeaveReturn_Read", "LeaveReturnPersonal").Data("sendForgery"))
              .Create(create => create.Action("LeaveReturnPersonal_Create", "LeaveReturnPersonal").Data("sendForgery"))
              .Update(update => update.Action("LeaveReturnPersonal_Update", "LeaveReturnPersonal").Data("sendForgery"))
              .Destroy(destroy => destroy.Action("LeaveReturnPersonal_Destroy", "LeaveReturnPersonal").Data("sendForgery"))
@@ -102,7 +109,14 @@
                                         .Columns(columns =>
                                         {
                                             //columns.Bound(c => c.RequestId);
-                                            columns.Bound(c => c.DateReqStatAm).Width(120);
+                                            if (useEthiopian)
+                                            {
+                                                columns.Bound(c => c.DateReqStatAm).EditorTemplateName("Calander").Width(100);
+                                            }
+                                            else
+                                            {
+                                                columns.Bound(c => c.Date).Width(100);
+                                            }
                                             columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
                                             //columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["UserName"], "EmployeeId", "UserName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                                             columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
@@ -489,6 +503,7 @@
             if (dataItem.IsApproved === true) {
 
                 row.css("background-color", "darkgrey");
+
             }
             else {
 

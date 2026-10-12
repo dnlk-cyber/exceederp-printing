@@ -26,9 +26,9 @@
                                                                             events.RequestEnd("onRequestEnd(\"grid\")");
                                                                         })
           .Model(model => model.Id(p => p.EmpMeasurementDefinitionId))
-          .Read(read => read.Action("EmployeeMeasurementDefinition_Read", "EmployeeMeasurementDefination"))
-          .Create(create => create.Action("EmployeeMeasurementDefinition_Create", "EmployeeMeasurementDefination"))
-          .Update(update => update.Action("EmployeeMeasurementDefinition_Update", "EmployeeMeasurementDefination"))
-          .Destroy(destroy => destroy.Action("EmployeeMeasurementDefinition_Destroy", "EmployeeMeasurementDefination"))
+          .Read(read => read.Action("EmployeeMeasurementDefinition_Read", "EmployeeMeasurementDefination").Data("sendForgery"))
+          .Create(create => create.Action("EmployeeMeasurementDefinition_Create", "EmployeeMeasurementDefination").Data("sendForgery"))
+          .Update(update => update.Action("EmployeeMeasurementDefinition_Update", "EmployeeMeasurementDefination").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("EmployeeMeasurementDefinition_Destroy", "EmployeeMeasurementDefination").Data("sendForgery"))
       )
 )

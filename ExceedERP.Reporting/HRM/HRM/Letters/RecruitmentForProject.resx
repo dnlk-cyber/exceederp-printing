@@ -117,4 +117,117 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="l.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Fields.Address</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>In Our Company  {Fields.Department}  In work process = Fields.Branch} </value>
+  </data>
+  <data name="textBox44.Value" xml:space="preserve">
+    <value>{Fields.JobTitle}  It was decided to hire a position</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>Therefore, according to the organization's salary scale, the base salary determined for the job position at the level {Fields.RankName} is not netted per month {Fields.Salary}</value>
+  </data>
+  <data name="textBox54.Value" xml:space="preserve">
+    <value>You are being paid {Fields.JobTitle} position starting from {Fields.HireDate} in the case of employer and employee Proclamation No. 377/96 -----------------</value>
+  </data>
+  <data name="textBox58.Value" xml:space="preserve">
+    <value>Basis for 45 days trial period {Fields.Branch} Work Project/--------------/ Job responsibilities for which you have been hired High professional qualification,</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>Case Team to register the hire and prepare payroll on behalf of the employee every month and make salary payment as well  {Fields.Department}
+
+</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>We would like to state that the supporting work process has been informed by the copy of the same letter so that the employee can fill out the performance evaluation before the end of the trial period.</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>With Regards</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>Acknowledging that it requires honesty, care and hard work, and reminding you to perform your assigned job responsibilities effectively, human resource management</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>=  Fields. Abbreviation</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>To  {= Fields.Branch}  </value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>To Inform</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>CCC</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Date:-</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>{Fields.CurrentDateAmh}</value>
+  </data>
+  <data name="textBox40.Value" xml:space="preserve">
+    <value>No.:-</value>
+  </data>
+  <data name="textBox43.Value" xml:space="preserve">
+    <value>_____________________</value>
+  </data>
+  <data name="textBox49.Value" xml:space="preserve">
+    <value>= Fields.Tel</value>
+  </data>
+  <data name="textBox37.Value" xml:space="preserve">
+    <value>= Fields.Fax</value>
+  </data>
+  <data name="textBox36.Value" xml:space="preserve">
+    <value>= Fields.Pobox</value>
+  </data>
+  <data name="textBox35.Value" xml:space="preserve">
+    <value>= Fields.Email</value>
+  </data>
+  <data name="textBox34.Value" xml:space="preserve">
+    <value>= Fields.Address</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee </value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>To Inform</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>With Header?</value>
+  </data>
 </root>

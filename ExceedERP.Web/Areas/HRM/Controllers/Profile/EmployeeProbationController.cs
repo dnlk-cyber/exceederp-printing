@@ -14,6 +14,7 @@ using ExceedERP.Core.Domain.HRM.Prohibition;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -22,9 +23,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     public class EmployeeProbationController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime EndDate { get; set; }
-        public static string EndDateAm { get; set; }
-        HRMInputs inputs = new HRMInputs();
+      
+        //HRMInputs inputs = new HRMInputs();
+        private readonly CacheData CacheData = new CacheData();
+
         // GET: HRM/EmployeeExperience
         public ActionResult Index()
         {
@@ -34,8 +36,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         }
         private void PopulateViewData()
         {
-            var listt = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = listt.Where(x => x.IsActive);
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+           i => new
+           {
+               FullNameAmharic = i.AmharicName,
+               FullNameaEnglish = i.Code+"-"+i.Name,
+               EmployeeId = i.Id,
+               HeadId = i.Id
+           }).AsQueryable();
+           // ViewData["EmployeeList"] = listt.Where(x => x.IsActive);
             ViewData["Decistion"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.PROBATION_STATUS);
 
         }
@@ -43,9 +52,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             if (name == "EndDateAm")
             {
-                EndDateAm = value;
-                var splitDate = EndDateAm.Split('/');
-                EndDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var EndDate = HrHelper.ParseEthiopicDate(value);
             }
 
 
@@ -54,8 +61,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRRecruitmentUser, HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
         public ActionResult Prohibitions_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<Prohibition> prohibitions = db.Prohibitions.Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Prohibition> prohibitions = db.Prohibitions/*.Where(x => mybraches.Contains(x.br))*/;
             DataSourceResult result = prohibitions.ToDataSourceResult(request, prohibition => new
             {
                 EmployeeId = prohibition.EmployeeId,
@@ -82,44 +89,53 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Prohibitions_Create([DataSourceRequest]DataSourceRequest request, Prohibition prohibition)
         {
             ModelState.Clear();
+            if ( string.IsNullOrWhiteSpace(prohibition.EndDateAm))
+            {
+                ModelState.AddModelError("", "End date is mandatory!!");
+                return Json(new[] { prohibition }.ToDataSourceResult(request, ModelState));
+
+            }
+            prohibition.EndDate = HrHelper.ParseEthiopicDate(prohibition.EndDateAm);
+
+            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == prohibition.EmployeeId);
+            if (person ==null)
+            {
+                ModelState.AddModelError("", "employee not found!!");
+                return Json(new[] { prohibition }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
-                if (EndDateAm == null)
-                {
-                    ModelState.AddModelError("", "End date is mandatory!!");
-                }
-                else
-                {
-                    var entity = new Prohibition
-                    {
-                        EmployeeId = prohibition.EmployeeId,
-                        EndDate = EndDate,
-                        LookupId = prohibition.LookupId,
-                        EvaluationResult = prohibition.EvaluationResult,
-                        Remark = prohibition.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = prohibition.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = prohibition.ModifiedBy,
-                        Decision = prohibition.Decision,                        
-                        EndDateAm = EndDateAm,
-                        EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == prohibition.EmployeeId).FirstOrDefault().EmployeeCode,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
-                    };
+            
 
-                    db.Prohibitions.Add(entity);
-                    db.SaveChanges();
-                    prohibition.ProhibitionId = entity.ProhibitionId;
+                var entity = new Prohibition
+                {
+                    EmployeeId = prohibition.EmployeeId,
+                    EndDate = prohibition. EndDate,
+                    LookupId = prohibition.LookupId,
+                    EvaluationResult = prohibition.EvaluationResult,
+                    Remark = prohibition.Remark,
+                    DateCreated = DateTime.Now,
+                    LastModified = prohibition.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = prohibition.ModifiedBy,
+                    Decision = prohibition.Decision,                        
+                    EndDateAm = prohibition.EndDateAm,
+                    EmployeeCode = person.EmployeeCode,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
+                };
 
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Probation", "Success", User.Identity.Name, "Employee Probation of " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
+                db.Prohibitions.Add(entity);
+                db.SaveChanges();
+                prohibition.ProhibitionId = entity.ProhibitionId;
+
+                #region operation log
+
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Employee Probation", "Success", User.Identity.Name, "Employee Probation of " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
                         
-                    }
-                    #endregion
-                }
+                #endregion
+                
             }
 
             return Json(new[] { prohibition }.ToDataSourceResult(request, ModelState));
@@ -130,19 +146,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Prohibitions_Update([DataSourceRequest]DataSourceRequest request, Prohibition prohibition)
         {
             ModelState.Clear();
+            if (string.IsNullOrWhiteSpace(prohibition.EndDateAm))
+            {
+                ModelState.AddModelError("", "End date is mandatory!!");
+                return Json(new[] { prohibition }.ToDataSourceResult(request, ModelState));
+
+            }
+            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == prohibition.EmployeeId);
+            if (person == null)
+            {
+                ModelState.AddModelError("", "employee not found!!");
+                return Json(new[] { prohibition }.ToDataSourceResult(request, ModelState));
+
+            }
+            prohibition.EndDate = HrHelper.ParseEthiopicDate(prohibition.EndDateAm);
             if (ModelState.IsValid)
             {
-                if (EndDateAm == null)
-                {
-                    EndDateAm = prohibition.EndDateAm;
-                    var splitDate = EndDateAm.Split('/');
-                    EndDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
+                
                 var entity = new Prohibition
                 {
                     EmployeeId = prohibition.EmployeeId,
                     ProhibitionId = prohibition.ProhibitionId,
-                    EndDate = EndDate,
+                    EndDate = prohibition.EndDate,
                     LookupId = prohibition.LookupId,
                     EvaluationResult = prohibition.EvaluationResult,
                     Remark = prohibition.Remark,
@@ -150,9 +175,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     LastModified = DateTime.Now,
                     CreatedBy = prohibition.CreatedBy,
                     ModifiedBy = User.Identity.Name,
-                    EndDateAm = EndDateAm,
+                    EndDateAm = prohibition.EndDateAm,
                     Decision = prohibition.Decision,
-                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == prohibition.EmployeeId).FirstOrDefault().EmployeeCode,
+                    EmployeeCode = person.EmployeeCode,
                     OrgBranchName = prohibition.OrgBranchName
                 };
 
@@ -161,12 +186,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 db.SaveChanges();
 
                 #region operation log
-                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                if (person != null)
-                {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Probation", "Success", User.Identity.Name, "Probation of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
+
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Employee Probation", "Success", User.Identity.Name, "Probation of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
                     
-                }
+                
                 #endregion
             }
 

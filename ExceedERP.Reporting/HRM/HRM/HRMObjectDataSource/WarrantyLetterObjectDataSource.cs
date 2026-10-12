@@ -17,9 +17,10 @@ using ExceedERP.Core.Domain.HRM;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class WarrantyLetterObjectDataSource : List<WarrantyLetterViewModel>
+    public class WarrantyLetterObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
+        string cultureName = GlobalHelper.GetCurrentCulture();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<WarrantyVM> GetWarrantyLetter(string employee, bool header, string toCompany, string toPerson, string companyAddress)
@@ -131,11 +132,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         //warranty.EmployeeStatus = empName.Status;
                         if (warranty.EmployeeStatus == EmployeeStatus.PERMANENT.ToString())
                         {
-                            warranty.EmployeeStatus = "ቋሚ";
+                            warranty.EmployeeStatus = (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")? "ቋሚ": (cultureName.ToLower() == "om")? "Dhaabbataa":"Permanent";
+                          warranty.EmployeeStatus = EmployeeStatus.PERMANENT.ToString().ToLower();
                         }
                         if (warranty.EmployeeStatus == EmployeeStatus.CONTRACT.ToString())
                         {
-                            warranty.EmployeeStatus = "ጊዜያዊ";
+                            warranty.EmployeeStatus = (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et") ? "ጊዜያዊ" : (cultureName.ToLower() == "om") ? "kontiraataa" : "Contract";
+
+                            //warranty.EmployeeStatus = "ጊዜያዊ";
+                            //warranty.EmployeeStatus = EmployeeStatus.CONTRACT.ToString().ToLower();
                         }
 
                         var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
@@ -143,7 +148,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         {
                             warranty.Salary = placement.Salary;
 
-                            warranty.SalaryInWord = Convert.ToInt32(warranty.Salary).ToWordAmharic();
+                            var culture = cultureName.ToLower();
+                            int salary = Convert.ToInt32(warranty.Salary);
+
+                            warranty.SalaryInWord = (culture == "am" || culture == "am-et")
+                                ? salary.ToWordAmharic()
+                                : salary.ToWordEnglish();
                         }
                         var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.WarrantyAm);
                         if (template != null)
@@ -178,17 +188,23 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     #endregion
 
-                    letter.Title = "ዋስ ስለመሆን ይመለከታል፡፡";
 
                     var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.WarrantyAm);
                     if (template != null)
                     {
+                        letter.Title = template?.Title ??
+                            ((cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                                ? "ዋስ ስለመሆን ይመለከታል፡፡"
+                                : (cultureName.ToLower() == "om")
+                                    ? "Wabii ta’uu ilaallata."
+                                    : "It concerns being a guarantor");
+
                         string doc = "";
 
                         doc = template.Document.Replace("-ApplicantName-", war.Name);
                         doc = doc.Replace("-ToName-", toPerson);
                         doc = doc.Replace("-ApplicationDate-", war.RequestDate);
-                        string salary = war.Salary + "/" + war.SalaryInWord + "/";
+                        string salary = war.Salary + "(" + war.SalaryInWord + ")";
                         doc = doc.Replace("-Salary-", salary);
 
                         letter.Warranty = doc;
@@ -199,6 +215,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return warrantyOnePerson;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
         public static Image ByteArrayToImage(byte[] byteArrayIn)
         {

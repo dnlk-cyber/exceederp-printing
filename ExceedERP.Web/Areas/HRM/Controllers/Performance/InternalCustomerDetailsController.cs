@@ -10,6 +10,7 @@ using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -19,7 +20,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     HrmConstants.HRDepartmentHead,
                     HrmConstants.HRPerformanceReport)]
 
-    public class InternalCustomerDetailsController : Controller
+    public class InternalCustomerDetailsController : BaseController
     {
 
         private ExceedDbContext db = new ExceedDbContext();
@@ -30,6 +31,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 InternalCustomerDetailId = internalCustomer.InternalCustomerDetailId,
                 InternalCustomerId = internalCustomer.InternalCustomerId,
+                Remark = internalCustomer.Remark,
                 TobeEvalutedEmployeeId = internalCustomer.TobeEvalutedEmployeeId,
 
 
@@ -53,6 +55,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             if (db.InternalCustomerDetails.Where(x => x.TobeEvalutedEmployeeId == internalCustomer.TobeEvalutedEmployeeId&& x.InternalCustomerId == intenalCusId).Any())
             {
                 ModelState.AddModelError("", $"The Employee already registered !!");
+                return Json(new[] { internalCustomer }.ToDataSourceResult(request, ModelState), JsonRequestBehavior.AllowGet);
 
             }
             if (ModelState.IsValid)
@@ -73,6 +76,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             if (db.InternalCustomerDetails.Where(x =>  x.TobeEvalutedEmployeeId == internalCustomer.TobeEvalutedEmployeeId && x.InternalCustomerId == internalCustomer.InternalCustomerId &&x.InternalCustomerDetailId !=internalCustomer.InternalCustomerDetailId).Any())
             {
                 ModelState.AddModelError("", $"The Employee already registered select another!!");
+                return Json(new[] { internalCustomer }.ToDataSourceResult(request, ModelState));
 
             }
             if (ModelState.IsValid)
@@ -106,6 +110,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 InternalCustomerDetailId = internalCustomer.InternalCustomerDetailId,
                 InternalCustomerId = internalCustomer.InternalCustomerId,
+                Remark = internalCustomer.Remark,
                 TobeEvalutedEmployeeId = internalCustomer.TobeEvalutedEmployeeId,
 
             };

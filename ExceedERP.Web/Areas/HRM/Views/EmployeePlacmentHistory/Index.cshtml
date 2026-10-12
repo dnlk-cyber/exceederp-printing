@@ -70,10 +70,10 @@
                  })
                        
           .Model(model => model.Id(p => p.PlacementHistoryId))
-                              .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory"))
-                        .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory"))
-                      .Update(update => update.Action("PlacementHistories_Update", "EmployeePlacmentHistory"))
-                      .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory"))
+                              .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory").Data("sendForgery"))
+                        .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory").Data("sendForgery"))
+                      .Update(update => update.Action("PlacementHistories_Update", "EmployeePlacmentHistory").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory").Data("sendForgery"))
               )
 )
 <style type="text/css">
@@ -86,7 +86,6 @@
     function GetEmployeeNameEmploye(e) {
         var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
         var id = autocomplete.value();
-
         $.ajax({
             url: '@Url.Action("SetEmployeeId", "EmployeePlacmentHistory")',
             contentType: "application/json; charset=utf-8",
@@ -101,21 +100,7 @@
     }
 </script>
 <script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function (key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function () {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
+   
 
     function sync_handler(e) {
         this.read();

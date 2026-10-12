@@ -45,6 +45,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 LeavePayableSettingId = leavePayableSetting.LeavePayableSettingId,
                 IncludeCurrentFiscalYearDays = leavePayableSetting.IncludeCurrentFiscalYearDays,
+                EnableTaxableAllowance = leavePayableSetting.EnableTaxableAllowance,
                 CurrentValue = leavePayableSetting.CurrentValue,
                 CreatedBy = leavePayableSetting.CreatedBy,
                 DateCreated = leavePayableSetting.DateCreated,
@@ -69,6 +70,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                     CurrentValue = leavePayableSetting.CurrentValue,
                     IncludeCurrentFiscalYearDays = leavePayableSetting.IncludeCurrentFiscalYearDays,
+                    EnableTaxableAllowance = leavePayableSetting.EnableTaxableAllowance,
                     DateCreated = DateTime.UtcNow,
                     CreatedBy = User.Identity.Name
 
@@ -99,6 +101,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     LeavePayableSettingId = leavePayableSetting.LeavePayableSettingId,
                     CurrentValue = leavePayableSetting.CurrentValue,
                     IncludeCurrentFiscalYearDays = leavePayableSetting.IncludeCurrentFiscalYearDays,
+                    EnableTaxableAllowance = leavePayableSetting.EnableTaxableAllowance,
                     CreatedBy = leavePayableSetting.CreatedBy,
                     DateCreated = leavePayableSetting.DateCreated,
                     LastModified = leavePayableSetting.LastModified,

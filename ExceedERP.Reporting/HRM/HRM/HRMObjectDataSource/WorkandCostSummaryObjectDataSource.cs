@@ -14,7 +14,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
     [DataObject]
-    public class WorkandCostSummaryObjectDataSource : List<WorkandCostSummary>
+    public class WorkandCostSummaryObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -293,6 +293,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return summaryList;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

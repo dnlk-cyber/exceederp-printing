@@ -12,7 +12,7 @@ using ExceedERP.Reporting.HRM.Payroll;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class MonthlySalaryPerPeriodObjectDataSource : List<MonthlySalaryPerPeriodVM>
+    public class MonthlySalaryPerPeriodObjectDataSource :IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
 
@@ -134,6 +134,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return list;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

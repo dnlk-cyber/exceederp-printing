@@ -117,7 +117,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     LookupId = termination.LookupId,
                     Reason = termination.Reason,
                     ApplicationDate = termination.ApplicationDate,
-                    TerminationDate = new DateTime(termination.TerminationDate.Year, termination.TerminationDate.Month, termination.TerminationDate.Day),
+                    TerminationDate = new DateTime(termination.TerminationDate.Value.Year, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Day),
                     Remark = termination.Remark
                 };
 
@@ -155,7 +155,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     EmployeeId = termination.EmployeeId,
                     LookupId = termination.LookupId,
                     Reason = termination.Reason,
-                    TerminationDate = new DateTime(termination.TerminationDate.Year, termination.TerminationDate.Month, termination.TerminationDate.Day),
+                    TerminationDate = new DateTime(termination.TerminationDate.Value.Year, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Day),
                     ApplicationDate = termination.ApplicationDate,
                     Remark = termination.Remark
                 };
@@ -180,7 +180,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     EmployeeId = termination.EmployeeId,
                     LookupId = termination.LookupId,
                     Reason = termination.Reason,
-                    ApplicationDate = new DateTime(termination.TerminationDate.Year, termination.TerminationDate.Month, termination.TerminationDate.Day),
+                    ApplicationDate = new DateTime(termination.TerminationDate.Value.Year, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Day),
                     TerminationDate = termination.TerminationDate,
                     Remark = termination.Remark
                 };

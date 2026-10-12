@@ -82,6 +82,12 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
 
         [Display(Name = "HR_LeaveManagment_Leave_Hour", ResourceType = typeof(Localization.Resources))]
         public int Hours { get; set; }
+        public bool? IsProjectManagerApproved { get; set; }
+        public string ProjectManagerApprovedBy { get; set; }
+        public DateTime? ProjectManagerApprovedDate { get; set; }
+        public bool? IsHRManagerApproved { get; set; }
+        public string HRManagerApprovedBy { get; set; }
+        public DateTime? HRManagerApprovedDate { get; set; }
         [NotMapped]
         public bool IsApproved { get; set; }
         [NotMapped]
@@ -107,5 +113,21 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public string ShortPath { get; set; }
         public string FileExtension { get; set; }
         public string Description { get; set; }
+    }
+    public class LeaveRequestPMValidation : VoucherValidation
+    {
+        public int LeaveRequestPMValidationId { get; set; }
+        public int LeaveRequestId { get; set; }
+        public LeaveRequest LeaveRequest { get; set; }
+
+    }
+
+    public class LeaveRequestHRManagerValidation : VoucherValidation
+    {
+        public int LeaveRequestHRManagerValidationId { get; set; }
+
+        public int LeaveRequestId { get; set; }
+        public LeaveRequest LeaveRequest { get; set; }
+
     }
 }

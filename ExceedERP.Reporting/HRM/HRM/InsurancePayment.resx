@@ -117,4 +117,64 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox45.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Carbon Payment Amount</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Carbon Payment Amount</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>=Today()</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= RowNumber("tblInsu")</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.PeriodOne</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.PeriodTwo</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.RestitutionName</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>= Sum(Fields.PeriodTwoCount)</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Sum(Fields.PeriodOneCount)</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Page: {PageNumber}</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>the amount of Arbon payment requested by the insurance company</value>
+  </data>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>am</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>በጀት ዓመት</value>
+  </data>
 </root>

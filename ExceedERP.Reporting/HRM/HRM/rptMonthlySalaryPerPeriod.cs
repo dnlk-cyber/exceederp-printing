@@ -1,5 +1,7 @@
 using ExceedERP.Reporting.SharedDataSources;
 using System.Drawing;
+using System.Globalization;
+using System.Threading;
 
 namespace ExceedERP.Reporting.HRM.HRM
 {
@@ -15,6 +17,8 @@ namespace ExceedERP.Reporting.HRM.HRM
             //
             // Required for telerik Reporting designer support
             //
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
             InitializeComponent();
 
             //

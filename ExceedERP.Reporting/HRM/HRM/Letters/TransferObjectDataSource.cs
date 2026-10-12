@@ -12,7 +12,7 @@ using ExceedERP.Reporting.SharedDataSources;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-    public class TransferObjectDataSource : TransferVM
+    public class TransferObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -128,5 +128,11 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             return EmployeeInfo;
         }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+        
     }
 }

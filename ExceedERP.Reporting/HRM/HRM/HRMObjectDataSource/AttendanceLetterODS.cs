@@ -1,5 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using System;
 using System.Collections.Generic;
@@ -11,20 +13,22 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class AttendanceLetterODS
+    public class AttendanceLetterODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
+        string cultureName = GlobalHelper.GetCurrentCulture();
+
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<AttendanceLeterVM> GetAttendance(DateTime from, DateTime to, string id)
         {
+
             List<AttendanceLeterVM> attendanceList = new List<AttendanceLeterVM>();
 
             if (id != null)
             {
                 int.TryParse(id, out int empId);
-
-                var employees = GetEmployeesUnderBoss(empId);
-
+                var employees = EmployeeHelper.GetSubordinates_FilteredByHead(empId);
+                //var employees = GetEmployeesUnderBoss(empId);
                 var attendances = db.AttendanceNews.Where(x => employees.Contains(x.EmployeeId)).Where(x => x.Date >= from && x.Date <= to).OrderBy(x => x.Date).ToList();
 
                 int index = 0;
@@ -37,20 +41,50 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (person != null)
                     {
-                        attendanceMorning.Name = person.FullNameAmharic;
+                        // Same name must be used for both Morning/Afternoon rows of a day, otherwise the
+                        // report groups them as two different employees (om/en cultures used the Amharic
+                        // name here but the English name below).
+                        attendanceMorning.Name = (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                            ? person.FullNameAmharic
+                            : person.FullNameaEnglish;
 
                         attendanceMorning.Date = att.Date;
-                        attendanceMorning.Day = GetDaysAmharic(att.Date.DayOfWeek.ToString());
-                        attendanceMorning.Shift = "ጠዋት";
+                        attendanceMorning.Day = GetDayName(att.Date.DayOfWeek.ToString(), cultureName);
+                        if (cultureName.ToLower() == "om")
+                        {
+                            attendanceMorning.Shift = "Ganama";
+                        }
+                        if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                        {
+                            attendanceMorning.Shift = "Morning";
+                        }
+                        if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                        {
+                            attendanceMorning.Shift = "ጠዋት";
+                        }
+
+                           
                         attendanceMorning.Index = index;
 
-                        if (att.IsPresentMorning)
+                        if (att.MorningAttendance==TakeAttendance.Present)
                         {
                             attendanceMorning.Value = "P";
                         }
-                        else
+                        else if(att.MorningAttendance == TakeAttendance.Absent)
                         {
                             attendanceMorning.Value = "A";
+                        }
+                        else if(att.MorningAttendance == TakeAttendance.Field)
+                        {
+                            attendanceMorning.Value = "Field";
+                        }
+                        else if(att.MorningAttendance == TakeAttendance.Leave)
+                        {
+                            attendanceMorning.Value = "L";
+                        }
+                        else if(att.MorningAttendance == TakeAttendance.Others)
+                        {
+                            attendanceMorning.Value = "O";
                         }
 
                         var leaveTakenM = db.Leaves.FirstOrDefault(x => x.EmployeeId == att.EmployeeId && x.From <= att.Date && x.To >= att.Date);
@@ -73,20 +107,49 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                         var attendanceAfternoon = new AttendanceLeterVM();
 
-                        attendanceAfternoon.Name = person.FullNameAmharic;
                         attendanceAfternoon.Date = att.Date;
-                        attendanceAfternoon.Day = GetDaysAmharic(att.Date.DayOfWeek.ToString());
-                        attendanceAfternoon.Shift = "ከሰአት";
+                        attendanceAfternoon.Day = GetDayName(att.Date.DayOfWeek.ToString(),cultureName);
                         attendanceMorning.Index = index;
+                        attendanceAfternoon.Name = person.FullNameaEnglish;
+                        if (cultureName.ToLower() == "om")
+                        {
+                            attendanceAfternoon.Shift = "Waaree booda";
+                            attendanceAfternoon.Name = person.FullNameaEnglish;
 
-                        if (att.IsPresentAfternoon)
+                        }
+                        if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                        {
+                            attendanceAfternoon.Shift = "Afternoon";
+                            attendanceAfternoon.Name = person.FullNameaEnglish;
+
+                        }
+                        if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                        {
+                            attendanceAfternoon.Shift = "ከሰአት";
+                            attendanceAfternoon.Name = person.FullNameAmharic;
+
+                        }
+                        if (att.IsPresentAfternoon &&att.AfternoonAttendance == TakeAttendance.Present)
                         {
                             attendanceAfternoon.Value = "P";
                         }
-                        else
+                        else if (att.AfternoonAttendance == TakeAttendance.Absent)
                         {
                             attendanceAfternoon.Value = "A";
                         }
+                        else if (att.AfternoonAttendance == TakeAttendance.Field)
+                        {
+                            attendanceAfternoon.Value = "Field";
+                        }
+                        else if (att.AfternoonAttendance == TakeAttendance.Leave)
+                        {
+                            attendanceAfternoon.Value = "L";
+                        }
+                        else if (att.AfternoonAttendance == TakeAttendance.Others)
+                        {
+                            attendanceAfternoon.Value = "O";
+                        }
+                       
 
                         var leaveTakenA = db.Leaves.FirstOrDefault(x => x.EmployeeId == att.EmployeeId && x.From <= att.Date && x.To >= att.Date);
 
@@ -111,29 +174,65 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return attendanceList;
         }
-
-        public string GetDaysAmharic(string day)
+        public string GetDayName(string day, string cultureName)
         {
             switch (day.ToLower())
             {
                 case "monday":
-                    return "ሰኞ";
-                case "tuesday":
-                    return "ማክሰኞ";
-                case "wednesday":
-                    return "ረቡዕ";
-                case "thursday":
-                    return "ሐሙስ";
-                case "friday":
-                    return "አርብ";
-                case "saturday":
-                    return "ቅዳሜ";
-                case "sunday":
-                    return "እሁድ";
-            }
+                    return cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et" ? "ሰኞ" :
+                           cultureName.ToLower() == "om" ? "Wiixata" : "Monday";
 
-            return null;
+                case "tuesday":
+                    return cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et" ? "ማክሰኞ" :
+                           cultureName.ToLower() == "om" ? "Kabala" : "Tuesday";
+
+                case "wednesday":
+                    return cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et" ? "ረቡዕ" :
+                           cultureName.ToLower() == "om" ? "Roobii" : "Wednesday";
+
+                case "thursday":
+                    return cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et" ? "ሐሙስ" :
+                           cultureName.ToLower() == "om" ? "Kamiisa" : "Thursday";
+
+                case "friday":
+                    return cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et" ? "አርብ" :
+                           cultureName.ToLower() == "om" ? "Jimaata" : "Friday";
+
+                case "saturday":
+                    return cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et" ? "ቅዳሜ" :
+                           cultureName.ToLower() == "om" ? "Sanbata Duraa" : "Saturday";
+
+                case "sunday":
+                    return cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et" ? "እሁድ" :
+                           cultureName.ToLower() == "om" ? "Dilbata" : "Sunday";
+
+                default:
+                    return null; // If the day is not recognized
+            }
         }
+
+        //public string GetDaysAmharic(string day)
+        //{
+        //    switch (day.ToLower())
+        //    {
+        //        case "monday":
+        //            return "ሰኞ";
+        //        case "tuesday":
+        //            return "ማክሰኞ";
+        //        case "wednesday":
+        //            return "ረቡዕ";
+        //        case "thursday":
+        //            return "ሐሙስ";
+        //        case "friday":
+        //            return "አርብ";
+        //        case "saturday":
+        //            return "ቅዳሜ";
+        //        case "sunday":
+        //            return "እሁድ";
+        //    }
+
+        //    return null;
+        //}
 
         public string GetLeaveInAbbrvation(LeaveType leaveType)
         {
@@ -199,6 +298,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return employeesIdList;
         }
-
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 }

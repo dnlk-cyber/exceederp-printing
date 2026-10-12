@@ -18,7 +18,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
     [DataObject]
-   public class RecruitmentRequestLetterODS
+   public class RecruitmentRequestLetterODS : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -199,6 +199,12 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
          
             return EmployeeInfoList;
         }
+      
+            public void Dispose()
+            {
+                db.Dispose();
+            }
+        
     }
 
     public class RecruitmentRequestVM

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -7,7 +8,7 @@ using ExceedERP.DataAccess.Context;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class HospitalObjectDataSource : List<MainCompany>
+    public class HospitalObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -24,6 +25,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return hospitals;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

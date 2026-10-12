@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="textBox222.Value" xml:space="preserve">
+    <value>ለ ወ/ት/ሮ/አቶ</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>ሠላምታ ጋር
+
+</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>CC</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>ግልባጭ</value>
+  </data>
+  <data name="htmlTextBox1.Value" xml:space="preserve">
+    <value>&lt;p&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;በ{Fields.AmharicName} ከላይ በተጠቀሰው &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 10pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;የስራ መደብ ላይ በአሰሪና ሠራተኛ አዋጅ &lt;span style="text-decoration: underline"&gt;1156/11 አንቀጽ 30&lt;/span&gt; መሠረት &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&lt;/span&gt;እንዲቀጠሩ ከ &lt;span style="text-decoration: underline"&gt;&lt;span style="mso-tab-count: 3"&gt;{Fields.AssignmentDate}&lt;/span&gt;&lt;/span&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&lt;/span&gt;ጀምሮ እድል ሲሰጥዎት በደስታ ነው፡፡ የስራ ቦታዎም በ &lt;span style="text-decoration: underline"&gt;&lt;span style="mso-tab-count: 3"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;/span&gt;ይሆናል፡፡ &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;ተጠሪነትዎ ለ &lt;span style="text-decoration: underline"&gt;&lt;span style="mso-tab-count: 4"&gt;{Fields.CurrentDepartement}&lt;/span&gt;&lt;/span&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&lt;/span&gt;ሲሆን ከዚሁ ጋር በተያያዘው የስራ ዝርዝር መግለጫ ላይ የተዘረዘሩትን ተግባራትና ኃላፊነቶች ይተገብራሉ፡፡ ለተቀጠሩበት የስራ መደብም በኩባንያው የደመወዝ ደረጃና ስኬል ላይ ያሉትን የሚከተሉትን ክፍያዎች ያገኛሉ፡፡ &lt;p&gt;&lt;/p&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="htmlTextBox3.Value" xml:space="preserve">
+    <value>&lt;p&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;እንዲሁም በድርጅቱ የሚዋጣውን 11% አስራ አንድ በመቶ በኢትዮዽያ የግል ድርጅት ሠራተኞች አዋጅ 715/2003 መሠረት የጡረታ መዋጮ ተቀማጭ ገንዘብ ያገኛሉ፡፡ ሌሎች ግዴታዎች እና ሁኔታዎች በኢትዮዽያ&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp; &lt;/span&gt;የአሠሪና ሠራተኛ አዋጅ ቁጥር &lt;/span&gt;&lt;span style="text-decoration: underline"&gt;&lt;span lang="EN-US" style="font-size: 10pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;1156/11 አንቀጽ 30&lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 10pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt; &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;&lt;span style="mso-spacerun: yes"&gt;&amp;nbsp;&lt;/span&gt;እና በኩባንያው የሰው ኃይል ደንብና መመሪያ መሰረት ተግባራዊ ይሆናል፡፡ በተጨማሪም በየጊዜው የሚወጡትን የኩባንያው ደንቦችና መመሪያዎች ማክበርና መተግበር ይጠበቅብዎታል፡፡&amp;nbsp;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11pt; mso-bidi-font-size: 10.5pt"&gt;&lt;span style="font-family: power geez unicode1"&gt;የስራ አፈጻጸም የሚገመገምበት &lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="text-decoration: underline"&gt;60&lt;/span&gt;&lt;/b&gt; የስራ ቀናት የሙከራ ጊዜ ውስጥ ያልፋሉ፡፡ እንዲሁም የዲፓርትመንት ኃላፊዎች ሰራተኛው የስራ አፈጻጸም ከተቀጠረ &lt;b style="mso-bidi-font-weight: normal"&gt;&lt;span style="text-decoration: underline"&gt;&lt;span style="mso-tab-count: 1"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;55&lt;/span&gt;&lt;/b&gt; የስራ ቀን አስቦ በመሙላት ለሰው ኃይል ልማትና አስተዳደር መምሪያ መላክ ይኖርበታል፡፡ በሙከራ ጊዜ ወቅት አጥጋቢ የስራ አፈጻጸም ውጤት አለማምጣት የቅጥር ውልን ሊያቋርጥ ይችላል፡፡ &lt;/span&gt;&lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;የስራ ቅጥር ውል መቋረጥ በኩባንያው ወይንም በእርስዎ ተነሳሽነት ሊፈጸም ይችላል፡፡ አፈፃፀሙም በሠራተኛና አሠሪ አዋጅ መሠረት ይሆናል፡፡ &lt;/span&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;ከላይ በተሰጥዎት የስራ ቅጥር ዕድል የሚስማሙ ከሆነ ኮፒው ላይ ፈርመው ለግል ማህደርዎ ይመልሱት፡፡&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-language: ar-sa"&gt;ወደ {Fields.AmharicName}ን እንኳን ደህና መጡ እያልኩኝ አብረን እንደምንሰራና ስራዎም ውጤታማ እና ጥራት ያለው እንደሚሆን ተስፋ አደርጋለሁ፡፡&lt;/span&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="htmlTextBox2.Value" xml:space="preserve">
+    <value>&lt;p class="MsoNormal" style="text-align: center; margin: 0in"&gt;&lt;span lang="EN-US" style="font-size: 11pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-bidi-font-size: 10.5pt"&gt;&lt;strong&gt;ጉዳዩ፣ {Fields.CurrentJobTitle} &lt;/strong&gt;&lt;span style="mso-tab-count: 4"&gt;&lt;span style="font-size: 13px; font-family: nyala"&gt;&amp;nbsp;&lt;/span&gt;&lt;/span&gt;&lt;strong&gt;&lt;span style="text-decoration: underline"&gt;የሥራ መደብ መቀጠርዎን ስለመግለጽ፤&lt;/span&gt;&lt;/strong&gt; &lt;p&gt;&lt;/p&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>ቁጥር፡</value>
+  </data>
+  <data name="textBox1111.Value" xml:space="preserve">
+    <value>ቀን፡</value>
+  </data>
+</root>

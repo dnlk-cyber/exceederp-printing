@@ -14,13 +14,12 @@ namespace ExceedERP.Reporting.SharedDataSources
         {
             List<string> sourceList = new List<string>
             {
+                "< 18",
                 "18-29",
                 "30-40",
                 "41-50",
                 "51-60",
-                "More than 60"
-
-
+                "> 60"
 
             };
 

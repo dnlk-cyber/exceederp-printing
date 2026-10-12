@@ -2,9 +2,11 @@
 @using ExceedERP.Core.Localization
 @model ExceedERP.Core.Domain.Common.HRM.Person_Employee
 @using System.Collections
+@{
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
 
-
-<div class="form">
+<div class="form" id="EmployeePopup">
 
     <div class="row fullrow">
         <div class="col-md-1"> </div>
@@ -116,7 +118,7 @@
                                                       .ValuePrimitive(true)
                                                       .DataSource(dataSource =>
                                                       {
-                                                          dataSource.Read(read => read.Action("GetPersonTitle", "HRMDataProvider", new { area = "HRM" }))
+                                                          dataSource.Read(read => read.Action("GetPersonTitle", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                               .ServerFiltering(false);
                                                       })
 
@@ -165,7 +167,7 @@
                                      .ValuePrimitive(true)
                                      .DataSource(dataSource =>
                                      {
-                                         dataSource.Read(read => read.Action("GetEmployeeTypes", "HRMDataProvider"))
+                                         dataSource.Read(read => read.Action("GetEmployeeTypes", "HRMDataProvider").Data("sendForgery"))
                                              .ServerFiltering(false);
                                      }))
 
@@ -219,7 +221,7 @@
                                              .ValuePrimitive(true)
                                              .DataSource(dataSource =>
                                              {
-                                                 dataSource.Read(read => read.Action("GetCountry", "HRMDataProvider"))
+                                                 dataSource.Read(read => read.Action("GetCountry", "HRMDataProvider").Data("sendForgery"))
                                                      .ServerFiltering(true);
                                              }))
                                     </div>
@@ -236,7 +238,7 @@
                                             .ValuePrimitive(true)
                                             .DataSource(dataSource =>
                                             {
-                                                dataSource.Read(read => read.Action("GetNation", "HRMDataProvider"))
+                                                dataSource.Read(read => read.Action("GetNation", "HRMDataProvider").Data("sendForgery"))
                                                     .ServerFiltering(true);
                                             }))
                                     </div>
@@ -322,17 +324,33 @@
 
                         <div class="row fullrow">
                             <div class="col-md-3 ro1">
+                                @if (useEthiopian)
+                                {
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DateOfBirthAm, htmlAttributes: new { @class = "control-label col-md-8" })
 
+                                        <div class="col-md-10">
 
-                                <div class="form-group">
-                                    @Html.LabelFor(model => model.DateOfBirthAm, htmlAttributes: new { @class = "control-label col-md-8" })
-
-                                    <div class="col-md-10">
-
-                                        @Html.TextBoxFor(model => model.DateOfBirthAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
-                                        @Html.ValidationMessageFor(model => model.DateOfBirthAm, "", new { @class = "text-danger" })
+                                            @Html.TextBoxFor(model => model.DateOfBirthAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                                            @Html.ValidationMessageFor(model => model.DateOfBirthAm, "", new { @class = "text-danger" })
+                                        </div>
                                     </div>
-                                </div>
+
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DateOfBirthAm, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                                        <div class="col-md-10">
+
+                                            @Html.Kendo().DatePickerFor(model => model.DateOfBirth)
+                                            @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                }
+
                                 <div class="form-group">
                                     @Html.LabelFor(model => model.BirthPlace, htmlAttributes: new { @class = "control-label col-md-8" })
 
@@ -348,15 +366,35 @@
 
                             <div class="col-md-3 ro1">
 
+                                @if (useEthiopian)
+                                {
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.HiredDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                                        <div class="col-md-10">
+                                            @Html.TextBoxFor(model => model.HiredDateAmharic, htmlAttributes: new { onchange = "onHiredDateChange()", disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+                                            @*@Html.TextBoxFor(model => model.HiredDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />*@
+                                            @Html.ValidationMessageFor(model => model.HiredDateAmharic, "", new { @class = "text-danger" })
+                                        </div>
+                                
+                                    </div>
+
+                                }
+                                else
+                                {
                                 <div class="form-group">
-                                    @Html.LabelFor(model => model.HiredDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    @Html.LabelFor(model => model.HiredDate, htmlAttributes: new { @class = "control-label col-md-8" })
 
                                     <div class="col-md-10">
 
-                                        @Html.TextBoxFor(model => model.HiredDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
-                                        @Html.ValidationMessageFor(model => model.HiredDateAmharic, "", new { @class = "text-danger" })
+                                        @Html.Kendo().DatePickerFor(model => model.HiredDate).Events(e => e.Change("onHiredDateChange"))
+                                        @Html.ValidationMessageFor(model => model.HiredDate, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
+
+                                }
+                                
 
                                 <div class="form-group">
                                     @Html.LabelFor(model => model.MartialStatus, htmlAttributes: new { @class = "control-label col-md-8" })

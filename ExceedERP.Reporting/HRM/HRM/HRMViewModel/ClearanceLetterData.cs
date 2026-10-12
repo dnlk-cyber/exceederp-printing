@@ -25,5 +25,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Fax { get; set; }
         public string Pobox { get; set; }
         public string Tel { get; set; }
+        public byte[] SignatureImage { get; set; }
     }
 }

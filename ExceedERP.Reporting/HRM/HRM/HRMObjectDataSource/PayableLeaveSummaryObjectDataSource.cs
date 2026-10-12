@@ -10,7 +10,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class PayableLeaveSummaryObjectDataSource : List<PayableLeave>
+    public class PayableLeaveSummaryObjectDataSource :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -25,20 +25,20 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             var employees = db.Person_Employee.Where(x => x.IsActive).ToList();
 
-            if (branchId != null)
+            if (!string.IsNullOrEmpty(branchId))
             {
                 int.TryParse(branchId, out int braId);
                 var empIds = db.Placements.Where(x => x.BranchId == braId && x.isCurrent).Select(x => x.EmployeeId).ToList();
                 employees = employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-            if (dept != null)
+            if (!string.IsNullOrEmpty(dept))
             {
                 int.TryParse(dept, out int orgId);
                 var empIds = db.Placements.Where(x => x.OrgStructureId == orgId && x.isCurrent).Select(x => x.EmployeeId).ToList();
                 employees = employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
 
-            if (year != null)
+            if (!string.IsNullOrEmpty(year))
             {
                 int.TryParse(year, out int periodId);
                 periods = periods.Where(x => x.GlFiscalYearId == periodId).ToList();
@@ -98,6 +98,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
             return summaries;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 

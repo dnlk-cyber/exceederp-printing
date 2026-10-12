@@ -5,16 +5,22 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>@Resources.NavigatorPerformance_EmployeePerformance || Second Level</legend>
+<div class="epsl-page-header">
+    <i class="fa fa-bar-chart"></i>
+    <legend>@Resources.NavigatorPerformance_EmployeePerformance || Second Level</legend>
+</div>
+<div class="epsl-grid-wrapper">
 @(Html.Kendo().Grid<EmployeePerformance>()
         .Name("EmployeePerformancegrid")
         .Columns(columns =>
         {
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").Width(140).Title(Resources.Common_PersonEmployee_EmployeeCode).Filterable(ftb => ftb.Multi(true).Search(true));
             columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(170).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
             columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
             columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
             columns.Bound(c => c.IsCurrent).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsCurrent ? checked='checked' :'' # >").Width(150);
             columns.Bound(c => c.ReasonFor2ndRejection).Width(140);
+            columns.Bound(c => c.EmployeeRemark).Width(140);
             columns.Bound(c => c.IsApproved).ClientTemplate(
                    "<input type='checkbox' disabled = 'true' value='#=IsApproved#' " +
                    "#if(IsApproved) { #" +
@@ -45,12 +51,13 @@
                        "checked='checked'" +
                        "# } #" +
                        "/>").Width(120);
+            columns.Bound(c => c.Date).Width(120);
             columns.Command(command =>
             {
                 command.Custom("cmd-approve-request").IconClass("fa fa-check ").Text("Approva").Click("thirdLevelApproval").HtmlAttributes(new { @class = "btn btn-success" });
                 command.Custom("cmd-reject").IconClass("fa fa-check ").Text("Reject").Click("secondLevelRejection").HtmlAttributes(new { @class = "btn btn-warning" });
 
-            }).Width(100);
+            }).Width(200);
 
 
         })
@@ -59,13 +66,12 @@
         .Scrollable(h => h.Height("auto"))
         .Events(ev=>ev.DataBound("onDataBound"))
         .Pageable(pageable => pageable
-                //.Input(true)
-                // .Numeric(false)
-                .Refresh(true)
-                //.PageSizes(true)
-                // .ButtonCount(5)
-                )
-
+                     .Input(true)
+                     .Numeric(false)
+                     .Refresh(true)
+                     .PageSizes(true)
+                     .ButtonCount(5)
+                     )
             .DataSource(dataSource => dataSource
                 .Ajax()
                 .Events(events =>
@@ -85,6 +91,7 @@
                     .Read(read => read.Action("EmployeePerformanceSecondLevelSummaries_Read", "EmployeePerformanceSecondLevelSummaries").Data("sendForgery"))
                     ).ClientDetailTemplateId("employee_performance_template")
                     )
+</div>
 
 <script id="employee_performance_template" type="text/kendo-tmpl">
   @(Html.Kendo().TabStrip()
@@ -101,20 +108,22 @@
 
                   columns.ForeignKey(c => c.EvaluationCriteriaTypeId, (IEnumerable)ViewData["EvalutionCrateria"], "MeasurementDefinitionId", "Name").Width(200);
                   columns.Bound(c => c.Weight).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                  columns.Bound(c => c.EvalutionType).Width(120);
                   columns.Bound(c => c.Result).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
                   columns.Bound(c => c.ReasonFor2ndRejection).Width(100);
-                  columns.Bound(c => c.Remark).Width(50);
+                  columns.Bound(c => c.EmployeeRemark).Width(150);
+                  columns.Bound(c => c.Remark).Width(100);
 
               })
               .ClientDetailTemplateId("Action")
               .Editable(editable => editable.Mode(GridEditMode.InLine))
               .Scrollable(h => h.Height("auto"))
                 .Pageable(pageable => pageable
-                      //.Input(true)
-                      // .Numeric(false)
-                      .Refresh(true)
-                     //.PageSizes(true)
-                     // .ButtonCount(5)
+                     .Input(true)
+                     .Numeric(false)
+                     .Refresh(true)
+                     .PageSizes(true)
+                     .ButtonCount(5)
                      )
 
               .DataSource(dataSource => dataSource
@@ -146,58 +155,54 @@
                    </text> );
 
 
-                }).ToClientTemplate())
+
+        }).ToClientTemplate())
                                             
 </script>
 
 <script id="employee_performance_detail_template" type="text/kendo-tmpl">
         @(Html.Kendo().TabStrip()
-                .Name("tabstrip_#EmployeePerformanceId#")
-                .SelectedIndex(0)
-                .Items(items =>
-                {
-                    items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
-                    @<text>
-                        @(Html.Kendo().Grid<EmployeeMeasurement>()
-                                .Name("Measurement_grid_#=EmployeePerformanceId#")
-                                .Columns(columns =>
-                                {
-                                    columns.ForeignKey(c => c.MeasurmentId, (IEnumerable)ViewData["Measurments"], "MeasurementId", "MeasurementName").Width(200);
-                                    columns.Bound(c => c.Weight).Width(80);
-                                    columns.Bound(c => c.Result).Width(80);
-                                    columns.Bound(c => c.Remark).Width(50);
+            .Name("tabstrip_#EmployeePerformanceId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
+                @<text>
+                    @(Html.Kendo().Grid<EmployeeMeasurement>()
+                           .Name("Measurement_grid_#=EmployeePerformanceId#")
+                           .Columns(columns =>
+                           {
+                               columns.ForeignKey(c => c.MeasurmentId, (IEnumerable)ViewData["Measurments"], "MeasurementId", "MeasurementName").Width(200);
+                               columns.Bound(c => c.Weight).Width(80);
+                               columns.Bound(c => c.Result).Width(80);
+                               columns.Bound(c => c.Remark).Width(50);
 
-                                })
 
-                                .ClientDetailTemplateId("Action")
-
-                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                .Scrollable(h => h.Height("auto"))
-                                    .Pageable(pageable => pageable
-                                        //.Input(true)
-                                        // .Numeric(false)
+                           })
+                            .ClientDetailTemplateId("Action")
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height("auto"))
+                            .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
                                         .Refresh(true)
-                                        //.PageSizes(true)
-                                        // .ButtonCount(5)
-                                        )
-                                .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"Measurement_grid_#=EmployeePerformanceId#\")");
-                                    events.RequestStart("onRequestStart(\"Measurement_grid_#=EmployeePerformanceId#\")");
-                                    events.RequestEnd("onRequestEnd(\"Measurement_grid_#=EmployeePerformanceId#\")");
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                            .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"Measurement_grid_#=EmployeePerformanceId#\")");
+                                events.RequestStart("onRequestStart(\"Measurement_grid_#=EmployeePerformanceId#\")");
+                                events.RequestEnd("onRequestEnd(\"Measurement_grid_#=EmployeePerformanceId#\")");
 
 
-                                })
+                            })
 
                                 .Model(model =>
                                 {
                                     model.Id(p => p.EmpMeasurementId);
                                     model.Field(p => p.Result).Editable(false);
-
-
-
                                 })
                                 .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceSecondLevelSummaries", new { performanceId = "#=EmployeePerformanceId#" }).Data("sendForgery")/*.Data("filterdata")*/)
 
@@ -245,6 +250,12 @@
 
                             .Editable(editable => editable.Mode(GridEditMode.InLine))
                             .Scrollable(h => h.Height("auto"))
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
                             .DataSource(dataSource => dataSource
                                 .Ajax()
                                     .Events(events =>
@@ -253,6 +264,7 @@
                                         events.RequestStart("onRequestStart(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
                                         events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
                                     })
+                                   
 
                                 .Model(model =>
                                 {
@@ -275,68 +287,116 @@
             }).ToClientTemplate())
 </script >
 
-        @*</div>*@
+    <script>
 
+        function sync_handler(e) {
+            this.read();
 
-        @*</div>*@
-
-
-        <script>
-
-            function sync_handler(e) {
-                this.read();
-
-            }
-        </script>
+        }
+    </script>
 
 
 
-        <style>
-                #approveButtonStyle {
-                    border-radius: 5%;
-                    padding-top: 1px;
-                    padding-bottom: 1px;
-                }
-                /*#grid .k-grid-toolbar {
-                padding: .6em 1.3em;
-            }
+<style>
+        #approveButtonStyle {
+            border-radius: 5%;
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
 
-            .category-label {
-                vertical-align: middle;
-                padding-right: .5em;
-            }
+    .epsl-page-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
 
-            #category {
-                vertical-align: middle;
-            }
+        .epsl-page-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
 
-            .toolbar {
-                float: right;
-            }*/
+        .epsl-page-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    .epsl-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #EmployeePerformancegrid.k-grid {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #EmployeePerformancegrid.k-grid .k-grid-header {
+            background-color: #f9fafb;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #EmployeePerformancegrid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+
+    @@media (max-width: 767px) {
+        #EmployeePerformancegrid.k-grid {
+            font-size: 12px;
+        }
+    }
+        /*#grid .k-grid-toolbar {
+        padding: .6em 1.3em;
+    }
+
+    .category-label {
+        vertical-align: middle;
+        padding-right: .5em;
+    }
+
+    #category {
+        vertical-align: middle;
+    }
+
+    .toolbar {
+        float: right;
+    }*/
       
-        </style>
+</style>
 
 
  <script>
-            function onDataBound(e) {
-                var grid = this;
-                grid.tbody.find("tr[role='row']").each(function (e) {
-                    var model = grid.dataItem(this);
-                    if (model.IsSecondLevelApproved && model.AreAllHRLevelApproved) {
-                        $(this).find(".k-grid-cmd-approve-request").hide();
-                        $(this).find(".k-grid-cmd-reject").hide();
-                    }
-                    if (model.IsSecondLevelRejected && model.AreAllHRLevelApproved) {
-                        $(this).find(".k-grid-cmd-reject").hide();
-
-                    }
-                });
-               
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if ( model.AreAllHRLevelApproved) {
+                $(this).find(".k-grid-cmd-approve-request").hide();
+                $(this).find(".k-grid-cmd-reject").hide();
+            }
+            if (model.IsSecondLevelRejected && model.AreAllHRLevelApproved) {
+                $(this).find(".k-grid-cmd-reject").hide();
 
             }
+        });
+               
+
+    }
           
 
-        </script>
+
+ </script>
 
 <script>
     function thirdLevelApproval(e) {

@@ -37,6 +37,32 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public TrainingRequestType TrainingRequestType { get; set; }
 
         public int GlFisicalYearId { get; set; }
+        public bool IsMiddleOnlineApproved { get; set; }
+        public string MiddleOnlineApprovedBy { get; set; }
+        public DateTime? MiddleOnlineApprovedTime { get; set; }
 
+
+    }
+    public class TrainingApplicantAttachment : TrackUserSettingOperation
+    {
+        [Key]
+        public int TrainingApplicantAttachmentId { get; set; }
+
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+        public int TrainingApplicantId { get; set; }
+        public virtual TrainingApplicant Request { get; set; }
+    }
+
+    public class TrainingApplicantSecondValidation : VoucherValidation
+    {
+        [Key]
+        public int TrainingApplicantSecondValidationId { get; set; }
+
+        public int TrainingApplicantId { get; set; }
+        public virtual TrainingApplicant TrainingApplicant { get; set; }
     }
 }

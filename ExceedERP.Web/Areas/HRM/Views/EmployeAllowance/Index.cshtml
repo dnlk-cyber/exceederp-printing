@@ -1,126 +1,258 @@
-﻿@using ExceedERP.Core.Localization
+﻿
+@using ExceedERP.Core.Localization
 @using ExceedERP.Core.Domain.HRM.Allowance
 @using System.Collections
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>@Resources.NavigatorBenefit_EmployeeAllowance</legend>
+<style>
+    .employee-allowance-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+        .employee-allowance-header i {
+            color: #337ab7;
+            font-size: 20px;
+        }
+
+        .employee-allowance-header legend {
+            margin-bottom: 0;
+            border-bottom-color: #337ab7;
+        }
+
+    #AllowancePerEmployeegrid.k-grid {
+        border: 1px solid #e3e6ea;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+        #AllowancePerEmployeegrid.k-grid .k-grid-header {
+            background-color: #f8f9fb;
+        }
+
+        #AllowancePerEmployeegrid.k-grid .k-grid-header th.k-header {
+            font-weight: 600;
+            color: #333;
+        }
+
+        #AllowancePerEmployeegrid.k-grid .k-grid-content tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        #AllowancePerEmployeegrid.k-grid .k-grid-content tr:hover {
+            background-color: #eef4fb;
+        }
+
+        #AllowancePerEmployeegrid .k-grid-toolbar {
+            background-color: #fff;
+            padding: 10px;
+        }
+</style>
+<div class="employee-allowance-header">
+    <i class="fa fa-list-alt"></i>
+    <legend>@Resources.NavigatorBenefit_EmployeeAllowance</legend>
+</div>
+
 @(Html.Kendo().Grid<AllowancePerEmployee>()
-      .Name("AllowancePerEmployeegrid")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.EmployeeCode).Width(120);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Filterable(f=>f.Multi(true).Search(true)).Width(200);
-          columns.ForeignKey(c => c.AllowanceDefinationId, (IEnumerable)ViewData["AllowanceList"], "AllowanceDefinationId", "AllowanceName").EditorTemplateName("Allowance").Filterable(f=>f.Multi(true).Search(true)).Width(200);
-          columns.Bound(c => c.Pend).ClientTemplate("<input type='checkbox' #= Pend ? checked='checked':'' # class='chkbx' />").Width (120);
-          columns.Bound(c => c.From).Width(150);
-          columns.Bound(c => c.To).Width(150);
-          columns.Bound(c => c.Remark).Width(150);
-          columns.Command(command =>
-          {
-              //if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
-              //{
-              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-              //}
-              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+              .Name("AllowancePerEmployeegrid")
+              .Columns(columns =>
               {
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-              }
-          }).Width(200);
-      })
-      .ToolBar(toolbar =>
-      {
-
-      toolbar.Template(@<text>
-         <div class="toolbar">
-          
-             @item.CreateButton(Resources.ActionButton_AddNewRecord)            
-          
-         </div>       
-
-         </text>);
-
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))     
-         .Scrollable(h => h.Height(500))
-         .Groupable()
-         .Filterable()
-         .Pageable(pageable => pageable
-         .Input(true)
-         .Numeric(false)
-         .Refresh(true)
-         .PageSizes(true)
-         .ButtonCount(5))    
-
-      .DataSource(dataSource => dataSource
-      .Ajax()
-              .Events(events =>
-               {
-
-                   events.Error("error_handler(\"AllowancePerEmployeegrid\")");
-                   events.RequestStart("onRequestStart(\"AllowancePerEmployeegrid\")");
-                   events.RequestEnd("onRequestEnd(\"AllowancePerEmployeegrid\")");
-               })
-
-          .Model(model =>
-          {
-              model.Id(p => p.AllowanceId);
-              model.Field(p => p.EmployeeCode).Editable(false);
-              model.Field(p => p.Remark).Editable(false);
-          })
-          .Read(read => read.Action("AllowancePerEmployees_Read", "EmployeAllowance"))
-           .Create(create => create.Action("AllowancePerEmployees_Create", "EmployeAllowance"))
-          .Update(update => update.Action("AllowancePerEmployees_Update", "EmployeAllowance"))
-            .Destroy(destroy => destroy.Action("AllowancePerEmployees_Destroy", "EmployeAllowance"))
+                  columns.Bound(c => c.EmployeeCode).Width(120);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode")
+                            .Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                  columns.ForeignKey(c => c.AllowanceDefinationId, (IEnumerable)ViewData["AllowanceList"], "AllowanceDefinationId", "AllowanceName").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                  columns.Bound(c => c.Pend).ClientTemplate("<input type='checkbox' #= Pend ? checked='checked':'' # class='chkbx' />").Width(120);
+                  columns.Bound(c => c.From).Format("{0:yyyy-MM-dd}").Width(150);
+                  columns.Bound(c => c.To).Format("{0:yyyy-MM-dd}").Width(150);
+                  columns.Bound(c => c.Remark).Width(150);
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+                      {
+                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                      }
+                  }).Width(200);
+              })
+              .ToolBar(toolbar => toolbar.Create().Text(Resources.ActionButton_AddNewRecord))
+              .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                  .Window(w => w.Title("Employee Allowance Management")
+                                  .Modal(true)
+                                  .Events(ev => ev.Open("centerKendoWindow"))))
+              .Scrollable(h => h.Height(500))
+              .Filterable()
+              .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Sort(srt => srt.Add(x => x.AllowanceId).Descending())
+                  .Events(events =>
+                        {
+                            events.Error("error_handler(\"AllowancePerEmployeegrid\")");
+                            events.RequestStart("onRequestStart(\"AllowancePerEmployeegrid\")");
+                            events.RequestEnd("onRequestEnd(\"AllowancePerEmployeegrid\")");
+                        })
+                  .Model(model =>
+                  {
+                      model.Id(p => p.AllowanceId);
+                      model.Field(p => p.EmployeeCode).Editable(false);
+                  })
+                  .Read(read => read.Action("AllowancePerEmployees_Read", "EmployeAllowance").Data("sendForgery"))
+                  .Create(create => create.Action("AllowancePerEmployees_Create", "EmployeAllowance").Data("sendForgery"))
+                  .Update(update => update.Action("AllowancePerEmployees_Update", "EmployeAllowance").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("AllowancePerEmployees_Destroy", "EmployeAllowance").Data("sendForgery"))
               )
 )
 
 
-
-<style type="text/css">
-    div.k-edit-form-container {
-        width: 700px;
+<style>
+    /* Popup Window Width & Padding (actual width/height are set responsively by centerKendoWindow) */
+    .k-window-content.k-popup-edit-form {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
     }
+
+    div.k-edit-form-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px 25px !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+    }
+
+    /* Keep the Update/Cancel buttons in their own clearly padded, visible bar
+       instead of butting against the edited content or the window edge. */
+    .k-window .k-edit-buttons {
+        padding: 14px 25px !important;
+        margin: 0 !important;
+        border-top: 1px solid #e5e7eb;
+        background: #ffffff;
+    }
+
+    .allowance-popup-container {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .allowance-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .allowance-field {
+        margin-bottom: 12px;
+    }
+
+        .allowance-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .allowance-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+
+        .allowance-field input[type="text"],
+        .allowance-field textarea,
+        .allowance-field .k-dropdown,
+        .allowance-field .k-multiselect,
+        .allowance-field .k-datepicker {
+            width: 100% !important;
+        }
+
+    .checkbox-inline-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 10px 14px;
+        border-radius: 6px;
+    }
+
+        .checkbox-inline-wrapper label {
+            margin-bottom: 0 !important;
+            font-weight: 600;
+            color: #1f2937;
+            cursor: pointer;
+        }
 </style>
 
+
 <script type="text/javascript">
-    $(function () {
-        $('#AllowancePerEmployeegrid').on('click', '.chkbx', function () {
-            var checked = $(this).is(':checked');
-            var grid = $('#AllowancePerEmployeegrid').data().kendoGrid;
-            var dataItem = grid.dataItem($(this).closest('tr'));
-            dataItem.set('Pend', checked);
-        })
-    })
+        // Center and auto-scale the popup editor window based on device viewport
+        function centerKendoWindow(e) {
+            var win = e.sender;
+            var screenWidth = $(window).width();
 
-    function checkAll(ele) {
-        var state = $(ele).is(':checked');
-        var grid = $('#AllowancePerEmployeegrid').data().kendoGrid;
-        $.each(grid.dataSource.view(), function () {
-            if (this['Pend'] != state)
-                this.dirty = true;
-            this['Pend'] = state;
-        });
-        grid.refresh();
-    }
-    function ReAssign()
-    {
-        $.ajax({
-            url: '@Url.Action("PerapreEmployeeAllowance", "EmployeAllowance")',
-            contentType: "application/json; charset=utf-8",
-          //  data: { 'from': from, 'to': to },
-            type: 'GET',
-            cache: false,
-            success: function (result) {
-                r = result;
-                //$("#From").val(fromd);
-                //$("#From").trigger("change");
-                $("#AllowancePerEmployeegrid").data("kendoGrid").dataSource.read();
-                $("#AllowancePerEmployeegrid").data("kendoGrid").refresh();
+            if (screenWidth < 768) {
+                win.setOptions({
+                    width: "95%",
+                    maxHeight: "92vh"
+                });
+            } else if (screenWidth < 1100) {
+                win.setOptions({
+                    width: "740px",
+                    maxHeight: "90vh"
+                });
+            } else {
+                win.setOptions({
+                    width: "820px",
+                    maxHeight: "88vh"
+                });
             }
+            win.center();
+        }
 
-        });
+        $(function () {
+            $('#AllowancePerEmployeegrid').on('click', '.chkbx', function () {
+                var checked = $(this).is(':checked');
+                var grid = $('#AllowancePerEmployeegrid').data().kendoGrid;
+                var dataItem = grid.dataItem($(this).closest('tr'));
+                dataItem.set('Pend', checked);
+            })
+        })
 
-    }
+        function checkAll(ele) {
+            var state = $(ele).is(':checked');
+            var grid = $('#AllowancePerEmployeegrid').data().kendoGrid;
+            $.each(grid.dataSource.view(), function () {
+                if (this['Pend'] != state)
+                    this.dirty = true;
+                this['Pend'] = state;
+            });
+            grid.refresh();
+        }
+        function ReAssign()
+        {
+            $.ajax({
+                url: '@Url.Action("PerapreEmployeeAllowance", "EmployeAllowance")',
+                contentType: "application/json; charset=utf-8",
+              //  data: { 'from': from, 'to': to },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    //$("#From").val(fromd);
+                    //$("#From").trigger("change");
+                    $("#AllowancePerEmployeegrid").data("kendoGrid").dataSource.read();
+                    $("#AllowancePerEmployeegrid").data("kendoGrid").refresh();
+                }
+
+            });
+
+        }
 </script>
 

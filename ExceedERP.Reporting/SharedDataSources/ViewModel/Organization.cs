@@ -10,6 +10,7 @@ namespace ExceedERP.Reporting.SharedDataSources.ViewModel
         public string Website { get; set; }
         public string Address { get; set; }
         public Image LogoFileName { get; set; }
+        public Image IsoLogoFileName { get; set; }
         public string Abbreviation { get; set; }
         public string Date { get; set; }
         public string Note { get; set;}

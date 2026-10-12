@@ -4,13 +4,13 @@ using System.ComponentModel;
 using System.Linq;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class InternalVacancyObjectDataSource : List<InternalVacancy>
+    public class InternalVacancyObjectDataSource : IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -152,5 +152,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return internalVacancies;
             }
-           }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<Vacancy> GetInternalVacancyCode()
+        {
+            
+            return db.VaccancyPlans.ToList();
+        }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+    }
 }

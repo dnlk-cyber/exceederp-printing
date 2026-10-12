@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,7 +20,6 @@ namespace ExceedERP.Reporting.SharedDataSources
            return db.GLPeriods.Where(x=>x.GlFiscalYearId==fiscalYearId).ToList();
            
         }
-
 
     }
 

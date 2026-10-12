@@ -14,6 +14,7 @@ using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -23,31 +24,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     {
         // GET: HRM/EmployeeExperience
         private ExceedDbContext db = new ExceedDbContext();
-        public static string FromAmharic { get; set; }
-        public static string ToAmharic { get; set; }
-        public static DateTime From { get; set; }
-        public static DateTime To { get; set; }
+        //public static string FromAmharic { get; set; }
+        //public static string ToAmharic { get; set; }
+        //public static DateTime From { get; set; }
+        //public static DateTime To { get; set; }
         public ActionResult Index()
         {
 
             return View();
         }
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromContAm")
-            {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else if (name == "ToContAm")
-            {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
+        //public void SetDate(string name, string value)
+        //{
+        //    if (name == "FromContAm")
+        //    {
+        //        FromAmharic = value;
+        //        var splitDate = FromAmharic.Split('/');
+        //        From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+        //    }
+        //    else if (name == "ToContAm")
+        //    {
+        //        ToAmharic = value;
+        //        var splitDate = ToAmharic.Split('/');
+        //        To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+        //    }
 
-        }
+        //}
       
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin, HrmConstants.HRProfileUser)]
         public ActionResult Contract_Read([DataSourceRequest]DataSourceRequest request, int id)
@@ -76,62 +77,86 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Contract_Create([DataSourceRequest]DataSourceRequest request, Contract contract, int id)
         {
-            ModelState.Clear();
-            if (ModelState.IsValid)
+           
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
             {
-                if (FromAmharic != null && ToAmharic != null)
+                if (string.IsNullOrEmpty(contract.FromContAm)
+                || string.IsNullOrEmpty(contract.ToContAm))
                 {
-                    var checkexistance = db.Contract.FirstOrDefault(x => x.EmployeeId == id && x.From == From && x.To == To);
-                    if (checkexistance != null)
-                    {
-                        ModelState.AddModelError("", "This Contract date is already registered!!");
-                    }
-                    else if (From.Date > DateTime.Now.Date)
-                    {
-
-                        ModelState.AddModelError("", "start date should be less or equal to the current date!!");
-                    }
-                    else if (From.Date > To.Date)
-                    {
-
-                        ModelState.AddModelError("", "start date should be less or equal to the end date!!");
-                    }
-                    else
-                    {
-                        var entity = new Contract
-                        {
-                            ContractId = contract.ContractId,
-                            From = From,
-                            To = To,
-                            MonthlySalary = contract.MonthlySalary,
-                            EmployeeId = id,
-                            Remark = contract.Remark,
-                            DateCreated = DateTime.Now,
-                            LastModified = contract.LastModified,
-                            CreatedBy = User.Identity.Name,
-                            ModifiedBy = contract.ModifiedBy,
-                            FromContAm = FromAmharic,
-                            ToContAm = ToAmharic
-                        };
-
-                        db.Contract.Add(entity);
-                        db.SaveChanges();
-                        contract.ContractId = entity.ContractId;
-
-                        #region operation log
-                        var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                        if (person != null)
-                        {
-                                UserHelper.OperationLog(Request.UserHostAddress, "Employee Contract", "Success", User.Identity.Name, "Contract for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
-                            
-                        }
-                        #endregion
-                    }
+                    ModelState.AddModelError("", " Date fields are mandatory");
+                    return Json(new[] { contract }.ToDataSourceResult(request, ModelState));
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Both From and To Date values are mandatory!!");
+                    contract.From = HrHelper.ParseEthiopicDate(contract.FromContAm);
+                    contract.To = HrHelper.ParseEthiopicDate(contract.ToContAm);
                 }
+
+            }
+            else
+            {
+
+                contract.FromContAm = XAPI.EthiopicDateTime.GetEthiopicDate(contract.From.Day,contract.From.Month,contract.From.Year);
+                contract.ToContAm = XAPI.EthiopicDateTime.GetEthiopicDate(contract.To.Day,contract.To.Month,contract.To.Year);
+
+            }
+
+
+           
+            var checkexistance = db.Contract.FirstOrDefault(x => x.EmployeeId == id && x.From == contract.From && x.To == contract.To);
+            if (checkexistance != null)
+            {
+                ModelState.AddModelError("", "This Contract date is already registered!!");
+            }
+            if (contract.From.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "start date should be less or equal to the current date!!");
+            }
+            if (contract.From.Date > contract.To.Date)
+            {
+
+                ModelState.AddModelError("", "start date should be less or equal to the end date!!");
+            }
+            contract.EmployeeId = id;
+            contract.DateCreated = DateTime.Now;
+            contract.CreatedBy = User.Identity.Name;
+            if (ModelState.IsValid)
+            {
+               
+                   
+                var entity = new Contract
+                {
+                    ContractId = contract.ContractId,
+                    From = contract.From,
+                    To = contract.To,
+                    MonthlySalary = contract.MonthlySalary,
+                    EmployeeId = contract.EmployeeId,
+                    Remark = contract.Remark,
+                    DateCreated = contract.DateCreated,
+                    LastModified = contract.LastModified,
+                    CreatedBy = contract.CreatedBy,
+                    ModifiedBy = contract.ModifiedBy,
+                    FromContAm = contract.FromContAm,
+                    ToContAm = contract.ToContAm
+                };
+
+                db.Contract.Add(entity);
+                db.SaveChanges();
+                contract.ContractId = entity.ContractId;
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
+                {
+                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Contract", "Success", User.Identity.Name, "Contract for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
+                            
+                }
+                #endregion
+                    
+                
+               
 
 
 
@@ -144,57 +169,81 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Contract_Update([DataSourceRequest]DataSourceRequest request, Contract contract)
         {
-            ModelState.Clear();
-            if (ModelState.IsValid)
-            {
-                if (FromAmharic == null)
-                {
-                    FromAmharic = contract.FromContAm;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (ToAmharic == null)
-                {
-                    ToAmharic = contract.ToContAm;
-                    var splitDate = ToAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (From.Date > DateTime.Now.Date)
-                {
 
-                    ModelState.AddModelError("", "start date should be less or equal to the current date!!");
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(contract.FromContAm)
+                || string.IsNullOrEmpty(contract.ToContAm))
+                {
+                    ModelState.AddModelError("", " Date fields are mandatory");
+                    return Json(new[] { contract }.ToDataSourceResult(request, ModelState));
                 }
                 else
                 {
-                    var entity = new Contract
-                    {
-                        ContractId = contract.ContractId,
-                        From = From,
-                        To = To,
-                        MonthlySalary = contract.MonthlySalary,
-                        EmployeeId = contract.EmployeeId,
-                        Remark = contract.Remark,
-                        DateCreated = contract.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = contract.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        FromContAm = FromAmharic,
-                        ToContAm = ToAmharic
-                    };
-
-                    db.Contract.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Contract", "Success", User.Identity.Name, "Contract of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
-                        
-                    }
-                    #endregion
+                    contract.From = HrHelper.ParseEthiopicDate(contract.FromContAm);
+                    contract.To = HrHelper.ParseEthiopicDate(contract.ToContAm);
                 }
+
+            }
+            else
+            {
+
+                contract.FromContAm = XAPI.EthiopicDateTime.GetEthiopicDate(contract.From.Day, contract.From.Month, contract.From.Year);
+                contract.ToContAm = XAPI.EthiopicDateTime.GetEthiopicDate(contract.To.Day, contract.To.Month, contract.To.Year);
+
+            }
+
+            
+            var checkexistance = db.Contract.FirstOrDefault(x => x.EmployeeId == contract.EmployeeId && x.From == contract.From && x.To == contract.To);
+            if (checkexistance != null)
+            {
+                ModelState.AddModelError("", "This Contract date is already registered!!");
+            }
+            if (contract.From.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "start date should be less or equal to the current date!!");
+            }
+            if (contract.From.Date > contract.To.Date)
+            {
+
+                ModelState.AddModelError("", "start date should be less or equal to the end date!!");
+            }
+            contract.LastModified = DateTime.Now;
+            contract.ModifiedBy = User.Identity.Name;
+            if (ModelState.IsValid)
+            {
+               
+                var entity = new Contract
+                {
+                    ContractId = contract.ContractId,
+                    From = contract.From,
+                    To = contract.To,
+                    MonthlySalary = contract.MonthlySalary,
+                    EmployeeId = contract.EmployeeId,
+                    Remark = contract.Remark,
+                    DateCreated = contract.DateCreated,
+                    LastModified = contract.LastModified,
+                    CreatedBy = contract.CreatedBy,
+                    ModifiedBy = contract.ModifiedBy,
+                    FromContAm = contract.FromContAm,
+                    ToContAm = contract.ToContAm
+                };
+
+                db.Contract.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
+                {
+                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Contract", "Success", User.Identity.Name, "Contract of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
+                        
+                }
+                #endregion
+                
             }
 
             return Json(new[] { contract }.ToDataSourceResult(request, ModelState));

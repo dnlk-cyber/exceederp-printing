@@ -14,7 +14,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
    
 
     [DataObject]
-    public class WorkandCostSummaryPeriodODS : List<GlFiscalYear>
+    public class WorkandCostSummaryPeriodODS :IDisposable
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -29,6 +29,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 return list;
             }
             return period;
+        }
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

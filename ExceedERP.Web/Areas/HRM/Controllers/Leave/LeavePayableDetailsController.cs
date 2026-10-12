@@ -31,6 +31,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 BusinessUnitId = leavePayable.BusinessUnitId,
                 OrgStructureId = leavePayable.OrgStructureId,
                 BasicSalary = leavePayable.BasicSalary,
+                TaxableAllowance = leavePayable.TaxableAllowance,
+                TotalTaxableSalary = leavePayable.TotalTaxableSalary,
                 Year1 = leavePayable.Year1,
                 Year2 = leavePayable.Year2,
                 CurrentYear = leavePayable.CurrentYear,
@@ -152,14 +154,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             //}
             decimal totalDays = payableDetail.Year1 + payableDetail.Year2+ payableDetail.CurrentYear;
             decimal salary = placement.Salary;
+            // No source-of-truth to pull this from (unlike Salary via Placement), so keep whatever
+            // was submitted from the grid's editable Taxable Allowance column.
+            decimal taxableAllowance = payableDetail.TaxableAllowance;
+            decimal totalTaxableSalary = salary + taxableAllowance;
 
             decimal totalPayable = (salary * totalDays) / setting.CurrentValue;
             decimal monthlyLeave = totalPayable / 12;
 
-            decimal aggregateTaxable = monthlyLeave + salary;
+            decimal aggregateTaxable = monthlyLeave + totalTaxableSalary;
 
             decimal aggregateTax = (decimal)IncomeTax.GetIncomeTax((float)aggregateTaxable);
-            decimal basicTax = (decimal)IncomeTax.GetIncomeTax((float)salary);
+            decimal basicTax = (decimal)IncomeTax.GetIncomeTax((float)totalTaxableSalary);
             decimal taxDifference = (aggregateTax - basicTax) * 12;
             decimal netPayment = totalPayable - taxDifference;
 
@@ -170,6 +176,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             payableDetail.PayableDays = totalDays;
 
             payableDetail.BasicSalary = salary;
+            payableDetail.TaxableAllowance = taxableAllowance;
+            payableDetail.TotalTaxableSalary = totalTaxableSalary;
             payableDetail.Balance = totalPayable;
             payableDetail.AnnualLeavePerMonth = monthlyLeave;
 

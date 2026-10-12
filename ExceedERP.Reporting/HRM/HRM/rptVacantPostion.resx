@@ -117,4 +117,88 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Department.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="JobTitle.Value" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="TobeStaff.Value" xml:space="preserve">
+    <value>To Bee Staff</value>
+  </data>
+  <data name="CurrentStaf.Value" xml:space="preserve">
+    <value>Current Staff</value>
+  </data>
+  <data name="VacantPostion.Value" xml:space="preserve">
+    <value>Vacant Position</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.Department</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>=Fields.Jobtitle</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>=Fields.Shouldbe</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>=Fields.Current</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>=Fields.Vacant</value>
+  </data>
+  <data name="Total.Value" xml:space="preserve">
+    <value>Totall</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>=Sum(Fields.Shouldbe)</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>=Sum(Fields.Current)</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>=Sum(Fields.Vacant)</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="VacantPosition.Value" xml:space="preserve">
+    <value>Vacant Position</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Parameters.org.Label</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Parameters.branchId.Label</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Page: {PageNumber}</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Business Unit</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Status</value>
+  </data>
 </root>

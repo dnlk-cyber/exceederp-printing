@@ -11,7 +11,7 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class InVacVMODS : List<InVacVM>
+    public class InVacVMODS : IDisposable
     {
 
 
@@ -43,7 +43,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return vacancyLists;
         }
-
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 }
 

@@ -1,20 +1,18 @@
 ﻿using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using ExceedERP.Core.Domain.Global;
 using System.Web.Mvc;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
-    public class ProbationPerformanceDetailController : Controller
+    public class ProbationPerformanceDetailController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/ProbationPerformance

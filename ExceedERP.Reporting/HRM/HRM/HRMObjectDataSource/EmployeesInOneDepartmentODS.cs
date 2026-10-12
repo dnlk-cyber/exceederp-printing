@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common.HRM;
+﻿using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EmployeesInOneDepartmentODS
+    public class EmployeesInOneDepartmentODS:IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -33,5 +33,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             return personEmployes;
         }
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
+   
 }

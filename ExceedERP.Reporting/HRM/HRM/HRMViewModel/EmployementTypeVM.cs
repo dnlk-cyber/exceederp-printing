@@ -12,4 +12,5 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Contrat { get; set; }
         public string Freelance { get; set; }
     }
+   
 }
