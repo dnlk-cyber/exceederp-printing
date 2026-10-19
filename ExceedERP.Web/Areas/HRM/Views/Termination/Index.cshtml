@@ -416,10 +416,10 @@
                                                                         @EmployeeGuarantor()
                                                                     </text>);
 
-                                                                            items.Add().Text("Staff Debtor Balance").Content(
+                                                                            @*items.Add().Text("Staff Debtor Balance").Content(
                                                                             @<text>
                                                                                 @StaffDebtorBalance()
-                                                                            </text>);
+                                                                            </text>);*@
 
                                                                                 }).ToClientTemplate())
 </script>
@@ -578,7 +578,7 @@
     )
 }
 
-@helper StaffDebtorBalance()
+@*@helper StaffDebtorBalance()
 {
     @(Html.Kendo().Grid<StaffDebtorBalance>()
                 .Name("StaffDebtorBalance_#=TerminationId#")
@@ -625,7 +625,7 @@
                     .Destroy(destroy => destroy.Action("StaffDebtorBalances_Destroy", "StaffDebtorBalance").Data("sendForgery"))
                 ).ToClientTemplate()
     )
-}
+}*@
 
 <script id="GuarantorOrSuretytemplate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()

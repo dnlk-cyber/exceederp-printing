@@ -44,10 +44,20 @@ namespace ExceedERP.Web.Helpers
 
 	public class UserInformationHelper
 	{
-		 //ExceedDbContext db = new ExceedDbContext();
-		 //ApplicationDbContext _dbApplication = new ApplicationDbContext();
-		#region User Infromation
-		public static int GetEmployeeWorkUnitById(int employeeid)
+        //ExceedDbContext db = new ExceedDbContext();
+        //ApplicationDbContext _dbApplication = new ApplicationDbContext();
+        #region User Infromation
+        public static string GetEmployeeUserNameByEmployeeId(int empId)
+        {
+            using (var _dbApplication = new ApplicationDbContext())
+            {
+                return _dbApplication.Users
+                    .Where(x => x.EmployeeId == empId)
+                    .Select(x => x.UserName)
+                    .FirstOrDefault() ?? string.Empty;
+            }
+        }
+        public static int GetEmployeeWorkUnitById(int employeeid)
 		{
 			ExceedDbContext db = new ExceedDbContext();
 			int branch = 0;

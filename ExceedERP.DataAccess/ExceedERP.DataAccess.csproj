@@ -113,6 +113,10 @@
     <Compile Include="Migrations\202610121604099_HRMChangesMigration1.Designer.cs">
       <DependentUpon>202610121604099_HRMChangesMigration1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610190807408_OverTimechanges.cs" />
+    <Compile Include="Migrations\202610190807408_OverTimechanges.Designer.cs">
+      <DependentUpon>202610190807408_OverTimechanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -149,6 +153,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610121604099_HRMChangesMigration1.resx">
       <DependentUpon>202610121604099_HRMChangesMigration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610190807408_OverTimechanges.resx">
+      <DependentUpon>202610190807408_OverTimechanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

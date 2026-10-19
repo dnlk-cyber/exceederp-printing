@@ -13,7 +13,7 @@
       .BindTo((IEnumerable) ViewData["EmployeeList"])
        .DataSource(dataSource =>
        {
-           dataSource.Read(read => read.Action("GetEmployeesUnderLogedInUserDepartment", "OverTimeRequest", new { area = "HRM" }))
+           dataSource.Read(read => read.Action("GetEmployeesUnderLogedInUserDepartment", "OverTimeRequest", new { area = "HRM" }).Data("sendForgery"))
                .ServerFiltering(false);
        })
      .ValuePrimitive( true)

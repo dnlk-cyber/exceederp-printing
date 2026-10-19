@@ -12,7 +12,7 @@
       .HtmlAttributes(new { style = "width:100%" })
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetPayrollPlacmentEmployees", "HRMDataProvider", new { area = "HRM" }))
+          dataSource.Read(read => read.Action("GetPayrollPlacmentEmployees", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
               .ServerFiltering(false);
       })
      .ValuePrimitive( true)

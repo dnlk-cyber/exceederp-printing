@@ -15,6 +15,7 @@ namespace ExceedERP.Core.Domain
         public const string HRRecruitmentUser = "HR_Recruitment_User";   
         public const string HROverTimeRequestApprover = "OverTime_Request_Approver";
         public const string HRAdmin = "HR_Admin";
+        public const string HRManager = "HR_Manager";
         public const string HRHealthApprover = "Health_Approver";
         public const string HRLeaveApprover = "HR_Leave_Approver";
         public const string HRLeaveAdmin = "HR_Leave_Admin";
@@ -26,6 +27,7 @@ namespace ExceedERP.Core.Domain
         public const string HRNeedApprover = "HR_Training_Need_Approver";
         public const string HRArchiveUser = "Archive_User";
         public const string HRArchiveAdmin = "Archive_Admin";
+        public const string HRArchive_General_Setting_Admin = "Archive_General_Setting_Admin";
         public const string HRAttendanceUser = "HR_Attendance_User";
         public const string HRCompanyAdmin = "HR_Company_Admin";
         public const string HRCompanyUser = "HR_Company_User";
@@ -44,6 +46,7 @@ namespace ExceedERP.Core.Domain
         public const string HRProfileUser = "HR_Profile_User";
         public const string HRPlacementAdmin = "HR_Placement_Admin";
         public const string HRPlacementUser = "HR_Placement_User";
+        public const string PlacementEditor = "HR_Placement_Editor";
         public const string HRReport = "HR_Report";
         public const string HRRecruitmentReport = "HR_Recruitment_Report";
         public const string HRLeaveReport = "HR_Leave_Report";
@@ -52,6 +55,56 @@ namespace ExceedERP.Core.Domain
         public const string HRDepartmentHead = "HR_Department_Head";
         public const string HRTrainingUser = "HR_Training_User";
         public const string HRTemporaryPlacementAdmin = "HR_Temporary_Placement_Admin";
+        public const string PerformanceSecondLevelApproval = "Performance_Second_Level_Approval";
+        public const string Performance2ndLevelApproval = "Performance_2nd_Level_Approval";
+        public const string LeaveEntitleAdmin = "Leave_Entitlement_Admin";
+        public const string LeaveEntitlementManager = "LeaveEntitlementManager";
+        public const string LeaveEntitleEdit = "Leave_Entitlement_Edit";
+        public const string LeaveEntitleDelete = "Leave_Entitlement_Delete";
+        public const string HREducationAdmin = "HR_Education_Admin";
+        public const string HREducationUser = "HR_Education_User";
+        public const string HRDailyLaboarer = "Daily_Laboarer_User";
+        public const string HRDailyLaboarerAdmin = "Daily_Laboarer_Admin";
+        public const string AntiCorruptionEthicsAdmin = "Anti_Corruption_Ethics_Admin";
+        public const string EmployeeTransferAdmin = "Employee_Transfer_Admin";
+        public const string EmployeeTransferApprover = "Employee_Transfer_Approver";
+        public const string GeneralManagerApprover = "General_Manager_Approver";
+        public const string DeputyGeneralManagerApprover = "Deputy_General_Manager_Approver";
+        public const string SeveranceAdmin = "Severance_Admin";
+        public const string SeveranceUser = "Severance_User";
+
+        // =========================================================================
+        // ADDED APPROVAL ROLES (Mapped directly to ApprovalRole Enum)
+        // =========================================================================
+
+        // Executive & Governance
+        public const string CEO = "CEO";
+        public const string Board = "Board";
+        public const string GeneralManager = "GM";
+        public const string DeputyGeneralManager = "DGM";
+
+        // Operational & Department Leadership
+        public const string Supervisor = "Supervisor";
+        public const string DepartmentManager = "Department_Manager";
+
+        // Extended HR Roles
+        public const string HROfficer = "HR_Officer";
+        public const string HumanResourceAdmin = "Human_Resource_Admin";
+        public const string HRAdministrationManager = "HR_Administration_Manager";
+
+        // Finance Approvals
+        public const string FinanceOfficer = "Finance_Officer";
+        public const string FinanceManager = "Finance_Manager";
+
+        // Project & Site Operation Roles
+        public const string ProjectDepartmentHead = "Project_Department_Head";
+        public const string ProjectManager = "Project_Manager";
+        public const string ProjectHRAdmin = "Project_HR_Admin";
+        public const string PersonnelTimeKeeper = "Personnel_Time_Keeper";
+        public const string Foreman = "Foreman";
+        public const string OfficeEngineer = "Office_Engineer";
+        public const string ConstructionAndOperation = "Construction_And_Operation";
+        public const string DailyLabour = "Daily_Labour";
 
     }
 }

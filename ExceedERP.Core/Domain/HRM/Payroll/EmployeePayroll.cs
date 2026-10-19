@@ -59,6 +59,9 @@ namespace ExceedERP.Core.Domain.HRM.Payroll
         public decimal RestdayHours { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        // Marks records auto-posted from an approved OverTimeRequest, so they can't be hand-edited/deleted here
+        public bool IsFromOverTimeRequest { get; set; }
+        public int? OverTimeRequestId { get; set; }
 
     }
     #endregion

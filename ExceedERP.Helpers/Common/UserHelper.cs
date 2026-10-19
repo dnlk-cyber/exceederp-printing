@@ -14,8 +14,8 @@ namespace ExceedERP.Helpers.Common
 
     public static class UserHelper
     {
-        
-       
+
+
 
         #region general
 
@@ -27,7 +27,11 @@ namespace ExceedERP.Helpers.Common
         //        return branchesUserBelongsTo;
         //    }
         // }
-         public static string GetUserDefaultBranch(string user)
+        public static bool DisableUser(int empId)
+        {
+            return true;
+        }
+        public static string GetUserDefaultBranch(string user)
          {
             using (ExceedDbContext db = new ExceedDbContext())
             {
