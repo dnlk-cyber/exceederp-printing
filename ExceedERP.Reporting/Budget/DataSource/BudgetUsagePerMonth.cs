@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Helpers.Budget;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Reporting.Budget.DataSource
 {
@@ -21,285 +22,166 @@ namespace ExceedERP.Reporting.Budget.DataSource
     public class BudgetUsagePerMonth : List<BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel>
     {
         public ExceedDbContext db = new ExceedDbContext();
-
-
+        FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
+        BudgetGLJournalHelper BudgetGLJournalHelper = new BudgetGLJournalHelper();
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel> GetUsageList(string BudgetType, string BugetCategory, string Year, string WorkUnit, string Branch)
+        public List<BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel> GetUsageList(string BudgetType, string BugetCategory, string Year, string WorkUnit, string Branch, string BusinessUnit,bool draft)
         {
-            BudgetGLJournalHelper BudgetGLJournalHelper = new BudgetGLJournalHelper();
             List<BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel> BudgetList = new List<BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel>();
-            BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel BudgetViewModel;
-            List<BudgetPlanMonthly> BudgetPlanMonthlys = new List<BudgetPlanMonthly>();
-            BudgetPlan BudgetPlanObj = new BudgetPlan();
-            string AmharicName = "";
-            string Name = "";
-            string Address = "";
-            Image LogoFileName = null;
-            try
+
+            decimal PreviousYearBudgetPlan = 0;
+            decimal CurrentYearBudgetPlan = 0;
+            decimal PreviousActual = 0;
+            decimal CurrentActual = 0;
+            decimal ActualNet = 0;
+            decimal PlanNet = 0;
+            decimal ActualPercentage = 0;
+            decimal PlanPercentage = 0;
+          
+
+
+            if (!string.IsNullOrWhiteSpace(BugetCategory) && !string.IsNullOrWhiteSpace(Year))
             {
-                var BudgetPlans = db.BudgetPlans.ToList();
-                var BudgetPlanMonth = db.BudgetPlanMonthlys.ToList();
-                var budgetUsages = db.BudgetUsages.ToList();
-                if (!string.IsNullOrWhiteSpace(Branch))
+                int budgetCatId = int.Parse(BugetCategory);
+                int yearId = int.Parse(Year);
+                int prevYearId = new FiscalYearHelper().GetPreviousFYearId(yearId);
+                var currYear = db.GLFiscalYears.Find(yearId);
+                var previousYear = db.GLFiscalYears.Find(prevYearId);
+
+                var currYearPeriods=db.GLPeriods.Where(x => x.GlFiscalYearId == yearId).OrderBy(x=>x.DateFrom).Select(x=> new { x.Name,x.GLPeriodId,x.Index}).ToList();
+                var budgetItems = db.BudgetCategoryDetails.AsNoTracking().ToList();
+
+               // var currYearPlancatIds = db.PlanCategorys.Where(x => x.GlFiscalYearId == yearId && x.BudgetCategoryID == budgetCatId && x.IsOnlineApproved  && x.IsVoid == false).Select(x => x.PlanCategoryID).ToList();
+                var currYearPlancatIds = db.PlanCategorys
+                                        .Where(x => x.GlFiscalYearId == yearId
+                                                    && x.BudgetCategoryID == budgetCatId
+                                                    && x.IsDepartmentOnlineApproved
+                                                    && (draft || x.IsOnlineApproved)
+                                                    && x.IsVoid == false)
+                                        .Select(x => x.PlanCategoryID)
+                                        .ToList();
+                //  var prevYearPlancatIds = db.PlanCategorys.Where(x => x.GlFiscalYearId == prevYearId && x.BudgetCategoryID == budgetCatId && x.IsOnlineApproved == true && x.IsVoid == false).Select(x => x.PlanCategoryID).ToList();
+
+                var CurrentBudgetPlans = db.BudgetPlans.Where(x => currYearPlancatIds.Contains(x.PlanCategoryId)).ToList();
+
+
+
+                foreach (var p in currYearPeriods)
                 {
-                    BudgetPlans = BudgetPlans.Where(x => x.BranchId.ToString() == Branch).ToList();
-                }
-
-                if(string.IsNullOrWhiteSpace(Year))
-                {
-
-                    FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
-                    Year = fiscalYearHelper.GetCurrentFYearId().ToString();
-                }
-
-                #region SharedDataSource
-
-           
-         
-                var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
-
-                if (organization != null)
-                {
-                    Name = organization.TradeName;
-                    AmharicName = organization.AmharicName;
-                    var address =
-                        db.Addresses.Where(
-                            a =>
-                                a.Reference == organization.MainCompanyId.ToString() &&
-                                a.ReferenceType.ToLower() == "company").ToList();
-                    if (address.Any())
+                    var record = new BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel
                     {
-                        foreach (var a in address)
+                        Month = p.Name,
+                        List = new List<BudgetAllocationAndUsageAgainstPreviousYearViewModel>()
+                    };
+
+                    int prevPeriodId = fiscalYearHelper.GetParallelPeriodInYear(p.GLPeriodId, prevYearId);
+                    var prevPeriod = db.GLPeriods.Find(prevPeriodId);
+
+                    if (!string.IsNullOrWhiteSpace(WorkUnit))
+                    {
+                        CurrentBudgetPlans = CurrentBudgetPlans.Where(x => x.CostCenter == WorkUnit).ToList();
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Branch))
+                    {
+                        int branchId = int.Parse(Branch);
+                        CurrentBudgetPlans = CurrentBudgetPlans.Where(x => x.BranchId == branchId).ToList();
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(BusinessUnit))
+                    {
+                        int bizUnitId = int.Parse(BusinessUnit);
+                        CurrentBudgetPlans = CurrentBudgetPlans.Where(x => x.BusinessUnitId == bizUnitId).ToList();
+                    }
+
+                    foreach (var CurrentBudgetPlan in CurrentBudgetPlans)
+                    {
+                        var currMonthlyPlan = db.BudgetPlanMonthlys.Where(x => x.BudgetDefineID == CurrentBudgetPlan.BudgetPlanID && x.GLPeriodId == p.GLPeriodId).FirstOrDefault();
+                        var prevMonthlyPlan = db.BudgetPlanMonthlys.Where(x => x.BudgetDefineID == CurrentBudgetPlan.BudgetPlanID && x.GLPeriodId == prevPeriodId).FirstOrDefault();
+                                              
+
+                        var JournalDetails = db.GLRecordJournalDetails.Where(x => x.AccountCode == CurrentBudgetPlan.AccountCode && x.GLRecordJournal.IsOnlineApproved == true && x.GLRecordJournal.isVoid == false);
+
+                        var currMonthlyActual = JournalDetails.Where(x => x.GLRecordJournal.PeriodName == p.Name).ToList();
+                        var previousMonthlyActual = JournalDetails.Where(x => x.GLRecordJournal.FiscalYear == prevPeriod.Name).ToList();                       
+
+
+                        if (prevMonthlyPlan!=null)
+                        {
+                            PreviousYearBudgetPlan = prevMonthlyPlan.CurrentBudget;
+                        }
+                        if (previousMonthlyActual.Any())
+                        {
+                            PreviousActual = previousMonthlyActual.Sum(x => x.Credit);
+                        }
+
+                        if (currMonthlyPlan != null)
                         {
 
-                            if (Address == null)
-                            {
-                                Address = a.Category + ":- " + a.Value;
-                            }
-                            else
-                            {
-                                Address += ", " + a.Category + "-" + a.Value;
-                            }
+                            CurrentYearBudgetPlan = currMonthlyPlan.CurrentBudget;
+
+                        }
+                        if (currMonthlyActual.Any())
+                        {
+                            CurrentActual = BudgetGLJournalHelper.GetNetJournalsBalance(currMonthlyActual);
 
                         }
 
-                    }
-
-                    var logo =
-                        db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
-                                a.ReferenceType == AttachmentType.LOGO);
-                    if (logo != null)
-                    {
-                        LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
-                    }
-                }
-
-
-                #endregion
-
-
-
-                string AccountCode = "";
-                decimal PreviousPlanGrowth = 0;
-                decimal CurrentPlanGrowth = 0;
-                decimal PreviousActual = 0;
-                decimal CurrentActual = 0;
-                decimal ActualNet = 0;
-                decimal YearlyPlanNet = 0;
-                decimal BudgetActualDiffPerc = 0;
-                decimal YearlyPlanNetPercentage = 0;
-                int PreviousCategory = 0;
-                int CurrentCategory = 0;
-                string WorkUnitName = string.Empty;
-
-
-
-                var ThisYearRef = db.GLFiscalYears.Where(x => x.Name == Year).FirstOrDefault();
-                int IdRef = ThisYearRef.GlFiscalYearId - 1;
-                var PrevYearRef = db.GLFiscalYears.Where(x => x.GlFiscalYearId == IdRef).FirstOrDefault();
-
-                if (PrevYearRef == null)
-                {
-                    PrevYearRef = new GlFiscalYear();
-                    PrevYearRef.Name = string.Empty;
-                    PrevYearRef.GlFiscalYearId = 0;
-                }
-
-
-                var CurrentPlanCategory = db.PlanCategorys.Where(x => x.GlFiscalYear.Name == Year && x.Name == BugetCategory && x.IsOnlineApproved == true).FirstOrDefault();
-
-                var PreviousPlanCategory = db.PlanCategorys.Where(x => x.GlFiscalYear.Name == PrevYearRef.Name && x.Name == BugetCategory && x.IsOnlineApproved == true).FirstOrDefault();
-                if (PreviousPlanCategory != null)
-                {
-                    PreviousCategory = PreviousPlanCategory.PlanCategoryID;
-                }
-
-
-                if (CurrentPlanCategory != null)
-                {
-                    CurrentCategory = CurrentPlanCategory.PlanCategoryID;
-                }
-             
-                if (!string.IsNullOrEmpty(Year))
-                {
-                    int thisBudgetMonthRef = 0;
-                    int prevBudgetMonthRef = 0;
-                    List<BudgetPlan> PreviousBudgetPlans = new List<BudgetPlan>();
-                    List<BudgetPlan> CurrentBudgetPlans = new List<BudgetPlan>();
-
-                    if (!string.IsNullOrEmpty(WorkUnit))
-                    {
-                        PreviousBudgetPlans = db.BudgetPlans.AsNoTracking().Where(x => x.BudgetCategoryID == PreviousCategory && x.GLChartOfAccountCostCenterId.ToString() == WorkUnit).ToList();
-                        CurrentBudgetPlans = db.BudgetPlans.AsNoTracking().Where(x => x.BudgetCategoryID == CurrentCategory && x.GLChartOfAccountCostCenterId.ToString() == WorkUnit).ToList();
-
-
-                    }
-                    else
-                    {
-                        PreviousBudgetPlans = db.BudgetPlans.AsNoTracking().Where(x => x.BudgetCategoryID == PreviousCategory).ToList();
-                        CurrentBudgetPlans = db.BudgetPlans.AsNoTracking().Where(x => x.BudgetCategoryID == CurrentCategory).ToList();
-
-
-                    }
-                    if (PreviousBudgetPlans.Any())
-                    {
-                        PreviousPlanGrowth = PreviousBudgetPlans.Sum(x => x.TotalYearlyBudget);
-                        prevBudgetMonthRef = PreviousBudgetPlans.FirstOrDefault().BudgetPlanID;
-                    }
-                    if (CurrentBudgetPlans.Any())
-                    {
-                        CurrentPlanGrowth = CurrentBudgetPlans.Sum(x => x.TotalYearlyBudget);
-                        thisBudgetMonthRef = CurrentBudgetPlans.FirstOrDefault().BudgetPlanID;
-
-                    }
-                    YearlyPlanNet = CurrentPlanGrowth - PreviousPlanGrowth;
-
-
-                    decimal CurrentPlanGrowths = CurrentPlanGrowth;
-                    if (CurrentPlanGrowths > 0)
-                    {
-                        YearlyPlanNetPercentage = (YearlyPlanNet / CurrentPlanGrowths);
-                    }
-
-                    if (true)
-                    {
-                        if (!string.IsNullOrWhiteSpace(Branch))
+                        if (previousMonthlyActual.Any())
                         {
-                            CurrentBudgetPlans = CurrentBudgetPlans.Where(x => x.BranchId.ToString() == Branch).ToList();
+                            PreviousActual = BudgetGLJournalHelper.GetNetJournalsBalance(previousMonthlyActual);
+
                         }
-                        foreach (var CurrentBudgetPlan in CurrentBudgetPlans)
+
+                        ActualNet = CurrentActual - PreviousActual;
+                        PlanNet = CurrentYearBudgetPlan - PreviousYearBudgetPlan;
+
+
+
+                        if (ActualNet > 0)
                         {
-                            var PreviousBudgetPlan = PreviousBudgetPlans.Where(x => x.AccountCode == CurrentBudgetPlan.AccountCode && x.GLChartOfAccountCostCenterId == CurrentBudgetPlan.GLChartOfAccountCostCenterId).FirstOrDefault();
-
-                            var CurrentPeriodPlan = db.BudgetPlanMonthlys.Where(x => x.BudgetDefineID == CurrentBudgetPlan.BudgetPlanID).ToList();
-                            var PreviousPeriodPlans = new List<BudgetPlanMonthly>();
-                            if (PreviousBudgetPlan != null)
-                            {
-                                PreviousPeriodPlans = db.BudgetPlanMonthlys.Where(x => x.BudgetDefineID == PreviousBudgetPlan.BudgetPlanID).ToList();
-                            }
-
-                            foreach (var budgetPlanMonthlys in CurrentPeriodPlan)
-                            {
-
-                                var PreviousPeriodPlan = PreviousPeriodPlans.Where(x => x.BudgetPlan.AccountCode == budgetPlanMonthlys.BudgetPlan.AccountCode && x.BudgetPlan.GLChartOfAccountCostCenterId == budgetPlanMonthlys.BudgetPlan.GLChartOfAccountCostCenterId && x.GLPeriodId == budgetPlanMonthlys.GLPeriodId).FirstOrDefault();
-                                var CurrentPeriodActual = db.GLRecordJournalDetails.Where(x => x.AccountCode == budgetPlanMonthlys.AccountCode && x.GLRecordJournal.FiscalYear == ThisYearRef.Name && x.GLRecordJournal.PeriodName == budgetPlanMonthlys.GLPeriod.Name && x.CostCenterSegment == CurrentBudgetPlan.GLChartOfAccountCostCenterId.ToString() && x.GLRecordJournal.IsOnlineApproved == true).FirstOrDefault();
-                                var PreviousPeriodActual = db.GLRecordJournalDetails.Where(x => x.AccountCode == budgetPlanMonthlys.AccountCode && x.GLRecordJournal.FiscalYear == PrevYearRef.Name && x.GLRecordJournal.PeriodName == budgetPlanMonthlys.GLPeriod.Name && x.CostCenterSegment == CurrentBudgetPlan.GLChartOfAccountCostCenterId.ToString() && x.GLRecordJournal.IsOnlineApproved == true).FirstOrDefault();
-
-                                var WorkUnitObj = db.GLChartOfAccountCostCenters.Where(x => x.Values == CurrentBudgetPlan.GLChartOfAccountCostCenterId.ToString()).FirstOrDefault();
-
-                                if (WorkUnitObj != null)
-                                {
-                                    WorkUnitName = WorkUnitObj.Description;
-                                }
-                                decimal PreviousPlan = 0;
-                                decimal CurrentPlan = 0;
-                                decimal monthlyDiffPercent = 0;
-
-
-                                CurrentPlan = budgetPlanMonthlys.CurrentBudget;
-
-                                if (PreviousPeriodPlan != null)
-                                {
-                                    PreviousPlan = PreviousPeriodPlan.CurrentBudget;
-                                }
-
-                                var PlanNet = CurrentPlan - PreviousPlan;
-
-                                if (CurrentPlan > 0)
-                                {
-                                    monthlyDiffPercent = (PlanNet / CurrentPlan);
-                                }
-                                if (CurrentPeriodActual != null)
-                                {
-                                    CurrentActual = BudgetGLJournalHelper.GetNetJournalBalance(CurrentPeriodActual);
-                                }
-                                if (PreviousPeriodActual != null)
-                                {
-                                    PreviousActual = BudgetGLJournalHelper.GetNetJournalBalance(PreviousPeriodActual);
-                                }
-                                ActualNet = CurrentActual - PreviousActual;
-                                if (CurrentActual > 0)
-                                {
-                                    BudgetActualDiffPerc = (ActualNet / CurrentActual);
-                                }
-
-                                BudgetViewModel = new BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel();
-                                BudgetViewModel.AccountDesc = Year + " Against " + PrevYearRef.Name;
-                                BudgetViewModel.AccountCode = CurrentBudgetPlan.AccountCode;
-                                BudgetViewModel.Unit = CurrentBudgetPlan.BudgetCurrency.Name;
-                                BudgetViewModel.PreviousYearBudget = PreviousPlanGrowth;
-                                BudgetViewModel.PreviousYearActual = PreviousActual;
-                                BudgetViewModel.ThisYearActual = CurrentActual;
-                                BudgetViewModel.ThisYearBudget = CurrentPlanGrowth;
-                                BudgetViewModel.PreviousMonthlyBudget = PreviousPlan;
-                                BudgetViewModel.ThisYearMonthlyBudget = CurrentPlan;
-                                BudgetViewModel.MonthlyDiffrence = PlanNet;
-                                BudgetViewModel.MonthlyDiffrencePecent = monthlyDiffPercent;
-                                BudgetViewModel.ActualDifference = ActualNet;
-                                BudgetViewModel.BudgetDifference = YearlyPlanNet;
-                                BudgetViewModel.BudgetMonth = budgetPlanMonthlys.GLPeriod.Name + " -- " + WorkUnitName;
-                                BudgetViewModel.BudgetDifferencePercentage = YearlyPlanNetPercentage;
-                                BudgetViewModel.ActualDifferencePercentage = BudgetActualDiffPerc;
-
-                                BudgetViewModel.AmharicName = AmharicName;
-                                BudgetViewModel.Name = Name;
-                                BudgetViewModel.LogoFileName = LogoFileName;
-                                BudgetViewModel.Address = Address;
-
-                                BudgetList.Add(BudgetViewModel);
-
-
-                                CurrentActual = 0;
-                                PreviousActual = 0;
-                                BudgetActualDiffPerc = 0;
-
-                            }
+                            ActualPercentage = (ActualNet / BudgetGenericHelper.DivideByZero(PreviousActual));
                         }
-                        BudgetList.GroupBy(x => x.BudgetMonth);
+                        else
+                        {
+                            ActualPercentage = 0;
+                        }
+                        if (PlanNet > 0)
+                        {
+                            PlanPercentage = (PlanNet / BudgetGenericHelper.DivideByZero(PreviousYearBudgetPlan));
+                        }
 
-                        return BudgetList;
+                        int budgetItemId = int.Parse(CurrentBudgetPlan.BudgetItem);
+
+                        var detail = new BudgetAllocationAndUsageAgainstPreviousYearViewModel
+                        {
+                            AccountCode = CurrentBudgetPlan.AccountCode,// + " "+ CurrentBudgetPlan.AccountDesc,
+                            Unit = "",
+                            // WorkUnit = db.MainCompanyStructures.Find(CurrentBudgetPlan.OrgStructureId)?.Name,
+                            BudgetCode = CurrentBudgetPlan.BudgetCode + " " + budgetItems.FirstOrDefault(x => x.BudgetCategoryDetailID == budgetItemId)?.BudgetItem,
+                            PreviousYearBudget = PreviousYearBudgetPlan,
+                            PreviousYearActual = PreviousActual,
+                            ThisYearActual = CurrentActual,
+                            ThisYearBudget = CurrentYearBudgetPlan,
+                            ActualDifference = ActualNet,
+                            BudgetDifference = PlanNet,
+                            BudgetDifferencePercentage = PlanPercentage,
+                            ActualDifferencePercentage = ActualPercentage,
+                        };
+
+
+                        record.List.Add(detail);
+
                     }
 
-                    return null;
-                }
-                return null;
+                    BudgetList.Add(record);
+                }                             
+
             }
 
-            catch (Exception e)
-            {
-                BudgetViewModel = new BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel();
-      
-                BudgetViewModel.AmharicName = AmharicName;
-                BudgetViewModel.Name = Name;
-                BudgetViewModel.LogoFileName = LogoFileName;
-                BudgetViewModel.Address = Address;
-
-                BudgetList.Add(BudgetViewModel);
-
-                return BudgetList;
-            }
+            return BudgetList;
         }
     }
 

@@ -2,6 +2,16 @@
 
 namespace ExceedERP.Core.Domain.Budget
 {
+    public class BudgetPlanDepartmentApproval : TrackUserOperation
+    {
+
+        public int BudgetPlanDepartmentApprovalId { get; set; }
+        public int BudgetPlanId { get; set; }
+        public ApprovalStatuses Status { get; set; }
+        public string Remark { get; set; }
+
+
+    }
     public class BudgetPlanApproval : TrackUserOperation
     {
 
@@ -11,5 +21,15 @@ namespace ExceedERP.Core.Domain.Budget
         public string Remark { get; set; }
 
        
+    }
+    public class BudgetPlanRevisionApproval : TrackUserOperation
+    {
+
+        public int BudgetPlanRevisionApprovalId { get; set; }
+        public int BudgetPlanId { get; set; }
+        public ApprovalStatuses Status { get; set; }
+        public string Remark { get; set; }
+
+
     }
 }

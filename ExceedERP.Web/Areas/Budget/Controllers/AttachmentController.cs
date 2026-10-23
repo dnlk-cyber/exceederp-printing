@@ -1,35 +1,18 @@
-﻿﻿using System;
-using ExceedERP.Web.Helpers;
+﻿using System;
 using System.Collections.Generic;
-﻿using System.Data.Entity;
-﻿using System.IO;
-﻿using System.Linq;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core;
-﻿using ExceedERP.DataAccess;
-﻿using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Controllers;
-
-
-using ExceedERP.Helpers.Common;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.Budget.Models;
 
 using ExceedERP.Core.Domain.Budget;
-
-using System.Text;
-using ExceedERP.Helpers.Budget;
-using System.Diagnostics;
-using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.Finance.GL.Dynamic;
-using ExceedERP.Helpers.Finance;
-using OfficeOpenXml;
+
 
 namespace ExceedERP.Web.Areas.Budget.Controllers
 {
@@ -118,96 +101,94 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
             return Content("");
         }
 
-        public ActionResult DownloadCustomTemplate(AttachmentViewModel Attachment)
-        {
+        //public ActionResult DownloadCustomTemplate(AttachmentViewModel Attachment)
+        //{
 
-            System.Data.DataTable table = new System.Data.DataTable();
-            table = new System.Data.DataTable();
+        //    System.Data.DataTable table = new System.Data.DataTable();
+        //    table = new System.Data.DataTable();
 
-            table.Columns.Add("Id", typeof(int)).ReadOnly = true;
-            table.Columns.Add("Branch", typeof(string)).ReadOnly = true;
-            table.Columns.Add("Work Unit", typeof(string)).ReadOnly = true;
-            //table.Columns.Add("Category Code", typeof(int)).ReadOnly = true;
-            table.Columns.Add("Account Code", typeof(string)).ReadOnly = true;
-            table.Columns.Add("Description", typeof(string)).ReadOnly = true;
+        //    table.Columns.Add("Id", typeof(int)).ReadOnly = true;
+        //    table.Columns.Add("Branch", typeof(string)).ReadOnly = true;
+        //    table.Columns.Add("Work Unit", typeof(string)).ReadOnly = true;
+        //    //table.Columns.Add("Category Code", typeof(int)).ReadOnly = true;
+        //    table.Columns.Add("Account Code", typeof(string)).ReadOnly = true;
+        //    table.Columns.Add("Description", typeof(string)).ReadOnly = true;
 
-            table.Columns.Add("Month", typeof(string)).ReadOnly = true;
-            table.Columns.Add("  Unit", typeof(string)).ReadOnly = true;
-            table.Columns.Add("Amount", typeof(int));
-
-
-
-
-            var Currencies = db.BudgetCurrencies.ToList();
-            PlanCategory Category = db.PlanCategorys.Where(x => x.GlFiscalYear.Name == Attachment.FiscalYear && x.Name == Attachment.CategoryName).FirstOrDefault();
-            if (Category != null)
-            {
-                BudgetCategory budgetCategory = db.BudgetCategorys.Where(x => x.Name == Attachment.CategoryName).FirstOrDefault();
-
-                if (budgetCategory != null)
-                {
-                    var BudgetPlans = db.BudgetPlans.Where(x => x.BudgetCategoryID == Category.PlanCategoryID).ToList();
-
-                    if (Attachment.Branch != null)
-                    {
-                        BudgetPlans = BudgetPlans.Where(x => x.BranchId.ToString() == Attachment.Branch).ToList();
-                    }
-
-                    if (Attachment.WorkUnitName != null)
-                    {
-                        BudgetPlans = BudgetPlans.Where(x => x.WorkUnitName.ToString() == Attachment.WorkUnitName).ToList();
-                    }
-
-                    foreach (var BudgetPlan in BudgetPlans)
-                    {
-
-
-                       
-                        var Months = db.BudgetPlanMonthlys.Where(x => x.BudgetDefineID == BudgetPlan.BudgetPlanID).ToList();
-                        foreach (var Month in Months)
-                        {
-                            table.Rows.Add(Month.BudgetPlanMonthlyID, BudgetPlan.Branch.Name, BudgetPlan.WorkUnitName, BudgetPlan.AccountCode, BudgetPlan.AccountDesc, Month.GLPeriod.Name, BudgetPlan.BudgetCurrency.Name, Month.CurrentBudget);
-                        }
-                    }
-                }
-                if (table.Rows.Count == 0)
-                {
-
-                    table.Rows.Add(0, 0, "", "", "", "", 0);
-                }
+        //    table.Columns.Add("Month", typeof(string)).ReadOnly = true;
+        //    table.Columns.Add("  Unit", typeof(string)).ReadOnly = true;
+        //    table.Columns.Add("Amount", typeof(int));
 
 
 
 
-                using (ExcelPackage excelPackage = new ExcelPackage())
-                {
+        //    var Currencies = db.FinSetupCurrencies.ToList();
+        //    PlanCategory Category = db.PlanCategorys.Where(x => x.GlFiscalYear.Name == Attachment.FiscalYear && x.Name == Attachment.CategoryName).FirstOrDefault();
+        //    if (Category != null)
+        //    {
+        //        BudgetCategory budgetCategory = db.BudgetCategorys.Where(x => x.Name == Attachment.CategoryName).FirstOrDefault();
+
+        //        if (budgetCategory != null)
+        //        {
+        //            var BudgetPlans = db.BudgetPlans.Where(x => x.PlanCategoryId == Category.PlanCategoryID).ToList();
+
+        //            if (Attachment.Branch != null)
+        //            {
+        //                BudgetPlans = BudgetPlans.Where(x => x.BranchId.ToString() == Attachment.Branch).ToList();
+        //            }
+
+        //            //if (Attachment.WorkUnitName != null)
+        //            //{
+        //            //    BudgetPlans = BudgetPlans.Where(x => x.WorkUnitName.ToString() == Attachment.WorkUnitName).ToList();
+        //            //}
+
+        //            foreach (var budgetPlan in BudgetPlans)
+        //            {
+        //                var branchName = db.Branch.Find(budgetPlan.BranchId)?.Name;
+        //                var Months = db.BudgetPlanMonthlys.Where(x => x.BudgetDefineID == budgetPlan.BudgetPlanID).ToList();
+        //                foreach (var Month in Months)
+        //                {
+        //                    //table.Rows.Add(Month.BudgetPlanMonthlyID, branchName, budgetPlan.WorkUnitName, budgetPlan.AccountCode, budgetPlan.AccountDesc, Month.GLPeriod.Name, budgetPlan.BudgetCurrency.Name, Month.CurrentBudget);
+        //                }
+        //            }
+        //        }
+        //        if (table.Rows.Count == 0)
+        //        {
+
+        //            table.Rows.Add(0, 0, "", "", "", "", 0);
+        //        }
 
 
-                    //create a WorkSheet
-                    ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
 
 
-                    var ws = excelPackage.Workbook.Worksheets.Add("BudgetPlan");
+        //        using (ExcelPackage excelPackage = new ExcelPackage())
+        //        {
 
 
+        //            //create a WorkSheet
+        //            ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
 
-                    //add all the content from the DataTable, starting at cell A1
-                    worksheet.Cells["A1"].LoadFromDataTable(table, true);
 
-                    Response.BinaryWrite(excelPackage.GetAsByteArray());
-                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("content-disposition", "attachment;  filename=BudgetPlan.xlsx");
-
-                }
+        //            var ws = excelPackage.Workbook.Worksheets.Add("BudgetPlan");
 
 
 
-                return null;
+        //            //add all the content from the DataTable, starting at cell A1
+        //            worksheet.Cells["A1"].LoadFromDataTable(table, true);
 
-            }
-            return null;
+        //            Response.BinaryWrite(excelPackage.GetAsByteArray());
+        //            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        //            Response.AddHeader("content-disposition", "attachment;  filename=BudgetPlan.xlsx");
 
-        }
+        //        }
+
+
+
+        //        return null;
+
+        //    }
+        //    return null;
+
+        //}
 
 
         public ActionResult DownloadTemplate()

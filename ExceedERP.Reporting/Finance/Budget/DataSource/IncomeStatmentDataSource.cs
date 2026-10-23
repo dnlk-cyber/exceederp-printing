@@ -20,12 +20,12 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 {
 
     [DataObject]
-    public class IncomeStatmentDataSource : List<FinancialStatementQuarterlyVm>
+    public class IncomeStatmentDataSource : IDisposable
     {
-        public ExceedDbContext Db = new ExceedDbContext();
+        private readonly ExceedDbContext Db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<FinancialStatementQuarterlyVm> GetIncomeStatmentDataSource(string year, string periodFrom, string periodTo)
+        public List<FinancialStatementQuarterlyVm> GetIncomeStatmentDataSource(string year, string periodFrom, string periodTo, string businessUnit, string branchCode)
         {
             ReportHelper reportHelper = new ReportHelper();
 
@@ -71,17 +71,25 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 
                     var allBalnces = reportHelper.GetAccountBalanceByPeriodRange(fiscalyearId, firstPeriodId, lastPeriodId);
 
-                    
+                    #region filter by segment
+                    if (!String.IsNullOrEmpty(branchCode))
+                    {
+                        allBalnces = allBalnces
+                                      .Where(x => x.GLLedgerPosting.BranchSegment == branchCode).ToList();
+                    }
+                    if (!String.IsNullOrEmpty(businessUnit))
+                    {
+                        allBalnces = allBalnces
+                                      .Where(x => x.GLLedgerPosting.BusinessUnit == businessUnit).ToList();
+                    }
+                    #endregion
 
                     var firstMonthBalance = allBalnces.Where(x => x.GLPeriodId == firstPeriod).ToList();
                     var thirdMonthBalance = allBalnces.Where(x => x.GLPeriodId == thirdPeriod).ToList();
-
                     var forthMonthBalance = allBalnces.Where(x => x.GLPeriodId == fourthPeriod).ToList();
                     var sixthMonthBalance = allBalnces.Where(x => x.GLPeriodId == sixthPeriod).ToList();
-
                     var seventhMonthBalance = allBalnces.Where(x => x.GLPeriodId == seventhPeriod).ToList();
                     var ninthMonthBalance = allBalnces.Where(x => x.GLPeriodId == ninthPeriod).ToList();
-
                     var tenthMonthBalance = allBalnces.Where(x => x.GLPeriodId == tenthPeriod).ToList();
                     var twelvethMonthBalance = allBalnces.Where(x => x.GLPeriodId == twelvethPeriod).ToList();
 
@@ -1211,6 +1219,10 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
             }
 
             return balance;
+        }
+        public void Dispose()
+        {
+            Db?.Dispose();
         }
     }
 

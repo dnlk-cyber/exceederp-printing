@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -145,6 +145,11 @@ namespace ExceedERP.Helpers.Finance
             }
 
             return accountyearEndBalances;
+        }
+
+        public decimal GetAccountEndBalancesWithSegmentRangeAndBranch(List<GLLedgerPostingLines> endingQuarterBalance, string fromAccountCode, string toAccountCode, string locationAccount)
+        {
+            throw new NotImplementedException();
         }
 
         public decimal GetAccountEndBalancesByBranchWithAllranges(List<GLLedgerPostingLines> yearBalance, string fromAccCom, string toAccCom,string branchAccount)
@@ -587,6 +592,17 @@ namespace ExceedERP.Helpers.Finance
 
             return accountyearEndBalances;
         }
+
+        public decimal GetAverageEquityByPeriodRange(int periodfrom, int periodto)
+        {
+            return 0;
+        }
+
+        public decimal GetNetEarningByPeriodRange(int periodfrom, int periodto)
+        {
+            return 0; 
+        }
+
         public decimal GetAccountBegBalancesByBranchWithAllranges(List<GLLedgerPostingLines> yearBalance, string fromAccCom, string toAccCom, string branchAccount)
         {
             int accountLength = _accountHelper.GetAccountCombLength();
@@ -1078,7 +1094,178 @@ namespace ExceedERP.Helpers.Finance
 
             return accountyearEndBalances;
         }
+        public List<AccountCodeVm> GetAccountListByAccountWithAllranges(string fromAccCom, string toAccCom, string account)
+        {
+            int accountLength = _accountHelper.GetAccountCombLength();
+            List<AccountCodeVm> list=new List<AccountCodeVm>();
+            var ledger = _db.GLLedgerPostings.AsQueryable();
+            string seg1From = "";
+            string seg1To = "";
+            string seg2From = "";
+            string seg2To = "";
+            string seg3From = "";
+            string seg3To = "";
+            string seg4From = "";
+            string seg4To = "";
+            string seg5From = "";
+            string seg5To = "";
 
+            switch (accountLength)
+            {
+                case 1:
+                    seg1From = fromAccCom.Split('-')[0];
+                    seg1To = toAccCom.Split('-')[0];
+                    break;
+
+                case 2:
+                    seg1From = fromAccCom.Split('-')[0];
+                    seg1To = toAccCom.Split('-')[0];
+                    seg2From = fromAccCom.Split('-')[1];
+                    seg2To = toAccCom.Split('-')[1];
+                    break;
+                case 3:
+                    seg1From = fromAccCom.Split('-')[0];
+                    seg1To = toAccCom.Split('-')[0];
+                    seg2From = fromAccCom.Split('-')[1];
+                    seg2To = toAccCom.Split('-')[1];
+                    seg3From = fromAccCom.Split('-')[2];
+                    seg3To = toAccCom.Split('-')[2];
+                    break;
+                case 4:
+                    seg1From = fromAccCom.Split('-')[0];
+                    seg1To = toAccCom.Split('-')[0];
+                    seg2From = fromAccCom.Split('-')[1];
+                    seg2To = toAccCom.Split('-')[1];
+                    seg3From = fromAccCom.Split('-')[2];
+                    seg3To = toAccCom.Split('-')[2];
+                    seg4From = fromAccCom.Split('-')[3];
+                    seg4To = toAccCom.Split('-')[3];
+                    break;
+                case 5:
+                    seg1From = fromAccCom.Split('-')[0];
+                    seg1To = toAccCom.Split('-')[0];
+                    seg2From = fromAccCom.Split('-')[1];
+                    seg2To = toAccCom.Split('-')[1];
+                    seg3From = fromAccCom.Split('-')[2];
+                    seg3To = toAccCom.Split('-')[2];
+                    seg4From = fromAccCom.Split('-')[3];
+                    seg4To = toAccCom.Split('-')[3];
+                    seg5From = fromAccCom.Split('-')[4];
+                    seg5To = toAccCom.Split('-')[4];
+                    break;
+            }
+
+
+            int accountindex = 0;
+            accountindex = _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
+
+            switch (accountindex)
+            {
+                case 0:
+                    seg1From = account;
+                    seg1To = account;
+                    break;
+                case 1:
+                    seg2From = account;
+                    seg2To = account;
+                    break;
+                case 2:
+                    seg3From = account;
+                    seg3To = account;
+                    break;
+                case 3:
+                    seg4From = account;
+                    seg4To = account;
+                    break;
+                case 4:
+                    seg5From = account;
+                    seg5To = account;
+                    break;
+            }
+
+            if (ledger.Any())
+            {
+                 ledger = ledger
+                    .Where(x => x.AccountSegment == account).AsQueryable();
+
+                switch (accountLength)
+                {
+                    case 1:
+                        ledger = ledger
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1To.ToUpper(), StringComparison.Ordinal) <= 0)
+                            .AsQueryable();
+                        break;
+                    case 2:
+                        ledger = ledger
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2To.ToUpper(), StringComparison.Ordinal) <= 0)
+                            .AsQueryable();
+                        break;
+                    case 3:
+                        ledger = ledger
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment3.ToUpper(), seg3From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment3.ToUpper(), seg3To.ToUpper(), StringComparison.Ordinal) <= 0)
+                            .AsQueryable();
+                        break;
+                    case 4:
+                        ledger = ledger
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment3.ToUpper(), seg3From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment3.ToUpper(), seg3To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment4.ToUpper(), seg4From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment4.ToUpper(), seg4To.ToUpper(), StringComparison.Ordinal) <= 0)
+                            .AsQueryable();
+                        break;
+                    case 5:
+                        ledger = ledger
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment1.ToUpper(), seg1To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment2.ToUpper(), seg2To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment3.ToUpper(), seg3From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment3.ToUpper(), seg3To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment4.ToUpper(), seg4From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment4.ToUpper(), seg4To.ToUpper(), StringComparison.Ordinal) <= 0)
+
+                            .Where(x => Compare(x.Segment5.ToUpper(), seg5From.ToUpper(), StringComparison.Ordinal) >= 0)
+                            .Where(x => Compare(x.Segment5.ToUpper(), seg5To.ToUpper(), StringComparison.Ordinal) <= 0)
+                            .AsQueryable();
+                        break;
+
+                }
+
+
+
+                return ledger.Select(x => new AccountCodeVm
+                {
+                    AccountCode = x.AccountCode,
+                    AccountDesc = x.AccountDesc
+                }).ToList();
+
+
+            }
+
+            return list;
+        }
         public decimal GetAccountBegBalancesByAccountAndBranchWithAllranges(List<GLLedgerPostingLines> yearBalance, string fromAccCom, string toAccCom, string account, string branchAccount)
         {
             int accountLength = _accountHelper.GetAccountCombLength();
@@ -2166,5 +2353,11 @@ namespace ExceedERP.Helpers.Finance
 
             return accountyearEndBalances;
         }
+    }
+
+    public class AccountCodeVm
+    {
+        public string AccountCode { get; set; }
+        public string AccountDesc { get; set; }
     }
 }

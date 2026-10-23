@@ -18,7 +18,7 @@ namespace ExceedERP.Helpers.Budget
             }
             return Value;
         }
-        public  void GetQuarterIndex(GlFiscalYear FiscalYear, BudgetEnums.BudgetQuarter BudgetQuarter, out int LastPeriodIndex, out int OffSet)
+        public void GetQuarterIndex(GlFiscalYear FiscalYear, BudgetEnums.BudgetQuarter BudgetQuarter, out int LastPeriodIndex, out int OffSet)
         {
 
             int OffSetIndex = 0;
@@ -51,17 +51,17 @@ namespace ExceedERP.Helpers.Budget
             LastPeriodIndex = LastIndex;
 
         }
-        public  decimal GetQuarterPlanBalance(List<BudgetPlan> BudgetPlans, List<BudgetPlanMonthly> BudgetPlanMonthly)
+        public decimal GetQuarterPlanBalance(List<BudgetPlan> BudgetPlans, List<BudgetPlanMonthly> BudgetPlanMonthly)
         {
-               decimal GrowthBalance = decimal.Zero;
-               
-                 foreach (var Plan in BudgetPlans)
-                {
+            decimal GrowthBalance = decimal.Zero;
 
-                    Plan.BudgetPlanMonthly = BudgetPlanMonthly.Where(x => x.BudgetDefineID == Plan.BudgetPlanID).ToList();
-                     GrowthBalance = GrowthBalance + Plan.BudgetPlanMonthly.Sum(y => y.MonthlyBudget);
-                }
-               return GrowthBalance;
+            foreach (var Plan in BudgetPlans)
+            {
+
+                Plan.BudgetPlanMonthly = BudgetPlanMonthly.Where(x => x.BudgetDefineID == Plan.BudgetPlanID).ToList();
+                GrowthBalance = GrowthBalance + Plan.BudgetPlanMonthly.Sum(y => y.MonthlyBudget);
+            }
+            return GrowthBalance;
         }
 
     }

@@ -19,10 +19,10 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 {
 
     [DataObject]
-    public class CommonScheduleOds : List<CommonScheduleVm>
+    public class CommonScheduleOds : IDisposable
     {
         ExceedDbContext Db = new ExceedDbContext();
-       
+
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -59,12 +59,16 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> GetQuarterList()
         {
-            List<string> list = new List<string>();           
+            List<string> list = new List<string>();
             list.Add("1");
-            list.Add("2");           
+            list.Add("2");
             list.Add("3");
             list.Add("4");
             return list;
+        }
+        public void Dispose()
+        {
+            Db?.Dispose();
         }
     }
 }

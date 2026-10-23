@@ -1,0 +1,15 @@
+﻿
+
+@(Html.Kendo().DropDownListFor(model => model)
+    .ValuePrimitive(true)
+    .OptionLabel("Select tax")
+    .DataTextField("Name")
+    .DataValueField("Id")
+    .Filter("contains")
+    .MinLength(2)
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetTax", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+            .ServerFiltering(false);
+    })
+)

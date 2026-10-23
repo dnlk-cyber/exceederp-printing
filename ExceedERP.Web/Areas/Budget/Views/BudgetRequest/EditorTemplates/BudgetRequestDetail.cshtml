@@ -1,0 +1,58 @@
+﻿@model  ExceedERP.Core.Domain.Budget.BudgetRequestDetail
+
+
+
+
+<div class="demo-section k-content">
+    <form>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.AccountCode)
+
+                    </div>
+                    <div>
+                        <input data-val="true" data-val-required="The AccountCode field is required." disabled="  disabled" id="AccountCode" name="AccountCode" data-bind="value:AccountCode">
+                        <img src="~/Content/Images/search.png" onclick="SelectAccCode(this)" />
+
+
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+</div>
+
+

@@ -23,59 +23,60 @@
 
 </script>
 
-<legend>     Budget Request Transfer </legend>
+<legend>Budget Request Approval</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequest>()
-                                  .Name("grid")
+      .Name("grid")
       .Columns(columns =>
       {
 
           columns.Bound(c => c.BudgetRequestID).Title("Request No.").Width(120);
-
-          columns.Bound(c => c.PlanCategoryId).EditorTemplateName("RequestCategoryEditor").Width(100);
+          columns.ForeignKey(c => c.PlanCategoryId, (System.Collections.IEnumerable)ViewData["PlanCategory"], "PlanCategoryId", "Name").EditorTemplateName("PlanCategoryEditorTemplate");
+          //columns.Bound(c => c.PlanCategoryId).EditorTemplateName("RequestCategoryEditor").Width(100);
           columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchID", "Name").EditorTemplateName("BranchEditor").Width(120);
           columns.Bound(c => c.BudgetYear).Width(100);
           columns.ForeignKey(c => c.WorkUnit, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("WorkUnitEditor").Width(120);
           columns.Bound(c => c.FromDate).Title("From Date").EditorTemplateName("DateEditor").Width(120);
           columns.Bound(c => c.ToDate).Title("To Date").EditorTemplateName("DateEditor").Width(120);
-
           columns.Bound(c => c.Amount).Width(120);
-          //   columns.Bound(c => c.Reason).Width(160);
+          columns.Bound(c => c.Reason).Width(160);
           columns.Command(command => { command.Destroy().Text("Transfer"); }).Width(180);
       })
 
       .Events(ev => { ev.DataBound("onDataBound"); })
-          .Editable(editable => { editable.Mode(GridEditMode.InLine); editable.DisplayDeleteConfirmation("Are You Sure To Transfer Request"); })
-         .HtmlAttributes(new { style = "height: 520px;" })
-                      .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
-
-                            .Scrollable()
-                            .Sortable()
-                            .Filterable()
-                             .Scrollable(h => h.Height(500))
-                     .ClientDetailTemplateId("template")
-       .Events(ev => ev.DetailExpand("onDetailExpandUser"))
-           .DataSource(dataSource => dataSource
-          .Ajax()
-                  .Model(model =>
-                  {
-                      model.Id(p => p.BudgetRequestID);
-                      model.Field(p => p.BudgetYear).Editable(false);
-                      model.Field(p => p.Amount).Editable(false);
-                  }).Events(ev => ev
-                                                    .Error("error_handler(\"grid\")")
-                                                    .RequestStart("onRequestStart(\"grid\")")
-                                                    .RequestEnd("onRequestEnd(\"grid\")"))
-                  .Read(read => read.Action("BudgetRequestAccept_Read", "BudgetRequest"))
-              .Create(create => create.Action("BudgetRequest_Create", "BudgetRequest"))
-              .Update(update => update.Action("BudgetRequest_Update", "BudgetRequest"))
-              .Destroy(destroy => destroy.Action("BudgetRequest_Transfer", "BudgetRequest"))
+      .Editable(editable => { editable.Mode(GridEditMode.InLine); editable.DisplayDeleteConfirmation("Are You Sure To Transfer Request"); })
+      .HtmlAttributes(new { style = "height: 520px;" })
+      .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5)
+            )
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable(h => h.Height(500))
+            .ClientDetailTemplateId("template")
+            .Events(ev => ev.DetailExpand("onDetailExpandUser"))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model =>
+                {
+                    model.Id(p => p.BudgetRequestID);
+                    model.Field(p => p.BudgetYear).Editable(false);
+                    model.Field(p => p.Amount).Editable(false);
+                })
+                .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")")
                     )
+                .Read(read => read.Action("BudgetRequestAccept_Read", "BudgetRequest").Data("sendForgery"))
+                .Create(create => create.Action("BudgetRequest_Create", "BudgetRequest").Data("sendForgery"))
+                .Update(update => update.Action("BudgetRequest_Update", "BudgetRequest").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("BudgetRequest_Transfer", "BudgetRequest").Data("sendForgery"))
+            )
 )
 
 
@@ -83,395 +84,458 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                                                                                                  .Name("tabstripMain_#=BudgetRequestID#")
-                                                                                                                                                  .SelectedIndex(0)
-                                                                                                                                                  .Items(items =>
-                                                                                                                                                  {
-
-
-
-                                                                                                                                                      items.Add().Text("OutSourced Service").Content(
-                                                                                                                                                    @<text>
-                                                                                                                                                        # if (IsSecondSendForApproval == false || IsSecondSendForApproval == "false")
-                                                                                                                                                        {#
-
-                                                                                                                                                        <a href='@Url.Action("SendForOnlineTransfer", "BudgetRequest")/?Id=#=BudgetRequestID#' title="Send for Transfer"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                                                                                                        # }#
-                                                                                                                                                   
-                                                                                                                                                        <a href='@Url.Action("BudgetTransfer", "BudgetPrint")/?Id=#=BudgetRequestID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                                                                                                        <a href='@Url.Action("BudgetTransferNoHeader", "BudgetPrint")/?Id=#=BudgetRequestID#' title=" No Header Print"><i class="fa fa-archive fa-2x"></i></a>
-
-
-                                                                                                                                                       
-
-
-
-
-                                                                                                                                                        # if (IsSecondOnlineApproved == true && IsOnlineTransferred == false )
-                                                                                                                                                        {#
-                                                                                                                                                        <a onclick='return transferToGl("#=BudgetRequestID#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
-
-                                                                                                                                                        # } #
-
-                                                                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                                                                                                                                                                                                                                                                                                           .Name("OutSourceBudgetLine_#=BudgetRequestID#")
-                                                                                                                                                                                                                                                                                                                   .Columns(columns =>
-                                                                                                                                                                                                                                                                                                                   {
-                                                                                                                                                                                                                                                                                                                               columns.Bound(c => c.Description);
-                                                                                                                                                                                                                                                                                                                               columns.Bound(c => c.Remark);
-
-                                                                                                                                                                                                                                                                                                                               columns.Bound(c => c.Amount);
-
-                                                                                                                                                                                                                                                                                                                               columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                                                                                                                                                                                                                                                                                                           })
-                                                                                                                                                                                                                                                                                                                                 .Events(ev =>
-                                                                                                                                                                                                                                                                                                                                                                                             {
-                                                                                                                                                                                                                                                                                                                                                                                                         ev.DataBound("approveonDataBound");
-                                                                                                                                                                                                                                                                                                                                                                                                     })
-                                                                                                                                                                                                                                                                                                                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
-                                                                                                                                                                                                                                                                                                                   .Scrollable()
-                                                                                                                                                                                                                                                                                                                   .DataSource(dataSource => dataSource
-                                                                                                                                                                                                                                                                                                                       .Ajax()
-                                                                                                                                                                                                                                                                                                                       .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                                                                                                                                                                                                                       .Read(read => read.Action("BudgetRequestLinesSubContract_Aggrement_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                                                                                                                                                                       .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                                                                                                                                                                                       .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                                                                                                                                                                                                                                                                                                       .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                                                                                                                                                                                                                ).ToClientTemplate()
-
-                                                                                                                                                        )
-                                                                                                                                                    </text>
-
-
-                                                                                                                                                                                                                                                                              ); items.Add().Text("Staff Monthly Salary").Content(
-                                                                                                                                                                                                                                                                                @<text>
-
-                                                                                                                                                                                                                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                       .Name("StaffSalaryBudgetLine_#=BudgetRequestID#")
-                                                                                                                                                                                                                                                                                                                                                                                                                                               .Columns(columns =>
-                                                                                                                                                                                                                                                                                                                                                                                                                                               {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.Description);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.NoWorkingDay);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.SalaryPerMonth);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.ResponsibleAllowance);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.DisturbanceAllowance);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.ProffiessionalAllowance);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.OverTime);
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Bound(c => c.Amount);
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                       })
-                                                                                                                                                                                                                                                                                                                                                                                                                                                             .Events(ev =>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ev.DataBound("approveonDataBound");
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 })
-                                                                                                                                                                                                                                                                                                                                                                                                                                               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
-                                                                                                                                                                                                                                                                                                                                                                                                                                               .Scrollable()
-                                                                                                                                                                                                                                                                                                                                                                                                                                               .DataSource(dataSource => dataSource
-                                                                                                                                                                                                                                                                                                                                                                                                                                                   .Ajax()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                   .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                   .Read(read => read.Action("BudgetRequestLinesStaff_Monthly_Salary_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                                                                                                                                                                                                                                                                                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                                                                                                                                                                                                                                                                                                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                                                                                                                                                                                                                                                                                                                                                                                                                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                                                                                                                                                                                                                                                                                                                                            ).ToClientTemplate()
-
-                                                                                                                                                                                                                                                                                    )
-                                                                                                                                                                                                                                                                                </text>
-
-
-                                                                                                                                                                                                                                                                                                                                                                                                          );
-                                                                                                                                                                      items.Add().Text("Daily Labour").Content(
-            @<text>
-
-                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                                                                                                                                                                   .Name("DailyBudgetLine_#=BudgetRequestID#")
-                                                                                                                                                                           .Columns(columns =>
-                                                                                                                                                                           {
-                                                                                                                                                                                       columns.Bound(c => c.Description);
-                                                                                                                                                                                       columns.Bound(c => c.DailySalary);
-                                                                                                                                                                                       columns.Bound(c => c.NoWorkingDay);
-                                                                                                                                                                                       columns.Bound(c => c.OverTime);
-                                                                                                                                                                                       columns.Bound(c => c.Amount);
-
-                                                                                                                                                                                       columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-                                                                                                                                                                                   })
-                                                                                                                                                                                         .Events(ev =>
-                                                                                                                                                                                                                                                     {
-                                                                                                                                                                                                                                                                 ev.DataBound("approveonDataBound");
-                                                                                                                                                                                                                                                             })
-                                                                                                                                                                           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
-                                                                                                                                                                           .Scrollable()
-                                                                                                                                                                           .DataSource(dataSource => dataSource
-                                                                                                                                                                               .Ajax()
-                                                                                                                                                                               .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                                                                               .Read(read => read.Action("BudgetRequestLinesSkilled_Daily_Labour_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                               .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                                               .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                                                                                                                                                               .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                                                                        ).ToClientTemplate()
-
-                )
-            </text>
-
-
-);
-
-
-                                                                                                                                                      items.Add().Text("Gas & Oil").Content(
-                                                                                        @<text>
-
-                                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                                                                                                                                                                                                                                               .Name("GasoilBudgetLine_#=BudgetRequestID#")
-                                                                                                                                                                                                                                                       .Columns(columns =>
-                                                                                                                                                                                                                                                       {
-                                                                                                                                                                                                                                                                   columns.Bound(c => c.Description);
-                                                                                                                                                                                                                                                                   columns.Bound(c => c.Unit);
-                                                                                                                                                                                                                                                                   columns.Bound(c => c.PurchasedRequestUnit);
-                                                                                                                                                                                                                                                                   columns.Bound(c => c.PurchasedRequestUnitPrice);
-
-                                                                                                                                                                                                                                                                   columns.Bound(c => c.Amount);
-
-                                                                                                                                                                                                                                                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-                                                                                                                                                                                                                                                               })
-                                                                                                                                                                                                                                                                     .Events(ev =>
-                                                                                                                                                                                                                                                                                                                                 {
-                                                                                                                                                                                                                                                                                                                                             ev.DataBound("approveonDataBound");
-                                                                                                                                                                                                                                                                                                                                         })
-                                                                                                                                                                                                                                                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
-                                                                                                                                                                                                                                                       .Scrollable()
-                                                                                                                                                                                                                                                       .DataSource(dataSource => dataSource
-                                                                                                                                                                                                                                                           .Ajax()
-                                                                                                                                                                                                                                                           .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                                                                                                                                                           .Read(read => read.Action("BudgetRequestLinesGas_Oil_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                                                                                                           .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                                                                                                                           .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                                                                                                                                                                                                                                           .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                                                                                                                                                    ).ToClientTemplate()
-
-                                                                                            )
-                                                                                        </text>
-
-
-                                                                                                                                                                                );
-
-
-                                                                                                                                                              items.Add().Text("Equipment Purchase").Content(
-    @<text>
-
-        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                                                                                                                                                                   .Name("PurchaseBudgetLine_#=BudgetRequestID#")
-                                                                                                                                                                   .Columns(columns =>
-                                                                                                                                                                   {
-                                                                                                                                                                               columns.Bound(c => c.Description);
-                                                                                                                                                                               columns.Bound(c => c.Unit);
-                                                                                                                                                                               columns.Bound(c => c.PurchasedRequestUnit);
-                                                                                                                                                                               columns.Bound(c => c.PurchasedRequestUnitPrice);
-                                                                                                                                                                               columns.Bound(c => c.Amount);
-
-                                                                                                                                                                               columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                                                                                                                                                           })
-                                                                                                                                                                                 .Events(ev =>
-                                                                                                                                                                                                                                             {
-                                                                                                                                                                                                                                                         ev.DataBound("approveonDataBound");
-                                                                                                                                                                                                                                                     })
-                                                                                                                                                                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
-                                                                                                                                                                   .Scrollable()
-                                                                                                                                                                   .DataSource(dataSource => dataSource
-                                                                                                                                                                       .Ajax()
-                                                                                                                                                                       .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                                                                       .Read(read => read.Action("BudgetRequestLinesEquipment_Purchase_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                       .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                                       .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                                                                                                                                                       .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                                                                ).ToClientTemplate()
-
-        )
-    </text>
-
-
-);
-
-
-
-                                                                                                                                                      items.Add().Text("Rent").Content(
-@<text>
-
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                                                                                                                                                               .Name("RentBudgetLine_#=BudgetRequestID#")
-                                                                                                                                                               .Columns(columns =>
-                                                                                                                                                               {
-                                                                                                                                                                           columns.Bound(c => c.Description);
-
-                                                                                                                                                                           columns.Bound(c => c.RentTotalHr);
-                                                                                                                                                                           columns.Bound(c => c.RentPerHour);
-
-                                                                                                                                                                           columns.Bound(c => c.Amount);
-
-                                                                                                                                                                           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-                                                                                                                                                                       })
-                                                                                                                                                                             .Events(ev =>
-                                                                                                                                                                                                                                         {
-                                                                                                                                                                                                                                                     ev.DataBound("approveonDataBound");
-                                                                                                                                                                                                                                                 })
-                                                                                                                                                               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
-                                                                                                                                                               .Scrollable()
-                                                                                                                                                               .DataSource(dataSource => dataSource
-                                                                                                                                                                   .Ajax()
-                                                                                                                                                                   .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                                                                   .Read(read => read.Action("BudgetRequestLinesCar_Rent_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                                                                                                                                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                                                            ).ToClientTemplate()
-
-    )
-</text>
-
-
-);
-                                                                                                                                                      items.Add().Text("Other ").Content(
-                                                                        @<text>
-
-                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                                                                                                                                                                                                                                       .Name("OtherBudgetLine_#=BudgetRequestID#")
-                                                                                                                                                                                                                                       .Columns(columns =>
-                                                                                                                                                                                                                                       {
-                                                                                                                                                                                                                                                   columns.Bound(c => c.Description);
-                                                                                                                                                                                                                                                   columns.Bound(c => c.Unit);
-                                                                                                                                                                                                                                                   columns.Bound(c => c.PurchasedRequestUnit);
-                                                                                                                                                                                                                                                   columns.Bound(c => c.PurchasedRequestUnitPrice);
-                                                                                                                                                                                                                                                   columns.Bound(c => c.Amount);
-
-                                                                                                                                                                                                                                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                                                                                                                                                                                                                               })
-                                                                                                                                                                                                                                                     .Events(ev =>
-                                                                                                                                                                                                                                                                                                                 {
-                                                                                                                                                                                                                                                                                                                             ev.DataBound("approveonDataBound");
-                                                                                                                                                                                                                                                                                                                         })
-                                                                                                                                                                                                                                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
-                                                                                                                                                                                                                                       .Scrollable()
-                                                                                                                                                                                                                                       .DataSource(dataSource => dataSource
-                                                                                                                                                                                                                                           .Ajax()
-                                                                                                                                                                                                                                           .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                                                                                                                                                   .Read(read => read.Action("BudgetRequestLinesOther_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                                                                                           .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                                                                                                           .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                                                                                                                                                                                                                           .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                                                                                                                                    ).ToClientTemplate()
-
-                                                                            )
-                                                                        </text>
-
-
-                                                                                                                                                      );
-                                                                                                                                                              items.Add().Text("Distribution").Content(
-    @<text>
-        @RequestTransferDistribution()
-    </text>
-
-);
-                                                                                                                                                      items.Add().Text("Transfer").Content(
-                                                        @<text>
-
-                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestApproval>()
-                                                                                                                                                  .Name("approvalitemgrid_#=BudgetRequestID#")
-                                                                                                  .Columns(columns =>
-                                                                                                  {
-                                                                                                              columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusBind").Width(100);
-                                                                                                              columns.Bound(c => c.Remark).Width(150);
-                                                                                                              columns.Bound(c => c.CreatedBy).Width(150);
-                                                                                                              columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                                                                                              columns.Command(command => { command.Edit().Text("Approve"); }).Width(180);
-                                                                                                          })
-                                                                                                                     .Events(ev =>
-                                                                                                                                                                                         {
-                                                                                                                                                                                                     ev.DataBound("toapproveonDataBound");
-                                                                                                                                                                                                 })
-                                                                                                     .Editable(editable =>
-                                                                                                  {
-                                                                                                              editable.Mode(GridEditMode.InLine);
-                                                                                                              editable.DisplayDeleteConfirmation("Are You Sure To Approve ? ");
-                                                                                                          })
-
-                                                                                                  .DataSource(dataSource => dataSource
-                                                                                                      .Ajax()
-                                                                                                               .Model(model =>
-                                                                                                                  {
-                                                                                                                              model.Id(p => p.BudgetRequestApprovalId);
-                                                                                                                              model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                              model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                          })
-                                                                                                                     .Read(read => read.Action("BudgetRequestTransferApproval_Read", "BudgetRequest", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                                                                                              .Create(create => create.Action("BudgetRequestTransfer_Approve", "BudgetRequest", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                                              .Update(update => update.Action("BudgetRequestTransfer_Approve", "BudgetRequest", new { Id = "#=BudgetRequestID#" }))
-
-                                                                                                 ).ToClientTemplate()
-
-                                                            )
-                                                        </text>
-
-
-                                                                                                                                                                                                      );
-
-
-                                                                                                                                                          }).ToClientTemplate()
-
+                    .Name("tabstripMain_#=BudgetRequestID#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
+                        items.Add().Text("Status").Content(
+                        @<text>
+                        # if (IsSecondSendForApproval == false || IsSecondSendForApproval == "false")
+                        {#
+
+                            <a href='@Url.Action("SendForOnlineTransfer", "BudgetRequest")/?Id=#=BudgetRequestID#' title="Send for Transfer"><i class="fa fa-share-square fa-2x"></i></a>
+                        # }#
+
+                        <a href='@Url.Action("BudgetTransfer", "BudgetPrint")/?Id=#=BudgetRequestID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        <a href='@Url.Action("BudgetTransferNoHeader", "BudgetPrint")/?Id=#=BudgetRequestID#' title=" No Header Print"><i class="fa fa-archive fa-2x"></i></a>
+
+                            @*# if (IsSecondOnlineApproved == true && IsOnlineTransferred == false )
+                            {#
+                            <a onclick='return transferToGl("#=BudgetRequestID#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+
+                            # } #*@
+                            
+                        <div class="form-group">
+                            @*<div class="label">
+                                <label>Approval Status</label>
+                             </div>*@
+                            @* Not Working  *@
+                            <div>
+                                # if (IsSecondSendForApproval == false && IsSecondOnlineApproved == false)
+                                {#
+                                <h5 class="badge rounded-pill bg-info">Editing</h5>
+                                # }
+
+                                else if (IsSecondSendForApproval == true && IsSecondOnlineApproved == false)
+                                {#
+
+                                <h5 class="badge rounded-pill bg-info">Waiting For Approval</h5>
+                                # }
+
+                                else if (IsSecondOnlineApproved == true)
+                                {#
+
+                                <div class="badge rounded-pill bg-success">Approved</div>
+                                # }#
+                            </div>
+
+                        </div>
+                        </text>);
+
+                    items.Add().Text("Request Detail").Content(
+                        @<text>
+                                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestDetail>()
+                                            .Name("BudgetDetail_#=BudgetRequestID#")
+                                            .Columns(columns =>
+                                            {
+                                                columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode");
+                                                columns.Bound(c => c.Description);
+
+                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                            })
+                                            .ToolBar(toolbar =>
+                                            {
+                                                toolbar.Create();
+                                            })
+                                            .Events(ev =>
+                                            {
+                                                ev.DataBound("approveonDataBound");
+                                            })
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine)/*.TemplateName("BudgetRequestDetail")*/)
+                                            .Scrollable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.BudgetRequestDetailId))
+                                                        .Events(ev => ev
+                                                                .Error("error_handler(\"BudgetDetail_#=BudgetRequestID#\")")
+                                                                .RequestStart("onRequestStart(\"BudgetDetail_#=BudgetRequestID#\")")
+                                                                .RequestEnd("onRequestEnd(\"BudgetDetail_#=BudgetRequestID#\")"))
+
+                                                .Read(read => read.Action("BudgetRequestDetail_Read", "BudgetRequestDetail", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("BudgetRequestDetail_Create", "BudgetRequestDetail", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                                .Update(update => update.Action("BudgetRequestDetail_Update", "BudgetRequestDetail").Data("sendForgery"))
+                                                .Destroy(destroy => destroy.Action("BudgetRequestDetail_Delete", "BudgetRequestDetail").Data("sendForgery"))
+
+                                            ).ToClientTemplate()
+
+
+
+                                            )
+                        </text>
+                        );
+                    //OutSourced Service
+                @*items.Add().Text("OutSourced Service").Content(
+                       @<text>
+                           # if (IsSecondSendForApproval == false || IsSecondSendForApproval == "false")
+                           {#
+
+                           <a href='@Url.Action("SendForOnlineTransfer", "BudgetRequest")/?Id=#=BudgetRequestID#' title="Send for Transfer"><i class="fa fa-share-square fa-2x"></i></a>
+                           # }#
+
+                           <a href='@Url.Action("BudgetTransfer", "BudgetPrint")/?Id=#=BudgetRequestID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                           <a href='@Url.Action("BudgetTransferNoHeader", "BudgetPrint")/?Id=#=BudgetRequestID#' title=" No Header Print"><i class="fa fa-archive fa-2x"></i></a>
+
+                           # if (IsSecondOnlineApproved == true && IsOnlineTransferred == false )
+                           {#
+                           <a onclick='return transferToGl("#=BudgetRequestID#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+
+                           # } #
+
+                           @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                           .Name("OutSourceBudgetLine_#=BudgetRequestID#")
+                           .Columns(columns =>
+                           {
+                               columns.Bound(c => c.Description);
+                               columns.Bound(c => c.Remark);
+
+                               columns.Bound(c => c.Amount);
+
+                               columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                           })
+                           .Events(ev =>
+                           {
+                               ev.DataBound("approveonDataBound");
+                           })
+                           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
+                           .Scrollable()
+                           .DataSource(dataSource => dataSource
+                               .Ajax()
+                               .Model(model => model.Id(p => p.BudgetRequestLineId))
+                                               .Read(read => read.Action("BudgetRequestLinesSubContract_Aggrement_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                               .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                               .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                               .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
+
+                       ).ToClientTemplate()
+
+                       )
+                    </text> );*@
+
+                //Staff Monthly Salary
+                @*items.Add().Text("Staff Monthly Salary").Content(
+                            @<text>
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                            .Name("StaffSalaryBudgetLine_#=BudgetRequestID#")
+                            .Columns(columns =>
+                            {
+                                        columns.Bound(c => c.Description);
+                                        columns.Bound(c => c.NoWorkingDay);
+                                        columns.Bound(c => c.SalaryPerMonth);
+                                        columns.Bound(c => c.ResponsibleAllowance);
+                                        columns.Bound(c => c.DisturbanceAllowance);
+                                        columns.Bound(c => c.ProffiessionalAllowance);
+                                        columns.Bound(c => c.OverTime);
+
+                                        columns.Bound(c => c.Amount);
+
+                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                })
+                                .Events(ev =>
+                                {
+                                    ev.DataBound("approveonDataBound");
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
+                                .Scrollable()
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
+                                                    .Read(read => read.Action("BudgetRequestLinesStaff_Monthly_Salary_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                    .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                    .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
+
+                            ).ToClientTemplate()
+
+                        )
+                    </text>
+                         );*@
+
+
+
+                //Daily Labour
+                @*items.Add().Text("Daily Labour").Content(
+                        @<text>
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                            .Name("DailyBudgetLine_#=BudgetRequestID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Description);
+                        columns.Bound(c => c.DailySalary);
+                        columns.Bound(c => c.NoWorkingDay);
+                        columns.Bound(c => c.OverTime);
+                        columns.Bound(c => c.Amount);
+
+                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                    })
+                    .Events(ev =>
+                    {
+                       ev.DataBound("approveonDataBound");
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
+                    .Scrollable()
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model => model.Id(p => p.BudgetRequestLineId))
+                        .Read(read => read.Action("BudgetRequestLinesSkilled_Daily_Labour_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                        .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                        .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
+
+                    ).ToClientTemplate()
+
+                    )
+                    </text> );*@
+
+                //Gas & Oil
+                @*items.Add().Text("Gas & Oil").Content(
+                        @<text>
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                            .Name("GasoilBudgetLine_#=BudgetRequestID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.Description);
+                                columns.Bound(c => c.Unit);
+                                columns.Bound(c => c.PurchasedRequestUnit);
+                                columns.Bound(c => c.PurchasedRequestUnitPrice);
+
+                                columns.Bound(c => c.Amount);
+
+                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                            })
+                            .Events(ev =>
+                            {
+                                ev.DataBound("approveonDataBound");
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
+                            .Scrollable()
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Model(model => model.Id(p => p.BudgetRequestLineId))
+                                                .Read(read => read.Action("BudgetRequestLinesGas_Oil_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
+
+                            ).ToClientTemplate()
+
+                        )
+                    </text>
+                                 );*@
+
+
+                //Equipment Purchase
+                @*items.Add().Text("Equipment Purchase").Content(
+                                    @<text>
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                                            .Name("PurchaseBudgetLine_#=BudgetRequestID#")
+                                            .Columns(columns =>
+                                            {
+                                                columns.Bound(c => c.Description);
+                                                columns.Bound(c => c.Unit);
+                                                columns.Bound(c => c.PurchasedRequestUnit);
+                                                columns.Bound(c => c.PurchasedRequestUnitPrice);
+                                                columns.Bound(c => c.Amount);
+
+                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                            })
+                                            .Events(ev =>
+                                            {
+                                                ev.DataBound("approveonDataBound");
+                                            })
+                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
+                                            .Scrollable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.BudgetRequestLineId))
+                                                                .Read(read => read.Action("BudgetRequestLinesEquipment_Purchase_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                                .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                                .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
+
+                        ).ToClientTemplate()
+
+                    )
+                    </text>
+                    );*@
+
+
+
+                @*items.Add().Text("Rent").Content(
+                                    @<text>
+
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                                                .Name("RentBudgetLine_#=BudgetRequestID#")
+                                                .Columns(columns =>
+                                                {
+                                                    columns.Bound(c => c.Description);
+
+                                                    columns.Bound(c => c.RentTotalHr);
+                                                    columns.Bound(c => c.RentPerHour);
+
+                                                    columns.Bound(c => c.Amount);
+
+                                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                })
+                                                .Events(ev =>
+                                                {
+                                                    ev.DataBound("approveonDataBound");
+                                                })
+                                                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
+                                                .Scrollable()
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
+                                                                    .Read(read => read.Action("BudgetRequestLinesCar_Rent_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                                    .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                                    .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                                    .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
+
+                            ).ToClientTemplate()
+
+                    )
+                    </text>
+
+
+                    );
+                                items.Add().Text("Other ").Content(
+                                    @<text>
+
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                                            .Name("OtherBudgetLine_#=BudgetRequestID#")
+                                            .Columns(columns =>
+                                            {
+                                                columns.Bound(c => c.Description);
+                                                columns.Bound(c => c.Unit);
+                                                columns.Bound(c => c.PurchasedRequestUnit);
+                                                columns.Bound(c => c.PurchasedRequestUnitPrice);
+                                                columns.Bound(c => c.Amount);
+
+                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                            })
+                                                            .Events(ev =>
+                                                            {
+                                                                ev.DataBound("approveonDataBound");
+                                                            })
+                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequestLineEditor"))
+                                            .Scrollable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.BudgetRequestLineId))
+                                                                        .Read(read => read.Action("BudgetRequestLinesOther_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                                .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                                .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
+
+                                            ).ToClientTemplate()
+
+                                    )
+                                    </text>
+                                    );
+                                items.Add().Text("Distribution").Content(
+                                        @<text>
+                                            @RequestTransferDistribution()
+                                        </text>
+                                        );*@
+
+                //Transfer
+                items.Add().Text("Transfer").Content(
+                            @<text>
+
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestApproval>()
+                                               .Name("approvalitemgrid_#=BudgetRequestID#")
+                                               .Columns(columns =>
+                                               {
+                                                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                                    columns.Bound(c => c.Remark).Width(150);
+                                                    columns.Bound(c => c.CreatedBy).Width(150);
+                                                    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                    columns.Command(command => { command.Edit().Text("Approve"); }).Width(180);
+                                                })
+                                               .Events(ev =>
+                                               {
+                                                    ev.DataBound("toapproveonDataBound");
+                                               })
+                                               .Editable(editable =>
+                                               {
+                                                    editable.Mode(GridEditMode.InLine);
+                                                    editable.DisplayDeleteConfirmation("Are You Sure To Approve ? ");
+                                                })
+
+                                               .DataSource(dataSource => dataSource
+                                               .Ajax()
+                                               .Model(model =>
+                                               {
+                                                    model.Id(p => p.BudgetRequestApprovalId);
+                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                    model.Field(p => p.DateCreated).Editable(false);
+                                               })
+                                               .Read(read => read.Action("BudgetRequestTransferApproval_Read", "BudgetRequest", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                               .Create(create => create.Action("BudgetRequestTransfer_Approve", "BudgetRequest", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                               .Update(update => update.Action("BudgetRequestTransfer_Approve", "BudgetRequest", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+
+                                               ).ToClientTemplate()
+
+                                )
+                            </text>
+                                    );
+                                }).ToClientTemplate()
     )
 </script>
 
 
-@helper Staff()
-{
+                @helper Staff()
+                {
 
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                        .Name("StaffSalaryBudgetLine_#=BudgetRequestID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Description);
+                            columns.Bound(c => c.NoWorkingDay);
+                            columns.Bound(c => c.SalaryPerMonth);
+                            columns.Bound(c => c.ResponsibleAllowance);
+                            columns.Bound(c => c.DisturbanceAllowance);
+                            columns.Bound(c => c.ProffiessionalAllowance);
+                            columns.Bound(c => c.OverTime);
 
+                            columns.Bound(c => c.Amount);
+                            columns.Bound(c => c.Accepted).ClientTemplate("<input type='checkbox' \\#= Accepted? checked='checked': checked='' \\# class='checkbox'  />").Width(100);
+                        })
+                        .Events(ev => { ev.DataBound("approveonDataBound"); })
+                        .Editable(editable => editable.Mode(GridEditMode.InCell).TemplateName("RequestLineEditor"))
+                        .Scrollable()
+                        .DataSource(dataSource => dataSource
+                                .Ajax().Batch(true).ServerOperation(false)
+                                .Model(model => model.Id(p => p.BudgetRequestLineId))
+                                .Read(read => read.Action("BudgetRequestLinesStaff_Dately_Salary_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                .Update(update => update.Action("BudgetRequest_BatchUpdate", "BudgetRequestLine").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
-                                       .Name("StaffSalaryBudgetLine_#=BudgetRequestID#")
-                               .Columns(columns =>
-                               {
-                                   columns.Bound(c => c.Description);
-                                   columns.Bound(c => c.NoWorkingDay);
-                                   columns.Bound(c => c.SalaryPerMonth);
-                                   columns.Bound(c => c.ResponsibleAllowance);
-                                   columns.Bound(c => c.DisturbanceAllowance);
-                                   columns.Bound(c => c.ProffiessionalAllowance);
-                                   columns.Bound(c => c.OverTime);
+                        ).ToClientTemplate()
 
-                                   columns.Bound(c => c.Amount);
-                                   columns.Bound(c => c.Accepted).ClientTemplate("<input type='checkbox' \\#= Accepted? checked='checked': checked='' \\# class='checkbox'  />").Width(100);
-                               })
-
-                .Events(ev => { ev.DataBound("approveonDataBound"); })
-                                                                                                                   .Editable(editable => editable.Mode(GridEditMode.InCell).TemplateName("RequestLineEditor"))
-                                                                                                                   .Scrollable()
-                                                                                                                   .DataSource(dataSource => dataSource
-                                                                                                                         .Ajax().Batch(true).ServerOperation(false)
-                                                                                                                       .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                                                                                                       .Read(read => read.Action("BudgetRequestLinesStaff_Dately_Salary_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                                                                                                       .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                                                                                                                                           .Update(update => update.Action("BudgetRequest_BatchUpdate", "BudgetRequestLine"))
-                                                                                                                       .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
-
-                                                                                                ).ToClientTemplate()
-
-    )}
+                )}
 
  
 
 @helper RequestTransferDistribution()
 {
 
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestTransferDistribution>()
-                                       .Name("TransferDistrubtion#=BudgetRequestID#")
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestTransferDistribution>()
+                               .Name("TransferDistrubtion#=BudgetRequestID#")
                                .Columns(columns =>
                                {
                                    columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode");
@@ -481,28 +545,30 @@
 
                           //         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                                })
-                       .Events(ev => { ev.DataBound("DistributionapproveonDataBound"); })
-                               .Editable(editable => editable.Mode(GridEditMode.InLine))
-                               .Scrollable()
-                               .DataSource(dataSource => dataSource
-                .Ajax().ServerOperation(false)
-                                           .Model(model =>
-                                           {
-                                               model.Id(p => p.BudgetRequestTransferDistributionId);
-                                               model.Field(p => p.AccountDesc).Editable(false);
+                               .Events(ev => { ev.DataBound("DistributionapproveonDataBound"); })
+                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .Scrollable()
+                                       .DataSource(dataSource => dataSource
+                               .Ajax().ServerOperation(false)
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.BudgetRequestTransferDistributionId);
+                                    model.Field(p => p.AccountDesc).Editable(false);
 
-                                           }).Events(ev => ev
-                                                            .Error("error_handler(\"TransferDistrubtion#=BudgetRequestID#\")")
-                                                            .RequestStart("onRequestStart(\"TransferDistrubtion#=BudgetRequestID#\")")
-                                                            .RequestEnd("onRequestEnd(\"TransferDistrubtion#=BudgetRequestID#\")"))
-                                                                   .Read(read => read.Action("BudgetRequestTransferDistributions_Read", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }))
-                                                   .Create(create => create.Action("BudgetRequestTransferDistributions_Create", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }))
-                                               .Update(update => update.Action("BudgetRequestTransferDistributions_Update", "BudgetRequestTransferDistribution"))
-                                           .Destroy(destroy => destroy.Action("BudgetRequestTransferDistributions_Destroy", "BudgetRequestTransferDistribution"))
+                                })
+                                .Events(ev => ev
+                                        .Error("error_handler(\"TransferDistrubtion#=BudgetRequestID#\")")
+                                        .RequestStart("onRequestStart(\"TransferDistrubtion#=BudgetRequestID#\")")
+                                        .RequestEnd("onRequestEnd(\"TransferDistrubtion#=BudgetRequestID#\")")
+                                    )
+                                .Read(read => read.Action("BudgetRequestTransferDistributions_Read", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                .Create(create => create.Action("BudgetRequestTransferDistributions_Create", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                .Update(update => update.Action("BudgetRequestTransferDistributions_Update", "BudgetRequestTransferDistribution").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("BudgetRequestTransferDistributions_Destroy", "BudgetRequestTransferDistribution").Data("sendForgery"))
 
-            ).ToClientTemplate()
+                    ).ToClientTemplate()
 
-    )
+            )
 
 }
 
@@ -568,8 +634,8 @@
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             if (IsSecondSendForApproval == true) {
-                $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-edit").remove(); //remove the edit and delete button
+                $(this).find(".k-grid-delete").remove();//and delete button
             }
         });
     }
@@ -604,8 +670,11 @@
         var approvalItemGridName = "#approvalitemgrid_" + masterId;
         var DistributionGrid = "#TransferDistrubtion" + masterId;
 
+        var accountCodeGrid = "#BudgetDetail_" + masterId;
+
         if (masterDataItem.IsSecondSendForApproval == true) {
             $(".k-grid-edit", approvalItemGridName).hide();
+            $(".k-grid-top", accountCodeGrid).hide();
 
        }
         if (masterDataItem.IsOnlineTransferred == true) {

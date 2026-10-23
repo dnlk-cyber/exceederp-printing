@@ -1,0 +1,19 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+        .HtmlAttributes(new { @class = "form-control" })
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .OptionLabel(" Select ")
+                .Filter(FilterType.Contains)
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d =>
+                {
+                    d.Read(r =>
+                    {
+                        r.Action("AccCodeByCategory", "BudgetDataProvider").Data("filterAccCode2");
+                    })
+                    .ServerFiltering(true);
+                })
+                .AutoBind(false)
+                .CascadeFrom("PlanCategoryId"))
+               

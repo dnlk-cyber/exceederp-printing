@@ -8,7 +8,7 @@ using ExceedERP.Reporting.SharedDataSources.ViewModel;
 
 namespace ExceedERP.Reporting.Budget.ViewModel
 {
-        public  class BudgetControlViewModel : Organization
+        public  class BudgetControlViewModel 
     {
             public string BudgetCode { get; set; }
             public string BudgetDate { get; set; }

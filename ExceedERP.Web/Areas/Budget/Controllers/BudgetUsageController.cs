@@ -3,18 +3,15 @@ using System;
 using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;     
+using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Budget;
-
-using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Helpers.Common;  
-using ExceedERP.Web.Areas.FleetManagement.Models;
-using ExceedERP.Helpers.Budget;
-using ExceedERP.Web.Areas.Budget.Models;
-using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
+using System.Text.RegularExpressions;
+using ExceedERP.Core.Domain.Common.ViewModel;
+using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Web.Areas.Budget.Controllers
 {
@@ -23,148 +20,157 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
     {
 
 
-
-
-
         private ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {
-            ViewData["MainCompanyStructures"] = db.GLChartOfAccountCostCenters.ToList();
+            List<SelectorVm> costCenterList = new List<SelectorVm>();
+
+            var costCenterType =
+                db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            if (costCenterType != null)
+            {
+                var segmentSetups = db.GlChartOfAccountSegments
+                        .Where(x => x.GLSegmentSetupId == costCenterType.GLSegmentSetupId)
+                        .Where(x => x.Enable).AsQueryable();
+
+                foreach (var accountSegment in segmentSetups)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = accountSegment.Values + "-" + accountSegment.Description,
+                        Code = accountSegment.Values
+                    };
+                    costCenterList.Add(record);
+                }
+            }
+
+            var employee = db.Person_Employee;
+            var selectedEmployee = employee.Select(
+               i => new
+               {
+                   Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                   Code = i.EmployeeId
+               }).AsQueryable();
+            ViewData["personEmployees"] = selectedEmployee;
+
+            var workunits = db.MainCompanyStructures.ToList();
+            ViewData["workunits"] = workunits;
+            ViewData["GLPeriods"] = db.GLPeriods.ToList();
+            ViewData["FiscalYear"] = db.GLFiscalYears.ToList();
+            ViewData["BudgetCurrency"] = db.FinSetupCurrencies.ToList();
+            ViewData["CostCenters"] = costCenterList;
+            ViewData["BudgetCategory"] = db.BudgetCategorys.ToList();
+            ViewData["BudgetItems"] = db.BudgetCategoryDetails.ToList().Select(
+              i => new
+              {
+                  BudgetItem = Regex.Replace(i.BudgetItem.Trim(), "[^a-zA-Z0-9]+", "", RegexOptions.Compiled),
+                  BudgetCategoryDetailID = i.BudgetCategoryDetailID
+              }).AsQueryable(); ;
+
+            GetBranch();
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                GetBusinessUnits();
+            }
 
             return View();
         }
-        public static List<string> GetPeriod(List<GLPeriod> GLPeriod)
+        public ActionResult GetBranch()
         {
 
-            List<string> Periods = new List<string>();
-            for(int i=0; i < 12 ; i++ )
-            {
-                string Name = string.Empty;
-                GLPeriod Period = GLPeriod[i];
-                if (Period != null)
-                {
-                    Name = Period.Name;
-                }
-                Periods.Add(Name);
-            }
-            return Periods;
+            var branches = db.Branch;
+            ViewData["branches"] = branches.Select(
+              i => new
+              {
+                  Name = i.Name,
+                  BranchId = i.BranchId
+              }).AsQueryable(); ;
+            return Json(branches.Select(p => new { BranchId = p.BranchId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
-        [OutputCache(Duration = 1000)]
-        public ActionResult BudgetUsage_Read(string Name, string Year, [DataSourceRequest]DataSourceRequest request)
+        public ActionResult GetBusinessUnits()
         {
-            BudgetGLJournalHelper BudgetGLJournalHelper = new BudgetGLJournalHelper();
-               db = new ExceedDbContext();
-                List<BudgetUsageViewModel> NetUsages = new List<BudgetUsageViewModel>();
-                List<BudgetUsage> Usages = new List<BudgetUsage>();
+            var bizUnits = db.BusinessUnits.ToList();
+            var bizUnitdisplay = bizUnits.ToList();
 
-            var BudgetUsage = System.Runtime.Caching.MemoryCache.Default["Usage"];
-            if (BudgetUsage == null)
+            bizUnitdisplay.Add(new BusinessUnit
             {
-             
-               
-                var JournalDetails = db.GLRecordJournalDetails.Where(x => x.GLRecordJournal.IsOnlineApproved == true && x.GLRecordJournal.isVoid != true).AsQueryable();
+                BusinessUnitId = 0,
+                Name = "Not set"
+            });
+            ViewData["businesUnits"] = bizUnitdisplay.Select(
+              i => new
+              {
+                  Name = i.Name.Trim(),
+                  BusinessUnitId = i.BusinessUnitId
+              }).AsQueryable(); ;
+            return Json(bizUnits.Select(p => new { BusinessUnitId = p.BusinessUnitId, Name = p.Name }), JsonRequestBehavior.AllowGet);
+        }
 
-                foreach (var Usage in JournalDetails.DistinctByField(x => x.AccountCode))
-                {
-                    var FiscalYear = db.GLFiscalYears.Where(x => x.Name == Usage.GLRecordJournal.FiscalYear).FirstOrDefault();
-                   
-                    var Periods = db.GLPeriods.Where(x => x.GlFiscalYearId == FiscalYear.GlFiscalYearId).OrderBy(x=>x.GLPeriodId).ToList();
-                    var Period = GetPeriod(Periods);
 
-                    var janu = Period[0];
-                    var Febr = Period[1];
-                    var March = Period[2];
-                    var April = Period[3];
-                    var Ma = Period[4];
-                    var June = Period[5];
-                    var July = Period[6];
-                    var August = Period[7];
-                    var September = Period[8];
-                    var October = Period[9];
-                    var November = Period[10];
-                    var December = Period[11];
-
-                    var Jan = BudgetGLJournalHelper.GetNetJournalBalance(JournalDetails.Where(x => x.GLRecordJournal.PeriodName == janu && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Feb = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == Febr && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Mar = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == Ma && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Apr = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == April && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var May = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == Ma && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Jun = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == June && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Jul = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == July && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Aug = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == August && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Sep = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == September && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Oct = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == October && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Nov = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == November && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-                    var Dec = BudgetGLJournalHelper.GetNetJournalBalance( JournalDetails.Where(x => x.GLRecordJournal.PeriodName == December && x.AccountCode == Usage.AccountCode && x.CostCenterSegment == Usage.CostCenterSegment).FirstOrDefault());
-
-                    BudgetUsageViewModel Model = new BudgetUsageViewModel();
-
-                    Model.AccountCode = Usage.AccountCode+" - "+Usage.AccountDesc;
-                    Model.BudgetCategory = Usage.GLRecordJournal.FiscalYear;
-                    Model.WorkUnit = Usage.CostCenterSegment;
-                    Model.Unit = "";
-                    Model.Remark = Usage.AdditionalDescription;
-
-                   
-                        if (Jan != null)
-                            Model.Jan = Jan;
-                        if (Feb != null)
-                            Model.Feb = Feb;
-                        if (Mar != null)
-                            Model.Mar = Mar;
-                        if (Apr != null)
-                            Model.Apr = Apr;
-                        if (May != null)
-                            Model.May = May;
-                        if (Jun != null)
-                            Model.Jun = Jun;
-                        if (Jul != null)
-                            Model.Jul = Jul;
-                        if (Aug != null)
-                            Model.Aug = Aug;
-                        if (Sep != null)
-                            Model.Sep = Sep;
-                        if (Nov != null)
-                            Model.Nov = Nov;
-                        if (Oct != null)
-                            Model.Oct = Oct;
-                        if (Dec != null)
-                            Model.Dec = Dec;
-                     NetUsages.Add(Model);
-                 }
-
-                  System.Runtime.Caching.MemoryCache.Default["Usage"] = NetUsages;
-                DataSourceResult result = NetUsages.ToDataSourceResult(request);
-
-                return Json(result);
-                 
-            }
-            else
+        public ActionResult BudgetUsage_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            IQueryable<BudgetUsage> budgetUsages = db.BudgetUsages;
+            DataSourceResult result = budgetUsages.ToDataSourceResult(request, budgetUsage => new
             {
-                DataSourceResult BudGetresult = ((List<BudgetUsageViewModel>)BudgetUsage).ToDataSourceResult(request);
+                BudgetUsageID = budgetUsage.BudgetUsageID,
+                GlFiscalYearId = budgetUsage.GlFiscalYearId,
+                GLPeriodId = budgetUsage.GLPeriodId,
+                BranchId = budgetUsage.BranchId,
+                BusinessUnitId = budgetUsage.BusinessUnitId,
+                EmployeeId = budgetUsage.EmployeeId,
+                ReasonOfPayment = budgetUsage.ReasonOfPayment,
+                RequestDate = budgetUsage.RequestDate,
+                Amount = budgetUsage.Amount,
+                NetAmount = budgetUsage.NetAmount,
 
-                return Json(BudGetresult);
-            }
+                IsOnlineApproved = budgetUsage.IsOnlineApproved,
+                OnlineApprovedBy = budgetUsage.OnlineApprovedBy,
+                OnlineApprovedTime = budgetUsage.OnlineApprovedTime,
+                IsVoid = budgetUsage.IsVoid,
+                VoidBy = budgetUsage.VoidBy,
+                VoidTime = budgetUsage.VoidTime,
+                IsSendForApproval = budgetUsage.IsSendForApproval,
+                SendForApprovalBy = budgetUsage.SendForApprovalBy,
+                SendForApprovalTime = budgetUsage.SendForApprovalTime,
+
+                DateCreated = budgetUsage.DateCreated,
+                LastModified = budgetUsage.LastModified,
+                CreatedBy = budgetUsage.CreatedBy,
+                ModifiedBy = budgetUsage.ModifiedBy
+            });
+
+            return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult BudgetUsage_Create(int CCategoryId, [DataSourceRequest]DataSourceRequest request, BudgetUsage budgetUsage)
+        public ActionResult BudgetUsage_Create([DataSourceRequest]DataSourceRequest request, BudgetUsage budgetUsage)
         {
 
             if (ModelState.IsValid)
             {
                 var entity = new BudgetUsage
                 {
-                    BudgetUsageID = budgetUsage.BudgetUsageID,
-                    AccountCode = budgetUsage.AccountCode,
-                    AccountDesc = budgetUsage.AccountDesc,
-                    BudgetMonth = budgetUsage.BudgetMonth,
-                    BudgetYear = budgetUsage.BudgetYear,
-                    PlanCategoryId = CCategoryId,
-                    WorkUnit = budgetUsage.WorkUnit,
-                    Unit = budgetUsage.Unit,
-                    MonthlyActuals = budgetUsage.MonthlyActuals,
+                    GlFiscalYearId = budgetUsage.GlFiscalYearId,
+                    GLPeriodId = budgetUsage.GLPeriodId,
+                    BranchId = budgetUsage.BranchId,
+                    BusinessUnitId = budgetUsage.BusinessUnitId,
+                    EmployeeId = budgetUsage.EmployeeId,
+                    ReasonOfPayment = budgetUsage.ReasonOfPayment,
+                    RequestDate = budgetUsage.RequestDate,
+                    Amount = budgetUsage.Amount,
+                    NetAmount = budgetUsage.NetAmount,
+
+                    IsOnlineApproved = budgetUsage.IsOnlineApproved,
+                    OnlineApprovedBy = budgetUsage.OnlineApprovedBy,
+                    OnlineApprovedTime = budgetUsage.OnlineApprovedTime,
+                    IsVoid = budgetUsage.IsVoid,
+                    VoidBy = budgetUsage.VoidBy,
+                    VoidTime = budgetUsage.VoidTime,
+                    IsSendForApproval = budgetUsage.IsSendForApproval,
+                    SendForApprovalBy = budgetUsage.SendForApprovalBy,
+                    SendForApprovalTime = budgetUsage.SendForApprovalTime,
+
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name
 
@@ -187,13 +193,28 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
                 var entity = new BudgetUsage
                 {
                     BudgetUsageID = budgetUsage.BudgetUsageID,
-                    AccountCode = budgetUsage.AccountCode,
-                    AccountDesc = budgetUsage.AccountDesc,
-                    BudgetMonth = budgetUsage.BudgetMonth,
-                    BudgetYear = budgetUsage.BudgetYear,
-                    Unit = budgetUsage.Unit,
-                    WorkUnit = budgetUsage.WorkUnit,
-                    MonthlyActuals = budgetUsage.MonthlyActuals,
+                    GlFiscalYearId = budgetUsage.GlFiscalYearId,
+                    GLPeriodId = budgetUsage.GLPeriodId,
+                    BranchId = budgetUsage.BranchId,
+                    BusinessUnitId = budgetUsage.BusinessUnitId,
+                    EmployeeId = budgetUsage.EmployeeId,
+                    ReasonOfPayment = budgetUsage.ReasonOfPayment,
+                    RequestDate = budgetUsage.RequestDate,
+                    Amount = budgetUsage.Amount,
+                    NetAmount = budgetUsage.NetAmount,
+
+                    IsOnlineApproved = budgetUsage.IsOnlineApproved,
+                    OnlineApprovedBy = budgetUsage.OnlineApprovedBy,
+                    OnlineApprovedTime = budgetUsage.OnlineApprovedTime,
+                    IsVoid = budgetUsage.IsVoid,
+                    VoidBy = budgetUsage.VoidBy,
+                    VoidTime = budgetUsage.VoidTime,
+                    IsSendForApproval = budgetUsage.IsSendForApproval,
+                    SendForApprovalBy = budgetUsage.SendForApprovalBy,
+                    SendForApprovalTime = budgetUsage.SendForApprovalTime,
+
+                    DateCreated =budgetUsage.DateCreated,
+                    CreatedBy = budgetUsage.CreatedBy,
                     LastModified = DateTime.Now,
                     ModifiedBy = User.Identity.Name
                 };
@@ -215,15 +236,16 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
                 var entity = new BudgetUsage
                 {
                     BudgetUsageID = budgetUsage.BudgetUsageID,
-                    AccountCode = budgetUsage.AccountCode,
-                    AccountDesc = budgetUsage.AccountDesc,
-                    BudgetMonth = budgetUsage.BudgetMonth,
-                    BudgetYear = budgetUsage.BudgetYear,
-                    Unit = budgetUsage.Unit,
-                    WorkUnit = budgetUsage.WorkUnit,
-                    MonthlyActuals = budgetUsage.MonthlyActuals,
-                    LastModified = DateTime.Now,
-                    ModifiedBy = User.Identity.Name
+                    GlFiscalYearId = budgetUsage.GlFiscalYearId,
+                    GLPeriodId = budgetUsage.GLPeriodId,
+                    BranchId = budgetUsage.BranchId,
+                    BusinessUnitId = budgetUsage.BusinessUnitId,
+                    EmployeeId = budgetUsage.EmployeeId,
+                    ReasonOfPayment = budgetUsage.ReasonOfPayment,
+                    RequestDate = budgetUsage.RequestDate,
+                    Amount = budgetUsage.Amount,
+                    NetAmount = budgetUsage.NetAmount,
+                   
                 };
 
                 db.BudgetUsages.Attach(entity);

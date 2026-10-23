@@ -1,59 +1,193 @@
 ﻿@model ExceedERP.Core.Domain.Budget.BudgetPlan
+@using System.Collections
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Domain.Budget
 
-<script>
 
-    function onDetailExpand(e) {
-        var masterRow = e.masterRow;
-        //var masterGrid = $("#grid").data("kendoGrid");
-        var masterGrid = $("#gridCategory").data("kendoGrid");
-
-        var masterDataItem = masterGrid.dataItem(masterRow);
-        masterId = masterDataItem.PlanCategoryID;
-        console.error("master "+masterId);
-     
-    }
-</script>
 
 <legend> Budget Revision </legend>
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.PlanCategory>()
-          .Name("gridCategory")
-      .Columns(columns =>
-      {
+@(Html.Kendo().Grid<PlanCategory>()
+                  .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.PlanCategoryID).Title("ID").Width(90);
+                  columns.Bound(c => c.BudgetType).Width(110);
+                  columns.ForeignKey(c => c.BudgetCategoryID, (System.Collections.IEnumerable)ViewData["BudgetCategory"], "BudgetCategoryID", "Name").Title("Cetegory").EditorTemplateName("BudgetCategoryEditor").Width(150);
+                  columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("BudgetYearSelector").Width(150);
+                  columns.Bound(c => c.CurrentTotal).Format("{0:n2}").Width(110);
+                  columns.Bound(c => c.GrandTotal).EditorTemplateName("NumEditor").Format("{0:N0}").Width(100);
+                  columns.Bound(c => c.Progress).Format("{0:N0}").Width(100);
+                  // columns.Bound(c => c.ActualConsumption).Title("Actual GL").Width(90);
+                  columns.Bound(c => c.IsOpenforrevision).Width(100).Title("Open for Revision").ClientTemplate(
+                   "<input type='checkbox' disabled = 'true' value='#= IsOpenforrevision #' " +
+                   "# if (IsOpenforrevision) { #" +
+                   "checked='checked'" +
+                   "# } #" +
+                   "/>"
+                   );
+                  columns.Bound(c => c.Remark).Width(90);
+                  columns.Bound(c => c.Status).Width(120);
+                  columns.Command(command => { 
+                      //command.Edit();
+                      //command.Destroy(); 
+                  }).Width(200);
+              })
+           .ToolBar(toolbar =>
+           {
+               toolbar.Template(@<text>
 
-          columns.Bound(c => c.Name).EditorTemplateName("CategoryEditor").Width(150);
+                    <div class="toolbar" style="">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form action="@Url.Action("DownloadCustomTemplate", "Attachment")" method="post">
+                                    <div class="col-md-12">
+                                        <fieldset>
+                                            <div class="row">
+                                                <span class="">
+                                                    @*<a class="k-button k-button-icontext k-grid-add k-primary" href='#'>Add New Record</a>*@
+                                                </span>
+                                                @*@(Html.Kendo().DropDownListFor(model => model)
+                                                                            .HtmlAttributes(new { @class = "form-control", @required = "required" })
+                                                                            .Name("CategoryName")
+                                                                            .DataTextField("Text")
+                                                                            .DataValueField("Text")
+                                                                            .OptionLabel("Select Budget Category ")
+                                                                            .DataSource(d => d.Read(r => r.Action("BudgetGroupDistinctDDBind", "BudgetDataProvider").Data("sendForgery"))))
 
-          columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("YearTemplate").Width(120);
-          columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(120);
 
-       })
-                             .Events(ev =>
-                                                             {
-                                                                 ev.DetailExpand("onDetailExpand");
-                                                             })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-               .HtmlAttributes(new { style = "height: 520px;" })
-                                                          .Pageable(pageable => pageable
-                                                                            .Input(true)
-                                                                            .Numeric(false)
-                                                                            .Refresh(true)
-                                                                            .PageSizes(true)
-                                                                            .ButtonCount(5))
+                                                @(Html.Kendo().DropDownListFor(model => model)
+                                                                            .HtmlAttributes(new { @class = "form-control", @required = "required" })
+                                                                            .Name("FiscalYear")
+                                                                            .DataTextField("Text")
+                                                                            .DataValueField("Text").OptionLabel(" Select Fiscal Year ")
+                                                                            .DataSource(d =>
+                                                                            {
+                                                                                                                  d.Read(r =>
+                                                                                             {
+                                                                                                                                               r.Action("PlanYearByGroup", "BudgetDataProvider").Data("filterCategory");
+                                                                                                                                           })
+                                                                                         .ServerFiltering(true);
+                                                                                                              })
+                                                                            .AutoBind(false)
+                                                                            .CascadeFrom("CategoryName"))
 
-                                                                .Scrollable()
-                                                                .Sortable()
-                                                                .Filterable()
-                                                                                                .Scrollable(h => h.Height(500))
-                  .DataSource(dataSource => dataSource
-          .Ajax() 
-                  .Model(model =>
-                  {
-                      model.Id(p => p.PlanCategoryID);
+                                                @(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                                                                            .Name("Branch")
+                                                                            .DataTextField("Name")
+                                                                            .DataValueField("BranchId")
+                                                                            .OptionLabel("Select Branch ")
+                                                                            .DataSource(d => d.Read(r => r.Action("BranchDDBind", "BudgetDataProvider").Data("sendForgery"))))
 
-                      })
-                      .Read(read => read.Action("RevisionCategory_Read", "BudgetRevision")) 
-          )
-               .ClientDetailTemplateId("template")
+                                                @(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                                                                            .Name("WorkUnitName")
+                                                                            .DataTextField("Text")
+                                                                            .DataValueField("Text")
+                                                                            .OptionLabel("Select WorkUnit ")
+                                                                            .DataSource(d => d.Read(r => r.Action("WorkUnitDDBind", "BudgetDataProvider").Data("sendForgery"))))
+
+                                                <button type="submit" class="k-button k-primary  "> <i class="fa fa-cloud-download fa-2x"></i></button>
+                                                <a href='@Url.Action("Index", "BudgetPlanRegistration")/?Reset=Reset' title="Reset" class="btn btn-round btn-sm btn-primary"><i class="fa fa-refresh fa-1x"></i></a>*@
+
+                                            </div>
+                                            <div class="row">
+                                            </div>
+
+
+                                        </fieldset>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+
+                            <span class="col-md-2 col-md-offset-8">
+                                @*<br />*@
+                                @*@(Html.Kendo().Upload()
+                                                        .Name("file")
+                                                        .Async(a => a
+                                                            .Save("BudgetPlan_Import", "BudgetPlan")
+                                                            .AutoUpload(false)
+                                                            )
+                                                            .Messages(m => m.Select("Import Budget Plan"))
+                                                        .Events(e =>
+                                                        {
+                                                                              e.Complete("onUploadSuccess").Upload("checkFileType"); e.Error("onUploadError"); e.Success("onUploadError");
+
+                                                                          }))*@
+                                @*<a href='@Url.Action("Index", "BudgetPlanRegistration")/?Reset=Reset' title="Reset" class="pull-right "><i class="fa fa-refresh fa-2x"></i></a>*@
+
+                            </span>
+
+
+                        </div>
+                        @if (ViewBag.Error == true)
+                                    {
+                            <div class="row alert-danger"> <span>@ViewBag.Msg</span></div>
+                                    }
+
+
+                    </div>
+                </text>);
+
+
+
+           })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                             .HtmlAttributes(new { style = "height: 750px;" })
+                                          .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+                                                            .Scrollable()
+                                               .Filterable()
+                                               .Sortable()
+                                               .Scrollable(h => h.Height(650))
+                                                .Events(ev => ev.DetailExpand("detailExpandMasterRevision"))
+                                                  .Events(x => x.DataBound("onDataBoundMasterRevision"))
+                                              .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                               .Sort(sort => sort.Add("PlanCategoryID").Descending())
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.PlanCategoryID);
+                                                  model.Field(p => p.PlanCategoryID).Editable(false);
+                                                  model.Field(p => p.ActualConsumption).Editable(false);
+                                                  model.Field(p => p.CurrentTotal).Editable(false);
+                                                  model.Field(p => p.GrandTotal).Editable(false);
+                                                  model.Field(p => p.Progress).Editable(false);
+                                                  model.Field(p => p.BudgetType).Editable(false);
+
+                                                  model.Field(p => p.IsSendForApproval).Editable(false);
+                                                  model.Field(p => p.SendForApprovalBy).Editable(false);
+                                                  model.Field(p => p.SendForApprovalTime).Editable(false);
+                                                  model.Field(p => p.IsOnlineApproved).Editable(false);
+                                                  model.Field(p => p.OnlineApprovedBy).Editable(false);
+                                                  model.Field(p => p.OnlineApprovedTime).Editable(false);
+
+                                                  model.Field(p => p.IsOpenforrevision).Editable(false);
+
+                                                  model.Field(p => p.IsRevisionSendForApproval).Editable(false);
+                                                  model.Field(p => p.RevisionSendForApprovalBy).Editable(false);
+                                                  model.Field(p => p.RevisionSendForApprovalTime).Editable(false);
+                                                  model.Field(p => p.IsRevisionOnlineApproved).Editable(false);
+                                                  model.Field(p => p.RevisionOnlineApprovedBy).Editable(false);
+                                                  model.Field(p => p.RevisionOnlineApprovedTime).Editable(false);
+
+                                              }).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                                              .Read(read => read.Action("BudgetPlanRegistration_Read", "BudgetRevision").Data("sendForgery"))
+                                              .Create(create => create.Action("BudgetPlanRegistration_Create", "BudgetRevision").Data("sendForgery"))
+                                              .Update(update => update.Action("BudgetPlanRegistration_Update", "BudgetRevision").Data("sendForgery"))
+                                              .Destroy(destroy => destroy.Action("BudgetPlanRegistration_Destroy", "BudgetRevision").Data("sendForgery"))
+                                      )
+                                           .ClientDetailTemplateId("template")
 )
 
 
@@ -62,116 +196,540 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                  .Name("tabstripMain_#=PlanCategoryID#")
-          .SelectedIndex(0)
-          .Items(items =>
-          {
-              items.Add().Text("").Content(
-                @<text>
+                                  .Name("tabstripMain_#=PlanCategoryID#")
+                                  .SelectedIndex(0)
+                                  .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))//exp added
+                                                                                                              //Details
+                                  .Items(items =>
+                                  {
+                          /***********************************************Detail*******************************************/
 
-                    <legend>   Budget Plan</legend>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetPlan>()
-                   .Name("BudgetRevisiongrid_#=PlanCategoryID#")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
-          columns.Bound(c => c.AccountDesc);
+                                      items.Add().Text("Detail")
+                          .Content(@<text>
+
+                            # if (IsOnlineApproved&&!IsOpenforrevision)
+                                {#
+                                <a onclick='return OpenForRevision("#=PlanCategoryID#")' href=' \#' title="Open for Revision"><i class="fa fa-folder-open fa-2x"></i></a>
+                                <br />
+                                # } #
+                            # if (IsOpenforrevision&&!IsRevisionSendForApproval)
+                                {#
+                                <a onclick='return sendForApproval("#=PlanCategoryID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                # } #
+
+                            <div>
+                                <hr>
+                                <dl class="dl-horizontal">
+
+                                    <dt>
+                                        Status
+                                    </dt>
+                                    <dd>
+                                        #= Status #
+
+                                    </dd>
+                                    <dt>
+                                        CreatedOn
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
+
+                                    </dd>
+                                    <dt>
+                                        CreatedBy
+                                    </dt>
+                                    <dd>
+                                        #=CreatedBy #
+
+                                    </dd>
+                                    <dt>
+                                        Modified By
+                                    </dt>
+                                    <dd>
+                                        #= ModifiedBy #s
+                                    </dd>
+                                    <dt>
+                                        Modified Date
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
+                                    </dd>
+                                </dl>
+
+                            </div>
+
+                        </text>
+              );
+                                //Budget Plan
+                                items.Add().Text("Budget Plan").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetPlan>()
+                                                                .Name("gridplan_#=PlanCategoryID#") // template expression, to be evaluated in the master context
+                                                                .Columns(columns =>
+                                                                {
+                                                                    if (GlobalHelper.IsMultipleBusinessUnit())
+                                                                    {
+                                                                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businesUnits"], "BusinessUnitId", "Name").EditorTemplateName("BusinessUnitSelector").Width(150);
+                                                                    }
+                                                                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(150);
+                                                                    //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("BudgetWorkUnitSelector").Width(150);
+                                                                    columns.ForeignKey(c => c.CostCenter, (IEnumerable)ViewData["CostCenters"], "Code", "Name").Width(120).EditorTemplateName("CostCenterSelector");
+                                                                    columns.Bound(c => c.BudgetCode).Width(80);
+                                                                    columns.ForeignKey(c => c.BudgetItem, (IEnumerable)ViewData["BudgetItems"], "BudgetCategoryDetailID", "BudgetItem").Width(150).EditorTemplateName("BudgetItemSelector");
+                                                                    //columns.Bound(c => c.WorkUnitName);
+                                                                    // columns.Bound(c => c.PlanCategoryId).Hidden().Title("Category Code");
+                                                                    columns.Bound(c => c.AccountCode).EditorTemplateName("FinAccountCode").Width(120);
+                                                                    columns.Bound(c => c.AccountDesc).Width(250);
+                                                                    columns.ForeignKey(c => c.Unit, (System.Collections.IEnumerable)ViewData["BudgetCurrency"], "FinSetupCurrencyID", "Name").EditorTemplateName("UnitEditorTemplate").Width(80);
+                                                                    //columns.Bound(c => c.CurrentYearlyBudget).Title("Current Budget").Format("{0:n2}").Width(100);
+                                                                    columns.Bound(c => c.TotalYearlyBudget).Title("Total Budget").Format("{0:N0}").Width(100);
+                                                                    columns.Command(command => {
+                                                                       // command.Edit();
+                                                                      //  command.Destroy();
+                                                                    }).Width(250);
+
+                                                                })
+                                                              .ToolBar(toolbar =>
+                                                              {
+
+                                                                  toolbar.Create();
+                                                                  //toolbar.Excel();
+                                                              })
+                                                                  .Events(ev =>
+                                                                  {
+                                                                      ev.DataBound("onDataBoundLineFirst"); ev.ExcelExport("ExcelExportEvent");
+                                                                  })
+                                                                 .Filterable()
+                                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                 .HtmlAttributes(new { style = "height: 500px;" })
+                                                                 .Pageable(pageable => pageable
+                                                                                .Input(true)
+                                                                                .Numeric(false)
+                                                                                .Refresh(true)
+                                                                                .ButtonCount(5))
+                                                                                .ClientDetailTemplateId("lineItemtemplate")
+                                                                //.Excel(excel => excel
+                                                                //.FileName("Budget Plan Import Template.xlsx")
+                                                                //.Filterable(true).AllPages(true))
+                                                                .Scrollable(h => h.Height(350))
+                                                                .Reorderable(reorderable => reorderable.Columns(true))
+                                                                .DataSource(dataSource => dataSource
+                                                                    .Ajax()
+                                                                    //.Batch(true)
+                                                                    //.ServerOperation(false)
+                                                                    .Model(model =>
+                                                                    {
+                                                                        model.Id(p => p.BudgetPlanID);
+                                                                        model.Field(p => p.AccountDesc).Editable(false);
+                                                                        model.Field(p => p.BudgetCode).Editable(false);
+                                                                        //model.Field(p => p.BusinessUnitId).Editable(false);
+                                                                        model.Field(p => p.PlanCategoryId).Editable(false);
+                                                                        model.Field(p => p.CurrentYearlyBudget).Editable(false);
+                                                                        model.Field(p => p.AccountCode).Editable(false);
+                                                                        model.Field(p => p.Unit).Editable(false);
+                                                                        //model.Field(p => p.TotalYearlyBudget).Editable(true);
+                                                                    })
+                                                                    .Events(ev => ev
+                                                                            .Error("error_handler(\"gridplan_#=PlanCategoryID#\")")
+                                                                            .RequestStart("onRequestStart(\"gridplan_#=PlanCategoryID#\")")
+                                                                            .RequestEnd("onRequestEnd(\"gridplan_#=PlanCategoryID#\")")
+                                                                            )
+                                                                    .Read(read => read.Action("BudgetPlan_Read", "BudgetPlan", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                    .Create(create => create.Action("BudgetPlan_Create", "BudgetPlan", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                    .Update(update => update.Action("BudgetPlan_Update", "BudgetPlan").Data("sendForgery"))
+                                                                    .Destroy(destroy => destroy.Action("BudgetPlan_Destroy", "BudgetPlan").Data("sendForgery"))
+                                                                  )
+                                                                  .ToClientTemplate()
+                                    )
+
+                                </text>
+
+                                                     );
+                                  //Approve
+                                  items.Add().Text("Approval").Content(
+                                        @<text>
+
+                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetPlanApproval>()
+                                                                            .Name("approvalitemgrid_#=PlanCategoryID#")
+                                                                            .Columns(columns =>
+                                                                            {
+                                                                                columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(100);
+                                                                                columns.Bound(c => c.Remark).Width(150);
+                                                                                columns.Bound(c => c.CreatedBy).Width(150);
+                                                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                                columns.Command(command => { command.Edit().Text("Approve"); }).Width(180);
+                                                                            })
+                                                                            .ToolBar(toolbar =>
+                                                                            {
+                                                                                toolbar.Create();
+                                                                            })
+                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                            .Events(x => x.DataBound("onDataBoundValidationFirst"))
 
 
-          columns.ForeignKey(c => c.GLChartOfAccountCostCenterId, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("WorkUnitEditor");
+                                                                            .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                                    .Model(model =>
+                                                                                    {
+                                                                                        model.Id(p => p.BudgetPlanApprovalId);
+                                                                                        model.Field(p => p.CreatedBy).Editable(false);
+                                                                                        model.Field(p => p.DateCreated).Editable(false);
+                                                                                        model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                        model.Field(p => p.LastModified).Editable(false);
+                                                                                    })
+                                                                                    .Read(read => read.Action("BudgetPlanApprovals_Read", "BudgetPlanValidation", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                                    .Create(create => create.Action("BudgetPlanApprovals_Create", "BudgetPlanValidation", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("BudgetPlanApprovals_Update", "BudgetPlanValidation", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                            ).ToClientTemplate()
+                                            )
+                                        </text>
 
 
-         // columns.Bound(c => c.Unit).EditorTemplateName("UnitEditorTemplate");
-          columns.Bound(c => c.CurrentYearlyBudget).Format("{0:N0}");
-          columns.Bound(c => c.TotalYearlyBudget).Format("{0:N0}");
+                                                           );
+        //Approve
+                                  items.Add().Text("Revision Approval").Content(
+                                        @<text>
+
+                                            @(Html.Kendo().Grid<BudgetPlanRevisionApproval>()
+                                                                            .Name("revisionitemgrid_#=PlanCategoryID#")
+                                                                            .Columns(columns =>
+                                                                            {
+                                                                                columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(100);
+                                                                                columns.Bound(c => c.Remark).Width(150);
+                                                                                columns.Bound(c => c.CreatedBy).Width(150);
+                                                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                                columns.Command(command => { command.Edit().Text("Approve"); }).Width(180);
+                                                                            })
+                                                                            .ToolBar(toolbar =>
+                                                                            {
+                                                                                toolbar.Create();
+                                                                            })
+                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                            .Events(x => x.DataBound("onDataBoundValidationRevision"))
 
 
-         // columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-      })
+                                                                            .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                                    .Model(model =>
+                                                                                    {
+                                                                                        model.Id(p => p.BudgetPlanRevisionApprovalId);
+                                                                                        model.Field(p => p.CreatedBy).Editable(false);
+                                                                                        model.Field(p => p.DateCreated).Editable(false);
+                                                                                        model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                        model.Field(p => p.LastModified).Editable(false);
+                                                                                    })
+                                                                                    .Read(read => read.Action("BudgetPlanRevisionApprovals_Read", "BudgetPlanRevisionValidation", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                                    .Create(create => create.Action("BudgetPlanRevisionApprovals_Create", "BudgetPlanRevisionValidation", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("BudgetPlanRevisionApprovals_Update", "BudgetPlanRevisionValidation", new { Id = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                                                            ).ToClientTemplate()
+                                            )
+                                        </text>
 
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-         .HtmlAttributes(new { style = "height: 520px;" })
-                             .ClientDetailTemplateId("lineItemtemplate")
-           .DataSource(dataSource => dataSource
-          .Ajax() 
-              .Model(model =>
-              {
-                  model.Id(p => p.BudgetPlanID);
-                  model.Field(p => p.CurrentYearlyBudget).Editable(false);
-              })                              .Read(read => read.Action("BudgetPlan_Read", "BudgetPlan", new { RCategoryId = "#=PlanCategoryID#" }))
-                                      .Create(create => create.Action("BudgetPlan_Create", "BudgetPlan", new { CCategoryId = "#=PlanCategoryID#" }))
-              .Update(update => update.Action("BudgetPlan_Update", "BudgetPlan"))
-              .Destroy(destroy => destroy.Action("BudgetPlan_Destroy", "BudgetPlan"))
-            ).ToClientTemplate()
-                    )
 
-                </text>
-
-                           );
-                }).ToClientTemplate()
+                                                           );
+                              }).ToClientTemplate()
 
     )
 </script>
 
 
-
+@*monthly plan*@
 <script id="lineItemtemplate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-          .Name("tabstripline_#=BudgetPlanID#")
-          .SelectedIndex(0)
-          .Items(items =>
-          {
-              items.Add().Text("Monthly Plan").Content(
-                @<text>
+                          .Name("tabstripline_#=BudgetPlanID#")
+                          .SelectedIndex(0)
+                          .Items(items =>
+                          {
+                              items.Add().Text("Monthly Plan").Content(
+                                @<text>
 
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetPlanMonthly>()
-                  .Name("BudgetPlanMonthlygrid_#=BudgetPlanID#")
-      .Columns(columns =>
-      {
-          columns.ForeignKey(c => c.GLPeriodId, (System.Collections.IEnumerable)ViewData["GLPeriods"], "GLPeriodId", "Name").EditorTemplateName("BranchEditor").Width(120);
-         
-          columns.Bound(c => c.MonthlyBudget).Format("{0:N0}");
-          columns.Bound(c => c.AllocatedBudget).Format("{0:N0}");
-          columns.Bound(c => c.TransferedBudget).Format("{0:N0}");
-          columns.Bound(c => c.RevisedBudget).EditorTemplateName("NumEditor").Format("{0:N0}");
-          columns.Bound(c => c.CurrentBudget).Format("{0:N0}");
-          columns.Command(command => { command.Edit();  }).Width(180);
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Pageable(pageable => pageable
-                                                            .Input(true)
-                                                            .Numeric(false)
-                                                            .Refresh(true)
-                                                            .ButtonCount(5))
+                                    @(Html.Kendo().Grid<BudgetPlanMonthly>()
+                                                    .Name("BudgetPlanMonthly_#=BudgetPlanID#")
+                                              .Columns(columns =>
+                                              {
+                                                  columns.ForeignKey(c => c.GLPeriodId, (System.Collections.IEnumerable)ViewData["GLPeriods"], "GLPeriodId", "Name").Width(100);
+                                                  columns.Bound(c => c.MonthlyBudget).Format("{0:n2}").Width(90);
+                                                  columns.Bound(c => c.AllocatedBudget).Format("{0:N0}").Width(90);
+                                                  columns.Bound(c => c.TransferedBudget).Format("{0:N0}").Width(90);
+                                                  columns.Bound(c => c.RevisedBudget).Format("{0:N0}").Width(90);
+                                                  columns.Bound(c => c.CurrentBudget).Format("{0:n2}").Width(90);
+                                                  columns.Command(command => { command.Edit(); }).Width(380);
+                                              })
+                                                      .Events(ev =>
+                                                      {
+                                                          ev.DataBound("onDataBoundLineRevision");
+                                                      })
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
 
-                                                .Scrollable()
-                                                .Sortable()
-                                                .Filterable()
-                                                .Groupable()
-                                                .Scrollable(h => h.Height(100))
-               .HtmlAttributes(new { style = "height: 520px;" })
-       .DataSource(dataSource => dataSource
-          .Ajax() 
-              .Model(model =>
-              {
-                  model.Id(p => p.BudgetPlanMonthlyID);
-                  model.Field(p => p.TransferedBudget).Editable(false);
-                  model.Field(p => p.AllocatedBudget).Editable(false);
-                  model.Field(p => p.CurrentBudget).Editable(false);
-                  model.Field(p => p.MonthlyBudget).Editable(false);
-                  model.Field(p => p.GLPeriodId).Editable(false);
-              }).Events(ev => ev
-                                                    .Error("error_handler(\"BudgetPlanMonthlygrid_#=BudgetPlanID#\")")
-                                                    .RequestStart("onRequestStart(\"BudgetPlanMonthlygrid_#=BudgetPlanID#\")")
-                                                    .RequestEnd("onRequestEnd(\"BudgetPlanMonthlygrid_#=BudgetPlanID#\")")).Read(read => read.Action("BudgetPlanMonthly_Read", "BudgetPlanMonthly", new { Rid = "#=BudgetPlanID#" }))
-                              .Create(create => create.Action("BudgetPlanMonthly_Create", "BudgetPlanMonthly", new { Cid = "#=BudgetPlanID#" }))
-              .Update(update => update.Action("BudgetPlanMonthly_Update", "BudgetPlanMonthly"))
-              .Destroy(destroy => destroy.Action("BudgetPlanMonthly_Destroy", "BudgetPlanMonthly"))
-                            ).ToClientTemplate()
-                    )
-                </text>
-    );
-          }).ToClientTemplate())
+                                                                            //  .Scrollable()
+                                                                            .Sortable()
+                                                                            .Filterable()
+                                                                            .Scrollable(h => h.Height(400))
+                                              .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                                  .Model(model =>
+                                                  {
+                                                      model.Id(p => p.BudgetPlanMonthlyID);
+                                                      model.Field(p => p.BudgetPlanMonthlyID).Editable(false);
+                                                      model.Field(p => p.GLPeriod).Editable(false);
+                                                      model.Field(p => p.TransferedBudget).Editable(false);
+                                                      model.Field(p => p.AllocatedBudget).Editable(false);
+                                                      model.Field(p => p.MonthlyBudget).Editable(false);
+                                                      model.Field(p => p.CurrentBudget).Editable(false);
+                                                  })
+                                                  .Read(read => read.Action("BudgetPlanMonthly_Read", "BudgetRevisionMonthly", new { Rid = "#=BudgetPlanID#" }).Data("sendForgery"))
+                                                  .Create(create => create.Action("BudgetPlanMonthly_Create", "BudgetRevisionMonthly", new { Cid = "#=BudgetPlanID#" }).Data("sendForgery"))
+                                                  .Update(update => update.Action("BudgetPlanMonthly_Update", "BudgetRevisionMonthly").Data("sendForgery"))
+                                                  .Destroy(destroy => destroy.Action("BudgetPlanMonthly_Destroy", "BudgetRevisionMonthly").Data("sendForgery"))
+                                                                ).ToClientTemplate()
+                                    )
+                                </text>
+                                    );
+                                  }).ToClientTemplate())
 </script>
 
- 
+
+
+<script>
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isRevisionApproved;
+    var isApproved;
+    var isRevisionSendForApproval;
+    var isSendForApproval;
+
+    function detailExpandMasterRevision(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        // codeid = masterDataItem.PurchaseOrderID;
+        isRevisionApproved = masterDataItem.IsRevisionOnlineApproved;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isRevisionSendForApproval = masterDataItem.IsRevisionSendForApproval;
+        isDeptSendForApproval = masterDataItem.IsSendForApproval;
+    }
+    function onDataBoundMasterRevision(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsRevisionOnlineApproved || gridData[i].IsRevisionSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsRevisionSendForApproval && !dataItem.IsRevisionOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsRevisionSendForApproval && !dataItem.IsRevisionOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+
+            if (dataItem.IsBudgetApproved) {
+                row.css("background-color", "gold");
+            }
+
+            if (dataItem.Paid) {
+                row.css("background-color", "honeydew");
+            }
+
+            if (dataItem.IsVoid) {
+                row.css("background-color", "slategray");
+                row.css("color", "black");
+            }
+        }
+
+
+    }
+    function onDataBoundLineFirst(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isApproved || IsSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    function onDataBoundLineRevision(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isRevisionApproved || isRevisionSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    function onDataBoundValidationFirst(e) {
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isApproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+
+        this.table.find(".k-grid-edit").hide();
+    }
+    function onDataBoundValidationRevision(e) {
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isRevisionApproved || !isRevisionSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+    function filterCategory() {
+        return {
+            Group: $("#CategoryName").val()
+        };
+    }
+    function filterAccCode() {
+        return {
+            PlanCategoryID: masterId,
+        };
+    }
+    function SelectBudgetAccCode(e, BudgetCategory) {
+        // BudgetCategory = BudgetCategory;
+        console.log("budget category " + BudgetCategory);
+        accountCodeTextBox = $(e).prev('input').attr('id');
+        popup = window.open('/Budget/BudgetPlanRegistration/GLAccountSelector?Category=' + BudgetCategory, 'WindowPopup', 'top=100, left=400, width=650, height=320, resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function filterWorkUnit() {
+        return {
+            PlanCategoryID: $("#Name").val(),
+
+            AccCode: $("#AccountCode").val()
+        };
+    }
+
+
+    function onUploadError(e) {
+
+        var response = jQuery.parseJSON(e.XMLHttpRequest.responseText);
+        alert(response.data);
+    }
+
+    function ExcelExportEvent(e) {
+        e.sender.hideColumn("0");
+
+        //     e.sender.hideColumn("ReportStartDateTime");
+    }
+
+    function getBudgetCategoryId() {
+        return {
+            catId: masterId,
+            text: $("#BudgetItem").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+
+
+
+</script>
+
+
+
+<script type="text/javascript">
+
+
+    function onUploadSuccess(e) {
+        $("#gridCategory").data("kendoGrid").dataSource.read();
+        $("#gridCategory").data("kendoGrid").refresh();
+
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    function OpenForRevision(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("OpenForRevision", "BudgetRevision", new { area = "Budget" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "BudgetRevision", new { area = "Budget" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+</script>

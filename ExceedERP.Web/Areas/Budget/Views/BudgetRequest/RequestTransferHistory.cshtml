@@ -26,7 +26,7 @@
 <legend>     Request Transfer History </legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestTransferLog>()
-                                  .Name("grid")
+      .Name("grid")
       .Columns(columns =>
       {
 
@@ -70,10 +70,10 @@
                                                     .Error("error_handler(\"grid\")")
                                                     .RequestStart("onRequestStart(\"grid\")")
                                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                      .Read(read => read.Action("BudgetRequestAccepted_Read", "BudgetRequest"))
-              .Create(create => create.Action("BudgetRequest_Create", "BudgetRequest"))
-              .Update(update => update.Action("BudgetRequest_Update", "BudgetRequest"))
-              .Destroy(destroy => destroy.Action("BudgetRequest_Destroy", "BudgetRequest"))
+                      .Read(read => read.Action("BudgetRequestAccepted_Read", "BudgetRequest").Data("sendForgery"))
+              .Create(create => create.Action("BudgetRequest_Create", "BudgetRequest").Data("sendForgery"))
+              .Update(update => update.Action("BudgetRequest_Update", "BudgetRequest").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("BudgetRequest_Destroy", "BudgetRequest").Data("sendForgery"))
                     )
 )
 
@@ -89,12 +89,12 @@
 
                
 
-              items.Add().Text("OutSourced Service").Content(
-                @<text>
+              @*items.Add().Text("OutSourced Service").Content(
+                @<text>*@
     @*<a href='@Url.Action("BudgetRequestTransfer", "BudgetPrint")/?Id=#=BudgetRequestTransferLogId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
     <a href='@Url.Action("BudgetRequestTransferNoHeader", "BudgetPrint")/?Id=#=BudgetRequestTransferLogId#' title=" No Header Print"><i class="fa fa-print fa-2x"></i></a>*@
 
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
+                    @*@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
                                        .Name("OutSourceBudgetLine_#=BudgetRequestID#")
                                .Columns(columns =>
                                {
@@ -112,10 +112,10 @@
                                .DataSource(dataSource => dataSource
                                        .Ajax().Batch(true).ServerOperation(false) 
                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                   .Read(read => read.Action("BudgetRequestLinesSubContract_Aggrement_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
+                                                   .Read(read => read.Action("BudgetRequestLinesSubContract_Aggrement_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
             ).ToClientTemplate()
 
@@ -123,7 +123,7 @@
                 </text>
 
 
-            ); items.Add().Text("Staff Monthly Salary").Content(
+            );*@ @*items.Add().Text("Staff Monthly Salary").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
@@ -147,10 +147,10 @@
                                .DataSource(dataSource => dataSource
                                      .Ajax().Batch(true).ServerOperation(false) 
                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                   .Read(read => read.Action("BudgetRequestLinesStaff_Monthly_Salary_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
+                                                   .Read(read => read.Action("BudgetRequestLinesStaff_Monthly_Salary_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
             ).ToClientTemplate()
 
@@ -158,8 +158,8 @@
                 </text>
 
 
-            );
-              items.Add().Text("Daily Labour").Content(
+            );*@
+              @*items.Add().Text("Daily Labour").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
@@ -178,10 +178,10 @@
                                .DataSource(dataSource => dataSource
                                        .Ajax().Batch(true).ServerOperation(false) 
                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                   .Read(read => read.Action("BudgetRequestLinesSkilled_Daily_Labour_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
+                                                   .Read(read => read.Action("BudgetRequestLinesSkilled_Daily_Labour_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
             ).ToClientTemplate()
 
@@ -189,10 +189,10 @@
                 </text>
 
 
-            );
+            );*@
 
 
-              items.Add().Text("Gas & Oil").Content(
+              @*items.Add().Text("Gas & Oil").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
@@ -212,10 +212,10 @@
                                .DataSource(dataSource => dataSource
                 .Ajax().Batch(true).ServerOperation(false) 
                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                   .Read(read => read.Action("BudgetRequestLinesGas_Oil_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
+                                                   .Read(read => read.Action("BudgetRequestLinesGas_Oil_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
             ).ToClientTemplate()
 
@@ -223,10 +223,10 @@
                 </text>
 
 
-            );
+            );*@
 
 
-              items.Add().Text("Equipment Purchase").Content(
+              @*items.Add().Text("Equipment Purchase").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
@@ -245,10 +245,10 @@
                                .DataSource(dataSource => dataSource
                                        .Ajax().Batch(true).ServerOperation(false) 
                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                   .Read(read => read.Action("BudgetRequestLinesEquipment_Purchase_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
+                                                   .Read(read => read.Action("BudgetRequestLinesEquipment_Purchase_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
             ).ToClientTemplate()
 
@@ -256,9 +256,9 @@
                 </text>
 
 
-            );
+            );*@
 
-              items.Add().Text("Rent").Content(
+              @*items.Add().Text("Rent").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
@@ -278,10 +278,10 @@
                                .DataSource(dataSource => dataSource
                                          .Ajax().Batch(true).ServerOperation(false) 
                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                   .Read(read => read.Action("BudgetRequestLinesCar_Rent_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
+                                                   .Read(read => read.Action("BudgetRequestLinesCar_Rent_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
             ).ToClientTemplate()
 
@@ -289,8 +289,8 @@
                 </text>
 
 
-            );
-              items.Add().Text("Other ").Content(
+            );*@
+              @*items.Add().Text("Other ").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestLine>()
@@ -313,10 +313,10 @@
                                .DataSource(dataSource => dataSource
                                    .Ajax()
                                    .Model(model => model.Id(p => p.BudgetRequestLineId))
-                                                           .Read(read => read.Action("BudgetRequestLinesOther_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }))
-                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine"))
-                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine"))
-                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine"))
+                                                           .Read(read => read.Action("BudgetRequestLinesOther_Read", "BudgetRequestLine", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                   .Create(create => create.Action("BudgetRequestLines_Create", "BudgetRequestLine").Data("sendForgery"))
+                                   .Update(update => update.Action("BudgetRequestLines_Update", "BudgetRequestLine").Data("sendForgery"))
+                                   .Destroy(destroy => destroy.Action("BudgetRequestLines_Destroy", "BudgetRequestLine").Data("sendForgery"))
 
             ).ToClientTemplate()
 
@@ -324,7 +324,7 @@
                 </text>
 
 
-            );
+            );*@
 
               items.Add().Text("Distribution").Content(
                 @<text>
@@ -344,7 +344,7 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetRequestTransferDistribution>()
-                                               .Name("TransferDistrubtion#=BudgetRequestID#")
+                               .Name("TransferDistrubtion#=BudgetRequestID#")
                                .Columns(columns =>
                                {
                                    columns.Bound(c => c.AccountCode);
@@ -353,18 +353,18 @@
                                    columns.Bound(c => c.Credit);
                                })
                            // .ToolBar(x => x.Create())
- .Events(ev => { ev.DataBound("approveonDataBound"); })
+                               .Events(ev => { ev.DataBound("approveonDataBound"); })
                                .Editable(editable => editable.Mode(GridEditMode.InCell).TemplateName("RequestLineEditor"))
                                .Scrollable()
                                .DataSource(dataSource => dataSource
-                .Ajax().Batch(true).ServerOperation(false)
+                               .Ajax().Batch(true).ServerOperation(false)
                                    .Model(model => model.Id(p => p.BudgetRequestTransferDistributionId))
-                                                                               .Read(read => read.Action("BudgetRequestTransferDistributions_Read", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }))
-                                                           .Create(create => create.Action("BudgetRequestTransferDistributions_Create", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }))
-                                                       .Update(update => update.Action("BudgetRequestTransferDistributions_Update", "BudgetRequestTransferDistribution"))
-                                                   .Destroy(destroy => destroy.Action("BudgetRequestTransferDistributions_Destroy", "BudgetRequestTransferDistribution"))
+                                            .Read(read => read.Action("BudgetRequestTransferDistributions_Read", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                            .Create(create => create.Action("BudgetRequestTransferDistributions_Create", "BudgetRequestTransferDistribution", new { Id = "#=BudgetRequestID#" }).Data("sendForgery"))
+                                            .Update(update => update.Action("BudgetRequestTransferDistributions_Update", "BudgetRequestTransferDistribution").Data("sendForgery"))
+                                            .Destroy(destroy => destroy.Action("BudgetRequestTransferDistributions_Destroy", "BudgetRequestTransferDistribution").Data("sendForgery"))
 
-            ).ToClientTemplate()
+                            ).ToClientTemplate()
 
     )
 }

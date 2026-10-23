@@ -4,22 +4,14 @@ using ExceedERP.Reporting.SharedDataSources.ViewModel;
 
 namespace ExceedERP.Core.Reporting.ViewModel
 {
-    public class BudgetAllocationAndUsageAgainstPreviousYearViewModel : Organization
+    public class BudgetAllocationAndUsageAgainstPreviousYearViewModel 
     {
         [Display(Name = "Account Code")]
         public string AccountCode { get; set; }
-
-        [Display(Name = "Budget Category")]
-        public string BudgetCategory { get; set; }
-
-        [Display(Name = " Fiscal Year")]
-        public string FiscalYear { get; set; }
-       
-        [Display(Name = "Description")]
-        public string AccountDesc { get; set; }
         [Display(Name = "Work Unit")]
         public string WorkUnit { get; set; }
         public string Unit { get; set; }
+        public string BudgetCode { get; set; }
         public decimal ThisYearBudget { get; set; }
         public decimal PreviousYearBudget { get; set; }
         public decimal BudgetDifference { get; set; }

@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+      .ValuePrimitive(true)
+      .OptionLabel("Select Travel Order...")
+      .DataTextField("Name")
+      .DataValueField("Code")
+      .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetTravelOrders", "FinanceDataProvider", new { area = "Finance" }).Data("sendForgery"))
+              .ServerFiltering(false);
+      })
+      )
+@Html.ValidationMessageFor(m => m)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ExceedERP.Core.Domain.Finance.Report;
 using ExceedERP.Core.Domain.Inventory;
 using System.Collections.Generic;
@@ -29,6 +29,11 @@ namespace ExceedERP.Core.Domain.Dashboard
         NET_INCOME,
         COST_OF_SERVICES,
         SALES,
+        INTEREST,
+        OVERHEAD,
+        INVESTMENT,
+        LIQUID_ASSETS,
+        TOTAL_DEPOSITS,
         Other
     }
     public class FinanceDashboard
@@ -71,5 +76,7 @@ namespace ExceedERP.Core.Domain.Dashboard
         public string Name { get; set; }
         public string Dimesion { get; set; }
         public decimal Value { get; set; }
+
+        public int? GlFiscalYearId { get; set; }
     }
 }

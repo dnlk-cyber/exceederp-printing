@@ -15,6 +15,7 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Helpers.Budget;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Reporting.Budget.DataSource
 {
@@ -24,7 +25,7 @@ namespace ExceedERP.Reporting.Budget.DataSource
         public ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<WorkUnitReportViewModel> GetUsageList(string BudgetCategory, string Year, string WorkUnit, string Branch)
+        public List<WorkUnitReportViewModel> GetUsageList(string Type, string BudgetCategory, string Year, string WorkUnit, string Branch)
         {
             List<WorkUnitReportViewModel> BudgetList = new List<WorkUnitReportViewModel>();
               List<BudgetUsage> BudgetUsages = new List<BudgetUsage>();
@@ -120,26 +121,27 @@ namespace ExceedERP.Reporting.Budget.DataSource
                      x => x.AccountCode.ToUpper().CompareTo(BudgetCategorys.FromAccountCode) >= 0)
                      .Where(x => x.AccountCode.ToUpper().CompareTo(BudgetCategorys.ToAccountCode) <= 0);
 
-                var BudgetPlans = db.BudgetPlans.Where(x=> x.BudgetCategoryID ==  PlanCategory.PlanCategoryID).ToList();
+                var BudgetPlans = db.BudgetPlans.Where(x=> x.PlanCategoryId ==  PlanCategory.PlanCategoryID).ToList();
 
                 if (!string.IsNullOrEmpty(WorkUnit))
                 {
-                    BudgetPlans = BudgetPlans.Where(x => x.GLChartOfAccountCostCenterId.ToString() == WorkUnit).ToList();
+                    BudgetPlans = BudgetPlans.ToList();
                     JournalDetails = JournalDetails.Where(x => x.CostCenterSegment == WorkUnit);
                 }
                 if (!string.IsNullOrWhiteSpace(Branch))
                 {
                     BudgetPlans = BudgetPlans.Where(x => x.BranchId.ToString() == Branch).ToList();
                 }
-                foreach (var list in BudgetPlans.DistinctByField(x => x.GLChartOfAccountCostCenterId))
+                foreach (var list in BudgetPlans)
                 {
-
-                    var CostCenter = db.GLChartOfAccountCostCenters.Where(x => x.Values == list.GLChartOfAccountCostCenterId.ToString()).FirstOrDefault();
-                    var Currency = db.BudgetCurrencies.Where(x => x.BudgetCurrencyId == list.Unit).FirstOrDefault();
-                    var WorkUnitTotal = db.BudgetPlans.Where(x=>x.BudgetCategoryID == PlanCategory.PlanCategoryID && x.GLChartOfAccountCostCenterId == list.GLChartOfAccountCostCenterId).ToList();
+                    var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                    var glChartOfAccountCostCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId);
+                   // var CostCenter = glChartOfAccountCostCenters.Where(x => x.Values == list.GLChartOfAccountCostCenterValue.ToString()).FirstOrDefault();
+                    var Currency = db.FinSetupCurrencies.Where(x => x.FinSetupCurrencyID == list.Unit).FirstOrDefault();
+                    var WorkUnitTotal = db.BudgetPlans.Where(x=>x.PlanCategoryId == PlanCategory.PlanCategoryID ).ToList();
                     var ThisMonthPlans = db.BudgetPlanMonthlys.Where(x => x.GLPeriodId == CurrentPeriod.GLPeriodId && x.BudgetDefineID == list.BudgetPlanID).FirstOrDefault();
-                    var ThisMonthActuals = JournalDetails.Where(x => x.GLRecordJournal.PeriodName == CurrentPeriod.Name && x.CostCenterSegment == list.GLChartOfAccountCostCenterId.ToString()).FirstOrDefault();
-                    var ThisYearActuals = JournalDetails.Where(x => x.CostCenterSegment == list.GLChartOfAccountCostCenterId.ToString()).ToList();
+                    var ThisMonthActuals = JournalDetails.Where(x => x.GLRecordJournal.PeriodName == CurrentPeriod.Name ).FirstOrDefault();
+                    var ThisYearActuals = JournalDetails.ToList();
                     var ThisYearUntil = db.BudgetPlanMonthlys.Where(x => x.BudgetDefineID == list.BudgetPlanID && x.GLPeriodId <= CurrentPeriod.GLPeriodId).ToList();
 
                     if (ThisMonthActuals != null)
@@ -165,11 +167,12 @@ namespace ExceedERP.Reporting.Budget.DataSource
 
                     }
 
-                    var model = new WorkUnitReportViewModel();
-
-                    model.ThisYearBudget = WorkUnitTotal.Sum(x => x.TotalYearlyBudget);
-                    model.ThisYearMonthlyPlan = ThisYearMonthlyPlan;
-                    model.ThisYearMonthlyActual = ThisYearMonthlyActual;
+                    var model = new WorkUnitReportViewModel
+                    {
+                        ThisYearBudget = WorkUnitTotal.Sum(x => x.TotalYearlyBudget),
+                        ThisYearMonthlyPlan = ThisYearMonthlyPlan,
+                        ThisYearMonthlyActual = ThisYearMonthlyActual
+                    };
                     if (ThisYearMonthlyActual == decimal.Zero)
                     {
                         ThisYearMonthlyActual = 1;
@@ -191,14 +194,14 @@ namespace ExceedERP.Reporting.Budget.DataSource
                     model.GrandDifferencePercentage = (model.MonthlyDiffrencePecent / YearDiffrence) * 100;
 
 
-                    model.WorkUnit = CostCenter.Description;
-                    model.Unit = Currency.Name;
-                    model.AmharicName = AmharicName;
-                    model.Name = Name;
-                    model.LogoFileName = LogoFileName;
-                    model.Address = Address;
+                   // model.WorkUnit = CostCenter.Description;
+                    //model.Unit = Currency.Name;
+                    //model.AmharicName = AmharicName;
+                    //model.Name = Name;
+                    //model.LogoFileName = LogoFileName;
+                    //model.Address = Address;
 
-                    List.Add(model);
+                    //List.Add(model);
                 }
 
             }
@@ -209,13 +212,13 @@ namespace ExceedERP.Reporting.Budget.DataSource
             
                 model.WorkUnit = e.Message;
                 model.Unit = "";
-                model.AmharicName = e.StackTrace;
-                model.Name = Name;
-                model.LogoFileName = LogoFileName;
-                model.Address = Address;
+                //model.AmharicName = e.StackTrace;
+                //model.Name = Name;
+                //model.LogoFileName = LogoFileName;
+                //model.Address = Address;
 
-                List.Add(model);
-                return List;
+                //List.Add(model);
+                //return List;
             }
             return List;
         }

@@ -31,8 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocumentFormat.OpenXml">
-      <HintPath>..\ExceedERP.Web\Bin\DocumentFormat.OpenXml.dll</HintPath>
+    <Reference Include="DocumentFormat.OpenXml, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.3.5.1\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.Framework.3.5.1\lib\net46\DocumentFormat.OpenXml.Framework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
@@ -104,6 +107,7 @@
     <Compile Include="Budget\BudgetCreateExcelFile.cs" />
     <Compile Include="Budget\BudgetGenericHelper.cs" />
     <Compile Include="Budget\BudgetGLJournalHelper.cs" />
+    <Compile Include="Budget\BudgetPlanHelper.cs" />
     <Compile Include="Budget\BudgetRatioHelper.cs" />
     <Compile Include="Budget\BudgetReportHelper.cs" />
     <Compile Include="Budget\BudgetRequestHelper.cs" />

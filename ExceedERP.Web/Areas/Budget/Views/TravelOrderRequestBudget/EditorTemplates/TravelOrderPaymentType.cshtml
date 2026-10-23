@@ -1,0 +1,12 @@
+﻿@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP.Travel
+@using ExceedERP.Helpers.Common
+
+@(
+     Html.Kendo().DropDownListFor(m => m)
+            .DataTextField("Text")
+            .DataValueField("Value")
+                    .BindTo(EnumExtension.EnumToSelectList(typeof(TravelPaymentType)))
+)
+
+

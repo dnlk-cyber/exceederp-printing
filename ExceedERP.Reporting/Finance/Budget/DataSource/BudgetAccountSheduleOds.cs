@@ -18,10 +18,9 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 {
 
     [DataObject]
-    public class BudgetAccountSheduleOds : List<AccountSheduleViewModel>
+    public class BudgetAccountSheduleOds : IDisposable
     {
         public ExceedDbContext db = new ExceedDbContext();
-        readonly AccountHelper _accountHelper = new AccountHelper();
         
 
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -34,8 +33,8 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
             FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 
             //var budgetSchedules = Db.BudgetAccountShedules.ToList();
-            var budgetScheduleline = db.BudgetAccountSheduleLines.ToList();
-            var budgetSchedulelineAccount = db.BudgetLineSheduleAccounts.ToList();
+            var budgetScheduleline = db.BudgetAccountSheduleLines.AsNoTracking().ToList();
+            var budgetSchedulelineAccount = db.BudgetLineSheduleAccounts.AsNoTracking().ToList();
             Branch legerBranch = new Branch();
             bool isBranch = false;
             if (!String.IsNullOrWhiteSpace(branch))
@@ -137,34 +136,33 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
                                 decimal netChange = 0;
                                 if (isBranch)
                                 {
-                                    beginning = beginning + reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(
-                                                    firstMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount);
+                                    //beginning = beginning + reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(
+                                    //                 range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount,fiscalyearId,firstPeriod);
 
 
-                                    netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch(thirdMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount)
-                                                - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(firstMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount);
+                                    //netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch(range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, thirdPeriod)
+                                    //            - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, firstPeriod);
 
-                                    firstQuarter = firstQuarter + netChange;
+                                    //firstQuarter = firstQuarter + netChange;
 
-                                    netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch(sixthMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount)
-                                                - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(forthMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount);
-                                    secondQuarter = secondQuarter + netChange;
+                                    //netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch(range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, sixthPeriod)
+                                    //            - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, fourthPeriod);
+                                    //secondQuarter = secondQuarter + netChange;
 
-                                    netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch(ninthMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount)
-                                                - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(seventhMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount);
-                                    thirdQuarter = thirdQuarter + netChange;
+                                    //netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch(range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, ninthPeriod)
+                                    //            - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, seventhPeriod);
 
-                                    netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch(twelvethMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount)
-                                                - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch(tenthMonthBalance, range.FromAccountCode, range.ToAccountCode,
-                                                    legerBranch.LocationAccount);
+                                    //netChange = reportHelper.GetAccountEndBalancesWithSegmentRangeAndBranch( range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, twelvethPeriod)
+                                    //            - reportHelper.GetAccountBegBalancesWithSegmentRangeAndBranch( range.FromAccountCode, range.ToAccountCode,
+                                    //                legerBranch.LocationAccount, fiscalyearId, tenthPeriod);
                                     fourthQuarter = fourthQuarter + netChange;
 
                                     #region Budget Modifed 16/07/19
@@ -257,6 +255,10 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
             }
             return revenues;
 
+        }
+        public void Dispose()
+        {
+            db?.Dispose();
         }
     }
 }

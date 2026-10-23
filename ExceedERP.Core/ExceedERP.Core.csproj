@@ -180,6 +180,7 @@
     <Compile Include="Domain\Budget\BudgetAllocationApproval.cs" />
     <Compile Include="Domain\Budget\BudgetBankAccountMap.cs" />
     <Compile Include="Domain\Budget\BudgetCategory.cs" />
+    <Compile Include="Domain\Budget\BudgetCategoryDetail.cs" />
     <Compile Include="Domain\Budget\BudgetControl.cs" />
     <Compile Include="Domain\Budget\BudgetCurrency.cs" />
     <Compile Include="Domain\Budget\BudgetEnums.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Domain\Budget\BudgetPlanMonthly.cs" />
     <Compile Include="Domain\Budget\BudgetRequest.cs" />
     <Compile Include="Domain\Budget\BudgetRequestApproval.cs" />
+    <Compile Include="Domain\Budget\BudgetRequestDetail.cs" />
     <Compile Include="Domain\Budget\budgetrequestline.cs" />
     <Compile Include="Domain\Budget\BudgetRequestTransferDistribution.cs" />
     <Compile Include="Domain\Budget\BudgetRequestTransferLog.cs" />
@@ -541,6 +543,7 @@
     <Compile Include="Domain\Finance\Enum.cs" />
     <Compile Include="Domain\Finance\FinanceConstants.cs" />
     <Compile Include="Domain\Finance\FinanceEnums.cs" />
+    <Compile Include="Domain\Finance\FinancialRatio.cs" />
     <Compile Include="Domain\Finance\GL\Dynamic\GLChartOfAccountSegment.cs" />
     <Compile Include="Domain\Finance\GL\Dynamic\GLSegmentCrossValidation.cs" />
     <Compile Include="Domain\Finance\GL\Dynamic\GLSegmentSetup.cs" />
@@ -1449,6 +1452,7 @@
     <Compile Include="Domain\Procurement\PR\PurchaseRequisition.cs" />
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionAssignment.cs" />
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionAttachment.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionBudgetValidation.cs" />
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionItem.cs" />
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionPurchaseDepartmentValidation.cs" />
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionReassignmentItem.cs" />

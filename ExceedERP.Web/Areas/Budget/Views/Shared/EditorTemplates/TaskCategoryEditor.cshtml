@@ -1,4 +1,4 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
                                     .DataTextField("Text")
                                                         .DataValueField("Value").OptionLabel("Select ").Filter(FilterType.Contains)
-                                                        .DataSource(d => d.Read(r => r.Action("TaskCategoryDDBind", "BudgetDataProvider")).ServerFiltering(false)))
+                                                        .DataSource(d => d.Read(r => r.Action("TaskCategoryDDBind", "BudgetDataProvider").Data("sendForgery")).ServerFiltering(false)))

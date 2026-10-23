@@ -2,6 +2,6 @@
 @(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control", @required = "required" })
                                                 .DataTextField("BudgetYear")
                                                             .DataValueField("BudgetYear").OptionLabel("Select ").Filter(FilterType.Contains)
-                                                .DataSource(d => d.Read(r => r.Action("PlanDDBind", "BudgetDataProvider")).ServerFiltering(false)))
+                                                .DataSource(d => d.Read(r => r.Action("PlanDDBind", "BudgetDataProvider").Data("sendForgery")).ServerFiltering(false)))
 
 

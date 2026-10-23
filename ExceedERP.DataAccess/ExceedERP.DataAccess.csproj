@@ -117,6 +117,10 @@
     <Compile Include="Migrations\202610190807408_OverTimechanges.Designer.cs">
       <DependentUpon>202610190807408_OverTimechanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610231328538_BudgetUpdatesMigration.cs" />
+    <Compile Include="Migrations\202610231328538_BudgetUpdatesMigration.Designer.cs">
+      <DependentUpon>202610231328538_BudgetUpdatesMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -156,6 +160,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610190807408_OverTimechanges.resx">
       <DependentUpon>202610190807408_OverTimechanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610231328538_BudgetUpdatesMigration.resx">
+      <DependentUpon>202610231328538_BudgetUpdatesMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

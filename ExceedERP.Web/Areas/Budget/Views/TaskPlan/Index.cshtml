@@ -80,10 +80,10 @@
                                                 .Error("error_handler(\"grid\")")
                                                 .RequestStart("onRequestStart(\"grid\")")
                                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                                              .Read(read => read.Action("TaskPlan_Read", "TaskPlan"))
-                                      .Create(create => create.Action("TaskPlan_Create", "TaskPlan"))
-                      .Update(update => update.Action("TaskPlan_BatchUpdate", "TaskPlan"))
-              .Destroy(destroy => destroy.Action("TaskPlan_Destroy", "TaskPlan"))))
+                                              .Read(read => read.Action("TaskPlan_Read", "TaskPlan").Data("sendForgery"))
+                                      .Create(create => create.Action("TaskPlan_Create", "TaskPlan").Data("sendForgery"))
+                      .Update(update => update.Action("TaskPlan_BatchUpdate", "TaskPlan").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("TaskPlan_Destroy", "TaskPlan").Data("sendForgery"))))
 
 
 
@@ -169,7 +169,7 @@
                                                 <label>     @Html.LabelFor(model => model.DateCreated)</label>
                                             </div>
                                             <div>
-                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                             </div>
                                         </div>
@@ -222,10 +222,10 @@
 
 
               })
-                                      .Read(read => read.Action("TaskPlanMonth_Read", "TaskPlan", new { Id = "#=TaskPlanId#" }))
-                              .Create(create => create.Action("TaskPlanMonthly_Create", "TaskPlanMonthlyRegistration", new { Cid = "#=TaskPlanId#" }))
-              .Update(update => update.Action("TaskPlanMonthly_Update", "TaskPlanMonthlyRegistration"))
-              .Destroy(destroy => destroy.Action("TaskPlanMonthly_Destroy", "TaskPlanMonthlyRegistration"))
+                                      .Read(read => read.Action("TaskPlanMonth_Read", "TaskPlan", new { Id = "#=TaskPlanId#" }).Data("sendForgery"))
+                              .Create(create => create.Action("TaskPlanMonthly_Create", "TaskPlanMonthlyRegistration", new { Cid = "#=TaskPlanId#" }).Data("sendForgery"))
+              .Update(update => update.Action("TaskPlanMonthly_Update", "TaskPlanMonthlyRegistration").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("TaskPlanMonthly_Destroy", "TaskPlanMonthlyRegistration").Data("sendForgery"))
                             ).ToClientTemplate()
                     )
                 </text>
@@ -262,9 +262,9 @@
                           model.Field(p => p.CreatedBy).Editable(false);
                           model.Field(p => p.DateCreated).Editable(false);
                       })
-                                 .Read(read => read.Action("TaskPlanApproval_Read", "TaskPlan", new { Id = "#=TaskPlanId#" }))
-                                             .Create(update => update.Action("TaskPlans_Approve", "TaskPlan", new { Id = "#=TaskPlanId#" }))
-                                         .Update(update => update.Action("TaskPlans_Approve", "TaskPlan", new { Id = "#=TaskPlanId#" }))
+                                 .Read(read => read.Action("TaskPlanApproval_Read", "TaskPlan", new { Id = "#=TaskPlanId#" }).Data("sendForgery"))
+                                             .Create(update => update.Action("TaskPlans_Approve", "TaskPlan", new { Id = "#=TaskPlanId#" }).Data("sendForgery"))
+                                         .Update(update => update.Action("TaskPlans_Approve", "TaskPlan", new { Id = "#=TaskPlanId#" }).Data("sendForgery"))
 
      ).ToClientTemplate()
 

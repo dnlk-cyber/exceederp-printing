@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
@@ -10,278 +10,284 @@ using ExceedERP.Core.Domain.Budget.GAAP;
 
 namespace ExceedERP.DataAccess.Context
 {
-        public  class BudgetEntityConfiguration
+    public class BudgetEntityConfiguration
+    {
+        #region GAAP Budget Config
+
+
+        public class ProfitLossStatementEntityTypeConfiguration : EntityTypeConfiguration<ProfitLossStatement>
         {
-            #region GAAP Budget Config
-
-      
-
-            public class BalanceSheetEntityTypeConfiguration : EntityTypeConfiguration<BalanceSheet>
+            public ProfitLossStatementEntityTypeConfiguration()
             {
-
-                public BalanceSheetEntityTypeConfiguration()
-                {
-                    this.ToTable("BalanceSheet", "BudgetGAAP");
-                    this.HasKey<int>(t => t.BalanceSheetId);
-
-                }
+                this.ToTable("ProfitLossStatement", "BudgetGAAP");
+                this.HasKey<int>(t => t.ProfitLossStatementCategoryId);
             }
-
-            public class BudgetSheetCategoryEntityTypeConfiguration : EntityTypeConfiguration<BudgetSheetCategory>
+        }
+        public class InvestmentPlanEntityTypeConfiguration : EntityTypeConfiguration<InvestmentPlan>
+        {
+            public InvestmentPlanEntityTypeConfiguration()
             {
-
-                public BudgetSheetCategoryEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetSheetCategory", "BudgetGAAP");
-                    this.HasKey<int>(t => t.BalanceSheetCategoryId);
-
-                }
+                this.ToTable("InvestmentPlan", "BudgetGAAP");
+                this.HasKey<int>(t => t.InvestmentPlanId);
             }
+        }
 
-            public class CostOfServiceSoldEntityTypeConfiguration : EntityTypeConfiguration<CostOfServiceSold>
+        public class ExpendictureEntityTypeConfiguration : EntityTypeConfiguration<Expenditure>
+        {
+            public ExpendictureEntityTypeConfiguration()
             {
-
-                public CostOfServiceSoldEntityTypeConfiguration()
-                {
-                    this.ToTable("CostOfServiceSold", "BudgetGAAP");
-                    this.HasKey<int>(t => t.CostOfServiceSoldId);
-
-                }
+                this.ToTable("Expenditure", "BudgetGAAP");
+                this.HasKey<int>(t => t.ExpenditureId);
             }
+        }
 
-            public class ProfitLossStatementCategoryEntityTypeConfiguration : EntityTypeConfiguration<ProfitLossStatementCategory>
+        public class BalanceSheetEntityTypeConfiguration : EntityTypeConfiguration<BalanceSheet>
+        {
+
+            public BalanceSheetEntityTypeConfiguration()
             {
+                this.ToTable("BalanceSheet", "BudgetGAAP");
+                this.HasKey<int>(t => t.BalanceSheetId);
 
-                public ProfitLossStatementCategoryEntityTypeConfiguration()
-                {
-                    this.ToTable("ProfitLossStatementCategory", "BudgetGAAP");
-                    this.HasKey<int>(t => t.ProfitLossStatementCategoryId);
-
-                }
             }
+        }
 
-            public class ProfitLossStatementEntityTypeConfiguration : EntityTypeConfiguration<ProfitLossStatement>
+        public class BudgetSheetCategoryEntityTypeConfiguration : EntityTypeConfiguration<BudgetSheetCategory>
+        {
+
+            public BudgetSheetCategoryEntityTypeConfiguration()
             {
+                this.ToTable("BudgetSheetCategory", "BudgetGAAP");
+                this.HasKey<int>(t => t.BalanceSheetCategoryId);
 
-                public ProfitLossStatementEntityTypeConfiguration()
-                {
-                    this.ToTable("ProfitLossStatement", "BudgetGAAP");
-                    this.HasKey<int>(t => t.ProfitLossStatementId);
-
-                }
             }
-            public class InvestmentPlanEntityTypeConfiguration : EntityTypeConfiguration<InvestmentPlan>
+        }
+
+        public class CostOfServiceSoldEntityTypeConfiguration : EntityTypeConfiguration<CostOfServiceSold>
+        {
+
+            public CostOfServiceSoldEntityTypeConfiguration()
             {
+                this.ToTable("CostOfServiceSold", "BudgetGAAP");
+                this.HasKey<int>(t => t.CostOfServiceSoldId);
 
-                public InvestmentPlanEntityTypeConfiguration()
-                {
-                    this.ToTable("InvestmentPlan", "BudgetGAAP");
-                    this.HasKey<int>(t => t.InvestmentPlanId);
-
-                }
             }
+        }
 
-            public class ForcastedIncomeStatementEntityTypeConfiguration : EntityTypeConfiguration<ForcastedIncomeStatement>
+        public class ProfitLossStatementCategoryEntityTypeConfiguration : EntityTypeConfiguration<ProfitLossStatementCategory>
+        {
+
+            public ProfitLossStatementCategoryEntityTypeConfiguration()
             {
+                this.ToTable("ProfitLossStatementCategory", "BudgetGAAP");
+                this.HasKey<int>(t => t.ProfitLossStatementCategoryId);
 
-                public ForcastedIncomeStatementEntityTypeConfiguration()
-                {
-                    this.ToTable("ForcastedIncomeStatement", "BudgetGAAP");
-                    this.HasKey<int>(t => t.ForcastedIncomeStatementId);
-
-                }
             }
+        }
 
-            public class ExpenditureEntityTypeConfiguration : EntityTypeConfiguration<Expenditure>
+
+
+        public class ForcastedIncomeStatementEntityTypeConfiguration : EntityTypeConfiguration<ForcastedIncomeStatement>
+        {
+
+            public ForcastedIncomeStatementEntityTypeConfiguration()
             {
+                this.ToTable("ForcastedIncomeStatement", "BudgetGAAP");
+                this.HasKey<int>(t => t.ForcastedIncomeStatementId);
 
-                public ExpenditureEntityTypeConfiguration()
-                {
-                    this.ToTable("Expenditure", "BudgetGAAP");
-                    this.HasKey<int>(t => t.ExpenditureId);
-
-                }
             }
+        }
 
-            #endregion
+        public class ExpenditureEntityTypeConfiguration : EntityTypeConfiguration<Expenditure>
+        {
 
-
-            
-            public class BudgetBankAccountMapEntityTypeConfiguration : EntityTypeConfiguration<BudgetBankAccountMap>
+            public ExpenditureEntityTypeConfiguration()
             {
+                this.ToTable("Expenditure", "BudgetGAAP");
+                this.HasKey<int>(t => t.ExpenditureId);
 
-                public BudgetBankAccountMapEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetBankAccountMap", "Budget");
-                    this.HasKey<int>(t => t.BudgetBankAccountMapId);
-
-                }
             }
-                 public class BudgetTypeEntityTypeConfiguration : EntityTypeConfiguration<BudgetType>
+        }
+
+        #endregion
+
+
+
+        public class BudgetBankAccountMapEntityTypeConfiguration : EntityTypeConfiguration<BudgetBankAccountMap>
+        {
+
+            public BudgetBankAccountMapEntityTypeConfiguration()
             {
+                this.ToTable("BudgetBankAccountMap", "Budget");
+                this.HasKey<int>(t => t.BudgetBankAccountMapId);
 
-                public BudgetTypeEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetType", "Budget");
-                    this.HasKey<int>(t => t.BudgetTypeId);
-
-                }
             }
-            public class BudgetRequestTransferDistributionEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestTransferDistribution>
+        }
+        public class BudgetTypeEntityTypeConfiguration : EntityTypeConfiguration<BudgetType>
+        {
+
+            public BudgetTypeEntityTypeConfiguration()
             {
+                this.ToTable("BudgetType", "Budget");
+                this.HasKey<int>(t => t.BudgetTypeId);
 
-                public BudgetRequestTransferDistributionEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetRequestTransferDistribution", "Budget");
-                    this.HasKey<int>(t => t.BudgetRequestTransferDistributionId);
-
-                }
             }
+        }
+        public class BudgetRequestTransferDistributionEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestTransferDistribution>
+        {
 
-            public class BudgetRequestTransferLogEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestTransferLog>
+            public BudgetRequestTransferDistributionEntityTypeConfiguration()
             {
+                this.ToTable("BudgetRequestTransferDistribution", "Budget");
+                this.HasKey<int>(t => t.BudgetRequestTransferDistributionId);
 
-                public BudgetRequestTransferLogEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetRequestTransferLog", "Budget");
-                    this.HasKey<int>(t => t.BudgetRequestTransferLogId);
-
-                }
             }
+        }
 
+        public class BudgetRequestTransferLogEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestTransferLog>
+        {
 
-
-            //public class BudgetTypeEntityTypeConfiguration : EntityTypeConfiguration<BudgetType>
-            //{
-
-            //    public BudgetTypeEntityTypeConfiguration()
-            //    {
-            //        this.ToTable("BudgetType", "Budget");
-            //        this.HasKey<int>(t => t.BudgetTypeId);
-
-            //    }
-            //}
-
-
-            public class TaskPlanEntityTypeConfiguration : EntityTypeConfiguration<TaskPlan>
+            public BudgetRequestTransferLogEntityTypeConfiguration()
             {
+                this.ToTable("BudgetRequestTransferLog", "Budget");
+                this.HasKey<int>(t => t.BudgetRequestTransferLogId);
 
-                public TaskPlanEntityTypeConfiguration()
-                {
-                    this.ToTable("TaskPlan", "Budget");
-                    this.HasKey<int>(t => t.TaskPlanId);
-
-                }
             }
-            public class TaskCategoryEntityTypeConfiguration : EntityTypeConfiguration<TaskCategory>
+        }
+
+
+
+        //public class BudgetTypeEntityTypeConfiguration : EntityTypeConfiguration<BudgetType>
+        //{
+
+        //    public BudgetTypeEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("BudgetType", "Budget");
+        //        this.HasKey<int>(t => t.BudgetTypeId);
+
+        //    }
+        //}
+
+
+        public class TaskPlanEntityTypeConfiguration : EntityTypeConfiguration<TaskPlan>
+        {
+
+            public TaskPlanEntityTypeConfiguration()
             {
+                this.ToTable("TaskPlan", "Budget");
+                this.HasKey<int>(t => t.TaskPlanId);
 
-                public TaskCategoryEntityTypeConfiguration()
-                {
-                    this.ToTable("TaskCategory", "Budget");
-                    this.HasKey<int>(t => t.TaskCategoryId);
-
-                }
             }
-            public class TaskUnitEntityTypeConfiguration : EntityTypeConfiguration<TaskUnit>
+        }
+        public class TaskCategoryEntityTypeConfiguration : EntityTypeConfiguration<TaskCategory>
+        {
+
+            public TaskCategoryEntityTypeConfiguration()
             {
+                this.ToTable("TaskCategory", "Budget");
+                this.HasKey<int>(t => t.TaskCategoryId);
 
-                public TaskUnitEntityTypeConfiguration()
-                {
-                    this.ToTable("TaskUnit", "Budget");
-                    this.HasKey<int>(t => t.TaskUnitId);
-
-                }
             }
+        }
+        public class TaskUnitEntityTypeConfiguration : EntityTypeConfiguration<TaskUnit>
+        {
 
-            public class TaskPerformanceEntityTypeConfiguration : EntityTypeConfiguration<TaskPerformance>
+            public TaskUnitEntityTypeConfiguration()
             {
+                this.ToTable("TaskUnit", "Budget");
+                this.HasKey<int>(t => t.TaskUnitId);
 
-                public TaskPerformanceEntityTypeConfiguration()
-                {
-                    this.ToTable("TaskPerformance", "Budget");
-                    this.HasKey<int>(t => t.TaskPerformanceId);
-
-                }
             }
-            public class TaskPerformaceApprovalEntityTypeConfiguration : EntityTypeConfiguration<TaskPerformaceApproval>
+        }
+
+        public class TaskPerformanceEntityTypeConfiguration : EntityTypeConfiguration<TaskPerformance>
+        {
+
+            public TaskPerformanceEntityTypeConfiguration()
             {
+                this.ToTable("TaskPerformance", "Budget");
+                this.HasKey<int>(t => t.TaskPerformanceId);
 
-                public TaskPerformaceApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("TaskPerformaceApproval", "Budget");
-                    this.HasKey<int>(t => t.TaskPerformaceApprovalId);
-
-                }
             }
+        }
+        public class TaskPerformaceApprovalEntityTypeConfiguration : EntityTypeConfiguration<TaskPerformaceApproval>
+        {
 
-            public class TaskPlanMonthlyEntityTypeConfiguration : EntityTypeConfiguration<TaskPlanMonthly>
+            public TaskPerformaceApprovalEntityTypeConfiguration()
             {
+                this.ToTable("TaskPerformaceApproval", "Budget");
+                this.HasKey<int>(t => t.TaskPerformaceApprovalId);
 
-                public TaskPlanMonthlyEntityTypeConfiguration()
-                {
-                    this.ToTable("TaskPlanMonthly", "Budget");
-                    this.HasKey<int>(t => t.TaskPlanMonthlyId);
-
-                }
             }
-            public class TaskPlanApprovalEntityTypeConfiguration : EntityTypeConfiguration<TaskPlanApproval>
+        }
+
+        public class TaskPlanMonthlyEntityTypeConfiguration : EntityTypeConfiguration<TaskPlanMonthly>
+        {
+
+            public TaskPlanMonthlyEntityTypeConfiguration()
             {
+                this.ToTable("TaskPlanMonthly", "Budget");
+                this.HasKey<int>(t => t.TaskPlanMonthlyId);
 
-                public TaskPlanApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("TaskPlanApproval", "Budget");
-                    this.HasKey<int>(t => t.TaskPlanApprovalId);
-
-                }
             }
+        }
+        public class TaskPlanApprovalEntityTypeConfiguration : EntityTypeConfiguration<TaskPlanApproval>
+        {
 
-    
-
-            public class PlanCategoryEntityTypeConfiguration : EntityTypeConfiguration<PlanCategory>
+            public TaskPlanApprovalEntityTypeConfiguration()
             {
+                this.ToTable("TaskPlanApproval", "Budget");
+                this.HasKey<int>(t => t.TaskPlanApprovalId);
 
-                public PlanCategoryEntityTypeConfiguration()
-                {
-                    this.ToTable("PlanCategory", "Budget");
-                    this.HasKey<int>(t => t.PlanCategoryID);
-
-                }
             }
+        }
 
-            public class BudgetControlEntityTypeConfiguration : EntityTypeConfiguration<BudgetControl>
+
+
+        public class PlanCategoryEntityTypeConfiguration : EntityTypeConfiguration<PlanCategory>
+        {
+
+            public PlanCategoryEntityTypeConfiguration()
             {
+                this.ToTable("PlanCategory", "Budget");
+                this.HasKey<int>(t => t.PlanCategoryID);
 
-                public BudgetControlEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetControl", "Budget");
-                    this.HasKey<int>(t => t.BudgetControlId);
-
-                }
             }
-            public class BudgetRequestLineEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestLine>
+        }
+
+        public class BudgetControlEntityTypeConfiguration : EntityTypeConfiguration<BudgetControl>
+        {
+
+            public BudgetControlEntityTypeConfiguration()
             {
+                this.ToTable("BudgetControl", "Budget");
+                this.HasKey<int>(t => t.BudgetControlId);
 
-                public BudgetRequestLineEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetRequestLine", "Budget");
-                    this.HasKey<int>(t => t.BudgetRequestLineId);
-
-                }
             }
-            public class RequestedMonthEntityTypeConfiguration : EntityTypeConfiguration<RequestedMonth>
+        }
+        public class BudgetRequestLineEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestLine>
+        {
+
+            public BudgetRequestLineEntityTypeConfiguration()
             {
+                this.ToTable("BudgetRequestLine", "Budget");
+                this.HasKey<int>(t => t.BudgetRequestLineId);
 
-                public RequestedMonthEntityTypeConfiguration()
-                {
-                    this.ToTable("RequestedMonth", "Budget");
-                    this.HasKey<int>(t => t.RequestedMonthID);
-                   
-
-                }
             }
-      
-            public class BudgetPlanEntityTypeConfiguration : EntityTypeConfiguration<BudgetPlan>
+        }
+        public class RequestedMonthEntityTypeConfiguration : EntityTypeConfiguration<RequestedMonth>
+        {
+
+            public RequestedMonthEntityTypeConfiguration()
+            {
+                this.ToTable("RequestedMonth", "Budget");
+                this.HasKey<int>(t => t.RequestedMonthID);
+
+
+            }
+        }
+
+        public class BudgetPlanEntityTypeConfiguration : EntityTypeConfiguration<BudgetPlan>
         {
 
             public BudgetPlanEntityTypeConfiguration()
@@ -292,138 +298,179 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
+        public class BudgetPlanReserveEntityTypeConfiguration : EntityTypeConfiguration<BudgetPlanReserve>
+        {
 
-            public class BudgetAllocationEntityTypeConfiguration : EntityTypeConfiguration<BudgetAllocation>
+            public BudgetPlanReserveEntityTypeConfiguration()
             {
+                this.ToTable("BudgetPlanReserve", "Budget");
+                this.HasKey<int>(t => t.BudgetPlanReserveId);
 
-                public BudgetAllocationEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetAllocation", "Budget");
-                    this.HasKey<int>(t => t.BudgetAllocationID);
-
-                }
             }
+        }
 
 
-            public class BudgetAllocationApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetAllocationApproval>
+        public class BudgetAllocationEntityTypeConfiguration : EntityTypeConfiguration<BudgetAllocation>
+        {
+
+            public BudgetAllocationEntityTypeConfiguration()
             {
+                this.ToTable("BudgetAllocation", "Budget");
+                this.HasKey<int>(t => t.BudgetAllocationID);
 
-                public BudgetAllocationApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetAllocationApproval", "Budget");
-                    this.HasKey<int>(t => t.BudgetAllocationApprovalId);
-
-                }
             }
+        }
 
-            public class BudgetCategoryEntityTypeConfiguration : EntityTypeConfiguration<BudgetCategory>
+
+        public class BudgetAllocationApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetAllocationApproval>
+        {
+
+            public BudgetAllocationApprovalEntityTypeConfiguration()
             {
+                this.ToTable("BudgetAllocationApproval", "Budget");
+                this.HasKey<int>(t => t.BudgetAllocationApprovalId);
 
-                public BudgetCategoryEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetCategory", "Budget");
-                    this.HasKey<int>(t => t.BudgetCategoryID);
-
-                }
             }
+        }
 
-            public class BudgetCurrencyEntityTypeConfiguration : EntityTypeConfiguration<BudgetCurrency>
+        public class BudgetCategoryEntityTypeConfiguration : EntityTypeConfiguration<BudgetCategory>
+        {
+
+            public BudgetCategoryEntityTypeConfiguration()
             {
+                this.ToTable("BudgetCategory", "Budget");
+                this.HasKey<int>(t => t.BudgetCategoryID);
 
-                public BudgetCurrencyEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetCurrency", "Budget");
-                    this.HasKey<int>(t => t.BudgetCurrencyId);
-
-                }
             }
+        }
+        public class BudgetCurrencyEntityTypeConfiguration : EntityTypeConfiguration<BudgetCurrency>
+        {
 
-            public class BudgetPlanApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetPlanApproval>
+            public BudgetCurrencyEntityTypeConfiguration()
             {
+                this.ToTable("BudgetCurrency", "Budget");
+                this.HasKey<int>(t => t.BudgetCurrencyId);
 
-                public BudgetPlanApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetPlanApproval", "Budget");
-                    this.HasKey<int>(t => t.BudgetPlanApprovalId);
-
-                }
             }
+        }
 
-            public class BudgetPlanMonthlyEntityTypeConfiguration : EntityTypeConfiguration<BudgetPlanMonthly>
+        //Added BudgetCategoryDetail as requested
+        public class BudgetCategoryDetailEntityTypeConfiguration : EntityTypeConfiguration<BudgetCategoryDetail>
+        {
+
+            public BudgetCategoryDetailEntityTypeConfiguration()
             {
+                this.ToTable("BudgetCategoryDetail", "Budget");
+                this.HasKey<int>(t => t.BudgetCategoryDetailID);
 
-                public BudgetPlanMonthlyEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetPlanMonthly", "Budget");
-                    this.HasKey<int>(t => t.BudgetPlanMonthlyID);
-                    this.HasRequired<BudgetPlan>(x => x.BudgetPlan).WithMany().WillCascadeOnDelete(false);
-                }
             }
+        }
 
-            public class BudgetRequestEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequest>
+        public class BudgetPlanApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetPlanApproval>
+        {
+
+            public BudgetPlanApprovalEntityTypeConfiguration()
             {
+                this.ToTable("BudgetPlanApproval", "Budget");
+                this.HasKey<int>(t => t.BudgetPlanApprovalId);
 
-                public BudgetRequestEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetRequest", "Budget");
-                    this.HasKey<int>(t => t.BudgetRequestID);
-
-                }
             }
+        }
 
-            public class BudgetRequestApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestApproval>
+        public class BudgetPlanMonthlyEntityTypeConfiguration : EntityTypeConfiguration<BudgetPlanMonthly>
+        {
+
+            public BudgetPlanMonthlyEntityTypeConfiguration()
             {
-
-                public BudgetRequestApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetRequestApproval", "Budget");
-                    this.HasKey<int>(t => t.BudgetRequestApprovalId);
-
-                }
+                this.ToTable("BudgetPlanMonthly", "Budget");
+                this.HasKey<int>(t => t.BudgetPlanMonthlyID);
+                this.HasRequired<BudgetPlan>(x => x.BudgetPlan).WithMany().WillCascadeOnDelete(true);
             }
+        }
 
-            public class BudgetTransferEntityTypeConfiguration : EntityTypeConfiguration<BudgetTransfer>
+        public class BudgetMonthlyReserveEntityTypeConfiguration : EntityTypeConfiguration<BudgetMonthlyReserve>
+        {
+
+            public BudgetMonthlyReserveEntityTypeConfiguration()
             {
-
-                public BudgetTransferEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetTransfer", "Budget");
-                    this.HasKey<int>(t => t.BudgetTransferID);
-
-                }
+                this.ToTable("BudgetMonthlyReserve", "Budget");
+                this.HasKey<int>(t => t.BudgetMonthlyReserveId);
+                this.HasRequired<BudgetPlanMonthly>(x => x.BudgetPlanMonthly).WithMany().WillCascadeOnDelete(true);
             }
+        }
 
-            public class BudgetTransferApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetTransferApproval>
+        public class BudgetRequestEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequest>
+        {
+
+            public BudgetRequestEntityTypeConfiguration()
             {
+                this.ToTable("BudgetRequest", "Budget");
+                this.HasKey<int>(t => t.BudgetRequestID);
 
-                public BudgetTransferApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetTransferApproval", "Budget");
-                    this.HasKey<int>(t => t.BudgetTransferApprovalId);
-
-                }
             }
-            public class BudgetUsageEntityTypeConfiguration : EntityTypeConfiguration<BudgetUsage>
+        }
+        //added for testing
+        public class BudgetrequestDetailEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestDetail>
+        {
+            public BudgetrequestDetailEntityTypeConfiguration()
             {
-
-                public BudgetUsageEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetUsage", "Budget");
-                    this.HasKey<int>(t => t.BudgetUsageID);
-
-                }
+                this.ToTable("BudgetRequestDetail", "Budget");
+                this.HasKey<int>(t => t.BudgetRequestDetailId);
             }
-            public class BudgetUsageApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetUsageApproval>
+        }
+        public class BudgetRequestApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetRequestApproval>
+        {
+
+            public BudgetRequestApprovalEntityTypeConfiguration()
             {
+                this.ToTable("BudgetRequestApproval", "Budget");
+                this.HasKey<int>(t => t.BudgetRequestApprovalId);
 
-                public BudgetUsageApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("BudgetUsageApproval", "Budget");
-                    this.HasKey<int>(t => t.BudgetUsageApprovalId);
-
-                }
             }
+        }
 
-          
+        public class BudgetTransferEntityTypeConfiguration : EntityTypeConfiguration<BudgetTransfer>
+        {
+
+            public BudgetTransferEntityTypeConfiguration()
+            {
+                this.ToTable("BudgetTransfer", "Budget");
+                this.HasKey<int>(t => t.BudgetTransferID);
+
+            }
+        }
+
+        public class BudgetTransferApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetTransferApproval>
+        {
+
+            public BudgetTransferApprovalEntityTypeConfiguration()
+            {
+                this.ToTable("BudgetTransferApproval", "Budget");
+                this.HasKey<int>(t => t.BudgetTransferApprovalId);
+
+            }
+        }
+        public class BudgetUsageEntityTypeConfiguration : EntityTypeConfiguration<BudgetUsage>
+        {
+
+            public BudgetUsageEntityTypeConfiguration()
+            {
+                this.ToTable("BudgetUsage", "Budget");
+                this.HasKey<int>(t => t.BudgetUsageID);
+
+            }
+        }
+        public class BudgetUsageApprovalEntityTypeConfiguration : EntityTypeConfiguration<BudgetUsageApproval>
+        {
+
+            public BudgetUsageApprovalEntityTypeConfiguration()
+            {
+                this.ToTable("BudgetUsageApproval", "Budget");
+                this.HasKey<int>(t => t.BudgetUsageApprovalId);
+
+            }
+        }
+
+
     }
 }

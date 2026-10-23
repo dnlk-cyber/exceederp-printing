@@ -1,5 +1,5 @@
-﻿
- 
+
+
 
 @if (HttpContext.Current.User.IsInRole("Budget_User")
             || HttpContext.Current.User.IsInRole("Budget_Admin")
@@ -10,7 +10,9 @@
 
     <li class="">
         <a href="#" class="dropdown-toggle">
-            <i class="menu-icon fa glyphicon-euro"></i>
+
+            @*<i class="menu-icon fa glyphicon-euro"></i>*@
+            <i class="menu-icon fa fa-usd"></i>
             <span class="menu-text">
                 Budget
             </span>
@@ -21,71 +23,82 @@
         <b class="arrow"></b>
 
         <ul class="submenu">
-                        @if (HttpContext.Current.User.IsInRole("Budget_User")
+            @if (HttpContext.Current.User.IsInRole("Budget_PR_Approval")
+          || HttpContext.Current.User.IsInRole("Budget_Admin")
+          || HttpContext.Current.User.IsInRole("Budget_Requestor")
+          || HttpContext.Current.User.IsInRole("Budget_Approver"))
+            {
+
+                <li class="">
+
+                    <b class="arrow"></b>
+
+
+
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        PR & Payment
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="budgetpr001" class="actionlinlk">@Html.ActionLink("PR Approval", "Index", "PurchaseRequisitionBudget", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budgetpr003" class="actionlinlk">@Html.ActionLink("Purchase Payment", "Index", "PurchasePaymentBudget", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budgetpr004" class="actionlinlk">@Html.ActionLink("Payment Request", "Index", "PaymentRequestBudget", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budgetpr005" class="actionlinlk">@Html.ActionLink("Travel Request", "Index", "TravelOrderRequestBudget", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budgetpr005ec" class="actionlinlk">@Html.ActionLink("Expense Claim", "Index", "TravelExpenseClaimRequestBudget", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budgetpr0025" class="actionlinlk">@Html.ActionLink("Fund Transfer", "Index", "FundTransferRequestBudget", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budgetpr006" class="actionlinlk">@Html.ActionLink("Sub Contractor Payment Request", "Index", "SbContrPaytReqBudget", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                        <li id="budgetpr00423" class="actionlinlk">@Html.ActionLink("Rental Payment Request", "Index", "RentalPaymentRequestBudget", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                    </ul>
+                </li>
+
+        </li>
+
+    }
+            @if (HttpContext.Current.User.IsInRole("Budget_User")
             || HttpContext.Current.User.IsInRole("Budget_Admin")
             || HttpContext.Current.User.IsInRole("Budget_Requestor")
             || HttpContext.Current.User.IsInRole("Budget_Approver"))
             {
 
-                            <li class="">
-                            
- 
+                <li class="">
 
-
-                                <b class="arrow"></b>
-
-
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-caret-right"></i>
-                    Finance  Budget
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-
-                <b class="arrow"></b>
-
-
-                <b class="arrow"></b>
-
-                <ul class="submenu">
-                    <li id="budget001" class="actionlinlk">@Html.ActionLink("Budget Plan", "Index", "BudgetPlanRegistration", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                    <li id="budget002" class="actionlinlk">@Html.ActionLink("Budget Usage", "Index", "BudgetUsage", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                    <li id="budget003" class="actionlinlk">@Html.ActionLink("Budget Request", "Index", "BudgetRequest", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                    <li id="budget00236" class="actionlinlk">@Html.ActionLink(" Budget Request Transfer", "Transfer", "BudgetRequest", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                    <li id="budget00246" class="actionlinlk">@Html.ActionLink(" Request Transfer Log", "RequestTransferHistory", "BudgetRequest", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                         <li id="budget004" class="actionlinlk">@Html.ActionLink("Budget Revision", "Index", "BudgetRevision", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                    <li id="budget005" class="actionlinlk">@Html.ActionLink("Budget Allocation", "Index", "BudgetAllocation", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                    <li id="budget006" class="actionlinlk">@Html.ActionLink("Budget Transfer", "Index", "BudgetTransfer", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                   
-
-
-                </ul>
-            </li>
- 
-
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-caret-right"></i>
-                    Plan
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-
-                <b class="arrow"></b>
-
-
-                <b class="arrow"></b>
-
-                <ul class="submenu">
-                    <li id="budgetPlan001" class="actionlinlk">@Html.ActionLink(" Task Plan  ", "Index", "TaskPlan", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                    <li id="budgetPlan002" class="actionlinlk">@Html.ActionLink("Task Performace", "Index", "TaskPerformance", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                    <b class="arrow"></b>
 
 
 
-                </ul>
-            </li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Finance  Budget
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
 
 
-                 </li>
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="budget001" class="actionlinlk">@Html.ActionLink("Budget Plan", "Index", "BudgetPlanRegistration", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        @*<li id="budget005" class="actionlinlk">@Html.ActionLink("Budget Allocation", "Index", "BudgetAllocation", new { area = "Budget" }, null)<b class="arrow"></b></li>*@
+                        @*<li id="budget003" class="actionlinlk">@Html.ActionLink("Budget Request", "Index", "BudgetRequest", new { area = "Budget" }, null)<b class="arrow"></b></li>*@
+                        @*<li id="budget00236" class="actionlinlk">@Html.ActionLink("Budget Approval", "Transfer", "BudgetRequest", new { area = "Budget" }, null)<b class="arrow"></b></li>*@
+                        <li id="budget006" class="actionlinlk">@Html.ActionLink("Budget Transfer", "Index", "BudgetTransfer", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        @*<li id="budget00246" class="actionlinlk">@Html.ActionLink("Request Transfer Log", "RequestTransferHistory", "BudgetRequest", new { area = "Budget" }, null)<b class="arrow"></b></li>*@
+                        <li id="budget004" class="actionlinlk">@Html.ActionLink("Budget Revision", "Index", "BudgetRevision", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budget002" class="actionlinlk">@Html.ActionLink("Budget Usage", "Index", "BudgetUsage", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                    </ul>
+                </li>
+
+                </li>
 
             }
             @if (HttpContext.Current.User.IsInRole("Budget_Report"))
@@ -99,48 +112,50 @@
                     </a>
                     <b class="arrow"></b>
                     <ul class="submenu">
-
+                        <li id="budgetReport0012" class="actionlinlk">@Html.ActionLink("Budget Summary", "BudgetSummary", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
                         <li id="budgetReport008" class="actionlinlk">@Html.ActionLink("Yearly Budget", "BudgetYear", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
                         <li id="budgetReport009" class="actionlinlk">@Html.ActionLink("Monthly Budget", "BudgetMonth", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        <li id="budgetReport013" class="actionlinlk">@Html.ActionLink("Budget Plan Quarterly", "BudgetPlanByQuarter", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
                         <li id="budgetReport010" class="actionlinlk">@Html.ActionLink("Budget Usage And Allocation", "BudgetAllocationUsage", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
 
-                        <li id="budgetReport0109" class="actionlinlk">@Html.ActionLink(" Budget Transfer Vs Plan", "BudgetTransferVsPlan", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li> 
+                        <li id="budgetReport0109" class="actionlinlk">@Html.ActionLink("Budget Transfer Vs Plan", "BudgetTransferVsPlan", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
                         <li id="budgetReport01110" class="actionlinlk">@Html.ActionLink("Plan Vs Actual Work Unit", "PlanVsActualWorkUnit", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                        <li id="budgetReport03210" class="actionlinlk">@Html.ActionLink("Plan vs Performance ", "TaskPlan", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                       
+                        <li id="budgetReport008" class="actionlinlk">@Html.ActionLink("Budget Plan Report", "BudgetPlanReportView", "BudgetReport", new { area = "Budget" }, null)<b class="arrow"></b></li>
+
+                        <li id="budgetlink1810b" class="actionlinlk">@Html.ActionLink("Balance Sheet", "BalanceSheetReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        @*<li id="link1810b" class="actionlinlk">@Html.ActionLink("Balance Sheet One Quarter", "BalanceSheetSingleQuarterReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>*@
+                        <li id="budgetlink1810is" class="actionlinlk">@Html.ActionLink("Income Statement", "IncomeStatementReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="budgetlink1820is" class="actionlinlk">@Html.ActionLink("Budget Cash Flow", "BudgetBalanceSheet", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        @*<li id="link1810is" class="actionlinlk">@Html.ActionLink("Income Statement One Quarter", "IncomeStatementSingleQuarterReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>*@
 
                     </ul>
                 </li>
-   
+
             }
 
             @if (HttpContext.Current.User.IsInRole("Budget_Admin"))
             {
-
                 <li class="">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-caret-right"></i>
-
-                        Setting
+                        Settings
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
 
                     <b class="arrow"></b>
 
                     <ul class="submenu">
+                        <li id="budgeCategoryt009" class="actionlinlk">@Html.ActionLink("Budget Category", "Index", "BudgetCategory", new { area = "Budget" }, null)<b class="arrow"></b></li>
                         <li id="budgetControl009" class="actionlinlk">@Html.ActionLink("Budget Control", "Index", "BudgetControl", new { area = "Budget" }, null)<b class="arrow"></b></li>
+
                         <li id="budgetType0001" class="actionlinlk">@Html.ActionLink("Budget Type", "Index", "BudgetType", new { area = "Budget" }, null)<b class="arrow"></b></li>
 
-                        <li id="budgeCategoryt009" class="actionlinlk">@Html.ActionLink("Budget Category", "Index", "BudgetCategory", new { area = "Budget" }, null)<b class="arrow"></b></li>
-                        <li id="budgetsetting009" class="actionlinlk">@Html.ActionLink("Task Category", "Index", "TaskCategory", new { area = "Budget" }, null)<b class="arrow"></b></li>
 
-                        <li id="budgetsetting0010" class="actionlinlk">@Html.ActionLink(" Currency ", "Index", "Currency", new { area = "Budget" }, null)<b class="arrow"></b></li>
+                        @*<li id="budgetsetting009" class="actionlinlk">@Html.ActionLink("Task Category", "Index", "TaskCategory", new { area = "Budget" }, null)<b class="arrow"></b></li>*@
 
-                        <li id="budgetAssetsetting0010" class="actionlinlk">@Html.ActionLink(" UOM ", "Index", "TaskUnit", new { area = "Budget" }, null)<b class="arrow"></b></li>
-
-
+                        @*<li id="budgetsetting0010" class="actionlinlk">@Html.ActionLink("Currency", "Index", "Currency", new { area = "Budget" }, null)<b class="arrow"></b></li>*@
                     </ul>
                 </li>
             }
- </ul></li>
-}
+            </ul></li>
+        }

@@ -13,7 +13,7 @@ using ExceedERP.Core.Domain.Common;
 using System.Drawing;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Helpers.Budget;
-using ExceedERP.Core.Domain.Budget.Task;
+//using ExceedERP.Core.Domain.Budget.Task;
 using ExceedERP.Reporting.Budget.Print.ViewModel;
 
 namespace ExceedERP.Reporting.Budget.Print.DataSource
@@ -76,45 +76,46 @@ namespace ExceedERP.Reporting.Budget.Print.DataSource
             #endregion
 
 
- var BudgetRequestTransferLog = db.BudgetRequests.Where(x=>x.BudgetRequestID.ToString() == Id).FirstOrDefault();
- var BudgetRequestLine = db.BudgetRequestLines.Where(x => x.BudgetRequestId.ToString() == Id).ToList();
+        var BudgetRequestTransferLog = db.BudgetRequests.Where(x=>x.BudgetRequestID.ToString() == Id).FirstOrDefault();
+        var BudgetRequestLine = db.BudgetRequestLines.Where(x => x.BudgetRequestId.ToString() == Id).ToList();
 
- if (BudgetRequestTransferLog != null)
- {
+        if (BudgetRequestTransferLog != null)
+        {
     
-         var BudgetRequestViewModel = new BudgetRequestViewModel();
-         var HeadOfficeBankName = string.Empty;
-         var HeadOfficeBankAddress = string.Empty;
-         var HeadOfficeBankNumber = string.Empty;
+             var BudgetRequestViewModel = new BudgetRequestViewModel();
+             var HeadOfficeBankName = string.Empty;
+             var HeadOfficeBankAddress = string.Empty;
+             var HeadOfficeBankNumber = string.Empty;
 
-         var BranchOfficeBankName = string.Empty;
-         var BranchOfficeBankAddress = string.Empty;
-         var BranchOfficeBankNumber = string.Empty;
-         var Branch = db.Branch.Where(x => x.BranchId == BudgetRequestTransferLog.BranchId).FirstOrDefault();
+             var BranchOfficeBankName = string.Empty;
+             var BranchOfficeBankAddress = string.Empty;
+             var BranchOfficeBankNumber = string.Empty;
+             var Branch = db.Branch.Where(x => x.BranchId == BudgetRequestTransferLog.BranchId).FirstOrDefault();
         
-     var HeadOfficeBank = db.BudgetBankAccountMaps.Where(x => x.IsHeadOffice).FirstOrDefault();
-     var BranchOfficeBank = db.BudgetBankAccountMaps.Where(x => !x.IsHeadOffice && x.BranchId == BudgetRequestTransferLog.BranchId).FirstOrDefault();
+             var HeadOfficeBank = db.BudgetBankAccountMaps.Where(x => x.IsHeadOffice).FirstOrDefault();
+             var BranchOfficeBank = db.BudgetBankAccountMaps.Where(x => !x.IsHeadOffice && x.BranchId == BudgetRequestTransferLog.BranchId).FirstOrDefault();
 
 
-     if (HeadOfficeBank != null)
-     {
-         HeadOfficeBankName = HeadOfficeBank.Name;
-         HeadOfficeBankAddress = HeadOfficeBank.Address;
-         HeadOfficeBankNumber = HeadOfficeBank.BankNumber;
+             if (HeadOfficeBank != null)
+             {
+                 HeadOfficeBankName = HeadOfficeBank.Name;
+                 HeadOfficeBankAddress = HeadOfficeBank.Address;
+                 HeadOfficeBankNumber = HeadOfficeBank.BankNumber;
      
-     }
+             }
 
-     if (BranchOfficeBank != null)
-     {
-         BranchOfficeBankName = BranchOfficeBank.Name;
-         BranchOfficeBankAddress = BranchOfficeBank.Address;
-         BranchOfficeBankNumber = BranchOfficeBank.BankNumber;
-     }
-         if (Branch != null)
-         {
-             BudgetRequestViewModel.Branch = Branch.Name;
-         }
-         BudgetRequestViewModel.TotalAmount = BudgetRequestLine.Sum(x => x.Amount);
+             if (BranchOfficeBank != null)
+             {
+                 BranchOfficeBankName = BranchOfficeBank.Name;
+                 BranchOfficeBankAddress = BranchOfficeBank.Address;
+                 BranchOfficeBankNumber = BranchOfficeBank.BankNumber;
+             }
+            if (Branch != null)
+             {
+                 BudgetRequestViewModel.Branch = Branch.Name;
+             }
+
+             BudgetRequestViewModel.TotalAmount = BudgetRequestLine.Sum(x => x.Amount);
              BudgetRequestViewModel.Month = BudgetRequestTransferLog.FromDate.Date.ToShortDateString() + " - " + BudgetRequestTransferLog.ToDate.ToShortDateString();
              BudgetRequestViewModel.Year = BudgetRequestTransferLog.BudgetYear;
              BudgetRequestViewModel.RequestNo = BudgetRequestTransferLog.BudgetRequestID;
@@ -140,24 +141,26 @@ namespace ExceedERP.Reporting.Budget.Print.DataSource
 
              BudgetList.Add(BudgetRequestViewModel);
          
- }
- else
- {
-     return BudgetList;
- }
+        }
+        else
+        {
             return BudgetList;
         }
 
-        [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<TaskCategory> GetPlanCategory()
-        {
+
+        return BudgetList;
+    }
+
+        //[DataObjectMethod(DataObjectMethodType.Select)]
+        //public List<TaskCategory> GetPlanCategory()
+        //{
 
 
-            db = new ExceedDbContext();
-            var result = db.TaskCategorys.ToList();
-            return result;
+        //    db = new ExceedDbContext();
+        //    var result = db.TaskCategorys.ToList();
+        //    return result;
 
-        }
+        //}
     }
 }
 

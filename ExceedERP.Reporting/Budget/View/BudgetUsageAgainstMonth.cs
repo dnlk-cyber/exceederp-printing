@@ -19,7 +19,7 @@ namespace ExceedERP.Reporting.Budget.View
             //
             InitializeComponent();
 
-          
+            this.DataSource = headerComp;
             //
             // TODO: Add any constructor code after InitializeComponent call
             //

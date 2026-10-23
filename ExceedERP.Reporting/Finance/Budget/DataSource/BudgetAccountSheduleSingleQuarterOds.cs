@@ -18,10 +18,9 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 {
 
     [DataObject]
-    public class BudgetAccountSheduleSingleQuarterOds : List<AccountSheduleSingleQuarterVm>
+    public class BudgetAccountSheduleSingleQuarterOds : IDisposable
     {
         ExceedDbContext db = new ExceedDbContext();
-        AccountHelper _accountHelper = new AccountHelper();
         ReportHelper reportHelper = new ReportHelper();
         BudgetReportHelper budgetReportHelper = new BudgetReportHelper();
         FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
@@ -334,6 +333,10 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
             }
             return acccountSchedules;
 
+        }
+        public void Dispose()
+        {
+            db?.Dispose();
         }
     }
 }

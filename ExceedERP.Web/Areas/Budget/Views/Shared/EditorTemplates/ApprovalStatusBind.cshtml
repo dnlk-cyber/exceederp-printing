@@ -1,5 +1,6 @@
 ﻿@(Html.Kendo().DropDownListFor(m => m)
         .DataTextField("Text")
-                        .DataValueField("Value").OptionLabel("Status") 
+        .DataValueField("Value")
+        .OptionLabel("Status") 
         .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.ApprovalStatuses)))
 )

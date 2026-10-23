@@ -13,6 +13,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.Budget.Controllers
 {
@@ -24,32 +25,348 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
         private ExceedDbContext db = new ExceedDbContext();
 
 
+
+
         public ActionResult Index()
         {
-            ViewData["MainCompanyStructures"] = db.GLChartOfAccountCostCenters.ToList();
-            ViewData["Branches"] = db.Branch.ToList();
-            ViewData["PlanCategory"] = db.PlanCategorys.ToList();
-            ViewData["BudgetCategorys"] = db.BudgetCategorys.ToList();
-            return View();
-        }
-        [AuthorizeRoles(BudgetRoles.BudgetTransfer)]
-        public ActionResult Transfer()
-        {
-            ViewData["MainCompanyStructures"] = db.GLChartOfAccountCostCenters.ToList();
-            ViewData["Branches"] = db.Branch.ToList();
-            ViewData["PlanCategory"] = db.PlanCategorys.ToList();
-            ViewData["BudgetCategorys"] = db.BudgetCategorys.ToList();
-            return View();
-        }
-        public ActionResult RequestTransferHistory()
-        {
-            ViewData["MainCompanyStructures"] = db.GLChartOfAccountCostCenters.ToList();
+            var costcenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).Select(x => x.GLSegmentSetupId).ToList();
+            ViewData["MainCompanyStructures"] = db.GlChartOfAccountSegments.Where(x => costcenterSeg.Contains(x.GLSegmentSetupId)).ToList();
+
             ViewData["Branches"] = db.Branch.ToList();
             ViewData["PlanCategory"] = db.PlanCategorys.ToList();
             ViewData["BudgetCategorys"] = db.BudgetCategorys.ToList();
             return View();
         }
 
+
+
+
+
+        [AuthorizeRoles(BudgetRoles.BudgetTransfer)]
+        public ActionResult Transfer()
+        {
+            var costcenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).Select(x => x.GLSegmentSetupId).ToList();
+            ViewData["MainCompanyStructures"] = db.GlChartOfAccountSegments.Where(x => costcenterSeg.Contains(x.GLSegmentSetupId)).ToList();
+            ViewData["Branches"] = db.Branch.ToList();
+            ViewData["PlanCategory"] = db.PlanCategorys.ToList();
+            ViewData["BudgetCategorys"] = db.BudgetCategorys.ToList();
+            return View();
+        }
+
+
+
+
+
+        public ActionResult RequestTransferHistory()
+        {
+            var costcenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).Select(x => x.GLSegmentSetupId).ToList();
+            ViewData["MainCompanyStructures"] = db.GlChartOfAccountSegments.Where(x => costcenterSeg.Contains(x.GLSegmentSetupId)).ToList();
+            ViewData["Branches"] = db.Branch.ToList();
+            ViewData["PlanCategory"] = db.PlanCategorys.ToList();
+            ViewData["BudgetCategorys"] = db.BudgetCategorys.ToList();
+            return View(); 
+        }
+
+
+
+
+
+        #region BudgetRequest/CRUD
+
+
+        public ActionResult BudgetRequest_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            IQueryable<BudgetRequest> BudgetRequest = db.BudgetRequests;
+            DataSourceResult result = BudgetRequest.ToDataSourceResult(request, budgetRequest => new BudgetRequest
+            {
+                AccountCode = budgetRequest.AccountCode,//added
+                BudgetRequestID = budgetRequest.BudgetRequestID,
+                BudgetGroup = budgetRequest.BudgetGroup,
+                BudgetYear = budgetRequest.BudgetYear,
+                FromDate = budgetRequest.FromDate,
+                ToDate = budgetRequest.ToDate,
+                PlanCategoryId = budgetRequest.PlanCategoryId,
+                //Amount = budgetRequest.BudgetRequestLine.Sum(x => x.Amount),
+                Amount = budgetRequest.Amount,
+                BranchId = budgetRequest.BranchId,
+                WorkUnit = budgetRequest.WorkUnit,
+                Reason = budgetRequest.Reason,
+                IsSendForApproval = budgetRequest.IsSendForApproval,
+                IsSecondSendForApproval = budgetRequest.IsSecondSendForApproval,
+                IsOnlineTransferred = budgetRequest.IsOnlineTransferred,
+                IsOnlineApproved = budgetRequest.IsOnlineApproved,
+                IsSecondOnlineApproved = budgetRequest.IsSecondOnlineApproved
+            });
+
+            return Json(result);
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult BudgetRequest_Create([DataSourceRequest]DataSourceRequest request, BudgetRequest BudgetRequest)
+        {
+
+            if (ModelState.IsValid)
+            {
+                FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
+
+                //gets the current year Id if there is any
+                int fiscalYear = fiscalYearHelper.GetCurrentFYearId();
+
+                var entity = new BudgetRequest
+                {
+                    BudgetRequestID = BudgetRequest.BudgetRequestID,
+                    Amount = BudgetRequest.Amount,
+                    FiscalYearId = fiscalYear,
+                    BranchId = BudgetRequest.BranchId,
+                    AccountCode = BudgetRequest.AccountCode,//added
+                    WorkUnit = BudgetRequest.WorkUnit,
+                    Reason = BudgetRequest.Reason,
+                    PlanCategoryId = BudgetRequest.PlanCategoryId,
+                    BudgetGroup = BudgetRequest.BudgetGroup,
+                    FromDate = BudgetRequest.FromDate,
+                    ToDate = BudgetRequest.ToDate,
+                    BudgetYear = DateTime.Now.Year.ToString(),
+
+                    DateCreated = DateTime.Now,
+                    CreatedBy = User.Identity.Name
+
+                };
+
+                db.BudgetRequests.Add(entity);
+                db.SaveChanges();
+
+
+                BudgetRequest.BudgetRequestID = entity.BudgetRequestID;
+            }
+
+
+            return Json(new[] { BudgetRequest }.ToDataSourceResult(request));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult BudgetRequest_Update([DataSourceRequest]DataSourceRequest request, BudgetRequest BudgetRequest)
+        {
+
+            if (ModelState.IsValid)
+            {
+                FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
+
+                int fiscalYear = fiscalYearHelper.GetCurrentFYearId();
+
+                var entity = new BudgetRequest
+                {
+                    AccountCode = BudgetRequest.AccountCode,//added
+                    BudgetRequestID = BudgetRequest.BudgetRequestID,
+                    Amount = BudgetRequest.Amount,
+                    BranchId = BudgetRequest.BranchId,
+                    FiscalYearId = fiscalYear,
+                    WorkUnit = BudgetRequest.WorkUnit,
+                    Reason = BudgetRequest.Reason,
+                    BudgetGroup = BudgetRequest.BudgetGroup,
+                    BudgetYear = DateTime.Now.Year.ToString(),
+                    FromDate = BudgetRequest.FromDate,
+                    ToDate = BudgetRequest.ToDate,
+                    PlanCategoryId = BudgetRequest.PlanCategoryId,
+
+                    LastModified = DateTime.Now,
+                    ModifiedBy = User.Identity.Name
+                };
+
+                db.BudgetRequests.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+            }
+
+            return Json(new[] { BudgetRequest }.ToDataSourceResult(request));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult BudgetRequest_Destroy([DataSourceRequest]DataSourceRequest request, BudgetRequest BudgetRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new BudgetRequest
+                {
+                    BudgetRequestID = BudgetRequest.BudgetRequestID,
+
+
+                };
+
+                db.BudgetRequests.Attach(entity);
+                db.BudgetRequests.Remove(entity);
+                db.SaveChanges();
+                UserHelper.DeleteLog(HttpContext.Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Budget Request number " + BudgetRequest.BudgetRequestID);
+
+            }
+
+            return Json(new[] { BudgetRequest }.ToDataSourceResult(request, ModelState));
+        }
+        #endregion
+
+
+
+
+
+        #region BudgetRequestTransferApproval CRUD
+        public ActionResult BudgetRequestTransferApproval_Read([DataSourceRequest]DataSourceRequest request, int Id)
+        {
+
+
+            List<BudgetRequestApproval> usageApproval = db.BudgetRequestApprovals.Where(x => x.BudgetRequestId == Id && x.IsTransfer).ToList();
+            var Category = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
+
+            if (Category.IsSecondOnlineApproved == false && Category.IsSecondSendForApproval == true)
+            {
+                usageApproval.Add(new BudgetRequestApproval()
+                {
+                    BudgetRequestId = Id,
+                    Remark = string.Empty,
+                    Status = ApprovalStatuses.Pending,
+
+                });
+            }
+
+
+
+            return Json(usageApproval.ToDataSourceResult(request, approval => new BudgetRequestApproval()
+            {
+                BudgetRequestApprovalId = approval.BudgetRequestApprovalId,
+                BudgetRequestId = approval.BudgetRequestId,
+                Remark = approval.Remark,
+                Status = approval.Status,
+                DateCreated = DateTime.Now,
+                CreatedBy = User.Identity.Name
+
+
+            }));
+        }
+
+
+
+        [AuthorizeRoles(BudgetRoles.BudgetApprover)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult BudgetRequestTransfer_Approve([DataSourceRequest]DataSourceRequest request, BudgetRequestApproval BudgetRequestApproval, int Id)
+        {
+            
+            if (BudgetRequestApproval.Status == ApprovalStatuses.Approve)
+            {
+
+
+                var entity = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
+
+                entity.IsSecondOnlineApproved = true;
+                entity.SecondOnlineApprovedBy = User.Identity.Name;
+                entity.SecondOnlineApprovedTime = DateTime.Now;
+
+                db.BudgetRequests.Attach(entity);
+                db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
+
+                //var RequestLine = db.BudgetRequestLines.Where(x => x.BudgetRequestId == entity.BudgetRequestID).ToList();
+
+
+                BudgetRequestApproval budgetRequestApproval = new BudgetRequestApproval()
+                {
+
+                    BudgetRequestId = entity.BudgetRequestID,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    Status = BudgetRequestApproval.Status,
+                    IsTransfer = true,
+                    Remark = BudgetRequestApproval.Remark,
+                };
+
+                db.BudgetRequestApprovals.Add(budgetRequestApproval);
+                db.SaveChanges();
+
+                BudgetRequestTransferLog TransferLog = new BudgetRequestTransferLog
+                {
+                    Amount = entity.Amount,//RequestLine.Sum(x => x.Amount), //changed 
+                    RequestNo = entity.BudgetRequestID,
+                    BranchId = entity.BranchId,
+                    BudgetYear = entity.BudgetYear,
+                    FromDate = entity.FromDate,
+                    ToDate = entity.ToDate,
+                    WorkUnit = entity.WorkUnit,
+
+                    PlanCategoryId = entity.PlanCategoryId
+                };
+
+                db.BudgetRequestTransferLogs.Add(TransferLog);
+                db.SaveChanges();
+
+            }
+            if (BudgetRequestApproval.Status == ApprovalStatuses.Reject)
+            {
+                var entity = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
+
+                entity.IsSecondOnlineApproved = true;
+                entity.SecondOnlineApprovedBy = User.Identity.Name;
+                entity.SecondOnlineApprovedTime = DateTime.Now;
+                db.BudgetRequests.Attach(entity);
+                db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
+            }
+            var approval = new BudgetRequestApproval()
+            {
+
+                Status = BudgetRequestApproval.Status,
+                BudgetRequestId = Id,
+                Remark = BudgetRequestApproval.Remark,
+                DateCreated = DateTime.Now,
+                CreatedBy = User.Identity.Name
+
+            };
+
+            db.BudgetRequestApprovals.Add(approval);
+            db.SaveChanges();
+            BudgetRequestApproval.BudgetRequestApprovalId = approval.BudgetRequestApprovalId;
+
+           
+            return Json(new[] { BudgetRequestApproval }.ToDataSourceResult(request, ModelState));
+        }
+        #endregion
+
+
+
+        #region BudgetRequest/Approve CRUD
+        //Get/Budget Request Approval
+        public ActionResult BudgetRequestApproval_Read([DataSourceRequest]DataSourceRequest request, int Id)
+        {
+
+
+            List<BudgetRequestApproval> usageApproval = db.BudgetRequestApprovals.Where(x => x.BudgetRequestId == Id).ToList();
+            var Category = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
+
+            if (Category.IsSendForApproval == true && Category.IsOnlineApproved == false)
+            {
+                usageApproval.Add(new BudgetRequestApproval()
+                {
+                    BudgetRequestId = Id,
+                    Remark = string.Empty,
+                    Status = ApprovalStatuses.Pending,
+
+                });
+            }
+
+
+
+            return Json(usageApproval.ToDataSourceResult(request, approval => new BudgetRequestApproval()
+            {
+                BudgetRequestApprovalId = approval.BudgetRequestApprovalId,
+                BudgetRequestId = approval.BudgetRequestId,
+                Remark = approval.Remark,
+                Status = approval.Status,
+                DateCreated = DateTime.Now,
+                CreatedBy = User.Identity.Name
+
+
+            }));
+        }
+
+        //Post/Budget/BudgetRequest Approval/
+        /*Approves the Request*/
         [AuthorizeRoles(BudgetRoles.BudgetApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BudgetRequest_Approve([DataSourceRequest]DataSourceRequest request, BudgetRequestApproval BudgetRequestApproval, int Id)
@@ -83,7 +400,7 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
                             BudgetRequestId = Id,
                             AccountCode = headOfficeBankAccount.AccountCode,
                             AccountDesc = AccountDesc,
-                            Credit = RequestLines.Sum(x => x.Amount),
+                            Credit = RequestLines.Sum(x => x.Amount), //maybe change it to entity.Amount
                             Debit = 0,
                             DateCreated = DateTime.Now,
                             CreatedBy = User.Identity.Name,
@@ -99,15 +416,15 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
                         string AccountDesc = accountHelper.GetAccountDesc(BranchBankAccount.AccountCode);
 
                         var budgetRequestTransferDistribution = new BudgetRequestTransferDistribution
-                         {
-                             BudgetRequestId = Id,
-                             AccountCode = BranchBankAccount.AccountCode,
-                             AccountDesc = AccountDesc,
-                             Debit = RequestLines.Sum(x => x.Amount),
-                             Credit = 0,
-                             DateCreated = DateTime.Now,
-                             CreatedBy = User.Identity.Name,
-                         };
+                        {
+                            BudgetRequestId = Id,
+                            AccountCode = BranchBankAccount.AccountCode,
+                            AccountDesc = AccountDesc,
+                            Debit = RequestLines.Sum(x => x.Amount), //maybe change it to entity.Amount
+                            Credit = 0,
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name,
+                        };
 
                         db.BudgetRequestTransferDistributions.Add(budgetRequestTransferDistribution);
                         db.SaveChanges();
@@ -153,95 +470,8 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
             return Json(new[] { BudgetRequestApproval }.ToDataSourceResult(request, ModelState));
         }
 
+        #endregion
 
-        [AuthorizeRoles(BudgetRoles.BudgetApprover)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult BudgetRequestTransfer_Approve([DataSourceRequest]DataSourceRequest request, BudgetRequestApproval BudgetRequestApproval, int Id)
-        {
-            try
-            {
-                if (BudgetRequestApproval.Status == ApprovalStatuses.Approve)
-                {
-
-
-                    var entity = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
-
-                    entity.IsSecondOnlineApproved = true;
-                    entity.SecondOnlineApprovedBy = User.Identity.Name;
-                    entity.SecondOnlineApprovedTime = DateTime.Now;
-
-                    db.BudgetRequests.Attach(entity);
-                    db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
-
-                    var RequestLine = db.BudgetRequestLines.Where(x => x.BudgetRequestId == entity.BudgetRequestID).ToList();
-
-
-                    BudgetRequestApproval budgetRequestApproval = new BudgetRequestApproval()
-                    {
-
-                        BudgetRequestId = entity.BudgetRequestID,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Now,
-                        Status = BudgetRequestApproval.Status,
-                        IsTransfer = true,
-                        Remark = BudgetRequestApproval.Remark,
-                    };
-
-                    db.BudgetRequestApprovals.Add(budgetRequestApproval);
-                    db.SaveChanges();
-
-                    BudgetRequestTransferLog TransferLog = new BudgetRequestTransferLog
-                    {
-                        Amount = RequestLine.Sum(x => x.Amount),
-                        RequestNo = entity.BudgetRequestID,
-                        BranchId = entity.BranchId,
-                        BudgetYear = entity.BudgetYear,
-                        FromDate = entity.FromDate,
-                        ToDate = entity.ToDate,
-                        WorkUnit = entity.WorkUnit,
-
-                        PlanCategoryId = entity.PlanCategoryId
-                    };
-
-                    db.BudgetRequestTransferLogs.Add(TransferLog);
-                    db.SaveChanges();
-
-                }
-                if (BudgetRequestApproval.Status == ApprovalStatuses.Reject)
-                {
-                    var entity = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
-
-                    entity.IsSecondOnlineApproved = true;
-                    entity.SecondOnlineApprovedBy = User.Identity.Name;
-                    entity.SecondOnlineApprovedTime = DateTime.Now;
-                    db.BudgetRequests.Attach(entity);
-                    db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
-                }
-                var approval = new BudgetRequestApproval()
-                {
-
-                    Status = BudgetRequestApproval.Status,
-                    BudgetRequestId = Id,
-                    Remark = BudgetRequestApproval.Remark,
-                    DateCreated = DateTime.Now,
-                    CreatedBy = User.Identity.Name
-
-                };
-
-                db.BudgetRequestApprovals.Add(approval);
-                db.SaveChanges();
-                BudgetRequestApproval.BudgetRequestApprovalId = approval.BudgetRequestApprovalId;
-
-            }
-            catch (Exception)
-            {
-
-
-            }
-            return Json(new[] { BudgetRequestApproval }.ToDataSourceResult(request, ModelState));
-        }
 
 
 
@@ -306,73 +536,8 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
             return Json(new[] { BudgetRequestApproval }.ToDataSourceResult(request, ModelState));
         }
 
-        public ActionResult BudgetRequestApproval_Read([DataSourceRequest]DataSourceRequest request, int Id)
-        {
 
-
-            List<BudgetRequestApproval> usageApproval = db.BudgetRequestApprovals.Where(x => x.BudgetRequestId == Id).ToList();
-            var Category = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
-
-            if (Category.IsSendForApproval == true && Category.IsOnlineApproved == false)
-            {
-                usageApproval.Add(new BudgetRequestApproval()
-                {
-                    BudgetRequestId = Id,
-                    Remark = string.Empty,
-                    Status = ApprovalStatuses.Pending,
-
-                });
-            }
-
-
-
-            return Json(usageApproval.ToDataSourceResult(request, approval => new BudgetRequestApproval()
-            {
-                BudgetRequestApprovalId = approval.BudgetRequestApprovalId,
-                BudgetRequestId = approval.BudgetRequestId,
-                Remark = approval.Remark,
-                Status = approval.Status,
-                DateCreated = DateTime.Now,
-                CreatedBy = User.Identity.Name
-
-
-            }));
-        }
-
-        public ActionResult BudgetRequestTransferApproval_Read([DataSourceRequest]DataSourceRequest request, int Id)
-        {
-
-
-            List<BudgetRequestApproval> usageApproval = db.BudgetRequestApprovals.Where(x => x.BudgetRequestId == Id && x.IsTransfer).ToList();
-            var Category = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
-
-            if (Category.IsSecondOnlineApproved == false && Category.IsSecondSendForApproval == true)
-            {
-                usageApproval.Add(new BudgetRequestApproval()
-                {
-                    BudgetRequestId = Id,
-                    Remark = string.Empty,
-                    Status = ApprovalStatuses.Pending,
-
-                });
-            }
-
-
-
-            return Json(usageApproval.ToDataSourceResult(request, approval => new BudgetRequestApproval()
-            {
-                BudgetRequestApprovalId = approval.BudgetRequestApprovalId,
-                BudgetRequestId = approval.BudgetRequestId,
-                Remark = approval.Remark,
-                Status = approval.Status,
-                DateCreated = DateTime.Now,
-                CreatedBy = User.Identity.Name
-
-
-            }));
-        }
-
-
+        
         public void GetXLs(System.Data.DataTable datatable)
         {
 
@@ -407,6 +572,11 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
             { }
         }
 
+
+
+
+
+
         public ActionResult BudgetRequestAccept_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<BudgetRequest> BudgetRequest = db.BudgetRequests.Where(x => x.IsOnlineApproved == true);
@@ -419,7 +589,7 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
                 ToDate = budgetRequest.ToDate,
                 IsOnlineTransferred = budgetRequest.IsOnlineTransferred,
                 PlanCategoryId = budgetRequest.PlanCategoryId,
-                Amount = budgetRequest.BudgetRequestLine.Sum(x => x.Amount),
+                Amount = budgetRequest.Amount,//budgetRequest.BudgetRequestLine.Sum(x => x.Amount),
                 BranchId = budgetRequest.BranchId,
                 WorkUnit = budgetRequest.WorkUnit,
                 Reason = budgetRequest.Reason,
@@ -432,6 +602,12 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
 
             return Json(result);
         }
+
+
+
+
+
+
         public ActionResult BudgetRequestAccepted_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<BudgetRequestTransferLog> BudgetRequest = db.BudgetRequestTransferLogs;
@@ -456,108 +632,11 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
 
             return Json(result);
         }
-
-        public ActionResult BudgetRequest_Read([DataSourceRequest]DataSourceRequest request)
-        {
-            IQueryable<BudgetRequest> BudgetRequest = db.BudgetRequests;
-            DataSourceResult result = BudgetRequest.ToDataSourceResult(request, budgetRequest => new BudgetRequest
-            {
-                BudgetRequestID = budgetRequest.BudgetRequestID,
-                BudgetGroup = budgetRequest.BudgetGroup,
-                BudgetYear = budgetRequest.BudgetYear,
-                FromDate = budgetRequest.FromDate,
-                ToDate = budgetRequest.ToDate,
-                PlanCategoryId = budgetRequest.PlanCategoryId,
-                Amount = budgetRequest.BudgetRequestLine.Sum(x => x.Amount),
-                BranchId = budgetRequest.BranchId,
-                WorkUnit = budgetRequest.WorkUnit,
-                Reason = budgetRequest.Reason,
-                IsSendForApproval = budgetRequest.IsSendForApproval,
-                IsSecondSendForApproval = budgetRequest.IsSecondSendForApproval,
-                IsOnlineTransferred = budgetRequest.IsOnlineTransferred,
-                IsOnlineApproved = budgetRequest.IsOnlineApproved,
-                IsSecondOnlineApproved = budgetRequest.IsSecondOnlineApproved
-            });
-
-            return Json(result);
-        }
-
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult BudgetRequest_Create([DataSourceRequest]DataSourceRequest request, BudgetRequest BudgetRequest)
-        {
-
-            if (ModelState.IsValid)
-            {
-                FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
-
-                int fiscalYear = fiscalYearHelper.GetCurrentFYearId();
-
-                var entity = new BudgetRequest
-                {
-                    BudgetRequestID = BudgetRequest.BudgetRequestID,
-                    Amount = BudgetRequest.Amount,
-                    FiscalYearId = fiscalYear,
-                    BranchId = BudgetRequest.BranchId,
-                    WorkUnit = BudgetRequest.WorkUnit,
-                    Reason = BudgetRequest.Reason,
-                    PlanCategoryId = BudgetRequest.PlanCategoryId,
-                    BudgetGroup = BudgetRequest.BudgetGroup,
-                    FromDate = BudgetRequest.FromDate,
-                    ToDate = BudgetRequest.ToDate,
-                    BudgetYear = DateTime.Now.Year.ToString(),
-
-                    DateCreated = DateTime.Now,
-                    CreatedBy = User.Identity.Name
-
-                };
-
-                db.BudgetRequests.Add(entity);
-                db.SaveChanges();
+      
 
 
-                BudgetRequest.BudgetRequestID = entity.BudgetRequestID;
-            }
 
 
-            return Json(new[] { BudgetRequest }.ToDataSourceResult(request));
-        }
-
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult BudgetRequest_Update([DataSourceRequest]DataSourceRequest request, BudgetRequest BudgetRequest)
-        {
-
-            if (ModelState.IsValid)
-            {
-                FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
-
-                int fiscalYear = fiscalYearHelper.GetCurrentFYearId();
-
-                var entity = new BudgetRequest
-                {
-                    BudgetRequestID = BudgetRequest.BudgetRequestID,
-                    Amount = BudgetRequest.Amount,
-                    BranchId = BudgetRequest.BranchId,
-                    FiscalYearId = fiscalYear,
-                    WorkUnit = BudgetRequest.WorkUnit,
-                    Reason = BudgetRequest.Reason,
-                    BudgetGroup = BudgetRequest.BudgetGroup,
-                    BudgetYear = DateTime.Now.Year.ToString(),
-                    FromDate = BudgetRequest.FromDate,
-                    ToDate = BudgetRequest.ToDate,
-                    PlanCategoryId = BudgetRequest.PlanCategoryId,
-
-                    LastModified = DateTime.Now,
-                    ModifiedBy = User.Identity.Name
-                };
-
-                db.BudgetRequests.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
-
-            }
-
-            return Json(new[] { BudgetRequest }.ToDataSourceResult(request));
-        }
 
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -596,6 +675,14 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
             return Json(new[] { BudgetRequest }.ToDataSourceResult(request));
         }
 
+
+
+
+
+
+
+        //BudgetRequest/Transfer/sendforapproval
+        //send for online approval transfer
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult SendForOnlineTransfer(string Id)
         {
@@ -607,7 +694,9 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
                 db.Entry(Request).State = EntityState.Modified;
                 db.SaveChanges();
             }
-            ViewData["MainCompanyStructures"] = db.GLChartOfAccountCostCenters.ToList();
+            var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var glChartOfAccountCostCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId);
+            ViewData["MainCompanyStructures"] = glChartOfAccountCostCenters.ToList();
             ViewData["Branches"] = db.Branch.ToList();
             ViewData["PlanCategory"] = db.PlanCategorys.ToList();
             ViewData["BudgetCategorys"] = db.BudgetCategorys.ToList();
@@ -615,47 +704,36 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
         }
 
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult BudgetRequest_Destroy([DataSourceRequest]DataSourceRequest request, BudgetRequest BudgetRequest)
-        {
-            if (ModelState.IsValid)
-            {
-                var entity = new BudgetRequest
-                {
-                    BudgetRequestID = BudgetRequest.BudgetRequestID,
+        
 
 
-                };
 
-                db.BudgetRequests.Attach(entity);
-                db.BudgetRequests.Remove(entity);
-                db.SaveChanges();
-                UserHelper.DeleteLog(HttpContext.Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Budget Request number " + BudgetRequest.BudgetRequestID);
-
-            }
-
-            return Json(new[] { BudgetRequest }.ToDataSourceResult(request, ModelState));
-        }
-
-
+        /*Budget Request Send For Approval */
         public ActionResult SendForOnlineApproval(int Id)
         {
 
             var BudgetRequests = db.BudgetRequests.Where(x => x.BudgetRequestID == Id).FirstOrDefault();
             if (BudgetRequests != null)
             {
-                if (BudgetRequests.BudgetRequestLine.Any())
-                {
+                //if (BudgetRequests.BudgetRequestLine.Any())
+                //{
                     BudgetRequests.IsSendForApproval = true;
                     db.BudgetRequests.Attach(BudgetRequests);
                     db.Entry(BudgetRequests).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
-                }
+                //}
 
             }
 
             return RedirectToAction("Index", "BudgetRequest", null);
         }
+
+
+
+
+
+
+
         [AuthorizeRoles(BudgetRoles.BudgetApprover)]
         public ActionResult SecondSendForOnlineApproval(int Id)
         {
@@ -671,6 +749,12 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
 
             return RedirectToAction("Index", "BudgetRequest", null);
         }
+
+
+
+
+
+
 
         public JsonResult TransferDistribution(string id, string description)
         {
@@ -881,7 +965,15 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
 
             return null;
         }
-        [AllowAnonymous]
+
+
+
+
+
+
+
+
+        
         public ActionResult BranchDDBind()
         {
 

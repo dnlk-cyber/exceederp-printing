@@ -66,10 +66,10 @@
                                                     .Error("error_handler(\"grid\")")
                                                     .RequestStart("onRequestStart(\"grid\")")
                                                     .RequestEnd("onRequestEnd(\"grid\")"))
-              .Read(read => read.Action("TaskPerformance_Read", "TaskPerformance"))
-              .Create(create => create.Action("TaskPerformance_Create", "TaskPerformance"))
-              .Update(update => update.Action("TaskPerformance_Update", "TaskPerformance"))
-              .Destroy(destroy => destroy.Action("TaskPerformance_Destroy", "TaskPerformance"))
+              .Read(read => read.Action("TaskPerformance_Read", "TaskPerformance").Data("sendForgery"))
+              .Create(create => create.Action("TaskPerformance_Create", "TaskPerformance").Data("sendForgery"))
+              .Update(update => update.Action("TaskPerformance_Update", "TaskPerformance").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("TaskPerformance_Destroy", "TaskPerformance").Data("sendForgery"))
                     ).ClientDetailTemplateId("template")
 )
 
@@ -152,7 +152,7 @@
                                                 <label>     @Html.LabelFor(model => model.DateCreated)</label>
                                             </div>
                                             <div>
-                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                             </div>
                                         </div>
@@ -205,9 +205,9 @@
                           model.Field(p => p.CreatedBy).Editable(false);
                           model.Field(p => p.DateCreated).Editable(false);
                       })
-                                                         .Read(read => read.Action("TaskPerformaceApproval_Read", "TaskPerformance", new { Id = "#=TaskPerformanceId#" }))
-                                                                           .Create(update => update.Action("TaskPerformance_Approve", "TaskPerformance", new { Id = "#=TaskPerformanceId#" }))
-                                                                                  .Update(update => update.Action("TaskPerformance_Approve", "TaskPerformance", new { Id = "#=TaskPerformanceId#" }))
+                                                         .Read(read => read.Action("TaskPerformaceApproval_Read", "TaskPerformance", new { Id = "#=TaskPerformanceId#" }).Data("sendForgery"))
+                                                                           .Create(update => update.Action("TaskPerformance_Approve", "TaskPerformance", new { Id = "#=TaskPerformanceId#" }).Data("sendForgery"))
+                                                                                  .Update(update => update.Action("TaskPerformance_Approve", "TaskPerformance", new { Id = "#=TaskPerformanceId#" }).Data("sendForgery"))
 
      ).ToClientTemplate()
 

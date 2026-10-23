@@ -18,11 +18,9 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 {
 
     [DataObject]
-    public class BudgetPayableReceiviableDataSource : List<AccountPayableReceviableViewModel>
+    public class BudgetPayableReceiviableDataSource : IDisposable
     {
         public ExceedDbContext db = new ExceedDbContext();
-        private readonly AccountHelper _accountHelper = new AccountHelper();
-        private ReportHelper reportHelper = new ReportHelper();
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -60,11 +58,11 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
             var budgetSchedulesLinesAccount = db.BudgetLineSheduleAccounts.ToList();
             var accountShedules = db.BudgetAccountShedules.ToList();
             Branch legerBranch = new Branch();
-            
+
             bool isBranch = false;
             int periodFrom = 1;
             int periodTo = 12;
-            
+
 
             if (!string.IsNullOrWhiteSpace(type) && !string.IsNullOrWhiteSpace(FiscalYear))
             {
@@ -108,7 +106,7 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
                     .GetAccountBalanceByPeriodRange(year, periodFrom, periodTo)
                     .Where(x => x.Type == LedgerPostTypes.Standard).ToList();
 
-                List<GLLedgerPostingLines> beginningQuarterBalance = reportHelper.GetAccountBegBalance(year, periodFrom).ToList(); 
+                List<GLLedgerPostingLines> beginningQuarterBalance = reportHelper.GetAccountBegBalance(year, periodFrom).ToList();
 
                 List<GLLedgerPostingLines> endingQuarterBalance = reportHelper.GetAccountEndBalance(year, periodTo).ToList();
 
@@ -202,6 +200,10 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
             return list;
         }
 
+        public void Dispose()
+        {
+            db?.Dispose();
+        }
 
     }
 }

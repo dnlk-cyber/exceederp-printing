@@ -16,10 +16,12 @@ namespace ExceedERP.Core.Domain.Budget
    
         [Display(Name = "Budget Year")]
         public string BudgetYear { get; set; }
+
         [Required]
         [Display(Name = "Budget Category")]
-        public string PlanCategoryId { get; set; }
-             [Display(Name = " Branch / Project ")]
+        public int PlanCategoryId { get; set; }
+
+        [Display(Name = " Branch / Project ")]
         public int BranchId { get; set; }
 
         public string WorkUnit { get; set; }
@@ -36,11 +38,12 @@ namespace ExceedERP.Core.Domain.Budget
         public DateTime ToDate { get; set; }
 
         public decimal Amount { get; set; }
-             [Display(Name = " Remark ")]
+
+        [Display(Name = " Remark ")]
         public string Reason { get; set; }
 
 
-             public int RequestNo { get; set; }
+        public int RequestNo { get; set; }
  
         [ForeignKey("RequestNo")]
         public virtual BudgetRequest BudgetRequest { get; set; }

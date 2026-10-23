@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.Budget.View
             // Required for telerik Reporting designer support
             //
             InitializeComponent();
-
+            this.DataSource = headerComp;
 
           
             //

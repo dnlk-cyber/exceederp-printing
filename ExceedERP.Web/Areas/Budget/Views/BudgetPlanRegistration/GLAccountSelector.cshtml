@@ -27,7 +27,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetAccountBudgets", "BudgetPlanRegistration").Data("filterCategory")
+                              dataSource.Read(read => read.Action("GetAccountBudgets", "BudgetPlanRegistration").Data("sendForgery").Data("filterCategory")
 )
                                   .ServerFiltering(false);
                           })
@@ -49,7 +49,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetLocationBudgets", "BudgetPlanRegistration").Data("filterCategory"))
+                              dataSource.Read(read => read.Action("GetLocationBudgets", "BudgetPlanRegistration").Data("sendForgery").Data("filterCategory"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -70,7 +70,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetCostCenterBudget", "BudgetPlanRegistration").Data("filterCategory"))
+                              dataSource.Read(read => read.Action("GetCostCenterBudget", "BudgetPlanRegistration").Data("sendForgery").Data("filterCategory"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -91,7 +91,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetSubAccountBudgets", "BudgetPlanRegistration").Data("filterCategory"))
+                              dataSource.Read(read => read.Action("GetSubAccountBudgets", "BudgetPlanRegistration").Data("sendForgery").Data("filterCategory"))
                                   .ServerFiltering(false);
                           })
                          )

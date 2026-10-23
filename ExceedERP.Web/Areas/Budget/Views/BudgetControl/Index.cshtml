@@ -10,7 +10,7 @@
           columns.Bound(c => c.ReserveAmount).EditorTemplateName("OptionalNumEditor").Width(100);
           columns.Bound(c => c.Percentage).EditorTemplateName("OptionalNumEditor").Width(100);
           columns.Bound(c => c.Remark).Width(100);
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Command(command => { command.Edit(); /*command.Destroy();*/ }).Width(180);
       })
       .ToolBar(toolbar =>
       {
@@ -38,10 +38,10 @@
                                             .Error("error_handler(\"grid\")")
                                             .RequestStart("onRequestStart(\"grid\")")
                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                          .Read(read => read.Action("BudgetControl_Read", "BudgetControl"))
-                      .Create(create => create.Action("BudgetControl_Create", "BudgetControl"))
-                      .Update(update => update.Action("BudgetControl_Update", "BudgetControl"))
-                      .Destroy(destroy => destroy.Action("BudgetControl_Destroy", "BudgetControl"))
+                          .Read(read => read.Action("BudgetControl_Read", "BudgetControl").Data("sendForgery"))
+                      .Create(create => create.Action("BudgetControl_Create", "BudgetControl").Data("sendForgery"))
+                      .Update(update => update.Action("BudgetControl_Update", "BudgetControl").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("BudgetControl_Destroy", "BudgetControl").Data("sendForgery"))
           )
 
 )

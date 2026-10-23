@@ -401,7 +401,7 @@ namespace ExceedERP.Helpers.Finance
 
             return alances;
         }
-        public decimal GetAccountEndBalancesWithSegmentRangeAndBranch(List<GLLedgerPostingLines> yearBalance, string fromAccCom, string toAccCom, string branchAccount)
+        public decimal GetAccountEndBalancesWithSegmentRangeAndBranch(string fromAccountCode, List<GLLedgerPostingLines> yearBalance, string fromAccCom, string toAccCom, string branchAccount)
         {
             string seg1From = fromAccCom.Split('-')[0];
             string seg1To = toAccCom.Split('-')[0];

@@ -4,7 +4,7 @@ using ExceedERP.Reporting.SharedDataSources.ViewModel;
 
 namespace ExceedERP.Core.Reporting.ViewModel
 {
-    public class WorkUnitReportViewModel : Organization
+    public class WorkUnitReportViewModel 
     {
    
         public string Unit { get; set; }

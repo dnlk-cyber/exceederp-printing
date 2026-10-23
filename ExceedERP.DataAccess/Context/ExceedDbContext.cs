@@ -986,7 +986,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Budget
-
+            modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetCategoryDetailEntityTypeConfiguration());//Added
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetRequestTransferDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetRequestTransferLogEntityTypeConfiguration());
@@ -1005,9 +1005,12 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetAllocationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetCurrencyEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetPlanApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetPlanReserveEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetPlanMonthlyEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetMonthlyReserveEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetRequestApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetTransferApprovalEntityTypeConfiguration());
@@ -1015,12 +1018,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetUsageApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetUsageEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetBankAccountMapEntityTypeConfiguration());
-
-
-
-
+            modelBuilder.Configurations.Add(new BudgetEntityConfiguration.BudgetrequestDetailEntityTypeConfiguration());//added new
             #endregion
-
             #region FleetManagement
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MaintenanceCostDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAvailabilityTresholdEntityTypeConfiguration());
@@ -3934,7 +3933,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Budget
-
+        public DbSet<BudgetRequestDetail> BudgetRequestDetails { get; set; }//added 
         public DbSet<BudgetType> BudgetTypes { get; set; }
         public DbSet<BudgetRequestTransferDistribution> BudgetRequestTransferDistributions { get; set; }
         public DbSet<BudgetRequestTransferLog> BudgetRequestTransferLogs { get; set; }
@@ -3948,24 +3947,31 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<TaskCategory> TaskCategorys { get; set; }
         public DbSet<BudgetControl> BudgetControls { get; set; }
         public DbSet<BudgetPlan> BudgetPlans { get; set; }
+        public DbSet<BudgetPlanReserve> BudgetPlanReserves { get; set; }
         public DbSet<BudgetPlanApproval> BudgetPlanApprovals { get; set; }
+        public DbSet<BudgetPlanDepartmentApproval> BudgetPlanDepartmentApprovals { get; set; }
+        public DbSet<BudgetPlanRevisionApproval> BudgetPlanRevisionApprovals { get; set; }
         public DbSet<RequestedMonth> RequestedMonths { get; set; }
         public DbSet<BudgetPlanMonthly> BudgetPlanMonthlys { get; set; }
+        public DbSet<BudgetMonthlyReserve> BudgetMonthlyReserves { get; set; }
         public DbSet<BudgetTransfer> BudgetTransfers { get; set; }
         public DbSet<BudgetUsage> BudgetUsages { get; set; }
+        public DbSet<BudgetUsageDetail> BudgetUsageDetails { get; set; }
+        public DbSet<BudgetUsageApproval> BudgetUsageApprovals { get; set; }
         public DbSet<BudgetAllocation> BudgetAllocations { get; set; }
         public DbSet<BudgetCategory> BudgetCategorys { get; set; }
+        public DbSet<BudgetCategoryDetail> BudgetCategoryDetails { get; set; }//added new BudgetCategoryDetail as requested
         public DbSet<BudgetRequest> BudgetRequests { get; set; }
         public DbSet<PlanCategory> PlanCategorys { get; set; }
-        public DbSet<BudgetCurrency> BudgetCurrencies { get; set; }
+        public DbSet<BudgetPlanAttachment> BudgetPlanAttachments { get; set; }
         public DbSet<BudgetAllocationApproval> BudgetAllocationApprovals { get; set; }
-        public DbSet<BudgetUsageApproval> BudgetUsageApprovals { get; set; }
+        public DbSet<BudgetCurrency> BudgetCurrencies { get; set; }
+
         public DbSet<BudgetTransferApproval> BudgetTransferApprovals { get; set; }
         public DbSet<BudgetRequestApproval> BudgetRequestApprovals { get; set; }
         public DbSet<BudgetBankAccountMap> BudgetBankAccountMaps { get; set; }
 
         #endregion
-
         #region Budget GAAP
         public DbSet<BalanceSheet> BalanceSheets { get; set; }
         public DbSet<BudgetSheetCategory> BalanceSheetCategories { get; set; }
@@ -4139,6 +4145,7 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<ItemTransferDistribution> ItemTransferDistributions { get; set; }
         public DbSet<PurchaseRequisition> PurchaseRequisitions { get; set; }
+        public DbSet<PurchaseRequisitionBudgetValidation> PurchaseRequisitionBudgetValidations { get; set; }
         public DbSet<PurchaseRequisitionItem> PurchaseRequisitionItems { get; set; }
         public DbSet<PurchaseRequisitionItemSpecification> PurchaseRequisitionItemSpecifications { get; set; }
         public DbSet<PurchaseRequisitionAssignment> PurchaseRequisitionAssignments { get; set; }
@@ -4469,6 +4476,7 @@ namespace ExceedERP.DataAccess.Context
 
 
         #endregion
+        public DbSet<FinancialRatio> FinancialRatios { get; set; }
         public DbSet<GLSegmentCrossValidation> GlSegmentCrossValidations { get; set; }
         public DbSet<GLCrossValidationRuleElement> GlCrossValidationRuleElements { get; set; }
         public DbSet<GlRuleValue> GlRuleValues { get; set; }

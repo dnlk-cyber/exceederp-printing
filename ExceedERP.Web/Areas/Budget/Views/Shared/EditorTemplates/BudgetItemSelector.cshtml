@@ -1,0 +1,15 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m => m)
+                  //.AutoBind(false)
+                      .OptionLabel("Select Budget Item")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                              .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetBudgetItems", "BudgetDataProvider", new { area = "Budget" }).Data("sendForgery").Data("getBudgetCategoryId"))
+                                            .ServerFiltering(true);
+                          })
+                          
+)
+@Html.ValidationMessageFor(m => m)

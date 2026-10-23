@@ -1,11 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Budget;
-using ExceedERP.Web.Areas.FleetManagement.Models;
-using System;
 using ExceedERP.Web.Helpers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;     
+using System.Web.Mvc;
 
 
 namespace ExceedERP.Web.Areas.Budget.Controllers
@@ -13,6 +8,14 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
     [AuthorizeRoles(BudgetRoles.BudgetReport)]
     public class BudgetReportController : Controller
     {
+        public ActionResult BudgetPlanByQuarter()
+        {
+            return View();
+        }
+        public ActionResult BudgetSummary()
+        {
+            return View();
+        }
         public ActionResult BudgetAllocationUsage()
         {
             return View();
@@ -65,6 +68,25 @@ namespace ExceedERP.Web.Areas.Budget.Controllers
         {
             return View();
         }
+        public ActionResult BudgetPlanReportView()
+        {
+            return View();
+        }
+        //remove these
+        //public ActionResult ReportTest()
+        //{
+        //    return View();
+        //}
+        //public ActionResult BudgetPlanTestview()
+        //{
+        //    return View();
+        //}
+        ////add an action method that will call a view 
+        //public ActionResult PlanTestViewR()
+        //{
+        //    return View();
+        //}
+
 
     }
 }

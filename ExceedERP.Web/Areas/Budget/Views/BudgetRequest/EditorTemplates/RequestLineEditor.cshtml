@@ -16,10 +16,14 @@
 
                     </div>
                     <div>
-                        @(Html.Kendo().DropDownListFor(model => model.BudgetRequestType).Name("BudgetRequestType")
-                                                                                                      .DataTextField("Text")
-                                                .DataValueField("Value").OptionLabel(" Select ").Events(x => x.Change("BindDetail").DataBound("BindDetail"))
-.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.Budget.BudgetRequestType))))
+                        @(Html.Kendo().DropDownListFor(model => model.BudgetRequestType)
+                             .Name("BudgetRequestType")
+                             .DataTextField("Text")
+                             .DataValueField("Value")
+                             .OptionLabel(" Select ")
+                             .Events(x => x.Change("BindDetail")
+                             .DataBound("BindDetail"))
+                             .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.Budget.BudgetRequestType))))
 
                     </div>
 
@@ -34,7 +38,7 @@
                     </div>
                     <div>
                         <input   data-val="true" data-val-required="The AccountCode field is required." disabled="  disabled" id="AccountCode" name="AccountCode" data-bind="value:AccountCode">
-  <img src="~/Content/Images/search.png" onclick="SelectAccCode(this)" />
+                        <img src="~/Content/Images/search.png" onclick="SelectAccCode(this)" />
 
 
                     </div>

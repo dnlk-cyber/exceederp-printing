@@ -5,28 +5,21 @@
 
 <div class="demo-section k-content">
 
-
-
     <div class="row">
         <div class="col-md-1">
         </div>
        
-
-
         <div class="col-md-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.FromBranch)
                 </div>
 
-                @(Html.Kendo().DropDownListFor(model => model.FromBranch).HtmlAttributes(new { @class = "form-control", @required = "required" })
-                                    .DataTextField("Name")
-                                                    .DataValueField("BranchId").OptionLabel("Select ").Filter(FilterType.Contains)
-                                                            .DataSource(d => d.Read(r => r.Action("BranchDDBind", "BudgetDataProvider")).ServerFiltering(false)))
-
-
-
-
+                @(Html.Kendo().DropDownListFor(model => model.FromBranch)
+                    .HtmlAttributes(new { @class = "form-control", @required = "required" })
+                    .DataTextField("Name")
+                    .DataValueField("BranchId").OptionLabel("Select ").Filter(FilterType.Contains)
+                    .DataSource(d => d.Read(r => r.Action("BranchDDBind", "BudgetDataProvider").Data("sendForgery")).ServerFiltering(false)))
 
             </div>
         </div>
@@ -37,8 +30,10 @@
                     @Html.LabelFor(model => model.FromWorkUnit)
                 </div>
                 @(Html.Kendo().DropDownListFor(model => model.FromWorkUnit).HtmlAttributes(new { @class = "form-control", @required = "required" })
-                        .DataTextField("Text")
-                                    .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .OptionLabel(" Select ")
+                    .Filter(FilterType.Contains)
                     .HtmlAttributes(new { style = "width:100%" })
                     .DataSource(d =>
                     {
@@ -46,16 +41,14 @@
                         {
                             r.Action("WorkUnitDDBind", "BudgetDataProvider").Data("filterWorkUnit");
                         })
-                      .ServerFiltering(true);
+                        .ServerFiltering(true);
                     })
-                       .AutoBind(false)
-                               .CascadeFrom("FromAccountCode"))
+                    .AutoBind(false)
+                    //.CascadeFrom("FromAccountCode")
+                    )
             </div>
         </div>
 
-
-
-        
           <div class="col-md-3">
             <div class="form-group">
                 <div class="k-label">
@@ -63,36 +56,25 @@
                 </div>
 
                   @(Html.Kendo().DropDownListFor(model => model.FromAccountCode).HtmlAttributes(new { @class = "form-control", @required = "required" })
-                            .DataTextField("Text")
-                                    .DataValueField("Text").OptionLabel(" Select ")
-                    .HtmlAttributes(new { style = "width:100%" })
-                    .DataSource(d =>
-                    {
-                        d.Read(r =>
+                        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select ")
+                        .HtmlAttributes(new { style = "width:100%" })
+                        .DataSource(d =>
                         {
-                            r.Action("BudgetTransferFromAccCode", "BudgetDataProvider").Data("filterFromAccCode");
+                            d.Read(r =>
+                            {
+                                r.Action("BudgetTransferFromAccCode", "BudgetDataProvider").Data("filterFromAccCode");
+                            })
+                            .ServerFiltering(true);
                         })
-                      .ServerFiltering(true);
-                    })
-                   .AutoBind(false))
-                          
-
+                        .AutoBind(false)
+                        .CascadeFrom("FromWorkUnit"))
+                        
                 </div>
             </div>
         
-
-
-
-       
-
-
-
-
  </div>
 
-       
-
-    
     <div class="row">
         <div class="col-md-1">
         </div>
@@ -106,11 +88,7 @@
                 @(Html.Kendo().DropDownListFor(model => model.ToBranch).HtmlAttributes(new { @class = "form-control", @required = "required" })
                                                   .DataTextField("Name")
                                                             .DataValueField("BranchId").OptionLabel("Select ").Filter(FilterType.Contains)
-                                                            .DataSource(d => d.Read(r => r.Action("BranchDDBind", "BudgetDataProvider")).ServerFiltering(false)))
-
-
-
-
+                                                            .DataSource(d => d.Read(r => r.Action("BranchDDBind", "BudgetDataProvider").Data("sendForgery")).ServerFiltering(false)))
 
             </div>
         </div>
@@ -139,7 +117,6 @@
             </div>
         </div>
 
-
         <div class="col-md-3">
             <div class="form-group">
                 <div class="k-label">
@@ -159,22 +136,17 @@
                       .ServerFiltering(true);
                     })
                    .AutoBind(false)
+                   .CascadeFrom("ToWorkUnit")
                            )
                 </div>
             </div>
         </div>
  
-   
     </div>
     
-
-
     <div class="row">
         <div class="col-md-1">
         </div>
-
-         
-  
         <div class="col-md-3">
             <div class="form-group">
                 <div class="k-label">
@@ -184,7 +156,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.Unit).HtmlAttributes(new { @class = "k-dropdown-clientValidation form-control", required = "required" })
                                     .DataTextField("Text").Filter(FilterType.Contains)
                                             .DataValueField("Value").OptionLabel("Select ")
-                                                .DataSource(d => d.Read(r => r.Action("CurrencyDDBind", "BudgetDataProvider")).ServerFiltering(false)).ValuePrimitive(true))
+                                                .DataSource(d => d.Read(r => r.Action("CurrencyDDBind", "BudgetDataProvider").Data("sendForgery")).ServerFiltering(false)).ValuePrimitive(true))
                 </div>
             </div>
         </div>
@@ -200,6 +172,5 @@
         </div>
 
     </div>
-
 
 </div>

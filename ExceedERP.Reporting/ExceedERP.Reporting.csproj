@@ -161,6 +161,185 @@
     </Compile>
     <Compile Include="Archive\ViewModel\IncomingLetterVM.cs" />
     <Compile Include="Archive\ViewModel\OutgoingngLetterVM..cs" />
+    <Compile Include="Budget\DataSource\BudgetAllocationUsage.cs" />
+    <Compile Include="Budget\DataSource\BudgetControlDS.cs" />
+    <Compile Include="Budget\DataSource\BudgetParameterODS.cs" />
+    <Compile Include="Budget\DataSource\BudgetPlanODS.cs" />
+    <Compile Include="Budget\DataSource\BudgetPlanQuarterlyOds.cs" />
+    <Compile Include="Budget\DataSource\BudgetRequestVsPlan.cs" />
+    <Compile Include="Budget\DataSource\BudgetSummaryOds.cs" />
+    <Compile Include="Budget\DataSource\BudgetUsagePerMonth.cs" />
+    <Compile Include="Budget\DataSource\BudgetUsagePerYear.cs" />
+    <Compile Include="Budget\DataSource\BudgetUsageVsPlanCostCenter.cs" />
+    <Compile Include="Budget\DataSource\BudgetUsageVsPlanCostCenterSummary.cs" />
+    <Compile Include="Budget\DataSource\TaskPlan.cs" />
+    <Compile Include="Budget\GAAP\DataSource\ExpenseDataSource.cs" />
+    <Compile Include="Budget\GAAP\DataSource\InvestmentPlanDataSource.cs" />
+    <Compile Include="Budget\GAAP\DataSource\ProfitLossSheetDataSource.cs" />
+    <Compile Include="Budget\GAAP\DataSource\RevenueDataSource.cs" />
+    <Compile Include="Budget\GAAP\ViewModel\BalanceSheetViewModel.cs" />
+    <Compile Include="Budget\GAAP\ViewModel\ExpenseViewModel.cs" />
+    <Compile Include="Budget\GAAP\ViewModel\InvestmentPlanViewModel.cs" />
+    <Compile Include="Budget\GAAP\ViewModel\ProfitLossSheetViewModel.cs" />
+    <Compile Include="Budget\GAAP\ViewModel\RevenueViewModel.cs" />
+    <Compile Include="Budget\GAAP\View\BalanceSheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\BalanceSheet.Designer.cs">
+      <DependentUpon>BalanceSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\Expense.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\Expense.Designer.cs">
+      <DependentUpon>Expense.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\InvestmentPlan.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\InvestmentPlan.Designer.cs">
+      <DependentUpon>InvestmentPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\ProfitLoss.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\ProfitLoss.Designer.cs">
+      <DependentUpon>ProfitLoss.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\Revenue.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\GAAP\View\Revenue.Designer.cs">
+      <DependentUpon>Revenue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Print\DataSource\BudgetRequest.cs" />
+    <Compile Include="Budget\Print\DataSource\BudgetRequestTransfer.cs" />
+    <Compile Include="Budget\Print\ViewModel\BudgetRequestViewModel.cs" />
+    <Compile Include="Budget\Print\View\BudgetRequestPrint.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetRequestPrint.Designer.cs">
+      <DependentUpon>BudgetRequestPrint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetRequestTransfer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetRequestTransfer.Designer.cs">
+      <DependentUpon>BudgetRequestTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetRequestWithOutHeaderTransfer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetRequestWithOutHeaderTransfer.Designer.cs">
+      <DependentUpon>BudgetRequestWithOutHeaderTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetTransfer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetTransfer.Designer.cs">
+      <DependentUpon>BudgetTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetTransferWithOutHeader.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\Print\View\BudgetTransferWithOutHeader.Designer.cs">
+      <DependentUpon>BudgetTransferWithOutHeader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\ViewModel\BudgetAllocationAndUsageAgainstPreviousYearMonthlyViewModel.cs" />
+    <Compile Include="Budget\ViewModel\BudgetAllocationAndUsageAgainstPreviousYearViewModel.cs" />
+    <Compile Include="Budget\ViewModel\BudgetAllocationAndUsageViewModel.cs" />
+    <Compile Include="Budget\ViewModel\BudgetControlViewModel.cs" />
+    <Compile Include="Budget\ViewModel\BudgetParameterViewModel.cs" />
+    <Compile Include="Budget\ViewModel\BudgetPlanQuarterlyVm.cs" />
+    <Compile Include="Budget\ViewModel\BudgetPlanViewModel.cs" />
+    <Compile Include="Budget\ViewModel\BudgetRequestVsPlanViewModel.cs" />
+    <Compile Include="Budget\ViewModel\BudgetSummaryVm.cs" />
+    <Compile Include="Budget\ViewModel\BugetPlanRepViewModel.cs" />
+    <Compile Include="Budget\ViewModel\WorkUnitReportViewModel.cs" />
+    <Compile Include="Budget\View\BudgetAllocationAndUsage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetAllocationAndUsage.Designer.cs">
+      <DependentUpon>BudgetAllocationAndUsage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetAllocationAndUsageAnnual.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetAllocationAndUsageAnnual.Designer.cs">
+      <DependentUpon>BudgetAllocationAndUsageAnnual.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetAllocationAndUsageCrossTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetAllocationAndUsageCrossTab.Designer.cs">
+      <DependentUpon>BudgetAllocationAndUsageCrossTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetAllocationAndUsageMonthly.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetAllocationAndUsageMonthly.Designer.cs">
+      <DependentUpon>BudgetAllocationAndUsageMonthly.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetPlanByQuarter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetPlanByQuarter.Designer.cs">
+      <DependentUpon>BudgetPlanByQuarter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetPlanReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetPlanReport.Designer.cs">
+      <DependentUpon>BudgetPlanReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetSummary.Designer.cs">
+      <DependentUpon>BudgetSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetTransferVsPlan.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetTransferVsPlan.Designer.cs">
+      <DependentUpon>BudgetTransferVsPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetUsageAgainstMonth.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetUsageAgainstMonth.Designer.cs">
+      <DependentUpon>BudgetUsageAgainstMonth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\BudgetUsageAgainstYear.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\BudgetUsageAgainstYear.Designer.cs">
+      <DependentUpon>BudgetUsageAgainstYear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\PlanReportTest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\PlanReportTest.Designer.cs">
+      <DependentUpon>PlanReportTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\PlanVsActualCostCenterSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\PlanVsActualCostCenterSummary.Designer.cs">
+      <DependentUpon>PlanVsActualCostCenterSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\PlanVsUsageCostCenter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\PlanVsUsageCostCenter.Designer.cs">
+      <DependentUpon>PlanVsUsageCostCenter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\View\TaskPlan.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Budget\View\TaskPlan.Designer.cs">
+      <DependentUpon>TaskPlan.cs</DependentUpon>
+    </Compile>
     <Compile Include="CMS\Printing\DataSources\FullRegistrationSlipDataSource.cs" />
     <Compile Include="CMS\Printing\DataSources\RegistrationSlipDataSource.cs" />
     <Compile Include="CMS\Printing\DataSources\WelderCertificatePrintDataSource.cs" />
@@ -498,17 +677,18 @@
     <Compile Include="CRM\View\TicketReport.Designer.cs">
       <DependentUpon>TicketReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExceedERP\Reporting\Budget\GAAP\DataSource\BalanceSheetDataSource.cs" />
+    <Compile Include="ExceedERP\Reporting\Finance\Budget\DataSource\BalanceSheetDataSource.cs" />
     <Compile Include="Finance\Budget\DataSource\BalanceSheetSingleQuarterOds.cs" />
     <Compile Include="Finance\Budget\DataSource\BudgetAccountSheduleOds.cs" />
     <Compile Include="Finance\Budget\DataSource\BudgetAccountSheduleSingleQuarterOds.cs" />
+    <Compile Include="Finance\Budget\DataSource\BudgetCashFlowOds.cs" />
     <Compile Include="Finance\Budget\DataSource\BudgetPayableReceiviableDataSource.cs" />
     <Compile Include="Finance\Budget\DataSource\CommonScheduleOds.cs" />
     <Compile Include="Finance\Budget\DataSource\IncomeStatmentSingleQuarterOds.cs" />
-    <Compile Include="Finance\Budget\DataSource\old\BalanceSheetDataSource - type1.cs" />
-    <Compile Include="Finance\Budget\DataSource\BalanceSheetDataSource.cs" />
-    <Compile Include="Finance\Budget\DataSource\old\IncomeStatmentDataSource - type1.cs" />
     <Compile Include="Finance\Budget\DataSource\IncomeStatmentDataSource.cs" />
     <Compile Include="Finance\Budget\ViewModel\AccountPayableReceviableViewModel.cs" />
+    <Compile Include="Finance\Budget\ViewModel\BudgetCashFlowVm.cs" />
     <Compile Include="Finance\Budget\ViewModel\FinancialStatementSingleQuarterVm.cs" />
     <Compile Include="Finance\Budget\ViewModel\AccountSheduleSingleQuarterVm.cs" />
     <Compile Include="Finance\Budget\ViewModel\CommonScheduleVm.cs" />
@@ -537,6 +717,12 @@
     </Compile>
     <Compile Include="Finance\Budget\View\BudgetAccountScheduleSingleQuarter.Designer.cs">
       <DependentUpon>BudgetAccountScheduleSingleQuarter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Budget\View\BudgetCashFlow.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Budget\View\BudgetCashFlow.Designer.cs">
+      <DependentUpon>BudgetCashFlow.cs</DependentUpon>
     </Compile>
     <Compile Include="Finance\Budget\View\BudgetPayableReceiviable.cs">
       <SubType>Component</SubType>
@@ -5508,6 +5694,78 @@
     <EmbeddedResource Include="Archive\Design\OutgoingLetterReport.resx">
       <DependentUpon>OutgoingLetterReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Budget\GAAP\View\BalanceSheet.resx">
+      <DependentUpon>BalanceSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\GAAP\View\Expense.resx">
+      <DependentUpon>Expense.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\GAAP\View\InvestmentPlan.resx">
+      <DependentUpon>InvestmentPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\GAAP\View\ProfitLoss.resx">
+      <DependentUpon>ProfitLoss.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\GAAP\View\Revenue.resx">
+      <DependentUpon>Revenue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\Print\View\BudgetRequestPrint.resx">
+      <DependentUpon>BudgetRequestPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\Print\View\BudgetRequestTransfer.resx">
+      <DependentUpon>BudgetRequestTransfer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\Print\View\BudgetRequestWithOutHeaderTransfer.resx">
+      <DependentUpon>BudgetRequestWithOutHeaderTransfer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\Print\View\BudgetTransfer.resx">
+      <DependentUpon>BudgetTransfer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\Print\View\BudgetTransferWithOutHeader.resx">
+      <DependentUpon>BudgetTransferWithOutHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetAllocationAndUsage.resx">
+      <DependentUpon>BudgetAllocationAndUsage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetAllocationAndUsageAnnual.resx">
+      <DependentUpon>BudgetAllocationAndUsageAnnual.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetAllocationAndUsageCrossTab.resx">
+      <DependentUpon>BudgetAllocationAndUsageCrossTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetAllocationAndUsageMonthly.resx">
+      <DependentUpon>BudgetAllocationAndUsageMonthly.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetPlanByQuarter.resx">
+      <DependentUpon>BudgetPlanByQuarter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetPlanReport.resx">
+      <DependentUpon>BudgetPlanReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetSummary.resx">
+      <DependentUpon>BudgetSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetTransferVsPlan.resx">
+      <DependentUpon>BudgetTransferVsPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetUsageAgainstMonth.resx">
+      <DependentUpon>BudgetUsageAgainstMonth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\BudgetUsageAgainstYear.resx">
+      <DependentUpon>BudgetUsageAgainstYear.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\PlanReportTest.resx">
+      <DependentUpon>PlanReportTest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\PlanVsActualCostCenterSummary.resx">
+      <DependentUpon>PlanVsActualCostCenterSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\PlanVsUsageCostCenter.resx">
+      <DependentUpon>PlanVsUsageCostCenter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Budget\View\TaskPlan.resx">
+      <DependentUpon>TaskPlan.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CMS\Printing\ReportDesigns\FullRegistrationSlipBackReportDesign.resx">
       <DependentUpon>FullRegistrationSlipBackReportDesign.cs</DependentUpon>
     </EmbeddedResource>
@@ -5645,6 +5903,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\Budget\View\BudgetAccountScheduleSingleQuarter.resx">
       <DependentUpon>BudgetAccountScheduleSingleQuarter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Budget\View\BudgetCashFlow.resx">
+      <DependentUpon>BudgetCashFlow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\Budget\View\BudgetPayableReceiviable.resx">
       <DependentUpon>BudgetPayableReceiviable.cs</DependentUpon>

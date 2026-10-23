@@ -13,9 +13,11 @@ using ExceedERP.Core.Domain.Common;
 using System.Drawing;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Helpers.Budget;
-using ExceedERP.Core.Domain.Budget.Task;
+//using ExceedERP.Core.Domain.Budget.Task;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
+using ExceedERP.Core.Domain.Budget.Task;
 
 namespace ExceedERP.Reporting.Budget.DataSource
 {
@@ -86,14 +88,14 @@ namespace ExceedERP.Reporting.Budget.DataSource
 
             if (string.IsNullOrWhiteSpace(BudgetCategory) || string.IsNullOrWhiteSpace(Year))
             {
-                var model = new WorkUnitReportViewModel();
-                model.AmharicName = AmharicName;
-                model.Name = Name;
-                model.LogoFileName = LogoFileName;
-                model.Address = Address;
+                //var model = new WorkUnitReportViewModel();
+                //model.AmharicName = AmharicName;
+                //model.Name = Name;
+                //model.LogoFileName = LogoFileName;
+                //model.Address = Address;
 
-                BudgetList.Add(model);
-                return BudgetList;
+                //BudgetList.Add(model);
+                //return BudgetList;
             }
 
 
@@ -124,8 +126,9 @@ namespace ExceedERP.Reporting.Budget.DataSource
 
             foreach (var list in PlanCategory.DistinctByField(x => x.GLChartOfAccountCostCenterId))
             {
-
-                var CostCenter = db.GLChartOfAccountCostCenters.Where(x => x.Values == list.GLChartOfAccountCostCenterId.ToString()).FirstOrDefault();
+                var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                var glChartOfAccountCostCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId);
+                var CostCenter = glChartOfAccountCostCenters.Where(x => x.Values == list.GLChartOfAccountCostCenterId.ToString()).FirstOrDefault();
                 var Currency = db.TaskUnits.Where(x => x.TaskUnitId == list.Unit).FirstOrDefault();
                 var WorkUnitTotal = PlanCategory.Where(x => x.GLChartOfAccountCostCenterId == list.GLChartOfAccountCostCenterId).ToList();
                 var ThisMonthPlans = db.TaskPlanMonthlys.Where(x => x.GLPeriodId == CurrentPeriod.GLPeriodId && x.BudgetDefineID == list.TaskPlanId).FirstOrDefault();
@@ -170,12 +173,12 @@ namespace ExceedERP.Reporting.Budget.DataSource
 
                 model.WorkUnit = CostCenter.Description;
                 model.Unit = Currency.Name;
-                model.AmharicName = AmharicName;
-                model.Name = Name;
-                model.LogoFileName = LogoFileName;
-                model.Address = Address;
+                //model.AmharicName = AmharicName;
+                //model.Name = Name;
+                //model.LogoFileName = LogoFileName;
+                //model.Address = Address;
 
-                List.Add(model);
+                //List.Add(model);
             }
 
             return List;

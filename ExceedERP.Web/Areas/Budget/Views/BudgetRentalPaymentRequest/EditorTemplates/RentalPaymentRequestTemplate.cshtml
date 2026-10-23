@@ -1,0 +1,167 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model  ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequest
+@using ExceedERP.Helpers.Common
+@Html.HiddenFor(model => model.RentalPaymentRequestId)
+
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Requestor</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select Employee...")
+                                    .DataTextField("Name")
+                                    .DataValueField("Code")
+                                    .Filter("contains")
+                                    .MinLength(2)
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetEmployees", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                            .ServerFiltering(false);
+                                    })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Supplier Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ProcurementSupplierID)
+                                                 .ValuePrimitive(true)
+                                                 .OptionLabel("Select Supplier...")
+                                                 .DataTextField("Name")
+                                                 .DataValueField("Id")
+                                                 .Filter("contains")
+                                                 .DataSource(dataSource =>
+                                                 {
+                                                     dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                     .ServerFiltering(false);
+                                                 })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Payment Reason</label>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.ReasonofPayment)
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Remark)
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Fiscal Year</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(n => n.GLFiscalYearId)
+                                         .OptionLabel("Select Year")
+                                         .AutoBind(false)
+                                         .DataValueField("GlFiscalYearId")
+                                         .DataTextField("Name")
+                                         .DataSource(dataSource =>
+                                         {
+                                             dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
+                                              .ServerFiltering(false);
+                                         }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Department Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
+                                                  .ValuePrimitive(true)
+                                                  .OptionLabel("Select Department...")
+                                                  .DataTextField("Name")
+                                                  .DataValueField("OrgStructureId")
+                                                  .Filter("contains")
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetDepartments", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                      .ServerFiltering(false);
+                                                  })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Reference</label>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Refference)
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Period</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.GLPeriodId)
+                                  .OptionLabel("Select Period")
+                                  .AutoBind(false)
+                                  .DataValueField("GLPeriodId")
+                                  .DataTextField("Name")
+                                  .CascadeFrom("GLFiscalYearId")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery").Data("getFiscalYear"))
+                                      .ServerFiltering(true);
+                                  })
+                )
+            </div>
+        </div>
+    </div>
+   
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Branch Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.BranchId)
+                                 .ValuePrimitive(true)
+                                 .OptionLabel("Select Branch...")
+                                 .DataTextField("Name")
+                                 .DataValueField("BranchId")
+                                 .Filter("contains")
+                                 .MinLength(2)
+                                 .DataSource(dataSource =>
+                                 {
+                                     dataSource.Read(read => read.Action("GetBranch", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                     .ServerFiltering(false);
+                                 })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Request Date</label>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.RequestDate)
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+

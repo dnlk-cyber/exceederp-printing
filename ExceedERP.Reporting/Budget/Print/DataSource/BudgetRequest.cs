@@ -13,8 +13,9 @@ using ExceedERP.Core.Domain.Common;
 using System.Drawing;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Helpers.Budget;
-using ExceedERP.Core.Domain.Budget.Task;
+//using ExceedERP.Core.Domain.Budget.Task;
 using ExceedERP.Reporting.Budget.Print.ViewModel;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Reporting.Budget.Print.DataSource
 {
@@ -76,55 +77,58 @@ namespace ExceedERP.Reporting.Budget.Print.DataSource
             #endregion
 
 
- var BudgetRequest = db.BudgetRequests.Where(x=>x.BudgetRequestID.ToString() == Id).FirstOrDefault();
+            var BudgetRequest = db.BudgetRequests.Where(x=>x.BudgetRequestID.ToString() == Id).FirstOrDefault();
          
- if (BudgetRequest != null)
- {
-     var WorkUnit = db.GLChartOfAccountCostCenters.Where(x => x.Values == BudgetRequest.WorkUnit).FirstOrDefault();
+            if (BudgetRequest != null)
+            {
+                var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                var glChartOfAccountCostCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId);
+                var WorkUnit = glChartOfAccountCostCenters.Where(x => x.Values == BudgetRequest.WorkUnit).FirstOrDefault();
 
-     foreach (var RequestLine in BudgetRequest.BudgetRequestLine)
-     {
-         var BudgetRequestViewModel = new BudgetRequestViewModel();
+                foreach (var RequestLine in BudgetRequest.BudgetRequestLine)
+                {
+                    var BudgetRequestViewModel = new BudgetRequestViewModel();
 
-         if (WorkUnit != null)
-             BudgetRequestViewModel.WorkUnit = WorkUnit.Description;
+                    if (WorkUnit != null)
+                        BudgetRequestViewModel.WorkUnit = WorkUnit.Description;
 
-         BudgetRequestViewModel.Branch = BudgetRequest.Branch.Name;
+                    BudgetRequestViewModel.Branch = BudgetRequest.Branch.Name;
     
-         BudgetRequestViewModel.LineType = RequestLine.BudgetRequestType.ToString();
-         BudgetRequestViewModel.TotalAmount = RequestLine.Amount;
-         BudgetRequestViewModel.Month = BudgetRequest.FromDate.Date + " -- " + BudgetRequest.ToDate.Date;
-         BudgetRequestViewModel.Category = RequestLine.Remark;
-         BudgetRequestViewModel.RequestNo = BudgetRequest.BudgetRequestID;
-         BudgetRequestViewModel.Year = BudgetRequest.BudgetYear;
-         BudgetRequestViewModel.RequestNo = BudgetRequest.BudgetRequestID;
+                    BudgetRequestViewModel.LineType = RequestLine.BudgetRequestType.ToString();
+                    BudgetRequestViewModel.TotalAmount = RequestLine.Amount;
+                    BudgetRequestViewModel.Month = BudgetRequest.FromDate.Date + " -- " + BudgetRequest.ToDate.Date;
+                    BudgetRequestViewModel.Category = RequestLine.Remark;
+                    BudgetRequestViewModel.RequestNo = BudgetRequest.BudgetRequestID;
+                    BudgetRequestViewModel.Year = BudgetRequest.BudgetYear;
+                    BudgetRequestViewModel.RequestNo = BudgetRequest.BudgetRequestID;
 
 
-         BudgetRequestViewModel.AmharicName = AmharicName;
-         BudgetRequestViewModel.Name = Name;
-         BudgetRequestViewModel.Address =Address;
-         BudgetRequestViewModel.LogoFileName = LogoFileName;
+                    BudgetRequestViewModel.AmharicName = AmharicName;
+                    BudgetRequestViewModel.Name = Name;
+                    BudgetRequestViewModel.Address =Address;
+                    BudgetRequestViewModel.LogoFileName = LogoFileName;
 
-         BudgetList.Add(BudgetRequestViewModel);
-     }
- }
- else
- {
-     return BudgetList;
- }
+                    BudgetList.Add(BudgetRequestViewModel);
+                 }
+            }
+            else
+            {
+                return BudgetList;
+            }
+
             return BudgetList;
         }
 
-        [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<TaskCategory> GetPlanCategory()
-        {
+        //[DataObjectMethod(DataObjectMethodType.Select)]
+        //public List<TaskCategory> GetPlanCategory()
+        //{
 
 
-            db = new ExceedDbContext();
-            var result = db.TaskCategorys.ToList();
-            return result;
+        //    db = new ExceedDbContext();
+        //    var result = db.TaskCategorys.ToList();
+        //    return result;
 
-        }
+        //}
     }
 }
 

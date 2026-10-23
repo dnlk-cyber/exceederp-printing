@@ -14,7 +14,7 @@ namespace ExceedERP.Helpers.Budget
         public List<GLLedgerPostingLines> GetGLPostingByQuarterEnding(int FiscalYearId, BudgetEnums.BudgetQuarter Quarter)
         {
             ReportHelper _ReportHelper = new ReportHelper();
-            FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
+           // FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
             List<GLLedgerPostingLines> QuarterBalance = new List<GLLedgerPostingLines>();
 
 
@@ -44,7 +44,7 @@ namespace ExceedERP.Helpers.Budget
         public List<GLLedgerPostingLines> GetGLPostingByQuarterBeginning(int FiscalYearId, BudgetEnums.BudgetQuarter Quarter)
         {
             ReportHelper _ReportHelper = new ReportHelper();
-            FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
+           // FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
             List<GLLedgerPostingLines> QuarterBalance = new List<GLLedgerPostingLines>();
 
             if (Quarter == BudgetEnums.BudgetQuarter.First)
@@ -73,20 +73,17 @@ namespace ExceedERP.Helpers.Budget
         public List<GLLedgerPostingLines> GetSinglePeriodGLPosting(int FiscalYearId, int Index)
         {
             ReportHelper _ReportHelper = new ReportHelper();
-            FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
-            List<GLLedgerPostingLines> QuarterBalance = new List<GLLedgerPostingLines>();
 
+            return _ReportHelper.GetAccountBalance(FiscalYearId, _ReportHelper.GetPeriodQuarterIndex(FiscalYearId, Index));
 
-            QuarterBalance = _ReportHelper.GetAccountBalance(FiscalYearId, _ReportHelper.GetPeriodQuarterIndex(FiscalYearId, Index));
-
-            return QuarterBalance;
+           
 
         }
 
         public List<GLLedgerPostingLines> GetGLPostingByQuarter(int FiscalYearId, BudgetEnums.BudgetQuarter Quarter)
         {
             ReportHelper _ReportHelper = new ReportHelper();
-            FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
+           // FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
             List<GLLedgerPostingLines> QuarterBalance = new List<GLLedgerPostingLines>();
 
             if (Quarter == BudgetEnums.BudgetQuarter.First)
@@ -122,11 +119,11 @@ namespace ExceedERP.Helpers.Budget
 
                 if (budget.AccountType == GlAccountTypes.Asset || budget.AccountType == GlAccountTypes.Expense)
                 {
-                    NetBalance = NetBalance + (budget.Credit - budget.Debit);
+                    NetBalance = NetBalance + (budget.Debit - budget.Credit);
                 }
                 if (budget.AccountType == GlAccountTypes.Liability || budget.AccountType == GlAccountTypes.Capital || budget.AccountType == GlAccountTypes.Revenue)
                 {
-                    NetBalance = NetBalance + (budget.Debit - budget.Credit);
+                    NetBalance = NetBalance + (budget.Credit - budget.Debit);
                 }
 
             }
@@ -162,11 +159,7 @@ namespace ExceedERP.Helpers.Budget
         public List<GLLedgerPostingLines> GetGLPostingByPeriodRange(int FiscalYearId, int periodfrom, int toperiod)
         {
             ReportHelper _ReportHelper = new ReportHelper();
-            FiscalYearHelper _FiscalYearHelper = new FiscalYearHelper();
-            List<GLLedgerPostingLines> Balance = new List<GLLedgerPostingLines>();
-            Balance = _ReportHelper.GetAccountBalanceByPeriodRange(FiscalYearId,periodfrom, toperiod);
-            
-            return Balance;
+            return _ReportHelper.GetAccountBalanceByPeriodRange(FiscalYearId,periodfrom, toperiod);
 
         }
         public void GetQuarterIndex(GlFiscalYear FiscalYear, BudgetEnums.BudgetQuarter BudgetQuarter, out int LastPeriodIndex, out int OffSet)
@@ -234,24 +227,16 @@ namespace ExceedERP.Helpers.Budget
             {
                 if (JournalDetail.AccountType == GlAccountTypes.Asset || JournalDetail.AccountType == GlAccountTypes.Expense)
                 {
-                    NetBalance = NetBalance + (JournalDetail.Credit - JournalDetail.Debit);
+                    NetBalance = NetBalance + (JournalDetail.Debit - JournalDetail.Credit);
                 }
                 if (JournalDetail.AccountType == GlAccountTypes.Liability || JournalDetail.AccountType == GlAccountTypes.Capital || JournalDetail.AccountType == GlAccountTypes.Revenue)
                 {
-                    NetBalance = NetBalance + (JournalDetail.Debit - JournalDetail.Credit);
+                    NetBalance = NetBalance + (JournalDetail.Credit - JournalDetail.Debit);
                 }
             }
 
             return NetBalance;
         }
-
-
-
-
-
-
-
-
 
 
 

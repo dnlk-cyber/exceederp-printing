@@ -1,0 +1,13 @@
+@(Html.Kendo().DropDownListFor(model => model)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Select Employee...")
+                                        .DataTextField("Name")
+                                        .DataValueField("Code")
+                                        .Filter("contains")
+                                        .MinLength(2)
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetEmployees", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                .ServerFiltering(false);
+                                        })
+)

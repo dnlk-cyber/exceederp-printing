@@ -36,6 +36,8 @@ namespace ExceedERP.Core.Domain.Finance.AP.FundTransfer
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
         //for access or view
+        public decimal PaymentAmount { get; set; }
+        public decimal AmountDue { get; set; }
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
         public int CreatedAtOrgStructureId { get; set; }

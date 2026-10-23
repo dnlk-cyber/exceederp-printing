@@ -34,20 +34,20 @@
 <legend>   Budget Allocation  </legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.PlanCategory>()
           .Name("gridCategory")
-      .Columns(columns =>
-      {
+          .Columns(columns =>
+          {
 
-          columns.Bound(c => c.Name).EditorTemplateName("CategoryEditor").Width(150);
+              columns.Bound(c => c.Name).EditorTemplateName("CategoryEditor").Width(150);
 
-          columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("YearTemplate").Width(120);
-          columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(120);
+              columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("YearTemplate").Width(120);
+              columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(120);
            
-      })
+          })
          .Events(ev =>
-                                                     {
-                                                         ev.DetailExpand("onDetailExpand");
-                                                      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         {
+             ev.DetailExpand("onDetailExpand");
+         })
+         .Editable(editable => editable.Mode(GridEditMode.InLine))
          .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable
                                         .Input(true)
@@ -55,15 +55,13 @@
                                         .Refresh(true)
                                         .PageSizes(true)
                                         .ButtonCount(5))
-
                             .Scrollable()
                             .Sortable()
                             .Filterable()
-                              .Scrollable(h => h.Height(500))
-
+                            .Scrollable(h => h.Height(500))
            .DataSource(dataSource => dataSource
-          .Ajax()
-                                   .Model(model =>
+           .Ajax()
+                      .Model(model =>
                       {
                           model.Id(p => p.PlanCategoryID);
                           model.Field(p => p.GrandTotal).Editable(false);
@@ -72,76 +70,68 @@
                                         .Error("error_handler(\"gridCategory\")")
                                         .RequestStart("onRequestStart(\"gridCategory\")")
                                         .RequestEnd("onRequestEnd(\"gridCategory\")"))
-                          .Read(read => read.Action("AllocationCategory_Read", "BudgetAllocation"))
+                          .Read(read => read.Action("AllocationCategory_Read", "BudgetAllocation").Data("sendForgery"))
                
           )
                .ClientDetailTemplateId("template")
 )
 
 
-
-
-
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                          .Name("tabstripMain_#=PlanCategoryID#")
+          .Name("tabstripMain_#=PlanCategoryID#")
           .SelectedIndex(0)
           .Items(items =>
           {
-              items.Add().Text("Budget Allocation").Content(
-                @<text>
-
-
+              items.Add().Text("Budget Allocation")
+              .Content(@<text>
                     <legend>     </legend>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetAllocation>()
-                                            .Name("gridBudgetAllocation_#=PlanCategoryID#")
-      .Columns(columns =>
-      {
-       //   columns.Bound(c => c.BudgetGroup).EditorTemplateName("BudgetGroupEditor").Width(220);
-       //   columns.Bound(c => c.BudgetYear).Title("Year").EditorTemplateName("BudgetYearCascade").Width(120);
-          columns.Bound(c => c.AccountCode).Title("From Code").EditorTemplateName("AccountCodeCascade").Width(120);
-          columns.ForeignKey(c => c.WorkUnit, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("WorkUnitAllocation").Width(120);
+                          .Name("gridBudgetAllocation_#=PlanCategoryID#")
+                          .Columns(columns =>
+                          {
+                           //   columns.Bound(c => c.BudgetGroup).EditorTemplateName("BudgetGroupEditor").Width(220);
+                           //   columns.Bound(c => c.BudgetYear).Title("Year").EditorTemplateName("BudgetYearCascade").Width(120);
+                              columns.Bound(c => c.AccountCode).Title("From Code").EditorTemplateName("AccountCodeCascade").Width(120);
+                              columns.ForeignKey(c => c.WorkUnit, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("WorkUnitAllocation").Width(120);
+                              
+                              columns.ForeignKey(c => c.Branch, (System.Collections.IEnumerable)ViewData["Branches"], "BranchID", "Name").EditorTemplateName("BranchEditor").Width(100);
+                              columns.Bound(c => c.Month).EditorTemplateName("MonthNullableEditor").Width(120);
+                              columns.Bound(c => c.Amount).Format("{0:N0}").EditorTemplateName("NumEditor").Width(120);
+                              
+                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
 
-
-          columns.ForeignKey(c => c.Branch, (System.Collections.IEnumerable)ViewData["Branches"], "BranchID", "Name").EditorTemplateName("BranchEditor").Width(100);
-          columns.Bound(c => c.Month).EditorTemplateName("MonthNullableEditor").Width(120);
-          columns.Bound(c => c.Amount).Format("{0:N0}").EditorTemplateName("NumEditor").Width(120);
-
-
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-      })
-      .ToolBar(toolbar =>
-      {
-          toolbar.Create();
-      })
-
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-         .HtmlAttributes(new { style = "height: 520px;" })
-                      .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
-
-                            .Scrollable()
-                            .Sortable()
-                            .Filterable()
-                             .Scrollable(h => h.Height(500))
-
-           .DataSource(dataSource => dataSource
-          .Ajax() 
-                  .Model(model => model.Id(p => p.BudgetAllocationID))
-                          .Events(ev => ev
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .HtmlAttributes(new { style = "height: 520px;" })
+                                        .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                            .Scrollable()
+                                            .Sortable()
+                                            .Filterable()
+                                            .Scrollable(h => h.Height(500))
+                               .DataSource(dataSource => dataSource
+                                      .Ajax() 
+                                      .Model(model => model.Id(p => p.BudgetAllocationID))
+                                              .Events(ev => ev
                                                         .Error("error_handler(\"gridBudgetAllocation_#=PlanCategoryID#\")")
                                                         .RequestStart("onRequestStart(\"gridBudgetAllocation_#=PlanCategoryID#\")")
                                                         .RequestEnd("onRequestEnd(\"gridBudgetAllocation_#=PlanCategoryID#\")"))
-              .Read(read => read.Action("BudgetAllocation_Read", "BudgetAllocation" , new { RCategoryId = "#=PlanCategoryID#" }))
-                      .Create(create => create.Action("BudgetAllocation_Create", "BudgetAllocation", new { CCategoryId = "#=PlanCategoryID#" }))
-              .Update(update => update.Action("BudgetAllocation_Update", "BudgetAllocation"))
-              .Destroy(destroy => destroy.Action("BudgetAllocation_Destroy", "BudgetAllocation"))
+
+                                  .Read(read => read.Action("BudgetAllocation_Read", "BudgetAllocation" , new { RCategoryId = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                  .Create(create => create.Action("BudgetAllocation_Create", "BudgetAllocation", new { CCategoryId = "#=PlanCategoryID#" }).Data("sendForgery"))
+                                  .Update(update => update.Action("BudgetAllocation_Update", "BudgetAllocation").Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("BudgetAllocation_Destroy", "BudgetAllocation").Data("sendForgery"))
           
- ).ToClientTemplate()
+                                  ).ToClientTemplate()
                     )
 
                 </text>

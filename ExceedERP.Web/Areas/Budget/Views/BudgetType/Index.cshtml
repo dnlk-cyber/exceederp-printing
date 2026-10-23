@@ -1,21 +1,21 @@
 ﻿@model ExceedERP.Core.Domain.Budget.BudgetCategory
 
 
-<legend>   Budget Category Type </legend>
+<legend>Budget Type </legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetType>()
-              .Name("grid")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.Name).Width(150);
-          columns.Bound(c => c.Description).Width(100);
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-      })
-      .ToolBar(toolbar =>
-      {
-          toolbar.Create();
-      })
-
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name).Width(120);
+              columns.Bound(c => c.Description).Width(150);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  //command.Destroy();
+              }).Width(180);
+          })
+          .ToolBar(toolbar => toolbar.Create())// The "create" command adds new data items.
+          .Editable(editable => editable.Mode(GridEditMode.InLine).ConfirmDelete("continue deleting this record?").DisplayDeleteConfirmation("Continue to delete this record?"))// Use the inline edit mode.
          .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable
                                         .Input(true)
@@ -27,20 +27,32 @@
                             .Scrollable()
                             .Sortable()
                             .Filterable()
-                             .Scrollable(h => h.Height(500))
-
-           .DataSource(dataSource => dataSource
-          .Ajax()
-                      .Model(model => model.Id(p => p.BudgetTypeId))
-                      .Events(ev => ev
-                                            .Error("error_handler(\"grid\")")
+                            .Scrollable(h => h.Height(500))
+            .Events(events => events.Edit("onEdit"))
+          .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model => model.Id(p => p.BudgetTypeId)) // Specify the property which is the unique identifier of the model.
+                .Events(ev => ev
+                                            .Error("error_handler(\"grid\")")// Handle the "error" event.
                                             .RequestStart("onRequestStart(\"grid\")")
                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                          .Read(read => read.Action("BudgetType_Read", "BudgetType"))
-                      .Create(create => create.Action("BudgetType_Create", "BudgetType"))
-                      .Update(update => update.Action("BudgetType_Update", "BudgetType"))
-                      .Destroy(destroy => destroy.Action("BudgetType_Destroy", "BudgetType"))
+
+                      .Read(read => read.Action("BudgetType_Read", "BudgetType").Data("sendForgery")) // Action invoked when the Grid needs data.
+                      .Create(create => create.Action("BudgetType_Create", "BudgetType").Data("sendForgery")) // Action invoked when the user saves a new data item.
+                      .Update(update => update.Action("BudgetType_Update", "BudgetType").Data("sendForgery")) // Action invoked when the user saves an updated data item.
+                      .Destroy(destroy => destroy.Action("BudgetType_Destroy", "BudgetType").Data("sendForgery")) // Action invoked when the user removes a data item.
           )
 
 )
+
+<script>
+    function onEdit(e) {
+        // Check if it's an update (not new row)
+        if (!e.model.isNew()) {
+            // Disable the Name field on update
+            var input = e.container.find("input[name='Name']");
+            input.prop("disabled", true);
+        }
+    }
+</script>
 

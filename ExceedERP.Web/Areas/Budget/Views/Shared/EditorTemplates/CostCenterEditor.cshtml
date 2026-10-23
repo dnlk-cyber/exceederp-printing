@@ -1,4 +1,4 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" }).Name("GLChartOfAccountCostCenterId")
                                         .DataTextField("Text").Filter(FilterType.Contains)
                                                 .DataValueField("Value").OptionLabel("Select")
-                                                .DataSource(d => d.Read(r => r.Action("WorkUnitDDBind", "BudgetDataProvider")).ServerFiltering(false)))
+                                                .DataSource(d => d.Read(r => r.Action("WorkUnitDDBind", "BudgetDataProvider").Data("sendForgery")).ServerFiltering(false)))

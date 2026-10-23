@@ -20,12 +20,12 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 {
 
     [DataObject]
-    public class IncomeStatmentSingleQuarterOds : List<FinancialStatementSingleQuarterVm>
+    public class IncomeStatmentSingleQuarterOds : IDisposable
     {
-        public ExceedDbContext Db = new ExceedDbContext();
+        private readonly ExceedDbContext Db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<FinancialStatementSingleQuarterVm> GetIncomeStatmentDataSource(string year,  string quarter)
+        public List<FinancialStatementSingleQuarterVm> GetIncomeStatmentDataSource(string year,  string quarter, string businessUnit, string branchCode)
         {
             ReportHelper reportHelper = new ReportHelper();
 
@@ -96,11 +96,23 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
 
                     var allBalnces = reportHelper.GetAccountBalanceByPeriodRange(fiscalyearId, yearBegPeriodId, quarterEndPeriodId);
 
+                    #region filter by segment
+                    if (!String.IsNullOrEmpty(branchCode))
+                    {
+                        allBalnces = allBalnces
+                                      .Where(x => x.GLLedgerPosting.BranchSegment == branchCode).ToList();
+                    }
+                    if (!String.IsNullOrEmpty(businessUnit))
+                    {
+                        allBalnces = allBalnces
+                                      .Where(x => x.GLLedgerPosting.BusinessUnit == businessUnit).ToList();
+                    }
+                    #endregion
+
                     yearBegPeriodBalance = allBalnces.Where(x => x.GLPeriodId == yearBegPeriodId).ToList();
                     quarterBegPeriodBalance = allBalnces.Where(x => x.GLPeriodId == quarterBegPeriodId).ToList();
                     quarterEndPeriodBalance = allBalnces.Where(x => x.GLPeriodId == quarterEndPeriodId).ToList();
-
-
+                                       
 
                     //#region Budget Modifed 1/25/18
                     //var periodRangeBalnce = budgetReportHelper.GetPeriodRangePlanBalance(fiscalyearId, firstPeriodId, lastPeriodId);
@@ -108,7 +120,7 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
                     //var secondQuarterMonthlys = budgetReportHelper.ParseQuarterBalanceFromPeriod(periodRangeBalnce, fiscalyearId, BudgetEnums.BudgetQuarter.Second);
                     //var thirdQuarterMonthlys = budgetReportHelper.ParseQuarterBalanceFromPeriod(periodRangeBalnce, fiscalyearId, BudgetEnums.BudgetQuarter.Third);
                     //var fourthQuarterMonthlys = budgetReportHelper.ParseQuarterBalanceFromPeriod(periodRangeBalnce, fiscalyearId, BudgetEnums.BudgetQuarter.Fourth);
-                    
+
                     //decimal PlanDiffFirst = 0;
                     //decimal PlanDiffSecond = 0;
                     //decimal PlanDiffThird = 0;
@@ -379,121 +391,123 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
                     #endregion
 
                     #region selling and dist expense
-                    #region selling and dist header
-
-
-                    var sellingAndDistExpenseHeader = new FinancialStatementSingleQuarterVm
-                    {
-                        Description = "SELLING AND DISTRIBUTION EXPENSE",
-                        IsHeader = true
-
-                    };
-                    balance.Add(sellingAndDistExpenseHeader);
-
-                    #endregion
-
                     var sellingAndAdminExpenses = expensesBalances.Where(x => x.Category == IncomeStatementExpenseCategory.SellingAndDistributionExpense);
-
-                    foreach (var expensesBalance in sellingAndAdminExpenses)
+                    if (sellingAndAdminExpenses.Any())
                     {
-
-                        var ranges = expensesBalance.GaapIncomeStatementOperationExpenseRanges.ToList();
-                        decimal beginning = 0;
-                        decimal quarterActual = 0;
-                        decimal quarterBudget = 0;
-                        decimal quarterPercentage = 0;
-                        decimal quarterVariance = 0;
+                        #region selling and dist header
 
 
-                        decimal totalActual = 0;
-                        decimal totalBudget = 0;
-                        decimal totalPercentage = 0;
-                        decimal totalVariance = 0;
-
-                        foreach (var range in ranges)
+                        var sellingAndDistExpenseHeader = new FinancialStatementSingleQuarterVm
                         {
-                            decimal netChange = 0;
-
-                            beginning = beginning + reportHelper.GetAccountBegBalancesWithAllranges(
-                                            yearBegPeriodBalance, range.AccountFrom, range.AccountTo);
-
-                            netChange = reportHelper.GetAccountEndBalancesWithAllranges(quarterEndPeriodBalance, range.AccountFrom, range.AccountTo)
-                                        - reportHelper.GetAccountBegBalancesWithAllranges(quarterBegPeriodBalance, range.AccountFrom, range.AccountTo);
-                            quarterActual = quarterActual + netChange;
-
-                            netChange = reportHelper.GetAccountEndBalancesWithAllranges(yearBegPeriodBalance, range.AccountFrom, range.AccountTo)
-                                      - reportHelper.GetAccountBegBalancesWithAllranges(quarterBegPeriodBalance, range.AccountFrom, range.AccountTo);
-                            totalActual = totalActual + netChange;
-
-                            #region Budget 
-
-                            budgetAnnualMonthlies = budgetReportHelper.GetPeriodRangePlanBalance(fiscalyearId, yearBegPeriodId, quarterEndPeriodId);
-                            switch (quarter)
-                            {
-                                case "1":
-                                    budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.First);
-                                    break;
-                                case "2":
-                                    budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.Second);
-                                    break;
-                                case "3":
-                                    budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.Third);
-                                    break;
-                                case "4":
-                                    budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.Fourth);
-                                    break;
-                            }
-
-                            quarterBudget += budgetReportHelper.GetQuarterPlanByAccountRange(budgetQuarterMonthlies, range.AccountFrom, range.AccountTo);
-                            totalBudget += budgetReportHelper.GetQuarterPlanByAccountRange(budgetAnnualMonthlies, range.AccountFrom, range.AccountTo);
-                            #endregion
-                        }
-
-                        quarterVariance = quarterBudget - quarterActual;
-                        quarterPercentage = (quarterActual / quarterBudget.DivideByZeroHelper()) * 100;
-
-                        totalVariance = totalBudget - totalActual;
-                        totalPercentage = (totalActual / totalBudget.DivideByZeroHelper()) * 100;
-
-                        var sellingAndDistExpense = new FinancialStatementSingleQuarterVm
-                        {
-                            Description = expensesBalance.Description,
-                            Begining = beginning,
-                            QuarterPlan = quarterBudget,
-                            QuarterActual = quarterActual,
-                            QuarterPercentage = quarterPercentage,
-                            QuarterVariance = quarterVariance,
-
-                            TotalBudget = totalBudget,
-                            TotalActual = totalActual,
-                            TotalPercentage = totalPercentage,
-                            TotalVariance = totalVariance
+                            Description = "SELLING AND DISTRIBUTION EXPENSE",
+                            IsHeader = true
 
                         };
+                        balance.Add(sellingAndDistExpenseHeader);
 
-                        sellingAndDistributionExpenseList.Add(sellingAndDistExpense);
+                        #endregion
+
+                        foreach (var expensesBalance in sellingAndAdminExpenses)
+                        {
+
+                            var ranges = expensesBalance.GaapIncomeStatementOperationExpenseRanges.ToList();
+                            decimal beginning = 0;
+                            decimal quarterActual = 0;
+                            decimal quarterBudget = 0;
+                            decimal quarterPercentage = 0;
+                            decimal quarterVariance = 0;
+
+
+                            decimal totalActual = 0;
+                            decimal totalBudget = 0;
+                            decimal totalPercentage = 0;
+                            decimal totalVariance = 0;
+
+                            foreach (var range in ranges)
+                            {
+                                decimal netChange = 0;
+
+                                beginning = beginning + reportHelper.GetAccountBegBalancesWithAllranges(
+                                                yearBegPeriodBalance, range.AccountFrom, range.AccountTo);
+
+                                netChange = reportHelper.GetAccountEndBalancesWithAllranges(quarterEndPeriodBalance, range.AccountFrom, range.AccountTo)
+                                            - reportHelper.GetAccountBegBalancesWithAllranges(quarterBegPeriodBalance, range.AccountFrom, range.AccountTo);
+                                quarterActual = quarterActual + netChange;
+
+                                netChange = reportHelper.GetAccountEndBalancesWithAllranges(yearBegPeriodBalance, range.AccountFrom, range.AccountTo)
+                                          - reportHelper.GetAccountBegBalancesWithAllranges(quarterBegPeriodBalance, range.AccountFrom, range.AccountTo);
+                                totalActual = totalActual + netChange;
+
+                                #region Budget 
+
+                                budgetAnnualMonthlies = budgetReportHelper.GetPeriodRangePlanBalance(fiscalyearId, yearBegPeriodId, quarterEndPeriodId);
+                                switch (quarter)
+                                {
+                                    case "1":
+                                        budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.First);
+                                        break;
+                                    case "2":
+                                        budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.Second);
+                                        break;
+                                    case "3":
+                                        budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.Third);
+                                        break;
+                                    case "4":
+                                        budgetQuarterMonthlies = budgetReportHelper.ParseQuarterBalanceFromPeriod(budgetAnnualMonthlies, fiscalyearId, BudgetEnums.BudgetQuarter.Fourth);
+                                        break;
+                                }
+
+                                quarterBudget += budgetReportHelper.GetQuarterPlanByAccountRange(budgetQuarterMonthlies, range.AccountFrom, range.AccountTo);
+                                totalBudget += budgetReportHelper.GetQuarterPlanByAccountRange(budgetAnnualMonthlies, range.AccountFrom, range.AccountTo);
+                                #endregion
+                            }
+
+                            quarterVariance = quarterBudget - quarterActual;
+                            quarterPercentage = (quarterActual / quarterBudget.DivideByZeroHelper()) * 100;
+
+                            totalVariance = totalBudget - totalActual;
+                            totalPercentage = (totalActual / totalBudget.DivideByZeroHelper()) * 100;
+
+                            var sellingAndDistExpense = new FinancialStatementSingleQuarterVm
+                            {
+                                Description = expensesBalance.Description,
+                                Begining = beginning,
+                                QuarterPlan = quarterBudget,
+                                QuarterActual = quarterActual,
+                                QuarterPercentage = quarterPercentage,
+                                QuarterVariance = quarterVariance,
+
+                                TotalBudget = totalBudget,
+                                TotalActual = totalActual,
+                                TotalPercentage = totalPercentage,
+                                TotalVariance = totalVariance
+
+                            };
+
+                            sellingAndDistributionExpenseList.Add(sellingAndDistExpense);
+                        }
+
+                        balance.AddRange(sellingAndDistributionExpenseList);
+
+                        #region total selling and dist expense
+                        total = new FinancialStatementSingleQuarterVm
+                        {
+                            Description = "TOTAL SELLING AND DISTRIBUTION EXPENSE",
+                            Begining = sellingAndDistributionExpenseList.Sum(x => x.Begining),
+                            QuarterActual = sellingAndDistributionExpenseList.Sum(x => x.QuarterActual),
+                            QuarterPlan = sellingAndDistributionExpenseList.Sum(x => x.QuarterPlan),
+                            QuarterPercentage = sellingAndDistributionExpenseList.Sum(x => x.QuarterPercentage),
+                            QuarterVariance = sellingAndDistributionExpenseList.Sum(x => x.QuarterVariance),
+                            TotalBudget = sellingAndDistributionExpenseList.Sum(x => x.TotalBudget),
+                            TotalActual = sellingAndDistributionExpenseList.Sum(x => x.TotalActual),
+                            TotalVariance = sellingAndDistributionExpenseList.Sum(x => x.TotalVariance),
+                            TotalPercentage = sellingAndDistributionExpenseList.Sum(x => x.TotalPercentage),
+                            IsHeader = true
+                        };
+                        #endregion
+
+                        balance.Add(total);
                     }
-
-                    balance.AddRange(sellingAndDistributionExpenseList);
-
-                    #region total selling and dist expense
-                    total = new FinancialStatementSingleQuarterVm
-                    {
-                        Description = "TOTAL SELLING AND DISTRIBUTION EXPENSE",
-                        Begining = sellingAndDistributionExpenseList.Sum(x => x.Begining),
-                        QuarterActual = sellingAndDistributionExpenseList.Sum(x => x.QuarterActual),
-                        QuarterPlan = sellingAndDistributionExpenseList.Sum(x => x.QuarterPlan),
-                        QuarterPercentage = sellingAndDistributionExpenseList.Sum(x => x.QuarterPercentage),
-                        QuarterVariance = sellingAndDistributionExpenseList.Sum(x => x.QuarterVariance),
-                        TotalBudget = sellingAndDistributionExpenseList.Sum(x => x.TotalBudget),
-                        TotalActual = sellingAndDistributionExpenseList.Sum(x => x.TotalActual),
-                        TotalVariance = sellingAndDistributionExpenseList.Sum(x => x.TotalVariance),
-                        TotalPercentage = sellingAndDistributionExpenseList.Sum(x => x.TotalPercentage),
-                        IsHeader = true
-                    };
-                    #endregion
-
-                    balance.Add(total);
 
                     #endregion
 
@@ -629,22 +643,22 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
                     decimal totalOperatingexpenseTotalVariance = sellingAndDistributionExpenseList.Sum(x => x.TotalVariance) + administrativeAndGeneralExpenseList.Sum(x => x.TotalVariance);
                     decimal totalOperatingexpenseTotalPercentage = sellingAndDistributionExpenseList.Sum(x => x.TotalPercentage) + administrativeAndGeneralExpenseList.Sum(x => x.TotalPercentage);
                   
-                    #region total operating expense
-                    var totalOperatingexpense = new FinancialStatementSingleQuarterVm
-                    {
-                        Description = "TOTAL OPERATING EXPENSE",
-                        QuarterPlan = totalOperatingexpenseQuarterBudget,                       
-                        QuarterActual = totalOperatingexpenseQuarterActual,
-                        QuarterVariance = totalOperatingexpenseQuarterVariance,
-                        QuarterPercentage = totalOperatingexpenseQuarterPercentage,
-                        TotalBudget = totalOperatingexpenseTotalPlan,
-                        TotalActual = totalOperatingexpenseTotalActual,
-                        TotalVariance = totalOperatingexpenseTotalVariance,
-                        TotalPercentage = totalOperatingexpenseTotalPercentage,
-                        IsHeader = true
-                    };
-                    #endregion
-                    balance.Add(totalOperatingexpense);
+                    //#region total operating expense
+                    //var totalOperatingexpense = new FinancialStatementSingleQuarterVm
+                    //{
+                    //    Description = "TOTAL OPERATING EXPENSE",
+                    //    QuarterPlan = totalOperatingexpenseQuarterBudget,                       
+                    //    QuarterActual = totalOperatingexpenseQuarterActual,
+                    //    QuarterVariance = totalOperatingexpenseQuarterVariance,
+                    //    QuarterPercentage = totalOperatingexpenseQuarterPercentage,
+                    //    TotalBudget = totalOperatingexpenseTotalPlan,
+                    //    TotalActual = totalOperatingexpenseTotalActual,
+                    //    TotalVariance = totalOperatingexpenseTotalVariance,
+                    //    TotalPercentage = totalOperatingexpenseTotalPercentage,
+                    //    IsHeader = true
+                    //};
+                    //#endregion
+                    //balance.Add(totalOperatingexpense);
                     #endregion
 
                     #region total operating income/loss
@@ -881,6 +895,10 @@ namespace ExceedERP.Reporting.Finance.Budget.DataSource
             }
 
             return balance;
+        }
+        public void Dispose()
+        {
+            Db?.Dispose();
         }
     }
 

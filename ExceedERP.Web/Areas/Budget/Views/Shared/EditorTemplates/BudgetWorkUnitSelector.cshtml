@@ -1,0 +1,16 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m => m)
+    .ValuePrimitive(true)
+                  .AutoBind(false)
+                      .OptionLabel("Select Work Unit")
+                          .DataTextField("Name")
+                          .DataValueField("OrgStructureId")
+                              .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetBudgetableWorkUnits", "BudgetDataProvider", new { area = "Budget" }).Data("sendForgery"))
+                                            .ServerFiltering(false);
+                          })
+                          
+)
+@Html.ValidationMessageFor(m => m)

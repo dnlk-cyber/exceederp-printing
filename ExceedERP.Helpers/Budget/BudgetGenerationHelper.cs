@@ -1,10 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Budget;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Helpers.Finance;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
@@ -49,37 +45,39 @@ namespace ExceedERP.Helpers.Budget
         public async Task<bool> GenrateAccountCodeByRange(AccountCodeRangeViewModel range,
             OtherSpecifcationViewModel otherSpecifcation, BudgetGLAccountViewModel budgetGlAccount)
         {
-            ExceedDbContext db = new ExceedDbContext();
-            //AccountHelper accountHelper = new AccountHelper();
+            //using (ExceedDbContext db = new ExceedDbContext())
+            //{
+                //AccountHelper accountHelper = new AccountHelper();
 
-            return await _dynamicGenerationHelper.GenrateAccountCodeByRange(range, otherSpecifcation,
+                return await _dynamicGenerationHelper.GenrateAccountCodeByRange(range, otherSpecifcation,
                    budgetGlAccount);
 
-            //budgetGlAccount = new BudgetGLAccountViewModel();
+                //budgetGlAccount = new BudgetGLAccountViewModel();
 
-            //var glChartOfAccountAccounts =
-            //    db.GLChartOfAccountAccounts.Where(x => x.Enable && x.AllowBudgeting).ToList();
+                //var glChartOfAccountAccounts =
+                //    db.GLChartOfAccountAccounts.Where(x => x.Enable && x.AllowBudgeting).ToList();
 
-            //var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
-            //var glChartOfAccountLocations =
-            //    db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId)
-            //    .Where(x => x.Enable && x.AllowBudgeting).ToList();
+                //var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+                //var glChartOfAccountLocations =
+                //    db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId)
+                //    .Where(x => x.Enable && x.AllowBudgeting).ToList();
 
-            //var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
-            //var glChartOfAccountCostCenters =
-            //    db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId)
-            //    .Where(x => x.Enable && x.AllowBudgeting).ToList();
+                //var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                //var glChartOfAccountCostCenters =
+                //    db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId)
+                //    .Where(x => x.Enable && x.AllowBudgeting).ToList();
 
-            //var subAccountSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
-            //var glChartOfAccountSubAccounts =
-            //    db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
-            //    .Where(x => x.Enable && x.AllowBudgeting).ToList();
+                //var subAccountSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+                //var glChartOfAccountSubAccounts =
+                //    db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
+                //    .Where(x => x.Enable && x.AllowBudgeting).ToList();
 
-            //budgetGlAccount.GlChartOfAccountAccounts = glChartOfAccountAccounts;
-            //budgetGlAccount.GlChartOfAccountCostCenters = glChartOfAccountCostCenters;
-            //budgetGlAccount.GlChartOfAccountLocations = glChartOfAccountLocations;
-            //budgetGlAccount.GlChartOfAccountSubAccounts = glChartOfAccountSubAccounts;
-            //return await _staticGenerationHelper.GenrateAccountCodeByRange(range, otherSpecifcation, budgetGlAccount);
+                //budgetGlAccount.GlChartOfAccountAccounts = glChartOfAccountAccounts;
+                //budgetGlAccount.GlChartOfAccountCostCenters = glChartOfAccountCostCenters;
+                //budgetGlAccount.GlChartOfAccountLocations = glChartOfAccountLocations;
+                //budgetGlAccount.GlChartOfAccountSubAccounts = glChartOfAccountSubAccounts;
+                //return await _staticGenerationHelper.GenrateAccountCodeByRange(range, otherSpecifcation, budgetGlAccount);
+           // }
         }
     }
 }

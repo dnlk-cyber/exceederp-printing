@@ -1,0 +1,138 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Finance.AP.Travel.ApTravelOrder
+
+@*@Html.HiddenFor(c => c.ApTravelExpenseClaimId)*@
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+
+                <div class="col-md-6">
+
+
+                    @(Html.CheckBoxFor(m => m.IsForOther, htmlAttributes: new { @onchange = "SetEmployee(this)" })
+
+                    )
+                    @Html.LabelFor(model => model.IsForOther, htmlAttributes: new { @class = "control-label col-md-8" })
+                    @Html.ValidationMessageFor(model => model.IsForOther, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                      //  .Name("EmployeeId")
+                      .DataValueField("PersonId")
+                      .DataTextField("FullName")
+                      .OptionLabel("Select Employee...")
+                      .Filter("contains")
+                      .MinLength(2)
+                      //.CascadeFrom("IsForOther")
+                      .HtmlAttributes(new { style = "width:200px" })
+                      .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetEmployeesAskForOther", "HRMDataProvider");
+                              //.Data("IsforOthers");
+                          })
+                              .ServerFiltering(false);
+                      })
+                      .Enable(false)
+                      .ValuePrimitive(true)
+
+
+                      .Height(400)
+                      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                      "<span>Photo</span>" +
+                                      "<span>Full Name</span>" +
+                                      "</div>")
+                      .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#." + "#:data.ImageType#" + ");'></div>" +
+                                "<div class='Employee-name'>#:FullName#</div>")
+                    )
+
+
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ApTravelOrderId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.ApTravelOrderId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Travel Order...")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetTravelOrders", "FinanceDataProvider", new { area = "Finance" }).Data("sendForgery"))
+                                  .ServerFiltering(false);
+                          })
+                          .Events(e =>
+                          {
+                              e.Select("onTravelOrderSelect");
+                          })
+                    )
+                    @Html.ValidationMessageFor(model => model.ApTravelOrderId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+          
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PurposeOfTravel, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PurposeOfTravel)
+                    @Html.ValidationMessageFor(model => model.PurposeOfTravel, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+
+        </div>
+
+        <div class="col-md-3 ro1">
+            
+            @*<div class="form-group">
+                @Html.LabelFor(model => model.ClaimDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.ClaimDate)
+                    @Html.ValidationMessageFor(model => model.ClaimDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>*@
+            
+            @*<div class="form-group">
+                @Html.LabelFor(model => model.PaymentMethod, htmlAttributes: new { @class = "control-label col-md-8" })
+               
+            </div>
+            <div class="row"></div>*@
+            
+        </div>
+
+        <div class="col-md-3 ro1">
+           
+            <div class="form-group">
+                @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Reference)
+                    @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>  
+           
+            
+
+        </div>
+    </div>
+</div>
+
+

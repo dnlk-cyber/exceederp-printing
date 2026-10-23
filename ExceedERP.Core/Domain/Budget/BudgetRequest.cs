@@ -10,9 +10,13 @@ namespace ExceedERP.Core.Domain.Budget
     public class BudgetRequest : OperationWithSecondValidation
     {
 
+        //public BudgetRequest()
+        //{
+        //    this.BudgetRequestLine = new HashSet<BudgetRequestLine>();
+        //}
         public BudgetRequest()
         {
-            this.BudgetRequestLine = new HashSet<BudgetRequestLine>();
+            this.BudgetRequestDetails = new HashSet<BudgetRequestDetail>();
         }
         public int BudgetRequestID { get; set; }
 
@@ -25,11 +29,15 @@ namespace ExceedERP.Core.Domain.Budget
         public string BudgetYear { get; set; }
         [Required]
         [Display(Name = "Category")]
-        public string PlanCategoryId { get; set; }
-             [Display(Name = "Branch / Project")]
+        
+        public int PlanCategoryId { get; set; } //changed it to int
+        [Display(Name = "Branch / Project")]
         public int BranchId { get; set; }
 
         public string WorkUnit { get; set; }
+
+        [Display(Name = "Account Code ")]
+        public string AccountCode { get; set; }//added 
 
         [Display(Name = " From Date")]
         [DataType(DataType.DateTime)]
@@ -43,14 +51,16 @@ namespace ExceedERP.Core.Domain.Budget
         public DateTime ToDate { get; set; }
 
         public decimal Amount { get; set; }
-             [Display(Name = " Remark ")]
+        [Display(Name = " Remark ")]
         public string Reason { get; set; }
 
            
 
         [ForeignKey("BranchId")]
         public virtual Branch Branch { get; set; }
+        public virtual ICollection<BudgetRequestDetail> BudgetRequestDetails { get; set; }
 
         public virtual ICollection<BudgetRequestLine> BudgetRequestLine { get; set; }
+        
     }
 }
