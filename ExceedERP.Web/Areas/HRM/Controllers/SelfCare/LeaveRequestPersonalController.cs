@@ -366,7 +366,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             #endregion
 
             #region Leave Days Calculation (Including Mixed Support)
-            if (leaveRequest.Day == LeaveDay.Mixed)
+            if (leaveRequest.Day == LeaveDay.Half_Day && leaveRequest.From.Date == leaveRequest.To.Date)
+            {
+                // Respect holidays and configured full-day weekends. A normal
+                // working-day half-day remains 0.5, while a non-working date is 0.
+                leaveRequest.LeaveDays = HrHelper.GetLeaveDays(
+                    leaveRequest.From,
+                    leaveRequest.To,
+                    fiscalYear.GlFiscalYearId,
+                    LeaveDay.Half_Day,
+                    leaveRequest.Type,
+                    leaveRequest.EmployeeId);
+            }
+            else if (leaveRequest.Day == LeaveDay.Mixed)
             {
                 // For Mixed day type, leaveRequest.LeaveDays already holds the user-entered amount directly.
                 // We only validate that a valid positive amount has been entered.
@@ -426,7 +438,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             // Time segment adjustment
             decimal afternoonOffDays = 0;
-            if (leaveRequest.MorningOrAfternoon == MorningOrAfternoon.Afternoon)
+            if (leaveRequest.MorningOrAfternoon == MorningOrAfternoon.Afternoon && leaveRequest.Day != LeaveDay.Half_Day)
             {
                 afternoonOffDays = IsHalfDays(leaveRequest.From, leaveRequest.To);
             }
@@ -634,7 +646,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             #region Leave Days Calculation & Mixed Support
             var leaveTypeSetting = db.LeaveTypeSettings.FirstOrDefault(x => x.LeaveType == leaveRequest.Type);
 
-            if (leaveRequest.Day == LeaveDay.Mixed)
+            if (leaveRequest.Day == LeaveDay.Half_Day && leaveRequest.From.Date == leaveRequest.To.Date)
+            {
+                // Respect holidays and configured full-day weekends. A normal
+                // working-day half-day remains 0.5, while a non-working date is 0.
+                leaveRequest.LeaveDays = HrHelper.GetLeaveDays(
+                    leaveRequest.From,
+                    leaveRequest.To,
+                    fiscalYear.GlFiscalYearId,
+                    LeaveDay.Half_Day,
+                    leaveRequest.Type,
+                    leaveRequest.EmployeeId);
+            }
+            else if (leaveRequest.Day == LeaveDay.Mixed)
             {
                 if (leaveRequest.LeaveDays <= 0)
                 {
@@ -683,7 +707,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             // Afternoon offset adjustment
             decimal afternoonOffDays = 0;
-            if (leaveRequest.MorningOrAfternoon == MorningOrAfternoon.Afternoon)
+            if (leaveRequest.MorningOrAfternoon == MorningOrAfternoon.Afternoon && leaveRequest.Day != LeaveDay.Half_Day)
             {
                 afternoonOffDays = IsHalfDays(leaveRequest.From, leaveRequest.To);
             }

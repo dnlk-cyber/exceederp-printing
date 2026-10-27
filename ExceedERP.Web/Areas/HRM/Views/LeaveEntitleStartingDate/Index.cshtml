@@ -22,9 +22,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.LeaveEntitleStartingDateId))
-          .Read(read => read.Action("LeaveEntitleStartingDate_Read", "LeaveEntitleStartingDate"))
-          .Create(create => create.Action("LeaveEntitleStartingDate_Create", "LeaveEntitleStartingDate"))
-          .Update(update => update.Action("LeaveEntitleStartingDate_Update", "LeaveEntitleStartingDate"))
-          .Destroy(destroy => destroy.Action("LeaveEntitleStartingDate_Destroy", "LeaveEntitleStartingDate"))
+          .Read(read => read.Action("LeaveEntitleStartingDate_Read", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Create(create => create.Action("LeaveEntitleStartingDate_Create", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Update(update => update.Action("LeaveEntitleStartingDate_Update", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeaveEntitleStartingDate_Destroy", "LeaveEntitleStartingDate").Data("sendForgery"))
       )
 )

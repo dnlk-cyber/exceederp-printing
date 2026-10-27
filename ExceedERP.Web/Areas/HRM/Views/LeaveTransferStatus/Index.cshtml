@@ -40,11 +40,14 @@
         )
         <label class="category-label" for="To">@Resources.HR_LeaveManagment_LeaveTransfer_To</label>
         @(Html.Kendo().ComboBox()
-                                    .Name("To")
-                                                    .Placeholder(Resources.HR_LeaveManagment_LeaveTransfer_To)
-                                            .DataTextField("PeriodName")
-                                                            .BindTo((IEnumerable)ViewData["PeriodList"])
-                                            .DataValueField("PeriodId")
+                      .Name("To")              
+                      .Placeholder(Resources.HR_LeaveManagment_LeaveTransfer_To)
+                                           
+                      .DataTextField("PeriodName")
+                                                            
+                      .BindTo((IEnumerable)ViewData["PeriodList"])
+                                            
+                      .DataValueField("PeriodId")
                             .AutoBind(false)
                                                  //   .Events(e => e.Change("ToPeriod"))
                             .HtmlAttributes(new { style = "width: 300px;" })
@@ -76,22 +79,24 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                       .Events(events =>
-                                                     {
-                                                         events.Error("error_handler(\"LeaveTransfergrid\")");
-                                                         events.RequestStart("onRequestStart(\"LeaveTransfergrid\")");
-                                                         events.RequestEnd("onRequestEnd(\"LeaveTransfergrid\")");
-                                                     })
-              
+                      {
+                          events.Error("error_handler(\"LeaveTransfergrid\")");
+                          events.RequestStart("onRequestStart(\"LeaveTransfergrid\")");
+                          events.RequestEnd("onRequestEnd(\"LeaveTransfergrid\")");
+
+                      })
+
           .Model(model => model.Id(p => p.LeaveTransferId))
-          .Read(read => read.Action("LeaveTransfer_Read", "LeaveTransfer"))
-                  .Create(create => create.Action("LeaveTransfer_Create", "LeaveTransfer"))
-                  .Update(update => update.Action("LeaveTransfer_Update", "LeaveTransfer"))
-          .Destroy(destroy => destroy.Action("LeaveTransfer_Destroy", "LeaveTransfer"))
+          .Read(read => read.Action("LeaveTransfer_Read", "LeaveTransfer").Data("sendForgery"))
+                  .Create(create => create.Action("LeaveTransfer_Create", "LeaveTransfer").Data("sendForgery"))
+                  .Update(update => update.Action("LeaveTransfer_Update", "LeaveTransfer").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeaveTransfer_Destroy", "LeaveTransfer").Data("sendForgery"))
                   ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                  .Name("tabstrip_#=LeaveTransferId#")
+                                  
+        .Name("tabstrip_#=LeaveTransferId#")
           .SelectedIndex(0)
           .Items(items =>
           {
@@ -100,7 +105,7 @@
                     @* <legend>Status</legend>*@
 
                     @(Html.Kendo().Grid<RequestesStatus>()
-                                          .Name("RequestesStatusgrid_#=LeaveTransferId#")
+                         .Name("RequestesStatusgrid_#=LeaveTransferId#")
                           .Columns(columns =>
                           {
                               //columns.Bound(c => c.RequestId);
@@ -133,10 +138,10 @@
                                                   model.Id(p => p.RequestStatusId);
                                                   model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
                                               })
-                                                                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType = "LeaveTransfer" }))
-                                                                                                                                  .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType2 = "LeaveTransfer" }))
-                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                                                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType = "LeaveTransfer" }).Data("sendForgery"))
+                                                                                                                                  .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType2 = "LeaveTransfer" }).Data("sendForgery"))
+                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
                           ).ToClientTemplate()
                     )
 

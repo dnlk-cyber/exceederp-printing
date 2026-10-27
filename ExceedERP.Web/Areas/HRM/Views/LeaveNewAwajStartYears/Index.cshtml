@@ -20,9 +20,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.LeaveNewAwajStartYearId))
-          .Read(read => read.Action("LeaveNewAwajStartYears_Read", "LeaveNewAwajStartYears"))
-          .Create(create => create.Action("LeaveNewAwajStartYears_Create", "LeaveNewAwajStartYears"))
-          .Update(update => update.Action("LeaveNewAwajStartYears_Update", "LeaveNewAwajStartYears"))
-          .Destroy(destroy => destroy.Action("LeaveNewAwajStartYears_Destroy", "LeaveNewAwajStartYears"))
+          .Read(read => read.Action("LeaveNewAwajStartYears_Read", "LeaveNewAwajStartYears").Data("sendForgery"))
+          .Create(create => create.Action("LeaveNewAwajStartYears_Create", "LeaveNewAwajStartYears").Data("sendForgery"))
+          .Update(update => update.Action("LeaveNewAwajStartYears_Update", "LeaveNewAwajStartYears").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeaveNewAwajStartYears_Destroy", "LeaveNewAwajStartYears").Data("sendForgery"))
       )
 )

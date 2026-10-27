@@ -99,9 +99,7 @@
             columns.Command(command =>
             {
 
-                if (HttpContext.Current.User.IsInRole("HR_Placement_User") 
-                || HttpContext.Current.User.IsInRole("HR_Admin") 
-                || HttpContext.Current.User.IsInRole("HR_Placement_Editor"))
+                if (HttpContext.Current.User.IsInRole("HR_Placement_User") || HttpContext.Current.User.IsInRole("HR_Placement_Editor"))
                 {
                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { @id = "modify" });
                     command.Custom("").Click("Pend").Text(Resources.HR_Allowance_AllowancePerEmployee_Pend).IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Pend the employee to stop payroll processing ", @id = "pend" });
@@ -110,8 +108,7 @@
                 if (needChecker)
                 {
                     if (HttpContext.Current.User.IsInRole("PlacementChecker") ||
-                   HttpContext.Current.User.IsInRole("HR_Placement_User")
-                   || HttpContext.Current.User.IsInRole("HR_Admin"))
+                   HttpContext.Current.User.IsInRole("HR_Placement_User"))
                     {
                         command.Custom("")
                             .Click("CheckPlacement")
@@ -126,12 +123,12 @@
                     }
                 }
 
-                if (HttpContext.Current.User.IsInRole("PlacementApprover") || HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Placement_User"))
+                if (HttpContext.Current.User.IsInRole("PlacementApprover")|| HttpContext.Current.User.IsInRole("HR_Placement_User"))
                 {
                     command.Custom("").Click("ApprovePlacement").Text(Resources.ActionButton_Approve).IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success approveplacement", @title = "Approve Placement ", @id = "approveplacement" });
                 }
 
-                if (HttpContext.Current.User.IsInRole("HR_Placement_Editor") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                if (HttpContext.Current.User.IsInRole("HR_Placement_Editor"))
                 {
 
                     command.Custom("editPlacement").Click("setPlacementAsEditable").Text(Resources.Enable_Editing)
@@ -488,7 +485,9 @@
                    }).ToClientTemplate() )
                     <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x">Placement</i></a>
                     <a href='@Url.Action("EmployeeProbationChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print Probation Letter">
-                        <i class="fa fa-print fa-2x"></i> Probation</a>              
+                        <i class="fa fa-print fa-2x"></i> Probation</a>  
+                        <a href='@Url.Action("ProjectEmployeeContract", "PrintableLetter")/?id=#=EmployeeId#' title="Print Probation Letter">
+                        <i class="fa fa-print fa-2x"></i> Employee contract</a>              
                 </text> );
                           items.Add().Text("Attachments").Content(
                 @<text>

@@ -248,12 +248,13 @@
                                         .Name("RequestesStatusgrid_#=LeaveRequestId#")
                                         .Columns(columns =>
                                         {
-                                                    columns.Bound(c => c.DateReqStatAm).Width(120);
-                                                    columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(180);
-                                                    columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                    columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                    columns.Bound(c => c.Remark).Width(120);
-                                                })
+                                            columns.Bound(c => c.DateReqStatAm).Width(120);
+                                            columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(180);
+                                            columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                            columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                            columns.Bound(c => c.Remark).Width(120);
+
+                                        })
                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                                         .Scrollable()
                                         .Events(ev => ev.DataBound("onRequestesStatusDataBound"))
@@ -261,17 +262,17 @@
                                             .Ajax()
                                             .Events(events =>
                                             {
-                                                        events.Error("error_handler(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                                        events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                                        events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                                    })
+                                                events.Error("error_handler(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                                events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                                events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                            })
                                             .Model(model =>
                                             {
-                                                        model.Id(p => p.RequestStatusId);
-                                                        model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                                        model.Field(p => p.ApproverId).Editable(false);
-                                                        model.Field(p => p.ApproverDepartment).Editable(false);
-                                                    })
+                                                model.Id(p => p.RequestStatusId);
+                                                model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                model.Field(p => p.ApproverId).Editable(false);
+                                                model.Field(p => p.ApproverDepartment).Editable(false);
+                                            })
                                             .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType = "Leave" }).Data("sendForgery"))
                                         ).ToClientTemplate()
                             )

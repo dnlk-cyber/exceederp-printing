@@ -1,0 +1,247 @@
+@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+
+
+<div class="row">
+
+    <div class="col-sm-6 col-lg-6 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="employeeCount" width="400" height="400" class="chartarea"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-6 col-lg-6 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="employeeCardStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+   
+</div>
+
+
+
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script>
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)',
+        fuchsia: 'rgb(255, 0, 255)'
+    };
+    CountEmployee();
+    CountEmployeeCarStatu();
+    //ContratEmployee();
+    
+
+    function CountEmployee() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetEmployeeCardCount", "EmployeeCards", new {area = "HRM"})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("employeeCount").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Employee Count',
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: ['Employee Count']
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'black'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+    
+    function CountEmployeeCarStatu() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetCountEmployeeCardActionStatu", "EmployeeCards", new {area = "HRM"})',
+        success: function (result) {
+            // Render the chart
+            var ctx = document.getElementById("employeeCardStatus").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'bar', // Change this to 'bar'
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        // label: result.Labels,
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: " Employee Cards"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red', 'yellow'],
+                        precision: 2
+                    },
+                    legend: {
+                        display: false // Disable legend display
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: ' Employee Cards'
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0 // Ensure X-axis starts at 0
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of Employees'
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0 // Ensure Y-axis starts at 0
+                            }
+                        }]
+                    },
+                    maintainAspectRatio: false,
+
+                }
+            });
+        },
+        error: function (result) {
+            alert(result);
+        }
+    });
+}
+
+    
+
+    
+
+  
+    
+   
+   
+
+   
+
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+</script>
+

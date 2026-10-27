@@ -1,0 +1,279 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Common.HRM.LegacyEmployee
+<form>
+    <!-- Row 1: EmployeeCode, FullName, Sex, Age -->
+    <div class="row my-class">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.EmployeeCode)</div>
+                <div>
+                    @Html.Kendo().TextBoxFor(m => m.EmployeeCode)
+                    @Html.ValidationMessageFor(m => m.EmployeeCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.FullName)</div>
+                <div>
+                    @Html.Kendo().TextBoxFor(m => m.FullName)
+                    @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.Sex)</div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.Sex)
+                                        .OptionLabel("--select--")
+                                        .BindTo(new List<SelectListItem> {
+                                                    new SelectListItem { Text = "Male", Value = "Male" },
+                                                    new SelectListItem { Text = "Female", Value = "Female" }
+                                        })
+                                        .Filter("contains")
+                                        .ValuePrimitive(true)
+                    )
+                    @Html.ValidationMessageFor(m => m.Sex)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.Age)</div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(m => m.Age)
+                    @Html.ValidationMessageFor(m => m.Age)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Dept, Title, Grade, PresentSalary -->
+    <div class="row my-class">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.Dept)</div>
+                <div>
+                    @(Html.Kendo().ComboBoxFor(m => m.Dept)
+                             .Placeholder(Resources.Select)
+                             .DataTextField("Name")
+                             .DataValueField("Name")
+                             .Filter("contains")
+                             .Suggest(true)
+                             .Events(e => e.Change("onDeptChange"))
+                             .DataSource(dataSource =>
+                             {
+                                 dataSource.Read(read => read.Action("GetAllDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                           .ServerFiltering(false);
+                             })
+                             .ValuePrimitive(true)
+                                    )
+
+                    @Html.ValidationMessageFor(m => m.Dept)
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.Title)</div>
+                <div>
+                    @(Html.Kendo().ComboBoxFor(model => model.Title)
+                                                  .Placeholder(Resources.Select)
+                                                  .Filter("contains")
+                                                  .MinLength(2)
+                                                  .DataTextField("Description")
+                                                  .DataValueField("Description")
+                                                 .Suggest(true)
+                                                 .Events(e => e.Change("onTitleChange"))
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetAllJobTitleForVaancy", "HRMDataProvider").Data("sendForgery"))
+                                                          .ServerFiltering(false);
+
+                                                  })
+                                                    .ValuePrimitive(true)
+
+                    )
+                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.Grade)</div>
+                <div>
+                    @Html.Kendo().TextBoxFor(m => m.Grade)
+                    @Html.ValidationMessageFor(m => m.Grade)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.PresentSalary)</div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(m => m.PresentSalary)
+                    @Html.ValidationMessageFor(m => m.PresentSalary)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 3: Education, FieldOfStudy, OutExperience, WithInExperience -->
+    <div class="row my-class">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.Education)</div>
+                <div>
+                    @Html.Kendo().TextBoxFor(m => m.Education)
+                    @Html.ValidationMessageFor(m => m.Education)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.FieldOfStudy)</div>
+                <div>
+                    @Html.Kendo().TextBoxFor(m => m.FieldOfStudy)
+                    @Html.ValidationMessageFor(m => m.FieldOfStudy)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.OutExperience)</div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(m => m.OutExperience)
+                    @Html.ValidationMessageFor(m => m.OutExperience)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.WithInExperience)</div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(m => m.WithInExperience)
+                    @Html.ValidationMessageFor(m => m.WithInExperience)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 4: TotalExperience, LeaveBalance, RecruitmentDate, ReasonforTermination -->
+    <div class="row my-class">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.TotalExperience)</div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(m => m.TotalExperience)
+                    @Html.ValidationMessageFor(m => m.TotalExperience)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.LeaveBalance)</div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(m => m.LeaveBalance)
+                    @Html.ValidationMessageFor(m => m.LeaveBalance)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.RecruitmentDate)</div>
+                <div>
+                    @Html.Kendo().DatePickerFor(m => m.RecruitmentDate)
+                    @Html.ValidationMessageFor(m => m.RecruitmentDate)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.DateofTermination)</div>
+                <div>
+                    @Html.Kendo().DatePickerFor(m => m.DateofTermination)
+                    @Html.ValidationMessageFor(m => m.DateofTermination)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 5: Branch, SubBranch -->
+    <div class="row my-class">
+
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.ReasonforTermination)</div>
+                <div>
+                    @Html.TextAreaFor(m => m.ReasonforTermination)
+                    @Html.ValidationMessageFor(m => m.ReasonforTermination)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.Branch)</div>
+                <div>
+                    @(Html.Kendo().ComboBoxFor(model => model.Branch)
+                                            .Placeholder(Resources.Select)
+                                            .Filter("contains")
+                                            .MinLength(2)
+                                            .DataTextField("Name")
+                                                .DataValueField("Name")
+                                            .Events(e => e.Change("onBranchChange"))
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetAllBranchs", "HRMDataProvider").Data("sendForgery"))
+                                                    .ServerFiltering(false);
+                                            })
+                                            .ValuePrimitive(true)
+
+                    )
+                    @Html.ValidationMessageFor(model => model.Branch, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">@Html.LabelFor(m => m.SubBranch)</div>
+                <div>
+                    @(Html.Kendo().ComboBoxFor(model => model.SubBranch)
+                                                    .Placeholder(Resources.Select)
+                                                    .Filter("contains")
+                                                    .MinLength(2)
+                                                    .DataTextField("Name")
+                                                        .DataValueField("Name")
+                                                        .Events(e => e.Change("onSubBranchChange"))
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetAllBranchs", "HRMDataProvider").Data("sendForgery"))
+                                                            .ServerFiltering(false);
+                                                    })
+                                                    .ValuePrimitive(true)
+
+                    )
+                    @Html.ValidationMessageFor(model => model.SubBranch, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

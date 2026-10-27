@@ -520,8 +520,8 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     From = e.From.ToString("dd.MM.yyyy"),
                     To = e.To.ToString("dd.MM.yyyy"),
                     CompanyName = e.Organozation,
-                    JobTitleName = db.Lookups.FirstOrDefault(x => x.LookupId == e.JobTitleId)?.Description ?? e.Responsibility,
-                    JobTitleNameEnglish = db.Lookups.FirstOrDefault(x => x.LookupId == e.JobTitleId)?.DescriptionEng ?? e.Responsibility,
+                    JobTitleName = db.Lookups.FirstOrDefault(x => x.LookupId == e.LookupId)?.Description ?? e.Responsibility,
+                    JobTitleNameEnglish = db.Lookups.FirstOrDefault(x => x.LookupId == e.LookupId)?.DescriptionEng ?? e.Responsibility,
                     Year = FormatYearMonthDay(GetYearMonthDays(e.From, e.To).First(), isAmharic,isOromo),
                     Salary = e.Salary
                 }).ToList();

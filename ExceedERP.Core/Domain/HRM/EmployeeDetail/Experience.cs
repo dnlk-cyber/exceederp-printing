@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using System.ComponentModel;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 {
@@ -14,7 +15,6 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
     {
         [Key ]
         public int ExperienceId { get; set; }
-  
         [Display(Name = "Common_PersonEmployee_EmployeeCode", ResourceType = typeof(Localization.Resources))]
         public string EmployeeCode { get; set; }
         [Required]
@@ -47,7 +47,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public decimal TotalDuration { get; set; }
         [Display(Name = "HR_EmployeeDetail_Experience_TotalDuration", ResourceType = typeof(Localization.Resources))]
         public string TotalExp { get; set; }
-        [Display(Name = "HR_EmployeeDetail_Experience_Responsibility", ResourceType = typeof(Localization.Resources))]
+        [Display(Name = "ExternalExperienceJobTitle", ResourceType = typeof(Localization.Resources))]
         public string Responsibility { get; set; }	
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
@@ -66,6 +66,6 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
         [Display(Name = "ExternalExperienceJobTitle", ResourceType = typeof(Localization.Resources))]
-        public int JobTitleId { get; set; }
+        public int? LookupId { get; set; }
     }
 }

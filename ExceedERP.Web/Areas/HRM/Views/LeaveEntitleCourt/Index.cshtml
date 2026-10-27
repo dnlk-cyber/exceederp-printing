@@ -82,10 +82,10 @@ events.RequestEnd("onRequestEnd(\"LeaveEntitlegrid\")");
                       
           .Model(model => { model.Id(p => p.LeaveEntitleId);
           model.Field(p => p.EmployeeCode).Editable (false);})
-          .Read(read => read.Action("LeavesEntitle_Read", "LeaveEntitle"))
-                  .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle"))
-                  .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
-          .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
+          .Read(read => read.Action("LeavesEntitle_Read", "LeaveEntitle").Data("sendForgery"))
+                  .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle").Data("sendForgery"))
+                  .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle").Data("sendForgery"))
       )
 )
 

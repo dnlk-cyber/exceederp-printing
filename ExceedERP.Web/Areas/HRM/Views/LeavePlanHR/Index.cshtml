@@ -3,6 +3,7 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <legend>@Resources.NavigatorLeave_LeavePlan </legend>
 @(Html.Kendo().Grid<LeavePlan>()
@@ -13,8 +14,16 @@
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("Employees").Filterable(ftb => ftb.Multi(true).Search(true)).Width(210);
           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-          columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(150);
-          columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(150);
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(150);
+              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(150);
+          }
+          else
+          {
+              columns.Bound(c => c.From).Width(100);
+              columns.Bound(c => c.To).Width(100);
+          }
           columns.Bound(c => c.Day).Width (120);
           columns.Bound(c => c.LeaveAmount).Width (120);
           columns.Bound(c => c.Remark).Width (100);
@@ -105,10 +114,10 @@
         {
            
                      
-            items.Add().Text("Departmental Validation").Content(
+            items.Add().Text("Final Validation").Content(
             @<text>
             @(Html.Kendo().Grid<LeavePlanFinalValidation>()
-                .Name("LeavePlanFinalValidationgrid_#=LeavePlanId#")
+                .Name("LeavePlanValidationgrid_#=LeavePlanId#")
                 .Columns(columns =>
                 {
                     columns.Bound(c => c.Status).Width(170);
@@ -140,9 +149,9 @@
                     {
 
 
-                        events.Error("error_handler(\"LeavePlanFinalValidationgrid_#=LeavePlanId#\")");
-                        events.RequestStart("onRequestStart(\"LeavePlanFinalValidationgrid_#=LeavePlanId#\")");
-                        events.RequestEnd("onRequestEnd(\"LeavePlanFinalValidationgrid_#=LeavePlanId#\")");
+                        events.Error("error_handler(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
+                        events.RequestStart("onRequestStart(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
+                        events.RequestEnd("onRequestEnd(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
 
 
 
@@ -252,8 +261,15 @@
 
         var masterDataItem = masterGrid.dataItem(masterRow);
         var masterId = masterDataItem.LeavePlanId;
-        var gridName = "#LeavePlanFinalValidationgrid_" + masterId;
-       
+        var gridName = "#LeavePlanValidationgrid_" + masterId;
+        if (masterDataItem.IsDepartmentOnlineApproved) {
+            $(gridName).find(".k-toolbar").show();
+            $(".k-grid-top", gridName).show();
+            $(".k-grid-edit", gridName).hide();
+            $(".k-grid-delete", gridName).hide();
+
+
+        }
         if (masterDataItem.IsOnlineApproved) {
             $(gridName).find(".k-toolbar").hide(); //hide toolbar
             $(".k-grid-top", gridName).hide();
@@ -262,14 +278,7 @@
 
 
         }
-        else if (masterDataItem.IsDepartmentOnlineApproved) {
-            //$(gridName).find(".k-toolbar").hide();
-            //$(".k-grid-top", gridName).hide();
-            $(".k-grid-edit", gridName).hide();
-            $(".k-grid-delete", gridName).hide();
-
-
-        }
+       
 
 
     }

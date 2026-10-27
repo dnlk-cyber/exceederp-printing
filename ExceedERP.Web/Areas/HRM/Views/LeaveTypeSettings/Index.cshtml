@@ -1,0 +1,81 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.LeaveManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.Rpt_LeaveType @Resources.Settings</Legend>
+@(Html.Kendo().Grid<LeaveTypeSetting>()
+     .Name("LeaveSettinggrid")
+     .Columns(columns =>
+     {
+
+         columns.Bound(c => c.LeaveTypeSettingId).Title("#").Width(90);
+         columns.Bound(c => c.LeaveType).Width(130);
+         columns.Bound(c => c.IsConsecutiveDays).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#=IsConsecutiveDays#' " +
+                "# if (IsConsecutiveDays) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Width(130);
+         columns.Bound(c => c.IsWorkingDays).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#=IsWorkingDays#' " +
+                "# if (IsWorkingDays) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Width(120);
+         columns.Bound(c => c.MaximumAmount).Width(130);
+         columns.Bound(c => c.BlockBackdatedLeave).ClientTemplate(
+                 "<input type='checkbox' disabled = 'true' value='#=BlockBackdatedLeave#' " +
+                 "# if (BlockBackdatedLeave) { #" +
+                 "checked='checked'" +
+                 "# } #" +
+                 "/>").Width(140);
+         columns.Bound(c => c.MaxDaysBack).Width(120);
+         columns.Bound(c => c.Remark).Width(120);
+         columns.Command(command => {
+             command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+             command.Destroy().Text(Resources.ActionButton_Cancel);
+         }).Width(200);
+
+     })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Scrollable(h => h.Height(550))
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
+
+    })
+            .Filterable()
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort=>sort.Add(x=>x.LeaveTypeSettingId).Descending())
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"LeaveSettinggrid\")");
+                  events.RequestStart("onRequestStart(\"LeaveSettinggrid\")");
+                  events.RequestEnd("onRequestEnd(\"LeaveSettinggrid\")");
+
+              })
+              .Model(model => {
+                  model.Id(p => p.LeaveTypeSettingId);
+                  model.Field(p => p.LeaveTypeSettingId).Editable(false);
+              })
+              .Read(read => read.Action("LeaveTypeSettings_Read", "LeaveTypeSettings").Data("sendForgery"))
+              .Create(create => create.Action("LeaveTypeSettings_Create", "LeaveTypeSettings").Data("sendForgery"))
+              .Update(update => update.Action("LeaveTypeSettings_Update", "LeaveTypeSettings").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("LeaveTypeSettings_Destroy", "LeaveTypeSettings").Data("sendForgery"))
+          )
+)
+
+

@@ -306,7 +306,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         From = GetEthDate(ext.From),
                         To = GetEthDate(ext.To),
-                        Responsibility = GetResponsibility(ext.JobTitleId) ?? ext.Responsibility,
+                        Responsibility = GetResponsibility(ext.LookupId) ?? ext.Responsibility,
                         Totalyear = EmployeeHelper.GetDaystoWords((ext.To - ext.From).TotalDays),
                         TotalExperince = (ext.To - ext.From).Days
                     });

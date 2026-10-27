@@ -1653,12 +1653,13 @@
 
                         .ToolBar(toolbar =>
                         {
-                        toolbar.Template(@<text>
+                             toolbar.Template(@<text>
                                 @Html.Kendo().Upload().Name("employeeProfileFiles").Async(a => a.Save("AttachmentTemplateFiles_Create", "EmployeeProfile", new { Area = "HRM", attachmentReferenceType = "PHOTO", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" })).Events(e => e.Complete("onUploadSuccess")
                                                                                                                           .Select("function(e) { globalOnSelect(e, ['.jpg', '.png'], 6 * 1024 * 1024); }")
                                                                              .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
                             </text>);
-                                    })
+
+                        })
                                                 //.Events(e =>
                                                 //{
                                                 //    e.Change("onChange");
@@ -2340,7 +2341,11 @@
                         </div>
                     </text>);
                     })
-                    .Excel(excel => excel.ProxyURL(Url.Action("Excel_Export_Save", "EmployeeProfile")).AllPages(true))
+                    .Excel(excel => excel
+                        .FileName(Resources.Navigator_Employee_EmployeeProfile + ".xlsx")
+                        .Filterable(true)
+                        .AllPages(true)
+                        .ProxyURL(Url.Action("Excel_Export_Save", "EmployeeProfile")))
                         .Editable(editable => editable.Mode(GridEditMode.PopUp)
                                         .TemplateName("PersonEmployeeNew")
                                         .Window(window =>
@@ -2647,7 +2652,7 @@
                                   }
                                   columns.Bound(c => c.TotalExp).Width(130);
                                   columns.Bound(c => c.Responsibility).Width(130);
-                                  columns.ForeignKey(c => c.JobTitleId, (IEnumerable)ViewData["AllJobTitles"], "LookupId", "Description").EditorTemplateName("JobTitleExternalExperience").Width(150);
+                                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["AllJobTitles"], "LookupId", "Description").EditorTemplateName("JobTitleExternalExperience").Width(150);
                                   columns.Bound(c => c.CleranceReason).Width(120);
                                   columns.Bound(c => c.IncomeTaxPaymentRefNo).Width(150);
                                   columns.Bound(c => c.Salary).Width(100);
@@ -8301,20 +8306,22 @@ items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
 
     }
 
-    function onExcelExportClick()
+    function onExcelExportClick(e)
     {
-        // Get the reference to the grid
-         var grid = $("#Person_Employeegrid").data("kendoGrid");
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
 
-        // Get the URL for the Excel export action
-        var excelExportUrl = "@Url.Action("Excel_Export_Save", "EmployeeProfile")";
+        var grid = $("#Person_Employeegrid").data("kendoGrid");
+        if (!grid) {
+            alert("The employee grid is not ready. Please refresh the page and try again.");
+            return false;
+        }
 
-        // Trigger the Excel export
-        grid.saveAsExcel({
-            fileName: "EmployeeData.xlsx",
-            proxyURL: excelExportUrl,
-            allPages: true
-        });
+        // The grid already contains the file name, proxy URL, and all-pages settings.
+        // Calling the configured API avoids overriding those settings with stale values.
+        grid.saveAsExcel();
+        return false;
     }
 </script>
 <script>

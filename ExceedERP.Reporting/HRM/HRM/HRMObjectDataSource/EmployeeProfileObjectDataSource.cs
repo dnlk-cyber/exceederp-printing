@@ -118,7 +118,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 var empOtherEx = otherexpriances.Where(x => x.EmployeeId == r.e.EmployeeId).OrderByDescending(x=>x.From).ToList();
                 foreach (var e in empOtherEx)
                 {
-                    var jobtitle = lookups.FirstOrDefault(x=>x.LookupId==e.JobTitleId);
+                    var jobtitle = lookups.FirstOrDefault(x=>x.LookupId==e.LookupId);
                     totalExternalExperienceDays +=  e.To.Subtract(e.From).Days;
                     totalExperienceDays +=  e.To.Subtract(e.From).Days;
                     otherexplist = new OtherEmployeeExpriance();

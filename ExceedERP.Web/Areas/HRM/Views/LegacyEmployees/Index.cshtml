@@ -1,0 +1,346 @@
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Domain.Common.HRM
+@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+
+}
+<legend>Legacy Employee  </legend>
+@(Html.Kendo().Grid<LegacyEmployee>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.LegacyEmployeeId).Title("ID").Width(80);
+            columns.Bound(c => c.EmployeeCode).Width(100);
+            columns.Bound(c => c.FullName).Width(150);
+            columns.Bound(c => c.Sex).Width(100);
+            columns.Bound(c => c.Age).Width(100);
+            columns.Bound(c => c.Dept).Width(120);
+            columns.Bound(c => c.Title).Width(120);
+            columns.Bound(c => c.Grade).Width(100);
+            columns.Bound(c => c.PresentSalary).Width(100);
+            columns.Bound(c => c.Education).Width(150);
+            columns.Bound(c => c.FieldOfStudy).Width(150);
+            columns.Bound(c => c.OutExperience).Width(100);
+            columns.Bound(c => c.WithInExperience).Width(100);
+            columns.Bound(c => c.TotalExperience).Width(120);
+            columns.Bound(c => c.LeaveBalance).Width(130);
+            columns.Bound(c => c.RecruitmentDate).Width(130);
+            columns.Bound(c => c.DateofTermination).Width(140);
+            columns.Bound(c => c.ReasonforTermination).Width(140);
+            columns.Bound(c => c.Branch).Width(130);
+            columns.Bound(c => c.SubBranch).Width(130);
+            columns.Bound(c => c.IsProcessed).ClientTemplate(
+                                                   "<input type='checkbox' disabled = 'true' value='#= IsProcessed#' " +
+                                                   "# if (IsProcessed) { #" +
+                                                   "checked='checked'" +
+                                                   "# } #" +
+                                                   "/>").Width(100);
+            columns.Command(command =>
+            {
+                command.Edit();
+                command.Custom("Process").Text("<span class='k-icon k-i-user'></span> Re-register")
+                                        .IconClass("fa fa-user")
+                                        .HtmlAttributes(new
+                                        {
+                                            title = "Register a terminated employee who has rejoined the organization",
+                                            @class = "k-button k-primary"
+                                        })
+                                        .Click("processEmployee");
+
+                command.Destroy();
+            }).Width(300);
+
+        })
+
+       .ToolBar(toolbar =>
+       {
+       toolbar.Template(@<text>
+                    <div class="toolbar">
+                        @item.CreateButton(Resources.ActionButton_AddNewRecord)
+                        <input type="file" id="fileUpload" />
+                        <button onclick="uploadExcel()">Upload Excel</button>
+                        @(Html.Kendo()
+                                    .Button()
+                                        .Name("btnExcelExport")
+                                        .HtmlAttributes(new { type = "button", @class = "k-primary pull-right" })
+                                        .Content("Export to Excel")
+                                        .Events(events => events.Click("onExcelExportClick")))
+                    </div>
+                </text>);
+
+            })
+         .Excel(excel => excel.ProxyURL(Url.Action("Excel_Export_Save", "LegacyEmployees")).AllPages(true))
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.PopUp);
+            editable.TemplateName("LegacyTemplate");
+            editable.Window(window =>
+            {
+                window.Title("Legacy Employee Registration ");
+                window.Draggable(false);
+                window.Scrollable(false);
+                //window.Width(920);
+
+
+            });
+        })
+        .Events(ev=>ev.DataBound("onDataBound"))
+        .HtmlAttributes(new { style = "height: 520px;" })
+        .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .Scrollable()
+        .Sortable()
+        .Filterable()
+        .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+             .Events(ev => ev
+                .Error("error_handler(\"grid\")")
+                .RequestStart("onRequestStart(\"grid\")")
+                .RequestEnd("onRequestEnd(\"grid\")"))
+            .Model(model =>
+            {
+                model.Id(p => p.LegacyEmployeeId);
+                model.Field(p => p.LegacyEmployeeId).Editable(false);
+            })
+            .Read(read => read.Action("LegacyEmployees_Read", "LegacyEmployees"))
+            .Create(create => create.Action("LegacyEmployees_Create", "LegacyEmployees"))
+            .Update(update => update.Action("LegacyEmployees_Update", "LegacyEmployees"))
+            .Destroy(destroy => destroy.Action("LegacyEmployees_Destroy", "LegacyEmployees"))
+        ))
+
+
+<script>
+    function onExcelExportClick() {
+        // Get the reference to the grid
+        var grid = $("#grid").data("kendoGrid");
+
+        // Get the URL for the Excel export action
+        var excelExportUrl = "@Url.Action("Excel_Export_Save", "EmployeeProfile")";
+
+        // Trigger the Excel export
+        grid.saveAsExcel({
+            fileName: "LegacyEmployeeData.xlsx",
+            proxyURL: excelExportUrl,
+            allPages: true
+        });
+    }
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function onDeptChange(e) {
+        var combo = $("#Dept").data("kendoComboBox");
+        var text = combo.text();
+
+        if (combo.value() !== text) {
+            combo.value(text); // force custom value into model
+        }
+    }
+    function onTitleChange(e) {
+        var combo = $("#Title").data("kendoComboBox");
+        var text = combo.text();
+
+        if (combo.value() !== text) {
+            combo.value(text); // force custom value into model
+        }
+    }
+    function onBranchChange(e) {
+        var combo = $("#Branch").data("kendoComboBox");
+        var text = combo.text();
+
+        if (combo.value() !== text) {
+            combo.value(text); // force custom value into model
+        }
+    }
+    function onSubBranchChange(e) {
+        var combo = $("#SubBranch").data("kendoComboBox");
+        var text = combo.text();
+
+        if (combo.value() !== text) {
+            combo.value(text); // force custom value into model
+        }
+    }
+    // ON LOAD (VERY IMPORTANT FOR EDIT)
+    $(document).ready(function () {
+
+        setComboText("#senderDepartment");
+        //setComboText("#Title");
+        //setComboText("#Branch");
+        //setComboText("#SubBranch");
+
+    });
+
+    function setComboText(selector) {
+        var combo = $(selector).data("kendoComboBox");
+
+        if (!combo) return;
+
+        var value = combo.value();
+
+        if (value) {
+            // If value not found in datasource, force it
+            if (combo.dataSource.view().length === 0) {
+                combo.one("dataBound", function () {
+                    combo.text(value);
+                });
+            } else {
+                combo.text(value);
+            }
+        }
+    }
+    //$(document).ready(function () {
+    //    var combo = $("#Dept").data("kendoComboBox");
+    //    var comboTitle = $("#Title").data("kendoComboBox");
+    //    var comboBranch = $("#Branch").data("kendoComboBox");
+    //    var subBranchCombo = $("#SubBranch").data("kendoComboBox");
+    //    var comboBranchValue = comboBranch.value();
+    //    var SubBranchvalue = subBranchCombo.value();
+    //    var comboTitlevalue = comboTitle.value();
+    //    var combovalue = combo.value();
+
+    //    if (combovalue) {
+    //        combo.text(combovalue); // force display even if not in list
+    //    }
+    //    if (comboTitle) {
+    //        comboTitle.text(comboTitlevalue); // force display even if not in list
+    //    }
+    //    if (comboBranchValue) {
+    //        comboBranch.text(comboBranchValue); // force display even if not in list
+    //    }
+    //    if (SubBranchvalue) {
+    //        subBranchCombo.text(SubBranchvalue); // force display even if not in list
+    //    }
+    //});
+    function onDataBound(e)
+    {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++)
+        {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.IsProcessed)
+            {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-enable").hide();
+                row.find(".k-grid-Process").hide();
+                row.css("background-color", "gray");
+
+            }
+
+        }
+    }
+
+
+    @*function enableEmployeeCard(e)
+    {
+        var row = $(e.target).closest("tr");
+        var grid = $("#grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.EmployeeCardId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+            $.ajax({
+                url: '@Url.Action("EnableEployeeCardAction", "EmployeeCards")',
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }*@
+    function processEmployee(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        $.ajax({
+            url: '/HRM/LegacyEmployees/ProcessToEmployee',
+            type: 'POST',
+            data: { id: dataItem.LegacyEmployeeId },
+            success: function (res) {
+                alert(res.Message);
+                $("#grid").data("kendoGrid").dataSource.read();
+            }
+        });
+    }
+
+    function uploadExcel() {
+        var fileInput = document.getElementById("fileUpload");
+
+        if (fileInput.files.length === 0) {
+            alert("Please select a file.");
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        $.ajax({
+            url: '/HRM/LegacyEmployees/UploadLegacyEmployees',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                alert(res.Message);
+                $("#grid").data("kendoGrid").dataSource.read();
+            }
+        });
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-3 {
+        width: 200px;
+    }
+
+    .my-class {
+        margin-bottom: 10px;
+        margin-left: 20px;
+    }
+
+    .kendo-textbox {
+        width: 200px;
+        height: 35px;
+    }
+
+    .textarea-class {
+        width: 200px;
+        height: 50px;
+    }
+    .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* space between items */
+    }
+
+        .toolbar input[type="file"] {
+            display: inline-block;
+        }
+
+        .toolbar button {
+            white-space: nowrap;
+        }
+</style>

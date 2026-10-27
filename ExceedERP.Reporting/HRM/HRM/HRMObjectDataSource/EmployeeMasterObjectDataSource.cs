@@ -437,7 +437,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 {
                     foreach (var ex in empExtExps)
                     {
-                        allLookups.TryGetValue(ex.JobTitleId, out var jobdic);
+                        allLookups.TryGetValue(ex.LookupId??0, out var jobdic);
 
                         expSum += ex.To.Subtract(ex.From).Days;
                         TotalDays += ex.To.Subtract(ex.From).Days; 

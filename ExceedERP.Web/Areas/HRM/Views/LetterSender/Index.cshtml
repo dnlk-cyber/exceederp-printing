@@ -28,10 +28,10 @@
                                                                  })
                       
           .Model(model => model.Id(p => p.LetterSenderId))
-          .Read(read => read.Action("LetterSenders_Read", "LetterSender"))
-          .Create(create => create.Action("LetterSenders_Create", "LetterSender"))
-          .Update(update => update.Action("LetterSenders_Update", "LetterSender"))
-          .Destroy(destroy => destroy.Action("LetterSenders_Destroy", "LetterSender"))
+          .Read(read => read.Action("LetterSenders_Read", "LetterSender").Data("sendForgery"))
+          .Create(create => create.Action("LetterSenders_Create", "LetterSender").Data("sendForgery"))
+          .Update(update => update.Action("LetterSenders_Update", "LetterSender").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LetterSenders_Destroy", "LetterSender").Data("sendForgery"))
       )
 )
 <script>

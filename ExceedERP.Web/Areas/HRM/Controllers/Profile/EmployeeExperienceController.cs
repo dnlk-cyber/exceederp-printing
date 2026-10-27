@@ -119,7 +119,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
                 EmployeeId = experience.EmployeeId,
                 ExperienceId = experience.ExperienceId,
-                JobTitleId = experience.JobTitleId,
+                LookupId = experience.LookupId,
                 Organozation = experience.Organozation,
                 OrgFullAddress = experience.OrgFullAddress,
                 EmploymentType = experience.EmploymentType,
@@ -262,7 +262,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     CleranceReason = experience.CleranceReason,
                     IncomeTaxPaymentRefNo = experience.IncomeTaxPaymentRefNo,
                     Remark = experience.Remark,
-                    JobTitleId = experience.JobTitleId,
+                    LookupId = experience.LookupId,
                     Salary = experience.Salary,
                     EmployeeCode = experience.EmployeeCode,
                     FromExAmharic = experience.FromExAmharic,
@@ -362,7 +362,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 {
                     EmployeeId = experience.EmployeeId,
                     ExperienceId = experience.ExperienceId,
-                    JobTitleId = experience.JobTitleId,
+                    LookupId = experience.LookupId,
                     Organozation = experience.Organozation,
                     OrgFullAddress = experience.OrgFullAddress,
                     EmploymentType = experience.EmploymentType,
@@ -414,7 +414,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 {
                     EmployeeId = experience.EmployeeId,
                     ExperienceId = experience.ExperienceId,
-                    JobTitleId = experience.JobTitleId,
+                    LookupId = experience.LookupId,
                     Organozation = experience.Organozation,
                     OrgFullAddress = experience.OrgFullAddress,
                     EmploymentType = experience.EmploymentType,

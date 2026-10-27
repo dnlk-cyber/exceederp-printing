@@ -1516,6 +1516,9 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\FixedContributionController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Payroll\GuarantorOrSuretiesController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Payroll\GuarantorOrSuretyAttachmentsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Payroll\GuarantorOrSuretyDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\LoanController.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -7918,6 +7921,30 @@
     <Content Include="Areas\Budget\Views\TravelOrderRequestBudget\Index.cshtml" />
     <Content Include="Areas\Budget\Views\web.config" />
     <Content Include="Areas\Budget\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\HRM\Views\Templates\TemplatePrint.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveReport\AnnualLeaveReport.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveReport\LeaveUsageReport.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestHRManager\EditorTemplates\EnumWithoutWaitingForApprovalAndApprove.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestHRManager\EditorTemplates\GLFPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestHRManager\EditorTemplates\LeaveBalance.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestHRManager\EditorTemplates\LeaveRequest.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestHRManager\EditorTemplates\LeaveType.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestHRManager\EditorTemplates\RequestStatus.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestHRManager\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPM\EditorTemplates\EnumWithoutWaitingForApprovalAndApprove.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPM\EditorTemplates\GLFPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPM\EditorTemplates\LeaveBalance.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPM\EditorTemplates\LeaveRequest.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPM\EditorTemplates\LeaveType.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPM\EditorTemplates\RequestStatus.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPM\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveTypeSettings\EditorTemplates\FiscalYear.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveTypeSettings\EditorTemplates\Setting.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveTypeSettings\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LegacyEmployees\Dashboard.cshtml" />
+    <Content Include="Areas\HRM\Views\LegacyEmployees\EditorTemplates\ActiveEmployees.cshtml" />
+    <Content Include="Areas\HRM\Views\LegacyEmployees\EditorTemplates\LegacyTemplate.cshtml" />
+    <Content Include="Areas\HRM\Views\LegacyEmployees\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

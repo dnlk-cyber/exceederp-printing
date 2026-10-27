@@ -123,7 +123,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 totalExternalDays += days;
                 totalExperienceDays += days;
 
-                jobTitles.TryGetValue(ex.JobTitleId , out var jt);
+                jobTitles.TryGetValue(ex.LookupId??0 , out var jt);
 
                 result.OtherExpriance.Add(new OtherEmployeeExpriance
                 {
@@ -283,7 +283,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     var durationDays = (ex.To - ex.From).Days;
                     totalExternalDays += durationDays;
                     totalExperienceDays += durationDays;
-                    var jobTitle = jobTitles.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
+                    var jobTitle = jobTitles.FirstOrDefault(x => x.LookupId == ex.LookupId);
 
                     var parts = XAPI.Common.GetConcatenatedYearMonthDay(ex.From, ex.To).Split('-');
                     promoted.OtherExpriance.Add(new OtherEmployeeExpriance

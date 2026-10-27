@@ -17,41 +17,50 @@
             </div>
             <div>
 
-             @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                     //  .Name("EmployeeId")
-                                              .DataValueField("PersonId")
-                        .DataTextField("FullName")
-                           .OptionLabel("Select Employee..")
-                            .Filter("contains")
-                            .MinLength(2)
-                                   
-                            .HtmlAttributes(new { style = "width:260px" })
-                            .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
-                        .DataSource(source =>
-                        {
-                            source.Custom()
-                                  .ServerFiltering(true)
-                                  .ServerPaging(true)
-                                  .Type("aspnetmvc-ajax")
-                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "Loan")))
-                                  .Schema(schema =>
-                                  {
-                                      schema.Data("Data")
-                                            .Total("Total");
-                                  });
-                        })
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                                                        //  .Name("EmployeeId")
+                                                        .DataValueField("PersonId")
+                                  .DataTextField("FullName")
+                                     .OptionLabel("Select Employee..")
+                                      .Filter("contains")
+                                      .MinLength(2)
 
-                                           .ValuePrimitive(true)
+                                      .HtmlAttributes(new { style = "width:260px" })
+                                      //new
+                                      .DataSource(source =>
+                                      {
+                                        //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider").Data("sendForgery"));
+                                        source.Read(read => read.Action("GetAllEmployeesForPayrollInput", "PayrollDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
+                                         .ServerFiltering(true);
+                                      })
+                                        .ValuePrimitive(true)
+                          //end new
+                          //  .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                          //.DataSource(source =>
+                          //{
+                          //    source.Custom()
+                          //          .ServerFiltering(true)
+                          //          .ServerPaging(true)
+                          //          .Type("aspnetmvc-ajax")
+                          //          .Transport(transport => transport.Read(r => r.Action("GetEmployees", "Loan").Data("sendForgery")))
+                          //          .Schema(schema =>
+                          //          {
+                          //              schema.Data("Data")
+                          //                    .Total("Total");
+                          //          });
+                          //})
+
+                          //                   .ValuePrimitive(true)
 
 
-                                                                  .Height(400)
-                                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
-                                                        "<span>Photo</span>" +
-                                                        "<span>Full Name</span>" +
-                                                    "</div>")
-                                                            .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
-                                                            "<div class='Employee-name'>#:FullName#</div>")
-            )
+                          //                                          .Height(400)
+                          //                                                  .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                          //                                "<span>Photo</span>" +
+                          //                                "<span>Full Name</span>" +
+                          //                            "</div>")
+                          //                                    .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                          //                                    "<div class='Employee-name'>#:FullName#</div>")
+                )
 
 
 
@@ -74,7 +83,7 @@
                                    .ValuePrimitive(true)
                                        .DataSource(dataSource =>
                                           {
-                                              dataSource.Read(read => read.Action("GetPeriod", "HRMDataProvider", new { area = "HRM" }))
+                                              dataSource.Read(read => read.Action("GetPeriod", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                                     .ServerFiltering(false);
                                           }))
             </div>

@@ -17,6 +17,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Helpers.HR;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -41,6 +42,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                               .Select(e => new
                               {
                                   PersonId = e.EmployeeId,
+                                  EmployeeCode = e.EmployeeCode,
                                   EmployeeId = e.EmployeeId,
                                   FullNameAmharic = e.FirstName + " " + e.MiddleName + " " + e.LastName,
                                   FullNameWithOutCode = e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish
@@ -82,6 +84,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return false;
         }
+        private bool CheckAgreeRetunSalary(DateTime terminationDate, DateTime applicationDate)
+        {
+            var diffDays = (terminationDate - applicationDate).TotalDays;
+            return diffDays < 30;
+        }
         public ActionResult Terminations_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -96,16 +103,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Reason = termination.Reason,
                 TerminationDate = termination.TerminationDate,
                 ApplicationDate = termination.ApplicationDate,
-                Remark = termination.Remark,
-                EmployeeCode = termination.EmployeeCode,
                 TerminationDateAm = termination.TerminationDateAm,
                 ApplicationDateAm = termination.ApplicationDateAm,
+                Remark = termination.Remark,
+                EmployeeCode = termination.EmployeeCode,
                 DateCreated = termination.DateCreated,
                 LastModified = termination.LastModified,
                 CreatedBy = termination.CreatedBy,
                 ModifiedBy = termination.ModifiedBy,
                 OrgBranchName = termination.OrgBranchName,
                 IsApproved = CheckStatusForBackColor(termination.TerminationId),
+                IsAgreeRetunSalary = CheckAgreeRetunSalary(termination.TerminationDate.Value,termination.ApplicationDate),
                 DepartmentSendForApprovalBy = termination.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = termination.DepartmentSendForApprovalTime,
                 IsDepartmentSendForApproval = termination.IsDepartmentSendForApproval,
@@ -116,6 +124,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 OnlineApprovedBy = termination.OnlineApprovedBy,
                 OnlineApprovedTime = termination.OnlineApprovedTime,
                 IsOnlineApproved = termination.IsOnlineApproved,
+                IsEarlyRetirement = termination.IsEarlyRetirement,
             });
 
             return Json(result);
@@ -126,70 +135,145 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult Terminations_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.EmployeeDetail.Termination termination)
         {
             ModelState.Clear();
-            var EmployeeId = termination.EmployeeId;
-            if (!termination.IsForOther)
+            var employeeId = termination.IsForOther? termination.EmployeeId : UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            // 1. Date Handling
+            bool isEthiopic = HrHelper.GetDatePreference();
+
+            if (isEthiopic)
             {
-                EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            }
-           
-            bool datePreference = HrHelper.GetDatePreference();
-            if (datePreference)
-            {
-                if (string.IsNullOrEmpty(termination.TerminationDateAm)
-                || string.IsNullOrEmpty(termination.ApplicationDateAm))
+                if (string.IsNullOrWhiteSpace(termination.ApplicationDateAm))
                 {
-                    ModelState.AddModelError("", "Both Application and Termination Date fields are mandatory");
+                    ModelState.AddModelError("", "Application date is required.");
                     return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
                 }
 
-                termination.TerminationDate = HrHelper.ParseEthiopicDate(termination.TerminationDateAm);
                 termination.ApplicationDate = HrHelper.ParseEthiopicDate(termination.ApplicationDateAm);
+
+                if (!string.IsNullOrWhiteSpace(termination.TerminationDateAm))
+                {
+                    termination.TerminationDate = HrHelper.ParseEthiopicDate(termination.TerminationDateAm);
+                }
             }
             else
             {
+               
 
-                termination.TerminationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.TerminationDate.Value.Day, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Year);
-                termination.ApplicationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.ApplicationDate.Day, termination.ApplicationDate.Month, termination.ApplicationDate.Year);
+                termination.ApplicationDateAm = HrHelper.GetECDate(termination.ApplicationDate);
 
+                if (termination.TerminationDate.HasValue)
+                {
+                    termination.TerminationDateAm = HrHelper.GetECDate(termination.TerminationDate.Value);
+                }
             }
 
-            var checkExistance = db.Terminations.FirstOrDefault(x => x.EmployeeId == EmployeeId);
-            if (checkExistance != null)
+            // 2. Basic Validation
+            if (termination.ApplicationDate > DateTime.Now.Date)
             {
-
-                ModelState.AddModelError("", "This employee already request the termination!!");
+                ModelState.AddModelError("", "Application date must be today or earlier.");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
-
             }
-            
-           if (termination.TerminationDate.Value.Date < termination.ApplicationDate.Date)
-           {
-                ModelState.AddModelError("", "Please check the date, Applicaton date should be less than Termination Date!!");
-                return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
 
+            // Get fiscal year first
+            var fiscalYear = db.GLFiscalYears
+                .Where(x => x.DateFrom <= termination.ApplicationDate
+                         && x.DateTo >= termination.ApplicationDate)
+                .Select(x => new { x.DateFrom, x.DateTo })
+                .FirstOrDefault();
 
-           }
-            else if (termination.ApplicationDate.Date > DateTime.Now.Date)
+            if (fiscalYear == null)
             {
-
-                ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
+                ModelState.AddModelError("", "No fiscal year found for the selected application date.");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
-
             }
-            var diff = (termination.TerminationDate.Value - termination.ApplicationDate).TotalDays;
-            if (diff < 30&&!termination.IsAgreeRetunSalary)
+
+            // Check if termination already exists in SAME fiscal year
+            bool exists = db.Terminations.Any(x =>
+                x.EmployeeId == employeeId &&
+                x.ApplicationDate >= fiscalYear.DateFrom &&
+                x.ApplicationDate <= fiscalYear.DateTo
+            );
+
+            if (exists)
             {
-                ModelState.AddModelError("", "Your termination request date length is less than 30. You need  to agree to return one month salary to finance!!");
-                termination.Remark = "The Date Length is less than 30.";
+                ModelState.AddModelError("", "Termination request already exists in this fiscal year.");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+            }
+
+            // --------------------
+            // 3. Placement + Notice Period
+            // --------------------
+            var placement = db.Placements
+                .Where(x => x.EmployeeId == employeeId && x.isCurrent)
+                .Select(x => new { x.ResponsibilityLevel })
+                .FirstOrDefault();
+
+            if (placement == null)
+            {
+                ModelState.AddModelError("", "No active placement found.");
+                return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+            }
+
+            int noticeDays = db.TerminationSettings
+                .Where(x => x.IsActive && x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                .Select(x => (int?)x.NoticePeriodDays)
+                .FirstOrDefault() ?? 30; // default fallback
+
+            // --------------------
+            // 4. Termination Date Logic
+            // --------------------
+            if (!termination.TerminationDate.HasValue)
+            {
+                // Auto-calculate if not provided
+                termination.TerminationDate = termination.ApplicationDate.AddDays(noticeDays);
+            }
+            else
+            {
+                if (termination.TerminationDate.Value.Date < termination.ApplicationDate.Date)
+                {
+                    ModelState.AddModelError("", "Termination date must be after application date.");
+                    return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+                }
+            }
+
+            // Sync Ethiopic date
+            termination.TerminationDateAm = HrHelper.GetECDate(termination.TerminationDate.Value);
+
+            // --------------------
+            // 5. Business Rule (Minimum 30 days)
+            // --------------------
+            var diffDays = (termination.TerminationDate.Value - termination.ApplicationDate).TotalDays;
+
+            if (diffDays < 30 && !termination.IsAgreeRetunSalary)
+            {
+                ModelState.AddModelError("", "Less than 30 days requires salary agreement.");
+                termination.Remark = "Notice period less than 30 days.";
+                return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+            }
+            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+
+            if (termination.IsEarlyRetirement && employee != null)
+            {
+                var age = DateTime.Now.Year - employee.DateOfBirth.Year;
+
+                if (employee.DateOfBirth > DateTime.Now.AddYears(-age))
+                {
+                    age--;
+                }
+
+                if (age < 55)
+                {
+                    ModelState.AddModelError("", "Employee is not eligible for early retirement before age 55.");
+                    return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+
+                }
             }
             if (ModelState.IsValid)
             {
+               
 
-                var employee = db.Person_Employee.Find(termination.EmployeeId);
                 var entity = new Core.Domain.HRM.EmployeeDetail.Termination
                 {
-                    EmployeeId = EmployeeId,
+                    EmployeeId = employeeId,
                     LookupId = termination.LookupId,
                     Reason = termination.Reason,
                     ApplicationDate = termination.ApplicationDate,
@@ -204,12 +288,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     ModifiedBy = termination.ModifiedBy,
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
                     IsForOther = termination.IsForOther,
+                    IsEarlyRetirement = termination.IsEarlyRetirement,
+
                 };
 
                 db.Terminations.Add(entity);
                 db.SaveChanges();
                 termination.TerminationId = entity.TerminationId;
-                if (diff < 30)
+                if (diffDays < 30)
                 {
                     string messages = "Your termination request date length is less than 30. You need to return one month salary to finance.";
                     termination.Remark = "The Date Length is less than 30.";
@@ -228,56 +314,136 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult Terminations_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.EmployeeDetail.Termination termination)
         {
             ModelState.Clear();
-            termination.EmployeeId = HRMInputs.EmployeeId;
-            bool datePreference = HrHelper.GetDatePreference();
-            if (datePreference)
+            termination.EmployeeId = termination.IsForOther ? termination.EmployeeId : UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            // 1. Date Handling
+            bool isEthiopic = HrHelper.GetDatePreference();
+
+            if (isEthiopic)
             {
-                if (string.IsNullOrEmpty(termination.TerminationDateAm)
-                || string.IsNullOrEmpty(termination.ApplicationDateAm))
+                if (string.IsNullOrWhiteSpace(termination.ApplicationDateAm))
                 {
-                    ModelState.AddModelError("", "Both application and Termination Date fields are mandatory");
+                    ModelState.AddModelError("", "Application date is required.");
                     return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
                 }
 
-                termination.TerminationDate = HrHelper.ParseEthiopicDate(termination.TerminationDateAm);
                 termination.ApplicationDate = HrHelper.ParseEthiopicDate(termination.ApplicationDateAm);
 
-
+                if (!string.IsNullOrWhiteSpace(termination.TerminationDateAm))
+                {
+                    termination.TerminationDate = HrHelper.ParseEthiopicDate(termination.TerminationDateAm);
+                }
             }
             else
             {
-                termination.TerminationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.TerminationDate.Value.Day, termination.TerminationDate.Value.Month, termination.TerminationDate.Value.Year);
-                termination.ApplicationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(termination.ApplicationDate.Day, termination.ApplicationDate.Month, termination.ApplicationDate.Year);
+                if (termination.ApplicationDate == null)
+                {
+                    ModelState.AddModelError("", "Application date is required.");
+                    return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+                }
+
+                termination.ApplicationDateAm = HrHelper.GetECDate(termination.ApplicationDate);
+
+                if (termination.TerminationDate != null)
+                {
+                    termination.TerminationDateAm = HrHelper.GetECDate(termination.TerminationDate.Value);
+                }
             }
 
-            var checkExistance = db.Terminations.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
-            if (checkExistance != null)
+            // 2. Basic Validations
+            if (termination.ApplicationDate > DateTime.Now.Date)
             {
+                ModelState.AddModelError("", "Application date must be today or earlier.");
+                return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+            }
 
-                ModelState.AddModelError("", "This employee already request the termination!!");
+            // Get fiscal year first
+            var fiscalYear = db.GLFiscalYears
+                .Where(x => x.DateFrom <= termination.ApplicationDate
+                         && x.DateTo >= termination.ApplicationDate)
+                .Select(x => new { x.DateFrom, x.DateTo })
+                .FirstOrDefault();
+
+            if (fiscalYear == null)
+            {
+                ModelState.AddModelError("", "No fiscal year found for the selected application date.");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
             }
-            if (termination.TerminationDate.Value.Date < termination.ApplicationDate.Date)
+
+            // Check if termination already exists in SAME fiscal year
+            bool exists = db.Terminations.Any(x =>
+                x.EmployeeId == termination.EmployeeId &&
+                x.TerminationId != termination.TerminationId &&
+                x.ApplicationDate >= fiscalYear.DateFrom &&
+                x.ApplicationDate <= fiscalYear.DateTo
+            );
+
+            // 3. Get Placement + Notice Period
+            var placement = db.Placements
+                .Where(x => x.EmployeeId == termination.EmployeeId && x.isCurrent)
+                .Select(x => new { x.ResponsibilityLevel })
+                .FirstOrDefault();
+
+            if (placement == null)
             {
-                ModelState.AddModelError("", "Please check the date, Applicaton date should be less than Termination Date!!");
+                ModelState.AddModelError("", "No active placement found.");
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
             }
-            else if (termination.ApplicationDate.Date > DateTime.Now.Date)
+
+            int noticeDays = db.TerminationSettings
+                .Where(x => x.IsActive && x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                .Select(x => (int?)x.NoticePeriodDays)
+                .FirstOrDefault() ?? 30; // default = 30 days
+
+            // 4. Termination Date Logic
+            if (string.IsNullOrWhiteSpace(termination.TerminationDateAm)&& termination.TerminationDate == null)
             {
-                ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
+                // Auto-calculate if not provided
+                termination.TerminationDate = termination.ApplicationDate.AddDays(noticeDays);
+            }
+            else
+            {
+                // Validate user input
+                if (termination.TerminationDate < termination.ApplicationDate)
+                {
+                    ModelState.AddModelError("", "Termination date must be after application date.");
+                    return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+                }
+            }
+
+            // Sync Ethiopic date
+            termination.TerminationDateAm = HrHelper.GetECDate(termination.TerminationDate.Value);
+
+            // 5. Business Rule (Minimum 30 days)
+            var diffDays = (termination.TerminationDate.Value - termination.ApplicationDate).TotalDays;
+
+            if (diffDays < 30 && !termination.IsAgreeRetunSalary)
+            {
+                ModelState.AddModelError("", "Less than 30 days requires salary compensation.");
+                termination.Remark = "Notice period less than 30 days.";
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
             }
-            var diff = (termination.TerminationDate.Value - termination.ApplicationDate).TotalDays;
-            if (diff < 30 && !termination.IsAgreeRetunSalary)
+
+            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+
+            if (termination.IsEarlyRetirement && employee != null)
             {
-                ModelState.AddModelError("", "Your termination request date length is less than 30. You need to return one month salary to finance!!");
-                termination.Remark = "The Date Length is less than 30.";
-                return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+                var age = DateTime.Now.Year - employee.DateOfBirth.Year;
+
+                if (employee.DateOfBirth > DateTime.Now.AddYears(-age))
+                {
+                    age--;
+                }
+
+                if (age < 55)
+                {
+                    ModelState.AddModelError("", "Employee is not eligible for early retirement before age 55.");
+                    return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
+
+                }
             }
             if (ModelState.IsValid)
             {
 
-                var employee = db.Person_Employee.Find(termination.EmployeeId);
                 var entity = new Core.Domain.HRM.EmployeeDetail.Termination
                 {
                     TerminationId = termination.TerminationId,
@@ -296,6 +462,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     ModifiedBy = User.Identity.Name,
                     OrgBranchName = termination.OrgBranchName,
                     IsForOther = termination.IsForOther,
+                    IsEarlyRetirement = termination.IsEarlyRetirement,
+
                 };
                 db.Terminations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -322,6 +490,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 return Json(new[] { termination }.ToDataSourceResult(request, ModelState));
 
             }
+
             if (ModelState.IsValid)
                {
              
@@ -344,6 +513,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         ModifiedBy = termination.ModifiedBy,
                         OrgBranchName = termination.OrgBranchName,
                         IsForOther = termination.IsForOther,
+                        IsEarlyRetirement = termination.IsEarlyRetirement,
+
                     };
 
                     #region delete log
@@ -517,6 +688,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             db.RequestesStatus.Add(requestStatus);
             db.Entry(termination).State = EntityState.Modified;
             db.SaveChanges();
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var headId = EmployeeHelper.GetHeadId(empId);
+            if (headId != 0)
+            {
+                NotifModels notif = new NotifModels
+                {
+                    UserId = UserInformationHelper.GetEmployeeUserId(headId),
+                    Title = "Termination Request",
+                    Message = $"{User.Identity.Name} has submitted a Employee Transfer Requests that requires your approval.",
+                    URL = "~/HRM/TerminationRequestes"
+                };
+
+                Notify.NotifyUser(notif);
+            }
             return Json(new { Message = "Request successfully sent for approval.", Status = "Success" }, JsonRequestBehavior.AllowGet);
         }
 

@@ -7,133 +7,364 @@
 
     var recordKeyItems = Enum.GetValues(typeof(ExceedERP.Core.Domain.HRM.Templates.RecordKeyType))
         .Cast<Enum>()
-        .Select(e => new SelectListItem
-        {
-            Text = "-" + e.ToString() + "-",
-            Value = e.ToString()
-        });
+        .Select(e => e.ToString())
+        .OrderBy(e => e)
+        .ToList();
 }
 
-<legend>@Resources.Edit_Templates</legend>
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <!-- 🔵 Top row with dropdown on right half -->
-    <div class="row mb-3">
-        <div class="col-md-6 col-md-offset-6 text-right">
-            @Html.DropDownList("RecordKeyDropdown", recordKeyItems, "Use those Replaceable Keys", new { @class = "form-control d-inline-block", style = "width:auto;" })
+<div class="template-page">
+    <div class="template-page-header">
+        <div>
+            <h3><i class="fa fa-file-alt"></i> @Resources.Edit_Templates</h3>
+            <p>Design a document template for <strong>Telerik reports</strong> and printable <strong>HTML letters</strong>. Insert replaceable keys and they'll be substituted with real employee/record data when the template is printed.</p>
         </div>
+        @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index", null, new { @class = "btn btn-outline-secondary" })
     </div>
 
-    <div class="form">
-        <div class="row">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.TemplateId)
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.TemplateId)
 
-            <!-- Template Type (half width) -->
-            <div class="col-md-3">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TemplateType, htmlAttributes: new { @class = "control-label" })
-                    @Html.EnumDropDownListFor(model => model.TemplateType, htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+        <div class="template-meta-card">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TemplateType, htmlAttributes: new { @class = "control-label" })
+                        @Html.EnumDropDownListFor(model => model.TemplateType, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+                    </div>
                 </div>
-            </div> 
-            <!-- Template Type (half width) -->
-            <div class="col-md-3">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TemplateTypeSettingId, htmlAttributes: new { @class = "control-label" })
-
-                    @( Html.Kendo().DropDownListFor(m => m.TemplateTypeSettingId)
-
-                                 .OptionLabel(Resources.Select)
-                                 .DataTextField("TemplateType")
-                                 .DataValueField("TemplateTypeSettingId")
-                                 .Filter("contains")
-                                     .DataSource(dataSource =>
-                                      {
-                                          dataSource.Read(read => read.Action("GetTeplateType", "Templates", new { area = "HRM" }).Data("sendForgery"))
-                                         .ServerFiltering(false);
-                                      })
-                                         .ValuePrimitive(true)
-                    )
-
-                    @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TemplateTypeSettingId, htmlAttributes: new { @class = "control-label" })
+                        @( Html.Kendo().DropDownListFor(m => m.TemplateTypeSettingId)
+                                             .OptionLabel(Resources.Select)
+                                             .DataTextField("TemplateType")
+                                             .DataValueField("TemplateTypeSettingId")
+                                             .Filter("contains")
+                                                 .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetTeplateType", "Templates", new { area = "HRM" }).Data("sendForgery"))
+                                                     .ServerFiltering(false);
+                                                  })
+                                                     .ValuePrimitive(true)
+                        )
+                        @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+                    </div>
                 </div>
-            </div>
-
-            <!-- Title (half width) -->
-            <div class="col-md-6">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" })
-                    @Html.TextBoxFor(model => model.Title, htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" })
+                        @Html.TextBoxFor(model => model.Title, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Document (full width) -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Document, htmlAttributes: new { @class = "control-label" })
-                    <textarea name="Document" id="Document" class="form-control document-textarea" rows="20">@Model.Document</textarea>
-                    @Html.ValidationMessageFor(model => model.Document, "", new { @class = "text-danger" })
+        <div class="row template-editor-row">
+            <div class="col-md-8">
+                <div class="template-section-card">
+                    <h5><i class="fa fa-edit"></i> Document Content @if (!string.IsNullOrEmpty(ViewBag.WaterMarkUrl as string)) { <span class="template-watermark-badge" title="The company watermark shows faintly behind your text, matching the printed output"><i class="fa fa-tint"></i> Watermark preview on</span> }</h5>
+                    <div class="form-group">
+                        @(Html.Kendo().EditorFor(model => model.Document)
+                                     .Name("Document")
+                                     .HtmlAttributes(new { style = "width:100%" })
+                                     .Tools(tools => tools
+                                                     .Clear()
+                                                     .FontName(font => font
+                                                         .Add("Nyala", "Nyala")
+                                                         .Add("Abyssinica SIL", "Abyssinica SIL")
+                                                         .Add("Times New Roman", "Times New Roman")
+                                                         .Add("Calibri", "Calibri")
+                                                         .Add("Arial", "Arial")
+                                                         .Add("Tahoma", "Tahoma")
+                                                         .Add("Verdana", "Verdana")
+                                                         .Add("Ebrima", "Ebrima")
+                                                         .Add("Segoe UI", "Segoe UI")
+                                                     )
+                                                     .FontSize()
+                                                     .Formatting()
+                                                     .Bold()
+                                                     .Italic()
+                                                     .Underline()
+                                                     .Strikethrough()
+                                                     .SubScript()
+                                                     .SuperScript()
+                                                     .BackColor()
+                                                     .CleanFormatting()
+                                                     .JustifyLeft()
+                                                     .JustifyCenter()
+                                                     .JustifyRight()
+                                                     .JustifyFull()
+                                                     .InsertUnorderedList()
+                                                     .InsertOrderedList()
+                                                     .Outdent()
+                                                     .Indent()
+                                                     .TableEditing()
+                                                     .CreateLink()
+                                                     .Unlink()
+                                                     .ViewHtml()
+                            )
+                        )
+                        @Html.ValidationMessageFor(model => model.Document, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="template-keys-card">
+                    <h5><i class="fa fa-key"></i> Replaceable Keys</h5>
+                    <input type="text" id="keySearch" class="form-control form-control-sm" placeholder="Search keys..." />
+                    <div class="key-chip-list" id="keyChipList">
+                        @foreach (var key in recordKeyItems)
+                        {
+                            <span class="key-chip" data-key="@key" title="Click to insert -@key-">-@key-</span>
+                        }
+                    </div>
+                    <small class="text-muted"><i class="fa fa-info-circle"></i> Click a key to insert it at the cursor position in the editor.</small>
+                    <div class="key-insert-toast" id="keyInsertToast"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Submit -->
-        <div class="form-group">
-            <div class="col-md-12 text-right">
-                <input type="submit" value="@Resources.Button_Submit" class="btn btn-primary" />
-            </div>
+        <div class="template-actions-footer">
+            @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index", null, new { @class = "btn btn-light" })
+            <input type="submit" value="@Resources.Button_Submit" class="btn btn-primary" />
         </div>
-    </div>
-}
-
-<div>
-    @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index", null, new { @class = "btn btn-link" })
+    }
 </div>
 
-<!-- 🔸 Insert Key at Cursor -->
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-        var dropdown = document.getElementById("RecordKeyDropdown");
-        var textarea = document.getElementById("Document");
-
-        dropdown.addEventListener("change", function () {
-            var selectedValue = dropdown.options[dropdown.selectedIndex].value;
-
-            if (selectedValue && textarea) {
-                var insertText = "-" + selectedValue + "-";
-
-                var start = textarea.selectionStart;
-                var end = textarea.selectionEnd;
-                var text = textarea.value;
-
-                // Insert text at cursor position
-                textarea.value = text.substring(0, start) + insertText + text.substring(end);
-                textarea.focus();
-                textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
-            }
-        });
-    });
-</script>
-
-<!-- 🔸 Style -->
 <style>
- 
+    .template-page {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 
-    .document-textarea {
-        width: 100% !important;
-        min-width: 100% !important;
-        max-width: 100% !important;
-        resize: vertical;
+    .template-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 18px;
+    }
+
+        .template-page-header h3 {
+            margin: 0 0 4px 0;
+            color: #1e293b;
+        }
+
+        .template-page-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 13px;
+            max-width: 640px;
+        }
+
+    .template-meta-card,
+    .template-section-card,
+    .template-keys-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    }
+
+    .template-editor-row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .template-section-card h5,
+    .template-keys-card h5 {
+        margin-top: 0;
+        margin-bottom: 12px;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .template-watermark-badge {
+        float: right;
+        font-size: 11px;
+        font-weight: 600;
+        color: #0e7490;
+        background: #ecfeff;
+        border: 1px solid #a5f3fc;
+        border-radius: 20px;
+        padding: 3px 10px;
+    }
+
+    .key-chip-list {
+        max-height: 420px;
+        overflow-y: auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 4px 0 10px 0;
+        margin-top: 10px;
+    }
+
+    .key-chip {
+        cursor: pointer;
+        user-select: none;
+        background: #eef2ff;
+        color: #3730a3;
+        border: 1px solid #c7d2fe;
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease;
+    }
+
+        .key-chip:hover {
+            background: #4f46e5;
+            color: #fff;
+            border-color: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .key-chip.is-hidden {
+            display: none;
+        }
+
+    .key-insert-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #1e293b;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease;
+        z-index: 2000;
+    }
+
+        .key-insert-toast.show {
+            opacity: 1;
+        }
+
+    .template-actions-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 14px 0;
+        border-top: 1px solid #e2e8f0;
     }
 
     .form-group {
         margin-bottom: 20px;
     }
+
+    :root {
+        --document-editor-height: 70vh;
+    }
+
+    /* Kendo Editor renders as <table class="k-editor"> > <td class="k-editable-area"> > iframe/textarea.k-content */
+    .k-editor {
+        width: 100% !important;
+        height: var(--document-editor-height) !important;
+        min-height: 260px;
+    }
+
+    .k-editor .k-editable-area .k-content {
+        width: 100% !important;
+        height: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* Tablets */
+    @@media (max-width: 991px) {
+        :root {
+            --document-editor-height: 55vh;
+        }
+    }
+
+    /* Mobile phones */
+    @@media (max-width: 575px) {
+        :root {
+            --document-editor-height: 45vh;
+        }
+
+        .template-editor-row {
+            flex-direction: column-reverse;
+        }
+
+        .key-chip-list {
+            max-height: 220px;
+        }
+    }
+
+    /* Ensure Kendo Editor iframe body inherits Ge'ez fonts */
+    .k-editor-content body {
+        font-family: 'Nyala', 'Abyssinica SIL', 'Segoe UI', Arial, sans-serif !important;
+        font-size: 15px;
+    }
 </style>
+
+<!-- Insert Key at Cursor -->
+<script type="text/javascript">
+    var templateWaterMarkUrl = @Html.Raw(!string.IsNullOrEmpty(ViewBag.WaterMarkUrl as string) ? "\"" + ViewBag.WaterMarkUrl + "\"" : "null");
+
+    function applyDocumentEditorWatermark() {
+        if (!templateWaterMarkUrl) return;
+        var editor = $("#Document").data("kendoEditor");
+        if (!editor) return;
+        var doc = editor.document;
+        if (!doc || !doc.body || $(doc.body).find("#docWatermark").length) return;
+
+        $(doc.body).css("position", "relative");
+        var img = doc.createElement("img");
+        img.id = "docWatermark";
+        img.src = templateWaterMarkUrl;
+        img.style.cssText = "position:absolute; top:120px; left:50%; transform:translateX(-50%); width:260px; opacity:0.09; pointer-events:none; z-index:-1;";
+        doc.body.insertBefore(img, doc.body.firstChild);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        applyDocumentEditorWatermark();
+
+        function showToast(text) {
+            var toast = document.getElementById("keyInsertToast");
+            toast.textContent = text;
+            toast.classList.add("show");
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(function () { toast.classList.remove("show"); }, 1400);
+        }
+
+        function insertKey(key) {
+            var editor = $("#Document").data("kendoEditor");
+            if (editor) {
+                editor.exec("inserthtml", { value: "-" + key + "-" });
+                editor.focus();
+                showToast("Inserted -" + key + "-");
+            }
+        }
+
+        document.querySelectorAll(".key-chip").forEach(function (chip) {
+            chip.addEventListener("click", function () {
+                insertKey(chip.getAttribute("data-key"));
+            });
+        });
+
+        var search = document.getElementById("keySearch");
+        search.addEventListener("input", function () {
+            var term = search.value.trim().toLowerCase();
+            document.querySelectorAll(".key-chip").forEach(function (chip) {
+                var match = chip.getAttribute("data-key").toLowerCase().indexOf(term) !== -1;
+                chip.classList.toggle("is-hidden", !match);
+            });
+        });
+    });
+</script>

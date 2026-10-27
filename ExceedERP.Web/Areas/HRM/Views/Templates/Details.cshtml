@@ -2,43 +2,136 @@
 @model ExceedERP.Core.Domain.HRM.Templates.Template
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = Resources.Details;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@Resources.Details</h2>
+<div class="template-page">
+    <div class="template-page-header">
+        <div>
+            <h3><i class="fa fa-file-alt"></i> @Resources.Details</h3>
+            <p>Preview of a saved <strong>@Resources.Templates</strong> document, exactly as it will render in Telerik reports and printable HTML letters.</p>
+        </div>
+        <div>
+            @Html.ActionLink(Resources.ActionButton_Edit, "Edit", new { id = Model.TemplateId }, new { @class = "btn btn-outline-secondary" })
+            @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index", null, new { @class = "btn btn-outline-secondary" })
+        </div>
+    </div>
 
-<div>
-    <h4>@Resources.Templates</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.TempOne)
-        </dt>
+    <div class="template-meta-card">
+        <div class="row">
+            <div class="col-md-4">
+                <label class="template-detail-label">@Html.DisplayNameFor(model => model.TemplateType)</label>
+                <div class="template-detail-value">@Html.DisplayFor(model => model.TemplateType)</div>
+            </div>
+            <div class="col-md-4">
+                <label class="template-detail-label">@Html.DisplayNameFor(model => model.Title)</label>
+                <div class="template-detail-value">@Html.DisplayFor(model => model.Title)</div>
+            </div>
+            <div class="col-md-4">
+                <label class="template-detail-label">@Html.DisplayNameFor(model => model.TempOne)</label>
+                <div class="template-detail-value">@Html.DisplayFor(model => model.TempOne)</div>
+            </div>
+        </div>
+    </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.TempOne)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TemplateType)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TemplateType)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Document)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Document)
-        </dd>
-
-    </dl>
+    <div class="template-section-card">
+        <h5><i class="fa fa-eye"></i> Document Preview</h5>
+        <div class="template-document-preview">
+            <div style="position: relative; z-index: 1;">
+            @Html.Raw(HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(Model.Document)))
+            </div>
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink(Resources.ActionButton_Edit, "Edit", new { id = Model.TemplateId }) |
-    @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index")
-</p>
+
+<style>
+    .template-page {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .template-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 18px;
+    }
+
+        .template-page-header h3 {
+            margin: 0 0 4px 0;
+            color: #1e293b;
+        }
+
+        .template-page-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 13px;
+            max-width: 640px;
+        }
+
+    .template-meta-card,
+    .template-section-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    }
+
+    .template-section-card h5 {
+        margin-top: 0;
+        margin-bottom: 12px;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .template-detail-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #94a3b8;
+        margin-bottom: 4px;
+    }
+
+    .template-detail-value {
+        font-size: 14px;
+        color: #1e293b;
+        font-weight: 600;
+        word-wrap: break-word;
+    }
+
+    .template-document-preview {
+        border: 1px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 16px;
+        background: #f8fafc;
+        white-space: pre-wrap;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .template-document-preview::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 260px;
+            height: 260px;
+            background-image: url('@ViewBag.WaterMarkUrl');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.09;
+            pointer-events: none;
+        }
+</style>

@@ -3,11 +3,12 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+
 }
 <legend>@Resources.NavigatorLeave_Leave</legend>
-
 @(Html.Kendo().Grid<Leave>()
-              .Name("Leavegrid")
+      .Name("Leavegrid")
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(150);
@@ -15,9 +16,20 @@
           columns.Bound(c => c.LeaveType).EditorTemplateName("Enum").Width( 120);
           columns.Bound(c => c.Amount).Width( 90);
           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Filterable(g => g.Search(true).Multi(true)).EditorTemplateName("GLPeriodSelector").Width(80);
-          columns.Bound(c => c.FromAmharic).Width(120);
-          columns.Bound(c => c.ToAmharic).Width( 120);
-          columns.Bound(c => c.Day).Width(80);
+
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(200);
+              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(200);
+          }
+          else
+          {
+              columns.Bound(c => c.From).Width(80);
+              columns.Bound(c => c.To).Width(80);
+          }
+          //columns.Bound(c => c.FromAmharic).Width(120);
+          //columns.Bound(c => c.ToAmharic).Width( 120);
+          columns.Bound(c => c.Day).Width(120);
           //columns.Bound(c => c.MorningOrAfternoon).Width( 100);
           //columns.Bound(c => c.After).Width( 100);
           //columns.Bound(c => c.Remark).Width( 100);
@@ -40,36 +52,37 @@
               //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           }
       })
-                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveTaken").Window(window => { window.Title(Resources.NavigatorLeave_Leave); window.Scrollable(false); }))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveTaken").Window(window => { window.Title(Resources.NavigatorLeave_Leave); window.Scrollable(false); }))
           .Scrollable(h => h.Height(500))
-            
-                      .Sortable(sortable =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+
+          })
           //.Events(x => x.Edit("onGridEdit(e)")                      )
           .Filterable()
-               .Events(x =>
-               {
-                   x.Edit("GetDate");
-                   x.Save("GetDate");
-               })
-             .Pageable(pageable => pageable
+          .Events(x =>
+          {
+              x.Edit("GetDate");
+              x.Save("GetDate");
+
+          })
+          .Pageable(pageable => pageable
                                         .Input(true)
                                         .Numeric(false)
                                         .Refresh(true)
                                         .PageSizes(true)
                                         .ButtonCount(5))
       .DataSource(dataSource => dataSource
-          .Ajax()
+              .Ajax()
               .Sort(sort => sort.Add("DateCreated").Descending())
-               .Events(events =>
-               {
+              .Events(events =>
+              {
 
-                   events.Error("error_handler(\"Leavegrid\")");
-                   events.RequestStart("onRequestStart(\"Leavegrid\")");
-                   events.RequestEnd("onRequestEnd(\"Leavegrid\")");
-               })
+                  events.Error("error_handler(\"Leavegrid\")");
+                  events.RequestStart("onRequestStart(\"Leavegrid\")");
+                  events.RequestEnd("onRequestEnd(\"Leavegrid\")");
+              })
 
           .Model(model =>
           {
@@ -79,10 +92,10 @@
               model.Field(p => p.OrgName).Editable(false);
               model.Field(p => p.Amount).Editable(false);
           })
-                  .Read(read => read.Action("Leaves_Read", "Leave"))
-                  .Create(create => create.Action("Leaves_Create", "Leave"))
-          .Update(update => update.Action("Leaves_Update", "Leave"))
-          .Destroy(destroy => destroy.Action("Leaves_Destroy", "Leave"))
+                  .Read(read => read.Action("Leaves_Read", "Leave").Data("sendForgery"))
+                  .Create(create => create.Action("Leaves_Create", "Leave").Data("sendForgery"))
+          .Update(update => update.Action("Leaves_Update", "Leave").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Leaves_Destroy", "Leave").Data("sendForgery"))
       )
 )
 

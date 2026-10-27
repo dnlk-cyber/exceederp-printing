@@ -5,10 +5,10 @@
 }
 <Legend>@Resources.NavigatorPayroll_Loan</Legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.Loan>()
-          .Name("Loangrid")
+      .Name("Loangrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("ListOfEmployee").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
           columns.Bound(c => c.LoanAmount).Width (110);
           columns.Bound(c => c.Months).Width (100);
@@ -17,6 +17,7 @@
           columns.Bound(c => c.Description).Visible(false);
           columns.Bound(c => c.JumpHoliday).ClientTemplate("<input type='checkbox'  disabled='true' value='#=JumpHoliday #' " + " # if (JumpHoliday) { #" + "checked='checked'" + "# } #" + " />").Width(130);
           columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Width(130);
+          columns.Bound(c => c.Remark).Width(100);
           columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
       .ToolBar(toolbar => {
@@ -38,7 +39,7 @@
           .ProxyURL(Url.Action("Pdf_Export_Save", "Loan"))
       )
           .Scrollable(h => h.Height(500))
-         
+
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);
@@ -52,6 +53,7 @@
                                         .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+           .Sort(sort => sort.Add("LoanId").Descending())
                .Events(events =>
                {
                    events.Error("error_handler(\"Loangrid\")");
@@ -65,10 +67,10 @@
               model.Field(p => p.MonthlyAmount).Editable(false);
               model.Field(p => p.Balance).Editable(false);
           })
-          .Read(read => read.Action("Loans_Read", "Loan"))
-          .Create(create => create.Action("Loans_Create", "Loan"))
-          .Update(update => update.Action("Loans_Update", "Loan"))
-          .Destroy(destroy => destroy.Action("Loans_Destroy", "Loan"))
+          .Read(read => read.Action("Loans_Read", "Loan").Data("sendForgery"))
+          .Create(create => create.Action("Loans_Create", "Loan").Data("sendForgery"))
+          .Update(update => update.Action("Loans_Update", "Loan").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Loans_Destroy", "Loan").Data("sendForgery"))
       )
 )
 <style type="text/css">
@@ -111,6 +113,12 @@
     //    }
 
     //}
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
     function sync_handler(e) {
         this.read();

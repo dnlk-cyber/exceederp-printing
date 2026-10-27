@@ -134,7 +134,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     foreach (var e in empOtherEx)
                     {
                         otherexplist = new OtherEmployeeExpriance();
-                        jobTitles.TryGetValue(e.JobTitleId , out var jt);
+                        jobTitles.TryGetValue(e.LookupId??0 , out var jt);
 
 
                         otherexplist.From = datePreference ? e?.FromExAmharic

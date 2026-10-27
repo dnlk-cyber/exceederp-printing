@@ -37,7 +37,7 @@
                           .ServerFiltering(true)
                           .ServerPaging(true)
                           .Type("aspnetmvc-ajax")
-                          .Transport(transport => transport.Read(r => r.Action("GetEmployees", "HRMDataProvider", new { area = "HRM" })))
+                          .Transport(transport => transport.Read(r => r.Action("GetEmployees", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery")))
                           .Schema(schema =>
                           {
                               schema.Data("Data")
@@ -138,7 +138,7 @@
                       .OptionLabel(Resources.Select)
                                         .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                                  dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                         .ServerFiltering(false);
                               })
                                       .DataTextField("Name")

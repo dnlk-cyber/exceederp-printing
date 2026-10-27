@@ -121,6 +121,10 @@
     <Compile Include="Migrations\202610231328538_BudgetUpdatesMigration.Designer.cs">
       <DependentUpon>202610231328538_BudgetUpdatesMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610270924174_LeaverAndTermniationUpdateMigration.cs" />
+    <Compile Include="Migrations\202610270924174_LeaverAndTermniationUpdateMigration.Designer.cs">
+      <DependentUpon>202610270924174_LeaverAndTermniationUpdateMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -163,6 +167,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610231328538_BudgetUpdatesMigration.resx">
       <DependentUpon>202610231328538_BudgetUpdatesMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610270924174_LeaverAndTermniationUpdateMigration.resx">
+      <DependentUpon>202610270924174_LeaverAndTermniationUpdateMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

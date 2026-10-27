@@ -21,90 +21,21 @@ using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Core.Domain.HRM.Payroll.Vm;
 using ExceedERP.Core.Domain.Archive;
-using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Insurance;
 using System.Data.Entity;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Core.Domain.Finance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {
     [Authorize]
-    public class HRMDataProviderController : Controller
+    public class HRMDataProviderController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
-        //new
         private HRMInputs inputs = new HRMInputs();
-
-        public JsonResult GetAllDepartmentsForEvalutionCriteria()
-        {
-            var orgIds = db.MeasurementDefinitions.Where(x => x.OrgStuructureId != null || x.OrgStuructureId != 0).Select(x => x.OrgStuructureId);
-            var departments = db.MainCompanyStructures
-                                            .Where(x => orgIds.Contains(x.OrgStructureId))
-                                            .Where(x => x.IsActive).ToList();
-            return Json(departments.Select(p => new
-            {
-                OrgStructureId = p.OrgStructureId,
-                Name = p.Name
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult GetActiveEmployeesForDepartmentDelegation()
-        {
-            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
-            subordinates.Add(id);
-            var list = db.Person_Employee
-                                .Where(x => subordinates.Contains(x.EmployeeId))
-                                .Where(x => x.IsActive).ToList();
-            return Json(list.Select(p => new
-            {
-                EmployeeId = p.EmployeeId,
-                FullNameEnglish = p.EmployeeCode + " " + p.FullNameaEnglish,
-                FullNameAmharic = p.EmployeeCode + " " + p.FullNameAmharic
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetOneDepartmentEmployee()
-        {
-            // Get the employee ID of the current user
-            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-            // Get the list of subordinates for the current user
-            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
-            var employees = db.Person_Employee.Where(x => x.IsActive && subordinates.Contains(x.EmployeeId) /*&& x.EmployeeId != id*/)
-               .Select(p => new
-               {
-                   EmployeeId = p.EmployeeId,
-                   FullNameEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
-               })
-               .ToList();
-            return Json(employees, JsonRequestBehavior.AllowGet);
-
-            // Return the list of employees as JSON
-
-        }
-        public JsonResult GetClearanceType()
-        {
-            var oldJobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.CLEARANCE_TYPE).ToList();
-
-            return Json(oldJobTitle.Select(p => new
-            {
-                LookupId = p.LookupId,
-                Description = p.Description,
-            }), JsonRequestBehavior.AllowGet);
-        }
-       
-        public JsonResult GetFiscalYearForPerformance()
-        {
-            var fiscalYear = db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
-
-            return Json(fiscalYear.Select(p =>
-            new
-            {
-                GlFiscalYearId = p.GlFiscalYearId,
-                Name = p.Name
-
-            }), JsonRequestBehavior.AllowGet);
-        }
         public JsonResult GetEmployeeFullName(int id)
         {
             // Find the current placement of the employee with the given ID
@@ -129,7 +60,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             // Return the formatted data as JSON
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
-
         public ActionResult GetNextApprover(string id)
         {
             ViewBag.id = id;
@@ -142,9 +72,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
             // Get a list of current head employees excluding the given employee and the current approver
             var employeeIds = db.Placements
-                .Where(x => x.EmployeeId != id
-                             && x.isCurrent
-                             && x.IsHead
+                .Where(x => x.EmployeeId != id 
+                             && x.isCurrent 
+                             && x.IsHead 
                              && x.EmployeeId != nextApproveId)
                 .Select(x => x.EmployeeId);
 
@@ -163,17 +93,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             // Return the formatted data as JSON
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetNextApproverListCopy(int id)
         {
             var NextApproveId = db.Placements.FirstOrDefault(x => x.EmployeeId == id)?.HeadId;
-            var employeeIds = db.Placements.Where(x => x.EmployeeId != id && x.isCurrent && x.IsHead && x.EmployeeId != NextApproveId).Select(x => x.EmployeeId);
+            var employeeIds = db.Placements.Where(x => x.EmployeeId != id && x.isCurrent&&x.IsHead&&x.EmployeeId != NextApproveId).Select(x=>x.EmployeeId);
             var employees = db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
-
+           
             return Json(employees.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
-                FullName = p.EmployeeCode + "- " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+                FullName = p.EmployeeCode + "- " + p.FirstNameEnglish + " "+p.MiddleNameEnglish+" "+p.LastNameEnglish
             }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult UpdateNextApprover(int currentEmployeeId, int nextApproverEmployeeId)
@@ -225,148 +154,174 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
         }
 
-
-        public JsonResult GetEmployeeSForPerformanceEvaluationByBranch(string branchId, string text)
+        public JsonResult GetClearanceType()
         {
-            // Get the employee ID of the current user
-            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var oldJobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.CLEARANCE_TYPE ).ToList();
 
-            // Get the list of subordinates for the current user
-            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
-
-            // If a branch ID is provided, filter subordinates by branch
-            if (!string.IsNullOrEmpty(branchId) && int.TryParse(branchId, out int branchIdParsed))
+            return Json(oldJobTitle.Select(p => new
             {
-                subordinates = EmployeeHelper.GetSubordinates_FilteredByHeadAndBranch(id, branchIdParsed);
-            }
-
-            // Check if self-evaluation is enabled in the configuration
-            var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == PerformanceSelfEvaluation.Enable_Self_Evaluation.ToString());
-
-            // Remove the current user from the list of subordinates if self-evaluation is enabled
-            if (config != null)
-            {
-                subordinates.Remove(id);
-            }
-
-            // Retrieve the list of active employees who are subordinates and not the current user
-
-            if (!string.IsNullOrEmpty(text))
-            {
-
-                var employees = db.Person_Employee.Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
-                        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
-                          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
-                            x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
-                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
-                              (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
-                    ).Where(x => x.IsActive && subordinates.Contains(x.EmployeeId) && x.EmployeeId != id)
-                .Select(p => new
-                {
-                    EmployeeId = p.EmployeeId,
-                    FullNameEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
-                })
-                .ToList();
-                return Json(employees, JsonRequestBehavior.AllowGet);
-
-            }
-            else
-            {
-                var employees = db.Person_Employee.Where(x => x.IsActive && subordinates.Contains(x.EmployeeId) && x.EmployeeId != id)
-               .Select(p => new
-               {
-                   EmployeeId = p.EmployeeId,
-                   FullNameEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
-               })
-               .ToList();
-                return Json(employees, JsonRequestBehavior.AllowGet);
-            }
-            // Return the list of employees as JSON
-
-        }
-        public JsonResult GetDepartmentForManinDepartmentSettings()
-        {
-            var structures = db.MainCompanyStructures.Where(x => x.IsActive).AsQueryable();
-
-            return Json(structures.Select(p => new
-            {
-                OrgStructureId = p.OrgStructureId,
-                Name = p.Name
+                LookupId = p.LookupId,
+                Description = p.Description,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetAllHeadEmployeesForPlacement()
+
+        public JsonResult GetEmployeeStatus()
+        {
+            var employeeStatus = Enum.GetValues(typeof(EmployeeStatus))
+                                     .Cast<EmployeeStatus>()
+                                     .ToList();
+            // Manually add the default value (-1)
+            //employeeStatus.Insert(0, (EmployeeStatus)(-1));
+            return Json(employeeStatus.Select(p => new
+            {
+                Value = (int)p,
+                Text = p.ToString(),
+            }).OrderBy(x => x.Value), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetCriteriaCategory()
+        {
+            return Json(db.CriteriaCategories.Select(x => new { x.CriteriaCategoryId, x.Name }).ToList(), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetSelfEvaluationCriterias(string level)
+        {
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var lookupId = db.Lookups.Where(x => x.EvalutionType == EvaluationType.SelfEvaluation).Select(x => x.LookupId);
+            List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => lookupId.Contains(x.LookupId)).ToList();
+            if (level == "Global" || level == "1")
+            {
+                measurments = db.MeasurementDefinitions.Where(x => !x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
+            }
+            else if (level == "Department" || level == "2")
+            {
+                measurments = db.MeasurementDefinitions.Where(x => x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
+            }
+            var placement = db.Placements.Where(x => x.EmployeeId == empId&&x.isCurrent).OrderByDescending(x=>x.PlacementId).FirstOrDefault();
+            if (placement != null)
+            {
+                measurments = measurments
+                    .Where(x => x.Role == placement.ResponsibilityLevel)
+                    .ToList();
+
+            }
+            return Json(measurments.Select(p => new
+            {
+                MeasurementDefinitionId = p.MeasurementDefinitionId,
+                Name = p.EvaluationCriteria + " - " + GetSelfEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetMySelfForPerformanceEvaluation()
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var employeeIds = db.Placements.Where(x => x.isCurrent && x.IsHead/*&&x.EmployeeId !=id*/).Select(x => x.EmployeeId);
-            var employees = db.Person_Employee.Where(x => x.IsActive).Where(x => employeeIds.Contains(x.EmployeeId))
-                    .Select(x => new
-                    {
-                        EmployeeId = x.EmployeeId,
-                        EmployeeCode = x.EmployeeCode,
-                        FirstName = x.FirstName,
-                        MiddleName = x.MiddleName,
-                        LastName = x.LastName,
-                        FirstNameEnglish = x.FirstNameEnglish,
-                        MiddleNameEnglish = x.MiddleNameEnglish,
-                        LastNameEnglish = x.LastNameEnglish
-                    }).AsQueryable();
-
-
-
-
+            var employees = db.Person_Employee.Where(x =>x.EmployeeId == id).ToList();
             return Json(employees.Select(p => new
             {
-                HeadId = p.EmployeeId,
-                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
-                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetJobTitlesForTemppraryPlacement()
-        {
-            var orgs = db.JobTitleMapping.Where(x => x.IsActive).ToList();
-            List<Lookup> titleList = new List<Lookup>();
-            if (orgs.Any())
-            {
-                titleList = new List<Lookup>();
-                foreach (var title in orgs)
-                {
-                    var lookup = db.Lookups.Where(x => x.LookupId == title.LookupId).FirstOrDefault();
-                    if (!titleList.Contains(lookup))
-                    {
-                        titleList.Add(lookup);
-                    }
 
+        public JsonResult GetEmployeesFromPeertopeerForPerformanceEvaluation(string fiscalyear, string glperiod)
+        {
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            var peerevaluation = db.PeerToPeerPerformanceEvaluations.Where(x => x.EvaluatorId == id).Select(x => x.EmployeeId).ToList();
+            if (!string.IsNullOrEmpty(fiscalyear))
+            {
+                int.TryParse(fiscalyear, out int fiscalYearId);
+                peerevaluation = db.PeerToPeerPerformanceEvaluations
+                                        .Where(x => x.EvaluatorId == id
+                                        && x.PerformanceRequest.FiscalYearId == fiscalYearId).Select(x => x.EmployeeId).ToList();
+            }
+            if (!string.IsNullOrEmpty(glperiod))
+            {
+                int.TryParse(glperiod, out int periodId);
+                peerevaluation = db.PeerToPeerPerformanceEvaluations
+                                        .Where(x => x.EvaluatorId == id
+                                        && x.PerformanceRequest.PeriodId == periodId).Select(x => x.EmployeeId).ToList();
+            }
+            var employees = db.Person_Employee.Where(x => peerevaluation.Contains(x.EmployeeId) && x.EmployeeId != id).ToList();
+            return Json(employees.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetEmployeesFromInternalCustomerForPerformanceEvaluation(string fiscalyear, string glperiod)
+        {
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            IQueryable<PerformanceRequestPeriod> requestPeriods = db.PerformanceRequestPeriods;
+            if (int.TryParse(fiscalyear, out int fiscalYearId))
+            {
+                requestPeriods = requestPeriods.Where(x => x.FiscalYearId == fiscalYearId);
+            }
+
+            if (int.TryParse(glperiod, out int periodId))
+            {
+                requestPeriods = requestPeriods.Where(x => x.PeriodId == periodId);
+            }
+            HashSet<int> masterIds = new HashSet<int>(requestPeriods.Select(x => x.PerformanceRequestPeriodId));
+            HashSet<int> inturnalCustomerIds = new HashSet<int>(db.InternalCustomers.Where(x => x.EmployeeId == id && masterIds.Contains(x.InternalCustomerEvaluation.PerformanceRequestPeriodId)).Select(x=>x.InternalCustomerId));
+            var emplloyeeIds = db.InternalCustomerDetails.Where(x => inturnalCustomerIds.Contains(x.InternalCustomerId)).Select(x => x.TobeEvalutedEmployeeId);
+            var employees = db.Person_Employee.Where(x => emplloyeeIds.Contains(x.EmployeeId) && x.EmployeeId != id).ToList();
+            return Json(employees.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+            }), JsonRequestBehavior.AllowGet);
+
+            
+        }
+        public string GetSelfEvaluationTypeName(int lookupId)
+        {
+            var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == lookupId);
+            if (lookup != null)
+            {
+                return lookup.Description;
+            }
+            return "";
+        }
+        public JsonResult GetPeerTopeerEvaluationCriterias(string level,string empId)
+        {
+            var lookupId = db.Lookups.Where(x => x.EvalutionType == EvaluationType.PeerEvaluation).Select(x => x.LookupId);
+            List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => lookupId.Contains(x.LookupId)).ToList();
+            if (level == "Global" || level == "1")
+            {
+                measurments = db.MeasurementDefinitions.Where(x => !x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
+            }
+            else if (level == "Department" || level == "2")
+            {
+                measurments = db.MeasurementDefinitions.Where(x => x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
+            }
+            if (!string.IsNullOrEmpty(empId))
+            {
+                if (int.TryParse(empId, out int employeeId))
+                {
+                    var role = db.Placements
+                        .Where(x => x.EmployeeId == employeeId
+                                    && x.isCurrent)
+                        .Select(x => (ResponsibilityLevel?)x.ResponsibilityLevel)
+                        .FirstOrDefault();
+
+                    if (role.HasValue)
+                    {
+                        measurments = measurments.Where(x => x.Role == role.Value).ToList();
+                    }
                 }
             }
-            return Json(titleList.Select(p => new
+
+            return Json(measurments.Select(p => new
             {
-                LookupId = p.LookupId,
-                Description = p.Description
-            }), JsonRequestBehavior.AllowGet);
-
-
-        }
-        public JsonResult GetAllJobTitleForPerformances(int evaluationCriteriaId)
-        {
-            var maindepartment = db.MainCompanyEvalutionSettings.Where(x => x.MeasurementDefinitionId == evaluationCriteriaId && x.LookUpId != null);
-            HashSet<int> lookupIds = new HashSet<int>(maindepartment.Select(x => (int)x.LookUpId));
-
-            var structures = db.Lookups.Where(x => lookupIds.Contains(x.LookupId) && x.LookupType == LookUpTypes.JOB_TITLE).Where(x => x.IsActive).AsQueryable();
-
-            return Json(structures.Select(p => new
-            {
-                LookupId = p.LookupId,
-                Description = p.Description
+                MeasurementDefinitionId = p.MeasurementDefinitionId,
+                Name = p.EvaluationCriteria + " - " + GetEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
             }), JsonRequestBehavior.AllowGet);
         }
-
-        public JsonResult GetCorporateOrSectorEvaluationCriterias(string level, string text)
+        public JsonResult GetCorporateOrSectorEvaluationCriterias(string level,string text)
         {
-            var lookupIds = level == "6" ? db.Lookups.Where(x => x.EvalutionType == EvaluationType.Corporate_Result).Select(x => x.LookupId)
-                                      : level == "7" ? db.Lookups.Where(x => x.EvalutionType == EvaluationType.Sector_Result).Select(x => x.LookupId)
-                                      : level == "8" ? db.Lookups.Where(x => x.EvalutionType == EvaluationType.MainDepartmentLevel).Select(x => x.LookupId)
+            var lookupIds = level =="6"?db.Lookups.Where(x => x.EvalutionType == EvaluationType.Corporate_Result).Select(x => x.LookupId)
+                                      : level == "7" ? db.Lookups.Where(x =>  x.EvalutionType == EvaluationType.Sector_Result).Select(x => x.LookupId)
+                                      : level == "8"? db.Lookups.Where(x => x.EvalutionType == EvaluationType.MainDepartmentLevel).Select(x => x.LookupId)
                                       : db.Lookups.Where(x => x.EvalutionType == EvaluationType.Project_Manager).Select(x => x.LookupId);
-
+            
             List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => lookupIds.Contains(x.LookupId)).ToList();
             if (!string.IsNullOrEmpty(text) && measurments.Any())
             {
@@ -380,172 +335,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.EvaluationCriteria + " - " + GetEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetJobTitleForManPower(int BranchId)
-        {
-            var manPowerPlannings = db.JobTitleMapping.Where(x => x.BranchId == BranchId).ToList();
-
-            if (manPowerPlannings.Any())
-            {
-                var jobIds = manPowerPlannings.Select(x => x.LookupId).ToList();
-
-                var jobTitle = db.Lookups.Where(x => jobIds.Contains(x.LookupId) && x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).ToList();
-
-                return Json(jobTitle.Select(p => new
-                {
-                    LookupId = p.LookupId,
-                    Description = p.Description,
-                }), JsonRequestBehavior.AllowGet);
-            }
-            return null;
-        }
-        public JsonResult GetFisicalYearForRecruitmentAndManPower()
-        {
-            var periodList = db.GLFiscalYears.Where(x => x.DateFrom >= DateTime.Now || x.DateTo >= DateTime.Now).OrderByDescending(x => x.GlFiscalYearId).ToList();
-            var fisicalYear = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
-
-            return Json(periodList.Select(p => new
-            {
-                GlFiscalYearId = p.GlFiscalYearId,
-                Name = p.Name
-            }), JsonRequestBehavior.AllowGet);
-
-        }
-        public JsonResult GetAllWorkUnitForPerformances(int evaluationCriteriaId, string businessUnitId, string branchId, string text)
-        {
-            var orgstuctureLists = new List<MainCompanyStructure>();
-            var placements = db.Placements.Where(x => x.isCurrent).ToList();
-            if (!string.IsNullOrEmpty(branchId) && placements.Any())
-            {
-                int.TryParse(branchId, out int braId);
-                placements = placements.Where(x => x.BranchId == braId).ToList();
-            }
-            if (!string.IsNullOrEmpty(businessUnitId) && placements.Any())
-            {
-                int.TryParse(businessUnitId, out int busisId);
-                placements = placements.Where(x => x.BusinessUnitId == busisId).ToList();
-            }
-
-            var workUnitIds = placements.Select(x => x.OrgStructureId).Distinct();
-            var orgstuctures = db.MainCompanyEvalutionSettings.Where(x => x.MeasurementDefinitionId == evaluationCriteriaId && x.OrgStructureId != null);
-
-            HashSet<int> orgIds = new HashSet<int>(orgstuctures.Where(x => workUnitIds.Contains((int)x.OrgStructureId)).Select(x => (int)x.OrgStructureId));
-
-            //var structures = orgIds.Any()? db.MainCompanyStructures.Where(x=> orgIds.Contains(x.OrgStructureId)).Where(x => x.IsActive).ToList(): orgstuctureLists;
-            var structures = orgIds.Any() ? db.MainCompanyStructures.Where(x => orgIds.Contains(x.OrgStructureId)).Where(x => x.IsActive).ToList() : workUnitIds.Any() ? db.MainCompanyStructures.Where(x => workUnitIds.Contains(x.OrgStructureId)).ToList() : orgstuctureLists;
-
-            if (!string.IsNullOrEmpty(text) && structures.Any())
-            {
-
-                structures = structures.Where(x => x.IsActive).ToList().Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper().Contains(text.ToUpper())).ToList();
-                //if (ids.Any())
-                //{
-                //    structures = structures.Where(x => ids.Contains(x.OrgStructureId)).AsQueryable();
-                //    if(branchId != 0)
-                //    {
-                //       // var workUnitIds = db.JobTitleMapping.Where(x => x.IsActive && x.BranchId == branchId).Select(x => x.OrgStructureId);
-                //        if (structures.Any() && workUnitIds.Any())
-                //        {
-                //            structures = structures.Where(x => workUnitIds.Contains(x.OrgStructureId)).AsQueryable();
-
-                //        }
-                //    }
-                //}
-            }
-            if (structures.Any())
-            {
-                return Json(structures.Select(p => new
-                {
-                    OrgStructureId = p.OrgStructureId,
-                    Name = p.Name
-                }), JsonRequestBehavior.AllowGet);
-            }
-            return Json(orgstuctureLists, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult GetSelfEvaluationCriterias(string level)
-        {
-            var lookupId = db.Lookups.Where(x => x.EvalutionType == EvaluationType.SelfEvaluation).Select(x => x.LookupId);
-            List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => lookupId.Contains(x.LookupId)).ToList();
-            if (level == "Global" || level == "1")
-            {
-                measurments = db.MeasurementDefinitions.Where(x => !x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
-            }
-            else if (level == "Department" || level == "2")
-            {
-                measurments = db.MeasurementDefinitions.Where(x => x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
-            }
-            return Json(measurments.Select(p => new
-            {
-                MeasurementDefinitionId = p.MeasurementDefinitionId,
-                Name = p.EvaluationCriteria + " - " + GetSelfEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
-            }), JsonRequestBehavior.AllowGet);
-        }
-     
-
-        public JsonResult GetMySelfForPerformanceEvaluation()
-        {
-            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var employees = db.Person_Employee.Where(x => x.EmployeeId == id).ToList();
-            return Json(employees.Select(p => new
-            {
-                EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetEmployeesFromPeertopeerForPerformanceEvaluation()
-        {
-            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-            var peerevaluation = db.PeerToPeerPerformanceEvaluations.Where(x => x.EvaluatorId == id).Select(x => x.EmployeeId).ToList();
-            var employees = db.Person_Employee.Where(x => peerevaluation.Contains(x.EmployeeId) && x.EmployeeId != id).ToList();
-            return Json(employees.Select(p => new
-            {
-                EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetEmployeesFromInternalCustomerForPerformanceEvaluation()
-        {
-            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var inturnalCustomerId = db.InternalCustomers.Where(x => x.EmployeeId == id).Select(x => x.InternalCustomerId).Distinct().ToList();
-            var internalCustomerDetailId = db.InternalCustomerDetails.Where(x => inturnalCustomerId.Contains(x.InternalCustomerId)).Select(x => x.TobeEvalutedEmployeeId);
-            var employees = db.Person_Employee.Where(x => internalCustomerDetailId.Contains(x.EmployeeId) && x.EmployeeId != id).ToList();
-            return Json(employees.Select(p => new
-            {
-                EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
-            }), JsonRequestBehavior.AllowGet);
-        }
-       
-       
-        public string GetSelfEvaluationTypeName(int lookupId)
-        {
-            var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == lookupId);
-            if (lookup != null)
-            {
-                return lookup.Description;
-            }
-            return "";
-        }
-        public JsonResult GetPeerTopeerEvaluationCriterias(string level)
-        {
-            var lookupId = db.Lookups.Where(x => x.EvalutionType == EvaluationType.PeerEvaluation).Select(x => x.LookupId);
-            List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => lookupId.Contains(x.LookupId)).ToList();
-            if (level == "Global" || level == "1")
-            {
-                measurments = db.MeasurementDefinitions.Where(x => !x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
-            }
-            else if (level == "Department" || level == "2")
-            {
-                measurments = db.MeasurementDefinitions.Where(x => x.IsDepartmentLevel && lookupId.Contains(x.LookupId)).ToList();
-            }
-            return Json(measurments.Select(p => new
-            {
-                MeasurementDefinitionId = p.MeasurementDefinitionId,
-                Name = p.EvaluationCriteria + " - " + GetEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult InternalCustomerEvaluationCriterias(string level)
+        public JsonResult InternalCustomerEvaluationCriterias(string level,string empId)
         {
             var lookupId = db.Lookups.Where(x => x.EvalutionType == EvaluationType.InternalCustomer).Select(x => x.LookupId);
             List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => lookupId.Contains(x.LookupId) /*x.EvalutionType == EvaluationType.InternalCustomer*/).ToList();
@@ -557,13 +347,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             {
                 measurments = db.MeasurementDefinitions.Where(x => lookupId.Contains(x.LookupId) && x.IsDepartmentLevel /*&& x.EvalutionType == EvaluationType.InternalCustomer*/).ToList();
             }
+            if (!string.IsNullOrEmpty(empId))
+            {
+                if (int.TryParse(empId, out int employeeId))
+                {
+                    var placement = db.Placements.Where(x => x.EmployeeId == employeeId && x.isCurrent).OrderByDescending(x => x.PlacementId).FirstOrDefault();
+                    if (placement != null)
+                    {
+                        measurments = measurments
+                            .Where(x => x.Role == placement.ResponsibilityLevel)
+                            .ToList();
+
+                    }
+                }
+            }
             return Json(measurments.Select(p => new
             {
                 MeasurementDefinitionId = p.MeasurementDefinitionId,
                 Name = p.EvaluationCriteria + " - " + GetEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
             }), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetPayrollPeriods()
         {
 
@@ -576,7 +379,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Name
             }), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetLookUpdata()
         {
             return Json(db.Lookups.Where(x=>x.LookupType==LookUpTypes.ADDITION_TYPE).Select(p => new
@@ -585,7 +387,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Code=p.Description
             }), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetEmployeeTypes()
         {
             var data = db.EmployeeTypes.ToList();
@@ -595,39 +396,118 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 p.Name
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetCriteriaCategory()
+        public JsonResult GetEvaluationCriterias(string criteriaCategoryId, string level, string workUnit = null, string empId = null)
         {
-            return Json(db.CriteriaCategories.Select(x => new { x.CriteriaCategoryId, x.Name }).ToList(), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetEvaluationCriterias(int criteriaCategoryId, string level, string workUnit = null)
-        {
-            var lookupIds = db.Lookups.Where(x => x.EvalutionType == EvaluationType.SelfEvaluation
-                                                || x.EvalutionType == EvaluationType.PeerEvaluation
-                                                || x.EvalutionType == EvaluationType.InternalCustomer
-                                                || x.EvalutionType == EvaluationType.Sector_Result
-                                                || x.EvalutionType == EvaluationType.Corporate_Result
-                                                || x.EvalutionType == EvaluationType.MainDepartmentLevel
-                                                || x.EvalutionType == EvaluationType.Project_Manager
-                                                ).Select(x => x.LookupId).ToList();
-            List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => !lookupIds.Contains(x.LookupId) && x.CriteriaCategoryId == criteriaCategoryId).ToList();
+            // 1. Exclude specific evaluation types
+            var excludedLookupIds = db.Lookups
+                .Where(x =>
+                    x.EvalutionType == EvaluationType.SelfEvaluation ||
+                    x.EvalutionType == EvaluationType.PeerEvaluation ||
+                    x.EvalutionType == EvaluationType.InternalCustomer ||
+                    x.EvalutionType == EvaluationType.Sector_Result ||
+                    x.EvalutionType == EvaluationType.Corporate_Result ||
+                    x.EvalutionType == EvaluationType.MainDepartmentLevel ||
+                    x.EvalutionType == EvaluationType.Project_Manager)
+                .Select(x => x.LookupId);
+
+            // 2. Start with all relevant measurements (as IQueryable)
+            var query = db.MeasurementDefinitions
+                .Where(x => !excludedLookupIds.Contains(x.LookupId));
+
+            // 3. Filter by criteria category
+            if (int.TryParse(criteriaCategoryId, out int categoryId))
+            {
+                query = query.Where(x => x.CriteriaCategoryId == categoryId);
+            }
+
+            // 4. Filter by level (Global vs Department)
             if (level == "Global" || level == "1")
             {
-                measurments = measurments.Where(x => !x.IsDepartmentLevel).ToList();
+                query = query.Where(x => !x.IsDepartmentLevel);
             }
             else if (level == "Department" || level == "2")
             {
-                measurments = measurments.Where(x => x.IsDepartmentLevel).ToList();
-                if (!string.IsNullOrEmpty(workUnit) && int.TryParse(workUnit, out int orgId))
+                query = query.Where(x => x.IsDepartmentLevel);
+
+                if (int.TryParse(workUnit, out int orgId))
                 {
-                    measurments = measurments.Where(x => x.OrgStuructureId == orgId).ToList();
+                    query = query.Where(x => x.OrgStuructureId == orgId);
                 }
             }
-            return Json(measurments.Select(p => new
+
+            // 5. Filter by employee's responsibility level if provided
+            if (int.TryParse(empId, out int employeeId))
+            {
+                var role = db.Placements
+                    .Where(x => x.EmployeeId == employeeId
+                                &&x.isCurrent)
+                    .Select(x => (ResponsibilityLevel?)x.ResponsibilityLevel)
+                    .FirstOrDefault();
+
+                if (role.HasValue)
+                {
+                    query = query.Where(x => x.Role == role.Value);
+                }
+            }
+
+            // 6. Materialize and format the result
+            var result = query.ToList().Select(p => new
             {
                 MeasurementDefinitionId = p.MeasurementDefinitionId,
-                Name = p.EvaluationCriteria + " - " + GetEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
-            }), JsonRequestBehavior.AllowGet);
+                Name = $"{p.EvaluationCriteria} - {GetEvaluationTypeName(p.LookupId)} - {p.Role}"
+            });
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        //public JsonResult GetEvaluationCriterias(string criteriaCategoryId,string level,string workUnit=null,string empId=null)
+        //{
+        //    var lookupIds = db.Lookups.Where(x => x.EvalutionType == EvaluationType.SelfEvaluation 
+        //                                        || x.EvalutionType == EvaluationType.PeerEvaluation 
+        //                                        || x.EvalutionType == EvaluationType.InternalCustomer
+        //                                        || x.EvalutionType == EvaluationType.Sector_Result
+        //                                        || x.EvalutionType == EvaluationType.Corporate_Result
+        //                                        || x.EvalutionType == EvaluationType.MainDepartmentLevel
+        //                                        || x.EvalutionType == EvaluationType.Project_Manager
+        //                                        ).Select(x => x.LookupId).ToList();
+        //    List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x=>! lookupIds.Contains(x.LookupId)).ToList();
+        //    if (!string.IsNullOrEmpty(criteriaCategoryId) && int.TryParse(criteriaCategoryId, out int categoryId))
+        //    {
+        //        measurments = measurments.Where(x => x.CriteriaCategoryId == categoryId).ToList();
+        //    }
+        //    if (level == "Global" || level == "1")
+        //    {
+        //        measurments = measurments.Where(x => !x.IsDepartmentLevel).ToList();
+        //    }
+        //    else if (level == "Department" || level == "2")
+        //    {
+        //        measurments = measurments.Where(x => x.IsDepartmentLevel).ToList();
+        //        if(!string.IsNullOrEmpty(workUnit)&&int.TryParse(workUnit,out int orgId))
+        //        {
+        //            measurments = measurments.Where(x => x.OrgStuructureId == orgId).ToList();
+        //        }
+
+        //    }
+        //    if (!string.IsNullOrEmpty(empId))
+        //    {
+        //        if (int.TryParse(empId, out int employeeId))
+        //        {
+        //            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeId);
+        //            if (placement != null)
+        //            {
+        //                measurments = measurments
+        //                    .Where(x => x.Role == placement.ResponsibilityLevel)
+        //                    .ToList();
+
+        //            }
+        //        }
+        //    }
+        //    return Json(measurments.Select(p => new
+        //    {
+        //        MeasurementDefinitionId = p.MeasurementDefinitionId,
+        //        Name = p.EvaluationCriteria + " - " + GetEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
         public string GetEvaluationTypeName(int lookupId)
         {
             var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == lookupId);
@@ -637,7 +517,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
             return "";
         }
-
         public JsonResult GetOldandNewJobTitles()
         {
             var oldJobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.OLD_JOB_TITLE || x.LookupType == LookUpTypes.JOB_TITLE).ToList();
@@ -682,14 +561,108 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             return Json(listt.Select(x => x.g), JsonRequestBehavior.AllowGet);
 
         }
+        //public JsonResult GetAllEmployeesForPlacement(string text)
+        //{
+        //    List<EmployeeVm> list = new List<EmployeeVm>();
+
+        //    if (!String.IsNullOrWhiteSpace(text))
+        //    {
+        //        var employees = db.Person_Employee.Where(x=>x.IsActive)
+        //            .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+        //                x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+        //                  x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+        //                    x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+        //                     (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+        //                      (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
+        //            )
+        //            .Select(x => new EmployeeVm
+        //            {
+        //                EmployeeId = x.EmployeeId,
+        //                EmployeeCode = x.EmployeeCode,
+        //                FirstName = x.FirstName,
+        //                MiddleName = x.MiddleName,
+        //                LastName = x.LastName,
+        //                FirstNameEnglish = x.FirstNameEnglish,
+        //                MiddleNameEnglish = x.MiddleNameEnglish,
+        //                LastNameEnglish = x.LastNameEnglish
+        //            }).ToList();
+
+        //        list = employees;
+        //    }
+
+        //    return Json(list.Select(p => new
+        //    {
+        //        EmployeeId = p.EmployeeId,
+        //        FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+        //        FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
+        public JsonResult GetAllEmployeesProfile(string text, int? employeeId)
+        {
+            var query = db.Person_Employee.Where(x => x.IsActive);
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                text = text.ToUpper();
+                query = query.Where(x =>
+                    x.EmployeeCode.ToUpper().Contains(text) ||
+                    x.FirstNameEnglish.ToUpper().Contains(text) ||
+                    x.MiddleNameEnglish.ToUpper().Contains(text) ||
+                    x.LastNameEnglish.ToUpper().Contains(text) ||
+                    (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text) ||
+                    (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text)
+                );
+            }
+            else if (employeeId.HasValue)
+            {
+                query = query.Where(x => x.EmployeeId == employeeId.Value);
+            }
+            
+            var employees = query.Select(x => new
+            {
+                EmployeeId = x.EmployeeId,
+                FullNameaEnglish = x.EmployeeCode + " - " + x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish
+            }).ToList();
+
+            return Json(employees, JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetAllEmployeesForPlacement(string text)
         {
+            var query = db.Person_Employee.Where(x => x.IsActive);
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                text = text.ToUpper();
+
+                query = query.Where(x =>
+                    x.EmployeeCode.ToUpper().Contains(text) ||
+                    x.FirstNameEnglish.ToUpper().Contains(text) ||
+                    x.MiddleNameEnglish.ToUpper().Contains(text) ||
+                    x.LastNameEnglish.ToUpper().Contains(text) ||
+                    (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text) ||
+                    (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text)
+                );
+            }
+
+
+            var employees = query.Select(x => new
+            {
+                EmployeeId = x.EmployeeId,
+                FullNameaEnglish = x.EmployeeCode + " - " + x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish,
+                FullNameAmharic = x.EmployeeCode + " - " + x.FirstName + " " + x.MiddleName + " " + x.LastName
+            }).ToList();
+
+            return Json(employees, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAllEmployeesForPerformance(string text)
+        {
             List<EmployeeVm> list = new List<EmployeeVm>();
 
-            if (!String.IsNullOrWhiteSpace(text))
+            if (!string.IsNullOrWhiteSpace(text))
             {
-                var employees = db.Person_Employee.Where(x => x.IsActive)
+                var employees = db.Person_Employee
                     .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
                         x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
                           x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
@@ -719,13 +692,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetAllHeadEmployeesForPlacement()
+        {
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var employeeIds = db.Placements.Where(x => x.isCurrent && x.IsHead/*&&x.EmployeeId !=id*/).Select(x => x.EmployeeId);
+            var employees = db.Person_Employee.Where(x=>x.IsActive).Where(x => employeeIds.Contains(x.EmployeeId))
+                    .Select(x => new
+                    {
+                        EmployeeId = x.EmployeeId,
+                        EmployeeCode = x.EmployeeCode,
+                        FirstName = x.FirstName,
+                        MiddleName = x.MiddleName,
+                        LastName = x.LastName,
+                        FirstNameEnglish = x.FirstNameEnglish,
+                        MiddleNameEnglish = x.MiddleNameEnglish,
+                        LastNameEnglish = x.LastNameEnglish
+                    }).AsQueryable();
+
+          
+           
+
+            return Json(employees.Select(p => new
+            {
+                HeadId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetAllEmployeesForSelfCare(string text)
         {
             List<EmployeeVm> list = new List<EmployeeVm>();
 
             if (!String.IsNullOrWhiteSpace(text))
             {
-                var employees = db.Person_Employee.Where(x => x.IsActive)
+                var employees = db.Person_Employee.Where(x=>x.IsActive)
                     .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
                         x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
                           x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
@@ -757,7 +757,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetFisicalYear()
         {
+
             var periodList = db.GLFiscalYears.OrderByDescending(x=>x.GlFiscalYearId).ToList();
+            //var fisicalYear = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
+
+            return Json(periodList.Select(p => new
+            {
+                GlFiscalYearId = p.GlFiscalYearId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult GetFisicalYearForRecruitmentAndManPower()
+        {
+            var periodList = db.GLFiscalYears.Where(x=>x.DateFrom>=DateTime.Now||x.DateTo>= DateTime.Now).OrderByDescending(x=>x.GlFiscalYearId).ToList();
             var fisicalYear = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
 
             return Json(periodList.Select(p => new
@@ -767,6 +780,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }), JsonRequestBehavior.AllowGet);
 
         }
+
         public JsonResult GetCurrentPeriods()
         {
             List<GLPeriod> glPeriods = new List<GLPeriod>();
@@ -783,10 +797,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Name
             }), JsonRequestBehavior.AllowGet);
         }
+
         public JsonResult GetPeriods(string GlFiscalYearId)
         {
+            int.TryParse(GlFiscalYearId, out int yearId);
             List<GLPeriod> periodList = new List<GLPeriod>();
-            var periods = db.GLPeriods.Where(x => x.GlFiscalYearId.ToString() == GlFiscalYearId).ToList();
+            var periods = db.GLPeriods
+                                .Where(x => x.GlFiscalYearId == yearId)
+                                .OrderByDescending(x=>x.GLPeriodId)
+                                .ToList();
 
             if (periods.Any())
             {
@@ -801,8 +820,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetGlPeriod()
         {
-            var periodList = db.GLPeriods.OrderByDescending(x => x.GLPeriodId).ToList();
-            //var fisicalYear = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
+            var periodList = db.GLPeriods.OrderByDescending(x => x.DateTo).ToList();
 
             return Json(periodList.Select(p => new
             {
@@ -910,7 +928,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetEducationLevel()
         {
-            var eduLevel = db.Lookups.AsQueryable();
+            var eduLevel = db.Lookups.Where(x=>x.IsActive).AsQueryable();
 
             if (eduLevel.Any())
             {
@@ -1006,7 +1024,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
             return null;
         }
-
         public JsonResult GetDepartmentsForPlacement(int OrgStructureId, bool isHead)
         {
             if (isHead)
@@ -1014,7 +1031,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 var parent = db.MainCompanyStructures.FirstOrDefault(x=>x.OrgStructureId==OrgStructureId&& x.IsActive);
                 if(parent != null)
                 {
-                    var orgStructures = db.MainCompanyStructures.Where(x => x.OrgStructureId == parent.Parent).AsQueryable();
+                    var orgStructures = db.MainCompanyStructures
+                                        .Where(x=>x.IsActive)
+                                        .Where(x => x.OrgStructureId == parent.Parent).AsQueryable();
                     return Json(orgStructures.Select(p => new
                     {
                         OrgStructureId = p.Parent,
@@ -1022,7 +1041,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
                     }), JsonRequestBehavior.AllowGet);
                 }
-                var WorkUnit = db.MainCompanyStructures.Where(x => x.OrgStructureId == OrgStructureId).Where(x => x.IsActive).AsQueryable();
+                var WorkUnit = db.MainCompanyStructures
+                                                    .Where(x => x.OrgStructureId == OrgStructureId)
+                                                    .Where(x => x.IsActive).AsQueryable();
                 return Json(WorkUnit.Select(p => new
                 {
                     OrgStructureId = p.OrgStructureId,
@@ -1031,7 +1052,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 }), JsonRequestBehavior.AllowGet);
 
             }
-            var structures = db.MainCompanyStructures.Where(x=>x.OrgStructureId==OrgStructureId).Where(x => x.IsActive).AsQueryable();
+            var structures = db.MainCompanyStructures
+                .Where(x=>x.OrgStructureId==OrgStructureId)
+                .Where(x => x.IsActive).AsQueryable();
             return Json(structures.Select(p => new
             {
                 OrgStructureId = p.OrgStructureId,
@@ -1050,6 +1073,97 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Name
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetDepartmentForManinDepartmentSettings()
+        {
+            var structures = db.MainCompanyStructures.Where(x => x.IsActive).AsQueryable();
+
+            return Json(structures.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllWorkUnitForPerformances(int evaluationCriteriaId, string businessUnitId, string branchId, string text)
+        {
+            var orgstuctureLists = new List<MainCompanyStructure>();
+            var placements = db.Placements.Where(x => x.isCurrent).ToList();
+            if (!string.IsNullOrEmpty(branchId)&& placements.Any())
+            {
+                int.TryParse(branchId, out int braId);
+                placements = placements.Where(x => x.BranchId == braId).ToList();
+            }
+            if (!string.IsNullOrEmpty(businessUnitId) && placements.Any())
+            {
+                int.TryParse(businessUnitId, out int busisId);
+                placements = placements.Where(x => x.BusinessUnitId == busisId).ToList();
+            }
+
+            var workUnitIds = placements.Select(x => x.OrgStructureId).Distinct();
+            var orgstuctures = db.MainCompanyEvalutionSettings.Where(x => x.MeasurementDefinitionId == evaluationCriteriaId && x.OrgStructureId != null);
+
+            HashSet<int> orgIds = new HashSet<int>(orgstuctures.Where(x=> workUnitIds.Contains((int)x.OrgStructureId)).Select(x => (int)x.OrgStructureId));
+
+            //var structures = orgIds.Any()? db.MainCompanyStructures.Where(x=> orgIds.Contains(x.OrgStructureId)).Where(x => x.IsActive).ToList(): orgstuctureLists;
+            var structures = orgIds.Any()? db.MainCompanyStructures.Where(x=> orgIds.Contains(x.OrgStructureId)).Where(x => x.IsActive).ToList():workUnitIds.Any()? db.MainCompanyStructures.Where(x=>workUnitIds.Contains(x.OrgStructureId)).ToList(): orgstuctureLists;
+
+            if (!string.IsNullOrEmpty(text)&& structures.Any())
+            {
+
+                structures = structures.Where(x => x.IsActive).ToList().Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper().Contains(text.ToUpper())).ToList();
+                //if (ids.Any())
+                //{
+                //    structures = structures.Where(x => ids.Contains(x.OrgStructureId)).AsQueryable();
+                //    if(branchId != 0)
+                //    {
+                //       // var workUnitIds = db.JobTitleMapping.Where(x => x.IsActive && x.BranchId == branchId).Select(x => x.OrgStructureId);
+                //        if (structures.Any() && workUnitIds.Any())
+                //        {
+                //            structures = structures.Where(x => workUnitIds.Contains(x.OrgStructureId)).AsQueryable();
+
+                //        }
+                //    }
+                //}
+            }
+            if (structures.Any())
+            {
+                return Json(structures.Select(p => new
+                {
+                    OrgStructureId = p.OrgStructureId,
+                    Name = p.Name
+                }), JsonRequestBehavior.AllowGet);
+            }
+            return Json(orgstuctureLists, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllJobTitleForPerformances(int evaluationCriteriaId,int branchId,string text)
+        {
+            var maindepartment = db.MainCompanyEvalutionSettings.Where(x => x.MeasurementDefinitionId == evaluationCriteriaId && x.LookUpId != null);
+            HashSet<int> lookupIds = new HashSet<int>(maindepartment.Select(x => (int)x.LookUpId));
+
+            var lookups = db.Lookups.Where(x=>lookupIds.Contains(x.LookupId)&&x.LookupType==LookUpTypes.JOB_TITLE)
+                                    .Where(x => x.LookupType == LookUpTypes.JOB_TITLE
+                                                || x.LookupType == LookUpTypes.OLD_JOB_TITLE
+                                                || x.LookupType == LookUpTypes.Jobtitle_External_Experience)
+                                                .Where(x => x.IsActive).AsQueryable();
+            if (!String.IsNullOrEmpty(text) && lookups.Any())
+            {
+
+                lookups = lookups.Where(x => !string.IsNullOrEmpty(x.Description) && x.Description.ToUpper().Contains(text.ToUpper())).AsQueryable();
+                if (branchId !=0)
+                {
+                    var jobTitleIds  = db.JobTitleMapping.Where(x =>x.BranchId==branchId).Where(x=>x.IsActive).Select(x=>x.LookupId).Distinct();
+                    if (jobTitleIds.Any())
+                    {
+                        lookups = lookups.Where(x => jobTitleIds.Contains(x.LookupId)).AsQueryable();
+                    }
+
+                }
+            }
+            return Json(lookups.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetJobTitle(int BranchId, int OrgStructureId)
         {
             var manPowerPlannings = db.JobTitleMapping.Where(x => x.BranchId == BranchId && x.OrgStructureId == OrgStructureId).ToList();
@@ -1058,7 +1172,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             {
                 var jobIds = manPowerPlannings.Select(x => x.LookupId).ToList();
 
-                var jobTitle = db.Lookups.Where(x => jobIds.Contains(x.LookupId) && x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).ToList();
+                var jobTitle = db.Lookups.Where(x => jobIds.Contains(x.LookupId) && x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).Where(x => x.LookupType == LookUpTypes.JOB_TITLE
+                                                || x.LookupType == LookUpTypes.OLD_JOB_TITLE
+                                                || x.LookupType == LookUpTypes.Jobtitle_External_Experience).ToList();
 
                 return Json(jobTitle.Select(p => new
                 {
@@ -1068,10 +1184,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
             return null;
         }
+        public JsonResult GetJobTitleForManPower(int BranchId)
+        {
+            var manPowerPlannings = db.JobTitleMapping.Where(x=>x.IsActive).Where(x => x.BranchId == BranchId).ToList();
 
+            if (manPowerPlannings.Any())
+            {
+                var jobIds = manPowerPlannings.Select(x => x.LookupId).ToList();
+
+                var jobTitle = db.Lookups.Where(x => jobIds.Contains(x.LookupId) && x.IsActive)
+                                         .Where(x => x.LookupType == LookUpTypes.JOB_TITLE
+                                                   || x.LookupType == LookUpTypes.OLD_JOB_TITLE
+                                                   || x.LookupType == LookUpTypes.Jobtitle_External_Experience).ToList();
+
+                return Json(jobTitle.Select(p => new
+                {
+                    LookupId = p.LookupId,
+                    Description = p.Description,
+                }), JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
         public JsonResult GetAllJobTitle()
         {
-            var jobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).ToList();
+            var jobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE 
+                                                ||x.LookupType == LookUpTypes.OLD_JOB_TITLE
+                                                ||x.LookupType == LookUpTypes.Jobtitle_External_Experience 
+                                                && x.IsActive).ToList();
+
+            return Json(jobTitle.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description,
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAllJobTitleForVaancy()
+        {
+            var jobTitleIds = db.ExperienceJobTitles.Select(x => x.LookupId);
+            var jobTitle = db.Lookups
+                .Where(x =>jobTitleIds.Contains(x.LookupId)).ToList();
 
             return Json(jobTitle.Select(p => new
             {
@@ -1092,7 +1244,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetJobTitleForExternalExperience()
         {
-            var externalJobtitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.Jobtitle_External_Experience && x.IsActive).ToList();
+            var externalJobtitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.Jobtitle_External_Experience
+                                                        ||x.LookupType == LookUpTypes.JOB_TITLE 
+                                                        ||x.LookupType == LookUpTypes.OLD_JOB_TITLE 
+                                                        && x.IsActive)
+                                                        .ToList();
 
             return Json(externalJobtitle.Select(p => new
             {
@@ -1100,6 +1256,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Description = p.Description,
             }), JsonRequestBehavior.AllowGet);
         }
+
         public JsonResult GetJobTitleForRecruitment(string OrgStructureId, string searchText)
         {
             List<Jobs> jobList = new List<Jobs>();
@@ -1123,6 +1280,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 jobList.Add(job);
 
             }
+
             //if (!String.IsNullOrEmpty(searchText))
             //{
             //jobTitle = jobTitle.Where(x =>
@@ -1199,7 +1357,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 foreach (var p in plans)
                 {
                     appRegister = new ApplicantRegistrationViewModel();
-                    var detail = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == p.VacancyId && x.RecruSource == RecruitmentSource.INTERNAL);
+                    var detail = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == p.VacancyId 
+                                                            && (x.RecruSource == RecruitmentSource.INTERNAL
+                                                                ||x.RecruSource == RecruitmentSource.INTERNALPROMOTION
+                                                                ||x.RecruSource == RecruitmentSource.INTERNALTRANSFER));
                     if (detail != null)
                     {
                         var recruitPlan = db.RecruitmentPlans.Find(detail.RecruitmentPlanId);
@@ -1228,9 +1389,59 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         }
 
+        public JsonResult GetJobTitlesForPlacement(int orgStructureId, string text)
+        {
+            var titleList = (from jm in db.JobTitleMapping
+                             join l in db.Lookups on jm.LookupId equals l.LookupId
+                             where jm.IsActive && jm.OrgStructureId == orgStructureId
+                             select l)
+                            .Distinct()
+                            .ToList();
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                var upperText = text.ToUpper();
+                titleList = titleList
+                    .Where(x => x.Description != null && x.Description.ToUpper().Contains(upperText))
+                    .ToList();
+            }
+
+            return Json(titleList.Select(p => new
+            {
+                p.LookupId,
+                p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetJobTitles(int OrgStructureId)
         {
             var orgs = db.JobTitleMapping.Where(x=>x.IsActive).Where(x => x.OrgStructureId == OrgStructureId).ToList();
+            List<Lookup> titleList = new List<Lookup>();
+            if (orgs.Any())
+            {
+                titleList = new List<Lookup>();
+                foreach (var title in orgs)
+                {
+                    var lookup = db.Lookups.Where(x => x.LookupId == title.LookupId).FirstOrDefault();
+                    if (!titleList.Contains(lookup))
+                    {
+                        titleList.Add(lookup);
+                    }
+
+                }
+            }
+           
+            return Json(titleList.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
+
+
+        }
+        public JsonResult GetJobTitlesForTemppraryPlacement()
+        {
+            var orgs = db.JobTitleMapping.Where(x=>x.IsActive).ToList();
             List<Lookup> titleList = new List<Lookup>();
             if (orgs.Any())
             {
@@ -1266,7 +1477,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public JsonResult GetJobTitleSelected()
         {
             var jobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE);
-            var jobtitleselected = jobTitle != null ? jobTitle.ToList() : new List<Lookup>();
+            var jobtitleselected = jobTitle.Any() ? jobTitle.ToList() : new List<Lookup>();
 
             return Json(jobtitleselected.Select(p => new
             {
@@ -1276,13 +1487,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetJobTitleMapping(string mediacode)
         {
-            //this method is for Applicant Registration
+
             db = new ExceedDbContext();
             List<ApplicantRegistrationViewModel> titleList = new List<ApplicantRegistrationViewModel>();
-            //for (int i=0;i<VacancyId.Length;i++)
-            //{
             var plans = db.RecruitmentVacancy.Where(x => x.MediaVacancyCode.ToString() == mediacode).ToList();
-
             if (plans.Any())
             {
                 titleList = new List<ApplicantRegistrationViewModel>();
@@ -1312,7 +1520,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
                 }
             }
-            //}
             return Json(titleList.Select(p => new
             {
                 LookupId = p.LookUpId + "-" + p.VacancyId,
@@ -1344,7 +1551,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public JsonResult GetEducationFieldList()
         {
 
-            var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.EDUCATION_FIELD).AsQueryable();
+            var lookups = db.Lookups.Where(l =>l.IsActive
+                                                && l.LookupType == LookUpTypes.EDUCATION_FIELD).AsQueryable();
             return Json(lookups.Select(p => new
             {
                 LookupId = p.LookupId,
@@ -1354,7 +1562,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public JsonResult GetEducationLevelList()
         {
 
-            var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.EDUCATION_LEVEL).AsQueryable();
+            var lookups = db.Lookups.Where(l =>l.IsActive&& l.LookupType == LookUpTypes.EDUCATION_LEVEL).AsQueryable();
             return Json(lookups.Select(p => new
             {
                 LookupId = p.LookupId,
@@ -1398,21 +1606,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             return Json(employees.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish+" "+p.MiddleNameEnglish+" "+p.LastNameEnglish,
             }), JsonRequestBehavior.AllowGet);
         }
+       
         public JsonResult GetTotalEmployees()
         {
 
-            var employees = db.Person_Employee.Where(x => x.IsActive).ToList();
+            var employees = db.Person_Employee.Where(x=>x.IsActive).ToList();
             return Json(employees.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
                 FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish,
             }), JsonRequestBehavior.AllowGet);
         }
-       
-        
         public JsonResult GetBankLists()
         {
 
@@ -1630,9 +1837,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public JsonResult GetBranch()
         {
 
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            var branches = db.Branch.Where(x => x.IsActive).Where(x => x.IsActive).Where(x => mybraches.Contains(x.BranchId.ToString()));
+            var branches = db.Branch.Where(x=>x.IsActive).Where(x => mybraches.Contains(x.BranchId));
             return Json(branches.Select(p => new
             {
                 BranchId = p.BranchId,
@@ -1653,9 +1860,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Name,
             }), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetAllBranchs()
         {
+            var branches = db.Branch.Where(x => x.IsActive).ToList();
+
+
+            return Json(branches.DistinctByField(x => x.BranchId).Select(p => new
+            {
+                BranchId = p.BranchId,
+                Name = p.Name,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetFromBranchs()
+        {
+           
             var branches = db.Branch.Where(x => x.IsActive).ToList();
 
 
@@ -1672,7 +1890,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             return Json(branches.Select(p => new
             {
                 BranchId = p.BranchId,
-                Name = p.AmharicName,
+                AmharicName = p.AmharicName??p.Name,
+                Name = p.Name??p.AmharicName,
             }), JsonRequestBehavior.AllowGet);
         }
 
@@ -1708,7 +1927,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                     var requests = db.OverTimeRequestEmployee.Where(x => x.OverTimeRequestId == requestStatus.RequestId);
                     foreach (var request in requests)
                     {
-                        var person = db.Person_Employee.Where(x => x.IsActive).FirstOrDefault(x => x.EmployeeId == request.EmployeeId);
+                        var person = db.Person_Employee.Where(x=>x.IsActive).FirstOrDefault(x => x.EmployeeId == request.EmployeeId);
                         if (person != null)
                         {
                             personList.Add(person);
@@ -1733,8 +1952,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.AmharicName,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetAllBranchByBusinessUnit(int businessUnitId, string searchText)
+        public JsonResult GetFiscalYearForPerformance()
         {
+            HashSet<int> fiscalYearIds = new HashSet<int>(db.QuarterLengths
+                                                                 .Where(x=>!x.IsClosed)
+                                                                 .Select(x => x.GlFiscalYearId));
+            var fiscalYear = db.GLFiscalYears
+                                    .Where(x => fiscalYearIds.Contains(x.GlFiscalYearId))
+                                    .OrderByDescending(x => x.GlFiscalYearId)
+                                    .ToList();
+            //var fiscalYear = db.GLFiscalYears.OrderByDescending(x=>x.GlFiscalYearId).ToList();
+
+            return Json(fiscalYear.Select(p =>
+            new
+            {
+                GlFiscalYearId = p.GlFiscalYearId,
+                Name = p.Name
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetPeriodOrQuarterList(int GlFiscalYearId)
+        {
+            List<Quarter> quarterList = new List<Quarter>();
+            var quarterLength = db.QuarterLengths
+                                        .FirstOrDefault(x => x.GlFiscalYearId == GlFiscalYearId
+                                                        && !x.IsClosed);
+            if (quarterLength != null)
+            {
+                var quarter = db.Quarters
+                    .Where(x => x.QuarterLengthId == quarterLength.QuarterLengthId
+                             && !x.IsClosed).ToList();
+                quarterList.AddRange(quarter);
+            }
+
+            return Json(quarterList.Select(p => new
+            {
+                QuarterId = p.QuarterId,
+                Name = p.Name
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAllBranchByBusinessUnit(int businessUnitId, string searchText)
+      {
             // Load all branches and filter by active status and search text
             var branches = db.Branch.ToList()
                 .ToList();
@@ -1770,10 +2030,47 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        //public JsonResult GetAllBranchByBusinessUnit(int businessUnitId, string searchText)
+        //{
+        //    var branches = db.Branch.ToList();
+        //     branches = branches.Where(x =>!string.IsNullOrEmpty(x.Name) && x.Name.ToUpper().Contains(searchText.ToUpper())).Where(x => x.IsActive).ToList();
+        //    if (businessUnitId != 0)
+        //    {
+        //        var branchId = db.JobTitleMapping.Where(x => x.IsActive).ToList().Where(x => x.BusinessUnitId == businessUnitId).Select(x=>x.BranchId).Distinct().ToList();
+        //        if (branchId.Any())
+        //        {
+        //            branches = branches.Where(x => x.Name.ToUpper().Contains(searchText.ToUpper())).ToList().Where(x => branchId.Contains(x.BranchId)).ToList();
+
+        //            return Json(branches.Select(p => new
+        //            {
+        //                BranchId = p.BranchId,
+        //                Name = p.AmharicName,
+        //            }), JsonRequestBehavior.AllowGet);
+        //        }
+        //        else
+        //        {
+        //            branches = new List<Branch>();
+        //        }
+
+        //         return Json(branches.Select(p => new
+        //        {
+        //            BranchId = p.BranchId,
+        //            Name = p.AmharicName,
+        //        }), JsonRequestBehavior.AllowGet);
+
+        //    }
+
+        //    return Json(branches.Select(p => new
+        //    {
+        //        BranchId = p.BranchId,
+        //        Name = p.AmharicName,
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult GetSelectedBranchs()
         {
 
-            var branches = db.Branch.Where(x => x.BranchTypes == BranchTypes.PROJECT);
+            var branches = db.Branch.Where(x=>x.IsActive).Where(x => x.BranchTypes == BranchTypes.PROJECT);
             return Json(branches.Select(p => new
             {
                 BranchId = p.BranchId,
@@ -1829,7 +2126,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 foreach (var recruitmentVacancy in vacancies)
                 {
                     var vacany = db.VaccancyPlans.FirstOrDefault(x =>
-                        x.VacancyId == recruitmentVacancy.VacancyId && x.IsActive /*&& !x.IsComplete*/ && x.RecruSource == RecruitmentSource.INTERNAL);
+                        x.VacancyId == recruitmentVacancy.VacancyId && x.IsActive /*&& !x.IsComplete*/
+                        && (x.RecruSource == RecruitmentSource.INTERNAL
+                              || x.RecruSource == RecruitmentSource.INTERNALPROMOTION
+                              || x.RecruSource == RecruitmentSource.INTERNALTRANSFER));
                     if (vacany != null)
                     {
                         recruit.Add(recruitmentVacancy);
@@ -1954,7 +2254,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 int branchId = Convert.ToInt32(OrgStructureId.Split('-')[0]);
                 int orgId = Convert.ToInt32(OrgStructureId.Split('-')[1]);
 
-                var manPowerPlannings = db.JobTitleMapping.Where(x => x.BranchId == branchId && x.OrgStructureId == orgId).ToList();
+                var manPowerPlannings = db.JobTitleMapping.Where(x=>x.IsActive).Where(x => x.BranchId == branchId && x.OrgStructureId == orgId).ToList();
 
                 foreach (var plan in manPowerPlannings)
                 {
@@ -2015,7 +2315,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                         x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
                           x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
                             x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
-                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).Contains(text) ||
                               (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
                     )
                 .Where(x => x.IsActive).ToList();
@@ -2023,22 +2323,54 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             return Json(list.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.EmployeeCode + " " + p.FullNameaEnglish,
+                FullNameaEnglish = p.EmployeeCode + " " + p.FirstNameEnglish+" "+p.MiddleNameEnglish+" "+p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " " + p.FullNameAmharic
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetActiveEmployeeForClearances()
+        {
+            var employeeIds = db.Placements.Where(x => x.isCurrent&&x.IsHead).Select(x => x.EmployeeId).Distinct();
+            var list = db.Person_Employee.Where(x=>employeeIds.Contains(x.EmployeeId)).Where(x => x.IsActive).ToList();
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " " + p.FirstNameEnglish+" "+p.MiddleNameEnglish+" "+p.LastNameEnglish,
                 FullNameAmharic = p.EmployeeCode + " " + p.FullNameAmharic
             }), JsonRequestBehavior.AllowGet);
         }
         public ActionResult GetActiveEmployeesForDelegation()
         {
             var list = db.Person_Employee
-                //.Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
-                //        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
-                //          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
-                //            x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
-                //             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
-                //              (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
-                //    )
+               
                 .Where(x => x.IsActive).ToList();
 
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameEnglish = p.EmployeeCode + " " + p.FullNameaEnglish,
+                FullNameAmharic = p.EmployeeCode + " " + p.FullNameAmharic
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetActiveAndInActiveEmployeesForDelegation()
+        {
+            var list = db.Person_Employee.ToList();
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameEnglish = p.EmployeeCode + " " + p.FullNameaEnglish,
+                FullNameAmharic = p.EmployeeCode + " " + p.FullNameAmharic
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetActiveEmployeesForDepartmentDelegation()
+        {
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
+            subordinates.Add(id);
+            var list = db.Person_Employee
+                                .Where(x=>subordinates.Contains(x.EmployeeId))
+                                .Where(x => x.IsActive).ToList();
             return Json(list.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
@@ -2126,7 +2458,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
             return Json(employees.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
         }
-
         public ActionResult GetEmployeesAskForOther()
         {
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -2151,7 +2482,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             return Json(personEmployees.DistinctByField(x => x.FirstName + " " + x.MiddleName + " " + x.LastName).Select(p => new
             {
                 PersonId = p.EmployeeId,
-                FullName = p.EmployeeCode + "-" + p.FullNameAmharic //p.FirstName + " " + p.MiddleName + " " + p.LastName
+                EmployeeId = p.EmployeeId,
+                FullName = p.EmployeeCode+"-"+p.FullNameAmharic //p.FirstName + " " + p.MiddleName + " " + p.LastName
             }), JsonRequestBehavior.AllowGet);
 
 
@@ -2170,11 +2502,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 PersonId = p.PersonId
             }), JsonRequestBehavior.AllowGet);
         }
-       
         public JsonResult GetAllowance()
         {
-            var lookups = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE);
-
+            var lookups = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE
+                                                ||x.LookupType==LookUpTypes.OLD_JOB_TITLE
+                                                ||x.LookupType==LookUpTypes.Jobtitle_External_Experience);
             return Json(lookups.Select(p => new
             {
                 LookupId = p.LookupId,
@@ -2190,7 +2522,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 LookupId = p.LookupId
             }), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetPayrollPlacmentEmployees()
         {
             HRMInputs inputs = new HRMInputs();
@@ -2201,14 +2532,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 PersonId = p.PersonId
             }), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetApprovedEmpForOverTime()
         {
             List<Person_Employee> empLists = new List<Person_Employee>();
             var emps = db.OverTimeRequestEmployee.ToList();
             foreach (var emp in emps)
             {
-                var employee = db.Person_Employee.Where(x => x.IsActive).FirstOrDefault(x => x.EmployeeId == emp.EmployeeId);
+                var employee = db.Person_Employee.Where(x=>x.IsActive).FirstOrDefault(x => x.EmployeeId == emp.EmployeeId);
                 Person_Employee emplist = new Person_Employee();
 
                 emplist.EmployeeCode = employee.EmployeeCode;
@@ -2257,10 +2587,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetTrainingPlan()
         {
-            var structures = db.TrainingPlans.AsQueryable();
-            return Json(structures.DistinctByField(x => x.LookupId).Select(p => new
+           var assessmentSummaries = db.NeedAssessmentSummary
+                                                    .Where(x => x.IsThirdSendForApproval 
+                                                    && x.IsApproved || x.IsRejected).AsQueryable();
+
+            //var structures = db.TrainingPlans.AsQueryable();
+            return Json(assessmentSummaries.DistinctByField(x => x.LookupId).Select(p => new
             {
-                TrainingPlanId = p.TrainingPlanId,
+                TrainingPlanId = p.NeedAssessmentSummaryId,
                 Name = p.GlFiscalYear.Name + " " + p.Lookup.Description
 
             }), JsonRequestBehavior.AllowGet);
@@ -2453,7 +2787,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         }
 
-        public JsonResult GetCostCenter(int BranchId,string text)
+        public JsonResult GetCostCenter(int BranchId, string text)
         {
 
             GlCostCenterTypes type;
@@ -2469,7 +2803,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 {
                     type = GlCostCenterTypes.Project;
                 }
-               // AccountHelper accountHelper = new AccountHelper();
+                // AccountHelper accountHelper = new AccountHelper();
                 var glCostCenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).FirstOrDefault();
                 if (glCostCenterSeg != null)
                 {
@@ -2491,7 +2825,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                     }
                 }
 
-            }            
+            }
 
             return Json(costcenterList.Select(p => new
             {
@@ -2597,6 +2931,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 RankName = p.RankName
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetRankForAllowance()
+        {
+            var ranksQuery = db.Ranks.Select(x => new
+            {
+                RankId = x.RankId,
+                RankName = x.RankName
+            }).AsQueryable();
+
+           
+          
+            return Json(ranksQuery.Select(r => new
+            {
+                RankId = r.RankId,
+                RankName = r.RankName
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetStep()
         {
 
@@ -2608,15 +2958,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 StepName = p.StepName
             }), JsonRequestBehavior.AllowGet);
         }
-        //public JsonResult GetContributionType()
-        //{
-        //    var ConrtibutionTypes = db.ContributionTypes.Where(x => x.ContributionCategory == ContributionCategory.FIXED);
-        //    return Json(ConrtibutionTypes.Select(p => new
-        //    {
-        //        Description = p.Description,
-        //        ContributionTypeId = p.ContributionTypeId
-        //    }), JsonRequestBehavior.AllowGet);
-        //}
         public JsonResult GetWorkUnit()
         {
             List<MainCompanyStructure> workUnits = new List<MainCompanyStructure>();
@@ -2652,24 +2993,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 OrgStructureId = p.OrgStructureId
             }), JsonRequestBehavior.AllowGet);
         }
-        //public JsonResult GetPeriodForOvertime()
-        //{
-        //    var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
-        //    //var list = from p in periodList
-        //    //           join g in db.GLPeriods
-        //    //               on p.Name equals g.Name
-        //    //           select (new
-        //    //           {
-        //    //               g
-        //    //           });
-        //    ViewData["PeriodList"] = periodList.Select(x => x.Name).ToList(); //!= null ? list.ToList() : new List<PayrollPeriod>();
-
-        //    return Json(periodList.Select(p => new
-        //    {
-        //        GLPeriodId = p.GLPeriodId,
-        //        Name = p.Name
-        //    }), JsonRequestBehavior.AllowGet);
-        //}
+        public JsonResult GetPeriodForOvertime()
+        {
+            //var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
+            //var list = from p in periodList
+            //           join g in db.GLPeriods
+            //               on p.Name equals g.Name
+            //           select (new
+            //           {
+            //               g
+            //           });
+            //ViewData["PeriodList"] = periodList.Select(x => x.Name).ToList(); //!= null ? list.ToList() : new List<PayrollPeriod>();
+            var periodList = db.GLPeriods.OrderByDescending(x=>x.DateTo);
+            return Json(periodList.Select(p => new
+            {
+                GLPeriodId = p.GLPeriodId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetWorkUnitFromVacancy(string mediacode)
         {
             List<MainCompanyStructure> workUnitsList = new List<MainCompanyStructure>();
@@ -2785,7 +3126,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
             return Json(dataItemIndex, JsonRequestBehavior.AllowGet);
         }
-       
         public JsonResult GetTargetGroup()
         {
             var targetGroups = db.Lookups.Where(x => x.LookupType == LookUpTypes.TARGET_GROUP);
@@ -2809,7 +3149,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
             //var subordinates1 = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
-            var employees = db.Person_Employee.Where(x => x.IsActive).Where(x => subordinates.Contains(x.EmployeeId)).ToList();
+            var employees = db.Person_Employee.Where(x=>x.IsActive)
+                                              .Where(x => subordinates.Contains(x.EmployeeId)||x.EmployeeId==id)
+                                              .ToList();
+
             return Json(employees.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
@@ -2832,6 +3175,83 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 EmployeeId = p.EmployeeId,
                 FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish
             }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetEmployeeSForPerformanceEvaluationByBranch(string branchId, string text)
+        {
+            // Get the employee ID of the current user
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            // Get the list of subordinates for the current user
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
+
+            // If a branch ID is provided, filter subordinates by branch
+            if (!string.IsNullOrEmpty(branchId) && int.TryParse(branchId, out int branchIdParsed))
+            {
+                subordinates = EmployeeHelper.GetSubordinates_FilteredByHeadAndBranch(id, branchIdParsed);
+            }
+
+            // Check if self-evaluation is enabled in the configuration
+            var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == PerformanceSelfEvaluation.Enable_Self_Evaluation.ToString());
+
+            // Remove the current user from the list of subordinates if self-evaluation is enabled
+            if (config != null)
+            {
+                subordinates.Remove(id);
+            }
+
+            // Retrieve the list of active employees who are subordinates and not the current user
+           
+            if (!string.IsNullOrEmpty(text))
+            {
+
+               var  employees = db.Person_Employee.Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+                       x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                         x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                           x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                            (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
+                   ).Where(x => x.IsActive && subordinates.Contains(x.EmployeeId) && x.EmployeeId != id)
+               .Select(p => new
+               {
+                   EmployeeId = p.EmployeeId,
+                   FullNameEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+               })
+               .ToList();
+                return Json(employees, JsonRequestBehavior.AllowGet);
+
+            }
+            else
+            {
+                var employees = db.Person_Employee.Where(x => x.IsActive && subordinates.Contains(x.EmployeeId))
+               .Select(p => new
+               {
+                   EmployeeId = p.EmployeeId,
+                   FullNameEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+               })
+               .ToList();
+                return Json(employees, JsonRequestBehavior.AllowGet);
+            }
+            // Return the list of employees as JSON
+           
+        }
+        public JsonResult GetOneDepartmentEmployee()
+        {
+            // Get the employee ID of the current user
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            // Get the list of subordinates for the current user
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
+            var employees = db.Person_Employee.Where(x => x.IsActive && subordinates.Contains(x.EmployeeId) /*&& x.EmployeeId != id*/)
+               .Select(p => new
+               {
+                   EmployeeId = p.EmployeeId,
+                   FullNameEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+               })
+               .ToList();
+                return Json(employees, JsonRequestBehavior.AllowGet);
+           
+            // Return the list of employees as JSON
+           
         }
 
         public JsonResult GetSubjectType()
@@ -2862,7 +3282,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
 
             return Json(list.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
-        }
+            }
+
         public ActionResult PayrollEmployee_ValueMapper(string value)
         {
 
@@ -3042,7 +3463,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             return Json(list.Select(x => new
             {
                 Name = x.Name,
-                Code = x.Code
+                Code = x.Code,
+                BusinessUnitId = x.Code,
             }), JsonRequestBehavior.AllowGet);
         }
 
@@ -3067,7 +3489,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public ActionResult GetEducationLevelLists()
         {
-            var educationLevels = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
+            var educationLevels = db.Lookups.Where(x =>x.IsActive&& x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
             return Json(educationLevels.Select(p => new
             {
                 LookupId = p.LookupId,
@@ -3077,7 +3499,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         public ActionResult GetEducationFieldLists()
         {
-            var educationFields = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
+            var educationFields = db.Lookups.Where(x =>x.IsActive&& x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
             return Json(educationFields.Select(p => new
             {
                 LookupId = p.LookupId,
@@ -3087,7 +3509,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         public ActionResult GetLookupJobtitle()
         {
-            var experienceJobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            var experienceJobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE
+                                                || x.LookupType == LookUpTypes.OLD_JOB_TITLE
+                                                || x.LookupType == LookUpTypes.Jobtitle_External_Experience).ToList();
             return Json(experienceJobtitles.Select(p => new
             {
                 LookupId = p.LookupId,
@@ -3098,7 +3522,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public ActionResult GetLookupJobtitleForInternal()
         {
             // this "Jobtitle External Experience" is for internal applicants that they have external experiences registered in profile
-            var experienceJobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.Jobtitle_External_Experience).ToList();
+            var experienceJobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE || x.LookupType == LookUpTypes.OLD_JOB_TITLE).ToList();
             return Json(experienceJobtitles.Select(p => new
             {
                 LookupId = p.LookupId,
@@ -3108,7 +3532,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         public JsonResult GetEducationLevels()
         {
-            var educationLevels = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
+            var educationLevels = db.Lookups.Where(x => x.IsActive&&x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
 
             return Json(educationLevels.Select(p => new
             {
@@ -3119,7 +3543,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         public JsonResult GetEducationFields()
         {
-            var educationFields = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
+            var educationFields = db.Lookups.Where(x =>x.IsActive&& x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
 
             return Json(educationFields.Select(p => new
             {
@@ -3138,7 +3562,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetVacancyInternal()
         {
-            var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.INTERNAL && x.IsActive).ToList();
+            var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.INTERNAL
+                                                || x.RecruSource == RecruitmentSource.INTERNALPROMOTION
+                                                || x.RecruSource == RecruitmentSource.INTERNALTRANSFER
+                                                && x.IsActive).ToList();
             return Json(vacancies.Select(p => new
             {
                 VacancyId = p.VacancyId,
@@ -3148,7 +3575,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         public JsonResult GetVacancyCodeForInternalApplicant()
         {
-            var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.INTERNAL && x.IsActive).ToList();
+            var vacancies = db.VaccancyPlans
+                  .Where(x => x.RecruSource == RecruitmentSource.INTERNAL
+                  ||x.RecruSource == RecruitmentSource.INTERNALPROMOTION
+                  ||x.RecruSource == RecruitmentSource.INTERNALTRANSFER
+                  && x.IsActive).ToList();
             return Json(vacancies.Select(p => new
             {
                 VacancyId = p.VacancyId,
@@ -3172,18 +3603,211 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Name,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetDepartmentsByBranchFromManPowerPlanning(int branchId,int businessUnitId,  string searchText )
+        public JsonResult GetDepartmentsByBranchFromManPowerPlanning(int branchId, int businessUnitId, string searchText)
+        {
+            var structuresQuery = db.JobTitleMapping
+                .Where(x => x.IsActive && x.BranchId == branchId);
+
+            if (businessUnitId != 0)
+            {
+                structuresQuery = structuresQuery.Where(x => x.BusinessUnitId == businessUnitId);
+            }
+
+            var structureList = structuresQuery
+                .Select(x => x.OrgStructureId)
+                .Distinct()
+                .ToList();
+
+            var departmentQuery = db.MainCompanyStructures
+                .Where(x => x.IsActive && structureList.Contains(x.OrgStructureId));
+
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                var searchTextUpper = searchText.ToUpper();
+                departmentQuery = departmentQuery.Where(x => x.Name != null 
+                                                      && x.Name.ToUpper().Contains(searchTextUpper));
+            }
+
+            // Remove duplicates (in case multiple job mappings point to same OrgStructureId)
+            var departments = departmentQuery
+                .DistinctByField(x => x.OrgStructureId)
+                .Select(x => new
+                {
+                    OrgStructureId = x.OrgStructureId,
+                    Name = x.Name
+                })
+                .ToList();
+
+            return Json(departments, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetDepartmentsByBranch(int branchId,  string searchText )
         {
             List<MainCompanyStructure> departments = new List<MainCompanyStructure>();
 
-            var structures = db.JobTitleMapping.Where(x => x.BranchId == branchId).DistinctByField(x => x.OrgStructureId).ToList();
+            var structures = db.JobTitleMapping
+                .Where(x => x.IsActive)
+                .Where(x => x.BranchId == branchId).ToList();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                var ids = db.MainCompanyStructures
+                    .Where(x => x.IsActive).ToList()
+                    .Where(x => !string.IsNullOrEmpty(x.Name) 
+                                && x.Name.ToUpper().Contains(searchText.ToUpper()))
+                                .Select(x => x.OrgStructureId).ToList();
+
+                structures = structures.Where(x => ids.Contains(x.OrgStructureId)).ToList();
+
+                foreach (var str in structures)
+                {
+                    var structure = new MainCompanyStructure();
+                    var department = db.MainCompanyStructures.Where(x => x.IsActive).FirstOrDefault(x => x.OrgStructureId == str.OrgStructureId);
+                    if (department != null)
+                    {
+                        structure.Name = department.Name;
+                        structure.OrgStructureId = department.OrgStructureId;
+
+                        departments.Add(structure);
+                    }
+                }
+
+            }
+            else
+            {
+                foreach (var str in structures)
+                {
+                    var structure = new MainCompanyStructure();
+                    var department = db.MainCompanyStructures
+                        .Where(x => x.IsActive)
+                        .FirstOrDefault(x => x.OrgStructureId == str.OrgStructureId);
+                    if (department != null)
+                    {
+                        structure.Name = department.Name;
+                        structure.OrgStructureId = department.OrgStructureId;
+
+                        departments.Add(structure);
+                    }
+                }
+            }
+
+
+            return Json(departments.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetDepartmentsByBranchForHeads(int branchId, string searchText)
+        {
+            List<MainCompanyStructure> departments = new List<MainCompanyStructure>();
+
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            // Current head placement
+            var employeePlacement = db.Placements
+                .FirstOrDefault(x => x.isCurrent
+                                  && x.EmployeeId == employeeId
+                                  && x.IsHead);
+
+            // Get all allowed department ids for the head
+            List<int> allowedDepartmentIds = new List<int>();
+
+            if (employeePlacement != null)
+            {
+                var workunit = db.MainCompanyStructures
+                    .FirstOrDefault(x => x.IsActive
+                                      && x.OrgStructureId == employeePlacement.OrgStructureId);
+
+                if (workunit != null)
+                {
+                    // Add current department
+                    allowedDepartmentIds.Add(workunit.OrgStructureId);
+
+                    // Add child departments
+                    var childDepartments = db.MainCompanyStructures
+                        .Where(x => x.IsActive && x.Parent == workunit.OrgStructureId)
+                        .Select(x => x.OrgStructureId)
+                        .Distinct()
+                        .ToList();
+
+                    allowedDepartmentIds.AddRange(childDepartments);
+                }
+            }
+
+            // Branch structures
+            var structures = db.JobTitleMapping
+                .Where(x => x.IsActive && x.BranchId == branchId)
+                .ToList();
+
+            // Filter only departments accessible by the head
+            structures = structures
+                .Where(x => allowedDepartmentIds.Contains(x.OrgStructureId))
+                .ToList();
+
+            // Search filter
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                var ids = db.MainCompanyStructures
+                    .Where(x => x.IsActive
+                             && !string.IsNullOrEmpty(x.Name)
+                             && x.Name.ToUpper().Contains(searchText.ToUpper()))
+                    .Select(x => x.OrgStructureId)
+                    .ToList();
+
+                structures = structures
+                    .Where(x => ids.Contains(x.OrgStructureId))
+                    .ToList();
+            }
+
+            // Build department list
+            foreach (var str in structures)
+            {
+                var department = db.MainCompanyStructures
+                    .FirstOrDefault(x => x.IsActive
+                                      && x.OrgStructureId == str.OrgStructureId);
+
+                if (department != null)
+                {
+                    departments.Add(new MainCompanyStructure
+                    {
+                        Name = department.Name,
+                        OrgStructureId = department.OrgStructureId
+                    });
+                }
+            }
+
+            return Json(departments
+                .DistinctByField(x => x.OrgStructureId)
+                .Select(p => new
+                {
+                    OrgStructureId = p.OrgStructureId,
+                    Name = p.Name
+                }),
+                JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetDepartmentsByBussinessUnitFromManPowerPlanning(int businessUnitId,  string searchText )
+        {
+            List<MainCompanyStructure> departments = new List<MainCompanyStructure>();
+
+            var structures = db.JobTitleMapping
+                                .Where(x => x.IsActive)
+                                .DistinctByField(x => x.OrgStructureId)
+                                .ToList();
             if(businessUnitId != 0)
             {
-                structures = structures.Where(x => x.BusinessUnitId == businessUnitId).ToList();
+                structures = structures
+                    .Where(x => x.BusinessUnitId == businessUnitId)
+                    .ToList();
             }
-            if (!String.IsNullOrEmpty(searchText))
+            if (!string.IsNullOrEmpty(searchText))
             {
-                var ids = db.MainCompanyStructures.Where(x => x.IsActive).ToList().Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper().Contains(searchText.ToUpper())).Select(x => x.OrgStructureId).ToList();
+                var ids = db.MainCompanyStructures
+                                .Where(x => x.IsActive)
+                                .ToList()
+                                .Where(x => !string.IsNullOrEmpty(x.Name) 
+                                        && x.Name.ToUpper().Contains(searchText.ToUpper()))
+                                        .Select(x => x.OrgStructureId).ToList();
 
                 structures = structures.Where(x => ids.Contains(x.OrgStructureId)).ToList();
 
@@ -3225,15 +3849,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
             }), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetJobtitlesByVacancy(int VacancyId)
         {
             List<Lookup> jobTitles = new List<Lookup>();
 
-            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == VacancyId);
+            var vacancy = db.VaccancyPlans
+                .FirstOrDefault(x => x.VacancyId == VacancyId);
             if (vacancy != null)
             {
-                var jobTitle = db.Lookups.Where(x => x.LookupId == vacancy.JobTitle).ToList();
+                var jobTitle = db.Lookups.Where(x => x.LookupId == vacancy.JobTitle&&x.IsActive).ToList();
 
                 jobTitles.AddRange(jobTitle);
             }
@@ -3253,6 +3877,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Name
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetAllDepartmentsForEvalutionCriteria()
+        {
+            var orgIds = db.MeasurementDefinitions.Where(x => x.OrgStuructureId != null || x.OrgStuructureId != 0).Select(x => x.OrgStuructureId);
+            var departments = db.MainCompanyStructures
+                                            .Where(x=>orgIds.Contains(x.OrgStructureId))
+                                            .Where(x => x.IsActive).ToList();
+
+            return Json(departments.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetTrainingCriterias()
         {
             var criterias = db.TrainingEvaluationCriterias.ToList();
@@ -3264,20 +3901,70 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }), JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public JsonResult GetEmployeeByDepartmentId(int? OrgStructureId = null)
+        {
+            var query = db.Person_Employee.Where(e => e.IsActive);
+
+            // If a department is selected, filter by current placement in that department
+            if (OrgStructureId.HasValue && OrgStructureId.Value > 0)
+            {
+                query = from e in query
+                        join p in db.Placements on e.EmployeeId equals p.EmployeeId
+                        where p.OrgStructureId == OrgStructureId.Value && p.isCurrent
+                        select e;
+            }
+
+            var employees = query
+                .Select(e => new
+                {
+                    e.EmployeeId,
+                    e.EmployeeCode,
+                    e.FirstName,
+                    e.MiddleName,
+                    e.LastName,
+                    e.FirstNameEnglish,
+                    e.MiddleNameEnglish,
+                    e.LastNameEnglish
+                })
+                .Distinct()
+                .ToList();
+
+            var result = employees
+                .OrderBy(p => p.EmployeeCode)
+                .Select(p =>
+                {
+                    string amharicName = string.Join(" ", new[] { p.FirstName, p.MiddleName, p.LastName }
+                        .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+                    string englishName = string.Join(" ", new[] { p.FirstNameEnglish, p.MiddleNameEnglish, p.LastNameEnglish }
+                        .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+                    string displayName = !string.IsNullOrWhiteSpace(amharicName) ? amharicName : englishName;
+
+                    return new
+                    {
+                        p.EmployeeId,
+                        FullNameAmharic = $"{p.EmployeeCode} - {displayName}"
+                    };
+                });
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetEmployeesInSelectedDepartment(int OrgStructureId)
         {
             //employe.GetSubordinates_FilteredByBranchAlso
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             var EemployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(EemployeeId);
-            var empIds = db.Placements.Where(x => x.OrgStructureId == OrgStructureId && x.isCurrent && mybraches.Contains(x.BranchId)).Select(x => x.EmployeeId).ToList();
+            var empIds = db.Placements.Where(x => x.OrgStructureId == OrgStructureId && x.isCurrent&& mybraches.Contains(x.BranchId)).Select(x => x.EmployeeId).ToList();
 
-            var employees = db.Person_Employee.Where(x => x.IsActive).Where(x => empIds.Contains(x.EmployeeId) || subordinates.Contains(x.EmployeeId)).DistinctByField(x => x.EmployeeId).ToList();
+            var employees = db.Person_Employee.Where(x=>x.IsActive).Where(x => empIds.Contains(x.EmployeeId)||subordinates.Contains(x.EmployeeId)).DistinctByField(x=>x.EmployeeId).ToList();
 
             return Json(employees.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
-                FullNameAmharic = p.EmployeeCode + "-" + p.FullNameAmharic
+                FullNameAmharic =p.EmployeeCode+"-"+ p.FullNameAmharic
             }), JsonRequestBehavior.AllowGet);
         }
         //////
@@ -3312,8 +3999,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Display = p.ToString()
             }), JsonRequestBehavior.AllowGet);
         }
-
-
+        
         public JsonResult GetEnumWithOutWaitingForApprovalandDepartmentApproveOption()
         {
 
@@ -3327,6 +4013,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             {
                 Value = Convert.ToInt32(p),
                 Display = p.ToString()
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetFiscalYearFromQuarterLength()
+        {
+            HashSet<int> fiscalYearIds = new HashSet<int>(db.QuarterLengths.Select(x => x.GlFiscalYearId));
+            var fiscalYear = db.GLFiscalYears
+                                    .Where(x=> fiscalYearIds.Contains(x.GlFiscalYearId))
+                                    .OrderByDescending(x => x.GlFiscalYearId)
+                                    .ToList();
+            
+            return Json(fiscalYear.Select(p =>
+            new
+            {
+                GlFiscalYearId = p.GlFiscalYearId,
+                Name = p.Name
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetBranchForHRDashBoard()
+        {
+            var branches = db.Branch.Where(x=> x.IsActive)
+                                    .ToList();
+            
+            return Json(branches.Select(p =>
+            new
+            {
+                Value = p.BranchId,
+                Text = p.Name
+
             }), JsonRequestBehavior.AllowGet);
         }
     }
