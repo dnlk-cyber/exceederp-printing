@@ -46,8 +46,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         }
         public ActionResult Complains_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Complain> complains = db.Complains.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<Complain> complains = db.Complains.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = complains.ToDataSourceResult(request, complain => new
             {
                 ComplainId = complain.ComplainId,

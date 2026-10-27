@@ -44,8 +44,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult Advances_Read([DataSourceRequest]DataSourceRequest request)
         {
            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Advance> advances = db.Advances.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<Advance> advances = db.Advances.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = advances.ToDataSourceResult(request, advance => new {
                 AdvanceID = advance.AdvanceId,
                 EmployeeId = advance.EmployeeId,

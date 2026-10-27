@@ -60,8 +60,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult FixedContributions_Read([DataSourceRequest]DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<FixedContribution> fixedcontributions = db.FixedContributions.Where(x => employees.Contains(x.EmployeeId.ToString())); 
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<FixedContribution> fixedcontributions = db.FixedContributions.Where(x => employees.Contains(x.EmployeeId)); 
             DataSourceResult result = fixedcontributions.ToDataSourceResult(request, fixedContribution => new {
                 FixedContributionId = fixedContribution.FixedContributionId,
                 EmployeeId = fixedContribution.EmployeeId,
@@ -175,8 +175,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     {
                         if (fixedContribution.ApplyToAll)
                         {
-                            List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-                            IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                            List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                            IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
                           
 
                             var allcontribution = db.FixedContributions.Where(x => x.GLPeriodId == fixedContribution.GLPeriodId && x.ContributionTypeId == fixedContribution.ContributionTypeId).ToList();
@@ -369,9 +369,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             }
                             if (fixedContribution.ApplyToAll)
                             {
-                                List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                                List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
                                 IQueryable<Person_Employee> employees =
-                                    db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                                    db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
                                 ;
                                 //var placments = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
                                 //List<Person_Employee> employees = new List<Person_Employee>();
@@ -534,9 +534,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 }
                                 if (fixedContribution.ApplyToAll)
                                 {
-                                    List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                                    List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
                                     IQueryable<Person_Employee> employees =
-                                        db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                                        db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
                                     ;
                                     //var placments = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
                                     //List<Person_Employee> employees = new List<Person_Employee>();

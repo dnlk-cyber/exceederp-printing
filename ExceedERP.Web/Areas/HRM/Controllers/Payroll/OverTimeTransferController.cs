@@ -196,8 +196,8 @@ else
         public ActionResult OverTimeTransfers_Read([DataSourceRequest]DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<OverTimeTransfer> overtimetransfers = db.OverTimeTransfers.Where(x => employees.Contains(x.EmployeeId.ToString())); ;
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<OverTimeTransfer> overtimetransfers = db.OverTimeTransfers.Where(x => employees.Contains(x.EmployeeId)); ;
             DataSourceResult result = overtimetransfers.ToDataSourceResult(request, overTimeTransfer => new {
                 OverTimeTransferId = overTimeTransfer.OverTimeTransferId,
                 EmployeeId = overTimeTransfer.EmployeeId,

@@ -53,8 +53,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         }     
         public ActionResult LateCommings_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<LateComming> latecommings = db.LateCommings.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<LateComming> latecommings = db.LateCommings.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = latecommings.ToDataSourceResult(request, lateComming => new {
                 LateCommingId = lateComming.LateCommingId,
                 EmployeeId = lateComming.EmployeeId,

@@ -56,8 +56,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult Associations_Read([DataSourceRequest]DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Association> associations = db.Associations.Where(x => employees.Contains(x.EmployeeId.ToString())).OrderBy(o => o.Type);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<Association> associations = db.Associations.Where(x => employees.Contains(x.EmployeeId)).OrderBy(o => o.Type);
             DataSourceResult result = associations.ToDataSourceResult(request, association => new {
                 AssociationId = association.AssociationId,
                 EmployeeId = association.EmployeeId,
@@ -107,8 +107,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         if (association.ApplyToAll)
                         
                         {
-                            List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-                            IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                            List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                            IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
                            
                             foreach (var e in employees)
                             {
@@ -277,9 +277,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         {
                             if (association.ApplyToAll)
                             {
-                                List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                                List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
                                 IQueryable<Person_Employee> employees =
-                                    db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                                    db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
 
                                 var allcontribution =
                                     db.Associations.Where(

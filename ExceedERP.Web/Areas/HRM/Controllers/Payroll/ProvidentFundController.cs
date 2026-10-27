@@ -38,8 +38,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult ProvidentFunds_Read([DataSourceRequest]DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<ProvidentFund> ProvidentFunds = db.ProvidentFunds.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<ProvidentFund> ProvidentFunds = db.ProvidentFunds.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = ProvidentFunds.ToDataSourceResult(request, ProvidentFund => new {
                 EmployeeId = ProvidentFund.EmployeeId,
                 ProvidentFundId = ProvidentFund.ProvidentFundId,

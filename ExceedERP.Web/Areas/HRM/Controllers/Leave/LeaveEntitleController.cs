@@ -24,7 +24,7 @@ using ExceedERP.Helpers.HR;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
 
-    [AuthorizeRoles(HrmConstants.HRLeaveUser, HrmConstants.HRLeaveAdmin)]
+    [AuthorizeRoles(HrmConstants.HRLeaveUser, HrmConstants.HRLeaveAdmin, HrmConstants.LeaveEntitlementManager)]
     public class LeaveEntitleController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -61,7 +61,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
 
         #region generate Leaveenttle
-        [AuthorizeRoles(HrmConstants.HRLeaveAdmin)]
+        [AuthorizeRoles(HrmConstants.LeaveEntitlementManager)]
         public JsonResult GetEmployeeLeaveEntitlementNewAwaj(int period, string employeeId)
         {
             try
@@ -122,7 +122,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         return Json(new
                         {
                             Status = "NOT_OK",
-                            Message = "Leave entitlement has already been generated for this fiscal year and regeneration is disabled. Enable 'Is Regenerating Allowed' in Leave Setting if you need to regenerate it."
+                            Message = "Leave entitlement has already been generated for this fiscal year and regeneration is disabled. Enable 'Is Regenerating Allowed' in  Annual Leave Setting if you need to regenerate it."
                         }, JsonRequestBehavior.AllowGet);
                     }
                 }
@@ -161,21 +161,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return validationResult;
             }
 
-            // 4. Load configuration values
-            var (maxLeaveConfig, maxLeaderConfig, thresholdLeave, forleadersnew) = LoadConfigurationValues();
-            var missingConfigurations = new List<string>();
+                // 4. Load configuration values
 
-            if (maxLeaveConfig == null || string.IsNullOrWhiteSpace(maxLeaveConfig.CurrentValue))
-                missingConfigurations.Add(LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
+                var (maxLeaveConfig, maxLeaderConfig, thresholdLeave, forleadersnew,staffIncrementAmount,ManagementIncrementAmount,increementYear) = LoadConfigurationValues();
+                var missingConfigurations = new List<string>();
 
-            if (maxLeaderConfig == null || string.IsNullOrWhiteSpace(maxLeaderConfig.CurrentValue))
-                missingConfigurations.Add(LeaveSetting.MAXIMUM_Leave_For_Leaders.ToString());
+                if (maxLeaveConfig == null || string.IsNullOrWhiteSpace(maxLeaveConfig.CurrentValue))
+                    missingConfigurations.Add(LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
 
-            if (thresholdLeave == null || string.IsNullOrWhiteSpace(thresholdLeave.CurrentValue))
-                missingConfigurations.Add(LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
+                if (maxLeaderConfig == null || string.IsNullOrWhiteSpace(maxLeaderConfig.CurrentValue))
+                    missingConfigurations.Add(LeaveSetting.MAXIMUM_Leave_For_Leaders.ToString());
 
-            if (forleadersnew == null || string.IsNullOrWhiteSpace(forleadersnew.CurrentValue))
-                missingConfigurations.Add(LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
+                if (thresholdLeave == null || string.IsNullOrWhiteSpace(thresholdLeave.CurrentValue))
+                    missingConfigurations.Add(LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
+
+                if (forleadersnew == null || string.IsNullOrWhiteSpace(forleadersnew.CurrentValue))
+                    missingConfigurations.Add(LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
+
+
+                if (staffIncrementAmount == null || string.IsNullOrWhiteSpace(staffIncrementAmount.CurrentValue))
+                    missingConfigurations.Add(LeaveSetting.Staff_Leave_Entitlement_Increase_Period.ToString());
+
+                if (ManagementIncrementAmount == null || string.IsNullOrWhiteSpace(ManagementIncrementAmount.CurrentValue))
+                    missingConfigurations.Add(LeaveSetting.Management_Leave_Entitlement_Increase_Period.ToString());
+
+                if (increementYear == null || string.IsNullOrWhiteSpace(increementYear.CurrentValue))
+                    missingConfigurations.Add(LeaveSetting.LEAVE_ENTITLEMENT_INCREEMENT_YEAR.ToString());
 
             if (missingConfigurations.Any())
             {
@@ -192,6 +203,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             int LeaveTrusholdValue = int.Parse(thresholdLeave.CurrentValue);
             int leaveTresholdForLeaderdrsNew = int.Parse(forleadersnew.CurrentValue);
             int maximumForLeader = int.Parse(maxLeaderConfig.CurrentValue);
+            int staffIncreement = int.Parse(staffIncrementAmount.CurrentValue);
+            int managmentincreement = int.Parse(ManagementIncrementAmount.CurrentValue);
+            int tobeIncrementedInyear = int.Parse(increementYear.CurrentValue);
 
             // 5. Find previous fiscal year
             var previousYear = GetPreviousFiscalYear(currentPeriod);
@@ -238,7 +252,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             // 8. Process entitlements
             ProcessEntitlements(activePlacements, prevEntitlements, currentEntitlements, currentPeriod,
                                newAwajInitialYear.GlFisicalYearId, maximumValue, maximumForLeader,
-                               LeaveTrusholdValue, leaveTresholdForLeaderdrsNew, incrementalAmount);
+                               LeaveTrusholdValue, leaveTresholdForLeaderdrsNew, incrementalAmount, 
+                               staffIncreement, managmentincreement, tobeIncrementedInyear);
             db.SaveChanges();
             // 9. Log operation
             UserHelper.OperationLog(
@@ -309,16 +324,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return null;
         }
-
-        private (Configuration maxLeave, Configuration maxLeader, Configuration threshold, Configuration forLeadersNew) 
+        //taffIncrementAmount,ManagementIncrementAmount,increementYear
+        private (Configuration maxLeave, Configuration maxLeader, Configuration threshold, Configuration forLeadersNew, Configuration taffIncrementAmount, Configuration ManagementIncrementAmount, Configuration increementYear) 
             LoadConfigurationValues()
         {
             var maxLeaveConfig = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
             var maxLeaderConfig = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.MAXIMUM_Leave_For_Leaders.ToString());
             var thresholdLeave = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
             var forleadersnew = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
+            var taffIncrementAmount = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.Staff_Leave_Entitlement_Increase_Period.ToString());
+            var ManagementIncrementAmount = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.Management_Leave_Entitlement_Increase_Period.ToString());
+            var increementYear = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_ENTITLEMENT_INCREEMENT_YEAR.ToString());
 
-            return (maxLeaveConfig, maxLeaderConfig, thresholdLeave, forleadersnew);
+            return (maxLeaveConfig, maxLeaderConfig, thresholdLeave, forleadersnew, taffIncrementAmount, ManagementIncrementAmount, increementYear);
         }
 
 
@@ -402,7 +420,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         private void ProcessEntitlements(List<Placement> activePlacements, List<LeaveEntitle> prevEntitlements,
                                           List<LeaveEntitle> currentEntitlements, GlFiscalYear currentPeriod, int initialYearId,
-                                          int maximumValue, int maximumForLeader, int LeaveTrusholdValue, int leaveTresholdForLeaderdrsNew, decimal incrementalAmount)
+                                          int maximumValue, int maximumForLeader, int LeaveTrusholdValue, int leaveTresholdForLeaderdrsNew,
+                                          decimal incrementalAmount,
+                                           int staffIncreement,int  managmentincreement,int  tobeIncrementedInyear)
         {
             // Clean up duplicates BEFORE processing
             var employeeIds = activePlacements.Select(x => x.EmployeeId).ToList();
@@ -419,6 +439,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 try
                 {
+                    if (empPlacement.ResponsibilityLevel == ResponsibilityLevel.STAFF)
+                        incrementalAmount = staffIncreement;
+                    if (empPlacement.ResponsibilityLevel == ResponsibilityLevel.LOW_MANAGMENT
+                        || empPlacement.ResponsibilityLevel == ResponsibilityLevel.MEDIUM_MANAGMENT
+                        || empPlacement.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
+                        incrementalAmount = managmentincreement;
                     // New entitlement path
                     var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empPlacement.EmployeeId);
                     if (person == null)
@@ -527,7 +553,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             else
             {
-                UpdateExistingEntitlement(currentEntitlement, currentFiscalYear, cappedAmount, cappedAmount);
+              
+                    UpdateExistingEntitlement(currentEntitlement, currentFiscalYear, cappedAmount, cappedAmount);
+
             }
         }
 
@@ -613,7 +641,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             freshEntitlement.IsAdded = true;
             freshEntitlement.IsExpired = false;
             freshEntitlement.Amount = newEntitlement ?? amount;
-            freshEntitlement.Balance = amount;
+            freshEntitlement.Balance = freshEntitlement.Balance < freshEntitlement.Balance? freshEntitlement.Balance: amount;
             freshEntitlement.GlFiscalYearId = currentPeriod.GlFiscalYearId;
             freshEntitlement.LastModified = DateTime.Now;
             freshEntitlement.ModifiedBy = User.Identity.Name;
@@ -2220,50 +2248,51 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LeavesEntitle_New_Read([DataSourceRequest] DataSourceRequest request,string yearId, string empId)
+        public ActionResult LeavesEntitle_New_Read([DataSourceRequest] DataSourceRequest request, string yearId, string empId)
         {
             var myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             var datePrefer = HrHelper.GetDatePreference();
 
-            // Query includes both expired and unexpired for full aggregation
-            var allLeaves = db.LeavesEntitle
-                .Include(e => e.Employee)
-                .Where(x => myBranches.Contains(x.BranchId)).ToList();
-            if(!string.IsNullOrWhiteSpace(yearId)&&int.TryParse(yearId,out int fiscalYearId))
-                allLeaves = allLeaves
-                .Where(x => x.GlFiscalYearId ==fiscalYearId).ToList();
+            // 1. Build the database query (keep as IQueryable)
+            var query = db.LeavesEntitle
+                .Where(x => myBranches.Contains(x.BranchId));
 
-            if (!string.IsNullOrWhiteSpace(yearId)&&int.TryParse(empId,out int employeeId))
-                allLeaves = allLeaves
-                .Where(x => x.EmployeeId == employeeId).ToList();
-            // Prepare grouping (SQL-level aggregation)
+            // 2. Apply filters at the database level to prevent pulling unnecessary rows
+            if (!string.IsNullOrWhiteSpace(yearId) && int.TryParse(yearId, out int fiscalYearId))
+            {
+                query = query.Where(x => x.GlFiscalYearId == fiscalYearId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(empId) && int.TryParse(empId, out int employeeId))
+            {
+                query = query.Where(x => x.EmployeeId == employeeId);
+            }
+
+            // 3. Execute query with only the filtered dataset
+            var allLeaves = query
+                .Include(e => e.Employee)
+                .ToList();
+
+            // 4. Perform grouping and aggregation in memory
             var groupedData = allLeaves
                 .GroupBy(x => x.EmployeeId)
                 .Select(g => new
                 {
                     EmployeeId = g.Key,
-                    // Total of all leaves (expired + unexpired)
                     TotalAmount_All = g.Sum(x => (decimal?)x.Amount) ?? 0,
-
                     TotalBalance_All = g.Sum(x => (decimal?)x.Balance) ?? 0,
-                    // Total of unexpired only
                     TotalAmount_Unexpired = g.Where(x => !x.IsExpired).Sum(x => (decimal?)x.Amount) ?? 0,
-
                     TotalBalance_Unexpired = g.Where(x => !x.IsExpired).Sum(x => (decimal?)x.Balance) ?? 0,
-                    // Latest active (unexpired) record
                     LatestActive = g.Where(x => !x.IsExpired)
-                                            .OrderByDescending(x => x.GlFiscalYearId)
-                                            .FirstOrDefault()
+                                    .OrderByDescending(x => x.GlFiscalYearId)
+                                    .FirstOrDefault()
                 })
-                .AsEnumerable() // move to memory for formatting
-                .Where(x => x.LatestActive != null) // show only employees with unexpired records
+                .Where(x => x.LatestActive != null)
                 .Select(x => new
                 {
                     x.EmployeeId,
-                    // Only unexpired info for display
                     Amount = x.TotalAmount_Unexpired,
                     Balance = x.TotalBalance_Unexpired,
-                    // Display also total of all (expired + unexpired)
                     SumOfAllEntitlement = x.TotalAmount_All,
                     SumOfAllBalances = x.TotalBalance_All,
                     EmployeeCode = x.LatestActive?.Employee?.EmployeeCode,
@@ -2283,13 +2312,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                     HireDate = datePrefer
                         ? (x.LatestActive?.Employee?.HiredDateAmharic ?? "-")
-                        : x.LatestActive?.Employee?.HiredDate.ToString("dd.MM.yyyy") ?? "-"
+                        : (x.LatestActive?.Employee != null ? x.LatestActive.Employee.HiredDate.ToString("dd.MM.yyyy") : "-")
                 });
 
-            var result = groupedData.ToDataSourceResult(request);
+            var result = groupedData.AsQueryable().ToDataSourceResult(request);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-
         public ActionResult LeavEntitleEmployee_Read([DataSourceRequest] DataSourceRequest request, string field)
         {
             int.TryParse(field, out int employeeId);
@@ -2356,57 +2384,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        //public ActionResult LeavesEntitle_New_Read([DataSourceRequest]DataSourceRequest request)
-        //{
-        //    List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
-
-        //    //var employeeIds = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
-        //    var datePrefer = HrHelper.GetDatePreference();
-        //    var query = db.LeavesEntitle.Where(x => myBranches.Contains(x.BranchId)
-        //                                            && !x.IsExpired)
-        //        .GroupBy(x => x.EmployeeId)
-        //        .Select(g => new
-        //        {
-        //            EmployeeId = g.Key,
-        //            Balance = g.Sum(x => x.Balance),
-        //            Amount = g.Sum(x => x.Amount),
-        //            Latest = g.OrderByDescending(x => x.GlFiscalYearId).FirstOrDefault(),
-        //            Count = g.Count()
-        //        })
-        //        .Select(x => new
-        //        {
-        //            EmployeeId=x.EmployeeId,
-        //            Amount=x.Amount,
-        //            Balance =x.Balance,
-        //            //x.TotalAmount,
-        //            //x.TotalBalance,
-        //            x.Count,
-        //            BranchId = x.Latest.Employee.BranchId,
-        //            GlFiscalYearId = x.Latest.GlFiscalYearId,
-        //            Remark = x.Latest.Remark,
-        //            EmployeeCode = x.Latest.Employee.EmployeeCode,
-        //            DateCreated = x.Latest.DateCreated,
-        //            LastModified = x.Latest.LastModified,
-        //            CreatedBy = x.Latest.CreatedBy,
-        //            ModifiedBy = x.Latest.ModifiedBy,
-        //            OrgBranchName = x.Latest.OrgBranchName,
-        //            ExpiredBy = x.Latest.ExpiredBy,
-        //            ExpiredDate = x.Latest.ExpiredDate,
-        //            ReversedBy = x.Latest.ReversedBy,
-        //            Void = x.Latest.Void,
-        //            ReversedDate = x.Latest.ReversedDate,
-        //            HireDate = datePrefer? x.Latest?.Employee?.HiredDateAmharic ?? "-"
-        //                            : x.Latest.Employee?.HiredDate?.ToString("dd.MM.yyyy") ?? "-"
-
-
-
-        //        });
-
-        //    var result = query.ToDataSourceResult(request);
-        //    return Json(result, JsonRequestBehavior.AllowGet);
-
-
-        //}
         public ActionResult LeavesEntitle_OnePerson_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             var leavesEntitleQuery = db.LeavesEntitle

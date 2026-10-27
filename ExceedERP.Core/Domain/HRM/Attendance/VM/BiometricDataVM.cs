@@ -1,5 +1,18 @@
-﻿namespace ExceedERP.Core.Domain.HRM.Attendance.VM
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.HRM.Attendance.VM
 {
+    public class DepartmentDataVM
+    {
+        public string id { get; set; }
+        public string dept_code { get; set; }
+        public string dept_name { get; set; }
+        public string parent_dept { get; set; }
+    }
     public class BiometricDataVM
     {
         public string employee_id { get; set; }
@@ -16,7 +29,7 @@
 
     public class AttendanceRecord
     {
-        public int EmpId { get; set; }
+        public string EmpId { get; set; }
         public string EmpCode { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -33,5 +46,4 @@
         public string PresentRate { get; set; }
         public string AbsenceRate { get; set; }
     }
-
 }

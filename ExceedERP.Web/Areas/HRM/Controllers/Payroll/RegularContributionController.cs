@@ -47,8 +47,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult RegularContributions_Read([DataSourceRequest]DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<RegularContribution> regularcontributions = db.RegularContributions.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<RegularContribution> regularcontributions = db.RegularContributions.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = regularcontributions.ToDataSourceResult(request, regularContribution => new {
                 RegContributionId = regularContribution.RegContributionId,
                 EmployeeId = regularContribution.EmployeeId,
@@ -96,8 +96,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     {
                         if (regularContribution.ApplyToAll)
                         {
-                            List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-                            IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                            List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                            IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
                             //var placments = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
                             //List<Person_Employee> employees = new List<Person_Employee>();
                             //foreach (var emp in person_employee)
@@ -190,8 +190,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     { 
                         if (regularContribution.ApplyToAll)
                 {
-                    List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-                    IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                    List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                    IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
                     //var placments = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
                     //List<Person_Employee> employees = new List<Person_Employee>();
                     //foreach (var emp in person_employee)
@@ -280,8 +280,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                     if (regularContribution.ApplyToAll)
                     {
-                        List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-                        IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString()));
+                        List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+                        IQueryable<Person_Employee> employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId));
                         //List<Person_Employee> employees = new List<Person_Employee>();
                         //foreach (var emp in person_employee)
                         //{

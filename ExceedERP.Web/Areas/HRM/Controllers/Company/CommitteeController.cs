@@ -53,7 +53,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult Committees_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             IQueryable<Committee> committees = db.Committees;//.Where(x => employees.Contains(x.EmployeeId.ToString())); ;
             DataSourceResult result = committees.ToDataSourceResult(request, committee => new
             {

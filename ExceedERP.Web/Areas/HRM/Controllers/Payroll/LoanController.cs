@@ -73,8 +73,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
       
         public ActionResult Loans_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Loan> loans = db.Loans.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<Loan> loans = db.Loans.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = loans.ToDataSourceResult(request, loan => new {
                 LoanId = loan.LoanId,
                 EmployeeId = loan.EmployeeId,

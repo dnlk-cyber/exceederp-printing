@@ -58,8 +58,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         }
         public ActionResult Absence_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Absence> absences = db.Absence.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<Absence> absences = db.Absence.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = absences.ToDataSourceResult(request, absence => new
             {
                 AbsenceId = absence.AbsenceId,

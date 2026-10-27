@@ -409,7 +409,19 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
                 new ApplicationRole(HrmConstants.ConstructionAndOperation, "Construction and operations management review", "Operation"),
                 new ApplicationRole(HrmConstants.DailyLabour, "Daily labor operations management", "HR"),
                 #endregion
-
+            #region Budget
+            new ApplicationRole("Budget_Admin", "Budget Administrator", "Budget"),
+            new ApplicationRole("Budget_Approver", "Budget Approver", "Budget"),
+            new ApplicationRole("Budget_Report", "Budget Report", "Budget"),
+            new ApplicationRole("Budget_Requestor", "Budget Requester", "Budget"),
+            new ApplicationRole("Budget_User", "Budget User", "Budget"),
+            new ApplicationRole("Budget_Transfer", "Budget Transfer", "Budget"),
+            new ApplicationRole("Budget_Revision", "Budget Revision", "Budget"),
+            new ApplicationRole("Budget_PR_Approval", "Budget PR Approval", "Budget"),
+            new ApplicationRole("Budget_Payment", "Budget Payment", "Budget"),
+            new ApplicationRole("Budget_Payment_Approval", "Budget Payment Approval", "Budget"),
+            new ApplicationRole("Budget_Void", "Budget Void", "Budget"),
+            #endregion
 			#region Archive
 		new ApplicationRole("Archive_Admin","Manage archive Settings and configurations by Archive administrator","Archive "),
 		new ApplicationRole("Archive_User","Manage archive functionalities by Archiver","Archive "),

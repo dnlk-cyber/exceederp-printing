@@ -70,9 +70,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
         public ActionResult Additions_Read([DataSourceRequest]DataSourceRequest request)
         {
-          List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+          List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
                 //UserInformationHelper.GetUserBranchs(User.Identity.Name);
-          IQueryable<Addition> additions = db.Additions.Where(x => employees.Contains(x.EmployeeId.ToString()));
+          IQueryable<Addition> additions = db.Additions.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = additions.ToDataSourceResult(request, addition => new {
                 AdditionId = addition.AdditionId,
                 EmployeeId = addition.EmployeeId,

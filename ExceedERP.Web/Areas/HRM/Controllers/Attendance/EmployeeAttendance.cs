@@ -36,8 +36,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         }
         public ActionResult Attendances_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Core.Domain.HRM.Attendance.Attendance> attendances = db.Attendances.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<Core.Domain.HRM.Attendance.Attendance> attendances = db.Attendances.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = attendances.ToDataSourceResult(request, attendance => new
             {
                 AttendanceId = attendance.AttendanceId,

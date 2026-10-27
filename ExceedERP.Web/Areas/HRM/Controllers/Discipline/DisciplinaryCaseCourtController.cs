@@ -108,9 +108,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
        
         public ActionResult DisciplinaryCases_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<DisciplinaryCase> disciplinarycases = db.DisciplinaryCases.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            IQueryable<DisciplinaryCase> disciplinarycases = db.DisciplinaryCases.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = disciplinarycases.ToDataSourceResult(request, disciplinaryCase => new {
                 DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
                 EmployeeId = disciplinaryCase.EmployeeId,

@@ -116,7 +116,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult Person_Employee_Read([DataSourceRequest]DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             var person_employe = db.Person_Employee.GroupJoin(db.BankReferences,
                 u => u.EmployeeId.ToString(),
                 p => p.Reference,
@@ -158,7 +158,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                          });
 
-            var filterd = person_employee.Where(x => employees.Contains(x.EmployeeId.ToString())).OrderBy(x => x.AccountNumber);
+            var filterd = person_employee.Where(x => employees.Contains(x.EmployeeId)).OrderBy(x => x.AccountNumber);
             DataSourceResult result =filterd .ToDataSourceResult(request, person_Employee => new
             {
                 EmployeeId = person_Employee.EmployeeId,

@@ -5,12 +5,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-﻿using ExceedERP.Core.Domain.Common;
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM.Payroll;
 ﻿using ExceedERP.DataAccess.Context;
-﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Helpers.Common;
@@ -47,9 +45,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
      
         public ActionResult OverTimePerDays_Read([DataSourceRequest]DataSourceRequest request, string ticketNo)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
 
-            IQueryable<OverTimePerDay> overtimeperdays = db.OverTimePerDays.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            IQueryable<OverTimePerDay> overtimeperdays = db.OverTimePerDays.Where(x => employees.Contains(x.EmployeeId));
             if (ticketNo != "")
             {
                 overtimeperdays = overtimeperdays.Where(x => x.TicketNumber == ticketNo);

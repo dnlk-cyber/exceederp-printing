@@ -234,8 +234,8 @@ namespace ExceedERP.Web.Areas.Health.Controllers
         }
         public ActionResult PatientCard_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<PatientCard> patientcard = db.PatientCard.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<PatientCard> patientcard = db.PatientCard.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = patientcard.ToDataSourceResult(request, patientCard => new
             {
                 PatientId = patientCard.PatientId,

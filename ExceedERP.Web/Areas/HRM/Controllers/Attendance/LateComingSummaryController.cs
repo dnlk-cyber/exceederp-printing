@@ -79,7 +79,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             //                 select (new { g.GLPeriodId });
 
            // List<int> selectedPeriod = periodList.Select(x => x.GLPeriodId).ToList();
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             IQueryable<LateComingSummary> LateComingSummaries = db.LateComingSummaries;//.Where(x => employees.Contains(x.EmployeeId.ToString()) /*&& selectedPeriod.Contains(x.GLPeriodId)*/);
             DataSourceResult result = LateComingSummaries.ToDataSourceResult(request, LateComingSummary => new
             {

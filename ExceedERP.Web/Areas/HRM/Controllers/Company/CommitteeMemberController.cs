@@ -38,7 +38,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult CommitteeMember_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             //IQueryable<CommitteeMember> committeeMember = db.CommitteeMembers.Where(x => employees.Contains(x.EmployeeId.ToString())); 
             //IQueryable<CommitteeMember> committeeMember=db.CommitteeMembers.AsQueryable();
             IQueryable<CommitteeMember> committeeMember = db.CommitteeMembers.Where(x => x.CommitteeId == id);

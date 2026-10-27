@@ -56,6 +56,7 @@
                         .OptionLabel(Resources.Select)
                         .DataTextField("Name")
                         .DataValueField("GlFiscalYearId")
+                        .Events(x=>x.Change("onEntitlementChange"))
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
@@ -68,7 +69,7 @@
                             .DataTextField("FullNameaEnglish")
                             .OptionLabel(Resources.Select + " " + Resources.Employee)
                             .Filter("contains")
-                            // .MinLength(2)
+                             .Events(x => x.Change("onEntitlementChange"))
                             .HtmlAttributes(new { style = "width:240px" })
                             .DataSource(source =>
                             {
@@ -380,6 +381,13 @@
 
 <script>
 
+    function onEntitlementChange(e) {
+        var grid = $("#LeaveEntitlegrid").data("kendoGrid");
+        if (grid) {
+            grid.dataSource.read();
+        }
+    }
+
     function filterParam() {
         var period = $("#GlFiscalYear").data("kendoDropDownList")?.value();
         var employeeId = $("#LeaveEmployeeId").data("kendoDropDownList")?.value();
@@ -419,38 +427,41 @@
             text: $("#LeaveEmployeeId").data("kendoDropDownList").filterInput.val(),
         }
     }
-    function Refresh(e) {
-    $('#loading-image').show();
 
-    try {
-        var period = $("#GlFiscalYear").data("kendoDropDownList")?.value();
-        var employeeId = $("#LeaveEmployeeId").data("kendoDropDownList")?.value();
+    function Refresh(e)
+    {
+        $('#loading-image').show();
 
-        $.ajax({
-            url: '@Url.Action("GetEmployeeLeaveEntitlementNewAwaj", "LeaveEntitle")',
-            type: 'POST',
-            data: { period: period, employeeId: employeeId },
-            cache: false,
-            success: function (result) {
-                $('#loading-image').hide();
-                alert(result.Message);
+        try {
+            var period = $("#GlFiscalYear").data("kendoDropDownList")?.value();
+            var employeeId = $("#LeaveEmployeeId").data("kendoDropDownList")?.value();
 
-                if (result.Status === "OK") {
-                    $("#LeaveEntitlegrid").data("kendoGrid").dataSource.read();
+            $.ajax({
+                url: '@Url.Action("GetEmployeeLeaveEntitlementNewAwaj", "LeaveEntitle")',
+                type: 'POST',
+                data: { period: period, employeeId: employeeId },
+                cache: false,
+                success: function (result) {
+                    $('#loading-image').hide();
+                    alert(result.Message);
+
+                    if (result.Status === "OK") {
+                        $("#LeaveEntitlegrid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#loading-image').hide();
+                    console.error("Error:", status, error, xhr.responseText);
+                    alert(xhr.responseText || error || "An error occurred while processing your request.");
                 }
-            },
-            error: function (xhr, status, error) {
-                $('#loading-image').hide();
-                console.error("Error:", status, error, xhr.responseText);
-                alert(xhr.responseText || error || "An error occurred while processing your request.");
-            }
-        });
-    } catch (ex) {
-        $('#loading-image').hide();
-        console.error("Exception:", ex);
-        alert("An unexpected error occurred. Please try again.");
+            });
+        } catch (ex) {
+            $('#loading-image').hide();
+            console.error("Exception:", ex);
+            alert("An unexpected error occurred. Please try again.");
+        }
+
     }
-}
 
    
     function Check() {

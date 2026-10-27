@@ -1,18 +1,18 @@
-﻿@using System.Collections
+@using System.Collections
 @using ExceedERP.Core.Domain.HRM.Attendance
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <legend>@Resources.NavigatorAttendance_DaysWorked</legend>
 @(Html.Kendo().Grid<EmpPayrollNoDaysWorked>()
-          .Name("EmpPayrollNoDaysWorkedgrid")
+      .Name("EmpPayrollNoDaysWorkedgrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
-          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["CurrentYearPeriods"], "GLPeriodId", "Name").EditorTemplateName("GetCurrentYearPeriods").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullName").EditorTemplateName("ActiveEmployees")/*.EditorTemplateName("PayrollListOfEmployee")*/.Filterable(ftb => ftb.Multi(true).Search(true)).Width(300);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["CurrentYearPeriods"], "GLPeriodId", "Name").EditorTemplateName("GetCurrentYearPeriods").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.Bound(c => c.Days);
-          //columns.Bound(c => c.Remark);
           columns.Bound(c => c.Reason);
           columns.Bound(c => c.MeasureTaken);
           columns.Command(command =>
@@ -23,115 +23,137 @@
               }
               if (HttpContext.Current.User.IsInRole("HR_Attendance_User") || HttpContext.Current.User.IsInRole("HR_Admin"))
               {
+
                   command.Destroy().Text(Resources.ActionButton_Cancel);
               }
           }).Width(200);
+
       })
-      .ToolBar(toolbar =>
-      {
-          toolbar.Template(@<text>
-<div class="toolbar">
-    @if (HttpContext.Current.User.IsInRole("HR_Attendance_User"))
-                {
-        @item.CreateButton(Resources.ActionButton_AddNewRecord)
+     .ToolBar(toolbar =>
+     {
+     toolbar.Template(@<text>
+                <div class="toolbar">
+                    @if (HttpContext.Current.User.IsInRole("HR_Attendance_User"))
+                     {
+                        @item.CreateButton(Resources.ActionButton_AddNewRecord)
 
-                }
-
-
-    <label class="category-label" for="GLPeriodId">@Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId</label>
-    @(Html.Kendo().ComboBox()
-                          .Placeholder(Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId)
-                          .Name("Period")
-
-                          .DataSource(dataSource =>
-                          {
-                            dataSource.Read(read => read.Action("GetCurrentYearPeriods", "EmpPayrollNoDaysWorked", new { area = "HRM" }))
-                .ServerFiltering(false);
-                        })
-
-                          .DataTextField("Name")
-                          .DataValueField("GLPeriodId")
-                          .AutoBind(false)
-
-                          .HtmlAttributes(new { style = "width: 300px;" })
-
-    )
+                     }
+                    <label class="period-label" for="GLPeriodId">@Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId</label>
+                    @(Html.Kendo().ComboBox()
+                                .Placeholder(Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId)
+                                .Name("Period")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetCurrentYearPeriods", "EmpPayrollNoDaysWorked", new { area = "HRM" }).Data("sendForgery"))
+                                    .ServerFiltering(false);
 
 
-    @(Html.Kendo().Button()
-                         .Name("btnRefresh")
-                         .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
-                         .Events(e => e.Click("Refresh"))
-                         .Content("Generate Days Absent"))
+                                })
+                                .DataTextField("Name")
+                                .DataValueField("GLPeriodId")
+                                .AutoBind(false)
 
-    @*@(Html.Kendo().Button()
-                        .Name("btnBiometric")
-                        .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
-                        .Events(e => e.Click("Biometric"))
-                        .Content("Generate Days Absent from Biometric"))*@
+                                .HtmlAttributes(new { style = "width: 150px;height:30px" })
 
+                    )
+                      <label for="FromDate">from:</label>
+                     @if (useEthiopian)
+                      {
 
-    @(Html.Kendo().Button()
-                          .Name("btnSummary")
-                          .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
-                          .Events(e => e.Click("summary"))
-                          .Content(Resources.HR_Attendance_EmpPayrollNoDaysWorked_Summary))
+                        @Html.TextBox("FromDate", "", new { disabled = "disabled", @class = "et-popup-picker"});<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
 
 
 
-</div>
 
-        </text>);
-           
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-          .Scrollable(h => h.Height(500))
-                         
-                                  .Sortable(sortable =>
-                                  {
-                                      sortable.SortMode(GridSortMode.SingleColumn);
-                                  })
-                      .Filterable()
-                         .Pageable(pageable => pageable
-                                .Input(true)
-                                .Numeric(false)
-                                .Refresh(true)
-                                .PageSizes(true)
-                                .ButtonCount(5))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Sort(x=>x.Add(s=>s.EmpPayrollNoDaysWorkedId).Descending())
-            .Events(events =>
-                 {
+                      }
+                       else
+                       {
+                            @(Html.Kendo().DatePicker().Name("FromDateGorg")
+                                                       .HtmlAttributes(new { style = "width:150px;height:30px" })
+                            )
 
-                     events.Error("error_handler(\"EmpPayrollNoDaysWorkedgrid\")");
-                     events.RequestStart("onRequestStart(\"EmpPayrollNoDaysWorkedgrid\")");
-                     events.RequestEnd("onRequestEnd(\"EmpPayrollNoDaysWorkedgrid\")");
-                 })
-                           
-          .Model(model => model.Id(p => p.EmpPayrollNoDaysWorkedId))
-          .Read(read => read.Action("EmpPayrollNoDaysWorkeds_Read", "EmpPayrollNoDaysWorked"))
-          .Create(create => create.Action("EmpPayrollNoDaysWorkeds_Create", "EmpPayrollNoDaysWorked"))
-          .Update(update => update.Action("EmpPayrollNoDaysWorkeds_Update", "EmpPayrollNoDaysWorked"))
-          .Destroy(destroy => destroy.Action("EmpPayrollNoDaysWorkeds_Destroy", "EmpPayrollNoDaysWorked"))
-      )
+
+                     }
+                      <label for="ToDate">To:</label>
+                     @if (useEthiopian)
+                      {
+
+                        @Html.TextBox("ToDate", "", new { disabled = "disabled", @class = "et-popup-picker"});<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+
+
+                        }
+                        else
+                        {
+                            @(Html.Kendo().DatePicker().Name("ToDateGorg")
+                                                       .HtmlAttributes(new { style = "width:150px;height:30px" })
+                            )
+
+                        }
+
+
+                    @(Html.Kendo().Button()
+                                    .Name("btnRefresh")
+                                    .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                                    .Events(e => e.Click("Refresh"))
+                                    .Content("Generate Days Absent"))
+
+
+                    @(Html.Kendo().Button()
+                                   .Name("btnBiometric2")
+                                   .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                                   .Events(e => e.Click("Biometric2"))
+                                   .Content("Generate from Biometric 2"))
+
+
+                    @(Html.Kendo().Button()
+                                        .Name("btnSummary")
+                                        .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                                        .Events(e => e.Click("summary"))
+                                        .Content(Resources.HR_Attendance_EmpPayrollNoDaysWorked_Summary))
+
+
+
+                </div>
+
+            </text>);
+
+
+          })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable(h => h.Height(500))
+
+                                            .Sortable(sortable =>
+                                            {
+                                                sortable.SortMode(GridSortMode.SingleColumn);
+                                            })
+                                .Filterable()
+                                   .Pageable(pageable => pageable
+                                          .Input(true)
+                                          .Numeric(false)
+                                          .Refresh(true)
+                                          .PageSizes(true)
+                                          .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(x => x.Add(s => s.EmpPayrollNoDaysWorkedId).Descending())
+                      .Events(events =>
+                      {
+
+                          events.Error("error_handler(\"EmpPayrollNoDaysWorkedgrid\")");
+                          events.RequestStart("onRequestStart(\"EmpPayrollNoDaysWorkedgrid\")");
+                          events.RequestEnd("onRequestEnd(\"EmpPayrollNoDaysWorkedgrid\")");
+                      })
+
+                    .Model(model => model.Id(p => p.EmpPayrollNoDaysWorkedId))
+                    .Read(read => read.Action("EmpPayrollNoDaysWorkeds_Read", "EmpPayrollNoDaysWorked").Data("sendForgery"))
+                    .Create(create => create.Action("EmpPayrollNoDaysWorkeds_Create", "EmpPayrollNoDaysWorked").Data("sendForgery"))
+                    .Update(update => update.Action("EmpPayrollNoDaysWorkeds_Update", "EmpPayrollNoDaysWorked").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("EmpPayrollNoDaysWorkeds_Destroy", "EmpPayrollNoDaysWorked").Data("sendForgery"))
+                )
 )
 <script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
 
-    //    }
-
-    //}
 
     function sync_handler(e) {
         this.read();
@@ -154,9 +176,9 @@
                     cache: false,
                     success: function (result) {
                         $('#loading-image').hide();
-                        r = result;
+                        alert(result.message)
                         $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").dataSource.read();
-                        $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").refresh();
+                        //$("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").refresh();
                     }
 
 
@@ -170,24 +192,104 @@
 </script>
 
 <script>
-
-    function Refresh() {
+    function Refresh()
+    {
         $('#loading-image').show();
         var grid = $("#Period").data("kendoComboBox");
         var period = grid.value();
-        if (period === "") {
-            alert("Please select period first!!");
-        } else {
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+        var fromDateGorg = $("#FromDateGorg").val();
+        var toDateGorg = $("#ToDateGorg").val();
+
+        if (fromDateGorg == null && toDateGorg == "" && fromDate == null && toDate == "") {
+            alert("Please select the date first to approve");
+            return;
+        }
+        // Period is always required
+        if (!period) {
+            alert("Please select a period.");
+            $('#loading-image').hide();
+            return;
+        }
+
+        // If one of the dates is selected but not both
+        if ((fromDate && !toDate) || (!fromDate && toDate)) {
+            alert("Please select both From and To dates together.");
+            $('#loading-image').hide();
+            return;
+        }
+
+        //// Optional: Inform user if both dates are selected (they will override period dates)
+        //if (fromDate && toDate) {
+        //    alert("From and To dates are selected and will override the period dates.");
+        //}
+
+      
+
+        $.ajax({
+            url: '@Url.Action("RefreshNew", "EmpPayrollNoDaysWorked")',
+            type: 'POST',
+            data: {
+                period: period,
+                from: fromDate,
+                to: toDate,
+                fromGorg: fromDateGorg,
+                toGorg: toDateGorg,
+            },
+            cache: false,
+            success: function (result) {
+                $('#loading-image').hide();
+                alert(result.message);
+
+                if (result.success) {
+                    var grid = $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid");
+                    if (grid)
+                    {
+                        grid.dataSource.read();
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                $('#loading-image').hide();
+                alert("An unexpected error occurred: " + error);
+            }
+        });
+
+    }
+
+    function Refreshcc() {
+        $('#loading-image').show();
+        var grid = $("#Period").data("kendoComboBox");
+        var period = grid.value();
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+
+        // Period is always required
+        if (!period) {
+            alert("Please select a period.");
+            $('#loading-image').hide();
+            return;
+        }
+
+        // If one of the dates is selected but not both
+        if ((fromDate && !toDate) || (!fromDate && toDate)) {
+            alert("Please select both From and To dates together.");
+            $('#loading-image').hide();
+            return;
+        }
+        else {
 
             $.ajax({
                 url: '@Url.Action("RefreshNew", "EmpPayrollNoDaysWorked")',
                 //contentType: "application/json; charset=utf-8",
-                data: { period: period},
+                data: { period: period, from: fromDate, to: toDate },
                 type: 'POST',
                 cache: false,
-                success: function (result) {
+                success: function (result)
+                {
                     $('#loading-image').hide();
-                    r = result;
+                    alert(result.message)
 
                     $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").dataSource.read();
                    // $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").refresh();
@@ -196,21 +298,46 @@
 
             });
         }
-      
+
     }
 
     function Biometric() {
         $('#loading-image').show();
         var grid = $("#Period").data("kendoComboBox");
         var period = grid.value();
-        if (period === "") {
-            alert("Please select period first!!");
-        } else {
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+        var fromDateGorg = $("#FromDateGorg").val();
+        var toDateGorg = $("#ToDateGorg").val();
+        if (fromDateGorg == null && toDateGorg == "" && fromDate == null && toDate == "") {
+            alert("Please select the date first to approve");
+            return;
+        }
+        // Period is always required
+        if (!period) {
+            alert("Please select a period.");
+            $('#loading-image').hide();
+            return;
+        }
+
+        // If one of the dates is selected but not both
+        if ((fromDate && !toDate) || (!fromDate && toDate)) {
+            alert("Please select both from and to dates together.");
+            $('#loading-image').hide();
+            return;
+        }
+        else {
 
             $.ajax({
                 url: '@Url.Action("ImportBiometricData", "EmpPayrollNoDaysWorked")',
                 //contentType: "application/json; charset=utf-8",
-                data: { period: period},
+                data: {
+                    period: period,
+                    from: fromDate,
+                    to: toDate,
+                    fromGorg: fromDateGorg,
+                    toGorg: toDateGorg
+                },
                 type: 'POST',
                 cache: false,
                 success: function (result) {
@@ -230,8 +357,71 @@
 
             });
         }
-      
+
+    }
+
+    function Biometric2()
+    {
+        $('#loading-image').show();
+        var grid = $("#Period").data("kendoComboBox");
+        var period = grid.value();
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+        var fromDateGorg = $("#FromDateGorg").val();
+        var toDateGorg = $("#ToDateGorg").val();
+        if (fromDateGorg == null && toDateGorg == "" && fromDate == null && toDate == "") {
+            alert("Please select the date first to approve");
+            return;
         }
+        // Period is always required
+        if (!period) {
+            alert("Please select a period.");
+            $('#loading-image').hide();
+            return;
+        }
+
+        // If one of the dates is selected but not both
+        if ((fromDate && !toDate) || (!fromDate && toDate)) {
+            alert("Please select both From and To dates together.");
+            $('#loading-image').hide();
+            return;
+        }
+        else
+        {
+
+            $.ajax({
+                url: '@Url.Action("ImportBiometricData2", "EmpPayrollNoDaysWorked")',
+                //contentType: "application/json; charset=utf-8",
+                data: {
+                    period: period,
+                    from: fromDate,
+                    to: toDate,
+                    fromGorg: fromDateGorg,
+                    toGorg: toDateGorg
+                },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    $('#loading-image').hide();
+                    r = result;
+                    alert(result.Message);
+
+                   $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").dataSource.read();
+                   // $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").refresh();
+                },
+                 error: function (xhr, status, error) {
+                     var errorMessage = xhr.status + ': ' + xhr.statusText
+                     $('#loading-image').hide();
+                    alert('Error - ' + errorMessage);
+                }
+
+
+            });
+
+        }
+
+
+    }
 
 
 

@@ -52,20 +52,22 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             // Apply status filtering
-            if (status == "Active") {
-                var empIds = placements.Where(x => x.isCurrent)
-                                       .Select(x => x.EmployeeId).Distinct();
+            if (status == "Active")
+            {
+                placements = placements.Where(x => x.isCurrent);
+                var empIds = placements.Select(x => x.EmployeeId).Distinct();
                 employeesQuery = employeesQuery.Where(x => x.IsActive && empIds.Contains(x.EmployeeId));
 
             }
             else if (status == "InActive")
             {
-                var empIds = placements.Where(x => !x.isCurrent)
-                                       .Select(x => x.EmployeeId).Distinct();
+                placements = placements.Where(x => !x.isCurrent);
+                    var empIds = placements.Select(x => x.EmployeeId).Distinct();
                 employeesQuery = employeesQuery.Where(x => !x.IsActive && empIds.Contains(x.EmployeeId));
             }
 
-            if (!string.IsNullOrEmpty(employementType)) {
+            if (!string.IsNullOrEmpty(employementType))
+            {
                 var empIds = placements.Where(x => x.EmployementType.ToString() == employementType)
                                        .Select(x => x.EmployeeId).Distinct();
                 employeesQuery = employeesQuery.Where(x => empIds.Contains(x.EmployeeId));

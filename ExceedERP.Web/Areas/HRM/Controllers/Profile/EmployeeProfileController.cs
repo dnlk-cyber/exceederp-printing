@@ -1280,9 +1280,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public void CheckEmployeeRetirment()
         {
             int maxAge;
-            List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
             var employees = db.Person_Employee
-                                    .Where(x => employeesList.Contains(x.EmployeeId.ToString()))
+                                    .Where(x => employeesList.Contains(x.EmployeeId))
                                     .Where(x => x.IsActive 
                                                 && !x.IsReHired 
                                                 && x.Remark != "R-Active" 

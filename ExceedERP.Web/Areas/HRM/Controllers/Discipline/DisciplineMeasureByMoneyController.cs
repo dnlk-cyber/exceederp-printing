@@ -25,7 +25,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
         public ActionResult DisciplineMeasuerByMoney_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             IQueryable<DisciplineMeasuerByMoney> disciplinemeasuerbymoney = db.DisciplineMeasuerByMoney.Where(x => x.DisciplinaryCaseId == id);
             DataSourceResult result = disciplinemeasuerbymoney.ToDataSourceResult(request, disciplineMeasuerByMoney => new
             {

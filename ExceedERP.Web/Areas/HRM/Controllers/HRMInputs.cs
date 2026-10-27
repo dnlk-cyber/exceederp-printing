@@ -75,6 +75,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             #endregion
         }
 
+        public List<int> GetUserBranchEmployees(string user)
+        {
+            var userBranches = UserInformationHelper.GetUserBranchsAsInt(user);
+
+            var employeeIds = db.Placements
+                .Where(p => userBranches.Contains(p.BranchId) && p.isCurrent)
+                .Join(db.Person_Employee.Where(e => e.IsActive),
+                      p => p.EmployeeId,
+                      e => e.EmployeeId,
+                      (p, e) => p.EmployeeId)
+                .Distinct()
+                .ToList();
+
+            return employeeIds;
+        }
 
         public List<EmployeeIdView> GetEmployeesForPlacment(string user)
         {
@@ -211,25 +226,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
             return new List<int>();
         }
-        public List<string> GetUserBranchEmployees(string user)
-        {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(user);
-            var placments = from p in db.Placements
-                            join
-                                e in db.Person_Employee
-                                on p.EmployeeId equals e.EmployeeId
-                            where mybraches.Contains(p.BranchId.ToString()) && p.isCurrent && e.IsActive
-                            select (new
-                            {
-                                EmployeeId = p.EmployeeId
-                            });
-            if (placments.Any())
-            {
-                var listOfEmployees = placments.Select(x => x.EmployeeId.ToString()).ToList();
-                return listOfEmployees;
-            }
-            return new List<string>();
-        }
+
+        //public List<string> GetUserBranchEmployees(string user)
+        //{
+        //    List<string> mybraches = UserInformationHelper.GetUserBranchs(user);
+        //    var placments = from p in db.Placements
+        //                    join
+        //                        e in db.Person_Employee
+        //                        on p.EmployeeId equals e.EmployeeId
+        //                    where mybraches.Contains(p.BranchId.ToString()) && p.isCurrent && e.IsActive
+        //                    select (new
+        //                    {
+        //                        EmployeeId = p.EmployeeId
+        //                    });
+        //    if (placments.Any())
+        //    {
+        //        var listOfEmployees = placments.Select(x => x.EmployeeId.ToString()).ToList();
+        //        return listOfEmployees;
+        //    }
+        //    return new List<string>();
+        //}
+
         public List<int> GetUserBranchAllEmployees(string user)
         {
             List<int> employeeIdLists = new List<int>();
