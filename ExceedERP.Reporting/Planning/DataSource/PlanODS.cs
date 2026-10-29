@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Planning;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Planning.ViewModel;
 using System;
@@ -18,13 +19,45 @@ namespace ExceedERP.Reporting.Planning.DataSource
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public PlanningVM GetPlannedData(string planyear, string workUnitId, string periodd)
+        public List<PlanningVM> GetPlannedData(object[] planyear, string workUnitId, string periodd, bool includeInactive)
+        {
+            var selectedFiscalYearIds = (planyear ?? new object[0])
+                .Select(value =>
+                {
+                    int fiscalYearId;
+                    return int.TryParse(Convert.ToString(value), out fiscalYearId)
+                        ? fiscalYearId
+                        : 0;
+                })
+                .Where(fiscalYearId => fiscalYearId > 0)
+                .Distinct()
+                .ToList();
+
+            var fiscalYears = db.GLFiscalYears.AsQueryable();
+            if (selectedFiscalYearIds.Any())
+            {
+                fiscalYears = fiscalYears.Where(x => selectedFiscalYearIds.Contains(x.GlFiscalYearId));
+            }
+            else
+            {
+                var fiscalYearIdsWithPlans = db.Plans.Select(x => x.GlFiscalYearId).Distinct();
+                fiscalYears = fiscalYears.Where(x => fiscalYearIdsWithPlans.Contains(x.GlFiscalYearId));
+            }
+
+            var fiscalYearIds = fiscalYears
+                .OrderBy(x => x.DateFrom)
+                .Select(x => x.GlFiscalYearId)
+                .ToList();
+
+            return fiscalYearIds
+                .Select(fiscalYearId => GetPlannedData(fiscalYearId, workUnitId, periodd, includeInactive))
+                .Where(model => model != null)
+                .ToList();
+        }
+
+        private PlanningVM GetPlannedData(int fiscalYearId, string workUnitId, string periodd, bool includeInactive)
         {
             var model = new PlanningVM();
-
-            // Validate year input
-            if (!int.TryParse(planyear, out int fiscalYearId))
-                return model;
 
             // Preload all required data with fewer DB calls
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
@@ -32,7 +65,7 @@ namespace ExceedERP.Reporting.Planning.DataSource
             var fiscalYear = db.GLFiscalYears.Find(fiscalYearId);
 
             if (plan == null)
-                return model;
+                return null;
 
             // Load logo
             if (organization != null)
@@ -89,16 +122,29 @@ namespace ExceedERP.Reporting.Planning.DataSource
                 }
             }
 
-            // Preload Indicators and Objectives for faster lookup
-            var indicatorLookup = db.Indicators.ToDictionary(x => x.IndicatorId);
+            // Regular reports print active indicators only; SelfCare can explicitly include all.
+            var indicatorQuery = db.Indicators.AsQueryable();
+            if (!includeInactive)
+            {
+                indicatorQuery = indicatorQuery.Where(x => x.IsActive);
+            }
+
+            var indicatorLookup = indicatorQuery.ToDictionary(x => x.IndicatorId);
             var objectiveLookup = db.Objectives.ToDictionary(x => x.ObjectiveId);
             var structureLookup = db.MainCompanyStructures.ToDictionary(x => x.OrgStructureId);
             // Preload all Planning Details
             var bscPlanIds = bscPlans.Select(b => b.BSCPlanId).ToList();
 
-            var allPlanningDetails = db.PlanningDetails
-                .Where(x => bscPlanIds.Contains(x.BSCPlanId))
-                .ToList();
+            var planningDetailsQuery = db.PlanningDetails
+                .Where(x => bscPlanIds.Contains(x.BSCPlanId));
+            if (!includeInactive)
+            {
+                planningDetailsQuery = planningDetailsQuery.Where(x =>
+                    db.Indicators.Any(indicator =>
+                        indicator.IndicatorId == x.IndicatorId && indicator.IsActive));
+            }
+
+            var allPlanningDetails = planningDetailsQuery.ToList();
 
             // Preload Monthly Plans
             var planningDetailIds = allPlanningDetails
@@ -123,9 +169,11 @@ namespace ExceedERP.Reporting.Planning.DataSource
             var periodLookup = db.GLPeriods.ToDictionary(x => x.GLPeriodId);
 
             // Optional period filter
-            int? filterPeriodId = null;
-            if (int.TryParse(periodd, out int perId))
-                filterPeriodId = perId;
+            int? filterPeriodIndex = null;
+            int perId;
+            GLPeriod selectedPeriod;
+            if (int.TryParse(periodd, out perId) && periodLookup.TryGetValue(perId, out selectedPeriod))
+                filterPeriodIndex = selectedPeriod.Index;
 
             // ========== MAIN LOOP ==========
 
@@ -143,6 +191,9 @@ namespace ExceedERP.Reporting.Planning.DataSource
                 }
 
                 objItem.IndicatorItems = new List<IndicatorItems>();
+                var childrenByParent = allPlanningDetails
+                    .Where(x => x.BSCPlanId == bsc.BSCPlanId)
+                    .ToLookup(x => x.ParentId);
 
                 // Get top-level indicators
                 var topIndicators = allPlanningDetails
@@ -153,23 +204,24 @@ namespace ExceedERP.Reporting.Planning.DataSource
                 {
                     var indicatorItem = new IndicatorItems();
                     if (indicatorLookup.TryGetValue(ind.IndicatorId, out var indInfo))
+                    {
                         indicatorItem.Indicators = indInfo.Name;
+                        indicatorItem.Weight = indInfo.Weight;
+                    }
 
                     indicatorItem.PlanItems = new List<PlanItem>();
 
-                    // Get child plans
-                    var childPlans = allPlanningDetails.Where(x =>
-                        x.BSCPlanId == ind.BSCPlanId &&
-                        (ind.HasSubIndicator ? x.ParentId == ind.IndicatorId : x.IndicatorId == ind.IndicatorId)
-                    ).ToList();
-
-                    foreach (var p in childPlans)
+                    foreach (var row in GetPlanRows(ind, childrenByParent))
                     {
-                        var planItem = new PlanItem();
+                        var p = row.Item1;
+                        var planItem = new PlanItem { IndicatorLevel = row.Item2 };
 
                         // Sub indicator name
                         if (indicatorLookup.TryGetValue(p.IndicatorId, out var subInd))
+                        {
                             planItem.SubIndicators = subInd.Name;
+                            planItem.Weight = subInd.Weight;
+                        }
 
                         planItem.Baseline = p.Baseline;
                         planItem.AnualPlan = p.Plan;
@@ -181,7 +233,9 @@ namespace ExceedERP.Reporting.Planning.DataSource
                         // Monthly plans
                         var months = allMonthlyPlans
                             .Where(x => x.PlanningDetailId == p.PlanningDetailId &&
-                                        (!filterPeriodId.HasValue || x.GLPeriodId == filterPeriodId.Value))
+                                        (!filterPeriodIndex.HasValue ||
+                                         (periodLookup.ContainsKey(x.GLPeriodId) &&
+                                          periodLookup[x.GLPeriodId].Index == filterPeriodIndex.Value)))
                             .ToList();
 
                         foreach (var m in months)
@@ -203,16 +257,68 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                           sum1, sum2, sum3, sum4);
                         }
 
+                        // Percentage KPIs: show the average of monthly quantities at the end of the row
+                        if (planItem.KPIType == "Percentage" || (planItem.Unit != null && planItem.Unit.Contains("%")))
+                        {
+                            var monthlyValues = allMonthlyPlans
+                                .Where(x => x.PlanningDetailId == p.PlanningDetailId)
+                                .ToList();
+                            if (monthlyValues.Any())
+                            {
+                                planItem.MonthlyAverage = monthlyValues.Average(x => x.Value);
+                            }
+                        }
+
                         indicatorItem.PlanItems.Add(planItem);
                     }
 
-                    objItem.IndicatorItems.Add(indicatorItem);
+                    if (includeInactive || indicatorItem.PlanItems.Any())
+                    {
+                        objItem.IndicatorItems.Add(indicatorItem);
+                    }
                 }
 
-                model.ObjectiveItems.Add(objItem);
+                if (includeInactive || objItem.IndicatorItems.Any())
+                {
+                    model.ObjectiveItems.Add(objItem);
+                }
             }
 
+            var percentageAverages = model.ObjectiveItems
+                .SelectMany(o => o.IndicatorItems)
+                .SelectMany(i => i.PlanItems)
+                .Where(x => x.MonthlyAverage.HasValue)
+                .Select(x => x.MonthlyAverage.Value)
+                .ToList();
+            model.PercentageAverage = percentageAverages.Any() ? percentageAverages.Average() : 0m;
+
             return model;
+        }
+
+        private static IEnumerable<Tuple<PlanningDetail, int>> GetPlanRows(
+            PlanningDetail root, ILookup<int, PlanningDetail> childrenByParent)
+        {
+            var children = childrenByParent[root.IndicatorId].ToList();
+            if (!children.Any())
+            {
+                if (!root.HasSubIndicator)
+                    yield return Tuple.Create(root, 0);
+                yield break;
+            }
+
+            var visited = new HashSet<int> { root.PlanningDetailId };
+            var pending = new Stack<Tuple<PlanningDetail, int>>(
+                children.AsEnumerable().Reverse().Select(child => Tuple.Create(child, 1)));
+            while (pending.Count > 0)
+            {
+                var row = pending.Pop();
+                if (!visited.Add(row.Item1.PlanningDetailId))
+                    continue;
+
+                yield return row;
+                foreach (var child in childrenByParent[row.Item1.IndicatorId].Reverse())
+                    pending.Push(Tuple.Create(child, row.Item2 + 1));
+            }
         }
 
         private void SetMonthValue(PlanItem planItem, int index, decimal value,

@@ -12,6 +12,7 @@ using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
+    [Authorize]
     public class WeeklyActualsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -39,12 +40,19 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult WeeklyActuals_Create([DataSourceRequest]DataSourceRequest request, WeeklyActual weeklyActual,int wAId)
         {
+            var monthlyActual = db.MonthlyActuals.Find(wAId);
+
             if (ModelState.IsValid)
             {
 
                 weeklyActual.MonthlyActualId = wAId;
                 var entity = GetMappedObject(weeklyActual);
                 db.WeeklyActuals.Add(entity);
+                if (monthlyActual != null)
+                {
+                    monthlyActual.ActualValue += weeklyActual.WeekOne + weeklyActual.WeekTwo + weeklyActual.WeekThree + weeklyActual.WeekFour;
+                    db.Entry(monthlyActual).State = EntityState.Modified;
+                }
                 db.SaveChanges();
                 weeklyActual.WeeklyActualId = entity.WeeklyActualId;
             }
@@ -61,6 +69,18 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 db.WeeklyActuals.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                var monthlyActual = db.MonthlyActuals.Find(weeklyActual.MonthlyActualId);
+                if (monthlyActual != null)
+                {
+                    var weeklyActuals = db.WeeklyActuals.Where(x => x.MonthlyActualId == monthlyActual.MonthlyActualId).ToList();
+                    if (weeklyActuals.Any())
+                    {
+                        monthlyActual.ActualValue = weeklyActuals.Sum(x => x.WeekOne) + weeklyActuals.Sum(x => x.WeekTwo) + weeklyActuals.Sum(x => x.WeekThree) + weeklyActuals.Sum(x => x.WeekFour);
+                        db.Entry(monthlyActual).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+
+                }
             }
 
             return Json(new[] { weeklyActual }.ToDataSourceResult(request, ModelState));

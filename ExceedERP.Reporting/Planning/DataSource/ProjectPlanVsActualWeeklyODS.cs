@@ -33,7 +33,17 @@ namespace ExceedERP.Reporting.Planning.DataSource
             if (!string.IsNullOrEmpty(businessUnitCode) && projectActuals.Any())
             {
 
-                
+                var projectTypeIds = db.ConsProjectTypes.Where(x => x.BusinessUnit == businessUnitCode).Select(x => x.ConsProjectTypeId);
+                if (projectTypeIds.Count() > 0)
+                {
+                    var projectIds = db.ProjectInformation.Where(x => projectTypeIds.Contains(x.ProjectTypeId)).Select(x => x.ProjectInformationId);
+                    if (projectIds.Count() > 0)
+                    {
+                        projectActuals = projectActuals.Where(x => projectIds.Contains(x.ProjectInformationId)).ToList();
+
+                    }
+
+                }
 
             }
             if (!string.IsNullOrEmpty(project) && projectActuals.Any())

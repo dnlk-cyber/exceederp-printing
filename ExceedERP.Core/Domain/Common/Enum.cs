@@ -100,6 +100,9 @@ namespace ExceedERP.Core.Domain.Common
         Plan_Vs_Actual_for_Weekly_Report,
         Project_Plan_Vs_Project_Actual_for_Weekly_Report,
         Project_Excutive_Summary_Per_Project,
+        Quarterly_Plan_Report,
+        Plan_VS_Actual_Report,
+        KPI_Progress_Tracker_Report
     }
 
     public enum HRMModuleReportType

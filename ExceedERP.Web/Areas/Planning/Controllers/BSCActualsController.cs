@@ -12,10 +12,14 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+       PlanningRoles.Planning_User,
+       HrmConstants.HRDepartmentHead,
+       HrmConstants.HREmployeeSelfService)]
     public class BSCActualsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -409,6 +413,10 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 #region validate item Addition
 
                 var indicators = db.PlanningDetails.Where(x => x.BSCPlanId == record.BSCPlanId).ToList();
+                if (!indicators.Any())
+                {
+                    indicators = db.PlanningDetails.Where(x => x.GetBSCPlan.OrgStructureId == record.OrgStructureId && x.GetBSCPlan.ObjectiveId == record.ObjectiveId).ToList();
+                }
                 foreach (var indicator in indicators)
                 {
                     var exist = db.ActualDetails.Where(x => x.IndicatorId == indicator.IndicatorId&&x.BSCActualId==id).FirstOrDefault();
@@ -508,7 +516,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             var formattedData12 = new
             {
                 Message = "The record is not found.",
-                Status = "NOT_OK"
+                Status = "Not_OK"
             };
             return Json(formattedData12, JsonRequestBehavior.AllowGet);
         }

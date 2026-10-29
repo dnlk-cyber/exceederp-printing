@@ -15,19 +15,26 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin)]
+    [Authorize]
     public class SubIndicatorsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
         
-        public ActionResult SubIndicators_Read([DataSourceRequest]DataSourceRequest request,int objecId, int parentId )
+        public ActionResult SubIndicators_Read([DataSourceRequest]DataSourceRequest request, int objecId, int parentId, bool activeOnly = false)
         {
             IQueryable<Indicator> subIndicators = db.Indicators.Where(x=>x.ObjectiveId == objecId && x.ParentId==parentId);
+            if (activeOnly)
+            {
+                subIndicators = subIndicators.Where(x => x.IsActive);
+            }
+
             DataSourceResult result = subIndicators.ToDataSourceResult(request, indicator => new {
                 IndicatorId = indicator.IndicatorId,
                 ParentId = indicator.ParentId,
                 HasSubIndicator = indicator.HasSubIndicator,
+                IsActive = indicator.IsActive,
                 Name = indicator.Name,
+                Weight = indicator.Weight,
                 Description = indicator.Description,
                 Unit = indicator.Unit,
                 KPIType = indicator.KPIType,
@@ -46,20 +53,32 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             {
                 subIndicator.Name = globalIndicator.Indicator;
             }
-            var exist = db.Indicators.Where(x => x.GlobalIndicatorId == subIndicator.GlobalIndicatorId
+            // New sub-indicators must be active, otherwise the activeOnly grid read hides them
+            subIndicator.IsActive = true;
+            var normalizedUnit = (subIndicator.Unit ?? string.Empty).Trim();
+            var exist = db.Indicators.Any(x => x.GlobalIndicatorId == subIndicator.GlobalIndicatorId
                                                 && x.ObjectiveId == objecId
                                                 && x.KPIType == subIndicator.KPIType
-                                                && x.ParentId==partId).Any();
+                                                && x.ParentId == partId
+                                                && (x.Unit ?? string.Empty).Trim() == normalizedUnit);
             if (exist)
             {
                 ModelState.AddModelError("", "The Sub-Indicator already Exists");
             }
+            subIndicator.ObjectiveId = objecId;
+            subIndicator.ParentId = partId;
+
             if (ModelState.IsValid)
             {
-                subIndicator.ObjectiveId = objecId;
-                subIndicator.ParentId = partId;
                 var entity = GetMappedObject(subIndicator);
                 db.Indicators.Add(entity);
+
+                var parent = db.Indicators.Find(partId);
+                if (parent != null)
+                {
+                    parent.HasSubIndicator = true;
+                }
+
                 db.SaveChanges();
                 subIndicator.IndicatorId = entity.IndicatorId;
                 #region operation log
@@ -81,11 +100,18 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             {
                 subIndicator.Name = globalIndicator.Indicator;
             }
-            var exist = db.Indicators.Where(x => x.GlobalIndicatorId == subIndicator.GlobalIndicatorId 
+            // Preserve the sub-indicator's own IsActive; it is managed via the parent's EnableOrDisable
+            var currentIsActive = db.Indicators.Where(x => x.IndicatorId == subIndicator.IndicatorId)
+                                               .Select(x => x.IsActive)
+                                               .FirstOrDefault();
+            subIndicator.IsActive = currentIsActive;
+            var normalizedUnit = (subIndicator.Unit ?? string.Empty).Trim();
+            var exist = db.Indicators.Any(x => x.GlobalIndicatorId == subIndicator.GlobalIndicatorId
                                             && x.ObjectiveId == subIndicator.ObjectiveId
-                                            && x.ParentId == subIndicator.ParentId     
+                                            && x.ParentId == subIndicator.ParentId
                                             && x.KPIType == subIndicator.KPIType
-                                            && x.IndicatorId !=subIndicator.IndicatorId).Any();
+                                            && (x.Unit ?? string.Empty).Trim() == normalizedUnit
+                                            && x.IndicatorId != subIndicator.IndicatorId);
             if (exist)
             {
                 ModelState.AddModelError("", "The Sub-Indicator already Exists");
@@ -108,6 +134,18 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SubIndicators_Destroy([DataSourceRequest]DataSourceRequest request, Indicator subIndicator)
         {
+            if (db.Indicators.Any(x => x.ParentId == subIndicator.IndicatorId))
+            {
+                ModelState.AddModelError("children", "You cannot delete this indicator until its sub-indicators are deleted.");
+                return Json(new[] { subIndicator }.ToDataSourceResult(request, ModelState));
+            }
+
+            if (db.PlanningDetails.Any(x => x.GlobalIndicatorId == subIndicator.GlobalIndicatorId))
+            {
+                ModelState.AddModelError("exist", "You cannot delete this indicator as it is used in a plan. Please delete it from the plan first.");
+                return Json(new[] { subIndicator }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
                 var entity = GetMappedObject(subIndicator);
@@ -119,6 +157,17 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 db.Indicators.Attach(entity);
                 db.Indicators.Remove(entity);
                 db.SaveChanges();
+
+                if (subIndicator.ParentId > 0 &&
+                    !db.Indicators.Any(x => x.ParentId == subIndicator.ParentId))
+                {
+                    var parent = db.Indicators.Find(subIndicator.ParentId);
+                    if (parent != null)
+                    {
+                        parent.HasSubIndicator = false;
+                        db.SaveChanges();
+                    }
+                }
             }
 
             return Json(new[] { subIndicator }.ToDataSourceResult(request, ModelState));
@@ -130,7 +179,9 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 IndicatorId = indicator.IndicatorId,
                 ParentId = indicator.ParentId,
                 HasSubIndicator = indicator.HasSubIndicator,
+                IsActive = indicator.IsActive,
                 Name = indicator.Name,
+                Weight = indicator.Weight,
                 Description = indicator.Description,
                 Unit = indicator.Unit,
                 KPIType = indicator.KPIType,

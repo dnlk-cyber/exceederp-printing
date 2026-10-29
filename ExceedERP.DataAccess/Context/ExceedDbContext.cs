@@ -596,6 +596,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new EmployeeExternalFundingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalSalaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DatePreferenceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExpenseAndTaxSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HRMContributionSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeProbationSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmpPayrollNoDaysWorkedEntityTypeConfiguration());
@@ -679,6 +681,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new RankEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new StepEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SalaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new StaffDebtorBalanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SalaryStructureVersionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmpTrainingEducationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new NeedAssessmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new NeedAssessmentAttachmentEntityTypeConfiguration());
@@ -692,6 +696,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new MainCompanyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProvidedTrainingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PasswordResetRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MainCompanyStructureEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CosignEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantionFormEntityTypeConfiguration());
@@ -792,7 +797,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new SickLeaveSalarySettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeCardEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeRewardEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RewardSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DelegationBenefitSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BusinessUnitBranchEntityTypeConfiguration());
             #region Performance
             modelBuilder.Configurations.Add(new MainCompanyEvalutionSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
@@ -865,10 +872,13 @@ namespace ExceedERP.DataAccess.Context
 
             #region Company
            
+            modelBuilder.Configurations.Add(new BranchRankMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleAndRankMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingMianEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HolidayGiftRateSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HolidayGiftEmployeeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingTempEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingDetailTempEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobTitleMappingMainTempEntityTypeConfiguration());
@@ -2055,46 +2065,49 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Planning
-            modelBuilder.Configurations.Add(new Context.GlobalIndicatorEntityTypeConfiguration());
-            #region Bussiness Plan
-            modelBuilder.Configurations.Add(new Context.BusinessPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.BusinessPlanValidationEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ShareAndDividendEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ShareAndDividendFiscalYearDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.LandManagementEntityTypeConfiguration());
-            #endregion
-            modelBuilder.Configurations.Add(new Context.ObjectiveEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.IndicatorEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ExcutivePlanKPIEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.PlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ActualEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.BSCPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.BSCActualEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.PlanningDetailEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new Context.PlanningWithSubIndicatorEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.MonthlyPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ActualDetailEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new Context.ActualDetailWithSubIndicatorEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.MonthlyActualEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.RiskMitigationPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.RiskFollowUpEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.WeeklyPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.WeeklyActualEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectWeeklyPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectWeeklyActualEntityTypeConfiguration());
-            #region project Plan
-            modelBuilder.Configurations.Add(new Context.ProjectObjectiveEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectKPIEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectSubKPIEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectActualEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectMonthlyPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectMonthlyActualEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectExcutiveSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new Context.ProjectExcutiveSummarySettingEntityTypeConfiguration());
-
-
-            #endregion
+            modelBuilder.Configurations.Add(new ObjectiveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new IndicatorEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new StrategicGoalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AnnualGoalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExcutivePlanKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new StrategicPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new QuickFixPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BSCPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PlanApprovalFeedbackEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BSCActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PlanningDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MonthlyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PastPlanAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ActualDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MonthlyActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RiskMitigationPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RiskFollowUpEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new WeeklyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new WeeklyActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectWeeklyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectWeeklyActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new GlobalIndicatorEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new GlobalKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new GlobalSubKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new KpiProgressTrackerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SubKpiProgressTrackerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectObjectiveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectSubKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectMonthlyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectMonthlyActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectExcutiveSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProjectExcutiveSummarySettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BusinessPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new BusinessPlanValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ShareAndDividendEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ShareAndDividendFiscalYearDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LandManagementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LandManagementAttachmentEntityTypeConfiguration());
             #endregion
 
             #region Health 
@@ -2202,28 +2215,23 @@ namespace ExceedERP.DataAccess.Context
         }
         public DbSet<ConsProjectType> ConsProjectTypes { get; set; }
         #region Planning
-        public DbSet<GlobalIndicator> GlobalIndicators { get; set; }
-        #region Bussiness Plan 
-        public DbSet<BusinessPlan> BusinessPlans { get; set; }
-        public DbSet<BusinessPlanValidation> BusinessPlanValidations { get; set; }
-        public DbSet<ShareAndDividend> ShareAndDividends { get; set; }
-        public DbSet<ShareAndDividendFiscalYearDetail> ShareAndDividendFiscalYearDetails { get; set; }
-        public DbSet<LandManagement> LandManagements { get; set; }
-
-        #endregion
         public DbSet<Objective> Objectives { get; set; }
+        public DbSet<StrategicGoal> StrategicGoals { get; set; }
+        public DbSet<AnnualGoal> AnnualGoals { get; set; }
         public DbSet<Indicator> Indicators { get; set; }
         public DbSet<ExcutivePlanKPI> ExcutivePlanKPIs { get; set; }
         public DbSet<Plan> Plans { get; set; }
+        public DbSet<StrategicPlan> StrategicPlans { get; set; }
+        public DbSet<QuickFixPlan> QuickFixPlans { get; set; }
         public DbSet<BSCPlan> BSCPlans { get; set; }
+        public DbSet<PlanApprovalFeedback> PlanApprovalFeedbacks { get; set; }
         public DbSet<PlanningDetail> PlanningDetails { get; set; }
-        ////public DbSet<PlanningWithSubIndicator> PlanningWithSubIndicators { get; set; }
         public DbSet<MonthlyPlan> MonthlyPlans { get; set; }
+        public DbSet<PastPlanAttachment> PastPlanAttachments { get; set; }
         public DbSet<WeeklyPlan> WeeklyPlans { get; set; }
         public DbSet<Actual> Actuals { get; set; }
         public DbSet<BSCActual> BSCActuals { get; set; }
         public DbSet<ActualDetail> ActualDetails { get; set; }
-        //public DbSet<ActualDetailWithSubIndicator> ActualDetailWithSubIndicators { get; set; }
         public DbSet<MonthlyActual> MonthlyActuals { get; set; }
         public DbSet<WeeklyActual> WeeklyActuals { get; set; }
         public DbSet<RiskMitigationPlan> RiskMitigationPlans { get; set; }
@@ -2239,6 +2247,18 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ProjectWeeklyActual> ProjectWeeklyActuals { get; set; }
         public DbSet<ProjectExcutiveSetting> ProjectExcutiveSettings { get; set; }
         public DbSet<ProjectExcutiveSummarySetting> ProjectExcutiveSummarySettings { get; set; }
+        public DbSet<GlobalIndicator> GlobalIndicators { get; set; }
+        public DbSet<GlobalKPI> GlobalKPIs { get; set; }
+        public DbSet<GlobalSubKPI> GlobalSubKPIs { get; set; }
+        public DbSet<KpiProgressTracker> KpiProgressTrackers { get; set; }
+        public DbSet<SubKpiProgressTracker> SubKpiProgressTrackers { get; set; }
+        public DbSet<BusinessPlan> BusinessPlans { get; set; }
+        public DbSet<BusinessPlanAttachment> BusinessPlanAttachment { get; set; }
+        public DbSet<BusinessPlanValidation> BusinessPlanValidations { get; set; }
+        public DbSet<ShareAndDividend> ShareAndDividends { get; set; }
+        public DbSet<ShareAndDividendFiscalYearDetail> ShareAndDividendFiscalYearDetails { get; set; }
+        public DbSet<LandManagement> LandManagements { get; set; }
+        public DbSet<LandManagementAttachment> LandManagementAttachment { get; set; }
 
 
         #endregion
@@ -2878,6 +2898,7 @@ namespace ExceedERP.DataAccess.Context
         #region HRM
         #region Company
        
+        public DbSet<RewardSetting> RewardSettings { get; set; }
         public DbSet<JobTitleAndRankMapping> JobTitleAndRankMappings { get; set; }
         public DbSet<ManPowerPlanningRequest> ManPowerPlanningRequests { get; set; }
         public DbSet<BusinessUnit> BusinessUnits { get; set; }
@@ -2888,6 +2909,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Branch> Branch { get; set; }
         public DbSet<JobTitleMappingDetail> JobTitleMappingDetail { get; set; }
         public DbSet<JobTitleMappingMain> JobTitleMappingMian { get; set; }
+        public DbSet<HolidayGiftRateSetting> HolidayGiftRateSettings { get; set; }
+        public DbSet<HolidayGiftEmployee> HolidayGiftEmployees { get; set; }
         public DbSet<JobTitleMappingDetailTemp> JobTitleMappingDetailTemp { get; set; }
         public DbSet<JobTitleMappingMainTemp> JobTitleMappingMainTemp { get; set; }
         public DbSet<RegionNation> RegionNation { get; set; }
@@ -3248,6 +3271,8 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #region Discipline
 
+        public DbSet<HRMContributionSetting> HRMContributionSettings { get; set; }
+        public DbSet<ExpenseAndTaxSetting> ExpenseAndTaxSettings { get; set; }
         public DbSet<DisciplineMeasures> DisciplineMeasures { get; set; }
         public DbSet<Appeal> Appeal { get; set; }
         public DbSet<DisciplineMeasuresDetail> DisciplineMeasuresDetail { get; set; }
@@ -3307,8 +3332,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<OverTimeJobResult> OverTimeJobResults { get; set; }
         public DbSet<DelegationTempoRole> DelegationTempoRoles { get; set; }
         public DbSet<AllowanceGenerationSetting> AllowanceGenerationSettings { get; set; }
-        public DbSet<HolidayGiftRateSetting> HolidayGiftRateSettings { get; set; }
-        public DbSet<HolidayGiftEmployee> HolidayGiftEmployees { get; set; }
+      
         public DbSet<DatePreferenceSetting> DatePreferenceSettings { get; set; }
         public DbSet<GeneralJobtitleSetting> GeneralJobtitleSettings { get; set; }
         #endregion

@@ -1,3 +1,5 @@
+using ExceedERP.Reporting.Planning.DataSource;
+
 namespace ExceedERP.Reporting.Planning.Design
 {
     partial class ProjectExecutiveSummary
@@ -296,7 +298,7 @@ namespace ExceedERP.Reporting.Planning.Design
             // fiscalYearobjectDataSource
             // 
             this.fiscalYearobjectDataSource.DataMember = "GetFiscalYear";
-            this.fiscalYearobjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearODS);
+            this.fiscalYearobjectDataSource.DataSource = typeof(FiscalYearODS);
             this.fiscalYearobjectDataSource.Name = "fiscalYearobjectDataSource";
             // 
             // periodobjectDataSource

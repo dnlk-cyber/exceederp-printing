@@ -1,0 +1,216 @@
+@using ExceedERP.Core.Domain.Planning
+@{
+    ViewBag.Title = "PMER - Annual Plan & Cascading";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .flow-step-box {
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 14px;
+        position: relative;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 12px;
+    }
+    .flow-step-box.active {
+        border-color: #3b82f6;
+        background: #f8fafc;
+    }
+    .flow-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 10px;
+        margin-bottom: 6px;
+    }
+    .badge-input { background: #e0f2fe; color: #0369a1; }
+    .badge-proc { background: #fef3c7; color: #b45309; }
+    .badge-output { background: #dcfce7; color: #15803d; }
+    .badge-resp { background: #f3e8ff; color: #7e22ce; }
+</style>
+
+<div class="container-fluid" style="padding: 15px 25px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <h3 style="margin: 0; color: #2c3e50;"><i class="fa fa-sitemap text-success"></i> PMER Annual Plan & Cascading</h3>
+                    <p class="text-muted" style="margin-top: 4px; margin-bottom: 0;">Goal Cascading, Corporate KPI Matrix, Targets, Thresholds, and Unit Plan Alignment.</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("Index", "PMER", new { area = "Planning" })" class="btn btn-default btn-sm">
+                        <i class="fa fa-arrow-left"></i> PMER Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @(Html.Kendo().TabStrip()
+        .Name("PMERAnnualPlanTabStrip")
+        .SelectedIndex(0)
+        .Items(tabs =>
+        {
+            // TAB 1: Corporate KPI and Annual Target Matrix
+            tabs.Add().Text("Corporate KPI & Annual Target Matrix").Content(@<text>
+                <div style="padding: 15px 0;">
+                    <div class="alert alert-info" style="margin-bottom: 15px; font-size: 13px;">
+                        <i class="fa fa-info-circle"></i> <strong>Corporate KPI and Annual Target Matrix (Strategic Objective 2):</strong>
+                        Defines standard institutional KPIs, Key Result Areas (KRAs), measurement formulas, annual targets, and performance thresholds.
+                    </div>
+
+                    @(Html.Kendo().Grid<GlobalKPI>()
+                        .Name("pmerCorporateKpiGrid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.KeyResultArea).Title("Key Result Area (KRA)").Width(200);
+                            columns.Bound(c => c.AnnualObjective).Title("Annual Objective (KPI Focus)").Width(280);
+                            columns.Bound(c => c.StandardKPI).Title("Standard KPI").Width(230);
+                            columns.Bound(c => c.MeasurementFormula).Title("Measurement Formula / Metric").Width(340);
+                            columns.Bound(c => c.AnnualTargetText).Title("Annual Target").Width(230);
+                            columns.Bound(c => c.ThresholdText).Title("Threshold").Width(230);
+                            columns.Command(command => command.Edit()).Width(110);
+                        })
+                        .ToolBar(toolbar => toolbar.Create())
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Pageable()
+                        .Filterable()
+                        .Scrollable(h => h.Height(550))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.GlobalKPIId);
+                                model.Field(p => p.GlobalKPIId).Editable(false);
+                            })
+                            .Read(read => read.Action("CorporateKPIs_Read", "PMER"))
+                            .Create(create => create.Action("CorporateKPIs_Create", "PMER"))
+                            .Update(update => update.Action("CorporateKPIs_Update", "PMER")))
+                    )
+                </div>
+            </text>);
+
+            // TAB 2: Cascading & Alignment Workflow
+            tabs.Add().Text("Cascading & Alignment Workflow").Content(@<text>
+                <div style="padding: 20px 0;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="font-weight: 600;">
+                            <i class="fa fa-random"></i> Standard Cascading Lifecycle (From PMER Framework)
+                        </div>
+                        <div class="panel-body">
+                            <table class="table table-bordered table-striped" style="font-size: 13px;">
+                                <thead style="background: #f1f5f9;">
+                                    <tr>
+                                        <th style="width: 20%;">Input</th>
+                                        <th style="width: 35%;">Process</th>
+                                        <th style="width: 25%;">Output</th>
+                                        <th style="width: 20%;">Responsibility</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Strategic Plan</td>
+                                        <td><strong>Strategic Plan</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Strategic Plan</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Planning Committee</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Strategic Plan<br>Strategic Objectives</td>
+                                        <td><strong>Strategic Objective &rarr; Strategic Goal</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Strategic Objectives & Strategic Goal</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Planning Committee</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Strategic Goal</td>
+                                        <td><strong>Mapping Strategic Goal with Annual Plan</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Mapped Strategic Goal with Annual Plan</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Department Heads / Line Managers</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Mapped Strategic Goal</td>
+                                        <td><strong>Annual Plan</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Annual Plan</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Department Heads</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Annual Plan</td>
+                                        <td><strong>Annual Goal Objective (Indicator)</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Annual Objective Goal</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Department Heads</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Annual Objective Goal</td>
+                                        <td><strong>Objective Mapping with Department Annual Goal</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Department Objective</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Department Heads</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Department Objective</td>
+                                        <td><strong>Cascading Activity</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Cascaded Departmental Plans</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Executive Team</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="flow-badge badge-input">Input</span> Cascaded Departmental Plans</td>
+                                        <td><strong>Record Periodical</strong></td>
+                                        <td><span class="flow-badge badge-output">Output</span> Periodic Performance Plans</td>
+                                        <td><span class="flow-badge badge-resp">Responsibility</span> Departments / Operational Teams</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </text>);
+
+            // TAB 3: Department Plan Alignment Tracker
+            tabs.Add().Text("Department Alignment Tracker").Content(@<text>
+                <div style="padding: 15px 0;">
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-md-4">
+                            <div class="well text-center" style="margin-bottom: 0;">
+                                <div style="font-size: 13px; color: #666;">Standard KPI</div>
+                                <div style="font-size: 18px; font-weight: 700; color: #2c3e50;">Strategic Goal Alignment Rate</div>
+                                <div style="font-size: 12px; color: #777;">(Aligned Unit Plans / Total Unit Plans) &times; 100%</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="well text-center" style="margin-bottom: 0;">
+                                <div style="font-size: 13px; color: #666;">Corporate Target</div>
+                                <div style="font-size: 24px; font-weight: 700; color: #16a34a;">100%</div>
+                                <div style="font-size: 12px; color: #777;">Semi-Annual Verification (2 Reports)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="well text-center" style="margin-bottom: 0;">
+                                <div style="font-size: 13px; color: #666;">Threshold Requirement</div>
+                                <div style="font-size: 24px; font-weight: 700; color: #d97706;">&ge; 90%</div>
+                                <div style="font-size: 12px; color: #777;">Minimum Acceptable Compliance</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @(Html.Kendo().Grid<dynamic>()
+                        .Name("pmerDepartmentAlignmentGrid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound("DepartmentName").Title("Directorate / Department").Width(300);
+                            columns.Bound("TotalPlans").Title("Total Unit Plans").Width(150);
+                            columns.Bound("ApprovedPlans").Title("Aligned & Approved").Width(150);
+                            columns.Bound("AlignmentRate").Title("Alignment Rate (%)").Format("{0:N1}%").Width(170);
+                            columns.Bound("Status").Title("Alignment Status").Width(180);
+                        })
+                        .Pageable()
+                        .Filterable()
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Read(read => read.Action("DepartmentAlignment_Read", "PMER")))
+                    )
+                </div>
+            </text>);
+        })
+    )
+</div>

@@ -17,7 +17,11 @@ namespace ExceedERP.Core.Domain.Planning
         public bool IsDepartnental { get; set; }
         [Display(Name = "Is Personal Plan")]
         public bool IsPersonal { get; set; }
+        [Display(Name = "Description(Key Result Area)")]
         public string Description { get; set; }
+        [StringLength(2000)]
+        [Display(Name = "Reason")]
+        public string Reason { get; set; }
         [Display(Name = "Fiscal Year")]
         public int GlFiscalYearId { get; set; }
         public GlFiscalYear GlFiscalYear { get; set; }

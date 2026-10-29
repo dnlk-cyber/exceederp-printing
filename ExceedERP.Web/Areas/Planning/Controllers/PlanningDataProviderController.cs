@@ -1,12 +1,6 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
@@ -23,7 +17,10 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
         public JsonResult GetGlobalIndicator()
         {
-            var globalIndicators = db.GlobalIndicators.Select(A => new
+            var departmentId = PlanningSelfCareHelper.GetCurrentDepartmentId(User.Identity.Name);
+            var globalIndicators = PlanningSelfCareHelper.GetDepartmentGlobalIndicators(db, departmentId)
+                .Where(x => x.IsActive)
+                .Select(A => new
             {
                 A.GlobalIndicatorId,
                 A.Indicator
@@ -32,17 +29,9 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
         public JsonResult GetIndicators()
         {
-            var indicators = db.Indicators.Select(A => new
-            {
-                A.IndicatorId,
-                A.Name
-            }).ToList();
+            var indicators = PlanningSelfCareHelper.GetDepartmentIndicatorList(db, User.Identity.Name, true);
             return Json(indicators, JsonRequestBehavior.AllowGet);
         }
-        
-        
-      
-
         public JsonResult GetProjects()
         {
             return Json(db.ProjectInformation.Select(x => new { x.ProjectInformationId, ProjectName = x.Code + "- " + x.Name }), JsonRequestBehavior.AllowGet);
@@ -61,6 +50,22 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         public JsonResult GetProjectSubKPIs(int kId)
         {
             return Json(db.ProjectSubKPIs.Where(x=>x.ProjectKPIId==kId).Select(x => new { x.ProjectSubKPIId, Name =  x.SubKPIName }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetGlobalKPI()
+        {
+            return Json(db.GlobalKPIs.Where(x=>x.IsActive).Select(x => new { x.GlobalKPIId,  x.KPIName  }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetSubKPIs(int kId,string searchText)
+        {
+            var globalSubKPIs = db.GlobalSubKPIs.Where(x => x.GlobalKPIId == kId);
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                 globalSubKPIs = db.GlobalSubKPIs.Where(x => x.SubKPIName.ToUpper().Contains(searchText.ToUpper()));
+
+            }
+            return Json(globalSubKPIs.Select(x => new { x.GlobalSubKPIId, x.SubKPIName }), JsonRequestBehavior.AllowGet);
         }
         
         public JsonResult GetFiscalYear()
@@ -118,6 +123,19 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             return Json("", JsonRequestBehavior.AllowGet);
 
         }
+
+        public JsonResult GetUoMs()
+        {
+            var uoms = db.UoMs.Select(x => x.UoMName).ToList();
+            var existingUnits = db.Indicators.Where(x => !string.IsNullOrEmpty(x.Unit)).Select(x => x.Unit).Distinct().ToList();
+            var all = uoms.Union(existingUnits).Where(x => !string.IsNullOrWhiteSpace(x)).OrderBy(x => x).Select(x => new
+            {
+                Name = x,
+                Code = x
+            }).ToList();
+            return Json(all, JsonRequestBehavior.AllowGet);
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

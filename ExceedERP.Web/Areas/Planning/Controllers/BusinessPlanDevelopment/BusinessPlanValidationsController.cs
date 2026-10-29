@@ -109,7 +109,6 @@ namespace ExceedERP.Web.Areas.Planning.Controllers.BusinessPlanDevelopment
             {
                 var entity = GetMappedObject(businessPlan);
                 #region delete log
-               
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "    Bussinss Plan " + businessPlan.BusinessPlanValidationId.ToString());
                 #endregion
                 db.BusinessPlanValidations.Attach(entity);

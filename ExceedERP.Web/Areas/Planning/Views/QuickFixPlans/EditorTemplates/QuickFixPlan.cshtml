@@ -1,0 +1,99 @@
+@model ExceedERP.Core.Domain.Planning.QuickFixPlan
+@using System.Collections
+
+<div class="k-edit-form-container">
+    <div class="editor-label">
+        @Html.LabelFor(model => model.GlFiscalYearId)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+            .OptionLabel("Select fiscal year...")
+            .DataValueField("GlFiscalYearId")
+            .DataTextField("Name")
+            .BindTo((IEnumerable)ViewData["FiscalYears"])
+            .Filter(FilterType.Contains))
+        @Html.ValidationMessageFor(model => model.GlFiscalYearId)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(model => model.PlanId)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownListFor(model => model.PlanId)
+            .OptionLabel("Select annual plan...")
+            .DataValueField("PlanId")
+            .DataTextField("Name")
+            .AutoBind(false)
+            .CascadeFrom("GlFiscalYearId")
+            .Filter(FilterType.Contains)
+            .DataSource(source => source
+                .Read(read => read
+                    .Action("Plans_Read", "QuickFixPlans")
+                    .Data("quickFixPlanFiscalYearFilter"))
+                .ServerFiltering(true)))
+        @Html.ValidationMessageFor(model => model.PlanId)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(model => model.UpToQuarter)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownListFor(model => model.UpToQuarter)
+            .OptionLabel("Select quarter...")
+            .DataValueField("Value")
+            .DataTextField("Text")
+            .BindTo((IEnumerable)ViewData["Quarters"]))
+        @Html.ValidationMessageFor(model => model.UpToQuarter)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(model => model.PlanUpToQuarter)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().NumericTextBoxFor(model => model.PlanUpToQuarter)
+            .Min(0)
+            .Format("n2")
+            .Decimals(2))
+        @Html.ValidationMessageFor(model => model.PlanUpToQuarter)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(model => model.Actual)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().NumericTextBoxFor(model => model.Actual)
+            .Min(0)
+            .Format("n2")
+            .Decimals(2))
+        @Html.ValidationMessageFor(model => model.Actual)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(model => model.PreviousPlanRemainingQuarter)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().NumericTextBoxFor(model => model.PreviousPlanRemainingQuarter)
+            .Min(0)
+            .Format("n2")
+            .Decimals(2))
+        @Html.ValidationMessageFor(model => model.PreviousPlanRemainingQuarter)
+    </div>
+
+    <div class="editor-label">
+        @Html.LabelFor(model => model.RevisedPlanRemainingQuarter)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().NumericTextBoxFor(model => model.RevisedPlanRemainingQuarter)
+            .Min(0)
+            .Format("n2")
+            .Decimals(2))
+        @Html.ValidationMessageFor(model => model.RevisedPlanRemainingQuarter)
+    </div>
+</div>
+
+<script>
+    function quickFixPlanFiscalYearFilter() {
+        var fiscalYear = $("#GlFiscalYearId").data("kendoDropDownList");
+        return { glFiscalYearId: fiscalYear ? fiscalYear.value() : null };
+    }
+</script>

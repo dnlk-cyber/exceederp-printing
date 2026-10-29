@@ -1,5 +1,4 @@
-﻿using ExceedERP.Core.Domain.Construction;
-using ExceedERP.Core.Domain.Finance.GL;
+﻿using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Planning;
 using ExceedERP.DataAccess.Context;
 using System;

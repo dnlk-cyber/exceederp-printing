@@ -1,4 +1,6 @@
-﻿<legend>Objectives</legend>
+<legend>Objectives</legend>
+@Html.Partial("_PlanningHierarchyImport")
+
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Objective>()
       .Name("grid")
       .Columns(columns =>
@@ -6,6 +8,7 @@
           columns.Bound(c => c.ObjectiveId).Title("S.N").Width(60);
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").EditorTemplateName("workUnit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
           columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.Weight).Width(100);
           columns.Bound(c => c.Description).Width(120);
           columns.Bound(c => c.Remark).Width(100);
           columns.Command(command =>
@@ -22,6 +25,7 @@
       .Pageable()
       .Filterable()
       .Scrollable(h => h.Height(550))
+      .Events(x => x.DetailExpand("onDetailExpand"))
       .DataSource(dataSource => dataSource
           .Ajax()
           .Sort(s => s.Add(x => x.ObjectiveId).Descending())
@@ -32,10 +36,10 @@
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-          .Read(read => read.Action("Objectives_Read", "Objectives"))
-          .Create(create => create.Action("Objectives_Create", "Objectives"))
-          .Update(update => update.Action("Objectives_Update", "Objectives"))
-          .Destroy(destroy => destroy.Action("Objectives_Destroy", "Objectives"))
+          .Read(read => read.Action("Objectives_Read", "Objectives").Data("sendForgery"))
+          .Create(create => create.Action("Objectives_Create", "Objectives").Data("sendForgery"))
+          .Update(update => update.Action("Objectives_Update", "Objectives").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Objectives_Destroy", "Objectives").Data("sendForgery"))
       ).ClientDetailTemplateId("objective_detail")
 )
 
@@ -45,7 +49,7 @@
         .SelectedIndex(0)
         .Items(items =>
         {
-            items.Add().Text("Indicators").Content(
+            items.Add().Text("Indicators(Activity)").Content(
             @<text>
                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Indicator>()
                       .Name("Indicator_grid_#=ObjectiveId#")
@@ -53,11 +57,19 @@
                       {
                           columns.ForeignKey(c => c.GlobalIndicatorId, (IEnumerable)ViewData["GlobalIndicators"], "GlobalIndicatorId", "Indicator").EditorTemplateName("GlobalIndicatorTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                           columns.Bound(c => c.Name).Width(180);
-                          columns.Bound(c => c.Unit).Width(100);
+                          columns.Bound(c => c.Weight).Width(100);
+                          columns.Bound(c => c.Unit).EditorTemplateName("UoMTemplate").Width(100);
                           columns.Bound(c => c.KPIType).Width(80);
                           columns.Bound(c => c.HasSubIndicator).ClientTemplate(
                                                             "<input type='checkbox' disabled = 'true' value='\\#= HasSubIndicator\\#' " +
                                                             "\\# if (HasSubIndicator) { \\#" +
+                                                            "checked='checked'" +
+                                                            "\\# } \\#" +
+                                                            "/>"
+                                                            ).Width(120);
+                          columns.Bound(c => c.IsActive).ClientTemplate(
+                                                            "<input type='checkbox' disabled = 'true' value='\\#= IsActive\\#' " +
+                                                            "\\# if (IsActive) { \\#" +
                                                             "checked='checked'" +
                                                             "\\# } \\#" +
                                                             "/>"
@@ -67,8 +79,10 @@
                           columns.Command(command =>
                           {
                               command.Edit();
+                              command.Custom("").Click("EnableOrDisableActive").Text("Enable or Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable ", @id = "enableDisable" });
+
                               command.Destroy();
-                          }).Width(200);
+                          }).Width(300);
                       })
                       .ToolBar(toolbar => {
                           toolbar.Create();
@@ -82,15 +96,16 @@
                           .Model(model => {
                               model.Id(p => p.IndicatorId);
                               model.Field(p => p.IndicatorId).Editable(false);
+                              model.Field(p => p.IsActive).Editable(false);
                           })
                           .Events(ev => ev
                             .Error("error_handler(\"Indicator_grid_#=ObjectiveId#\")")
                             .RequestStart("onRequestStart(\"Indicator_grid_#=ObjectiveId#\")")
                             .RequestEnd("onRequestEnd(\"Indicator_grid_#=ObjectiveId#\")"))
-                          .Read(read => read.Action("Indicators_Read", "Indicators",new { oId= "#=ObjectiveId#" }))
-                          .Create(create => create.Action("Indicators_Create", "Indicators", new { oId = "#=ObjectiveId#" }))
-                          .Update(update => update.Action("Indicators_Update", "Indicators"))
-                          .Destroy(destroy => destroy.Action("Indicators_Destroy", "Indicators"))
+                          .Read(read => read.Action("Indicators_Read", "Indicators",new { oId= "#=ObjectiveId#" }).Data("sendForgery"))
+                          .Create(create => create.Action("Indicators_Create", "Indicators", new { oId = "#=ObjectiveId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("Indicators_Update", "Indicators").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("Indicators_Destroy", "Indicators").Data("sendForgery"))
                       ).ClientDetailTemplateId("indicator_details")
                       .ToClientTemplate()
               )
@@ -101,13 +116,12 @@
     )
 </script>
 <script type="text/kendo-template" id="indicator_details">
-  #if(HasSubIndicator){#
     @(Html.Kendo().TabStrip()
         .Name("tab_SubIndicator_str_#=IndicatorId#")
         .SelectedIndex(0)
         .Items(items =>
         {
-            items.Add().Text("Sub-Indicators").Content(
+            items.Add().Text("Sub-Indicators(Sub-Activity)").Content(
             @<text>
                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Indicator>()
                       .Name("Sub_Indicator_grid_#=IndicatorId#")
@@ -115,15 +129,16 @@
                       {
                           columns.ForeignKey(c => c.GlobalIndicatorId, (IEnumerable)ViewData["GlobalIndicators"], "GlobalIndicatorId", "Indicator").EditorTemplateName("GlobalIndicatorTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                           columns.Bound(c => c.Name).Width(180);
-                          columns.Bound(c => c.Unit).Width(100);
+                          columns.Bound(c => c.Weight).Width(100);
+                          columns.Bound(c => c.Unit).EditorTemplateName("UoMTemplate").Width(100);
                           columns.Bound(c => c.KPIType).Width(80);
-                          //columns.Bound(c => c.HasSubIndicator).ClientTemplate(
-                          //                                  "<input type='checkbox' disabled = 'true' value='\\#= HasSubIndicator\\#' " +
-                          //                                  "\\# if (HasSubIndicator) { \\#" +
-                          //                                  "checked='checked'" +
-                          //                                  "\\# } \\#" +
-                          //                                  "/>"
-                          //                                  ).Width(120);
+                          columns.Bound(c => c.HasSubIndicator).ClientTemplate(
+                                                            "<input type='checkbox' disabled = 'true' value='\\#= HasSubIndicator\\#' " +
+                                                            "\\# if (HasSubIndicator) { \\#" +
+                                                            "checked='checked'" +
+                                                            "\\# } \\#" +
+                                                            "/>"
+                                                            ).Width(120);
                           columns.Bound(c => c.Description).Width(150);
                           columns.Command(command =>
                           {
@@ -138,6 +153,7 @@
                       .Pageable()
                       .Filterable()
                       .Scrollable(h=>h.Height(550))
+                      .Events(events => events.DetailInit("initializeRecursiveSubIndicator"))
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Model(model => model.Id(p => p.IndicatorId))
@@ -145,11 +161,11 @@
                             .Error("error_handler(\"Sub_Indicator_grid_#=IndicatorId#\")")
                             .RequestStart("onRequestStart(\"Sub_Indicator_grid_#=IndicatorId#\")")
                             .RequestEnd("onRequestEnd(\"Sub_Indicator_grid_#=IndicatorId#\")"))
-                          .Read(read => read.Action("SubIndicators_Read", "SubIndicators", new { objecId = "#=ObjectiveId#", parentId = "#=IndicatorId#" }))
-                          .Create(create => create.Action("SubIndicators_Create", "SubIndicators", new { objecId = "#=ObjectiveId#", partId = "#=IndicatorId#" }))
-                          .Update(update => update.Action("SubIndicators_Update", "SubIndicators"))
-                          .Destroy(destroy => destroy.Action("SubIndicators_Destroy", "SubIndicators"))
-                      )
+                          .Read(read => read.Action("SubIndicators_Read", "SubIndicators", new { objecId = "#=ObjectiveId#", parentId = "#=IndicatorId#" }).Data("sendForgery"))
+                          .Create(create => create.Action("SubIndicators_Create", "SubIndicators", new { objecId = "#=ObjectiveId#", partId = "#=IndicatorId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("SubIndicators_Update", "SubIndicators").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("SubIndicators_Destroy", "SubIndicators").Data("sendForgery"))
+                      ).ClientDetailTemplateId("recursive_indicator_detail")
                       .ToClientTemplate()
               )
 
@@ -157,6 +173,114 @@
 
         }).ToClientTemplate()
     )
-    #}#
 </script>
 
+<script type="text/kendo-template" id="recursive_indicator_detail">
+    <div class="recursive-sub-indicator-host"></div>
+</script>
+
+<script>
+    var masterId = 0;
+
+    function recursiveIndicatorRequestData(additionalData) {
+        var forgeryData = typeof sendForgery === "function" ? sendForgery() : {};
+        return $.extend({}, forgeryData, additionalData || {});
+    }
+
+    function initializeRecursiveSubIndicator(e) {
+        var parent = e.data;
+        var gridId = "Sub_Indicator_grid_" + parent.IndicatorId;
+        var host = e.detailCell.find(".recursive-sub-indicator-host");
+
+        if ($("#" + gridId).length) {
+            return;
+        }
+
+        host.attr("id", gridId);
+
+        var gridOptions = $.extend(true, {}, e.sender.options);
+        var dataSourceOptions = $.extend(true, {}, e.sender.dataSource.options);
+
+        dataSourceOptions.data = null;
+        dataSourceOptions.page = 1;
+        dataSourceOptions.transport.read.url = '@Url.Action("SubIndicators_Read", "SubIndicators", new { Area = "Planning" })';
+        dataSourceOptions.transport.read.data = function () {
+            return recursiveIndicatorRequestData({
+                objecId: parent.ObjectiveId,
+                parentId: parent.IndicatorId
+            });
+        };
+        dataSourceOptions.transport.create.url = '@Url.Action("SubIndicators_Create", "SubIndicators", new { Area = "Planning" })';
+        dataSourceOptions.transport.create.data = function () {
+            return recursiveIndicatorRequestData({
+                objecId: parent.ObjectiveId,
+                partId: parent.IndicatorId
+            });
+        };
+        dataSourceOptions.transport.update.url = '@Url.Action("SubIndicators_Update", "SubIndicators", new { Area = "Planning" })';
+        dataSourceOptions.transport.update.data = function () {
+            return recursiveIndicatorRequestData();
+        };
+        dataSourceOptions.transport.destroy.url = '@Url.Action("SubIndicators_Destroy", "SubIndicators", new { Area = "Planning" })';
+        dataSourceOptions.transport.destroy.data = function () {
+            return recursiveIndicatorRequestData();
+        };
+
+        if (typeof error_handler === "function") {
+            dataSourceOptions.error = error_handler(gridId);
+        }
+        if (typeof onRequestStart === "function") {
+            dataSourceOptions.requestStart = onRequestStart(gridId);
+        }
+        if (typeof onRequestEnd === "function") {
+            dataSourceOptions.requestEnd = onRequestEnd(gridId);
+        }
+
+        gridOptions.dataSource = new kendo.data.DataSource(dataSourceOptions);
+        gridOptions.toolbar = [
+            { name: "create", text: "Add new record" }
+        ];
+        gridOptions.detailTemplate = kendo.template($("#recursive_indicator_detail").html());
+        gridOptions.detailInit = initializeRecursiveSubIndicator;
+
+        host.kendoGrid(gridOptions);
+    }
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.ObjectiveId;
+    }
+    function EnableOrDisableActive(e)
+    {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#Indicator_grid_" + masterId).data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.IndicatorId;
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("EnableOrDisable", "Indicators")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+</script>

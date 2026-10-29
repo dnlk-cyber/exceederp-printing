@@ -23,13 +23,52 @@
 
     <script src="~/Scripts/Exceed/KendoReport.js"></script>
 
+    <script>
+        function createFiscalYearMultiSelectEditor(placeholder, options) {
+            var editorElement = $(placeholder).html("<div></div>");
+            var parameter;
+            var multiSelect;
+
+            function onChange() {
+                options.parameterChanged(parameter, multiSelect.value());
+            }
+
+            return {
+                beginEdit: function (param) {
+                    parameter = param;
+
+                    var initialValue = parameter.value;
+                    if (!$.isArray(initialValue)) {
+                        initialValue = initialValue == null ? [] : [initialValue];
+                    }
+
+                    editorElement.kendoMultiSelect({
+                        dataTextField: "name",
+                        dataValueField: "value",
+                        value: initialValue,
+                        dataSource: parameter.availableValues,
+                        filter: "contains",
+                        serverFiltering: true,
+                        placeholder: "All fiscal years",
+                        change: onChange
+                    });
+
+                    multiSelect = editorElement.data("kendoMultiSelect");
+                }
+            };
+        }
+    </script>
+
 </head>
 <body>
 
     @(Html.TelerikReporting().ReportViewer()
                         // Each report viewer must have an id - it will be used by the initialization script
                         // to find the element and initialize the report viewer.
-                        .Id("reportViewer1").ParameterEditors(editors => editors.SingleSelectEditor("createSingleSelectEditor"))
+                        .Id("reportViewer1")
+                        .ParameterEditors(editors => editors
+                            .SingleSelectEditor("createSingleSelectEditor")
+                            .MultiSelectEditor("createFiscalYearMultiSelectEditor"))
                         // The URL of the service which will serve reports.
                         // The URL corresponds to the name of the controller class (ReportsController).
                         // For more information on how to configure the service please check http://www.telerik.com/help/reporting/telerik-reporting-rest-conception.html.

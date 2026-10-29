@@ -1,3 +1,5 @@
+using ExceedERP.Reporting.Planning.DataSource;
+
 namespace ExceedERP.Reporting.Planning.Design
 {
     partial class ProjectPlanVsActualWeeklyReport
@@ -313,7 +315,7 @@ namespace ExceedERP.Reporting.Planning.Design
             // FiscalYearobjectDataSource
             // 
             this.FiscalYearobjectDataSource.DataMember = "GetFiscalYear";
-            this.FiscalYearobjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearODS);
+            this.FiscalYearobjectDataSource.DataSource = typeof(FiscalYearODS);
             this.FiscalYearobjectDataSource.Name = "FiscalYearobjectDataSource";
             // 
             // PeriodobjectDataSource

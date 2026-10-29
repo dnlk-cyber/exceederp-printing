@@ -54,69 +54,73 @@
                   model.Field(p => p.ActualId).Editable(false);
                   model.Field(p => p.IsPersonal).Editable(false);
               })
-              .Read(read => read.Action("Actuals_Read", "Actuals"))
-              .Create(create => create.Action("Actuals_Create", "Actuals"))
-              .Update(update => update.Action("Actuals_Update", "Actuals"))
-              .Destroy(destroy => destroy.Action("Actuals_Destroy", "Actuals"))
+              .Read(read => read.Action("Actuals_Read", "Actuals").Data("sendForgery"))
+              .Create(create => create.Action("Actuals_Create", "Actuals").Data("sendForgery"))
+              .Update(update => update.Action("Actuals_Update", "Actuals").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("Actuals_Destroy", "Actuals").Data("sendForgery"))
           ).ClientDetailTemplateId("actual_detail_template")
 )
 <script type="text/kendo-template" id="actual_detail_template">
     @(Html.Kendo().TabStrip()
-                .Name("tab_str_Objective_BSCActual_#=ActualId#")
-                .SelectedIndex(0)
-                .Items(items =>
+        .Name("tab_str_Objective_BSCActual_#=ActualId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+
+            items.Add().Text("Objective").Content(
+            @<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.BSCActual>()
+                .Name("BSCActual_grid_#=ActualId#")
+                .Columns(columns =>
                 {
-                items.Add().Text("Objective").Content(
-                @<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.BSCActual>()
-                                .Name("BSCActual_grid_#=ActualId#")
-                                .Columns(columns =>
-                                {
-                                    columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").EditorTemplateName("workUnit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(300);
+                    columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").EditorTemplateName("workUnit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(300);
 
-                                    //columns.ForeignKey(c => c.ObjectiveId, (IEnumerable)ViewData["Objectives"], "ObjectiveId", "Name").EditorTemplateName("Objectives").Width(300);
-                                    columns.ForeignKey(c => c.ObjectiveId, (IEnumerable)ViewData["Objectives"], "ObjectiveId", "Name").EditorTemplateName("Objectives").Filterable(ftb => ftb.Multi(true).Search(true)).Width(350);
+                    //columns.ForeignKey(c => c.ObjectiveId, (IEnumerable)ViewData["Objectives"], "ObjectiveId", "Name").EditorTemplateName("Objectives").Width(300);
+                    columns.ForeignKey(c => c.ObjectiveId, (IEnumerable)ViewData["Objectives"], "ObjectiveId", "Name").EditorTemplateName("Objectives").Filterable(ftb => ftb.Multi(true).Search(true)).Width(350);
 
-                                    columns.Command(command =>
-                                    {
-                                        command.Edit();
-                                        command.Destroy();
-                                    });
-                                })
-                                .ToolBar(toolbar =>
-                                {
-                                    toolbar.Create();
-                                })
-                                .Editable(editable => editable.Mode(GridEditMode.InLine).DisplayDeleteConfirmation("Are You Sure to delete"))
-                                .Pageable()
-                                .Filterable()
-                                .Scrollable(h => h.Height(650))
-                                .Events(events =>
-                                {
-                                    events.Cancel("onCancel");
-                                    events.Edit("onEdit");
-                                    events.DataBound("onDataBound");
-                                })
-                                .DataSource(dataSource => dataSource
-                                    .Ajax()
-                                    .Events(ev => ev
-                                                .Error("error_handler(\"BSCActual_grid_#=ActualId#\")")
-                                                .RequestStart("onRequestStart(\"BSCActual_grid_#=ActualId#\")")
-                                                .RequestEnd("onRequestEnd(\"BSCActual_grid_#=ActualId#\")"))
-                                    .Model(model => model.Id(p => p.BSCActualId))
-                                    .Read(read => read.Action("BSCActuals_Read", "BSCActuals", new { actualId = "#=ActualId#"}))
-                                    .Create(create => create.Action("BSCActuals_Create", "BSCActuals", new { id = "#=ActualId#"/*, planId = "#=PlanId#" */}))
-                                    .Update(update => update.Action("BSCActuals_Update", "BSCActuals"))
-                                    .Destroy(destroy => destroy.Action("BSCActuals_Destroy", "BSCActuals"))
-                                ).ClientDetailTemplateId("bssActual_detail_template")
-                                .ToClientTemplate()
+                    columns.Command(command =>
+                    {
+                        command.Edit();
+                        command.Destroy();
+                    });
 
-                    )
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine).DisplayDeleteConfirmation("Are You Sure to delete"))
+                .Pageable()
+                .Filterable()
+                .Scrollable(h => h.Height(650))
+                .Events(events =>
+                {
+                    events.Cancel("onCancel");
+                    events.Edit("onEdit");
+                    events.DataBound("onDataBound");
+                })
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(ev => ev
+                                .Error("error_handler(\"BSCActual_grid_#=ActualId#\")")
+                                .RequestStart("onRequestStart(\"BSCActual_grid_#=ActualId#\")")
+                                .RequestEnd("onRequestEnd(\"BSCActual_grid_#=ActualId#\")"))
+                    .Model(model => model.Id(p => p.BSCActualId))
+                    .Read(read => read.Action("BSCActuals_Read", "BSCActuals", new { actualId = "#=ActualId#"}).Data("sendForgery"))
+                    .Create(create => create.Action("BSCActuals_Create", "BSCActuals", new { id = "#=ActualId#"/*, planId = "#=PlanId#" */}).Data("sendForgery"))
+                    .Update(update => update.Action("BSCActuals_Update", "BSCActuals").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("BSCActuals_Destroy", "BSCActuals").Data("sendForgery"))
+                ).ClientDetailTemplateId("bssActual_detail_template")
+                .ToClientTemplate()
+
+            )
 
 
-                </text>);
+        </text>);
 
-                }).ToClientTemplate()
+
+
+        }).ToClientTemplate()
     )
 </script>
 <script type="text/kendo-template" id="bssActual_detail_template">
@@ -168,10 +172,10 @@
                                 model.Field(p => p.GlobalIndicatorId).Editable(false);
 
                             })
-                            .Read(read => read.Action("ActualDetails_Read", "ActualDetails", new { mAId = "#=BSCActualId#" }))
-                            .Create(create => create.Action("ActualDetails_Create", "ActualDetails", new { mAId = "#=BSCActualId#" }))
-                            .Update(update => update.Action("ActualDetails_Update", "ActualDetails"))
-                            .Destroy(destroy => destroy.Action("ActualDetails_Destroy", "ActualDetails"))
+                            .Read(read => read.Action("ActualDetails_Read", "ActualDetails", new { mAId = "#=BSCActualId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("ActualDetails_Create", "ActualDetails", new { mAId = "#=BSCActualId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("ActualDetails_Update", "ActualDetails").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("ActualDetails_Destroy", "ActualDetails").Data("sendForgery"))
                         ).ClientDetailTemplateId("Sub_Indicator_actual_details")
                         .ToClientTemplate()
 
@@ -227,10 +231,10 @@
                                 model.Field(p => p.IndicatorId).Editable(false);
                                 model.Field(p => p.GlobalIndicatorId).Editable(false);
                             })
-                            .Read(read => read.Action("ActualDetailWithSubIndicators_Read", "ActualDetailWithSubIndicators", new { aDetailId = "#=BSCActualId#", parentId= "#=IndicatorId#" }))
-                            .Create(create => create.Action("ActualDetailWithSubIndicators_Create", "ActualDetailWithSubIndicators", new { aDetailId = "#=BSCActualId#" }))
-                            .Update(update => update.Action("ActualDetailWithSubIndicators_Update", "ActualDetailWithSubIndicators"))
-                            .Destroy(destroy => destroy.Action("ActualDetailWithSubIndicators_Destroy", "ActualDetailWithSubIndicators"))
+                            .Read(read => read.Action("ActualDetailWithSubIndicators_Read", "ActualDetailWithSubIndicators", new { aDetailId = "#=BSCActualId#", parentId= "#=IndicatorId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("ActualDetailWithSubIndicators_Create", "ActualDetailWithSubIndicators", new { aDetailId = "#=BSCActualId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("ActualDetailWithSubIndicators_Update", "ActualDetailWithSubIndicators").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("ActualDetailWithSubIndicators_Destroy", "ActualDetailWithSubIndicators").Data("sendForgery"))
                         ).ClientDetailTemplateId("monthly_actual_details")
                         .ToClientTemplate()
 
@@ -285,10 +289,10 @@
                                 model.Field(p => p.GLPeriodId).Editable(false);
                                 model.Field(p => p.PlanValue).Editable(false);
                             })
-                            .Read(read => read.Action("MonthlyActuals_Read", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }))
-                            .Create(create => create.Action("MonthlyActuals_Create", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }))
-                            .Update(update => update.Action("MonthlyActuals_Update", "MonthlyActuals"))
-                            .Destroy(destroy => destroy.Action("MonthlyActuals_Destroy", "MonthlyActuals"))
+                            .Read(read => read.Action("MonthlyActuals_Read", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("MonthlyActuals_Create", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("MonthlyActuals_Update", "MonthlyActuals").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("MonthlyActuals_Destroy", "MonthlyActuals").Data("sendForgery"))
                         ).ClientDetailTemplateId("weekly_actual_details")
                         .ToClientTemplate()
 
@@ -334,9 +338,9 @@
                          events.RequestEnd("onRequestEnd(\"AttachementGrid#=ActualDetailId#\")");
                      })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                      ).ToClientTemplate())
         </text>);
          items.Add().Text("Plan Attachments").Content(       
@@ -376,9 +380,9 @@
                          events.RequestEnd("onRequestEnd(\"PlanAttachementGrid#=ActualDetailId#\")");
                      })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                      ).ToClientTemplate())
         </text>);
         }).ToClientTemplate()
@@ -431,10 +435,10 @@
                                 model.Field(p => p.GLPeriodId).Editable(false);
                                 model.Field(p => p.PlanValue).Editable(false);
                             })
-                            .Read(read => read.Action("MonthlyActuals_Read", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }))
-                            .Create(create => create.Action("MonthlyActuals_Create", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }))
-                            .Update(update => update.Action("MonthlyActuals_Update", "MonthlyActuals"))
-                            .Destroy(destroy => destroy.Action("MonthlyActuals_Destroy", "MonthlyActuals"))
+                            .Read(read => read.Action("MonthlyActuals_Read", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("MonthlyActuals_Create", "MonthlyActuals", new { mAId = "#=ActualDetailId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("MonthlyActuals_Update", "MonthlyActuals").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("MonthlyActuals_Destroy", "MonthlyActuals").Data("sendForgery"))
                         ).ClientDetailTemplateId("weekly_actual_details")
                         .ToClientTemplate()
 
@@ -481,9 +485,9 @@
                          events.RequestEnd("onRequestEnd(\"AttachementGrid#=ActualDetailId#\")");
                      })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ActualDetailId#", fileOwner = "#=ActualDetailId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                      ).ToClientTemplate())
         </text>);
          items.Add().Text("Plan Attachments").Content(       
@@ -523,9 +527,9 @@
                          events.RequestEnd("onRequestEnd(\"PlanAttachementGrid#=ActualDetailId#\")");
                      })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                      ).ToClientTemplate())
         </text>);
         }).ToClientTemplate()
@@ -560,10 +564,10 @@
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Model(model => model.Id(p => p.WeeklyActualId))
-                      .Read(read => read.Action("WeeklyActuals_Read", "WeeklyActuals", new { wAId = "#=MonthlyActualId#" }))
-                      .Create(create => create.Action("WeeklyActuals_Create", "WeeklyActuals", new { wAId = "#=MonthlyActualId#" }))
-                      .Update(update => update.Action("WeeklyActuals_Update", "WeeklyActuals"))
-                      .Destroy(destroy => destroy.Action("WeeklyActuals_Destroy", "WeeklyActuals"))
+                      .Read(read => read.Action("WeeklyActuals_Read", "WeeklyActuals", new { wAId = "#=MonthlyActualId#" }).Data("sendForgery"))
+                      .Create(create => create.Action("WeeklyActuals_Create", "WeeklyActuals", new { wAId = "#=MonthlyActualId#" }).Data("sendForgery"))
+                      .Update(update => update.Action("WeeklyActuals_Update", "WeeklyActuals").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("WeeklyActuals_Destroy", "WeeklyActuals").Data("sendForgery"))
                   ).ToClientTemplate()
             )
 

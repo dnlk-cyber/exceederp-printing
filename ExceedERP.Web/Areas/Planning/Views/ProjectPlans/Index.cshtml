@@ -59,10 +59,10 @@
                             .Error("error_handler(\"ProjectPlangrid\")")
                             .RequestStart("onRequestStart(\"ProjectPlangrid\")")
                             .RequestEnd("onRequestEnd(\"ProjectPlangrid\")"))
-                  .Read(read => read.Action("ProjectPlans_Read", "ProjectPlans"))
-                  .Create(create => create.Action("ProjectPlans_Create", "ProjectPlans"))
-                  .Update(update => update.Action("ProjectPlans_Update", "ProjectPlans"))
-                  .Destroy(destroy => destroy.Action("ProjectPlans_Destroy", "ProjectPlans"))
+                  .Read(read => read.Action("ProjectPlans_Read", "ProjectPlans").Data("sendForgery"))
+                  .Create(create => create.Action("ProjectPlans_Create", "ProjectPlans").Data("sendForgery"))
+                  .Update(update => update.Action("ProjectPlans_Update", "ProjectPlans").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectPlans_Destroy", "ProjectPlans").Data("sendForgery"))
               ).ClientDetailTemplateId("project_Plan_details")
 )
 
@@ -114,9 +114,9 @@
                          events.RequestEnd("onRequestEnd(\"AttachementGrid#=ProjectPlanId#\")");
                      })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                      ).ToClientTemplate())
         </text>);
 
@@ -144,9 +144,9 @@
                   .Model(model => { model.Id(p => p.ProjectMonthlyPlanId);
                       model.Field(p => p.GLPeriodId).Editable(false);
                   })
-                  .Read(read => read.Action("ProjectMonthlyPlans_Read", "ProjectMonthlyPlans",new { pMId = "#=ProjectPlanId#" }))
-                  .Update(update => update.Action("ProjectMonthlyPlans_Update", "ProjectMonthlyPlans"))
-                  .Destroy(destroy => destroy.Action("ProjectMonthlyPlans_Destroy", "ProjectMonthlyPlans"))
+                  .Read(read => read.Action("ProjectMonthlyPlans_Read", "ProjectMonthlyPlans",new { pMId = "#=ProjectPlanId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("ProjectMonthlyPlans_Update", "ProjectMonthlyPlans").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectMonthlyPlans_Destroy", "ProjectMonthlyPlans").Data("sendForgery"))
               ).ClientDetailTemplateId("project_weekly_plan_detail")
               .ToClientTemplate()
     )
@@ -182,10 +182,10 @@
               .DataSource(dataSource => dataSource
                   .Ajax()
                   .Model(model => model.Id(p => p.ProjectWeeklyPlanId))
-                  .Read(read => read.Action("ProjectWeeklyPlans_Read", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }))
-                  .Create(create => create.Action("ProjectWeeklyPlans_Create", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }))
-                  .Update(update => update.Action("ProjectWeeklyPlans_Update", "ProjectWeeklyPlans"))
-                  .Destroy(destroy => destroy.Action("ProjectWeeklyPlans_Destroy", "ProjectWeeklyPlans"))
+                  .Read(read => read.Action("ProjectWeeklyPlans_Read", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }).Data("sendForgery"))
+                  .Create(create => create.Action("ProjectWeeklyPlans_Create", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("ProjectWeeklyPlans_Update", "ProjectWeeklyPlans").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectWeeklyPlans_Destroy", "ProjectWeeklyPlans").Data("sendForgery"))
               ).ToClientTemplate()
         )
             </text>);

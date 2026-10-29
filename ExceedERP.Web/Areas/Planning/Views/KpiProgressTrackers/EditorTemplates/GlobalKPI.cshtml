@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                .OptionLabel("---Select----")
+                .Name("GlobalKPIId")
+                .Filter("contains")
+                .DataTextField("KPIName")
+                .DataValueField("GlobalKPIId")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetGlobalKPI", "PlanningDataProvider", new { area = "Planning" }))
+                    .ServerFiltering(false);
+                })
+            .AutoBind(true)
+            .HtmlAttributes(new { style = "width: 170px;" })
+
+)

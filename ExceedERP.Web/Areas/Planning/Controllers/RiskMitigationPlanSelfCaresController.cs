@@ -10,10 +10,14 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Planning;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin,PlanningRoles.Planning_Risk_User)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+                    PlanningRoles.Planning_Risk_User,
+                    HrmConstants.HRDepartmentHead,
+                    HrmConstants.HREmployeeSelfService)]
     public class RiskMitigationPlanSelfCaresController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -14,10 +14,14 @@ namespace ExceedERP.Core.Domain.Planning
     {
         [Key]
         public int GlobalIndicatorId { get; set; }
+        [Display(Name = "Department")]
+        public int OrgStructureId { get; set; }
         [Display(Name = "Indicator Name ")]
         [Required]
         public string Indicator { get; set; }
         public string Description { get; set; }
+        [Display(Name = "Is Active")]
+        public bool IsActive { get; set; }
 
     }
 }

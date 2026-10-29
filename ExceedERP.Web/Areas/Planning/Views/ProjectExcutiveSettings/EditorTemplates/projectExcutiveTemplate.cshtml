@@ -16,7 +16,7 @@
                                     .HtmlAttributes(new { style = "width: 300px;" })
                                     .DataSource(dataSource =>
                                     {
-                                        dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }))
+                                        dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery"))
                                             .ServerFiltering(false);
                                     })
                                     .Filter("contains")
@@ -46,7 +46,7 @@
                                             .HtmlAttributes(new { style = "width: 300px;" })
                                             .DataSource(dataSource =>
                                             {
-                                                dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("filterKPI"))
+                                                dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery").Data("filterKPI"))
                                                     .ServerFiltering(true);
                                             })
                                             .Filter("contains")

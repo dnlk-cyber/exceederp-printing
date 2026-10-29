@@ -55,10 +55,10 @@
                   .Model(model => { model.Id(p => p.ProjectActualId);
                       model.Field(p => p.ProjectActualId).Editable(false);
                   })
-                  .Read(read => read.Action("ProjectActuals_Read", "ProjectActuals"))
-                  .Create(create => create.Action("ProjectActuals_Create", "ProjectActuals"))
-                  .Update(update => update.Action("ProjectActuals_Update", "ProjectActuals"))
-                  .Destroy(destroy => destroy.Action("ProjectActuals_Destroy", "ProjectActuals"))
+                  .Read(read => read.Action("ProjectActuals_Read", "ProjectActuals").Data("sendForgery"))
+                  .Create(create => create.Action("ProjectActuals_Create", "ProjectActuals").Data("sendForgery"))
+                  .Update(update => update.Action("ProjectActuals_Update", "ProjectActuals").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectActuals_Destroy", "ProjectActuals").Data("sendForgery"))
               ).ClientDetailTemplateId("project_actual_details")
 )
 
@@ -112,20 +112,21 @@
                                 events.RequestEnd("onRequestEnd(\"AttachementGrid#=ProjectActualId#\")");
                             })
                             .Model(model => model.Id(p => p.AttachmentId))
-                            .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectActualId#", fileOwner = "#=ProjectActualId#" }))
-                            .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectActualId#", fileOwner = "#=ProjectActualId#" }))
-                            .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                            .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectActualId#", fileOwner = "#=ProjectActualId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectActualId#", fileOwner = "#=ProjectActualId#" }).Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                             ).ToClientTemplate())
                  </text>);
                 items.Add().Text("Project Plan Attachments").Content(
                 @<text>
+                    <button onclick='uploadPlanFile(#=ProjectActualId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
-                        .Name("PlanAttachementGrid#=ProjectPlanId#")
+                        .Name("PlanAttachementGrid#=ProjectActualId#")
                         .Columns(columns =>
                         {
-                            columns.Bound(c => c.FileName).ClientTemplate("<a href='/Planning/ProjectPlans/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                            columns.Bound(c => c.FileName).ClientTemplate("<a href='/Planning/ProjectActuals/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
                             columns.Bound(c => c.Description).Width(100);
-                            columns.Template(e => { }).ClientTemplate("<a href='/Planning/ProjectPlans/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; download </a>").Width(80);
+                            columns.Template(e => { }).ClientTemplate("<a href='/Planning/ProjectActuals/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; download </a>").Width(80);
                             columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
                             columns.Command(command =>
                             {
@@ -149,14 +150,13 @@
                         .Sort(sort => sort.Add(c => c.AttachmentId).Descending())
                         .Events(events =>
                         {
-                            events.Error("error_handler(\"PlanAttachementGrid#=ProjectPlanId#\")");
-                            events.RequestStart("onRequestStart(\"PlanAttachementGrid#=ProjectPlanId#\")");
-                            events.RequestEnd("onRequestEnd(\"PlanAttachementGrid#=ProjectPlanId#\")");
+                            events.Error("error_handler(\"PlanAttachementGrid#=ProjectActualId#\")");
+                            events.RequestStart("onRequestStart(\"PlanAttachementGrid#=ProjectActualId#\")");
+                            events.RequestEnd("onRequestEnd(\"PlanAttachementGrid#=ProjectActualId#\")");
                         })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("PlanAttachments_Read", "ProjectActuals", new { projectActualId = "#=ProjectActualId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("PlanAttachment_Destroy", "ProjectActuals").Data("sendForgery"))
                         ).ToClientTemplate())
             </text>);
             }).ToClientTemplate()
@@ -191,10 +191,10 @@
                             .Error("error_handler(\"project_monthly_actual_grid#=ProjectActualId#\")")
                             .RequestStart("onRequestStart(\"project_monthly_actual_grid#=ProjectActualId#\")")
                             .RequestEnd("onRequestEnd(\"project_monthly_actual_grid#=ProjectActualId#\")"))
-                  .Read(read => read.Action("ProjectMonthlyActuals_Read", "ProjectMonthlyActuals",new { aId = "#=ProjectActualId#" }))
-                  .Create(create => create.Action("ProjectMonthlyActuals_Create", "ProjectMonthlyActuals", new { aId = "#=ProjectActualId#" }))
-                  .Update(update => update.Action("ProjectMonthlyActuals_Update", "ProjectMonthlyActuals"))
-                  .Destroy(destroy => destroy.Action("ProjectMonthlyActuals_Destroy", "ProjectMonthlyActuals"))
+                  .Read(read => read.Action("ProjectMonthlyActuals_Read", "ProjectMonthlyActuals",new { aId = "#=ProjectActualId#" }).Data("sendForgery"))
+                  .Create(create => create.Action("ProjectMonthlyActuals_Create", "ProjectMonthlyActuals", new { aId = "#=ProjectActualId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("ProjectMonthlyActuals_Update", "ProjectMonthlyActuals").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectMonthlyActuals_Destroy", "ProjectMonthlyActuals").Data("sendForgery"))
               ).ClientDetailTemplateId("project_weekly_actual_details")
               .ToClientTemplate()
     )
@@ -229,10 +229,10 @@
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Model(model => model.Id(p => p.ProjectWeeklyActualId))
-                      .Read(read => read.Action("ProjectWeeklyActuals_Read", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }))
-                      .Create(create => create.Action("ProjectWeeklyActuals_Create", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }))
-                      .Update(update => update.Action("ProjectWeeklyActuals_Update", "ProjectWeeklyActuals"))
-                      .Destroy(destroy => destroy.Action("ProjectWeeklyActuals_Destroy", "ProjectWeeklyActuals"))
+                      .Read(read => read.Action("ProjectWeeklyActuals_Read", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }).Data("sendForgery"))
+                      .Create(create => create.Action("ProjectWeeklyActuals_Create", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }).Data("sendForgery"))
+                      .Update(update => update.Action("ProjectWeeklyActuals_Update", "ProjectWeeklyActuals").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("ProjectWeeklyActuals_Destroy", "ProjectWeeklyActuals").Data("sendForgery"))
                   ).ToClientTemplate()
             )
 
@@ -274,6 +274,22 @@
         </div>
     </text>)
 )
+@(Html.Kendo().Window()
+    .Name("PlanUploadDoc")
+    .Title("Add Plan File")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(400).Content(@<text><div class="form-group">
+            <form action="@Url.Action("PlanAttachment_Create", "ProjectActuals")" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="projectActualId" id="planProjectActualId">
+                <div class="row"><div class="col-md-10">@Html.TextBox("file", "", new { type = "file", required = "true" })<br /></div></div>
+                <div class="row"><div class="col-md-10">@Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })<br /></div></div>
+                <div class="row"><div class="col-lg-7"></div><input type="submit" class="btn-primary k-button" value="submit" /></div>
+            </form>
+        </div>
+    </text>)
+)
 <script>
 
     function onCancelActual(e) {
@@ -291,6 +307,11 @@
         $("#projectActualId").val(id);
         var wnd = $("#UploadDoc").data("kendoWindow");
         wnd.center().open();
+    }
+
+    function uploadPlanFile(id) {
+        $("#planProjectActualId").val(id);
+        $("#PlanUploadDoc").data("kendoWindow").center().open();
     }
 
  
@@ -325,10 +346,6 @@
         margin-right: 5px;
     }
 </style>
-<script>
-    
-    }
-</script>
 <script>
     function filterKPI() {
         return {

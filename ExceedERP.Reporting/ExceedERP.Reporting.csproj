@@ -4837,8 +4837,12 @@
     <Compile Include="Planning\DataSource\BussinessUnitODS.cs" />
     <Compile Include="Planning\DataSource\ExecutiveSummaryODS.cs" />
     <Compile Include="Planning\DataSource\FiscalYearODS.cs" />
+    <Compile Include="Planning\DataSource\KpiProgressTrackerODS.cs" />
+    <Compile Include="Planning\DataSource\ParamODS.cs" />
     <Compile Include="Planning\DataSource\PlanODS.cs" />
     <Compile Include="Planning\DataSource\PlanSelfCareODS.cs" />
+    <Compile Include="Planning\DataSource\PlanVsActualDynamicODS.cs" />
+    <Compile Include="Planning\DataSource\PlanVsActualQuarterlyODS.cs" />
     <Compile Include="Planning\DataSource\PlanVsActualWeeklyODS.cs" />
     <Compile Include="Planning\DataSource\ProjecKPITypeODS.cs" />
     <Compile Include="Planning\DataSource\ProjectActualODS.cs" />
@@ -4854,9 +4858,12 @@
     <Compile Include="Planning\DataSource\ProjectPlanVsActualWeeklyODS.cs" />
     <Compile Include="Planning\DataSource\ProjectSummaryBySectorsODS.cs" />
     <Compile Include="Planning\DataSource\ProjectTypeODS.cs" />
+    <Compile Include="Planning\DataSource\QuarterlyPlanODS.cs" />
     <Compile Include="Planning\DataSource\QuarterODS.cs" />
+    <Compile Include="Planning\DataSource\QuickFixPlanODS.cs" />
     <Compile Include="Planning\DataSource\RiskFollowUpODS.cs" />
     <Compile Include="Planning\DataSource\RiskMitigationPlanODS.cs" />
+    <Compile Include="Planning\DataSource\StrategicPlanReportODS.cs" />
     <Compile Include="Planning\DataSource\WorkUnitODS.cs" />
     <Compile Include="Planning\Design\ActualReport.cs">
       <SubType>Component</SubType>
@@ -4870,11 +4877,23 @@
     <Compile Include="Planning\Design\ActualSelfCareReport.Designer.cs">
       <DependentUpon>ActualSelfCareReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Planning\Design\ActualWithOutWeekReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ActualWithOutWeekReport.Designer.cs">
+      <DependentUpon>ActualWithOutWeekReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Planning\Design\ExcutiveSummaryReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Planning\Design\ExcutiveSummaryReport.Designer.cs">
       <DependentUpon>ExcutiveSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\KpiProgressTrackerReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\KpiProgressTrackerReport.Designer.cs">
+      <DependentUpon>KpiProgressTrackerReport.cs</DependentUpon>
     </Compile>
     <Compile Include="Planning\Design\PlanningAndActualReport.cs">
       <SubType>Component</SubType>
@@ -4905,6 +4924,30 @@
     </Compile>
     <Compile Include="Planning\Design\PlanSelfCareReport.Designer.cs">
       <DependentUpon>PlanSelfCareReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanVsActualDynamicReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanVsActualDynamicReport.Designer.cs">
+      <DependentUpon>PlanVsActualDynamicReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanVsActualQuarterlyReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanVsActualQuarterlyReport.Designer.cs">
+      <DependentUpon>PlanVsActualQuarterlyReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanVsActualWOWeekReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanVsActualWOWeekReport.Designer.cs">
+      <DependentUpon>PlanVsActualWOWeekReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanWithOutWeekReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanWithOutWeekReport.Designer.cs">
+      <DependentUpon>PlanWithOutWeekReport.cs</DependentUpon>
     </Compile>
     <Compile Include="Planning\Design\ProjectActualReport.cs">
       <SubType>Component</SubType>
@@ -4960,6 +5003,18 @@
     <Compile Include="Planning\Design\ProjectSummaryBySectorReports.Designer.cs">
       <DependentUpon>ProjectSummaryBySectorReports.cs</DependentUpon>
     </Compile>
+    <Compile Include="Planning\Design\QuarterlyPlanReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\QuarterlyPlanReport.Designer.cs">
+      <DependentUpon>QuarterlyPlanReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\QuickFixPlanReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\QuickFixPlanReport.Designer.cs">
+      <DependentUpon>QuickFixPlanReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Planning\Design\RiskFollowUpDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4972,10 +5027,18 @@
     <Compile Include="Planning\Design\RiskMitigationPlanDesign.Designer.cs">
       <DependentUpon>RiskMitigationPlanDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Planning\Design\StrategicPlanReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\StrategicPlanReport.Designer.cs">
+      <DependentUpon>StrategicPlanReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Planning\ViewModel\ActualAndPlanningVM.cs" />
     <Compile Include="Planning\ViewModel\ActualVM.cs" />
     <Compile Include="Planning\ViewModel\ExecutiveSummaryVM.cs" />
+    <Compile Include="Planning\ViewModel\KpiProgressTrackerVM.cs" />
     <Compile Include="Planning\ViewModel\PlanningVM.cs" />
+    <Compile Include="Planning\ViewModel\PlanVsActualQuarterlyVM.cs" />
     <Compile Include="Planning\ViewModel\ProjectActualVM.cs" />
     <Compile Include="Planning\ViewModel\ProjectExecutiveSummaryByProjectVM.cs" />
     <Compile Include="Planning\ViewModel\ProjectExecutiveSummaryVM.cs" />
@@ -4984,8 +5047,12 @@
     <Compile Include="Planning\ViewModel\ProjectPlanVM.cs" />
     <Compile Include="Planning\ViewModel\ProjectPlanVsActualWeeklyVM.cs" />
     <Compile Include="Planning\ViewModel\ProjectSummaryBySectorsVM.cs" />
+    <Compile Include="Planning\ViewModel\QuarterlyPlanVM.cs" />
+    <Compile Include="Planning\ViewModel\QuarterOptionVM.cs" />
+    <Compile Include="Planning\ViewModel\QuickFixPlanVM.cs" />
     <Compile Include="Planning\ViewModel\RiskFollowUpVM.cs" />
     <Compile Include="Planning\ViewModel\RiskMitgationPlanVM.cs" />
+    <Compile Include="Planning\ViewModel\StrategicPlanReportVM.cs" />
     <Compile Include="Printing\DataSource\PrintEstimationMonthlyReportOds.cs" />
     <Compile Include="Printing\DataSource\PrintingEstimationOds.cs" />
     <Compile Include="Printing\DataSource\PrintingEstimationSummaryPrintOds.cs" />
@@ -8382,8 +8449,14 @@
     <EmbeddedResource Include="Planning\Design\ActualSelfCareReport.resx">
       <DependentUpon>ActualSelfCareReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ActualWithOutWeekReport.resx">
+      <DependentUpon>ActualWithOutWeekReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Planning\Design\ExcutiveSummaryReport.resx">
       <DependentUpon>ExcutiveSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\KpiProgressTrackerReport.resx">
+      <DependentUpon>KpiProgressTrackerReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Planning\Design\PlanningAndActualReport.resx">
       <DependentUpon>PlanningAndActualReport.cs</DependentUpon>
@@ -8399,6 +8472,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Planning\Design\PlanSelfCareReport.resx">
       <DependentUpon>PlanSelfCareReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanVsActualQuarterlyReport.resx">
+      <DependentUpon>PlanVsActualQuarterlyReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanVsActualWOWeekReport.resx">
+      <DependentUpon>PlanVsActualWOWeekReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanWithOutWeekReport.resx">
+      <DependentUpon>PlanWithOutWeekReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Planning\Design\ProjectActualReport.resx">
       <DependentUpon>ProjectActualReport.cs</DependentUpon>
@@ -8427,11 +8509,20 @@
     <EmbeddedResource Include="Planning\Design\ProjectSummaryBySectorReports.resx">
       <DependentUpon>ProjectSummaryBySectorReports.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\QuarterlyPlanReport.resx">
+      <DependentUpon>QuarterlyPlanReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\QuickFixPlanReport.resx">
+      <DependentUpon>QuickFixPlanReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Planning\Design\RiskFollowUpDesign.resx">
       <DependentUpon>RiskFollowUpDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Planning\Design\RiskMitigationPlanDesign.resx">
       <DependentUpon>RiskMitigationPlanDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\StrategicPlanReport.resx">
+      <DependentUpon>StrategicPlanReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\JobOrderDesign.resx">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>

@@ -12,10 +12,14 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+       PlanningRoles.Planning_User,
+       HrmConstants.HRDepartmentHead,
+       HrmConstants.HREmployeeSelfService)]
     public class BSCActualSelfCaresController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

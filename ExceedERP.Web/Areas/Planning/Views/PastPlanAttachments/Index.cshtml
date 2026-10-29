@@ -1,0 +1,113 @@
+@using ExceedERP.Core.Domain.Planning
+@model IEnumerable<PastPlanAttachment>
+@{
+    ViewBag.Title = "Past Plans";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-content">
+    <div class="page-header">
+        <h1>Past Plans <small><i class="ace-icon fa fa-angle-double-right"></i> Archive</small></h1>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        @Html.ValidationSummary(false, "Please correct the following errors. Select the file again before retrying.", new { @class = "alert alert-danger" })
+    }
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="widget-box">
+                <div class="widget-header"><h4 class="widget-title">Attach Past Plan</h4></div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        @using (Html.BeginForm("Create", "PastPlanAttachments", new { area = "Planning" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="form-group">
+                                @Html.Label("GlFiscalYearId", "Fiscal Year")
+                                @Html.DropDownList("GlFiscalYearId", (IEnumerable<SelectListItem>)ViewBag.FiscalYears, "Select fiscal year", new { @class = "form-control", required = "required" })
+                                @Html.ValidationMessage("GlFiscalYearId", null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("PlanDate", "Plan Date")
+                                @Html.TextBox("PlanDate", null, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                                @Html.ValidationMessage("PlanDate", null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Title", "Plan Title")
+                                @Html.TextBox("Title", null, new { @class = "form-control", maxlength = "200", required = "required" })
+                                @Html.ValidationMessage("Title", null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Description")
+                                @Html.TextArea("Description", null, new { @class = "form-control", rows = "3", maxlength = "2000" })
+                                @Html.ValidationMessage("Description", null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="file">Attached File</label>
+                                <input id="file" name="file" type="file" class="form-control" required="required" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                                <small class="help-block">Maximum 25 MB. PDF, Word, Excel, JPG, JPEG, or PNG.</small>
+                                @Html.ValidationMessage("file", null, new { @class = "text-danger" })
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Upload Plan</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="widget-box">
+                <div class="widget-header"><h4 class="widget-title">Attached Past Plans</h4></div>
+                <div class="widget-body">
+                    <div class="widget-main no-padding">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fiscal Year</th>
+                                    <th>Plan Date</th>
+                                    <th>Title</th>
+                                    <th>File</th>
+                                    <th></th>
+                                    <th>Uploaded By</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.GlFiscalYear.Name</td>
+                                        <td>@item.PlanDate.ToString("yyyy-MM-dd")</td>
+                                        <td>@item.Title</td>
+                                        <td>@Html.ActionLink(item.FileName, "Download", new { id = item.PastPlanAttachmentId })</td>
+                                        <td>
+                                            <a href="@Url.Action("Open", "PastPlanAttachments", new { area = "Planning", id = item.PastPlanAttachmentId })" target="_blank" rel="noopener noreferrer" title="Open attachment" style="white-space: nowrap;"><i class="fa fa-folder-open" aria-hidden="true"></i> Open</a>
+                                        </td>
+                                        <td>@item.UploadedBy<br /><small>@item.UploadedAt.ToString("yyyy-MM-dd HH:mm")</small></td>
+                                        <td>
+                                            @using (Html.BeginForm("Delete", "PastPlanAttachments", new { area = "Planning", id = item.PastPlanAttachmentId }, FormMethod.Post, new { onsubmit = "return confirm('Delete this past plan attachment?');" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-xs btn-danger" title="Delete"><i class="fa fa-trash"></i></button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!Model.Any())
+                                {
+                                    <tr><td colspan="7" class="text-center">No past plans have been attached.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

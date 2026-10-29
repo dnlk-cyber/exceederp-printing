@@ -1,0 +1,120 @@
+@using Telerik.Reporting
+@using Telerik.ReportViewer.Mvc
+@{
+    ViewBag.Title = "PMER - Corporate Reports & Evaluation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string selectedReportType = ViewBag.SelectedReportType ?? "Strategic";
+    string reportTypeName = ViewBag.ReportTypeName ?? "ExceedERP.Reporting.Planning.Design.StrategicPlanReport, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
+}
+
+<script src="~/ReportViewer/js/jquery-3.3.1.min.js"></script>
+<link href="~/ReportViewer/css/2018.2.620/kendo.common.min.css" rel="stylesheet" />
+<link href="~/ReportViewer/css/kendo.blueopal.min.css" rel="stylesheet" />
+<script src="@Url.Content("~/ReportViewer/js/telerikReportViewer.kendo-12.2.18.912.min.js")"></script>
+<script src="~/Scripts/kendo/2018.3.911/kendo.all.min.js"></script>
+<script src="~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js"></script>
+<script src="@Url.Content("~/ReportViewer/js/telerikReportViewer-12.2.18.912.min.js")"></script>
+<script src="~/Scripts/Exceed/KendoReport.js"></script>
+
+<style>
+    .pmer-report-nav {
+        margin-bottom: 15px;
+        background: #fff;
+        padding: 10px 15px;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .pmer-report-btn-group .btn {
+        margin-right: 6px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+    #pmerReportViewer {
+        height: 820px;
+        width: 100%;
+        border: 1px solid #dcdcdc;
+        border-radius: 4px;
+        background-color: #fff;
+    }
+</style>
+
+<div class="container-fluid" style="padding: 15px 25px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; color: #2c3e50;"><i class="fa fa-line-chart text-info"></i> PMER Reports & Evaluation</h3>
+                    <p class="text-muted" style="margin-top: 4px; margin-bottom: 0;">Institutional PMER Reporting Engine, Interactive Telerik Viewer & Export Center.</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("Index", "PMER", new { area = "Planning" })" class="btn btn-default btn-sm">
+                        <i class="fa fa-arrow-left"></i> PMER Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Telerik PMER Report Selection Bar -->
+    <div class="pmer-report-nav">
+        <div class="pmer-report-btn-group">
+            <span style="font-weight: bold; margin-right: 12px; color: #475569;">
+                <i class="fa fa-filter"></i> Select Report:
+            </span>
+            <a href="@Url.Action("Reports", "PMER", new { area = "Planning", reportType = "Strategic" })"
+               class="btn @(selectedReportType == "Strategic" ? "btn-primary active" : "btn-default")">
+                <i class="fa fa-flag"></i> Strategic Plan
+            </a>
+            <a href="@Url.Action("Reports", "PMER", new { area = "Planning", reportType = "KPI" })"
+               class="btn @(selectedReportType == "KPI" ? "btn-primary active" : "btn-default")">
+                <i class="fa fa-bullseye"></i> KPI Progress Tracker
+            </a>
+            <a href="@Url.Action("Reports", "PMER", new { area = "Planning", reportType = "Quarterly" })"
+               class="btn @(selectedReportType == "Quarterly" ? "btn-primary active" : "btn-default")">
+                <i class="fa fa-bar-chart"></i> Quarterly Plan vs Actual
+            </a>
+            <a href="@Url.Action("Reports", "PMER", new { area = "Planning", reportType = "Annual" })"
+               class="btn @(selectedReportType == "Annual" ? "btn-primary active" : "btn-default")">
+                <i class="fa fa-calendar"></i> Annual Operational Plan
+            </a>
+            <a href="@Url.Action("Reports", "PMER", new { area = "Planning", reportType = "Executive" })"
+               class="btn @(selectedReportType == "Executive" ? "btn-primary active" : "btn-default")">
+                <i class="fa fa-briefcase"></i> Executive Summary
+            </a>
+        </div>
+        <div>
+            <span class="badge badge-info" style="font-size: 12px; padding: 6px 10px;">
+                <i class="fa fa-check-circle"></i> @ViewBag.FormTitle
+            </span>
+        </div>
+    </div>
+
+    <!-- Telerik HTML5 Report Viewer -->
+    <div class="row">
+        <div class="col-md-12">
+            @(Html.TelerikReporting().ReportViewer()
+                .Id("pmerReportViewer")
+                .ParameterEditors(editors => editors.SingleSelectEditor("createSingleSelectEditor"))
+                .ServiceUrl(Url.Content("~/api/reports"))
+                .ReportSource(new TypeReportSource
+                {
+                    TypeName = reportTypeName,
+                    Parameters =
+                    {
+                        new Parameter("FormTitle", ViewBag.FormTitle),
+                        new Parameter("FormNumber", ViewBag.FormNumber)
+                    }
+                })
+                .ViewMode(ViewMode.Interactive)
+                .ScaleMode(ScaleMode.FitPageWidth)
+                .PersistSession(false)
+                .PrintMode(PrintMode.AutoSelect)
+                .SendEmail(new SendEmail { Enabled = false })
+                .EnableAccessibility(false))
+        </div>
+    </div>
+</div>

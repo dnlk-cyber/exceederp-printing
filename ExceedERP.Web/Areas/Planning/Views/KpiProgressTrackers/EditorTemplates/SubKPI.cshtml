@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel("-Select Sub-KPI-")
+        .Filter("contains")
+        .DataTextField("SubKPIName")
+        .DataValueField("GlobalSubKPIId")
+        .CascadeFrom("GlobalKPIId")
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetSubKPIs", "PlanningDataProvider", new { area = "Planning" }).Data("filterKPI"))
+            .ServerFiltering(true);
+        })
+    .AutoBind(true)
+    .HtmlAttributes(new { style = "width: 170px;" })
+
+)

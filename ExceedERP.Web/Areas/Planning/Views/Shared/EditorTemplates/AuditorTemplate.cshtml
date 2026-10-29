@@ -1,0 +1,19 @@
+
+<div class="k-d-flex k-justify-content-center">
+
+    @(Html.Kendo().DropDownListFor(m => m)
+                    .OptionLabel("Select")
+                    .DataTextField("FullName")
+                    .DataValueField("EmployeeId")
+                    .Filter("contains")
+                    .HtmlAttributes(new { style = "width: 100%;" })
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetAuditorFromEmployee", "IADataProvider", new { Area = "InternalAudit" }).Data("sendForgery"))
+                            .ServerFiltering(false);
+                    })
+                    .Filter("contains")
+                    .MinLength(2)
+                    .ValuePrimitive(true)
+    )
+</div>

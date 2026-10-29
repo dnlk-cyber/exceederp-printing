@@ -16,15 +16,26 @@ using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User)]
+    [Authorize]
     public class PlanningDetailWithSubInsicatorsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly ExceedERP.Helpers.Planning.PlanningApprovalHelper auth;
 
-      
+        private const string NotEditableMessage =
+            "You can change figures only on your own work unit's plan, and only while it is a draft or has been returned for revision.";
+
+        public PlanningDetailWithSubInsicatorsController()
+        {
+            auth = new ExceedERP.Helpers.Planning.PlanningApprovalHelper(db);
+        }
+
         public ActionResult PlanningDetailWithSubInsicators_Read([DataSourceRequest]DataSourceRequest request,int pDetailId,int parentId)
         {
-            IQueryable<PlanningDetail> planningdetails = db.PlanningDetails.Where(p=>p.BSCPlanId==pDetailId&& p.ParentId==parentId);
+            if (!CanViewPlan(pDetailId))
+                return Json(Enumerable.Empty<PlanningDetail>().ToDataSourceResult(request));
+
+            IQueryable<PlanningDetail> planningdetails = db.PlanningDetails.Where(p=>p.BSCPlanId==pDetailId&& p.ParentId==parentId&&p.GetIndicator.IsActive);
             DataSourceResult result = planningdetails.ToDataSourceResult(request, planningDetail => new {
                 PlanningDetailId = planningDetail.PlanningDetailId,
                 BSCPlanId = planningDetail.BSCPlanId,
@@ -43,8 +54,12 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
       
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult PlanningDetailWithSubInsicators_Create([DataSourceRequest]DataSourceRequest request, PlanningDetail planningDetail,int pDetailId)
         {
+            if (IsPlanLocked(pDetailId))
+                ModelState.AddModelError(string.Empty, NotEditableMessage);
+
             if (ModelState.IsValid)
             {
                 planningDetail.BSCPlanId = pDetailId;
@@ -58,13 +73,20 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult PlanningDetailWithSubInsicators_Update([DataSourceRequest]DataSourceRequest request, PlanningDetail planningDetail)
         {
+            var entity = db.PlanningDetails.Find(planningDetail.PlanningDetailId);
+            if (entity == null)
+                ModelState.AddModelError(string.Empty, "The planning detail was not found.");
+            else if (IsPlanLocked(entity.BSCPlanId))
+                ModelState.AddModelError(string.Empty, NotEditableMessage);
+
             if (ModelState.IsValid)
             {
-                var entity = GetMappedObject(planningDetail);
-                db.PlanningDetails.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                entity.Plan = planningDetail.Plan;
+                entity.Baseline = planningDetail.Baseline;
+                entity.Target = planningDetail.Target;
                 db.SaveChanges();
             }
 
@@ -72,8 +94,15 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult PlanningDetailWithSubInsicators_Destroy([DataSourceRequest]DataSourceRequest request, PlanningDetail planningDetail)
         {
+            var entity = db.PlanningDetails.Find(planningDetail.PlanningDetailId);
+            if (entity == null)
+                ModelState.AddModelError(string.Empty, "The planning detail was not found.");
+            else if (IsPlanLocked(entity.BSCPlanId))
+                ModelState.AddModelError(string.Empty, NotEditableMessage);
+
             var monthlyDetails = db.MonthlyPlans.Where(x => x.PlanningDetailId == planningDetail.PlanningDetailId).ToList();
             if (monthlyDetails.Any())
             {
@@ -81,8 +110,6 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             }
             if (ModelState.IsValid)
             {
-                var entity = GetMappedObject(planningDetail);
-                db.PlanningDetails.Attach(entity);
                 db.PlanningDetails.Remove(entity);
                 db.SaveChanges();
             }
@@ -106,6 +133,23 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 Target = planningDetail.Target
             };
             return entity;
+        }
+
+        private bool IsPlanLocked(int bscPlanId)
+        {
+            var plan = db.BSCPlans.Find(bscPlanId);
+            var placement = auth.GetCurrentPlacement(UserInformationHelper.GetEmployeeId(User.Identity.Name));
+            return !auth.CanEditFigures(plan, placement);
+        }
+
+        private bool CanViewPlan(int bscPlanId)
+        {
+            var plan = db.BSCPlans.Find(bscPlanId);
+            if (plan != null && PlanningSelfCareHelper.CanViewAllWorkUnits(User))
+                return true;
+
+            var placement = auth.GetCurrentPlacement(UserInformationHelper.GetEmployeeId(User.Identity.Name));
+            return plan != null && placement != null && auth.CanViewPlan(plan, placement);
         }
         public ActionResult UploadDocument(int subIndicatorId, HttpPostedFileBase file, string txtValue)
         {

@@ -187,6 +187,9 @@
             this.pictureBox1 = new Telerik.Reporting.PictureBox();
             this.textBox1 = new Telerik.Reporting.TextBox();
             this.detail = new Telerik.Reporting.DetailSection();
+            this.averageTextBox = new Telerik.Reporting.TextBox();
+            this.averageHeaderTextBox = new Telerik.Reporting.TextBox();
+            this.percentageAverageTextBox = new Telerik.Reporting.TextBox();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox12 = new Telerik.Reporting.TextBox();
             this.textBox8 = new Telerik.Reporting.TextBox();
@@ -667,6 +670,41 @@
             this.textBox294.StyleName = "";
             this.textBox294.Value = "Description";
             // 
+            // averageHeaderTextBox
+            // 
+            this.averageHeaderTextBox.Name = "averageHeaderTextBox";
+            this.averageHeaderTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.6D), Telerik.Reporting.Drawing.Unit.Inch(0.18288643658161163D));
+            this.averageHeaderTextBox.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.averageHeaderTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.averageHeaderTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.averageHeaderTextBox.Style.Color = System.Drawing.Color.White;
+            this.averageHeaderTextBox.Style.Font.Bold = true;
+            this.averageHeaderTextBox.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
+            this.averageHeaderTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.averageHeaderTextBox.StyleName = "";
+            this.averageHeaderTextBox.Value = "Average";
+            // 
+            // averageTextBox
+            // 
+            this.averageTextBox.Format = "{0:N2}";
+            this.averageTextBox.Name = "averageTextBox";
+            this.averageTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.6D), Telerik.Reporting.Drawing.Unit.Inch(0.60222840309143066D));
+            this.averageTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.averageTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.averageTextBox.Style.Padding.Left = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.averageTextBox.Style.Padding.Right = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.averageTextBox.StyleName = "";
+            this.averageTextBox.Value = "=Fields.MonthlyAverage";
+            // 
+            // percentageAverageTextBox
+            // 
+            this.percentageAverageTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.9418537198798731E-05D), Telerik.Reporting.Drawing.Unit.Inch(2.16D));
+            this.percentageAverageTextBox.Name = "percentageAverageTextBox";
+            this.percentageAverageTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.5D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.percentageAverageTextBox.Style.Font.Bold = true;
+            this.percentageAverageTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.percentageAverageTextBox.Value = "= Format(\"Average of Percentage KPIs: {0:N2}\", Fields.PercentageAverage)";
+            // 
             // pageHeaderSection1
             // 
             this.pageHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Cm(4.4000000953674316D);
@@ -767,13 +805,14 @@
             // 
             // detail
             // 
-            this.detail.Height = Telerik.Reporting.Drawing.Unit.Cm(5.7000007629394531D);
+            this.detail.Height = Telerik.Reporting.Drawing.Unit.Inch(2.6D);
             this.detail.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.table1,
             this.textBox15,
             this.textBox32,
             this.textBox33,
-            this.textBox14});
+            this.textBox14,
+            this.percentageAverageTextBox});
             this.detail.Name = "detail";
             // 
             // table1
@@ -1164,6 +1203,7 @@
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.35785159468650818D)));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.29982152581214905D)));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.73731833696365356D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.6D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.17337793111801148D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.23464377224445343D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19420666992664337D)));
@@ -1279,6 +1319,7 @@
             this.table4.Body.SetCellContent(2, 51, this.textBox271);
             this.table4.Body.SetCellContent(0, 50, this.textBox272, 1, 4);
             this.table4.Body.SetCellContent(0, 54, this.textBox273, 3, 1);
+            this.table4.Body.SetCellContent(0, 55, this.averageTextBox, 3, 1);
             this.table4.Body.SetCellContent(1, 6, this.panel2);
             this.table4.Body.SetCellContent(0, 0, this.textBox274, 3, 1);
             this.table4.Body.SetCellContent(0, 3, this.textBox5, 3, 1);
@@ -1416,6 +1457,9 @@
             tableGroup62.ReportItem = this.textBox293;
             tableGroup67.Name = "group22";
             tableGroup67.ReportItem = this.textBox294;
+            Telerik.Reporting.TableGroup averageColumnGroup = new Telerik.Reporting.TableGroup();
+            averageColumnGroup.Name = "averageColumnGroup";
+            averageColumnGroup.ReportItem = this.averageHeaderTextBox;
             this.table4.ColumnGroups.Add(tableGroup1);
             this.table4.ColumnGroups.Add(tableGroup2);
             this.table4.ColumnGroups.Add(tableGroup3);
@@ -1435,6 +1479,7 @@
             this.table4.ColumnGroups.Add(tableGroup57);
             this.table4.ColumnGroups.Add(tableGroup62);
             this.table4.ColumnGroups.Add(tableGroup67);
+            this.table4.ColumnGroups.Add(averageColumnGroup);
             this.table4.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox274,
             this.textBox174,
@@ -1569,7 +1614,9 @@
             this.textBox291,
             this.textBox292,
             this.textBox293,
-            this.textBox294});
+            this.textBox294,
+            this.averageTextBox,
+            this.averageHeaderTextBox});
             this.table4.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0D));
             this.table4.Name = "table4";
             tableGroup69.Name = "group20";
@@ -1581,7 +1628,7 @@
             tableGroup68.Groupings.Add(new Telerik.Reporting.Grouping(null));
             tableGroup68.Name = "detailTableGroup1";
             this.table4.RowGroups.Add(tableGroup68);
-            this.table4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(19.675910949707031D), Telerik.Reporting.Drawing.Unit.Inch(0.7851148247718811D));
+            this.table4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(20.275910949707031D), Telerik.Reporting.Drawing.Unit.Inch(0.7851148247718811D));
             this.table4.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.table4.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.table4.Style.Padding.Left = Telerik.Reporting.Drawing.Unit.Point(0D);
@@ -3060,6 +3107,9 @@
         private Telerik.Reporting.TextBox textBox292;
         private Telerik.Reporting.TextBox textBox293;
         private Telerik.Reporting.TextBox textBox294;
+        private Telerik.Reporting.TextBox averageTextBox;
+        private Telerik.Reporting.TextBox averageHeaderTextBox;
+        private Telerik.Reporting.TextBox percentageAverageTextBox;
         private Telerik.Reporting.TextBox textBox23;
         private Telerik.Reporting.TextBox textBox90;
         private Telerik.Reporting.TextBox textBox38;

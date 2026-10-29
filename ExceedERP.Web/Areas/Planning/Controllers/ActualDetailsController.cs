@@ -13,7 +13,7 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin)]
+    [Authorize]
     public class ActualDetailsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -38,7 +38,8 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 HasSubIndicator = actualDetail.HasSubIndicator,
                 Plan = actualDetail.Plan,
                 Baseline = actualDetail.Baseline,
-                Target = actualDetail.Target
+                Target = actualDetail.Target,
+                ActualValue = db.MonthlyActuals.Where(ma => ma.ActualDetailId == actualDetail.ActualDetailId).Sum(ma => (decimal?)ma.ActualValue) ?? 0
             });
 
             return Json(result);

@@ -125,6 +125,10 @@
     <Compile Include="Migrations\202610270924174_LeaverAndTermniationUpdateMigration.Designer.cs">
       <DependentUpon>202610270924174_LeaverAndTermniationUpdateMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610271343456_PlanningandHRmModuleChangeMigration.cs" />
+    <Compile Include="Migrations\202610271343456_PlanningandHRmModuleChangeMigration.Designer.cs">
+      <DependentUpon>202610271343456_PlanningandHRmModuleChangeMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -170,6 +174,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610270924174_LeaverAndTermniationUpdateMigration.resx">
       <DependentUpon>202610270924174_LeaverAndTermniationUpdateMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610271343456_PlanningandHRmModuleChangeMigration.resx">
+      <DependentUpon>202610271343456_PlanningandHRmModuleChangeMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

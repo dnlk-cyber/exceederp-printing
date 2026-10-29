@@ -1,0 +1,193 @@
+@{
+    ViewBag.Title = "PMER - Planning, Monitoring, Evaluation & Reporting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .pmer-card {
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        padding: 22px;
+        margin-bottom: 24px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-top: 4px solid #337ab7;
+    }
+    .pmer-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .pmer-pillar-num {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #888;
+        letter-spacing: 1px;
+    }
+    .pmer-card h3 {
+        margin-top: 5px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    .pmer-card p {
+        color: #666;
+        min-height: 48px;
+        font-size: 13px;
+    }
+    .pmer-hero {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.2);
+    }
+    .pmer-hero h1 {
+        margin: 0 0 10px 0;
+        font-size: 28px;
+        font-weight: 700;
+    }
+    .pmer-hero p {
+        font-size: 15px;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+    .stat-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 12px;
+    }
+    .stat-success { background: #dff0d8; color: #3c763d; }
+    .stat-info { background: #d9edf7; color: #31708f; }
+</style>
+
+<div class="container-fluid" style="padding: 20px 30px;">
+
+    <!-- PMER Hero Banner -->
+    <div class="pmer-hero">
+        <div class="row">
+            <div class="col-md-8">
+                <h1><i class="fa fa-cubes"></i> PMER / PMETR System Progress</h1>
+                <p>Planning, Monitoring, Evaluation, Tracking & Reporting Enterprise Framework</p>
+                <div style="margin-top: 15px;">
+                    <span class="label label-primary" style="font-size: 12px; margin-right: 8px;">Multi-Year Strategic Framework</span>
+                    <span class="label label-success" style="font-size: 12px; margin-right: 8px;">Strategic Alignment: @ViewBag.AlignmentRate%</span>
+                    <span class="label label-info" style="font-size: 12px;">ERP Operationalization Ready</span>
+                </div>
+            </div>
+            <div class="col-md-4 text-right hidden-xs">
+                <div style="font-size: 42px; font-weight: 700; margin-top: 10px;">@ViewBag.AlignmentRate%</div>
+                <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Strategic Goal Alignment Rate</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 PMETR Pillars Cards -->
+    <div class="row">
+        <!-- Pillar 1: Strategic Plan -->
+        <div class="col-md-3 col-sm-6">
+            <div class="pmer-card" style="border-top-color: #3498db;">
+                <div class="pmer-pillar-num"><i class="fa fa-flag"></i> Strategic Planning</div>
+                <h3>Strategic Plan</h3>
+                <p>Strategic Objectives, Goals, 5-Year Implementation Schedule, and Financing.</p>
+                <div style="margin-bottom: 15px;">
+                    <span class="stat-badge stat-info">@ViewBag.TotalStrategicGoals Goals Configured</span>
+                </div>
+                <a href="@Url.Action("StrategicPlan", "PMER", new { area = "Planning" })" class="btn btn-primary btn-block btn-sm">
+                    <i class="fa fa-arrow-circle-right"></i> Open Strategic Plan
+                </a>
+            </div>
+        </div>
+
+        <!-- Pillar 2: Annual Plan & Cascading -->
+        <div class="col-md-3 col-sm-6">
+            <div class="pmer-card" style="border-top-color: #2ecc71;">
+                <div class="pmer-pillar-num"><i class="fa fa-sitemap"></i> Pillar 2</div>
+                <h3>Annual Plan</h3>
+                <p>Annual Objectives, Objective Mapping, Cascading Activity, and Corporate KPI Matrix.</p>
+                <div style="margin-bottom: 15px;">
+                    <span class="stat-badge stat-success">@ViewBag.TotalCorporateKPIs Standard KPIs</span>
+                </div>
+                <a href="@Url.Action("AnnualPlan", "PMER", new { area = "Planning" })" class="btn btn-success btn-block btn-sm">
+                    <i class="fa fa-arrow-circle-right"></i> Open Annual Plan & Cascading
+                </a>
+            </div>
+        </div>
+
+        <!-- Pillar 3: Actual Plan & Execution -->
+        <div class="col-md-3 col-sm-6">
+            <div class="pmer-card" style="border-top-color: #e67e22;">
+                <div class="pmer-pillar-num"><i class="fa fa-check-circle"></i> Pillar 3</div>
+                <h3>Actual Plan</h3>
+                <p>Operational validation checkpoints by Department Heads, execution results, and tracking.</p>
+                <div style="margin-bottom: 15px;">
+                    <span class="stat-badge stat-info">@ViewBag.TotalApprovedPlans Approved Plans</span>
+                </div>
+                <a href="@Url.Action("ActualPlan", "PMER", new { area = "Planning" })" class="btn btn-warning btn-block btn-sm" style="color: white;">
+                    <i class="fa fa-arrow-circle-right"></i> Open Actual Execution
+                </a>
+            </div>
+        </div>
+
+        <!-- Pillar 4: Reports & Governance -->
+        <div class="col-md-3 col-sm-6">
+            <div class="pmer-card" style="border-top-color: #9b59b6;">
+                <div class="pmer-pillar-num"><i class="fa fa-line-chart"></i> Pillar 4</div>
+                <h3>PMER Reports</h3>
+                <p>Strategic alignment, milestone framework, ERP adoption, monthly BOD and quarterly reports.</p>
+                <div style="margin-bottom: 15px;">
+                    <span class="stat-badge stat-success">6 Standard Reports</span>
+                </div>
+                <a href="@Url.Action("Reports", "PMER", new { area = "Planning" })" class="btn btn-default btn-block btn-sm" style="background: #9b59b6; color: white; border-color: #9b59b6;">
+                    <i class="fa fa-arrow-circle-right"></i> Open PMER Reports
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Process Flow Summary Diagram from PMER.docx -->
+    <div class="panel panel-default" style="margin-top: 10px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+        <div class="panel-heading" style="font-weight: 600; background: #f8f9fa;">
+            <i class="fa fa-exchange"></i> PMETR Planning & Execution Lifecycle
+        </div>
+        <div class="panel-body">
+            <div class="row text-center" style="padding: 10px 0;">
+                <div class="col-md-2 col-xs-6" style="margin-bottom: 15px;">
+                    <div style="padding: 15px; border: 1px solid #dcdcdc; border-radius: 6px; background: #fbfcfd;">
+                        <i class="fa fa-bullseye text-primary" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <div style="font-weight: 600; font-size: 13px;">Strategic Plan</div>
+                        <div style="font-size: 11px; color: #777;">Strategic Objectives & Goals</div>
+                    </div>
+                </div>
+                <div class="col-md-1 hidden-xs" style="padding-top: 25px;"><i class="fa fa-arrow-right text-muted fa-2x"></i></div>
+                <div class="col-md-2 col-xs-6" style="margin-bottom: 15px;">
+                    <div style="padding: 15px; border: 1px solid #dcdcdc; border-radius: 6px; background: #fbfcfd;">
+                        <i class="fa fa-calendar-check-o text-success" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <div style="font-weight: 600; font-size: 13px;">Annual Plan</div>
+                        <div style="font-size: 11px; color: #777;">Goal Mapping & Cascading to Work Units</div>
+                    </div>
+                </div>
+                <div class="col-md-1 hidden-xs" style="padding-top: 25px;"><i class="fa fa-arrow-right text-muted fa-2x"></i></div>
+                <div class="col-md-2 col-xs-6" style="margin-bottom: 15px;">
+                    <div style="padding: 15px; border: 1px solid #dcdcdc; border-radius: 6px; background: #fbfcfd;">
+                        <i class="fa fa-check-square-o text-warning" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <div style="font-weight: 600; font-size: 13px;">Validation Gate</div>
+                        <div style="font-size: 11px; color: #777;">Department Head Review & Operational Approval</div>
+                    </div>
+                </div>
+                <div class="col-md-1 hidden-xs" style="padding-top: 25px;"><i class="fa fa-arrow-right text-muted fa-2x"></i></div>
+                <div class="col-md-2 col-xs-6" style="margin-bottom: 15px;">
+                    <div style="padding: 15px; border: 1px solid #dcdcdc; border-radius: 6px; background: #fbfcfd;">
+                        <i class="fa fa-tasks text-danger" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <div style="font-weight: 600; font-size: 13px;">Execution & Monitoring</div>
+                        <div style="font-size: 11px; color: #777;">Actual Results, Thresholds & BOD Reporting</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

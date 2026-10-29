@@ -19,7 +19,7 @@ namespace ExceedERP.Reporting.Planning.DataSource
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ProjectExecutiveSummaryVM> GetProjectExecutiveSummaryData(string planyear,string periodId,string projectTypeId,string projectId,string projectKpiType)
+        public List<ProjectExecutiveSummaryVM> GetProjectExecutiveSummaryData(string planyear,string periodId,string projectTypeId,string projectId,string projectKpiType/*,DateTime? from,DateTime? to*/)
         {
 
             var models = new List<ProjectExecutiveSummaryVM>();
@@ -36,7 +36,11 @@ namespace ExceedERP.Reporting.Planning.DataSource
                     if (projecInfiIds.Count() > 0)
                     {
 
-                       
+                        var prjectTypeIds = db.ProjectInformation.Where(x => projecInfiIds.Contains(x.ProjectTypeId)).Select(x=>x.ProjectTypeId).ToList();
+                        if (prjectTypeIds.Count() > 0)
+                        {
+                            projectTypes = projectTypes.Where(x => prjectTypeIds.Contains(x.ConsProjectTypeId)).ToList();
+                        }
                     }
                     if (projectId != null && projectPlans.Count() > 0)
                     {
@@ -49,7 +53,14 @@ namespace ExceedERP.Reporting.Planning.DataSource
 
                     if (projectTypeId != null)
                     {
-                        
+                        int.TryParse(projectTypeId, out int typeId);
+                        var projectIds = db.ProjectInformation.Where(s => s.ProjectTypeId == typeId).Select(x => x.ProjectInformationId);
+                        if (projectIds.Count() > 0 && projectPlans.Count() > 0)
+                        {
+                            projectPlans = projectPlans.Where(s => projectIds.Contains(s.ProjectInformationId)).ToList();
+
+                        }
+                        projectTypes = projectTypes.Where(x => x.ConsProjectTypeId == typeId).ToList();
                     }
                 }
                 if (projectKpiType != null && projectPlans.Count() > 0)
@@ -61,6 +72,14 @@ namespace ExceedERP.Reporting.Planning.DataSource
 
                     }
                 }
+                //if (from.HasValue)
+                //{
+
+                //}
+                //if (to.HasValue)
+                //{
+
+                //}
                 var projectExcutiveSummaries = db.ProjectExcutiveSettings.ToList();
                 if (projectPlans.Count() > 0)
                 {
@@ -105,7 +124,70 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                 //var projectActuals = db.ProjectActuals.Where(x=>x.ProjectKPIId==excutiveSummary.ProjectKPIId
                                 //                                                    &&x.ProjectSubKPIId==excutiveSummary.ProjectSubKPIId
                                 //                                                    &&x.GlFiscalYearId==glFiscalYearId).ToList();
-                               
+                                var projectIds = db.ProjectInformation.Where(s => s.ProjectTypeId == proInfo.ConsProjectTypeId).Select(x => x.ProjectInformationId);
+
+                                if (projectIds.Any()  && projectPlanDetails.Any() )
+                                {
+                                 
+                                    projectPlanDetails = projectPlanDetails.Where(x => projectIds.Contains(x.ProjectInformationId)).ToList();
+                                    
+                                    var projects = new ProjectInformationExecutiveSummaryDetailVM();
+                                    var projectType = db.ConsProjectTypes.Find(proInfo.ConsProjectTypeId);
+                                    {
+                                        projects.Project = projectType.Name;
+
+                                    }
+
+                                    if (projectPlanDetails.Any())
+                                    {
+                                       
+                                        var projectInfo = db.ProjectInformation.Where(x=> projectIds.Contains(x.ProjectInformationId)).Where(x => x.ProjectTypeId == proInfo.ConsProjectTypeId).ToList();
+                                        if (projectInfo.Count() > 0)
+                                        {
+                                            // projects.Project = projectInfo.Code + " - " + projectInfo.Name;
+                                            projects.ContratAmount = projectInfo.Sum(x => x.ContractAmount);
+                                            projects.Unit = "Birr .";
+                                        }
+                                       
+
+                                        var projectActualIds = projectPlanDetails.Select(x => x.ProjectActualId);
+                                        var annualPlan = db.ProjectPlans.Where(x=> x.ProjectKPIId == excutiveSummary.ProjectKPIId
+                                                                                    && x.ProjectSubKPIId == excutiveSummary.ProjectSubKPIId
+                                                                                    && x.GlFiscalYearId == glFiscalYearId);
+                                        projects.AnnualPlan = annualPlan.Any() ? annualPlan.Sum(x => x.Plan) : 0;
+                                        var projectMonthlyPlans = db.ProjectMonthlyActuals.Where(x => projectActualIds.Contains(x.ProjectActualId)).ToList();
+                                        projects.Plan = projectMonthlyPlans.Any()? projectMonthlyPlans.Sum(x => x.PlanValue) : 0;
+                                        projects.Actual = projectMonthlyPlans.Any()  ? projectMonthlyPlans.Sum(x => x.ActualValue) : 0; ;
+                                        projects.Percent = projects.Plan != 0 ? (projects.Actual / projects.Plan) * 100 : 0;
+                                        projects.ToMonthPlan = projects.Plan;
+                                        projects.ToMonthActual = projects.Actual;
+                                        projects.ToMonthPercent = projects.Percent;
+                                        if (periodId != null)
+                                        {
+                                            int.TryParse(periodId, out int gPeriodId);
+                                            var singleprojectMonthlyPlans = projectMonthlyPlans.Where(x => x.GLPeriodId == gPeriodId).ToList();
+                                            projects.Plan = singleprojectMonthlyPlans.Count > 0 ? singleprojectMonthlyPlans.Sum(x => x.PlanValue) : 0;
+                                            projects.Actual = singleprojectMonthlyPlans.Count() > 0 ? singleprojectMonthlyPlans.Sum(x => x.ActualValue) : 0;
+                                            projects.Percent = projects.Plan != 0 ? (projects.Actual / projects.Plan) * 100 : 0;
+                                            var period = db.GLPeriods.Find(gPeriodId);
+                                            if (period != null)
+                                            {
+                                                var periodIds = db.GLPeriods.Where(x => x.Index <= period.Index && x.GlFiscalYearId == glFiscalYearId).Select(x => x.GLPeriodId);
+                                                if (periodIds.Count() > 0)
+                                                {
+                                                    projectMonthlyPlans = projectMonthlyPlans.Where(x => periodIds.Contains(x.GLPeriodId)).ToList();
+                                                    projects.ToMonthPlan = projectMonthlyPlans.Any() ? projectMonthlyPlans.Sum(x => x.PlanValue) : 0;
+                                                    projects.ToMonthActual = projectMonthlyPlans.Count() > 0 ? projectMonthlyPlans.Sum(x => x.ActualValue) : 0;
+                                                    projects.ToMonthPercent = projects.ToMonthPlan != 0 ? (projects.ToMonthActual / projects.ToMonthPlan) * 100 : 0;
+
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                    
+                                    projectSummary.projectInformation.Add(projects);
+                                }
                                 
                             }
                             projectSummary.ContratAmount = projectSummary.projectInformation.Sum(x => x.ContratAmount);

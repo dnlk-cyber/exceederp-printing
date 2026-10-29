@@ -63,7 +63,8 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 CreatedBy = plan.CreatedBy,
                 LastModified = plan.LastModified,
                 ModifiedBy = plan.ModifiedBy,
-                Description = plan.Description
+                Description = plan.Description,
+                Reason = plan.Reason
             });
 
             return Json(result);
@@ -161,7 +162,8 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 CreatedBy = plan.CreatedBy,
                 LastModified = plan.LastModified,
                 ModifiedBy = plan.ModifiedBy,
-                Description = plan.Description
+                Description = plan.Description,
+                Reason = plan.Reason
             };
             return entity;
         }

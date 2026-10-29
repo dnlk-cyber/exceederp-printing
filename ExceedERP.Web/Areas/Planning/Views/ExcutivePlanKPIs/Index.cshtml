@@ -30,10 +30,10 @@
               model.Field(p => p.ExcutivePlanKPIId).Editable(false);
           })
 
-          .Read(read => read.Action("ExcutivePlanKPIs_Read", "ExcutivePlanKPIs"))
-          .Create(create => create.Action("ExcutivePlanKPIs_Create", "ExcutivePlanKPIs"))
-          .Update(update => update.Action("ExcutivePlanKPIs_Update", "ExcutivePlanKPIs"))
-          .Destroy(destroy => destroy.Action("ExcutivePlanKPIs_Destroy", "ExcutivePlanKPIs"))
+          .Read(read => read.Action("ExcutivePlanKPIs_Read", "ExcutivePlanKPIs").Data("sendForgery"))
+          .Create(create => create.Action("ExcutivePlanKPIs_Create", "ExcutivePlanKPIs").Data("sendForgery"))
+          .Update(update => update.Action("ExcutivePlanKPIs_Update", "ExcutivePlanKPIs").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ExcutivePlanKPIs_Destroy", "ExcutivePlanKPIs").Data("sendForgery"))
       )
 )
 

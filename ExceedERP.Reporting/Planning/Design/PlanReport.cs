@@ -19,9 +19,23 @@ namespace ExceedERP.Reporting.Planning.Design
             //
             InitializeComponent();
 
-            //
-            // TODO: Add any constructor code after InitializeComponent call
-            //
+            textBox171.Value = "= Fields.Indicators + '\r\nWeight: ' + IIf(Format('{0:0.##}', Fields.Weight) = '', '-', Format('{0:0.##}', Fields.Weight))";
+            textBox274.Value = "= Fields.SubIndicators + '\r\nWeight: ' + IIf(Format('{0:0.##}', Fields.Weight) = '', '-', Format('{0:0.##}', Fields.Weight))";
+            textBox274.Bindings.Add(new Telerik.Reporting.Binding("Style.Padding.Left",
+                "= IIf(Fields.IndicatorLevel > 1, (Fields.IndicatorLevel - 1) * 6, 0) + 'pt'"));
+            textBox277.Value = "Sub-Indicators / Weight";
+
+            ReportParameters.Add(new ReportParameter
+            {
+                Name = "IncludeInactive",
+                Type = ReportParameterType.Boolean,
+                Value = "= False",
+                Visible = false
+            });
+            PlanODS.Parameters.Add(new ObjectDataSourceParameter(
+                "includeInactive",
+                typeof(bool),
+                "= Parameters.IncludeInactive.Value"));
         }
     }
 }

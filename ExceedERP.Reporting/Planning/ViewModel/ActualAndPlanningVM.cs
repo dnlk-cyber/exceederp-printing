@@ -9,9 +9,12 @@ namespace ExceedERP.Reporting.Planning.ViewModel
 {
     public class ActualAndPlanningVM : Organization
     {
-        
+        public string Date { get; set; }
         public string FiscalYear { get; set; }
         public string Description { get; set; }
+        public decimal GrandTotalPlan { get; set; }
+        public decimal GrandTotalActual { get; set; }
+        public decimal GrandTotalPercent { get; set; }
         public List<BothObjectiveItem> ObjectiveItems { get; set; } = new List<BothObjectiveItem>();
         public class BothObjectiveItem
         {
@@ -81,6 +84,9 @@ namespace ExceedERP.Reporting.Planning.ViewModel
             public decimal Yearly { get; set; }
             public decimal YearlyPlan { get; set; }
             public decimal YearlyActual { get; set; }
+            public decimal TotalPlan { get; set; }
+            public decimal TotalActual { get; set; }
+            public decimal TotalPercent { get; set; }
             public decimal JulyWeek1 { get; set; }
             public decimal JulyWeek2 { get; set; }
             public decimal JulyWeek3 { get; set; }

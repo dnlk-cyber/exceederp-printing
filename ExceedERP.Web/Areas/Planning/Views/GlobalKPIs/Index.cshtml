@@ -1,0 +1,145 @@
+﻿@using ExceedERP.Core.Domain.Planning
+<legend>Global-KPI</legend>
+@(Html.Kendo().Grid<GlobalKPI>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.GlobalKPIId).Title("S.N").Width(80);
+        columns.Bound(c => c.KPIName).EditorTemplateName("textarea").Width(300);
+        columns.Bound(c => c.IsActive).ClientTemplate(
+                    "<input type='checkbox' disabled = 'true' value='#= IsActive#' " +
+                    "# if (IsActive) { #" +
+                    "checked='checked'" +
+                    "# } #" +
+                    "/>"
+                    ).Width(120);
+        columns.Command(command =>
+        {
+            command.Edit();
+            command.Custom("").Click("EnableOrDisableActive").Text("Enable or Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable ", @id = "enableDisable" });
+
+            command.Destroy();
+        });
+
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create();
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable()
+    .Filterable()
+    .Scrollable(h => h.Height(550))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Sort(s => s.Add(x => x.GlobalKPIId).Descending())
+        .Events(ev => ev
+                .Error("error_handler(\"grid\")")
+                .RequestStart("onRequestStart(\"grid\")")
+                .RequestEnd("onRequestEnd(\"grid\")"))
+        .Model(model =>
+        {
+            model.Id(p => p.GlobalKPIId);
+            model.Field(p => p.GlobalKPIId).Editable(false);
+        })
+        .Read(read => read.Action("GlobalKPIs_Read", "GlobalKPIs").Data("sendForgery"))
+        .Create(create => create.Action("GlobalKPIs_Create", "GlobalKPIs").Data("sendForgery"))
+        .Update(update => update.Action("GlobalKPIs_Update", "GlobalKPIs").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("GlobalKPIs_Destroy", "GlobalKPIs").Data("sendForgery"))
+    ).ClientDetailTemplateId("template")
+)
+<script type="text/kendo-template" id="template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_#=GlobalKPIId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+
+            items.Add().Text("Sub-KPI").Content(
+                @<text>
+                    @SubKPI()
+                </text>);
+
+
+
+        }).ToClientTemplate()
+    )
+</script>
+@helper SubKPI()
+{
+
+    @(Html.Kendo().Grid<GlobalSubKPI>()
+        .Name("sub_KPI_grid_#=GlobalKPIId#")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.SubKPIName).EditorTemplateName("textarea").Width(400);
+            columns.Command(command =>
+            {
+                command.Edit();
+                command.Destroy();
+            });
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Pageable()
+        .Filterable()
+        .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(s => s.Add(x => x.GlobalSubKPIId).Descending())
+            .Events(ev => ev
+                        .Error("error_handler(\"sub_KPI_grid_#=GlobalKPIId#\")")
+                        .RequestStart("onRequestStart(\"sub_KPI_grid_#=GlobalKPIId#\")")
+                        .RequestEnd("onRequestEnd(\"sub_KPI_grid_#=GlobalKPIId#\")"))
+                .Model(model => model.Id(p => p.GlobalSubKPIId))
+                .Read(read => read.Action("GlobalSubKPIs_Read", "GlobalSubKPIs", new { id = "#=GlobalKPIId#" }).Data("sendForgery"))
+                .Create(create => create.Action("GlobalSubKPIs_Create", "GlobalSubKPIs", new { id = "#=GlobalKPIId#" }).Data("sendForgery"))
+                .Update(update => update.Action("GlobalSubKPIs_Update", "GlobalSubKPIs").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("GlobalSubKPIs_Destroy", "GlobalSubKPIs").Data("sendForgery"))
+            ).ToClientTemplate()
+    )
+
+}
+<script>
+
+ var masterId = 0;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.GlobalKPIId;
+    }
+
+    function EnableOrDisableActive(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.GlobalKPIId;
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("EnableOrDisable", "GlobalKPIs")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+</script>

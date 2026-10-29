@@ -13,7 +13,7 @@ using System.Web.Mvc;
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
 
-    [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User)]
+    [Authorize]
     public class PlanningReportsController : BaseController
     {
         // GET: TDS/TDSReport
@@ -29,6 +29,45 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             ViewBag.FormNumber = number;
             return View();
         }
+        public ActionResult StrategicPlan()
+        {
+            ViewBag.FormTitle = "Strategic Plan Report";
+            ViewBag.FormNumber = string.Empty;
+            return View();
+        }
+        public ActionResult QuarterlyPlan()
+        {
+            PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Quarterly_Plan_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult PlanVsActualQuarterly()
+        {
+            PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Plan_VS_Actual_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult PlanVsActualDynamic()
+        {
+            ViewBag.FormTitle = "Plan Vs Actual Report (Quarter Selection)";
+            ViewBag.FormNumber = string.Empty;
+            return View();
+        }
+        public ActionResult QuickFixPlan()
+        {
+            ViewBag.FormTitle = "Quick-Fix Plan";
+            ViewBag.FormNumber = string.Empty;
+            return View();
+        }
+        public ActionResult PlanWOWeek()
+        {
+            PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Plan_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
         public ActionResult PlanSelfCare()
         {
 
@@ -37,6 +76,20 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         public ActionResult Actual()
         {
             PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Actual_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult ActualWOWReport()
+        {
+            PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Actual_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult PlanVsActualWOWeek()
+        {
+            PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Plan_VS_Actual_Report, out string title, out string number);
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
@@ -137,6 +190,13 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         public ActionResult ProjectExcutiveSummaryPerProject()
         {
             PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Project_Excutive_Summary_Per_Project, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult KpiProgressTrackerReport()
+        {
+            PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.KPI_Progress_Tracker_Report, out string title, out string number);
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();

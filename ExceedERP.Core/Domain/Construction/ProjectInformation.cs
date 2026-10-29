@@ -40,6 +40,8 @@ namespace ExceedERP.Core.Domain.Construction
         [DisplayName("Consultant")]
         [StringLength(200)]
         public string Consultant { get; set; }
+        [Display(Name = "Project Type")]
+        public int ProjectTypeId { get; set; }
         [DisplayName("Type")]
         public AvailableProjectTypes ProjectType { get; set; }
         //public virtual ProjectType ProjectType { get; set; }

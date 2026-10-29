@@ -35,7 +35,18 @@ namespace ExceedERP.Reporting.Planning.DataSource
             if (businessUnitCode != null && plans.Count()>0)
             {
 
-               
+                var projectTypeIds = db.ConsProjectTypes.Where(x => x.BusinessUnit == businessUnitCode).Select(x => x.ConsProjectTypeId);
+                if (projectTypeIds.Count() > 0)
+                {
+                    var projectIds = db.ProjectInformation.Where(x => projectTypeIds.Contains(x.ProjectTypeId)).Select(x => x.ProjectInformationId);
+                    if (projectIds.Count() > 0)
+                    {
+                        plans = plans.Where(x => projectIds.Contains(x.ProjectInformationId)).ToList();
+
+                    }
+
+                }
+
 
             }
 

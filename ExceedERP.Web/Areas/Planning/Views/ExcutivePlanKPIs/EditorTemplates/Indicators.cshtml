@@ -4,13 +4,8 @@
             .DataTextField("Name")
             .DataValueField("IndicatorId")
             .HtmlAttributes(new { style = "width: 300px;" })
-            .DataSource(dataSource =>
-            {
-                dataSource.Read(read => read.Action("GetIndicators", "PlanningDataProvider", new { Area = "Planning" }))
-                    .ServerFiltering(false);
-            })
+            .BindTo((System.Collections.IEnumerable)ViewData["Indicators"])
             .Filter("contains")
-            .MinLength(2)
             .ValuePrimitive(true)
             )
                   

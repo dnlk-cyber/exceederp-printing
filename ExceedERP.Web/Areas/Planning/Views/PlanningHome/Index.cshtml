@@ -40,6 +40,12 @@
                                         <li id="plan-mgt-setup-01" class="actionlinlk">
                                             @Html.ActionLink("Plan ", "Index", "Plans", new { area = "Planning" }, null)<b class="arrow"></b>
                                         </li>
+                                        <li id="plan-mgt-quick-fix-plan" class="actionlinlk">
+                                            @Html.ActionLink("Quick-Fix Plan", "Index", "QuickFixPlans", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
+                                        <li id="plan-mgt-past-plans" class="actionlinlk">
+                                            @Html.ActionLink("Past Plans", "Index", "PastPlanAttachments", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
                                         <li id="plan-mgt-setup-02" class="actionlinlk">
                                             @Html.ActionLink("Actual ", "Index", "Actuals", new { area = "Planning" }, null)<b class="arrow"></b>
                                         </li>
@@ -108,6 +114,9 @@
                                     </li>
                                     <li id="plan-report-setup-04" class="actionlinlk">
                                         @Html.ActionLink("Plan Vs Actual Weekly", "PlanVsActualForWeeklyReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-14" class="actionlinlk">
+                                        @Html.ActionLink("Plan Vs Actual (Dynamic Quarter)", "PlanVsActualDynamic", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
                                     </li>
                                     <li class="divider"></li>
                                     <li class="dropdown-header">  Project Planning </li>

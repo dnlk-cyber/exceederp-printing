@@ -13,6 +13,7 @@ using ExceedERP.Core.Domain.Planning;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
+    [Authorize]
     public class MonthlyActualsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

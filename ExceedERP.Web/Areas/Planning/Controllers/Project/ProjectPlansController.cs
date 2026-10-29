@@ -17,6 +17,7 @@ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers.Project
 {
+    [Authorize]
     public class ProjectPlansController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

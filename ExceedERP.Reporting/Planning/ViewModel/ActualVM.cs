@@ -9,7 +9,7 @@ namespace ExceedERP.Reporting.Planning.ViewModel
 {
     public class ActualVM : Organization
     {
-        
+        public string Date { get; set; }
         public string FiscalYear { get; set; }
         public string Description { get; set; }
         public List<ActualObjectiveItem> ObjectiveItems { get; set; } = new List<ActualObjectiveItem>();

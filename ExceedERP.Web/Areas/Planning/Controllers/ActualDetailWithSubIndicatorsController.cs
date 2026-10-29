@@ -13,10 +13,14 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Common;
 using System.IO;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+        PlanningRoles.Planning_User,
+        HrmConstants.HRDepartmentHead,
+        HrmConstants.HREmployeeSelfService)]
     public class ActualDetailWithSubIndicatorsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

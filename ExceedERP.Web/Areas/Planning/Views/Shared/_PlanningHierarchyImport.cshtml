@@ -1,0 +1,154 @@
+@using ExceedERP.Core.Domain.Planning
+
+@if (User.IsInRole(PlanningRoles.Planning_Admin) || User.IsInRole(PlanningRoles.Planning_User))
+{
+    <div class="planning-hierarchy-import-actions">
+        <button type="button" id="openPlanningHierarchyImport" class="k-button k-primary">
+            <span class="k-icon k-i-excel"></span>
+            Import from Excel
+        </button>
+        <a class="k-button" href="@Url.Action("DownloadTemplate", "PlanningHierarchyImports", new { area = "Planning" })">
+            <span class="k-icon k-i-download"></span>
+            Download template
+        </a>
+    </div>
+
+    <div id="planningHierarchyImportWindow" style="display:none;">
+        <form id="planningHierarchyImportForm" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <p>
+                Upload the completed <strong>.xlsx</strong> template. Existing global indicators and
+                objectives are reused; missing records and their indicator hierarchy are created.
+            </p>
+            <p class="text-muted">
+                Give rows unique keys and put each parent row before its sub-indicator rows.
+            </p>
+
+            <div class="form-group">
+                <label for="planningHierarchyImportFile">Excel file</label>
+                <input type="file"
+                       id="planningHierarchyImportFile"
+                       name="file"
+                       accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                       required="required" />
+            </div>
+
+            <div id="planningHierarchyImportResult" class="alert" style="display:none;"></div>
+
+            <div class="text-right">
+                <button type="button" id="cancelPlanningHierarchyImport" class="k-button">Cancel</button>
+                <button type="submit" id="submitPlanningHierarchyImport" class="k-button k-primary">
+                    Import and parse
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .planning-hierarchy-import-actions {
+            margin: 0 0 12px 0;
+        }
+
+        .planning-hierarchy-import-actions .k-button {
+            margin-right: 6px;
+        }
+
+        #planningHierarchyImportWindow {
+            padding: 18px;
+        }
+
+        #planningHierarchyImportFile {
+            display: block;
+            margin-top: 8px;
+        }
+    </style>
+
+    <script>
+        $(function () {
+            var importWindowElement = $("#planningHierarchyImportWindow");
+            var importWindow = importWindowElement.data("kendoWindow");
+
+            if (!importWindow) {
+                importWindow = importWindowElement.kendoWindow({
+                    title: "Import planning hierarchy from Excel",
+                    modal: true,
+                    visible: false,
+                    resizable: false,
+                    width: 620
+                }).data("kendoWindow");
+            }
+
+            $("#openPlanningHierarchyImport").on("click", function () {
+                $("#planningHierarchyImportResult").hide().removeClass("alert-success alert-danger").text("");
+                importWindow.center().open();
+            });
+
+            $("#cancelPlanningHierarchyImport").on("click", function () {
+                importWindow.close();
+            });
+
+            $("#planningHierarchyImportForm").on("submit", function (event) {
+                event.preventDefault();
+
+                var fileInput = $("#planningHierarchyImportFile")[0];
+                var resultElement = $("#planningHierarchyImportResult");
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    resultElement
+                        .removeClass("alert-success")
+                        .addClass("alert-danger")
+                        .text("Select an Excel file to import.")
+                        .show();
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+                formData.append(
+                    "__RequestVerificationToken",
+                    $("#planningHierarchyImportForm input[name='__RequestVerificationToken']").val());
+
+                var submitButton = $("#submitPlanningHierarchyImport");
+                submitButton.prop("disabled", true).text("Importing...");
+                resultElement.hide().removeClass("alert-success alert-danger").text("");
+
+                $.ajax({
+                    url: '@Url.Action("Import", "PlanningHierarchyImports", new { area = "Planning" })',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function (response) {
+                        if (response && response.Success) {
+                            resultElement
+                                .addClass("alert-success")
+                                .text(response.Message)
+                                .show();
+
+                            alert(response.Message);
+                            window.location.reload();
+                            return;
+                        }
+
+                        resultElement
+                            .addClass("alert-danger")
+                            .text(response && response.Message
+                                ? response.Message
+                                : "The Excel import failed.")
+                            .show();
+                    },
+                    error: function () {
+                        resultElement
+                            .addClass("alert-danger")
+                            .text("The Excel import request failed. Please try again.")
+                            .show();
+                    },
+                    complete: function () {
+                        submitButton.prop("disabled", false).text("Import and parse");
+                    }
+                });
+            });
+        });
+    </script>
+}

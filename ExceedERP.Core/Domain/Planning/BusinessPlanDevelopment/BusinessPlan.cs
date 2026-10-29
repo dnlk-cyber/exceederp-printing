@@ -45,5 +45,16 @@ namespace ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment
         public int BusinessPlanId { get; set; }
         public virtual BusinessPlan Business { get; set; }
     }
+    public class BusinessPlanAttachment
+    {
+        public int BusinessPlanAttachmentId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+        public int BusinessPlanId { get; set; }
+        public virtual BusinessPlan Business { get; set; }
+    }
 
 }

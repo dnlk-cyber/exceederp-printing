@@ -1,0 +1,171 @@
+﻿@using ExceedERP.Core.Domain.Planning
+<legend>KPI Progress tracker</legend>
+@(Html.Kendo().Grid<KpiProgressTracker>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.KpiProgressTrackerId).Title("S.N").Width(80);
+          columns.ForeignKey(c => c.GlobalKPIId, (IEnumerable)ViewData["kpi"], "GlobalKPIId", "KPIName").EditorTemplateName("GlobalKPI").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.Bound(c => c.Weight).Width(150);
+          //columns.Bound(c => c.AnnualPlan).Width(120);
+          //columns.Bound(c => c.UpTo2ndQuarterPlan).Width(120);
+          //columns.Bound(c => c.UpTo2ndQuarterPerformance).Width(120);
+          //columns.Bound(c => c.UpTo2ndQuarterPercent).Width(120);
+          columns.Bound(c => c.Evaluation).Width(120);
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Command(command =>
+          {
+              command.Edit();
+              // command.Custom("").Click("EnableOrDisableActive").Text("Enable/Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable ", @id = "enableDisable" });
+
+              command.Destroy();
+
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .Events(x => {
+          x.DetailExpand("onDetailExpand");
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.KpiProgressTrackerId).Descending())
+          .Model(model => {
+              model.Id(p => p.KpiProgressTrackerId);
+              model.Field(p => p.KpiProgressTrackerId).Editable(false);
+              model.Field(p => p.Weight).Editable(false);
+              model.Field(p => p.Evaluation).Editable(false);
+          })
+          .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("KpiProgressTrackers_Read", "KpiProgressTrackers").Data("sendForgery"))
+          .Create(create => create.Action("KpiProgressTrackers_Create", "KpiProgressTrackers").Data("sendForgery"))
+          .Update(update => update.Action("KpiProgressTrackers_Update", "KpiProgressTrackers").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("KpiProgressTrackers_Destroy", "KpiProgressTrackers").Data("sendForgery"))
+      ).ClientDetailTemplateId("detail_template")
+)
+
+<script type="text/kendo-template" id="detail_template">
+    @(Html.Kendo().TabStrip()
+          .Name("tab_we_str_#=KpiProgressTrackerId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+                items.Add().Text("Sub-KPI Progress tracker ").Content(
+                @<text>
+                   @(Html.Kendo().Grid<SubKpiProgressTracker>()
+                      .Name("subkpi_grid_#=KpiProgressTrackerId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.GlobalSubKPIId, (IEnumerable)ViewData["subkpi"], "GlobalSubKPIId", "SubKPIName").EditorTemplateName("SubKPI").Filterable(ftb => ftb.Multi(true).Search(true)).Width(170);
+                          columns.Bound(c => c.Indicators).Width(180);
+                          columns.Bound(c => c.Saf).Width(120);
+                          columns.Bound(c => c.Weight).Width(120);
+                          columns.Bound(c => c.AnnualPlan).Width(120);
+                          columns.Bound(c => c.UpTo2ndQuarterPlan).Width(100);
+                          columns.Bound(c => c.UpTo2ndQuarterPerformance).Width(110);
+                          columns.Bound(c => c.UpTo2ndQuarterPercent).Width(100);
+                          columns.Bound(c => c.Evaluation).Width(120);
+                          columns.Bound(c => c.Remark).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(300);
+                      })
+                      .ToolBar(toolbar => {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                      .Filterable()
+                      .Scrollable(h=>h.Height(550))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          //.Sort(s => s.Add(x => x.SubKpiProgressTrackerId).Descending())
+                          .Model(model => {
+                              model.Id(p => p.SubKpiProgressTrackerId);
+                              model.Field(p => p.SubKpiProgressTrackerId).Editable(false);
+                              model.Field(p => p.UpTo2ndQuarterPercent).Editable(false);
+                              model.Field(p => p.Evaluation).Editable(false);
+                          })
+                          .Events(ev => ev
+                            .Error("error_handler(\"subkpi_grid_#=KpiProgressTrackerId#\")")
+                            .RequestStart("onRequestStart(\"subkpi_grid_#=KpiProgressTrackerId#\")")
+                            .RequestEnd("onRequestEnd(\"subkpi_grid_#=KpiProgressTrackerId#\")"))
+                          .Read(read => read.Action("SubKpiProgressTrackers_Read", "SubKpiProgressTrackers", new { kpiId= "#=KpiProgressTrackerId#" }).Data("sendForgery"))
+                          .Create(create => create.Action("SubKpiProgressTrackers_Create", "SubKpiProgressTrackers", new { kpiId = "#=KpiProgressTrackerId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("SubKpiProgressTrackers_Update", "SubKpiProgressTrackers").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("SubKpiProgressTrackers_Destroy", "SubKpiProgressTrackers").Data("sendForgery"))
+                      )
+                      .ToClientTemplate()
+              )
+
+            </text>);
+
+
+          }).ToClientTemplate()
+    )
+</script>
+
+<script>
+    var masterId = 0;
+    var kpiId = 0;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.KpiProgressTrackerId;
+        kpiId = masterDataItem.GlobalKPIId;
+    }
+    @*function EnableOrDisableActive(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#Indicator_grid_" + masterId).data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.IndicatorId;
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("EnableOrDisable", "Indicators")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }*@
+    function filterKPI() {
+        return {
+            kId: kpiId,
+            //kId: $("#GlobalKPIId").val(),
+            searchText: $("#GlobalSubKPIId").data("kendoDropDownList").filterInput.val()
+
+        }
+    }
+</script>

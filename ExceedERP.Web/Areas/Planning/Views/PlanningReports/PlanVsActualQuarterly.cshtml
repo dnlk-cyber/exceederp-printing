@@ -1,0 +1,43 @@
+@using Telerik.Reporting
+@using Telerik.ReportViewer.Mvc
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Plan Vs Actual Quarterly Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+    <script src="~/ReportViewer/js/jquery-3.3.1.min.js"></script>
+    <link href="~/ReportViewer/css/2018.2.620/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/ReportViewer/css/kendo.blueopal.min.css" rel="stylesheet" />
+    <script src="@Url.Content("~/ReportViewer/js/telerikReportViewer.kendo-12.2.18.912.min.js")"></script>
+    <script src="~/Scripts/kendo/2018.3.911/kendo.all.min.js"></script>
+    <script src="~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js"></script>
+    <script src="@Url.Content("~/ReportViewer/js/telerikReportViewer-12.2.18.912.min.js")"></script>
+    <script src="~/Scripts/Exceed/KendoReport.js"></script>
+</head>
+<body>
+    @(Html.TelerikReporting().ReportViewer()
+        .Id("reportViewer1")
+        .ParameterEditors(editors => editors.SingleSelectEditor("createSingleSelectEditor"))
+        .ServiceUrl(Url.Content("~/api/reports"))
+        .ReportSource(new TypeReportSource
+        {
+            TypeName = "ExceedERP.Reporting.Planning.Design.PlanVsActualQuarterlyReport, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            Parameters =
+            {
+                new Parameter("FormTitle", ViewBag.FormTitle),
+                new Parameter("FormNumber", ViewBag.FormNumber)
+            }
+        })
+        .ViewMode(ViewMode.Interactive)
+        .ScaleMode(ScaleMode.FitPageWidth)
+        .PersistSession(false)
+        .PrintMode(PrintMode.AutoSelect)
+        .SendEmail(new SendEmail { Enabled = false })
+        .EnableAccessibility(false))
+</body>
+</html>

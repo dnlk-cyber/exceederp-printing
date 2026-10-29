@@ -33,7 +33,13 @@ namespace ExceedERP.Reporting.Planning.DataSource
 
                 if (projectTypeId != null)
                 {
-                   
+                    int.TryParse(projectTypeId, out int typeId);
+                    var projectIds  = db.ProjectInformation.Where(s => s.ProjectTypeId == typeId).Select(x=>x.ProjectInformationId);
+                    if (projectIds.Count() > 0&& projectPlans.Count()>0)
+                    {
+                        projectPlans = projectPlans.Where(s => projectIds.Contains(s.ProjectInformationId)).ToList();
+
+                    }
                 }
                 if(kpiId != null && projectPlans.Count() > 0)
                 {

@@ -8,10 +8,17 @@ using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Planning;
 using ExceedERP.Core.Domain.Planning.Project;
+using ExceedERP.Core.Domain;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers.Project
 {
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+                   PlanningRoles.Planning_User,
+                   HrmConstants.HRDepartmentHead,
+                   HrmConstants.HREmployeeSelfService)]
     public class ProjectPlanSelfCaresController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

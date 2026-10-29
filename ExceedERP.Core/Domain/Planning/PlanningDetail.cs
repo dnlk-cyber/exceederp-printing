@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,13 +22,34 @@ namespace ExceedERP.Core.Domain.Planning
         public decimal Baseline { get; set; }
         [Display(Name = "Target")]
         public decimal Target { get; set; }
-        [Display(Name = "Indicator Name")]
+        [Display(Name = "Indicator(Activity) Name")]
         public int GlobalIndicatorId { get; set; }
-        [Display(Name = "Indicator")]
+        [Display(Name = "Indicator(Activity)")]
         public int IndicatorId { get; set; }
         public  virtual Indicator GetIndicator { get; set; }
         public int BSCPlanId { get; set; }
         public virtual BSCPlan GetBSCPlan { get; set; }
+
+        [Display(Name = "Strategic Objective")]
+        public string StrategicObjective { get; set; }
+
+        [Display(Name = "Key Result Area (KRA)")]
+        public string KeyResultArea { get; set; }
+
+        [Display(Name = "Annual Objective (KPI Focus)")]
+        public string AnnualObjective { get; set; }
+
+        [Display(Name = "Standard KPI")]
+        public string StandardKPI { get; set; }
+
+        [Display(Name = "Measurement Formula / Metric")]
+        public string MeasurementFormula { get; set; }
+
+        [Display(Name = "Annual Target")]
+        public string AnnualTargetText { get; set; }
+
+        [Display(Name = "Threshold")]
+        public string ThresholdText { get; set; }
 
     }
     //public class PlanningWithSubIndicator
@@ -65,15 +86,15 @@ namespace ExceedERP.Core.Domain.Planning
     {
         [Key]
         public int WeeklyPlanId { get; set; }
-        [Display(Name = "Week One")]
+        [Display(Name = "Plan Week 1")]
         public decimal WeekOne { get; set; }
-        [Display(Name = "Week Two")]
+        [Display(Name = "Plan Week 2")]
         public decimal WeekTwo { get; set; }
-        [Display(Name = "Week Three")]
+        [Display(Name = "Plan Week 3")]
         public decimal WeekThree { get; set; }
-        [Display(Name = "Week Four")]
+        [Display(Name = "Plan Week 4")]
         public decimal WeekFour { get; set; }
-        [Display(Name = "Week 1")]
+        [Display(Name = "Actual Week 1")]
         public decimal ActualWeekOne { get; set; }
         [Display(Name = "Actual Week 2")]
         public decimal ActualWeekTwo { get; set; }

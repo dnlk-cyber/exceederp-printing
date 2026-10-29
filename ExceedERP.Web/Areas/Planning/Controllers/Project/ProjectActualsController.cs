@@ -17,6 +17,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers.Project
 {
+    [Authorize]
     public class ProjectActualsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -90,7 +91,8 @@ namespace ExceedERP.Web.Areas.Planning.Controllers.Project
                 PUtProjectMonthlyActual(entity.ProjectActualId,projectActual.ProjectObjectiveId, projectActual.ProjectKPIId, projectActual.ProjectSubKPIId, projectActual.ProjectInformationId, projectActual.GlFiscalYearId);
                 #region operation log
 
-                UserHelper.OperationLog(Request.UserHostAddress, "Project Actual", "Success", User.Identity.Name, entity.FiscalYear.Name +" is Created By  " + User.Identity.Name, Modules.Planning);
+                var fiscalYear = db.GLFiscalYears.Find(projectActual.GlFiscalYearId);
+                UserHelper.OperationLog(Request.UserHostAddress, "Project Actual", "Success", User.Identity.Name, (fiscalYear == null ? "Fiscal year" : fiscalYear.Name) + " is Created By  " + User.Identity.Name, Modules.Planning);
                 #endregion
 
             }
@@ -116,7 +118,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers.Project
                 var fiscalyear = db.GLFiscalYears.Find(projectActual.GlFiscalYearId);
                 if(fiscalyear != null)
                 {
-                    UserHelper.OperationLog(Request.UserHostAddress, "Project Actual", "Success", User.Identity.Name, entity.FiscalYear.Name + " is Updated By  " + User.Identity.Name, Modules.Planning);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Project Actual", "Success", User.Identity.Name, fiscalyear.Name + " is Updated By  " + User.Identity.Name, Modules.Planning);
 
                 }
                 #endregion
@@ -231,6 +233,94 @@ namespace ExceedERP.Web.Areas.Planning.Controllers.Project
             return RedirectToAction("Index", "ProjectActuals");
         }
 
+        public ActionResult PlanAttachments_Read([DataSourceRequest] DataSourceRequest request, int projectActualId)
+        {
+            var projectPlanId = FindProjectPlanId(projectActualId);
+            var attachments = projectPlanId.HasValue
+                ? db.Attachments.Where(x => x.Reference == projectPlanId.Value.ToString() && x.ReferenceType == AttachmentType.DOCUMENT)
+                : Enumerable.Empty<Attachment>().AsQueryable();
+
+            return Json(attachments.ToDataSourceResult(request));
+        }
+
+        [HttpPost]
+        public ActionResult PlanAttachment_Create([DataSourceRequest] DataSourceRequest request, int projectActualId, HttpPostedFileBase file, string txtValue)
+        {
+            var projectPlanId = FindProjectPlanId(projectActualId);
+            if (!projectPlanId.HasValue)
+            {
+                ModelState.AddModelError("File", "No matching project plan was found.");
+            }
+            else if (file == null || file.ContentLength == 0)
+            {
+                ModelState.AddModelError("File", "Select a file to upload.");
+            }
+            else if (ModelState.IsValid)
+            {
+                var directory = Server.MapPath("~/Content/Files/Planning/");
+                Directory.CreateDirectory(directory);
+
+                var fileName = Path.GetFileName(file.FileName);
+                var storedFileName = Guid.NewGuid().ToString("N") + "_" + fileName;
+                var filePath = Path.Combine(directory, storedFileName);
+                file.SaveAs(filePath);
+
+                db.Attachments.Add(new Attachment
+                {
+                    Reference = projectPlanId.Value.ToString(),
+                    Description = string.IsNullOrWhiteSpace(txtValue) ? fileName : txtValue,
+                    FileName = fileName,
+                    FileType = file.ContentType,
+                    ReferenceType = AttachmentType.DOCUMENT,
+                    Index = 0,
+                    URL = filePath,
+                    Remark = projectActualId.ToString()
+                });
+                db.SaveChanges();
+            }
+
+            return Json(new object[0].ToDataSourceResult(request, ModelState));
+        }
+
+        [HttpPost]
+        public ActionResult PlanAttachment_Destroy([DataSourceRequest] DataSourceRequest request, Attachment attachment)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = db.Attachments.Find(attachment.AttachmentId);
+                if (entity != null)
+                {
+                    if (System.IO.File.Exists(entity.URL))
+                    {
+                        System.IO.File.Delete(entity.URL);
+                    }
+
+                    db.Attachments.Remove(entity);
+                    db.SaveChanges();
+                }
+            }
+
+            return Json(new[] { attachment }.ToDataSourceResult(request, ModelState));
+        }
+
+        private int? FindProjectPlanId(int projectActualId)
+        {
+            var actual = db.ProjectActuals.Find(projectActualId);
+            if (actual == null)
+            {
+                return null;
+            }
+
+            return db.ProjectPlans
+                .Where(x => x.ProjectInformationId == actual.ProjectInformationId
+                    && x.ProjectObjectiveId == actual.ProjectObjectiveId
+                    && x.ProjectKPIId == actual.ProjectKPIId
+                    && x.ProjectSubKPIId == actual.ProjectSubKPIId
+                    && x.GlFiscalYearId == actual.GlFiscalYearId)
+                .Select(x => (int?)x.ProjectPlanId)
+                .FirstOrDefault();
+        }
+
         public ActionResult DownloadDoument(string AttachmentId)
         {
             int.TryParse(AttachmentId, out int attachmentId);
@@ -241,57 +331,54 @@ namespace ExceedERP.Web.Areas.Planning.Controllers.Project
         }
         public JsonResult RefreshToAddNewAddedItems(int id)
         {
-            int count = 0;
-            var record = db.ProjectActuals.Find(id);
-            if (record != null)
+            var actualRecord = db.ProjectActuals.Find(id);
+            if (actualRecord == null)
             {
-                #region validate item Addition
-
-                var actuals = db.ProjectMonthlyActuals.Where(x => x.ProjectActualId == record.ProjectActualId).ToList();
-                foreach (var actual in actuals)
+                return Json(new
                 {
-                    var plan = db.ProjectMonthlyPlans.Where(x => x.GLPeriodId == actual.GLPeriodId 
-                                                                    && x.GetPlan.ProjectInformationId == actual.Actual.ProjectInformationId
-                                                                    && x.GetPlan.GlFiscalYearId == actual.Actual.GlFiscalYearId
-                                                                    && x.GetPlan.ProjectKPIId == actual.Actual.ProjectKPIId
-                                                                    && x.GetPlan.ProjectSubKPIId == actual.Actual.ProjectSubKPIId
-                                                                    ).FirstOrDefault();
-
-                    if (plan != null&&actual.PlanValue != plan.Value&& plan.Value !=0)
-                    {
-                        actual.PlanValue = plan.Value;
-                        db.Entry(actual).State = EntityState.Modified;
-                        db.SaveChanges();
-                        count++;
-                    }
-
-                }
-                if (count > 0)
-                {
-                    var formattedData = new
-                    {
-                        Message = "plan value has updated  Successfully .",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    var formattedData = new
-                    {
-                        Message = " no change .",
-                        Status = "OKe"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                #endregion
+                    Message = "The record was not found.",
+                    Status = "NOT_OK"
+                }, JsonRequestBehavior.AllowGet);
             }
-            var formattedData12 = new
+
+            var monthlyActuals = db.ProjectMonthlyActuals
+                .Where(x => x.ProjectActualId == actualRecord.ProjectActualId)
+                .ToList();
+
+            var modified = false;
+
+            foreach (var actual in monthlyActuals)
             {
-                Message = "The record is not found.",
-                Status = "Not_OKe"
-            };
-            return Json(formattedData12, JsonRequestBehavior.AllowGet);
+                var plan = db.ProjectMonthlyPlans.FirstOrDefault(p =>
+                    p.GLPeriodId == actual.GLPeriodId &&
+                    p.GetPlan.ProjectInformationId == actual.Actual.ProjectInformationId &&
+                    p.GetPlan.GlFiscalYearId == actual.Actual.GlFiscalYearId &&
+                    p.GetPlan.ProjectKPIId == actual.Actual.ProjectKPIId &&
+                    p.GetPlan.ProjectSubKPIId == actual.Actual.ProjectSubKPIId);
+
+                if (plan != null && actual.PlanValue != plan.Value && plan.Value != 0)
+                {
+                    actual.PlanValue = plan.Value;
+                    db.Entry(actual).State = EntityState.Modified;
+                    modified = true;
+                }
+            }
+
+            if (modified)
+            {
+                db.SaveChanges(); // Save once after all modifications
+                return Json(new
+                {
+                    Message = "Plan value(s) updated successfully.",
+                    Status = "OK"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new
+            {
+                Message = "No changes were made.",
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
         }
         protected override void Dispose(bool disposing)
         {

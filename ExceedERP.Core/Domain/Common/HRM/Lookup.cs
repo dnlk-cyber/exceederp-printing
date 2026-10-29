@@ -34,6 +34,7 @@ namespace ExceedERP.Core.Domain.Common.HRM
         [Range(0, 100, ErrorMessage = "Please enter valid integer Number")]
         public decimal Percentage { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
+
         public string Remark { get; set; }
     }
 }

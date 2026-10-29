@@ -15,30 +15,32 @@ using ExceedERP.Helpers.Common;
 using System.IO;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain;
+using ExceedERP.Helpers.Planning;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+                     PlanningRoles.Planning_User,
+                     HrmConstants.HRDepartmentHead,
+                     HrmConstants.HREmployeeSelfService)]
     public class PlanSelfCaresController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {
-            var objectives = db.Objectives.Select(O => new
-            {
-                O.ObjectiveId,
-                O.Name,
-                O.Description
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var placement = db.Placements.AsNoTracking()
+                .FirstOrDefault(x => x.isCurrent && x.EmployeeId == employeeId);
+            var orgStructure = placement == null
+                ? null
+                : db.MainCompanyStructures.Find(placement.OrgStructureId);
 
-            }).ToList();
-            var indicators = db.Indicators.Select(I => new
-            {
-                I.IndicatorId,
-                I.Name,
-                I.Description,
-                I.KPIType
-            }).ToList();
+            ViewBag.CanCreateDepartmentPlan = orgStructure != null && orgStructure.Parent > 0;
+
+            var objectives = PlanningSelfCareHelper.GetDepartmentObjectiveList(db, User.Identity.Name);
+            var indicators = PlanningSelfCareHelper.GetDepartmentIndicatorList(db, User.Identity.Name);
             var glFiscalYears = db.GLFiscalYears.Select(g => new
             {
                 g.GlFiscalYearId,
@@ -48,7 +50,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             ViewData["Objectives"] = objectives;
             ViewData["Indicators"] = indicators;
             ViewData["GlFiscalYears"] = glFiscalYears;
-            ViewData["GlobalIndicators"] = db.GlobalIndicators.Select(x => new { x.GlobalIndicatorId, x.Indicator });
+            ViewData["GlobalIndicators"] = PlanningSelfCareHelper.GetDepartmentGlobalIndicatorList(db, User.Identity.Name);
 
             ViewData["periods"] = db.GLPeriods.ToList().Select(x => new { x.GLPeriodId, period = x.Name }).ToList();
             ViewData["departmentLists"] = db.MainCompanyStructures.ToList();
@@ -58,10 +60,22 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
 
         public ActionResult PlanSelfCares_Read([DataSourceRequest]DataSourceRequest request)
         {
-            //var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            //var workUnitId = EmployeeHelper.GetEmployeeWorkUnitId(employeeId);
-            //var planIds = db.BSCPlans.Where(x => x.OrgStructureId == workUnitId).Select(x => x.PlanId);
-            IQueryable<Plan> planningfiscalyears = db.Plans/*.Where(x=>planIds.Contains(x.PlanId))*/;
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var placement = db.Placements.AsNoTracking()
+                .FirstOrDefault(x => x.isCurrent && x.EmployeeId == employeeId);
+            if (placement == null)
+                return Json(Enumerable.Empty<Plan>().ToDataSourceResult(request));
+
+            IQueryable<Plan> planningfiscalyears = db.Plans;
+            var branch = db.Branch.Find(placement.BranchId);
+            var orgStructure = db.MainCompanyStructures.Find(placement.OrgStructureId);
+
+            if (placement.IsHead && branch != null && orgStructure != null && orgStructure.Parent <= 0)
+            {
+                var visiblePlanIds = new PlanningApprovalHelper(db).GetVisiblePlanIds(placement);
+                planningfiscalyears = planningfiscalyears.Where(x => visiblePlanIds.Contains(x.PlanId));
+            }
+
             DataSourceResult result = planningfiscalyears.ToDataSourceResult(request, planningFiscalYear => new {
                 PlanId = planningFiscalYear.PlanId,
                 GlFiscalYearId = planningFiscalYear.GlFiscalYearId,
@@ -71,13 +85,15 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 CreatedBy = planningFiscalYear.CreatedBy,
                 LastModified = planningFiscalYear.LastModified,
                 ModifiedBy = planningFiscalYear.ModifiedBy,
-                Description = planningFiscalYear.Description
+                Description = planningFiscalYear.Description,
+                Reason = planningFiscalYear.Reason
             });
 
             return Json(result);
         }
-       
+
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult PlanSelfCares_Create([DataSourceRequest]DataSourceRequest request, Plan plan)
         {
             var exists = db.Plans.Any(s => s.GlFiscalYearId ==plan.GlFiscalYearId);
@@ -109,6 +125,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult PlanSelfCares_Update([DataSourceRequest]DataSourceRequest request, Plan plan)
         {
             var exists = db.Plans.Any(s => s.GlFiscalYearId == plan.GlFiscalYearId && s.PlanId != plan.PlanId);
@@ -138,6 +155,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult PlanSelfCares_Destroy([DataSourceRequest]DataSourceRequest request, Plan plan)
         {
             var bscPlans = db.BSCPlans.Where(x => x.PlanId == plan.PlanId).ToList();
@@ -171,7 +189,8 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 CreatedBy = plan.CreatedBy,
                 LastModified = plan.LastModified,
                 ModifiedBy = plan.ModifiedBy,
-                Description = plan.Description
+                Description = plan.Description,
+                Reason = plan.Reason
             };
             return entity;
         }

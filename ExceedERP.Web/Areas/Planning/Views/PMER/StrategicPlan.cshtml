@@ -1,0 +1,208 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Planning
+@{
+    ViewBag.Title = "PMER - Strategic Plan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid" style="padding: 15px 25px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <h3 style="margin: 0; color: #2c3e50;"><i class="fa fa-flag text-primary"></i> PMER Strategic Plan</h3>
+                    <p class="text-muted" style="margin-top: 4px; margin-bottom: 0;">Multi-Year Strategic Objectives, Goals, 5-Year Implementation Schedule and Financing.</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("Index", "PMER", new { area = "Planning" })" class="btn btn-default btn-sm">
+                        <i class="fa fa-arrow-left"></i> PMER Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @(Html.Kendo().TabStrip()
+        .Name("PMERStrategicPlanTabStrip")
+        .SelectedIndex(0)
+        .Items(tabs =>
+        {
+            // TAB 1: Strategic Plan Framework & Objectives
+            tabs.Add().Text("Strategic Plans & Objectives").Content(@<text>
+                <div style="padding: 15px 0;">
+                    @(Html.Kendo().Grid<StrategicPlan>()
+                        .Name("pmerStrategicPlanGrid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.StrategicPlanId).Title("ID").Width(70);
+                            columns.Bound(c => c.Description).Title("Strategic Plan Title / Framework").Width(300);
+                            columns.Bound(c => c.StrategicObjective).Title("Primary Strategic Objective").Width(300);
+                            columns.ForeignKey(c => c.FromGlFiscalYearId, (IEnumerable)ViewData["GlFiscalYears"], "GlFiscalYearId", "Name")
+                                .Title("Start Year").Width(150);
+                            columns.ForeignKey(c => c.ToGlFiscalYearId, (IEnumerable)ViewData["GlFiscalYears"], "GlFiscalYearId", "Name")
+                                .Title("End Year").Width(150);
+                            columns.Bound(c => c.TotalBudget).Title("Total Financing").Format("{0:N2}").Width(150);
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                            }).Width(120);
+                        })
+                        .ToolBar(toolbar => toolbar.Create())
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Pageable()
+                        .Filterable()
+                        .Scrollable(h => h.Height(500))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.StrategicPlanId);
+                                model.Field(p => p.StrategicPlanId).Editable(false);
+                            })
+                            .Read(read => read.Action("StrategicPlans_Read", "PMER"))
+                            .Create(create => create.Action("StrategicPlans_Create", "PMER"))
+                            .Update(update => update.Action("StrategicPlans_Update", "PMER")))
+                    )
+                </div>
+            </text>);
+
+            // TAB 2: Five Year Implementation Schedule
+            tabs.Add().Text("Five-Year Implementation Schedule").Content(@<text>
+                <div style="padding: 15px 0;">
+                    <div class="alert alert-info" style="margin-bottom: 12px; font-size: 13px;">
+                        <i class="fa fa-info-circle"></i> <strong>Five-Year Implementation Schedule:</strong>
+                        Multi-year schedule defining baseline, UOM, targets across fiscal years, and designated responsible bodies.
+                    </div>
+
+                    @(Html.Kendo().Grid<StrategicGoal>()
+                        .Name("pmerImplementationScheduleGrid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Code).Title("S/No").Width(80);
+                            columns.Bound(c => c.StrategicObjective).Title("Strategic Objective").Width(260);
+                            columns.Bound(c => c.Name).Title("Strategic Goal").Width(300);
+                            columns.Bound(c => c.UOM).Title("UOM").Width(110);
+                            columns.Bound(c => c.Baseline).Title("Baseline").Width(110);
+                            columns.Group(g => g
+                                .Title("Implementation Schedule Targets")
+                                .Columns(targetCols =>
+                                {
+                                    targetCols.Bound(c => c.Target2015EFY).Title("Year 1").Width(110);
+                                    targetCols.Bound(c => c.Target2016EFY).Title("Year 2").Width(110);
+                                    targetCols.Bound(c => c.Target2017EFY).Title("Year 3").Width(110);
+                                    targetCols.Bound(c => c.Target2018EFY).Title("Year 4").Width(110);
+                                    targetCols.Bound(c => c.Target2019EFY).Title("Year 5").Width(110);
+                                })
+                            );
+                            columns.Bound(c => c.ResponsibleBody).Title("Responsible Body").Width(200);
+                            columns.Bound(c => c.Remark).Title("Remark").Width(150);
+                            columns.Command(command => command.Edit()).Width(110);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Pageable(p => p.PageSizes(new[] { 10, 20, 50 }))
+                        .Filterable()
+                        .Sortable()
+                        .Scrollable(h => h.Height(600))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.StrategicGoalId);
+                                model.Field(p => p.StrategicGoalId).Editable(false);
+                            })
+                            .Read(read => read.Action("ImplementationSchedule_Read", "PMER"))
+                            .Update(update => update.Action("ImplementationSchedule_Update", "PMER")))
+                    )
+                </div>
+            </text>);
+
+            // TAB 3: Financing the Strategic Plan
+            tabs.Add().Text("Financing the Strategic Plan").Content(@<text>
+                <div style="padding: 20px 0;">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading"><i class="fa fa-money"></i> Strategic Financing Overview</div>
+                                <div class="panel-body">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Total Estimated Budget</th>
+                                            <td class="text-right font-bold">5,000,000.00 ETB</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Corporate Governance Allocation</th>
+                                            <td class="text-right">2,000,000.00 ETB</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Planning & Programming Allocation</th>
+                                            <td class="text-right">1,800,000.00 ETB</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Digital ERP Infrastructure</th>
+                                            <td class="text-right">1,200,000.00 ETB</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><i class="fa fa-pie-chart"></i> Financing Breakdown by Fiscal Year</div>
+                                <div class="panel-body">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Fiscal Year</th>
+                                                <th>Capital Budget (ETB)</th>
+                                                <th>Operational Budget (ETB)</th>
+                                                <th>Total Budget (ETB)</th>
+                                                <th>Funding Source</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Year 1</td>
+                                                <td>600,000.00</td>
+                                                <td>400,000.00</td>
+                                                <td><strong>1,000,000.00</strong></td>
+                                                <td>Enterprise Operating Revenue</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Year 2</td>
+                                                <td>650,000.00</td>
+                                                <td>400,000.00</td>
+                                                <td><strong>1,050,000.00</strong></td>
+                                                <td>Enterprise Operating Revenue</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Year 3</td>
+                                                <td>550,000.00</td>
+                                                <td>450,000.00</td>
+                                                <td><strong>1,000,000.00</strong></td>
+                                                <td>Enterprise Operating Revenue</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Year 4</td>
+                                                <td>500,000.00</td>
+                                                <td>450,000.00</td>
+                                                <td><strong>950,000.00</strong></td>
+                                                <td>Enterprise Operating Revenue</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Year 5</td>
+                                                <td>500,000.00</td>
+                                                <td>500,000.00</td>
+                                                <td><strong>1,000,000.00</strong></td>
+                                                <td>Enterprise Operating Revenue</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </text>);
+        })
+    )
+</div>

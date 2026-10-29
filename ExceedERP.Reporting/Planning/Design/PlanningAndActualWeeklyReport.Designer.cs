@@ -1,4 +1,6 @@
-﻿namespace ExceedERP.Reporting.Planning.Design
+﻿using ExceedERP.Reporting.Planning.DataSource;
+
+namespace ExceedERP.Reporting.Planning.Design
 {
     partial class PlanningAndActualWeeklyReport
     {
@@ -159,6 +161,10 @@
             this.PeriodobjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.WorkUnitobjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.detail = new Telerik.Reporting.DetailSection();
+            this.grandTotalLabelTextBox = new Telerik.Reporting.TextBox();
+            this.grandTotalPlanTextBox = new Telerik.Reporting.TextBox();
+            this.grandTotalActualTextBox = new Telerik.Reporting.TextBox();
+            this.grandTotalPercentTextBox = new Telerik.Reporting.TextBox();
             this.textBox32 = new Telerik.Reporting.TextBox();
             this.textBox33 = new Telerik.Reporting.TextBox();
             this.textBox14 = new Telerik.Reporting.TextBox();
@@ -485,7 +491,7 @@
             // FiscalyearobjectDataSource
             // 
             this.FiscalyearobjectDataSource.DataMember = "GetFiscalYear";
-            this.FiscalyearobjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearODS);
+            this.FiscalyearobjectDataSource.DataSource = typeof(FiscalYearODS);
             this.FiscalyearobjectDataSource.Name = "FiscalyearobjectDataSource";
             // 
             // PeriodobjectDataSource
@@ -504,7 +510,7 @@
             // 
             // detail
             // 
-            this.detail.Height = Telerik.Reporting.Drawing.Unit.Cm(5.5059990882873535D);
+            this.detail.Height = Telerik.Reporting.Drawing.Unit.Inch(2.75D);
             this.detail.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox32,
             this.textBox33,
@@ -512,8 +518,48 @@
             this.textBox15,
             this.table1,
             this.textBox16,
-            this.textBox17});
+            this.textBox17,
+            this.grandTotalLabelTextBox,
+            this.grandTotalPlanTextBox,
+            this.grandTotalActualTextBox,
+            this.grandTotalPercentTextBox});
             this.detail.Name = "detail";
+            // 
+            // grandTotalLabelTextBox
+            // 
+            this.grandTotalLabelTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(2.3D));
+            this.grandTotalLabelTextBox.Name = "grandTotalLabelTextBox";
+            this.grandTotalLabelTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalLabelTextBox.Style.Font.Bold = true;
+            this.grandTotalLabelTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalLabelTextBox.Value = "Grand Total:";
+            // 
+            // grandTotalPlanTextBox
+            // 
+            this.grandTotalPlanTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.05D), Telerik.Reporting.Drawing.Unit.Inch(2.3D));
+            this.grandTotalPlanTextBox.Name = "grandTotalPlanTextBox";
+            this.grandTotalPlanTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalPlanTextBox.Style.Font.Bold = true;
+            this.grandTotalPlanTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalPlanTextBox.Value = "= Format(\"Plan: {0:N2}\", Fields.GrandTotalPlan)";
+            // 
+            // grandTotalActualTextBox
+            // 
+            this.grandTotalActualTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.9D), Telerik.Reporting.Drawing.Unit.Inch(2.3D));
+            this.grandTotalActualTextBox.Name = "grandTotalActualTextBox";
+            this.grandTotalActualTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalActualTextBox.Style.Font.Bold = true;
+            this.grandTotalActualTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalActualTextBox.Value = "= Format(\"Actual: {0:N2}\", Fields.GrandTotalActual)";
+            // 
+            // grandTotalPercentTextBox
+            // 
+            this.grandTotalPercentTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.75D), Telerik.Reporting.Drawing.Unit.Inch(2.3D));
+            this.grandTotalPercentTextBox.Name = "grandTotalPercentTextBox";
+            this.grandTotalPercentTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.9D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalPercentTextBox.Style.Font.Bold = true;
+            this.grandTotalPercentTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalPercentTextBox.Value = "= Format(\"Achievement: {0:N2}%\", Fields.GrandTotalPercent)";
             // 
             // textBox32
             // 
@@ -1497,6 +1543,10 @@
         private Telerik.Reporting.ReportHeaderSection reportHeaderSection1;
         private Telerik.Reporting.SubReport subReport1;
         private SharedDesigners.HeaderSubReportLandScape headerSubReportLandScape1;
+        private Telerik.Reporting.TextBox grandTotalLabelTextBox;
+        private Telerik.Reporting.TextBox grandTotalPlanTextBox;
+        private Telerik.Reporting.TextBox grandTotalActualTextBox;
+        private Telerik.Reporting.TextBox grandTotalPercentTextBox;
         private Telerik.Reporting.ObjectDataSource PlanVsActualoForOneMonthbjectDataSource;
     }
 }

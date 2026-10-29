@@ -27,10 +27,10 @@
               model.Field(p => p.BusinessPlanId).Editable(false);
               model.Field(p => p.Status).Editable(false);
           })
-          .Read(read => read.Action("BusinessPlans_Read", "BusinessPlans"))
-          .Create(create => create.Action("BusinessPlans_Create", "BusinessPlans"))
-          .Update(update => update.Action("BusinessPlans_Update", "BusinessPlans"))
-          .Destroy(destroy => destroy.Action("BusinessPlans_Destroy", "BusinessPlans"))
+          .Read(read => read.Action("BusinessPlans_Read", "BusinessPlans").Data("sendForgery"))
+          .Create(create => create.Action("BusinessPlans_Create", "BusinessPlans").Data("sendForgery"))
+          .Update(update => update.Action("BusinessPlans_Update", "BusinessPlans").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("BusinessPlans_Destroy", "BusinessPlans").Data("sendForgery"))
       ).ClientDetailTemplateId("business_plan_detail")
 )
 
@@ -57,6 +57,7 @@
                           }).Width(200);
                       })
                       .ToolBar(toolbar => {
+
                           toolbar.Create();
                       })
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -70,16 +71,114 @@
                               model.Field(p => p.BusinessPlanValidationId).Editable(false);
                               model.Field(p => p.Date).DefaultValue(DateTime.Now).Editable(false);
                           })
-                          .Read(read => read.Action("BusinessPlanValidations_Read", "BusinessPlanValidations", new { bPId= "#=BusinessPlanId#" }))
-                          .Create(create => create.Action("BusinessPlanValidations_Create", "BusinessPlanValidations", new { bPId = "#=BusinessPlanId#" }))
-                          .Update(update => update.Action("BusinessPlanValidations_Update", "BusinessPlanValidations"))
-                          .Destroy(destroy => destroy.Action("BusinessPlanValidations_Destroy", "BusinessPlanValidations"))
+                          .Read(read => read.Action("BusinessPlanValidations_Read", "BusinessPlanValidations", new { bPId= "#=BusinessPlanId#" }).Data("sendForgery"))
+                          .Create(create => create.Action("BusinessPlanValidations_Create", "BusinessPlanValidations", new { bPId = "#=BusinessPlanId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("BusinessPlanValidations_Update", "BusinessPlanValidations").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("BusinessPlanValidations_Destroy", "BusinessPlanValidations").Data("sendForgery"))
                       ).ToClientTemplate()
               )
 
             </text>);
+              items.Add().Text("Attachments").Content(
+              @<text>
+
+                <button onclick='UploadFile(#=BusinessPlanId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+                @(Html.Kendo().Grid<BusinessPlanAttachment>()
+                    .Name("AttachmentGrid#=BusinessPlanId#")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/Planning/BusinessPlanAttachment/DownloadAttachment?attachmentId=\\#=BusinessPlanAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+
+                        columns.Template(e => { }).ClientTemplate("<a href='/Planning/BusinessPlanAttachment/DownloadAttachment?attachmentId=\\#=BusinessPlanAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp;</a>").Width(100);
+                        columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                        columns.Command(command =>
+                        {
+                            command.Destroy().Text("Delete");
+
+                        }).Width(300);
+
+
+                    })
+                    //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                    //.Window(window =>
+                    //{
+                    //    window.Title("");
+                    //    window.Scrollable(false);
+
+
+
+
+                    //}))
+                    .Scrollable(h => h.Height("auto"))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add(c => c.BusinessPlanAttachmentId).Descending())
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"AttachmentGrid#=BusinessPlanId#\")");
+                        events.RequestStart("onRequestStart(\"AttachmentGrid#=BusinessPlanId#\")");
+                        events.RequestEnd("onRequestEnd(\"AttachmentGrid#=BusinessPlanId#\")");
+
+
+
+                    })
+                    .Model(model => model.Id(p => p.BusinessPlanAttachmentId))
+                    .Read(read => read.Action("BusinessPlanAttachment_Read", "BusinessPlanAttachment", new { eACSId = "#=BusinessPlanId#", area = "Planning" }).Data("sendForgery"))
+                    .Create(create => create.Action("BusinessPlanAttachment_Create", "BusinessPlanAttachment", new { eACSId = "#=BusinessPlanId#", area = "Planning" }).Data("sendForgery"))
+                    .Update(update => update.Action("BusinessPlanAttachment_Update", "BusinessPlanAttachment").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("BusinessPlanAttachment_Destroy", "BusinessPlanAttachment").Data("sendForgery"))
+                    ).ToClientTemplate())
+
+                    </text>);
 
         }).ToClientTemplate()
     )
+</script>
+
+@(Html.Kendo().Window()
+        .Name("UploadDoc")
+        .Title("Upload File")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(400).Content(
+        @<text>
+            <div class="form-group">
+                <form action="@Url.Action("UploadFiles", "BusinessPlanAttachment", new { })" method="post" , new { enctype="multipart/form-data" }>
+                    <input type="hidden" name="masterId" id="masterId">
+                    <div class="row">
+                        <div class="col-md-10">
+                            @Html.TextBox("file", "", new { type = "file", required = "true" })
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="editor-field">
+                            <label>Description</label>
+                            @Html.TextArea("Description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7"></div>
+                        <input type="submit" class="btn-primary k-button" value=" Submit " />
+                    </div>
+
+                </form>
+                <div class="pull-right">
+
+                </div>
+            </div>
+        </text>)
+)
+<script>
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+    
 </script>
 

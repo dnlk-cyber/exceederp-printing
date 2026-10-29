@@ -72,6 +72,8 @@ namespace ExceedERP.Reporting.Planning.DataSource
 
                             }
                         }
+                        decimal grandTotalPlan = 0;
+                        decimal grandTotalActual = 0;
                         foreach (var bscPlan in bscPlans)
                         {
                             BothObjectiveItem objectiveItem = new BothObjectiveItem();
@@ -235,6 +237,11 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                     planItem.YearlyActual = yearlyActual-toDateActual;
                                     planItem.ToDate = (toDateActual > 0 && toDatePlan > 0) ? (toDateActual) / toDatePlan : 0;
                                     planItem.Yearly = (yearlyPlan - toDatePlan > 0) ? (yearlyActual - toDateActual) / (yearlyPlan - toDatePlan) : 0;
+                                    planItem.TotalPlan = yearlyPlan;
+                                    planItem.TotalActual = yearlyActual;
+                                    planItem.TotalPercent = (yearlyPlan > 0) ? (100 * yearlyActual) / yearlyPlan : 0;
+                                    grandTotalPlan += yearlyPlan;
+                                    grandTotalActual += yearlyActual;
 
                                     indicatorItem.ActualPlanItems.Add(planItem);
 
@@ -247,6 +254,9 @@ namespace ExceedERP.Reporting.Planning.DataSource
                             model.ObjectiveItems.Add(objectiveItem);
 
                         }
+                        model.GrandTotalPlan = grandTotalPlan;
+                        model.GrandTotalActual = grandTotalActual;
+                        model.GrandTotalPercent = (grandTotalPlan > 0) ? (100 * grandTotalActual) / grandTotalPlan : 0;
 
 
                     }

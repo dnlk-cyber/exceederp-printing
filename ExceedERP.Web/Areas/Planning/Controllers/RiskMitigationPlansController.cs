@@ -39,6 +39,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 MonitoringMethod = riskMitigationPlan.MonitoringMethod,
                 Evaluation = riskMitigationPlan.Evaluation,
                 PlanDate = riskMitigationPlan.PlanDate,
+                IsClosed = riskMitigationPlan.IsClosed,
                 DateCreated = riskMitigationPlan .DateCreated,
                 LastModified = riskMitigationPlan.LastModified,
                 CreatedBy = riskMitigationPlan.CreatedBy,
@@ -111,12 +112,48 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 MonitoringMethod = riskMitigationPlan.MonitoringMethod,
                 Evaluation = riskMitigationPlan.Evaluation,
                 PlanDate = riskMitigationPlan.PlanDate,
+                IsClosed = riskMitigationPlan.IsClosed,
                 DateCreated = riskMitigationPlan.DateCreated,
                 LastModified = riskMitigationPlan.LastModified,
                 CreatedBy = riskMitigationPlan.CreatedBy,
                 ModifiedBy = riskMitigationPlan.ModifiedBy
             };
             return entity;
+        }
+
+       public JsonResult CloseRiskMitigation(int id)
+        {
+            var mitigation = db.RiskMitigationPlans.Find(id);
+            if(mitigation != null)
+            {
+                if (mitigation.IsClosed)
+                {
+                    var formattedData1 = new
+                    {
+                        Message = "already closed you can't close again.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    mitigation.IsClosed = true;
+                    db.Entry(mitigation).State = EntityState.Modified;
+                    db.SaveChanges();
+                    var formattedData1 = new
+                    {
+                        Message = "Succesfully closed ",
+                        Status = "OK"
+                    };
+                    return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                }
+            }
+            var formattedData = new
+            {
+                Message = "Record not found.",
+                Status = "NOT-OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
         protected override void Dispose(bool disposing)
         {

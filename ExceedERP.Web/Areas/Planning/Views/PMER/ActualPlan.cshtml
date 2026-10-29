@@ -1,0 +1,121 @@
+@{
+    ViewBag.Title = "PMER - Actual Execution & Monitoring";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid" style="padding: 15px 25px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <h3 style="margin: 0; color: #2c3e50;"><i class="fa fa-check-square-o text-warning"></i> PMER Actual Execution & Monitoring</h3>
+                    <p class="text-muted" style="margin-top: 4px; margin-bottom: 0;">Operational Validation Checkpoint, Execution Tracking, and Performance Evaluation.</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("Index", "PMER", new { area = "Planning" })" class="btn btn-default btn-sm">
+                        <i class="fa fa-arrow-left"></i> PMER Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @(Html.Kendo().TabStrip()
+        .Name("PMERActualPlanTabStrip")
+        .SelectedIndex(0)
+        .Items(tabs =>
+        {
+            // TAB 1: Validation Checkpoint
+            tabs.Add().Text("Operational Validation Gate").Content(@<text>
+                <div style="padding: 15px 0;">
+                    <div class="alert alert-warning" style="margin-bottom: 15px; font-size: 13px;">
+                        <i class="fa fa-gavel"></i> <strong>Operational Validation Gate (Department Heads):</strong>
+                        Validates periodic plans & targets to produce <em>Approved Operational Plans</em> required before actual execution activities can be verified.
+                    </div>
+
+                    @(Html.Kendo().Grid<dynamic>()
+                        .Name("pmerValidationGrid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound("BSCPlanId").Title("Plan ID").Width(90);
+                            columns.Bound("WorkUnit").Title("Work Unit / Department").Width(260);
+                            columns.Bound("ObjectiveName").Title("Objective Focus").Width(280);
+                            columns.Bound("PlanDescription").Title("Plan Title").Width(260);
+                            columns.Bound("StatusText").Title("Approval Status").Width(170);
+                            columns.Bound("IsValidated").Title("Action").Width(150).ClientTemplate(
+                                "# if (!IsValidated) { #" +
+                                "<button class='btn btn-success btn-xs' onclick='validatePlan(#=BSCPlanId#)'><i class='fa fa-check'></i> Validate & Approve</button>" +
+                                "# } else { #" +
+                                "<span class='label label-success'><i class='fa fa-check-circle'></i> Validated</span>" +
+                                "# } #"
+                            );
+                        })
+                        .Pageable()
+                        .Filterable()
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Read(read => read.Action("OperationalValidation_Read", "PMER")))
+                    )
+                </div>
+            </text>);
+
+            // TAB 2: Execution Results & Monitoring
+            tabs.Add().Text("Execution Results & Evaluation Flow").Content(@<text>
+                <div style="padding: 20px 0;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="font-weight: 600;">
+                            <i class="fa fa-retweet"></i> Actual Execution & Evaluation Process (From PMER.docx)
+                        </div>
+                        <div class="panel-body">
+                            <table class="table table-bordered table-striped" style="font-size: 13px;">
+                                <thead style="background: #f8fafc;">
+                                    <tr>
+                                        <th style="width: 25%;">Input</th>
+                                        <th style="width: 30%;">Process</th>
+                                        <th style="width: 25%;">Output</th>
+                                        <th style="width: 20%;">Responsibility</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Periodic plans & targets</td>
+                                        <td><span class="label label-primary" style="font-size: 12px;"><i class="fa fa-diamond"></i> Validation</span></td>
+                                        <td>Approved operational plans</td>
+                                        <td><strong>Department Heads</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Approved operational plans</td>
+                                        <td><span class="label label-success" style="font-size: 12px;"><i class="fa fa-play"></i> Actual Execution</span></td>
+                                        <td>Executed activities & results</td>
+                                        <td><strong>Departments / Operational Teams</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Execution results<br>Targets & actual results</td>
+                                        <td><span class="label label-info" style="font-size: 12px;"><i class="fa fa-line-chart"></i> Evaluation & Monitoring</span></td>
+                                        <td>Actual performance records<br>Performance evaluation reports</td>
+                                        <td><strong>Planning Office / Management</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </text>);
+        })
+    )
+</div>
+
+<script>
+    function validatePlan(planId) {
+        if (confirm("Are you sure you want to validate and approve this operational plan?")) {
+            $.post('@Url.Action("ValidateOperationalPlan", "PMER", new { area = "Planning" })', { bscPlanId: planId }, function(res) {
+                if (res.success) {
+                    alert(res.message);
+                    $("#pmerValidationGrid").data("kendoGrid").dataSource.read();
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+    }
+</script>

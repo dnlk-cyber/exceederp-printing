@@ -1,6 +1,7 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -11,14 +12,29 @@ using ExceedERP.Core.Domain.Planning;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Planning;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+        PlanningRoles.Planning_User,
+        HrmConstants.HRDepartmentHead,
+        HrmConstants.HREmployeeSelfService)]
     public class BSCPlanSelfCaresController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly PlanningApprovalHelper auth;
+
+        private const string ConcurrencyMessage =
+            "The plan was changed by another user while you were working on it. Refresh the page and try again.";
+
+        public BSCPlanSelfCaresController()
+        {
+            auth = new PlanningApprovalHelper(db);
+        }
 
        private bool GetHasChid(int id,int OthWorkId)
        {
@@ -41,33 +57,62 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
         public ActionResult BSCPlanSelfCares_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
-            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var workUnitId = EmployeeHelper.GetEmployeeWorkUnitId(employeeId);
-            var bscplans = db.BSCPlans.Where(x => x.OrgStructureId == workUnitId).Where(b => b.PlanId == id).ToList();
-            var placement = db.Placements.Where(x => x.isCurrent && x.IsHead && x.OrgStructureId == workUnitId).FirstOrDefault();
-            if (placement != null)
+            var placement = GetCurrentPlacement();
+            if (placement == null && !PlanningSelfCareHelper.CanViewAllWorkUnits(User))
+                return Json(Enumerable.Empty<BSCPlan>().ToDataSourceResult(request));
+
+            var bscplans = GetVisiblePlans(id, placement);
+
+            var branchIds = bscplans.Where(x => x.BranchId.HasValue).Select(x => x.BranchId.Value).Distinct().ToList();
+            var branches = db.Branch.Where(x => branchIds.Contains(x.BranchId)).ToDictionary(x => x.BranchId, x => x.Name);
+
+            foreach (var bscplan in bscplans)
             {
-                List<int> orgstructureIds = db.MainCompanyStructures
-                                .Where(x => x.Parent == workUnitId)
-                                .Select(x => x.OrgStructureId)
-                                .ToList();
-                orgstructureIds.Add(workUnitId);
-                if (orgstructureIds.Count() > 0)
-                {
-                   bscplans = db.BSCPlans.Where(x => x.PlanId == id && orgstructureIds.Contains(x.OrgStructureId)/*||x.OrgStructureId==workUnitId*/).ToList()/*.DistinctByField(x=>x.OrgStructureId).ToList()*/;
-
-                }
-
+                bscplan.ApprovalStatus = GetEffectiveApprovalStatus(bscplan);
+                var approvalAction = string.Empty;
+                PlanApprovalStatus nextStatus;
+                bscplan.CanApprove = placement != null &&
+                                     TryGetNextApprovalStatus(bscplan, placement, out nextStatus, out approvalAction);
+                bscplan.ApprovalAction = approvalAction;
+                bscplan.CanCopy = placement != null && CanCurrentHeadAggregate(bscplan, placement);
+                bscplan.CanEdit = placement != null && IsRecordOwner(bscplan, placement) && IsEditableStatus(bscplan.ApprovalStatus);
+                bscplan.CanDelete = placement != null && IsRecordOwner(bscplan, placement) && bscplan.ApprovalStatus == PlanApprovalStatus.Draft;
+                bscplan.CanRequestRevision = bscplan.CanApprove && IsAwaitingApproval(bscplan.ApprovalStatus);
+                bscplan.CanAddFeedback = bscplan.CanRequestRevision;
+                bscplan.HasChild = placement != null && placement.IsHead && db.MainCompanyStructures.Any(x =>
+                    x.Parent == placement.OrgStructureId && x.OrgStructureId == bscplan.OrgStructureId);
+                bscplan.ApprovalStatusText = GetApprovalStatusText(bscplan.ApprovalStatus);
+                bscplan.BranchName = bscplan.BranchId.HasValue && branches.ContainsKey(bscplan.BranchId.Value)
+                    ? branches[bscplan.BranchId.Value]
+                    : string.Empty;
             }
+
             DataSourceResult result = bscplans.ToDataSourceResult(request, bSCPlan => new {
                 BSCPlanId = bSCPlan.BSCPlanId,
                 ObjectiveId = bSCPlan.ObjectiveId,
                 OrgStructureId = bSCPlan.OrgStructureId,
+                BranchId = bSCPlan.BranchId,
+                BranchName = bSCPlan.BranchName,
+                ApprovalStatus = bSCPlan.ApprovalStatus,
+                ApprovalStatusText = bSCPlan.ApprovalStatusText,
+                ApprovalAction = bSCPlan.ApprovalAction,
+                CanApprove = bSCPlan.CanApprove,
+                CanCopy = bSCPlan.CanCopy,
+                CanEdit = bSCPlan.CanEdit,
+                CanDelete = bSCPlan.CanDelete,
+                CanRequestRevision = bSCPlan.CanRequestRevision,
+                CanAddFeedback = bSCPlan.CanAddFeedback,
                 IsFirstLevelApproved = bSCPlan.IsFirstLevelApproved,
                 IsSecondLevel = bSCPlan.IsSecondLevel,
                 IsThirdLevel = bSCPlan.IsThirdLevel,
                 IsCopied = bSCPlan.IsCopied,
-                HasChild = GetHasChid(workUnitId, bSCPlan.OrgStructureId),
+                HasChild = bSCPlan.HasChild,
+                SubmittedBy = bSCPlan.SubmittedBy,
+                SubmittedTime = bSCPlan.SubmittedTime,
+                BranchApprovedBy = bSCPlan.BranchApprovedBy,
+                BranchApprovedTime = bSCPlan.BranchApprovedTime,
+                HeadOfficeApprovedBy = bSCPlan.HeadOfficeApprovedBy,
+                HeadOfficeApprovedTime = bSCPlan.HeadOfficeApprovedTime,
                 PlanId = bSCPlan.PlanId
             });
 
@@ -75,16 +120,31 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
       
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult BSCPlanSelfCares_Create([DataSourceRequest]DataSourceRequest request, BSCPlan bSCPlan,int id)
         {
-            var exists = db.BSCPlans.Any(s => s.ObjectiveId == bSCPlan.ObjectiveId && s.PlanId==id);
+            var placement = GetCurrentPlacement();
+            if (placement == null)
+                ModelState.AddModelError(string.Empty, "Your user is not linked to a current employee placement.");
+            else if (!IsDepartmentPlacement(placement))
+                ModelState.AddModelError(string.Empty, "Only department users can create a departmental plan. Branch plans are created by aggregating approved department plans.");
+
+            if (placement != null)
+            {
+                bSCPlan.OrgStructureId = placement.OrgStructureId;
+                bSCPlan.BranchId = placement.BranchId;
+            }
+
+            var exists = placement != null && db.BSCPlans.Any(s => s.ObjectiveId == bSCPlan.ObjectiveId &&
+                s.PlanId == id && s.OrgStructureId == placement.OrgStructureId && s.BranchId == placement.BranchId);
             if (exists)
             {
-                ModelState.AddModelError("exists", "This is already registered ");
+                ModelState.AddModelError("exists", "This objective is already registered for your branch and work unit.");
             }
             if (ModelState.IsValid)
             {
                 bSCPlan.PlanId = id;
+                bSCPlan.ApprovalStatus = PlanApprovalStatus.Draft;
                 var entity = GetMappedObject(bSCPlan);
                 db.BSCPlans.Add(entity);
                 db.SaveChanges();
@@ -102,13 +162,24 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
      
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult BSCPlanSelfCares_Update([DataSourceRequest]DataSourceRequest request, BSCPlan bSCPlan)
         {
+            var placement = GetCurrentPlacement();
+            var entity = db.BSCPlans.Find(bSCPlan.BSCPlanId);
+
+            if (placement == null || entity == null || !IsRecordOwner(entity, placement))
+                ModelState.AddModelError(string.Empty, "You can update only plans owned by your current branch and work unit.");
+            else if (!IsEditableStatus(GetEffectiveApprovalStatus(entity)))
+                ModelState.AddModelError(string.Empty, "Only a draft or a plan returned for revision can be edited.");
+            else if (db.BSCPlans.Any(x => x.BSCPlanId != entity.BSCPlanId && x.PlanId == entity.PlanId &&
+                                         x.ObjectiveId == bSCPlan.ObjectiveId && x.OrgStructureId == entity.OrgStructureId &&
+                                         x.BranchId == entity.BranchId))
+                ModelState.AddModelError("ObjectiveId", "This objective is already registered for your branch and work unit.");
+
             if (ModelState.IsValid)
             {
-                var entity = GetMappedObject(bSCPlan);
-                db.BSCPlans.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                entity.ObjectiveId = bSCPlan.ObjectiveId;
                 db.SaveChanges();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "BSCPlan", "Success", User.Identity.Name, " is Updated By  " + User.Identity.Name, Modules.Planning);
@@ -120,8 +191,16 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public ActionResult BSCPlanSelfCares_Destroy([DataSourceRequest]DataSourceRequest request, BSCPlan bSCPlan)
         {
+            var placement = GetCurrentPlacement();
+            var persistedPlan = db.BSCPlans.Find(bSCPlan.BSCPlanId);
+            if (placement == null || persistedPlan == null || !IsRecordOwner(persistedPlan, placement))
+                ModelState.AddModelError(string.Empty, "You can delete only plans owned by your current branch and work unit.");
+            else if (GetEffectiveApprovalStatus(persistedPlan) != PlanApprovalStatus.Draft)
+                ModelState.AddModelError(string.Empty, "A submitted plan cannot be deleted.");
+
             var planDetails = db.PlanningDetails.Where(x => x.BSCPlanId == bSCPlan.BSCPlanId).ToList();
             if (planDetails.Any())
             {
@@ -129,15 +208,13 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             }
             if (ModelState.IsValid)
             {
-                var entity = GetMappedObject(bSCPlan);
                 #region delete log
                 var objective = db.Objectives.Find(bSCPlan.ObjectiveId);
                 var delete = objective.Name;
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "     Objective deleted  " + delete);
                 #endregion
 
-                db.BSCPlans.Attach(entity);
-                db.BSCPlans.Remove(entity);
+                db.BSCPlans.Remove(persistedPlan);
                 db.SaveChanges();
             }
 
@@ -145,22 +222,30 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         }
         private BSCPlan GetMappedObject(BSCPlan bSCPlan)
         {
+            // Approval state is never accepted from the request; a new plan always starts as a draft.
             var entity = new BSCPlan
             {
-                BSCPlanId = bSCPlan.BSCPlanId,
                 ObjectiveId = bSCPlan.ObjectiveId,
                 OrgStructureId = bSCPlan.OrgStructureId,
-                IsFirstLevelApproved = bSCPlan.IsFirstLevelApproved,
-                IsSecondLevel = bSCPlan.IsSecondLevel,
-                IsThirdLevel = bSCPlan.IsThirdLevel,
-                IsCopied = bSCPlan.IsCopied,
+                BranchId = bSCPlan.BranchId,
+                IsFirstLevelApproved = false,
+                IsSecondLevel = false,
+                IsThirdLevel = false,
+                IsCopied = false,
+                ApprovalStatus = PlanApprovalStatus.Draft,
+                SubmittedBy = null,
+                SubmittedTime = null,
+                BranchApprovedBy = null,
+                BranchApprovedTime = null,
+                HeadOfficeApprovedBy = null,
+                HeadOfficeApprovedTime = null,
                 PlanId = bSCPlan.PlanId
             };
             return entity;
         }
         private int PopulatethePlanningDetails(int objectiveId, int bscId,int planId)
         {
-            var indicators = db.Indicators.Where(x=>x.ObjectiveId==objectiveId).ToList();
+            var indicators = db.Indicators.Where(x=>x.IsActive).Where(x=>x.ObjectiveId==objectiveId).ToList();
             foreach(var indcator in indicators)
             {
                
@@ -181,7 +266,6 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 };
                 db.PlanningDetails.Add(entity);
                 db.SaveChanges();
-               
                 var fiscalYear = db.Plans.Find(planId);
                 if (fiscalYear != null)
                 {
@@ -189,8 +273,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                     var periods = db.GLPeriods.Where(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId).ToList();
                     foreach (var period in periods)
                     {
-
-
+                        
                         var entity2 = new MonthlyPlan
                         {
                             GLPeriodId = period.GLPeriodId,
@@ -210,29 +293,366 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             }
             return 0;
         }
-        public JsonResult ApproveBScPlan(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User, HrmConstants.HRDepartmentHead, HrmConstants.HREmployeeSelfService)]
+        public JsonResult ApproveBScPlan(int id, string feedback)
         {
+            feedback = (feedback ?? string.Empty).Trim();
+            if (feedback.Length > 2000)
+                return Json(new { Message = "Feedback cannot exceed 2000 characters.", Status = "NOT_OK" });
+
             var record = db.BSCPlans.Find(id);
-            if (record != null)
+            var placement = GetCurrentPlacement();
+            if (record == null || placement == null)
+                return Json(new { Message = "The plan or your current placement was not found.", Status = "NOT_OK" });
+
+            record.ApprovalStatus = GetEffectiveApprovalStatus(record);
+            if (!record.BranchId.HasValue && IsRecordOwner(record, placement))
+                record.BranchId = placement.BranchId;
+
+            PlanApprovalStatus nextStatus;
+            string approvalAction;
+            if (!TryGetNextApprovalStatus(record, placement, out nextStatus, out approvalAction))
+                return Json(new { Message = "You are not the authorized approver for the plan's current hierarchy level.", Status = "NOT_OK" });
+
+            var previousStatus = record.ApprovalStatus;
+            var now = DateTime.Now;
+            if ((nextStatus == PlanApprovalStatus.DepartmentSubmitted ||
+                 nextStatus == PlanApprovalStatus.BranchApproved ||
+                 nextStatus == PlanApprovalStatus.HeadOfficeApproved) && !record.SubmittedTime.HasValue)
             {
+                record.SubmittedBy = User.Identity.Name;
+                record.SubmittedTime = now;
                 record.IsFirstLevelApproved = true;
-                db.Entry(record).State = EntityState.Modified;
-                db.SaveChanges();
-                var formattedData12 = new
-                {
-                    Message = "It is approved succesfully.",
-                    Status = "okay"
-                };
-                return Json(formattedData12, JsonRequestBehavior.AllowGet);
+            }
+            if ((nextStatus == PlanApprovalStatus.BranchApproved ||
+                 nextStatus == PlanApprovalStatus.HeadOfficeApproved) && !record.BranchApprovedTime.HasValue)
+            {
+                record.BranchApprovedBy = User.Identity.Name;
+                record.BranchApprovedTime = now;
+                record.IsSecondLevel = true;
+            }
+            if (nextStatus == PlanApprovalStatus.HeadOfficeApproved)
+            {
+                record.HeadOfficeApprovedBy = User.Identity.Name;
+                record.HeadOfficeApprovedTime = now;
+                record.IsThirdLevel = true;
             }
 
-            var formattedData = new
+            record.ApprovalStatus = nextStatus;
+            db.PlanApprovalFeedbacks.Add(new PlanApprovalFeedback
             {
-                Message = "Record is not found.",
-                Status = "NOT_OK"
-            };
-            return Json(formattedData, JsonRequestBehavior.AllowGet);
+                BSCPlanId = record.BSCPlanId,
+                Action = previousStatus == PlanApprovalStatus.RevisionRequested
+                    ? PlanApprovalAction.Resubmitted
+                    : previousStatus == PlanApprovalStatus.Draft
+                        ? PlanApprovalAction.Submitted
+                        : PlanApprovalAction.Approved,
+                FromStatus = previousStatus,
+                ToStatus = nextStatus,
+                Feedback = string.IsNullOrWhiteSpace(feedback) ? null : feedback,
+                ActionBy = User.Identity.Name,
+                ActionTime = now
+            });
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Json(new { Message = ConcurrencyMessage, Status = "NOT_OK" });
+            }
+
+            UserHelper.OperationLog(Request.UserHostAddress, "BSCPlan Approval", "Success", User.Identity.Name,
+                approvalAction + " by " + User.Identity.Name, Modules.Planning);
+
+            return Json(new
+            {
+                Message = approvalAction + " completed successfully.",
+                Status = "OK",
+                ApprovalStatus = GetApprovalStatusText(nextStatus)
+            });
         }
+
+        public ActionResult PlanApprovalFeedbacks_Read([DataSourceRequest] DataSourceRequest request, int bscPlanId)
+        {
+            var record = db.BSCPlans.Find(bscPlanId);
+            var placement = GetCurrentPlacement();
+            if (record == null || placement == null || !CanViewPlan(record, placement))
+                return Json(Enumerable.Empty<PlanApprovalFeedback>().ToDataSourceResult(request));
+
+            var feedbacks = db.PlanApprovalFeedbacks.AsNoTracking()
+                .Where(x => x.BSCPlanId == bscPlanId)
+                .OrderByDescending(x => x.ActionTime)
+                .ToList()
+                .Select(x => new
+                {
+                    x.PlanApprovalFeedbackId,
+                    x.BSCPlanId,
+                    ActionText = GetApprovalActionText(x.Action),
+                    FromStatusText = GetApprovalStatusText(x.FromStatus),
+                    ToStatusText = GetApprovalStatusText(x.ToStatus),
+                    x.Feedback,
+                    x.ActionBy,
+                    x.ActionTime
+                });
+
+            return Json(feedbacks.ToDataSourceResult(request));
+        }
+
+        public ActionResult PlanFeedbacks_Read([DataSourceRequest] DataSourceRequest request, int planId)
+        {
+            var placement = GetCurrentPlacement();
+            if (placement == null)
+                return Json(Enumerable.Empty<PlanApprovalFeedback>().ToDataSourceResult(request));
+
+            var visiblePlans = GetVisiblePlans(planId, placement);
+            var bscPlanIds = visiblePlans.Select(x => x.BSCPlanId).ToList();
+            if (!bscPlanIds.Any())
+                return Json(Enumerable.Empty<PlanApprovalFeedback>().ToDataSourceResult(request));
+
+            var orgStructureIds = visiblePlans.Select(x => x.OrgStructureId).Distinct().ToList();
+            var workUnits = db.MainCompanyStructures.AsNoTracking()
+                .Where(x => orgStructureIds.Contains(x.OrgStructureId))
+                .ToDictionary(x => x.OrgStructureId, x => x.Name);
+
+            var branchIds = visiblePlans.Where(x => x.BranchId.HasValue).Select(x => x.BranchId.Value).Distinct().ToList();
+            var branches = db.Branch.AsNoTracking()
+                .Where(x => branchIds.Contains(x.BranchId))
+                .ToDictionary(x => x.BranchId, x => x.Name);
+
+            var objectiveIds = visiblePlans.Select(x => x.ObjectiveId).Distinct().ToList();
+            var objectives = db.Objectives.AsNoTracking()
+                .Where(x => objectiveIds.Contains(x.ObjectiveId))
+                .ToDictionary(x => x.ObjectiveId, x => x.Name);
+
+            var departmentPlans = visiblePlans
+                .GroupBy(x => x.BSCPlanId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var planFeedbacks = db.PlanApprovalFeedbacks.AsNoTracking()
+                .Where(x => bscPlanIds.Contains(x.BSCPlanId))
+                .OrderByDescending(x => x.ActionTime)
+                .ToList()
+                .Select(x =>
+                {
+                    var departmentPlan = departmentPlans[x.BSCPlanId];
+                    return new
+                    {
+                        x.PlanApprovalFeedbackId,
+                        x.BSCPlanId,
+                        WorkUnitName = workUnits.ContainsKey(departmentPlan.OrgStructureId)
+                            ? workUnits[departmentPlan.OrgStructureId]
+                            : string.Empty,
+                        BranchName = departmentPlan.BranchId.HasValue && branches.ContainsKey(departmentPlan.BranchId.Value)
+                            ? branches[departmentPlan.BranchId.Value]
+                            : string.Empty,
+                        ObjectiveName = objectives.ContainsKey(departmentPlan.ObjectiveId)
+                            ? objectives[departmentPlan.ObjectiveId]
+                            : string.Empty,
+                        ActionText = GetApprovalActionText(x.Action),
+                        FromStatusText = GetApprovalStatusText(x.FromStatus),
+                        ToStatusText = GetApprovalStatusText(x.ToStatus),
+                        x.Feedback,
+                        x.ActionBy,
+                        x.ActionTime
+                    };
+                });
+
+            return Json(planFeedbacks.ToDataSourceResult(request));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User, HrmConstants.HRDepartmentHead, HrmConstants.HREmployeeSelfService)]
+        public JsonResult RequestPlanRevision(int id, string feedback)
+        {
+            feedback = (feedback ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(feedback))
+                return Json(new { Message = "Feedback is required when requesting a revision.", Status = "NOT_OK" });
+            if (feedback.Length > 2000)
+                return Json(new { Message = "Feedback cannot exceed 2000 characters.", Status = "NOT_OK" });
+
+            var record = db.BSCPlans.Find(id);
+            var placement = GetCurrentPlacement();
+            if (record == null || placement == null)
+                return Json(new { Message = "The plan or your current placement was not found.", Status = "NOT_OK" });
+
+            record.ApprovalStatus = GetEffectiveApprovalStatus(record);
+            if (!IsAwaitingApproval(record.ApprovalStatus))
+                return Json(new { Message = "Only a submitted plan awaiting your approval can be returned for revision.", Status = "NOT_OK" });
+
+            PlanApprovalStatus ignoredStatus;
+            string ignoredAction;
+            if (!TryGetNextApprovalStatus(record, placement, out ignoredStatus, out ignoredAction))
+                return Json(new { Message = "You are not the authorized approver for the plan's current hierarchy level.", Status = "NOT_OK" });
+
+            var previousStatus = record.ApprovalStatus;
+            var now = DateTime.Now;
+            db.PlanApprovalFeedbacks.Add(new PlanApprovalFeedback
+            {
+                BSCPlanId = record.BSCPlanId,
+                Action = PlanApprovalAction.RevisionRequested,
+                FromStatus = previousStatus,
+                ToStatus = PlanApprovalStatus.RevisionRequested,
+                Feedback = feedback,
+                ActionBy = User.Identity.Name,
+                ActionTime = now
+            });
+
+            ResetApprovalTracking(record);
+            record.ApprovalStatus = PlanApprovalStatus.RevisionRequested;
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Json(new { Message = ConcurrencyMessage, Status = "NOT_OK" });
+            }
+
+            UserHelper.OperationLog(Request.UserHostAddress, "BSCPlan Revision", "Success", User.Identity.Name,
+                "Revision requested by " + User.Identity.Name, Modules.Planning);
+
+            return Json(new
+            {
+                Message = "The plan was returned for revision.",
+                Status = "OK",
+                ApprovalStatus = GetApprovalStatusText(record.ApprovalStatus)
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User, HrmConstants.HRDepartmentHead, HrmConstants.HREmployeeSelfService)]
+        public JsonResult AddPlanFeedback(int id, string feedback)
+        {
+            feedback = (feedback ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(feedback))
+                return Json(new { Message = "Feedback is required.", Status = "NOT_OK" });
+            if (feedback.Length > 2000)
+                return Json(new { Message = "Feedback cannot exceed 2000 characters.", Status = "NOT_OK" });
+
+            var record = db.BSCPlans.Find(id);
+            var placement = GetCurrentPlacement();
+            if (record == null || placement == null)
+                return Json(new { Message = "The plan or your current placement was not found.", Status = "NOT_OK" });
+
+            record.ApprovalStatus = GetEffectiveApprovalStatus(record);
+            if (!IsAwaitingApproval(record.ApprovalStatus))
+                return Json(new { Message = "Feedback can be added only while the plan is awaiting your approval.", Status = "NOT_OK" });
+
+            PlanApprovalStatus ignoredStatus;
+            string ignoredAction;
+            if (!TryGetNextApprovalStatus(record, placement, out ignoredStatus, out ignoredAction))
+                return Json(new { Message = "You are not the authorized approver for the plan's current hierarchy level.", Status = "NOT_OK" });
+
+            db.PlanApprovalFeedbacks.Add(new PlanApprovalFeedback
+            {
+                BSCPlanId = record.BSCPlanId,
+                Action = PlanApprovalAction.FeedbackAdded,
+                FromStatus = record.ApprovalStatus,
+                ToStatus = record.ApprovalStatus,
+                Feedback = feedback,
+                ActionBy = User.Identity.Name,
+                ActionTime = DateTime.Now
+            });
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Json(new { Message = ConcurrencyMessage, Status = "NOT_OK" });
+            }
+
+            UserHelper.OperationLog(Request.UserHostAddress, "BSCPlan Feedback", "Success", User.Identity.Name,
+                "Feedback added by " + User.Identity.Name, Modules.Planning);
+
+            return Json(new { Message = "Feedback added successfully.", Status = "OK" });
+        }
+
+        private Placement GetCurrentPlacement()
+        {
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            return auth.GetCurrentPlacement(employeeId);
+        }
+
+        private static PlanApprovalStatus GetEffectiveApprovalStatus(BSCPlan plan)
+        {
+            return PlanningApprovalHelper.GetEffectiveApprovalStatus(plan);
+        }
+
+        private static string GetApprovalStatusText(PlanApprovalStatus status)
+        {
+            return PlanningApprovalHelper.GetApprovalStatusText(status);
+        }
+
+        private static string GetApprovalActionText(PlanApprovalAction action)
+        {
+            return PlanningApprovalHelper.GetApprovalActionText(action);
+        }
+
+        private static bool IsEditableStatus(PlanApprovalStatus status)
+        {
+            return PlanningApprovalHelper.IsEditableStatus(status);
+        }
+
+        private static bool IsAwaitingApproval(PlanApprovalStatus status)
+        {
+            return PlanningApprovalHelper.IsAwaitingApproval(status);
+        }
+
+        private static bool IsRecordOwner(BSCPlan record, Placement placement)
+        {
+            return PlanningApprovalHelper.IsRecordOwner(record, placement);
+        }
+
+        private List<BSCPlan> GetVisiblePlans(int planId, Placement placement)
+        {
+            if (PlanningSelfCareHelper.CanViewAllWorkUnits(User))
+                return db.BSCPlans.Where(x => x.PlanId == planId).ToList();
+
+            return auth.GetVisiblePlans(planId, placement);
+        }
+
+        private bool IsDepartmentPlacement(Placement placement)
+        {
+            return auth.IsDepartmentPlacement(placement);
+        }
+
+        private bool IsBranchPlacement(Placement placement)
+        {
+            return auth.IsBranchPlacement(placement);
+        }
+
+        private bool IsHeadOfficePlacement(Placement placement)
+        {
+            return auth.IsHeadOfficePlacement(placement);
+        }
+
+        private bool TryGetNextApprovalStatus(BSCPlan record, Placement placement,
+            out PlanApprovalStatus nextStatus, out string approvalAction)
+        {
+            return auth.TryGetNextApprovalStatus(record, placement, out nextStatus, out approvalAction);
+        }
+
+        private bool CanCurrentHeadAggregate(BSCPlan record, Placement placement)
+        {
+            return auth.CanCurrentHeadAggregate(record, placement);
+        }
+
+        private bool CanViewPlan(BSCPlan record, Placement placement)
+        {
+            return auth.CanViewPlan(record, placement);
+        }
+
+        private static void ResetApprovalTracking(BSCPlan record)
+        {
+            PlanningApprovalHelper.ResetApprovalTracking(record);
+        }
+        [NonAction]
         public JsonResult CopyBScPlan1(int bscPlanId)
         {
             var recordToBeCopied = db.BSCPlans.Where(x=>!x.IsCopied&&x.IsFirstLevelApproved).Where(x=>x.BSCPlanId==bscPlanId).FirstOrDefault();
@@ -551,73 +971,79 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User, HrmConstants.HRDepartmentHead)]
         public JsonResult CopyBScPlan(int bscPlanId)
         {
-            var recordToBeCopied = db.BSCPlans.FirstOrDefault(x => x.BSCPlanId == bscPlanId && !x.IsCopied && x.IsFirstLevelApproved);
+            var recordToBeCopied = db.BSCPlans.FirstOrDefault(x => x.BSCPlanId == bscPlanId && !x.IsCopied);
+            var placement = GetCurrentPlacement();
 
-            if (recordToBeCopied == null)
+            if (recordToBeCopied == null || placement == null)
             {
-                return Json(new { Message = "Record is already copied or not approved.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+                return Json(new { Message = "The plan is already copied, missing, or your placement was not found.", Status = "NOT_OK" });
             }
 
-            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == employeeId && x.IsHead);
-
-            if (placement == null)
+            recordToBeCopied.ApprovalStatus = GetEffectiveApprovalStatus(recordToBeCopied);
+            if (!CanCurrentHeadAggregate(recordToBeCopied, placement))
             {
-                return Json(new { Message = "You are not a department head.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+                return Json(new { Message = "You are not authorized to aggregate this plan at its current hierarchy level.", Status = "NOT_OK" });
             }
 
-            var orgstructures = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
-            var Recordorgstructures = orgstructures.FirstOrDefault(x => x.OrgStructureId == recordToBeCopied.OrgStructureId);
+            var bscplan = db.BSCPlans.FirstOrDefault(x => x.PlanId == recordToBeCopied.PlanId &&
+                x.ObjectiveId == recordToBeCopied.ObjectiveId && x.OrgStructureId == placement.OrgStructureId &&
+                x.BranchId == placement.BranchId);
 
-            if (Recordorgstructures == null)
+            using (var transaction = db.Database.BeginTransaction())
             {
-                return Json(new { Message = "You cannot copy because this is your own department or no work unit is under you.", Status = "OK" }, JsonRequestBehavior.AllowGet);
-            }
-
-            var bscplan = db.BSCPlans.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId && x.GetPlan.GlFiscalYearId == recordToBeCopied.GetPlan.GlFiscalYearId);
-
-            if (bscplan == null)
-            {
-                // Create a new BSCPlan
-                var entity11 = new BSCPlan
+                try
                 {
-                    OrgStructureId = placement.OrgStructureId,
-                    ObjectiveId = recordToBeCopied.ObjectiveId,
-                    PlanId = recordToBeCopied.PlanId,
-                    IsCopied = true,
-                    IsFirstLevelApproved = true,
-                    IsSecondLevel = true,
-                    IsThirdLevel = false
-                };
-                db.BSCPlans.Add(entity11);
-                db.SaveChanges();
+                    if (bscplan == null)
+                    {
+                        bscplan = new BSCPlan
+                        {
+                            OrgStructureId = placement.OrgStructureId,
+                            BranchId = placement.BranchId,
+                            ObjectiveId = recordToBeCopied.ObjectiveId,
+                            PlanId = recordToBeCopied.PlanId,
+                            ApprovalStatus = PlanApprovalStatus.Draft
+                        };
+                        db.BSCPlans.Add(bscplan);
+                        db.SaveChanges();
+                    }
 
-                // Copy PlanningDetails and MonthlyPlans
-                CopyPlanningDetailsAndMonthlyPlans(recordToBeCopied.BSCPlanId, entity11.BSCPlanId);
+                    CopyPlanningDetailsAndMonthlyPlans(recordToBeCopied.BSCPlanId, bscplan.BSCPlanId);
+                    recordToBeCopied.IsCopied = true;
 
-                // Update the copied record
-                recordToBeCopied.IsSecondLevel = true;
-                recordToBeCopied.IsCopied = true;
-                db.Entry(recordToBeCopied).State = EntityState.Modified;
-                db.SaveChanges();
-
-                return Json(new { Message = "Copied successfully.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+                    db.PlanApprovalFeedbacks.Add(new PlanApprovalFeedback
+                    {
+                        BSCPlanId = recordToBeCopied.BSCPlanId,
+                        Action = PlanApprovalAction.Aggregated,
+                        FromStatus = recordToBeCopied.ApprovalStatus,
+                        ToStatus = recordToBeCopied.ApprovalStatus,
+                        Feedback = "Aggregated into plan #" + bscplan.BSCPlanId + ".",
+                        ActionBy = User.Identity.Name,
+                        ActionTime = DateTime.Now
+                    });
+                    db.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    transaction.Rollback();
+                    return Json(new { Message = ConcurrencyMessage, Status = "NOT_OK" });
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return Json(new { Message = "The aggregation failed and no changes were saved.", Status = "NOT_OK" });
+                }
             }
-            else
-            {
-                // BSCPlan already exists for this OrgStructure
-                // Copy PlanningDetails and MonthlyPlans
-                CopyPlanningDetailsAndMonthlyPlans(recordToBeCopied.BSCPlanId, bscplan.BSCPlanId);
 
-                // Update the copied record
-                recordToBeCopied.IsCopied = true;
-                db.Entry(recordToBeCopied).State = EntityState.Modified;
-                db.SaveChanges();
+            UserHelper.OperationLog(Request.UserHostAddress, "BSCPlan Aggregation", "Success", User.Identity.Name,
+                "Aggregated by " + User.Identity.Name, Modules.Planning);
 
-                return Json(new { Message = "Copied successfully.", Status = "OK" }, JsonRequestBehavior.AllowGet);
-            }
+            return Json(new { Message = "Plan aggregated successfully into your branch/work-unit plan.", Status = "OK" });
         }
 
         private void CopyPlanningDetailsAndMonthlyPlans(int sourceBSCPlanId, int targetBSCPlanId)
@@ -628,6 +1054,8 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             {
                 // Copy PlanningDetail
                 var existInDesitination = db.PlanningDetails.Where(x => x.BSCPlanId == targetBSCPlanId
+                                                    && x.IndicatorId == planningDetail.IndicatorId
+                                                    && x.ParentId == planningDetail.ParentId
                                                     && x.GlobalIndicatorId == planningDetail.GlobalIndicatorId
                                                     && x.HasSubIndicator == planningDetail.HasSubIndicator
                                                     &&x.KPIType ==planningDetail.KPIType).FirstOrDefault();
@@ -688,7 +1116,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 {
                     existInDesitination.Plan += planningDetail.Plan;         //lowwerdetail.Count()>0? lowwerdetail.Sum(x => x.Plan): planningDetail.Plan;
                     existInDesitination.Target += planningDetail.Target;     //lowwerdetail.Count()>0? lowwerdetail.Sum(x => x.Target): planningDetail.Target;
-                    existInDesitination.Baseline += planningDetail.Target;   //lowwerdetail.Count()>0? lowwerdetail.Sum(x => x.Baseline): planningDetail.Baseline;
+                    existInDesitination.Baseline += planningDetail.Baseline;
                     existInDesitination.KPIType = planningDetail.KPIType;
                     existInDesitination.ParentId = planningDetail.ParentId;
                     existInDesitination.GlobalIndicatorId = planningDetail.GlobalIndicatorId;

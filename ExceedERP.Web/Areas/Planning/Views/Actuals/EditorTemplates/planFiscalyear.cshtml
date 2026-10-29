@@ -5,7 +5,7 @@
                 .DataValueField("Planid")
                 .DataSource(dataSource =>
                 {
-                    dataSource.Read(read => read.Action("GetPlanningFiscalYear", "PlanningDataProvider", new { area = "Planning" }))
+                    dataSource.Read(read => read.Action("GetPlanningFiscalYear", "PlanningDataProvider", new { area = "Planning" }).Data("sendForgery"))
                     .ServerFiltering(false);
                 })
             .AutoBind(true)

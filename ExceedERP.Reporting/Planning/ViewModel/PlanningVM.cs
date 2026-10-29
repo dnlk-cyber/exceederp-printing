@@ -9,9 +9,10 @@ namespace ExceedERP.Reporting.Planning.ViewModel
 {
     public class PlanningVM : Organization
     {
-        
+        public string Date { get; set; }
         public string FiscalYear { get; set; }
         public string Description { get; set; }
+        public decimal PercentageAverage { get; set; }
         public List<ObjectiveItem> ObjectiveItems { get; set; } = new List<ObjectiveItem>();
         public class ObjectiveItem
         {
@@ -25,6 +26,7 @@ namespace ExceedERP.Reporting.Planning.ViewModel
         public class IndicatorItems
         {
             public string Indicators { get; set; }
+            public decimal? Weight { get; set; }
             public List<PlanItem> PlanItems { get; set; } = new List<PlanItem>();
 
         }
@@ -32,9 +34,12 @@ namespace ExceedERP.Reporting.Planning.ViewModel
         {
             public string Indicators { get; set; }
             public string SubIndicators { get; set; }
+            public decimal? Weight { get; set; }
+            public int IndicatorLevel { get; set; }
             public string Unit { get; set; }
             public string KPIType { get; set; }
             public decimal AnualPlan { get; set; }
+            public decimal? MonthlyAverage { get; set; }
             public string Description { get; set; }
             public decimal Baseline { get; set; }
             public decimal Target { get; set; }

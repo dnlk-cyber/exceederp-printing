@@ -15,7 +15,7 @@
                                              .DataValueField("IndicatorId")
                                              .DataSource(dataSource =>
                                              {
-                                                 dataSource.Read(read => read.Action("GetIndicators", "PlanningDataProvider", new { Area = "Planning" }))
+                                                 dataSource.Read(read => read.Action("GetIndicators", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery"))
                                                      .ServerFiltering(false);
                                              })
                                              .Filter("contains")

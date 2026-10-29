@@ -224,6 +224,14 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                         }
                                    
                                     }
+                                    // Percentage KPIs: show the average of monthly quantities at the end of the row
+                                    if (planItem.KPIType == "Percentage" || (planItem.Unit != null && planItem.Unit.Contains("%")))
+                                    {
+                                        if (periods.Any())
+                                        {
+                                            planItem.MonthlyAverage = periods.Average(x => x.Value);
+                                        }
+                                    }
                                     indicatorItem.PlanItems.Add(planItem);
 
 
@@ -241,6 +249,13 @@ namespace ExceedERP.Reporting.Planning.DataSource
                 }
 
             }
+            var percentageAverages = model.ObjectiveItems
+                .SelectMany(o => o.IndicatorItems)
+                .SelectMany(i => i.PlanItems)
+                .Where(x => x.MonthlyAverage.HasValue)
+                .Select(x => x.MonthlyAverage.Value)
+                .ToList();
+            model.PercentageAverage = percentageAverages.Any() ? percentageAverages.Average() : 0m;
             return model;
         }
         public static Image ByteArrayToImage(byte[] byteArrayIn)

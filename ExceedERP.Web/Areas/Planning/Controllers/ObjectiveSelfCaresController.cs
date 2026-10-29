@@ -1,20 +1,20 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Planning;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+                     HrmConstants.HRDepartmentHead,
+                     HrmConstants.HREmployeeSelfService)]
     public class ObjectiveSelfCaresController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -27,7 +27,14 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 x.Name
             }).ToList();
             ViewData["departmentLists"] = departmentLists;
-            ViewData["GlobalIndicators"] = db.GlobalIndicators.Select(x => new { x.GlobalIndicatorId, x.Indicator });
+            ViewData["GlobalIndicators"] = PlanningSelfCareHelper.GetDepartmentGlobalIndicatorList(db, User.Identity.Name);
+            var uoms = db.UoMs.Select(x => x.UoMName).ToList();
+            var existingUnits = db.Indicators.Where(x => !string.IsNullOrEmpty(x.Unit)).Select(x => x.Unit).Distinct().ToList();
+            ViewData["UoMs"] = uoms.Union(existingUnits).Where(x => !string.IsNullOrWhiteSpace(x)).OrderBy(x => x).Select(x => new
+            {
+                Name = x,
+                Code = x
+            }).ToList();
 
             return View();
 
@@ -35,11 +42,14 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         
         public ActionResult ObjectiveSelfCares_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Objective> objectives = db.Objectives;
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var workUnitId = EmployeeHelper.GetEmployeeWorkUnitId(employeeId);
+            IQueryable<Objective> objectives = db.Objectives.Where(x=>x.OrgStructureId==workUnitId);
             DataSourceResult result = objectives.ToDataSourceResult(request, objective => new {
                 ObjectiveId = objective.ObjectiveId,
                 OrgStructureId = objective.OrgStructureId,
                 Name = objective.Name,
+                Weight = objective.Weight,
                 Description = objective.Description,
                 Remark = objective.Remark
             });
@@ -100,6 +110,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 ObjectiveId = objective.ObjectiveId,
                 OrgStructureId = objective.OrgStructureId,
                 Name = objective.Name,
+                Weight = objective.Weight,
                 Description = objective.Description,
                 Remark = objective.Remark
             };

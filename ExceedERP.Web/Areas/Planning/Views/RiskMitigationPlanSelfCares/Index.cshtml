@@ -45,10 +45,10 @@
                   model.Id(p => p.RiskMitigationPlanId);
                   model.Field(p => p.RiskMitigationPlanId).Editable(false);
               })
-          .Read(read => read.Action("RiskMitigationPlanSelfCares_Read", "RiskMitigationPlanSelfCares"))
-          .Create(create => create.Action("RiskMitigationPlanSelfCares_Create", "RiskMitigationPlanSelfCares"))
-          .Update(update => update.Action("RiskMitigationPlanSelfCares_Update", "RiskMitigationPlanSelfCares"))
-          .Destroy(destroy => destroy.Action("RiskMitigationPlanSelfCares_Destroy", "RiskMitigationPlanSelfCares"))
+          .Read(read => read.Action("RiskMitigationPlanSelfCares_Read", "RiskMitigationPlanSelfCares").Data("sendForgery"))
+          .Create(create => create.Action("RiskMitigationPlanSelfCares_Create", "RiskMitigationPlanSelfCares").Data("sendForgery"))
+          .Update(update => update.Action("RiskMitigationPlanSelfCares_Update", "RiskMitigationPlanSelfCares").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("RiskMitigationPlanSelfCares_Destroy", "RiskMitigationPlanSelfCares").Data("sendForgery"))
       ).ClientDetailTemplateId("template")
 )
 
@@ -111,10 +111,10 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.RiskFollowUpId))
-          .Read(read => read.Action("RiskFollowUps_Read", "RiskFollowUps", new { rId= "#=RiskMitigationPlanId#" }))
-          .Create(create => create.Action("RiskFollowUps_Create", "RiskFollowUps", new { rId = "#=RiskMitigationPlanId#" }))
-          .Update(update => update.Action("RiskFollowUps_Update", "RiskFollowUps"))
-          .Destroy(destroy => destroy.Action("RiskFollowUps_Destroy", "RiskFollowUps"))
+          .Read(read => read.Action("RiskFollowUps_Read", "RiskFollowUps", new { rId= "#=RiskMitigationPlanId#" }).Data("sendForgery"))
+          .Create(create => create.Action("RiskFollowUps_Create", "RiskFollowUps", new { rId = "#=RiskMitigationPlanId#" }).Data("sendForgery"))
+          .Update(update => update.Action("RiskFollowUps_Update", "RiskFollowUps").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("RiskFollowUps_Destroy", "RiskFollowUps").Data("sendForgery"))
       ).ToClientTemplate()
     )
 }

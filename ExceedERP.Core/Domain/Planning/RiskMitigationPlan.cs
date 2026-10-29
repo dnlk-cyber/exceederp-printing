@@ -36,6 +36,7 @@ namespace ExceedERP.Core.Domain.Planning
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime PlanDate { get; set; }
+        public bool IsClosed { get; set; }
     }
     public enum MitigationRiskLevel
     {
@@ -68,4 +69,5 @@ namespace ExceedERP.Core.Domain.Planning
 
 
     }
+
 }

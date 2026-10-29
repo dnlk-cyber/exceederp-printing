@@ -26,10 +26,10 @@
 
 
                   })
-                  .Read(read => read.Action("ProjectExcutiveSettings_Read", "ProjectExcutiveSettings"))
-                  .Create(create => create.Action("ProjectExcutiveSettings_Create", "ProjectExcutiveSettings"))
-                  .Update(update => update.Action("ProjectExcutiveSettings_Update", "ProjectExcutiveSettings"))
-                  .Destroy(destroy => destroy.Action("ProjectExcutiveSettings_Destroy", "ProjectExcutiveSettings"))
+                  .Read(read => read.Action("ProjectExcutiveSettings_Read", "ProjectExcutiveSettings").Data("sendForgery"))
+                  .Create(create => create.Action("ProjectExcutiveSettings_Create", "ProjectExcutiveSettings").Data("sendForgery"))
+                  .Update(update => update.Action("ProjectExcutiveSettings_Update", "ProjectExcutiveSettings").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectExcutiveSettings_Destroy", "ProjectExcutiveSettings").Data("sendForgery"))
               ).ClientDetailTemplateId("Project_template")
 )
 <script type="text/kendo-template" id="Project_template">
@@ -79,10 +79,10 @@
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Model(model => model.Id(p => p.ProjectSubKPIId))
-                          .Read(read => read.Action("ProjectExcutiveSummarySettings_Read", "ProjectExcutiveSummarySettings", new { kId = "#=ProjectExcutiveSettingId#" }))
-                          .Create(create => create.Action("ProjectExcutiveSummarySettings_Create", "ProjectExcutiveSummarySettings", new { kId = "#=ProjectExcutiveSettingId#" }))
-                          .Update(update => update.Action("ProjectExcutiveSummarySettings_Update", "ProjectExcutiveSummarySettings"))
-                          .Destroy(destroy => destroy.Action("ProjectExcutiveSummarySettings_Destroy", "ProjectExcutiveSummarySettings"))
+                          .Read(read => read.Action("ProjectExcutiveSummarySettings_Read", "ProjectExcutiveSummarySettings", new { kId = "#=ProjectExcutiveSettingId#" }).Data("sendForgery"))
+                          .Create(create => create.Action("ProjectExcutiveSummarySettings_Create", "ProjectExcutiveSummarySettings", new { kId = "#=ProjectExcutiveSettingId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("ProjectExcutiveSummarySettings_Update", "ProjectExcutiveSummarySettings").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ProjectExcutiveSummarySettings_Destroy", "ProjectExcutiveSummarySettings").Data("sendForgery"))
                       ).ToClientTemplate()
     )
 

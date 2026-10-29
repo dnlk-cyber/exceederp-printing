@@ -26,7 +26,7 @@ namespace ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment
         public string LandHoldingCertifcateNo { get; set; }
         [Display(Name = " Acquired By")]
         public AcquiredBy AcquiredBy { get; set; }
-        
+        public IList<LandManagementAttachment> GetAttachments { get; set; }
 
 
     }
@@ -39,5 +39,16 @@ namespace ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment
     {
         Lease,
         Rent
+    }
+    public class LandManagementAttachment
+    {
+        public int LandManagementAttachmentId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+        public int LandManagementId { get; set; }
+        public virtual LandManagement Management { get; set; }
     }
 }

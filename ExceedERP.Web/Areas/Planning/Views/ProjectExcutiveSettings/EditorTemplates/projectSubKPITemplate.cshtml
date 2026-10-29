@@ -12,7 +12,7 @@
                                 .DataValueField("ProjectSubKPIId")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("filterKPI"))
+                                    dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery").Data("filterKPI"))
                                         .ServerFiltering(true);
                                 })
                                 .Filter("contains")

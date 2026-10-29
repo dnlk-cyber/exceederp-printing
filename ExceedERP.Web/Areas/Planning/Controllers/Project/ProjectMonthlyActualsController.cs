@@ -12,6 +12,7 @@ using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers.Project
 {
+    [Authorize]
     public class ProjectMonthlyActualsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

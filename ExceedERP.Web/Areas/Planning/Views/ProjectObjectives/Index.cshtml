@@ -20,9 +20,9 @@
           .Model(model => { model.Id(p => p.ProjectObjectiveId);
               model.Field(p => p.ProjectObjectiveId).Editable(false);
           })
-          .Read(read => read.Action("ProjectObjectives_Read", "ProjectObjectives"))
-          .Create(create => create.Action("ProjectObjectives_Create", "ProjectObjectives"))
-          .Update(update => update.Action("ProjectObjectives_Update", "ProjectObjectives"))
-          .Destroy(destroy => destroy.Action("ProjectObjectives_Destroy", "ProjectObjectives"))
+          .Read(read => read.Action("ProjectObjectives_Read", "ProjectObjectives").Data("sendForgery"))
+          .Create(create => create.Action("ProjectObjectives_Create", "ProjectObjectives").Data("sendForgery"))
+          .Update(update => update.Action("ProjectObjectives_Update", "ProjectObjectives").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ProjectObjectives_Destroy", "ProjectObjectives").Data("sendForgery"))
       )
 )

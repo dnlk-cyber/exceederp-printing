@@ -1,0 +1,187 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Planning
+
+<legend>Strategic Plan</legend>
+
+@(Html.Kendo().Grid<StrategicPlan>()
+    .Name("strategicPlanGrid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.StrategicPlanId).Title("S.N").Width(70).Filterable(false);
+        columns.ForeignKey(
+                c => c.FromGlFiscalYearId,
+                (IEnumerable)ViewData["GlFiscalYears"],
+                "GlFiscalYearId",
+                "Name")
+            .Title("From Fiscal Year")
+            .Filterable(ftb => ftb.Multi(true).Search(true))
+            .Width(220);
+        columns.ForeignKey(
+                c => c.ToGlFiscalYearId,
+                (IEnumerable)ViewData["GlFiscalYears"],
+                "GlFiscalYearId",
+                "Name")
+            .Title("End Fiscal Year")
+            .Filterable(ftb => ftb.Multi(true).Search(true))
+            .Width(220);
+        columns.Bound(c => c.Description).Width(350);
+        columns.Command(command =>
+        {
+            command.Edit();
+            command.Destroy();
+        }).Width(220);
+    })
+    .ToolBar(toolbar => toolbar.Create())
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable()
+    .Filterable()
+    .Scrollable(h => h.Height(700))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model =>
+        {
+            model.Id(p => p.StrategicPlanId);
+            model.Field(p => p.StrategicPlanId).Editable(false);
+            model.Field(p => p.IsDepartnental).Editable(false);
+            model.Field(p => p.IsPersonal).Editable(false);
+        })
+        .Events(events => events
+            .Error("error_handler(\"strategicPlanGrid\")")
+            .RequestStart("onRequestStart(\"strategicPlanGrid\")")
+            .RequestEnd("onRequestEnd(\"strategicPlanGrid\")"))
+        .Read(read => read.Action("StrategicPlans_Read", "StrategicPlans").Data("sendForgery"))
+        .Create(create => create.Action("StrategicPlans_Create", "StrategicPlans").Data("sendForgery"))
+        .Update(update => update.Action("StrategicPlans_Update", "StrategicPlans").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("StrategicPlans_Destroy", "StrategicPlans").Data("sendForgery")))
+    .ClientDetailTemplateId("strategic_plan_template")
+)
+
+<script type="text/kendo-template" id="strategic_plan_template">
+    @(Html.Kendo().TabStrip()
+        .Name("strategic_plan_tab_#=StrategicPlanId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Strategic Goal").Content(
+                @<text>
+                    <p class="text-muted">
+                        Strategic goals are long-term objectives that define the company's business strategy and guide its efforts and resources.
+                    </p>
+                    @(Html.Kendo().Grid<StrategicGoal>()
+                        .Name("strategic_goal_grid_#=StrategicPlanId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Name).Title("Strategic Goal").Width(400);
+                            columns.Bound(c => c.Description).Width(350);
+                            columns.Bound(c => c.Remark).Width(250);
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(220);
+                        })
+                        .ToolBar(toolbar => toolbar.Create())
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Pageable()
+                        .Filterable()
+                        .Scrollable(h => h.Height(500))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.StrategicGoalId);
+                                model.Field(p => p.StrategicPlanId).Editable(false);
+                            })
+                            .Events(events => events
+                                .Error("error_handler(\"strategic_goal_grid_#=StrategicPlanId#\")")
+                                .RequestStart("onRequestStart(\"strategic_goal_grid_#=StrategicPlanId#\")")
+                                .RequestEnd("onRequestEnd(\"strategic_goal_grid_#=StrategicPlanId#\")"))
+                            .Read(read => read.Action("StrategicGoals_Read", "StrategicGoals", new { strategicPlanId = "#=StrategicPlanId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("StrategicGoals_Create", "StrategicGoals", new { parentStrategicPlanId = "#=StrategicPlanId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("StrategicGoals_Update", "StrategicGoals").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("StrategicGoals_Destroy", "StrategicGoals").Data("sendForgery")))
+                        .ToClientTemplate())
+                </text>);
+            items.Add().Text("Annual Goal").Content(
+                @<text>
+                    <p class="text-muted">
+                        An annual goal is a specific, measurable, achievable, relevant, and time-bound (SMART) objective that the company aims to achieve within a one-year period.
+                    </p>
+                    @(Html.Kendo().Grid<AnnualGoal>()
+                        .Name("annual_goal_grid_#=StrategicPlanId#")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYears"], "GlFiscalYearId", "Name")
+                                .Title("Fiscal Year")
+                                .Width(180);
+                            columns.Bound(c => c.Name).Title("Annual Goal").Width(400);
+                            columns.Bound(c => c.Description).Width(350);
+                            columns.Bound(c => c.Remark).Width(250);
+                            columns.Command(command => command.Edit()).Width(120);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Pageable()
+                        .Filterable()
+                        .Scrollable(h => h.Height(500))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.AnnualGoalId);
+                                model.Field(p => p.StrategicPlanId).Editable(false);
+                                model.Field(p => p.GlFiscalYearId).Editable(false);
+                            })
+                            .Events(events => events
+                                .Error("error_handler(\"annual_goal_grid_#=StrategicPlanId#\")")
+                                .RequestStart("onRequestStart(\"annual_goal_grid_#=StrategicPlanId#\")")
+                                .RequestEnd("onRequestEnd(\"annual_goal_grid_#=StrategicPlanId#\")"))
+                            .Read(read => read.Action("AnnualGoals_Read", "AnnualGoals", new { strategicPlanId = "#=StrategicPlanId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("AnnualGoals_Update", "AnnualGoals").Data("sendForgery")))
+                        .ToClientTemplate())
+                </text>);
+            items.Add().Text("Objective").Content(
+                @<text>
+                    @(Html.Kendo().Grid<Objective>()
+                        .Name("strategic_objective_grid_#=StrategicPlanId#")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name")
+                                .EditorTemplateName("workUnit")
+                                .Filterable(ftb => ftb.Multi(true).Search(true))
+                                .Width(300);
+                            columns.Bound(c => c.Name).Title("Objective").Width(400);
+                            columns.Bound(c => c.Weight).Width(100);
+                            columns.Bound(c => c.Description).Width(250);
+                            columns.Bound(c => c.Remark).Width(180);
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(220);
+                        })
+                        .ToolBar(toolbar => toolbar.Create())
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Pageable()
+                        .Filterable()
+                        .Scrollable(h => h.Height(550))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.ObjectiveId);
+                                model.Field(p => p.ObjectiveId).Editable(false);
+                                model.Field(p => p.StrategicPlanId).DefaultValue(null);
+                            })
+                            .Events(events => events
+                                .Error("error_handler(\"strategic_objective_grid_#=StrategicPlanId#\")")
+                                .RequestStart("onRequestStart(\"strategic_objective_grid_#=StrategicPlanId#\")")
+                                .RequestEnd("onRequestEnd(\"strategic_objective_grid_#=StrategicPlanId#\")"))
+                            .Read(read => read.Action("Objectives_Read", "Objectives", new { strategicPlanId = "#=StrategicPlanId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("StrategicPlanObjectives_Create", "Objectives", new { parentStrategicPlanId = "#=StrategicPlanId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("Objectives_Update", "Objectives").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("Objectives_Destroy", "Objectives").Data("sendForgery")))
+                        .ToClientTemplate())
+                </text>);
+        })
+        .ToClientTemplate())
+</script>

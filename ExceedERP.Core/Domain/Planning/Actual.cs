@@ -19,6 +19,7 @@ namespace ExceedERP.Core.Domain.Planning
         public int? PlanId { get; set; }
         public bool IsDepartnental { get; set; }
         public bool IsPersonal { get; set; }
+        [Display(Name = "Description(Key Result Area)")]
         public string Description { get; set; }
        
 

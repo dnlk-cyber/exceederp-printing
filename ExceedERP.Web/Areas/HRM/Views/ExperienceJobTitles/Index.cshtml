@@ -7,55 +7,305 @@
 }
 <legend>Experience Jobtitle</legend>
 @(Html.Kendo().Grid<ExperienceJobTitle>()
-          .Name("ConfigurationGrid")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.JobTitle).Width(150);
-          columns.Bound(c => c.Remark).Width(150);
-          //  columns.Bound(c => c.);
-          //columns.Bound(c => c.Remark);
-          columns.Command(command =>
+        .Name("ConfigurationGrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.ExperienceJobTitleId).Title("#").Width(80);
+            columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").EditorTemplateName("JobTitles").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            //columns.ForeignKey(c => c.EducationFieldId, (IEnumerable)ViewData["field"], "EducationFieldId", "Description").EditorTemplateName("EduFiled").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            //columns.ForeignKey(c => c.RelatedEducationFieldId, (IEnumerable)ViewData["field"], "RelatedEducationFieldId", "Description").EditorTemplateName("EduFiled").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            //columns.ForeignKey(c => c.EducationLevelId, (IEnumerable)ViewData["level"], "EducationLevelId", "Description").EditorTemplateName("EduLevel").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            // columns.ForeignKey(c => c.RelatedJobTitleExperienceId, (IEnumerable)ViewData["jobTitle"], "RelatedJobTitleExperienceId", "Description").EditorTemplateName("JobTitles").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            //columns.ForeignKey(c => c.RelevantJobTitleExperienceId, (IEnumerable)ViewData["jobTitle"], "RelevantJobTitleExperienceId", "Description").EditorTemplateName("JobTitles").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.Bound(c => c.Remark).Width(150);
+            columns.Command(command =>
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }).Width(150);
+
+
+        })
+        .ToolBar(toolbar =>
           {
-              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-              command.Destroy().Text(Resources.ActionButton_Cancel);
-          }).Width(150);
-      })
-      .ToolBar(toolbar =>
-      {
-          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
           .Scrollable(h => h.Height(500))
-                 .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-              .Filterable()
-                 .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-      .DataSource(dataSource => dataSource
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+              
+          })
+          .Filterable()
+          .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+          .DataSource(dataSource => dataSource
           .Ajax()
-              .Events(events =>
-              {
+          .Sort(sort => sort.Add(x => x.ExperienceJobTitleId).Descending())
 
-                  events.Error("error_handler(\"ConfigurationGrid\")");
-                  events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
-                  events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
+          .Events(events =>
+          {
+
+              events.Error("error_handler(\"ConfigurationGrid\")");
+              events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
+              events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
+
+          })
+
+             
+          .Model(model => 
+          {
+                  model.Id(p => p.ExperienceJobTitleId);
+                  model.Field(p => p.ExperienceJobTitleId).Editable(false);
               })
-
-          .Model(model => model.Id(p => p.ExperienceJobTitleId))
-                  .Read(read => read.Action("ExperienceJobTitles_Read", "ExperienceJobTitles"))
-                      .Create(create => create.Action("ExperienceJobTitles_Create", "ExperienceJobTitles"))
-                  .Update(update => update.Action("ExperienceJobTitles_Update", "ExperienceJobTitles"))
-                  .Destroy(destroy => destroy.Action("ExperienceJobTitles_Destroy", "ExperienceJobTitles"))
-      )
+               .Read(read => read.Action("ExperienceJobTitles_Read", "ExperienceJobTitles").Data("sendForgery"))
+               .Create(create => create.Action("ExperienceJobTitles_Create", "ExperienceJobTitles").Data("sendForgery"))
+               .Update(update => update.Action("ExperienceJobTitles_Update", "ExperienceJobTitles").Data("sendForgery"))
+               .Destroy(destroy => destroy.Action("ExperienceJobTitles_Destroy", "ExperienceJobTitles").Data("sendForgery"))
+          ).ClientDetailTemplateId("template")
 )
 
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip2_#=ExperienceJobTitleId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+
+            items.Add().Text("Detail").Content(
+            @<text>
+                @experienceJobTitleDetail()
+            </text>);
+            items.Add().Text("Field of study ").Content(
+            @<text>
+                @educationFieldDetail()
+            </text>);
+            items.Add().Text("Related Field of study ").Content(
+            @<text>
+                @relatedEducationFieldDetail()
+            </text>);
+            items.Add().Text("Education Level").Content(
+            @<text>
+                @educationLevel()
+            </text>);
+
+        }).ToClientTemplate())
+</script>
+@helper experienceJobTitleDetail()
+{ 
+     @(Html.Kendo().Grid<ExperienceJobTitleDetail>()
+           .Name("jobtitleDetail#=ExperienceJobTitleId#")
+           .Columns(columns =>
+           {
+               columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").EditorTemplateName("JobTitles").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+               columns.Bound(c => c.ExamType).Width(150);
+               columns.Bound(c => c.Remark).Width(150);
+               columns.Command(command =>
+               {
+
+                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                   command.Destroy().Text(Resources.ActionButton_Cancel);
+
+               }).Width(250);
+
+
+           })
+           .ToolBar(toolbar =>
+           {
+               if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+               {
+                   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+               }
+
+
+           })
+          .Filterable()
+          .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(sort=>sort.Add(x=>x.ExperienceJobTitleDetailId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"jobtitleDetail#=ExperienceJobTitleId#\")");
+                    events.RequestStart("onRequestStart(\"jobtitleDetail#=ExperienceJobTitleId#\")");
+                    events.RequestEnd("onRequestEnd(\"jobtitleDetail#=ExperienceJobTitleId#\")");
+                })
+                .Model(model =>
+                    model.Id(p => p.ExperienceJobTitleDetailId))
+                .Read(read => read.Action("Read", "ExperienceJobTitleDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+                .Create(create => create.Action("Create", "ExperienceJobTitleDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+                .Update(update => update.Action("Update", "ExperienceJobTitleDetails").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("Destroy", "ExperienceJobTitleDetails").Data("sendForgery"))
+            ).ToClientTemplate())
+}
+@helper educationFieldDetail() { 
+     @(Html.Kendo().Grid<EducationFieldDetail>()
+        .Name("EducationFieldDetail#=ExperienceJobTitleId#")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["field"], "LookupId", "Description").EditorTemplateName("EduFiled").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.Bound(c => c.Remark).Width(150);
+            columns.Command(command =>
+            {
+
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+
+            }).Width(250);
+        })
+        .ToolBar(toolbar =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            }
+
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+          .Filterable()
+          .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(sort=>sort.Add(x=>x.EducationFieldDetailId).Descending())
+            .Events(events =>
+            {
+                events.Error("error_handler(\"EducationFieldDetail#=ExperienceJobTitleId#\")");
+                events.RequestStart("onRequestStart(\"EducationFieldDetail#=ExperienceJobTitleId#\")");
+                events.RequestEnd("onRequestEnd(\"EducationFieldDetail#=ExperienceJobTitleId#\")");
+
+
+            })
+                .Model(model =>
+                    model.Id(p => p.EducationFieldDetailId))
+                .Read(read => read.Action("Read", "EducationFieldDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+                .Create(create => create.Action("Create", "EducationFieldDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+                .Update(update => update.Action("Update", "EducationFieldDetails").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("Destroy", "EducationFieldDetails").Data("sendForgery"))
+            ).ToClientTemplate()
+                )
+    }
+@helper relatedEducationFieldDetail() { 
+     @(Html.Kendo().Grid<RelatedEducationFieldDetail>()
+        .Name("RelatedEducationFieldDetail#=ExperienceJobTitleId#")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["field"], "LookupId", "Description").EditorTemplateName("EduFiled").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.Bound(c => c.Remark).Width(150);
+
+            columns.Command(command =>
+            {
+
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+
+            }).Width(250);
+        })
+        .ToolBar(toolbar =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            }
+
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+          .Filterable()
+          .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(sort=>sort.Add(x=>x.RelatedEducationFieldDetailId).Descending())
+            .Events(events =>
+            {
+                events.Error("error_handler(\"RelatedEducationFieldDetail#=ExperienceJobTitleId#\")");
+                events.RequestStart("onRequestStart(\"RelatedEducationFieldDetail#=ExperienceJobTitleId#\")");
+                events.RequestEnd("onRequestEnd(\"RelatedEducationFieldDetail#=ExperienceJobTitleId#\")");
+
+
+            })
+                .Model(model =>
+                    model.Id(p => p.RelatedEducationFieldDetailId))
+                .Read(read => read.Action("Read", "RelatedEducationFieldDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+                .Create(create => create.Action("Create", "RelatedEducationFieldDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+                .Update(update => update.Action("Update", "RelatedEducationFieldDetails").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("Destroy", "RelatedEducationFieldDetails").Data("sendForgery"))
+            ).ToClientTemplate()
+                )
+    }
+@helper educationLevel() { 
+     @(Html.Kendo().Grid<EducationLevelDetail>()
+        .Name("EducationLevelDetail#=ExperienceJobTitleId#")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["level"], "LookupId", "Description").EditorTemplateName("EduLevel").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.Bound(c => c.Experience).Width(150);
+            columns.Bound(c => c.Remark).Width(150);
+
+            columns.Command(command =>
+            {
+
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+
+            }).Width(250);
+        })
+        .ToolBar(toolbar =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            }
+
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+          .Filterable()
+          .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(sort=>sort.Add(x=>x.EducationLevelDetailId).Descending())
+            .Events(events =>
+            {
+                events.Error("error_handler(\"EducationLevelDetail#=ExperienceJobTitleId#\")");
+                events.RequestStart("onRequestStart(\"EducationLevelDetail#=ExperienceJobTitleId#\")");
+                events.RequestEnd("onRequestEnd(\"EducationLevelDetail#=ExperienceJobTitleId#\")");
+            })
+            .Model(model =>
+            model.Id(p => p.EducationLevelDetailId))
+            .Read(read => read.Action("EducationLevelDetails_Read", "EducationLevelDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+            .Create(create => create.Action("EducationLevelDetails_Create", "EducationLevelDetails", new { Area = "HRM", id = "#=ExperienceJobTitleId#" }).Data("sendForgery"))
+            .Update(update => update.Action("EducationLevelDetails_Update", "EducationLevelDetails").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("EducationLevelDetails_Destroy", "EducationLevelDetails").Data("sendForgery"))
+        ).ToClientTemplate())
+    }
 <script>
     function filterCategories() {
         return {

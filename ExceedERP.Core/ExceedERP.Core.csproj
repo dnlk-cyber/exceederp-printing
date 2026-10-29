@@ -846,6 +846,7 @@
     <Compile Include="Domain\HRM\Attendance\EmployeeAttendanceSummary.cs" />
     <Compile Include="Domain\HRM\Attendance\EmpPayrollNoDaysWorked.cs" />
     <Compile Include="Domain\HRM\Attendance\VM\BiometricDataVM.cs" />
+    <Compile Include="Domain\HRM\Company\BranchRankMapping.cs" />
     <Compile Include="Domain\HRM\Company\CompanyApprovalSetting.cs" />
     <Compile Include="Domain\HRM\Company\DatePreferenceSetting.cs" />
     <Compile Include="Domain\HRM\Company\EmployeeProbationSetting.cs" />
@@ -853,7 +854,9 @@
     <Compile Include="Domain\HRM\Company\HolidayGiftRate.cs" />
     <Compile Include="Domain\HRM\Company\JobTitleAndRankMapping.cs" />
     <Compile Include="Domain\HRM\Company\SalarySetting.cs" />
+    <Compile Include="Domain\HRM\Company\TemplateHeaderImage.cs" />
     <Compile Include="Domain\HRM\Company\WaterMark.cs" />
+    <Compile Include="Domain\HRM\Discipline\HRMContributionSetting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\Acting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ComplainCC.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ComplainDetail.cs" />
@@ -869,14 +872,17 @@
     <Compile Include="Domain\HRM\EmployeeDetail\EmployeeSalaryIncrementSetting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\EmployeesUnderBoss.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\EmployeeType.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\ExpenseAndTaxSetting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ExternalSalary.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\Freelancer.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\GuarantorOrSurety.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\HolidayGift.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\PasswordResetRequest.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\PlacementAfterSystem.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ProbationsSetting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\PromotionSetting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\RetirementSetting.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\StaffDebtorBalance.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\TerminationSetting.cs" />
     <Compile Include="Domain\HRM\Enum.cs" />
     <Compile Include="Domain\HRM\HRMLoans\LoanRequest.cs" />
@@ -1047,6 +1053,7 @@
     <Compile Include="Domain\HRM\SalaryStructure\Salary.cs" />
     <Compile Include="Domain\HRM\SalaryStructure\SalaryJobTitle.cs" />
     <Compile Include="Domain\HRM\SalaryStructure\SalaryStructure.cs" />
+    <Compile Include="Domain\HRM\SalaryStructure\SalaryStructureVersion.cs" />
     <Compile Include="Domain\HRM\SalaryStructure\Step.cs" />
     <Compile Include="Domain\HRM\SelfCare\ApplicantionForm.cs" />
     <Compile Include="Domain\HRM\SelfCare\EducationRequest.cs" />
@@ -1312,6 +1319,7 @@
     <Compile Include="Domain\Manufacturing\Setting\MaterialCategory.cs" />
     <Compile Include="Domain\Planning\Actual.cs" />
     <Compile Include="Domain\Planning\ActualDetail.cs" />
+    <Compile Include="Domain\Planning\AnnualGoal.cs" />
     <Compile Include="Domain\Planning\BSCActual.cs" />
     <Compile Include="Domain\Planning\BSCPlan.cs" />
     <Compile Include="Domain\Planning\BusinessPlanDevelopment\BusinessPlan.cs" />
@@ -1319,8 +1327,11 @@
     <Compile Include="Domain\Planning\BusinessPlanDevelopment\SharesAndDividends.cs" />
     <Compile Include="Domain\Planning\ExcutivePlanKPI.cs" />
     <Compile Include="Domain\Planning\GlobalIndicator.cs" />
+    <Compile Include="Domain\Planning\GlobalKPI.cs" />
     <Compile Include="Domain\Planning\Indicator.cs" />
+    <Compile Include="Domain\Planning\KpiProgressTrackerQ2.cs" />
     <Compile Include="Domain\Planning\Objective.cs" />
+    <Compile Include="Domain\Planning\PastPlanAttachment.cs" />
     <Compile Include="Domain\Planning\Plan.cs" />
     <Compile Include="Domain\Planning\PlanningDetail.cs" />
     <Compile Include="Domain\Planning\PlanningFiscalYear.cs" />
@@ -1331,7 +1342,10 @@
     <Compile Include="Domain\Planning\Project\ProjectKPI .cs" />
     <Compile Include="Domain\Planning\Project\ProjectObjective.cs" />
     <Compile Include="Domain\Planning\Project\ProjectPlan.cs" />
+    <Compile Include="Domain\Planning\QuickFixPlan.cs" />
     <Compile Include="Domain\Planning\RiskMitigationPlan.cs" />
+    <Compile Include="Domain\Planning\StrategicGoal.cs" />
+    <Compile Include="Domain\Planning\StrategicPlan.cs" />
     <Compile Include="Domain\Printing\OperationResult.cs" />
     <Compile Include="Domain\Printing\PrintCostCenter.cs" />
     <Compile Include="Domain\Printing\PrintingBindingStyle.cs" />

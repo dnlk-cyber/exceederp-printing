@@ -38,7 +38,14 @@ namespace ExceedERP.Reporting.Planning.DataSource
                 
                 if (!string.IsNullOrEmpty( projectTypeId))
                 {
-                    
+                    int.TryParse(projectTypeId, out int typeId);
+                    var projectIds = db.ProjectInformation.Where(s => s.ProjectTypeId == typeId).Select(x => x.ProjectInformationId);
+                    if (projectIds.Any() && projectPlans.Any())
+                    {
+                        projectPlans = projectPlans.Where(s => projectIds.Contains(s.ProjectInformationId)).ToList();
+
+                    }
+                    projectTypes = projectTypes.Where(x => x.ConsProjectTypeId == typeId).ToList();
                 }
                 if (!string.IsNullOrEmpty(projectKpiType) && projectPlans.Any())
                 {

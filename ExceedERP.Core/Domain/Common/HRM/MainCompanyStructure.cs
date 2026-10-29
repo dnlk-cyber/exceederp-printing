@@ -2,14 +2,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Common.HRM
 {
-    public class MainCompanyStructure : TrackUserOperation 
+    public class MainCompanyStructure : TrackUserOperation
     {
 
         [Key]
         public int OrgStructureId { get; set; }
+        [Display(Name = "Rpt_Code", ResourceType = typeof(Localization.Resources))]
+        public string Code { get; set; }
         [Display(Name = "Common_Company_MainCompanyStructure_Name", ResourceType = typeof(Localization.Resources))]
-        public string  Name { get; set; }
-        [Required]      
+        public string Name { get; set; }
+        [Required]
         [Display(Name = "Common_Company_MainCompanyStructure_Type", ResourceType = typeof(Localization.Resources))]
         public int StructureId { get; set; }
         public virtual Structure Structure { get; set; }
@@ -19,7 +21,11 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public string Remark { get; set; }
         [Display(Name = "Common_PersonEmployee_IsActive", ResourceType = typeof(Localization.Resources))]
         public bool IsActive { get; set; }
+        public string CostCenter { get; set; }
+        [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
+        public int? BusinessUnitId { get; set; }
 
-       
+
+
     }
 }

@@ -190,6 +190,7 @@
     <Compile Include="Inventory\InventoryTransferHelper.cs" />
     <Compile Include="Inventory\TransactionHelper.cs" />
     <Compile Include="Payroll\PayrollConfHelper.cs" />
+    <Compile Include="Planning\PlanningApprovalHelper.cs" />
     <Compile Include="Planning\PlanningIsoDocumentHelper.cs" />
     <Compile Include="Printing\BookMagazineLaborCostEstimation.cs" />
     <Compile Include="Printing\BookMagazineMaterialCostEstimation.cs" />

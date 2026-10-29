@@ -12,15 +12,24 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+                    PlanningRoles.Planning_User,
+                    HrmConstants.HRDepartmentHead,
+                    HrmConstants.HREmployeeSelfService)]
     public class GlobalIndicatorsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index()
         {
+            ViewData["departmentLists"] = db.MainCompanyStructures.Select(x => new
+            {
+                x.OrgStructureId,
+                x.Name
+            }).ToList();
             return View();
         }
         
@@ -29,7 +38,9 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             IQueryable<GlobalIndicator> globalIndicators = db.GlobalIndicators;
             DataSourceResult result = globalIndicators.ToDataSourceResult(request, globalIndicator => new {
                 GlobalIndicatorId = globalIndicator.GlobalIndicatorId,
+                OrgStructureId = globalIndicator.OrgStructureId,
                 Indicator = globalIndicator.Indicator,
+                IsActive = globalIndicator.IsActive,
                 Description = globalIndicator.Description,
                 CreatedBy = globalIndicator.CreatedBy,
                 DateCreated = globalIndicator.DateCreated,
@@ -47,6 +58,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             {
                 globalIndicator.CreatedBy = User.Identity.Name;
                 globalIndicator.DateCreated = DateTime.Now;
+                globalIndicator.IsActive = true;
                 var entity = GetMappedObject(globalIndicator);
                 db.GlobalIndicators.Add(entity);
                 db.SaveChanges();
@@ -82,6 +94,13 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GlobalIndicators_Destroy([DataSourceRequest]DataSourceRequest request, GlobalIndicator globalIndicator)
         {
+            // Check if the GlobalIndicator is being used in any Indicator
+            if (db.Indicators.Any(x => x.GlobalIndicatorId == globalIndicator.GlobalIndicatorId))
+            {
+                ModelState.AddModelError("exist", "You cannot delete this item because it is used in indicators. Please delete it from those indicators first.");
+                
+            }
+
             if (ModelState.IsValid)
             {
                 var entity = GetMappedObject(globalIndicator);
@@ -101,7 +120,9 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             var entity = new GlobalIndicator
             {
                 GlobalIndicatorId = globalIndicator.GlobalIndicatorId,
+                OrgStructureId = globalIndicator.OrgStructureId,
                 Indicator = globalIndicator.Indicator,
+                IsActive = globalIndicator.IsActive,
                 Description = globalIndicator.Description,
                 CreatedBy = globalIndicator.CreatedBy,
                 DateCreated = globalIndicator.DateCreated,
@@ -111,6 +132,44 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             };
             return entity;
         }
+
+        public ActionResult EnableOrDisable(int id)
+        {
+            var indicator = db.GlobalIndicators.Find(id);
+
+            if (indicator == null)
+            {
+                return Json(new
+                {
+                    Message = "This Indicator was not found.",
+                    Status = "FAIL"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Toggle IsActive status
+            indicator.IsActive = !indicator.IsActive;
+            db.Entry(indicator).State = EntityState.Modified;
+            // Update Globalindicators based on the parent's new IsActive status
+            db.SaveChanges();
+
+            #region Operation Log
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            UserHelper.OperationLog(Request.UserHostAddress, "Indicator", "Success", User.Identity.Name,
+                User.Identity.Name + "updated Indicator" + indicator.Indicator + "to IsActive" + indicator.IsActive, Modules.HRM
+            );
+            #endregion
+
+            var responseMessage = indicator.IsActive
+                ? "You successfully enabled this Global Indicator."
+                : "You successfully disabled this Global Indicator.";
+
+            return Json(new
+            {
+                Message = responseMessage,
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

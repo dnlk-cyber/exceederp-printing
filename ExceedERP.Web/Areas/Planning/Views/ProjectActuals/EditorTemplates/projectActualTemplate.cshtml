@@ -13,7 +13,7 @@
                                 .DataValueField("GlFiscalYearId")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetFiscalYear", "PlanningDataProvider", new { Area = "Planning" }))
+                                    dataSource.Read(read => read.Action("GetFiscalYear", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery"))
                                         .ServerFiltering(false);
                                 })
                                 .Filter("contains")
@@ -37,7 +37,7 @@
                                 .DataValueField("ProjectObjectiveId")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetProjectObjectives", "PlanningDataProvider", new { Area = "Planning" }))
+                                    dataSource.Read(read => read.Action("GetProjectObjectives", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery"))
                                         .ServerFiltering(false);
                                 })
                                 .Filter("contains")
@@ -63,7 +63,7 @@
                                 .DataValueField("ProjectKPIId")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }))
+                                    dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery"))
                                         .ServerFiltering(false);
                                 })
                                 .Filter("contains")
@@ -87,7 +87,7 @@
                                 .DataValueField("ProjectSubKPIId")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("filterKPI"))
+                                    dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery").Data("filterKPI"))
                                         .ServerFiltering(true);
                                 })
                                 .Filter("contains")
@@ -115,7 +115,7 @@
                             .DataValueField("ProjectInformationId")
                             .DataSource(dataSource =>
                             {
-                                dataSource.Read(read => read.Action("GetProjects", "PlanningDataProvider", new { Area = "Planning" }))
+                                dataSource.Read(read => read.Action("GetProjects", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery"))
                                     .ServerFiltering(false);
                             })
                             .Filter("contains")

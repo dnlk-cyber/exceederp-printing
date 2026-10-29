@@ -4,7 +4,48 @@ using ExceedERP.Core.Domain.Planning.Project;
 using System.Data.Entity.ModelConfiguration;
 namespace ExceedERP.DataAccess.Context
 {
-   public class GlobalIndicatorEntityTypeConfiguration : EntityTypeConfiguration<GlobalIndicator>
+   public class GlobalKPIEntityTypeConfiguration : EntityTypeConfiguration<GlobalKPI>
+   {
+
+       public GlobalKPIEntityTypeConfiguration()
+       {
+           this.ToTable("GlobalKPI", "plan");
+           this.HasKey<int>(t => t.GlobalKPIId);
+
+       }
+   }
+    public class GlobalSubKPIEntityTypeConfiguration : EntityTypeConfiguration<GlobalSubKPI>
+   {
+
+       public GlobalSubKPIEntityTypeConfiguration()
+       {
+           this.ToTable("GlobalSubKPI", "plan");
+           this.HasKey<int>(t => t.GlobalSubKPIId);
+
+       }
+   }
+
+    public class KpiProgressTrackerEntityTypeConfiguration : EntityTypeConfiguration<KpiProgressTracker>
+   {
+
+       public KpiProgressTrackerEntityTypeConfiguration()
+       {
+           this.ToTable("KpiProgressTrackers", "plan");
+           this.HasKey<int>(t => t.KpiProgressTrackerId);
+
+       }
+   }
+    public class SubKpiProgressTrackerEntityTypeConfiguration : EntityTypeConfiguration<SubKpiProgressTracker>
+   {
+
+       public SubKpiProgressTrackerEntityTypeConfiguration()
+       {
+           this.ToTable("SubKpiProgressTrackers", "plan");
+           this.HasKey<int>(t => t.SubKpiProgressTrackerId);
+
+       }
+   }
+    public class GlobalIndicatorEntityTypeConfiguration : EntityTypeConfiguration<GlobalIndicator>
    {
 
        public GlobalIndicatorEntityTypeConfiguration()
@@ -21,7 +62,41 @@ namespace ExceedERP.DataAccess.Context
        {
            this.ToTable("Objectives", "plan");
            this.HasKey<int>(t => t.ObjectiveId);
+           this.HasOptional(t => t.StrategicPlan)
+               .WithMany()
+               .HasForeignKey(t => t.StrategicPlanId)
+               .WillCascadeOnDelete(false);
 
+       }
+   }
+
+   public class StrategicGoalEntityTypeConfiguration : EntityTypeConfiguration<StrategicGoal>
+   {
+       public StrategicGoalEntityTypeConfiguration()
+       {
+           this.ToTable("StrategicGoals", "plan");
+           this.HasKey(t => t.StrategicGoalId);
+           this.HasRequired(t => t.StrategicPlan)
+               .WithMany()
+               .HasForeignKey(t => t.StrategicPlanId)
+               .WillCascadeOnDelete(false);
+       }
+   }
+
+   public class AnnualGoalEntityTypeConfiguration : EntityTypeConfiguration<AnnualGoal>
+   {
+       public AnnualGoalEntityTypeConfiguration()
+       {
+           this.ToTable("AnnualGoals", "plan");
+           this.HasKey(t => t.AnnualGoalId);
+           this.HasRequired(t => t.StrategicPlan)
+               .WithMany()
+               .HasForeignKey(t => t.StrategicPlanId)
+               .WillCascadeOnDelete(false);
+           this.HasRequired(t => t.GlFiscalYear)
+               .WithMany()
+               .HasForeignKey(t => t.GlFiscalYearId)
+               .WillCascadeOnDelete(false);
        }
    }
 
@@ -55,6 +130,43 @@ namespace ExceedERP.DataAccess.Context
 
         }
     }
+    public class StrategicPlanEntityTypeConfiguration : EntityTypeConfiguration<StrategicPlan>
+    {
+        public StrategicPlanEntityTypeConfiguration()
+        {
+            this.ToTable("StrategicPlans", "plan");
+            this.HasKey(t => t.StrategicPlanId);
+            this.HasRequired(t => t.FromGlFiscalYear)
+                .WithMany()
+                .HasForeignKey(t => t.FromGlFiscalYearId)
+                .WillCascadeOnDelete(false);
+            this.HasRequired(t => t.ToGlFiscalYear)
+                .WithMany()
+                .HasForeignKey(t => t.ToGlFiscalYearId)
+                .WillCascadeOnDelete(false);
+        }
+    }
+    public class QuickFixPlanEntityTypeConfiguration : EntityTypeConfiguration<QuickFixPlan>
+    {
+        public QuickFixPlanEntityTypeConfiguration()
+        {
+            this.ToTable("QuickFixPlans", "plan");
+            this.HasKey(t => t.QuickFixPlanId);
+            this.Property(t => t.AnnualPlan).HasPrecision(18, 2);
+            this.Property(t => t.PlanUpToQuarter).HasPrecision(18, 2);
+            this.Property(t => t.Actual).HasPrecision(18, 2);
+            this.Property(t => t.PreviousPlanRemainingQuarter).HasPrecision(18, 2);
+            this.Property(t => t.RevisedPlanRemainingQuarter).HasPrecision(18, 2);
+            this.HasRequired(t => t.FiscalYear)
+                .WithMany()
+                .HasForeignKey(t => t.GlFiscalYearId)
+                .WillCascadeOnDelete(false);
+            this.HasRequired(t => t.AnnualPlanSource)
+                .WithMany()
+                .HasForeignKey(t => t.PlanId)
+                .WillCascadeOnDelete(false);
+        }
+    }
     public class ActualEntityTypeConfiguration : EntityTypeConfiguration<Actual>
     {
 
@@ -83,7 +195,24 @@ namespace ExceedERP.DataAccess.Context
         {
             this.ToTable("BSCPlans", "plan");
             this.HasKey<int>(t => t.BSCPlanId);
+            this.Property(t => t.SubmittedBy).HasMaxLength(256);
+            this.Property(t => t.BranchApprovedBy).HasMaxLength(256);
+            this.Property(t => t.HeadOfficeApprovedBy).HasMaxLength(256);
 
+        }
+    }
+    public class PlanApprovalFeedbackEntityTypeConfiguration : EntityTypeConfiguration<PlanApprovalFeedback>
+    {
+        public PlanApprovalFeedbackEntityTypeConfiguration()
+        {
+            this.ToTable("PlanApprovalFeedbacks", "plan");
+            this.HasKey(t => t.PlanApprovalFeedbackId);
+            this.Property(t => t.Feedback).HasMaxLength(2000);
+            this.Property(t => t.ActionBy).HasMaxLength(256);
+            this.HasRequired(t => t.BSCPlan)
+                .WithMany()
+                .HasForeignKey(t => t.BSCPlanId)
+                .WillCascadeOnDelete(false);
         }
     }
     public class BSCActualEntityTypeConfiguration : EntityTypeConfiguration<BSCActual>
@@ -126,6 +255,23 @@ namespace ExceedERP.DataAccess.Context
              this.HasKey<int>(t => t.MonthlyPlanId);
 
          }
+    }
+    public class PastPlanAttachmentEntityTypeConfiguration : EntityTypeConfiguration<PastPlanAttachment>
+    {
+        public PastPlanAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("PastPlanAttachments", "plan");
+            this.HasKey(t => t.PastPlanAttachmentId);
+            this.Property(t => t.Title).IsRequired().HasMaxLength(200);
+            this.Property(t => t.Description).HasMaxLength(2000);
+            this.Property(t => t.FileName).IsRequired().HasMaxLength(260);
+            this.Property(t => t.StoredFileName).IsRequired().HasMaxLength(100);
+            this.Property(t => t.ContentType).HasMaxLength(200);
+            this.HasRequired(t => t.GlFiscalYear)
+                .WithMany()
+                .HasForeignKey(t => t.GlFiscalYearId)
+                .WillCascadeOnDelete(false);
+        }
     }
     public class WeeklyPlanEntityTypeConfiguration : EntityTypeConfiguration<WeeklyPlan>
         {
@@ -311,6 +457,16 @@ namespace ExceedERP.DataAccess.Context
 
         }
     }
+    public class BusinessPlanAttachmentEntityTypeConfiguration : EntityTypeConfiguration<BusinessPlanAttachment>
+    {
+
+        public BusinessPlanAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("BusinessPlanAttachment", "plan");
+            this.HasKey<int>(t => t.BusinessPlanAttachmentId);
+
+        }
+    }
     public class BusinessPlanValidationEntityTypeConfiguration : EntityTypeConfiguration<BusinessPlanValidation>
     {
 
@@ -348,6 +504,16 @@ namespace ExceedERP.DataAccess.Context
         {
             this.ToTable("LandManagements", "plan");
             this.HasKey<int>(t => t.LandManagementId);
+
+        }
+    }
+    public class LandManagementAttachmentEntityTypeConfiguration : EntityTypeConfiguration<LandManagementAttachment>
+    {
+
+        public LandManagementAttachmentEntityTypeConfiguration()
+        {
+            this.ToTable("LandManagementAttachments", "plan");
+            this.HasKey<int>(t => t.LandManagementAttachmentId);
 
         }
     }

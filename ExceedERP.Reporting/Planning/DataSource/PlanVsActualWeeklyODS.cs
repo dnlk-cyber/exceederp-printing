@@ -38,6 +38,8 @@ namespace ExceedERP.Reporting.Planning.DataSource
                         model.Description = actuall.Description;
                         model.FiscalYear = glfiscalyear.Name;
                         model.ObjectiveItems = new List<BothObjectiveItem>();
+                        decimal grandTotalPlan = 0;
+                        decimal grandTotalActual = 0;
                         var bscPlans = db.BSCActuals.Where(s => s.ActualId == actuall.ActualId).ToList();
                         if (workUnitId != null)
                         {
@@ -119,6 +121,8 @@ namespace ExceedERP.Reporting.Planning.DataSource
                                     planItem.MonthActual = monthlyActualDatas.Count()>0? monthlyActualDatas.Sum(x=>x.ActualValue):0;
                                     planItem.MonthPlan = monthlyPlanDatas.Count()>0? monthlyPlanDatas.Sum(x=>x.Value):0;
                                     planItem.MonthPercent = (planItem.MonthPlan > 0) ? (100 * planItem.MonthActual) / planItem.MonthPlan : 0;
+                                    grandTotalPlan += planItem.MonthPlan;
+                                    grandTotalActual += planItem.MonthActual;
                                     planItem.WeeklyActualVsPlanItems = new List<ActualVsPlanWeeklItems>();
 
                                     foreach (var pair in monthlyActualDatas.Zip(monthlyPlanDatas, (actual, plan) => new { Item1 = actual, Item2 = plan }))
@@ -156,6 +160,9 @@ namespace ExceedERP.Reporting.Planning.DataSource
                             model.ObjectiveItems.Add(objectiveItem);
 
                         }
+                        model.GrandTotalPlan = grandTotalPlan;
+                        model.GrandTotalActual = grandTotalActual;
+                        model.GrandTotalPercent = (grandTotalPlan > 0) ? (100 * grandTotalActual) / grandTotalPlan : 0;
 
 
                     }

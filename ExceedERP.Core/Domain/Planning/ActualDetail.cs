@@ -21,9 +21,9 @@ namespace ExceedERP.Core.Domain.Planning
 
         public int ParentId { get; set; }
         public int? PlanningDetailId { get; set; }
-        [Display(Name = "Indicator Name")]
+        [Display(Name = "Indicator(activity) Name")]
         public int GlobalIndicatorId { get; set; }
-        [Display(Name = "Indicator")]
+        [Display(Name = "Indicator(Activity)")]
         public int IndicatorId { get; set; }
         public virtual Indicator GetIndicator { get; set; }
         public int BSCActualId { get; set; }

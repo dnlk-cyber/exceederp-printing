@@ -1,0 +1,151 @@
+@model ExceedERP.Core.Domain.InternalAudit.FinancialAudit.AnnualAuditPlan
+<div class="row my-class">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.BranchId)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.BranchId)
+                        .OptionLabel("Select")
+                        .DataTextField("Name")
+                        .DataValueField("BranchId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetAuditBranch", "IADataProvider", new { Area = "InternalAudit" }).Data("sendForgery"))
+                                .ServerFiltering(false);
+                        })
+                        .Filter("contains")
+                        .MinLength(2)
+                        .ValuePrimitive(true)
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.IACategoryId)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.IACategoryId)
+                                .OptionLabel("Select")
+                                .DataTextField("CatagoryName")
+                                .DataValueField("IACategoryId")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetCategory", "IADataProvider", new { Area = "InternalAudit" }).Data("sendForgery"))
+                                        .ServerFiltering(false);
+                                })
+                                .Filter("contains")
+                                .MinLength(2)
+                                .ValuePrimitive(true)
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.FiscalYearId)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.FiscalYearId)
+                                .OptionLabel("Select")
+                                .DataTextField("Name")
+                                .DataValueField("FiscalYearId")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetFiscalYear", "IADataProvider", new { Area = "InternalAudit" }).Data("sendForgery"))
+                                        .ServerFiltering(false);
+                                })
+                                .Filter("contains")
+                                .MinLength(2)
+                                .ValuePrimitive(true)
+                )
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="row my-class">
+
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.StartDate)
+            </div>
+            <div>
+                @(Html.Kendo().DatePickerFor(model => model.StartDate)
+                                    .HtmlAttributes(new { style = "width: 200px; height: 40px;" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.EndDate)
+            </div>
+            <div>
+                @(Html.Kendo().DatePickerFor(model => model.EndDate)
+                                    .HtmlAttributes(new { style = "width: 200px; height: 40px;" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.ActivitiesPerformed)
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.ActivitiesPerformed, new { @class = "textarea-class" })
+
+                )
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row my-class">
+    
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.PlanForTheYear)
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.PlanForTheYear, new { @class = "textarea-class" })
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.WorkPLaceConducted)
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.WorkPLaceConducted, new { @class = "textarea-class" })
+
+                )
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.Remark)
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.Remark, new { @class = "textarea-class" }))
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+

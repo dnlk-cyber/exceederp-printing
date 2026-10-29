@@ -1,5 +1,6 @@
-﻿<legend> Risk Mitgation Plan</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.RiskMitigationPlan>()
+﻿@using ExceedERP.Core.Domain.Planning
+<legend> Risk Mitgation Plan</legend>
+@(Html.Kendo().Grid<RiskMitigationPlan>()
           .Name("grid")
           .Columns(columns =>
           {
@@ -15,9 +16,19 @@
               columns.Bound(c => c.MonitoringMethod).Width(150);
               columns.Bound(c => c.Evaluation).Width(150);
               columns.Bound(c => c.PlanDate).Width(100);
+              columns.Bound(c => c.IsClosed).ClientTemplate(
+                  "<input type='checkbox' disabled = 'true' value='#= IsClosed#' " +
+                  "# if (IsClosed) { #" +
+                  "checked='checked'" +
+                  "# } #" +
+                  "/>"
+                  ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
               columns.Command(command =>
-              { command.Edit();
+              {
+                  command.Edit();
+                  command.Custom("cmd-closed").Text("Closed").IconClass("fa fa-check").Click("riskClosed").HtmlAttributes(new { @class = "btn btn-success" });
                   command.Destroy();
+
               }).Width(200);
           })
           .ToolBar(toolbar => {
@@ -38,17 +49,22 @@
           .Pageable()
           .Filterable()
           .Scrollable(h => h.Height(550))
+          .Events(ev=> { ev.DataBound("onDataBound");
+              ev.Cancel("onCancel");
+              ev.DetailExpand("onDetailExpand");
+          })
           .DataSource(dataSource => dataSource
               .Ajax()
               .Sort(s => s.Add(x => x.RiskMitigationPlanId).Descending())
               .Model(model => {
                   model.Id(p => p.RiskMitigationPlanId);
                   model.Field(p => p.RiskMitigationPlanId).Editable(false);
+                  model.Field(p => p.IsClosed).Editable(false);
               })
-          .Read(read => read.Action("RiskMitigationPlans_Read", "RiskMitigationPlans"))
-          .Create(create => create.Action("RiskMitigationPlans_Create", "RiskMitigationPlans"))
-          .Update(update => update.Action("RiskMitigationPlans_Update", "RiskMitigationPlans"))
-          .Destroy(destroy => destroy.Action("RiskMitigationPlans_Destroy", "RiskMitigationPlans"))
+          .Read(read => read.Action("RiskMitigationPlans_Read", "RiskMitigationPlans").Data("sendForgery"))
+          .Create(create => create.Action("RiskMitigationPlans_Create", "RiskMitigationPlans").Data("sendForgery"))
+          .Update(update => update.Action("RiskMitigationPlans_Update", "RiskMitigationPlans").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("RiskMitigationPlans_Destroy", "RiskMitigationPlans").Data("sendForgery"))
       ).ClientDetailTemplateId("template")
 )
 
@@ -64,14 +80,13 @@
     items.Add().Text("Mitigation Fellow Up").Content(
         @<text>
             @mitigationFellowUp()
-        </text>
-        );
+        </text>);
     }).ToClientTemplate()
     )
 </script>
 @helper mitigationFellowUp()
 {
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.RiskFollowUp>()
+    @(Html.Kendo().Grid<RiskFollowUp>()
       .Name("RiskFellowUp_grid_#=RiskMitigationPlanId#")
       .Columns(columns =>
       {
@@ -111,10 +126,10 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.RiskFollowUpId))
-          .Read(read => read.Action("RiskFollowUps_Read", "RiskFollowUps", new { rId= "#=RiskMitigationPlanId#" }))
-          .Create(create => create.Action("RiskFollowUps_Create", "RiskFollowUps", new { rId = "#=RiskMitigationPlanId#" }))
-          .Update(update => update.Action("RiskFollowUps_Update", "RiskFollowUps"))
-          .Destroy(destroy => destroy.Action("RiskFollowUps_Destroy", "RiskFollowUps"))
+          .Read(read => read.Action("RiskFollowUps_Read", "RiskFollowUps", new { rId= "#=RiskMitigationPlanId#" }).Data("sendForgery"))
+          .Create(create => create.Action("RiskFollowUps_Create", "RiskFollowUps", new { rId = "#=RiskMitigationPlanId#" }).Data("sendForgery"))
+          .Update(update => update.Action("RiskFollowUps_Update", "RiskFollowUps").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("RiskFollowUps_Destroy", "RiskFollowUps").Data("sendForgery"))
       ).ToClientTemplate()
     )
 }
@@ -160,3 +175,75 @@
         height: 50px;
     }
 </style>
+
+<script>
+    function riskClosed(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $('#loading-image').show();
+        $.ajax({
+          
+            type: "POST",
+              url: '@Url.Action("CloseRiskMitigation", "RiskMitigationPlans", new { area = "Planning" })',
+              data: { id: dataItem.RiskMitigationPlanId },
+              success: function (result)
+              {
+                  console.log(result);
+                  alert(result.Message);
+                  $('#loading-image').hide();
+                  location.reload(true);
+              },
+            error: function (result) {
+                alert(result.Message);
+                $('#loading-image').hide();
+            }
+        });
+
+    }
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if (model.IsClosed) {
+                $(this).css("background-color", "#ffb3b3");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-cmd-closed").remove();
+            }
+        });
+    }
+    function onCancel(e) {
+        e.sender.dataSource.cancelChanges();
+        e.preventDefault();
+        e.sender.refresh();
+    }
+    
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.RiskMitigationPlanId;
+
+        var gridName = "#RiskFellowUp_grid_" + masterId;
+        if (masterDataItem.IsClosed) {
+            $(gridName).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", gridName).hide();
+            $(".k-grid-edit", gridName).hide();
+            $(".k-grid-delete", gridName).hide();
+
+
+        }
+        else {
+            $(gridName).find(".k-toolbar").show(); //show toolbar
+            $(".k-grid-top", gridName).show();
+            $(".k-grid-edit", gridName).show();
+            $(".k-grid-delete", gridName).hide();
+
+
+
+        }
+      
+    }
+</script>

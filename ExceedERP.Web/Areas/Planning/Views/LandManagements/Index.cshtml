@@ -44,11 +44,113 @@
           .Model(model => { model.Id(p => p.LandManagementId);
               model.Field(p => p.LandManagementId).Editable(false);
           })
-          .Read(read => read.Action("LandManagements_Read", "LandManagements"))
-          .Create(create => create.Action("LandManagements_Create", "LandManagements"))
-          .Update(update => update.Action("LandManagements_Update", "LandManagements"))
-          .Destroy(destroy => destroy.Action("LandManagements_Destroy", "LandManagements"))
-      )
+          .Read(read => read.Action("LandManagements_Read", "LandManagements").Data("sendForgery"))
+          .Create(create => create.Action("LandManagements_Create", "LandManagements").Data("sendForgery"))
+          .Update(update => update.Action("LandManagements_Update", "LandManagements").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LandManagements_Destroy", "LandManagements").Data("sendForgery"))
+      ).ClientDetailTemplateId("detail_template")
 )
+
+
+<script type="text/kendo-template" id="detail_template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_we_str_#=LandManagementId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            
+              items.Add().Text("Attachments").Content(
+              @<text>
+
+                <button onclick='UploadFile(#=LandManagementId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+                @(Html.Kendo().Grid<LandManagementAttachment>()
+                    .Name("AttachmentGrid#=LandManagementId#")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/Planning/LandManagementAttachment/DownloadAttachment?attachmentId=\\#=LandManagementAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+
+                        columns.Template(e => { }).ClientTemplate("<a href='/Planning/LandManagementAttachment/DownloadAttachment?attachmentId=\\#=LandManagementAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp;</a>").Width(100);
+                        columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                        columns.Command(command =>
+                        {
+                            command.Destroy().Text("Delete");
+
+                        }).Width(300);
+
+
+                    })
+                   
+                    .Scrollable(h => h.Height("auto"))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add(c => c.LandManagementAttachmentId).Descending())
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"AttachmentGrid#=LandManagementId#\")");
+                        events.RequestStart("onRequestStart(\"AttachmentGrid#=LandManagementId#\")");
+                        events.RequestEnd("onRequestEnd(\"AttachmentGrid#=LandManagementId#\")");
+
+
+
+                    })
+                    .Model(model => model.Id(p => p.LandManagementAttachmentId))
+                    .Read(read => read.Action("LandManagementAttachment_Read", "LandManagementAttachment", new { eACSId = "#=LandManagementId#", area = "Planning" }).Data("sendForgery"))
+                    .Create(create => create.Action("LandManagementAttachment_Create", "LandManagementAttachment", new { eACSId = "#=LandManagementId#", area = "Planning" }).Data("sendForgery"))
+                    .Update(update => update.Action("LandManagementAttachment_Update", "LandManagementAttachment").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("LandManagementAttachment_Destroy", "LandManagementAttachment").Data("sendForgery"))
+                    ).ToClientTemplate())
+
+                    </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+
+@(Html.Kendo().Window()
+        .Name("UploadDoc")
+        .Title("Upload File")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(400).Content(
+        @<text>
+            <div class="form-group">
+                <form action="@Url.Action("UploadFiles", "LandManagementAttachment", new { })" method="post" , new { enctype="multipart/form-data" }>
+                    <input type="hidden" name="masterId" id="masterId">
+                    <div class="row">
+                        <div class="col-md-10">
+                            @Html.TextBox("file", "", new { type = "file", required = "true" })
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="editor-field">
+                            <label>Description</label>
+                            @Html.TextArea("Description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7"></div>
+                        <input type="submit" class="btn-primary k-button" value=" Submit " />
+                    </div>
+
+                </form>
+                <div class="pull-right">
+
+                </div>
+            </div>
+        </text>)
+)
+<script>
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+
+</script>
 
 

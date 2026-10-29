@@ -1,0 +1,51 @@
+<legend>Department Indicators</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.GlobalIndicator>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GlobalIndicatorId).Title("S.N").Width(60);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").Title("Department").EditorTemplateName("WorkUnit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+          columns.Bound(c => c.Indicator).Width(250);
+          columns.Bound(c => c.IsActive).ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsActive#' " +
+             "# if (IsActive) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>"
+             ).Width(100);
+          columns.Bound(c => c.Description).Width(250);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(220);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add(x => x.GlobalIndicatorId).Descending())
+          .Model(model =>
+          {
+              model.Id(p => p.GlobalIndicatorId);
+              model.Field(p => p.GlobalIndicatorId).Editable(false);
+              model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.IsActive).Editable(false);
+          })
+          .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("GlobalIndicatorSelfCares_Read", "GlobalIndicatorSelfCares").Data("sendForgery"))
+          .Create(create => create.Action("GlobalIndicatorSelfCares_Create", "GlobalIndicatorSelfCares").Data("sendForgery"))
+          .Update(update => update.Action("GlobalIndicatorSelfCares_Update", "GlobalIndicatorSelfCares").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("GlobalIndicatorSelfCares_Destroy", "GlobalIndicatorSelfCares").Data("sendForgery"))
+      )
+)

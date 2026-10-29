@@ -1,4 +1,4 @@
-﻿<legend>Seting| Self-Care Objectives</legend>
+<legend>Seting| Self-Care Objectives</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Objective>()
       .Name("objectivegrid")
       .Columns(columns =>
@@ -6,6 +6,7 @@
           columns.Bound(c => c.ObjectiveId).Title("S.N").Width(60);
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("workUnit").Width(120);
           columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.Weight).Width(100);
           columns.Bound(c => c.Description).Width(120);
           columns.Bound(c => c.Remark).Width(100);
           columns.Command(command =>
@@ -16,6 +17,8 @@
       .ToolBar(toolbar => {
           toolbar.Create();
       })
+            
+      .Events(x => x.DetailExpand("onDetailExpand"))
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Pageable()
       .Filterable()
@@ -26,10 +29,10 @@
           .Model(model => { model.Id(p => p.ObjectiveId);
               model.Field(p => p.ObjectiveId).Editable(false);
           })
-          .Read(read => read.Action("ObjectiveSelfCares_Read", "ObjectiveSelfCares"))
-          .Create(create => create.Action("ObjectiveSelfCares_Create", "ObjectiveSelfCares"))
-          .Update(update => update.Action("ObjectiveSelfCares_Update", "ObjectiveSelfCares"))
-          .Destroy(destroy => destroy.Action("ObjectiveSelfCares_Destroy", "ObjectiveSelfCares"))
+          .Read(read => read.Action("ObjectiveSelfCares_Read", "ObjectiveSelfCares").Data("sendForgery"))
+          .Create(create => create.Action("ObjectiveSelfCares_Create", "ObjectiveSelfCares").Data("sendForgery"))
+          .Update(update => update.Action("ObjectiveSelfCares_Update", "ObjectiveSelfCares").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ObjectiveSelfCares_Destroy", "ObjectiveSelfCares").Data("sendForgery"))
       ).ClientDetailTemplateId("selfCare_objective_detail")
 )
 
@@ -39,7 +42,7 @@
         .SelectedIndex(0)
         .Items(items =>
         {
-            items.Add().Text("Indicators").Content(
+            items.Add().Text("Indicators(Activity)").Content(
             @<text>
                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Indicator>()
                       .Name("Indicator_grid_#=ObjectiveId#")
@@ -48,7 +51,8 @@
 
                           columns.ForeignKey(c => c.GlobalIndicatorId, (IEnumerable)ViewData["GlobalIndicators"], "GlobalIndicatorId", "Indicator").EditorTemplateName("GlobalIndicatorTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                           columns.Bound(c => c.Name).Width(180);
-                          columns.Bound(c => c.Unit).Width(100);
+                          columns.Bound(c => c.Weight).Width(100);
+                          columns.Bound(c => c.Unit).EditorTemplateName("UoMTemplate").Width(100);
                           columns.Bound(c => c.KPIType).Width(80);
                           columns.Bound(c => c.HasSubIndicator).ClientTemplate(
                                                             "<input type='checkbox' disabled = 'true' value='\\#= HasSubIndicator\\#' " +
@@ -57,13 +61,21 @@
                                                             "\\# } \\#" +
                                                             "/>"
                                                             ).Width(120);
+                          columns.Bound(c => c.IsActive).ClientTemplate(
+                                                          "<input type='checkbox' disabled = 'true' value='\\#= IsActive\\#' " +
+                                                          "\\# if (IsActive) { \\#" +
+                                                          "checked='checked'" +
+                                                          "\\# } \\#" +
+                                                          "/>"
+                                                          ).Width(120);
                           columns.Bound(c => c.Description).Width(150);
 
                           columns.Command(command =>
                           {
                               command.Edit();
+                              command.Custom("").Click("EnableOrDisableActive").Text("Enable or Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable ", @id = "enableDisable" });
                               command.Destroy();
-                          }).Width(200);
+                          }).Width(300);
                       })
                       .ToolBar(toolbar => {
                           toolbar.Create();
@@ -83,10 +95,10 @@
                               model.Field(p => p.IndicatorId).Editable(false);
                               model.Field(p => p.Name).Editable(false);
                           })
-                          .Read(read => read.Action("Indicators_Read", "Indicators",new { oId= "#=ObjectiveId#" }))
-                          .Create(create => create.Action("Indicators_Create", "Indicators", new { oId = "#=ObjectiveId#" }))
-                          .Update(update => update.Action("Indicators_Update", "Indicators"))
-                          .Destroy(destroy => destroy.Action("Indicators_Destroy", "Indicators"))
+                          .Read(read => read.Action("Indicators_Read", "Indicators",new { oId= "#=ObjectiveId#" }).Data("sendForgery"))
+                          .Create(create => create.Action("Indicators_Create", "Indicators", new { oId = "#=ObjectiveId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("Indicators_Update", "Indicators").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("Indicators_Destroy", "Indicators").Data("sendForgery"))
                       ).ClientDetailTemplateId("indicator_details")
                       .ToClientTemplate()
               )
@@ -103,7 +115,7 @@
         .SelectedIndex(0)
         .Items(items =>
         {
-            items.Add().Text("Sub-Indicators").Content(
+            items.Add().Text("Sub-Indicators(Sub-Activity)").Content(
             @<text>
                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Indicator>()
                       .Name("Sub_Indicator_grid_#=IndicatorId#")
@@ -111,7 +123,8 @@
                       {
                           columns.ForeignKey(c => c.GlobalIndicatorId, (IEnumerable)ViewData["GlobalIndicators"], "GlobalIndicatorId", "Indicator").EditorTemplateName("GlobalIndicatorTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                           columns.Bound(c => c.Name).Width(180);
-                          columns.Bound(c => c.Unit).Width(100);
+                          columns.Bound(c => c.Weight).Width(100);
+                          columns.Bound(c => c.Unit).EditorTemplateName("UoMTemplate").Width(100);
                           columns.Bound(c => c.KPIType).Width(80);
                           //columns.Bound(c => c.HasSubIndicator).ClientTemplate(
                           //                                  "<input type='checkbox' disabled = 'true' value='\\#= HasSubIndicator\\#' " +
@@ -142,14 +155,14 @@
                             .RequestEnd("onRequestEnd(\"Sub_Indicator_grid_#=IndicatorId#\")"))
                           .Model(model => {
                               model.Id(p => p.IndicatorId);
-                             // model.Field(p => p.GlobalIndicatorId).Editable(false);
+                              // model.Field(p => p.GlobalIndicatorId).Editable(false);
                               model.Field(p => p.Name).Editable(false);
 
                           })
-                          .Read(read => read.Action("SubIndicators_Read", "SubIndicators", new { objecId = "#=ObjectiveId#", parentId = "#=IndicatorId#" }))
-                          .Create(create => create.Action("SubIndicators_Create", "SubIndicators", new { objecId = "#=ObjectiveId#", partId = "#=IndicatorId#" }))
-                          .Update(update => update.Action("SubIndicators_Update", "SubIndicators"))
-                          .Destroy(destroy => destroy.Action("SubIndicators_Destroy", "SubIndicators"))
+                          .Read(read => read.Action("SubIndicators_Read", "SubIndicators", new { objecId = "#=ObjectiveId#", parentId = "#=IndicatorId#" }).Data("sendForgery"))
+                          .Create(create => create.Action("SubIndicators_Create", "SubIndicators", new { objecId = "#=ObjectiveId#", partId = "#=IndicatorId#" }).Data("sendForgery"))
+                          .Update(update => update.Action("SubIndicators_Update", "SubIndicators").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("SubIndicators_Destroy", "SubIndicators").Data("sendForgery"))
                       )
                       .ToClientTemplate()
               )
@@ -159,6 +172,46 @@
         }).ToClientTemplate()
     )
     #}#
+</script>
+
+<script>
+    var masterId = 0;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#objectivegrid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.ObjectiveId;
+    }
+    function EnableOrDisableActive(e)
+    {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#Indicator_grid_" + masterId).data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.IndicatorId;
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+            $.ajax({
+                url: '@Url.Action("EnableOrDisable", "Indicators")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
 </script>
 
 

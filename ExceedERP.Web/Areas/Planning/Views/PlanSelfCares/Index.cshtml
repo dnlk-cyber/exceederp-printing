@@ -7,6 +7,7 @@
               columns.Bound(c => c.PlanId).Title("S.N").Width(50).Filterable(false);
               columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYears"], "GlFiscalYearId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(250);
               columns.Bound(c => c.Description).Width(250);
+              columns.Bound(c => c.Reason).Width(300).HtmlAttributes(new { style = "white-space: normal; overflow-wrap: anywhere;" });
               columns.Command(command =>
               {
                   command.Edit();
@@ -38,10 +39,10 @@
                             .Error("error_handler(\"PlanSelfcaregrid\")")
                             .RequestStart("onRequestStart(\"PlanSelfcaregrid\")")
                             .RequestEnd("onRequestEnd(\"PlanSelfcaregrid\")"))
-              .Read(read => read.Action("PlanSelfCares_Read", "PlanSelfCares"))
-              .Create(create => create.Action("PlanSelfCares_Create", "PlanSelfCares"))
-              .Update(update => update.Action("PlanSelfCares_Update", "PlanSelfCares"))
-              .Destroy(destroy => destroy.Action("PlanSelfCares_Destroy", "PlanSelfCares"))
+              .Read(read => read.Action("PlanSelfCares_Read", "PlanSelfCares").Data("sendForgery"))
+              .Create(create => create.Action("PlanSelfCares_Create", "PlanSelfCares").Data("sendForgery"))
+              .Update(update => update.Action("PlanSelfCares_Update", "PlanSelfCares").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("PlanSelfCares_Destroy", "PlanSelfCares").Data("sendForgery"))
           ).ClientDetailTemplateId("self_care_detail_template")
 )
 <script type="text/kendo-template" id="self_care_detail_template">
@@ -53,25 +54,38 @@
                 items.Add().Text("Objective").Content(
                 @<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.BSCPlan>()
-                                .Name("Indicators_grid_#=PlanId#")
-                                .Columns(columns =>
-                                {
+                        .Name("Indicators_grid_#=PlanId#")
+                        .Columns(columns =>
+                        {
                                     columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").EditorTemplateName("workUnit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(300);
 
                                     columns.ForeignKey(c => c.ObjectiveId, (IEnumerable)ViewData["Objectives"], "ObjectiveId", "Name").EditorTemplateName("objectives").Filterable(ftb => ftb.Multi(true).Search(true)).Width(400);
+                                    columns.Bound(c => c.BranchName).Title("Branch").Width(180);
+                                    columns.Bound(c => c.ApprovalStatusText).Title("Approval Status").Width(180);
+                                    columns.Bound(c => c.SubmittedBy).Title("Submitted By").Width(180).Hidden();
+                                    columns.Bound(c => c.SubmittedTime).Title("Submitted On").Format("{0:yyyy-MM-dd HH:mm}").Width(150).Hidden();
+                                    columns.Bound(c => c.BranchApprovedBy).Title("Branch Approved By").Width(180).Hidden();
+                                    columns.Bound(c => c.BranchApprovedTime).Title("Branch Approved On").Format("{0:yyyy-MM-dd HH:mm}").Width(150).Hidden();
+                                    columns.Bound(c => c.HeadOfficeApprovedBy).Title("Head Office Approved By").Width(180).Hidden();
+                                    columns.Bound(c => c.HeadOfficeApprovedTime).Title("Head Office Approved On").Format("{0:yyyy-MM-dd HH:mm}").Width(150).Hidden();
 
                                     columns.Command(command =>
                                     {
                                         command.Edit();
-                                        command.Custom("cmd-Approve").Text("Approve").IconClass("fa fa-check").Click("ApprovePlan").HtmlAttributes(new { @class = "btn btn-success" });
-                                        command.Custom("cmd-Copy").Text("Copy").IconClass("fa fa-Copy").Click("copyPlan").HtmlAttributes(new { @class = "btn btn-success" });
+                                        command.Custom("cmd-Approve").Text("Submit / Approve").IconClass("fa fa-check").Click("ApprovePlan").HtmlAttributes(new { @class = "btn btn-success" });
+                                        command.Custom("cmd-Feedback").Text("Add Feedback").IconClass("fa fa-comment").Click("addPlanFeedback").HtmlAttributes(new { @class = "btn btn-primary" });
+                                        command.Custom("cmd-Revision").Text("Request Revision").IconClass("fa fa-undo").Click("requestPlanRevision").HtmlAttributes(new { @class = "btn btn-warning" });
+                                        command.Custom("cmd-Copy").Text("Aggregate").IconClass("fa fa-copy").Click("copyPlan").HtmlAttributes(new { @class = "btn btn-info" });
 
                                         command.Destroy();
                                     });
                                 })
                                 .ToolBar(toolbar =>
                                 {
-                                    toolbar.Create();
+                                    if (ViewBag.CanCreateDepartmentPlan == true)
+                                    {
+                                        toolbar.Create();
+                                    }
                                 })
                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
                                 .Pageable()
@@ -82,24 +96,64 @@
                                     events.Cancel("onCancel");
                                     events.Edit("onEdit");
                                     events.DataBound("onBSCPlanDataBound");
+                                    events.DetailExpand("onBSCPlanDetailExpand");
                                 })
                                 .DataSource(dataSource => dataSource
                                     .Ajax()
-                                    .Model(model => model.Id(p => p.BSCPlanId))
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.BSCPlanId);
+                                        model.Field(p => p.BranchName).Editable(false);
+                                        model.Field(p => p.ApprovalStatusText).Editable(false);
+                                        model.Field(p => p.ApprovalStatus).Editable(false);
+                                        model.Field(p => p.SubmittedBy).Editable(false);
+                                        model.Field(p => p.SubmittedTime).Editable(false);
+                                        model.Field(p => p.BranchApprovedBy).Editable(false);
+                                        model.Field(p => p.BranchApprovedTime).Editable(false);
+                                        model.Field(p => p.HeadOfficeApprovedBy).Editable(false);
+                                        model.Field(p => p.HeadOfficeApprovedTime).Editable(false);
+                                    })
                                     .Events(ev => ev
                                                 .Error("error_handler(\"Indicators_grid_#=PlanId#\")")
                                                 .RequestStart("onRequestStart(\"Indicators_grid_#=PlanId#\")")
                                                 .RequestEnd("onRequestEnd(\"Indicators_grid_#=PlanId#\")"))
-                                    .Read(read => read.Action("BSCPlanSelfCares_Read", "BSCPlanSelfCares", new { id = "#=PlanId#" }))
-                                    .Create(create => create.Action("BSCPlanSelfCares_Create", "BSCPlanSelfCares", new { id = "#=PlanId#" }))
-                                    .Update(update => update.Action("BSCPlanSelfCares_Update", "BSCPlanSelfCares"))
-                                    .Destroy(destroy => destroy.Action("BSCPlanSelfCares_Destroy", "BSCPlanSelfCares"))
+                                    .Read(read => read.Action("BSCPlanSelfCares_Read", "BSCPlanSelfCares", new { id = "#=PlanId#" }).Data("sendForgery"))
+                                    .Create(create => create.Action("BSCPlanSelfCares_Create", "BSCPlanSelfCares", new { id = "#=PlanId#" }).Data("sendForgery"))
+                                    .Update(update => update.Action("BSCPlanSelfCares_Update", "BSCPlanSelfCares").Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("BSCPlanSelfCares_Destroy", "BSCPlanSelfCares").Data("sendForgery"))
                                 ).ClientDetailTemplateId("Planning_detail_template")
                                 .ToClientTemplate()
 
                     )
 
 
+                </text>);
+
+                items.Add().Text("Feedback").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.PlanApprovalFeedback>()
+                        .Name("Plan_Feedback_grid_#=PlanId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.ActionTime).Title("Date").Format("{0:yyyy-MM-dd HH:mm}").Width(150);
+                            columns.Bound(c => c.WorkUnitName).Title("Work Unit").Width(220);
+                            columns.Bound(c => c.BranchName).Title("Branch").Width(180);
+                            columns.Bound(c => c.ObjectiveName).Title("Objective").Width(280);
+                            columns.Bound(c => c.ActionText).Title("Action").Width(150);
+                            columns.Bound(c => c.FromStatusText).Title("From").Width(160);
+                            columns.Bound(c => c.ToStatusText).Title("To").Width(160);
+                            columns.Bound(c => c.Feedback).Title("Feedback").Width(350);
+                            columns.Bound(c => c.ActionBy).Title("Action By").Width(180);
+                        })
+                        .Pageable()
+                        .Sortable()
+                        .Scrollable(h => h.Height(680))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model => model.Id(p => p.PlanApprovalFeedbackId))
+                            .Read(read => read.Action("PlanFeedbacks_Read", "BSCPlanSelfCares", new { planId = "#=PlanId#" }))
+                        )
+                        .ToClientTemplate()
+                    )
                 </text>);
 
                 }).ToClientTemplate()
@@ -136,13 +190,14 @@
                                             "\\#: kendo.toString( Unit, 'N4') \\#" +
                                             "\\# } \\#"
                                         );
-                            columns.Bound(c => c.Plan).Width(100).Filterable(false).ClientTemplate(
-                                        "\\# if (HasSubIndicator) { \\#" +
-                                            " -----" +
-                                            "\\# } else {\\#" +
-                                            "\\#: kendo.toString( Plan, 'N4') \\#" +
-                                            "\\# } \\#"
-                                        );
+                            columns.Bound(c => c.Plan).Width(100).Filterable(false);
+                            //columns.Bound(c => c.Plan).Width(100).Filterable(false).ClientTemplate(
+                            //            "\\# if (HasSubIndicator) { \\#" +
+                            //                " -----" +
+                            //                "\\# } else {\\#" +
+                            //                "\\#: kendo.toString( Plan, 'N4') \\#" +
+                            //                "\\# } \\#"
+                            //            );
                             columns.Bound(c => c.Baseline).Width(100).Filterable(false).ClientTemplate(
                                         "\\# if (HasSubIndicator) { \\#" +
                                             " -----" +
@@ -203,16 +258,41 @@
                                 model.Field(p => p.KPIType).Editable(false);
                                 model.Field(p => p.Unit).Editable(false);
                             })
-                            .Read(read => read.Action("PlanningDetails_Read", "PlanningDetails", new { pid = "#=BSCPlanId#" }))
-                            .Create(create => create.Action("PlanningDetails_Create", "PlanningDetails", new { pid = "#=BSCPlanId#" }))
-                            .Update(update => update.Action("PlanningDetails_Update", "PlanningDetails"))
-                            .Destroy(destroy => destroy.Action("PlanningDetails_Destroy", "PlanningDetails"))
+                            .Read(read => read.Action("PlanningDetails_Read", "PlanningDetails", new { pid = "#=BSCPlanId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("PlanningDetails_Create", "PlanningDetails", new { pid = "#=BSCPlanId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("PlanningDetails_Update", "PlanningDetails").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("PlanningDetails_Destroy", "PlanningDetails").Data("sendForgery"))
                         ).ClientDetailTemplateId("indicator_detail")
                         .ToClientTemplate()
 
                 )
 
 
+            </text>);
+
+            items.Add().Text("Approval Feedback").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.PlanApprovalFeedback>()
+                    .Name("Plan_Approval_Feedback_grid_#=BSCPlanId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.ActionTime).Title("Date").Format("{0:yyyy-MM-dd HH:mm}").Width(150);
+                        columns.Bound(c => c.ActionText).Title("Action").Width(150);
+                        columns.Bound(c => c.FromStatusText).Title("From").Width(160);
+                        columns.Bound(c => c.ToStatusText).Title("To").Width(160);
+                        columns.Bound(c => c.Feedback).Title("Feedback").Width(350);
+                        columns.Bound(c => c.ActionBy).Title("Action By").Width(180);
+                    })
+                    .Pageable()
+                    .Sortable()
+                    .Scrollable(h => h.Height(300))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model => model.Id(p => p.PlanApprovalFeedbackId))
+                        .Read(read => read.Action("PlanApprovalFeedbacks_Read", "BSCPlanSelfCares", new { bscPlanId = "#=BSCPlanId#" }))
+                    )
+                    .ToClientTemplate()
+                )
             </text>);
 
         }).ToClientTemplate()
@@ -222,14 +302,14 @@
 <script type="text/kendo-template" id="indicator_detail">
     #if(HasSubIndicator){#
     @(Html.Kendo().TabStrip()
-        .Name("tab_string_planning_Sub_indicator_#=IndicatorId#")
+        .Name("tab_string_planning_Sub_indicator_#=PlanningDetailId#")
         .SelectedIndex(0)
         .Items(items =>
         {
             items.Add().Text("Planning Sub-Indicators").Content(
             @<text>
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.PlanningDetail>()
-                        .Name("Planning_Sub_Indicator_grid#=IndicatorId#")
+                        .Name("Planning_Sub_Indicator_grid#=PlanningDetailId#")
                         .Columns(columns =>
                         {
                             columns.ForeignKey(c => c.GlobalIndicatorId, (IEnumerable)ViewData["GlobalIndicators"], "GlobalIndicatorId", "Indicator").EditorTemplateName("GlobalIndicatorTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
@@ -275,9 +355,9 @@
                         .DataSource(dataSource => dataSource
                             .Ajax()
                             .Events(ev =>ev
-                                        .Error("error_handler(\"Planning_Sub_Indicator_grid#=IndicatorId#\")")
-                                        .RequestStart("onRequestStart(\"Planning_Sub_Indicator_grid#=IndicatorId#\")")
-                                        .RequestEnd("onRequestEnd(\"Planning_Sub_Indicator_grid#=IndicatorId#\")"))
+                                        .Error("error_handler(\"Planning_Sub_Indicator_grid#=PlanningDetailId#\")")
+                                        .RequestStart("onRequestStart(\"Planning_Sub_Indicator_grid#=PlanningDetailId#\")")
+                                        .RequestEnd("onRequestEnd(\"Planning_Sub_Indicator_grid#=PlanningDetailId#\")"))
                             .Model(model => {
                                 model.Id(p => p.PlanningDetailId);
                                 model.Field(p => p.IndicatorId).Editable(false);
@@ -285,11 +365,11 @@
                                 model.Field(p => p.KPIType).Editable(false);
                                 model.Field(p => p.Unit).Editable(false);
                             })
-                            .Read(read => read.Action("PlanningDetailWithSubInsicators_Read", "PlanningDetailWithSubInsicators", new { pDetailId = "#=BSCPlanId#", parentId = "#=IndicatorId#" }))
-                            .Create(create => create.Action("PlanningDetailWithSubInsicators_Create", "PlanningDetailWithSubInsicators", new { pDetailId = "#=BSCPlanId#" }))
-                            .Update(update => update.Action("PlanningDetailWithSubInsicators_Update", "PlanningDetailWithSubInsicators"))
-                            .Destroy(destroy => destroy.Action("PlanningDetailWithSubInsicators_Destroy", "PlanningDetailWithSubInsicators"))
-                        ).ClientDetailTemplateId("Sub_Indicator_detail")
+                            .Read(read => read.Action("PlanningDetailWithSubInsicators_Read", "PlanningDetailWithSubInsicators", new { pDetailId = "#=BSCPlanId#", parentId = "#=IndicatorId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("PlanningDetailWithSubInsicators_Create", "PlanningDetailWithSubInsicators", new { pDetailId = "#=BSCPlanId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("PlanningDetailWithSubInsicators_Update", "PlanningDetailWithSubInsicators").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("PlanningDetailWithSubInsicators_Destroy", "PlanningDetailWithSubInsicators").Data("sendForgery"))
+                        ).ClientDetailTemplateId("indicator_detail")
                         .ToClientTemplate()
 
                 )
@@ -344,10 +424,10 @@
                                 model.Field(p => p.GLPeriodId).Editable(false);
                                 model.Field(p => p.ActualValue).DefaultValue(0);
                             })
-                            .Read(read => read.Action("MonthlyPlans_Read", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }))
-                            .Create(create => create.Action("MonthlyPlans_Create", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }))
-                            .Update(update => update.Action("MonthlyPlans_Update", "MonthlyPlans"))
-                            .Destroy(destroy => destroy.Action("MonthlyPlans_Destroy", "MonthlyPlans"))
+                            .Read(read => read.Action("MonthlyPlans_Read", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("MonthlyPlans_Create", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("MonthlyPlans_Update", "MonthlyPlans").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("MonthlyPlans_Destroy", "MonthlyPlans").Data("sendForgery"))
                         ).ClientDetailTemplateId("weekly_plan_detail")
                         .ToClientTemplate()
 
@@ -392,9 +472,9 @@
                          events.RequestEnd("onRequestEnd(\"AttachementGrid#=PlanningDetailId#\")");
                      })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                      ).ToClientTemplate())
         </text>);
          
@@ -450,10 +530,10 @@
                                 model.Field(p => p.GLPeriodId).Editable(false);
                                 model.Field(p => p.ActualValue).DefaultValue(0);
                             })
-                            .Read(read => read.Action("MonthlyPlans_Read", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }))
-                            .Create(create => create.Action("MonthlyPlans_Create", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }))
-                            .Update(update => update.Action("MonthlyPlans_Update", "MonthlyPlans"))
-                            .Destroy(destroy => destroy.Action("MonthlyPlans_Destroy", "MonthlyPlans"))
+                            .Read(read => read.Action("MonthlyPlans_Read", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("MonthlyPlans_Create", "MonthlyPlans", new { pMId = "#=PlanningDetailId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("MonthlyPlans_Update", "MonthlyPlans").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("MonthlyPlans_Destroy", "MonthlyPlans").Data("sendForgery"))
                         ).ClientDetailTemplateId("weekly_plan_detail")
                         .ToClientTemplate()
 
@@ -498,9 +578,9 @@
                          events.RequestEnd("onRequestEnd(\"AttachementGrid#=PlanningDetailId#\")");
                      })
                         .Model(model => model.Id(p => p.AttachmentId))
-                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }))
-                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=PlanningDetailId#", fileOwner = "#=PlanningDetailId#" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment").Data("sendForgery"))
                      ).ToClientTemplate())
         </text>);
          
@@ -535,14 +615,20 @@
               .Editable(editable => editable.Mode(GridEditMode.InLine))
               .Pageable()
               .Filterable()
+              .Events(events =>
+                        {
+                            events.Cancel("onCancel");
+                            events.Edit("onEdit");
+                            events.DataBound("onDataBound");
+                        })
               .Scrollable(h => h.Height(550))
               .DataSource(dataSource => dataSource
                   .Ajax()
                   .Model(model => model.Id(p => p.WeeklyPlanId))
-                  .Read(read => read.Action("WeeklyPlans_Read", "WeeklyPlans", new { mpId = "#=MonthlyPlanId#" }))
-                  .Create(create => create.Action("WeeklyPlans_Create", "WeeklyPlans", new { mpId = "#=MonthlyPlanId#" }))
-                  .Update(update => update.Action("WeeklyPlans_Update", "WeeklyPlans"))
-                  .Destroy(destroy => destroy.Action("WeeklyPlans_Destroy", "WeeklyPlans"))
+                  .Read(read => read.Action("WeeklyPlans_Read", "WeeklyPlans", new { mpId = "#=MonthlyPlanId#" }).Data("sendForgery"))
+                  .Create(create => create.Action("WeeklyPlans_Create", "WeeklyPlans", new { mpId = "#=MonthlyPlanId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("WeeklyPlans_Update", "WeeklyPlans").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("WeeklyPlans_Destroy", "WeeklyPlans").Data("sendForgery"))
               ).ToClientTemplate()
         )
             </text>);
@@ -585,7 +671,16 @@
                 </text>)
 )
 <script>
+    var planApprovalStatus = {
+        draft: @((int)ExceedERP.Core.Domain.Planning.PlanApprovalStatus.Draft),
+        departmentSubmitted: @((int)ExceedERP.Core.Domain.Planning.PlanApprovalStatus.DepartmentSubmitted),
+        branchApproved: @((int)ExceedERP.Core.Domain.Planning.PlanApprovalStatus.BranchApproved),
+        headOfficeApproved: @((int)ExceedERP.Core.Domain.Planning.PlanApprovalStatus.HeadOfficeApproved),
+        revisionRequested: @((int)ExceedERP.Core.Domain.Planning.PlanApprovalStatus.RevisionRequested)
+    };
     var isGlobalDepartnental = false;
+    var masterId = 0;
+    var isFirstLevel = false;
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 
@@ -594,6 +689,17 @@
         var masterDataItem = masterGrid.dataItem(masterRow);
 
         isGlobalDepartnental = masterDataItem.IsDepartnental;
+        masterId = masterDataItem.PlanId;
+
+
+    }
+    function onBSCPlanDetailExpand(e)
+    {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#Indicators_grid_" + masterId).data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        isFirstLevel = masterDataItem.IsFirstLevelApproved;
 
 
     }
@@ -613,53 +719,45 @@
             var dataItem = e.sender.dataItem(row);
             if (dataItem.IsDepartnental || isGlobalDepartnental) {
                 $(row).css("background-color", "#7FFFD4");
-                $(row).find(".k-grid-edit").remove();
+                $(row).find(".k-grid-edit").show();
                 $(row).find(".k-grid-delete").remove();
 
             }
-            
         }
     }
     function onBSCPlanDataBound(e) {
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function (e) {
             var model = grid.dataItem(this);
-            if (model.HasChild && model.IsCopied && model.IsFirstLevelApproved) {
-                //$(this).css("background-color", "#ffb3b3");
+            if (!model.CanEdit) {
                 $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
-                $(this).find(".k-grid-cmd-seen").remove();
-                $(this).find(".k-grid-cmd-Cancelled").remove();
             }
-            if (model.HasChild && model.IsCopied == false && model.IsFirstLevelApproved) {
-                $(this).find(".k-grid-edit").remove();
+            if (!model.CanDelete) {
                 $(this).find(".k-grid-delete").remove();
-                $(this).find(".k-grid-cmd-Copy").show();
+            }
+            if (!model.CanApprove) {
                 $(this).find(".k-grid-cmd-Approve").remove();
+            } else {
+                var actionText = model.ApprovalStatus === planApprovalStatus.draft ||
+                    model.ApprovalStatus === planApprovalStatus.revisionRequested ? "Submit" : "Approve";
+                $(this).find(".k-grid-cmd-Approve")
+                    .attr("title", model.ApprovalAction)
+                    .html('<span class="fa fa-check"></span>' + actionText);
             }
-            if (model.IsFirstLevelApproved == false && !model.HasChild) {
-                //$(this).css("background-color", "#7FFFD4");
-                ////$(this).find(".k-grid-edit").show();
-                ////$(this).find(".k-grid-delete").show();
-               $(this).find(".k-grid-cmd-Copy").remove();
-               $(this).find(".k-grid-cmd-Approve").show();
+            if (!model.CanRequestRevision) {
+                $(this).find(".k-grid-cmd-Revision").remove();
             }
-            if (model.IsCopied) {
-                //$(this).css("background-color", "#7FFFD4");
-                $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
-               $(this).find(".k-grid-cmd-Copy").remove();
-               $(this).find(".k-grid-cmd-Approve").remove();
+            if (!model.CanAddFeedback) {
+                $(this).find(".k-grid-cmd-Feedback").remove();
             }
-            if (!model.HasChild) {
-               
-               $(this).find(".k-grid-cmd-Copy").remove();
+            if (!model.CanCopy) {
+                $(this).find(".k-grid-cmd-Copy").remove();
             }
-            if (model.IsFirstLevelApproved) {
-                //$(this).css("background-color", "#7FFFD4");
-                $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();
-                $(this).find(".k-grid-cmd-Approve").remove();
+            if (model.ApprovalStatus === planApprovalStatus.headOfficeApproved) {
+                $(this).css("background-color", "#dff0d8");
+            }
+            if (model.ApprovalStatus === planApprovalStatus.revisionRequested) {
+                $(this).css("background-color", "#fcf8e3");
             }
         });
     }
@@ -728,17 +826,26 @@
 </script>
 <script>
     function ApprovePlan(e) {
+        e.preventDefault();
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-        var grid = this;
+        var feedback = window.prompt((dataItem.ApprovalAction || "Submit / Approve") + "\n\nOptional comment:", "");
+        if (feedback === null) {
+            return;
+        }
+        if (feedback.length > 2000) {
+            alert("Feedback cannot exceed 2000 characters.");
+            return;
+        }
           $.ajax({
             type: "POST",
               url: '@Url.Action("ApproveBScPlan", "BSCPlanSelfCares", new { area = "Planning" })',
-              data: { id: dataItem.BSCPlanId },
+              data: $.extend({ id: dataItem.BSCPlanId, feedback: feedback }, sendForgery()),
               success: function (result)
               {
-                console.log(result);
                   alert(result.Message);
-                  location.reload(true);
+                  if (result.Status === "OK") {
+                      location.reload(true);
+                  }
               },
             error: function (result) {
                 alert(result.Message);
@@ -746,13 +853,77 @@
         });
 
     }
+    function requestPlanRevision(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var feedback = window.prompt("Describe the changes required before this plan can be approved:", "");
+        if (feedback === null) {
+            return;
+        }
+        feedback = $.trim(feedback);
+        if (!feedback) {
+            alert("Feedback is required when requesting a revision.");
+            return;
+        }
+        if (feedback.length > 2000) {
+            alert("Feedback cannot exceed 2000 characters.");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RequestPlanRevision", "BSCPlanSelfCares", new { area = "Planning" })',
+            data: $.extend({ id: dataItem.BSCPlanId, feedback: feedback }, sendForgery()),
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status === "OK") {
+                    location.reload(true);
+                }
+            },
+            error: function (result) {
+                alert(result.Message || "The revision request could not be completed.");
+            }
+        });
+    }
+    function addPlanFeedback(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var feedback = window.prompt("Enter feedback for this plan:", "");
+        if (feedback === null) {
+            return;
+        }
+        feedback = $.trim(feedback);
+        if (!feedback) {
+            alert("Feedback is required.");
+            return;
+        }
+        if (feedback.length > 2000) {
+            alert("Feedback cannot exceed 2000 characters.");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddPlanFeedback", "BSCPlanSelfCares", new { area = "Planning" })',
+            data: $.extend({ id: dataItem.BSCPlanId, feedback: feedback }, sendForgery()),
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status === "OK") {
+                    location.reload(true);
+                }
+            },
+            error: function (result) {
+                alert(result.Message || "The feedback could not be saved.");
+            }
+        });
+    }
     function copyPlan(e) {
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
         var grid = this;
           $.ajax({
             type: "POST",
               url: '@Url.Action("CopyBScPlan", "BSCPlanSelfCares", new { area = "Planning" })',
-              data: { bscPlanId: dataItem.BSCPlanId },
+              data: $.extend({ bscPlanId: dataItem.BSCPlanId }, sendForgery()),
               success: function (result)
               {
                 console.log(result);

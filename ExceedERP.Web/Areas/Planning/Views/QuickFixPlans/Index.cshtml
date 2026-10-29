@@ -1,0 +1,127 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Planning
+
+<legend>Quick-Fix Plans</legend>
+
+<div class="alert alert-info">
+    Select a fiscal year and an annual plan activity, then enter performance up to the selected quarter and the revised plan for the remaining quarter(s).
+</div>
+
+<script>
+    window.quickFixPlanFiscalYearFilter = function () {
+        var fiscalYear = $("#GlFiscalYearId").data("kendoDropDownList");
+        return { glFiscalYearId: fiscalYear ? fiscalYear.value() : null };
+    };
+
+    window.onQuickFixPlanSelected = function (e) {
+        var annualPlan = $("#AnnualPlan").data("kendoNumericTextBox");
+        if (annualPlan && e.dataItem) {
+            annualPlan.value(e.dataItem.AnnualPlan);
+            annualPlan.trigger("change");
+        }
+    };
+
+    function onQuickFixPlanGridEdit(e) {
+        centerQuickFixPlanPopup(e.container);
+        window.setTimeout(function () {
+            centerQuickFixPlanPopup(e.container);
+        }, 100);
+    }
+
+    function centerQuickFixPlanPopup(container) {
+        var popup = container.data("kendoWindow");
+        var wrapper = popup ? popup.wrapper : container.closest(".k-window");
+
+        if (!wrapper || !wrapper.length) {
+            return;
+        }
+
+        var viewport = $(window);
+        var top = Math.max(viewport.scrollTop() + ((viewport.height() - wrapper.outerHeight()) / 2), viewport.scrollTop());
+        var left = Math.max(viewport.scrollLeft() + ((viewport.width() - wrapper.outerWidth()) / 2), viewport.scrollLeft());
+
+        wrapper.css({
+            position: "absolute",
+            top: top,
+            left: left,
+            zIndex: 10005
+        });
+    }
+</script>
+
+@(Html.Kendo().Grid<QuickFixPlan>()
+    .Name("quickFixPlanGrid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.QuickFixPlanId).Title("S.N").Width(70).Filterable(false);
+        columns.ForeignKey(
+                c => c.GlFiscalYearId,
+                (IEnumerable)ViewData["FiscalYears"],
+                "GlFiscalYearId",
+                "Name")
+            .Title("Fiscal Year")
+            .Width(140);
+        columns.ForeignKey(
+            c => c.PlanId,
+            (IEnumerable)ViewData["Plans"],
+            "PlanId",
+                "Name")
+            .Title("Annual Plan / From Plan")
+            .Width(300);
+        columns.ForeignKey(
+                c => c.UpToQuarter,
+                (IEnumerable)ViewData["Quarters"],
+                "Value",
+                "Text")
+            .Width(140);
+        columns.Bound(c => c.PlanUpToQuarter).Title("Plan Up To Quarter").Format("{0:n2}").Width(160);
+        columns.Bound(c => c.Actual).Format("{0:n2}").Width(130);
+        columns.Bound(c => c.PreviousPlanRemainingQuarter)
+            .Title("Previous Plan - Remaining")
+            .Format("{0:n2}")
+            .Width(190);
+        columns.Bound(c => c.RevisedPlanRemainingQuarter)
+            .Title("Revised / Improved Plan - Remaining")
+            .Format("{0:n2}")
+            .Width(220);
+        columns.Command(command => command.Edit().Text("Edit")).Width(100);
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create().Text("Add Quick-Fix Plan");
+        toolbar.Custom()
+            .Text("Quick-Fix Report")
+            .Url(Url.Action("QuickFixPlan", "PlanningReports", new { area = "Planning" }));
+    })
+    .Editable(editable => editable
+        .Mode(GridEditMode.PopUp)
+        .TemplateName("QuickFixPlan")
+        .Window(window => window
+            .Title("Quick-Fix Plan")
+            .Width(820)))
+    .Events(events => events.Edit("onQuickFixPlanGridEdit"))
+    .Pageable()
+    .Filterable()
+    .Sortable()
+    .Scrollable(h => h.Height(650))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Sort(sort => sort.Add(x => x.QuickFixPlanId).Descending())
+        .Model(model =>
+        {
+            model.Id(p => p.QuickFixPlanId);
+            model.Field(p => p.QuickFixPlanId).Editable(false);
+            model.Field(p => p.AnnualPlan).Editable(false);
+            model.Field(p => p.DateCreated).Editable(false);
+            model.Field(p => p.CreatedBy).Editable(false);
+            model.Field(p => p.LastModified).Editable(false);
+            model.Field(p => p.ModifiedBy).Editable(false);
+        })
+        .Events(events => events
+            .Error("error_handler(\"quickFixPlanGrid\")")
+            .RequestStart("onRequestStart(\"quickFixPlanGrid\")")
+            .RequestEnd("onRequestEnd(\"quickFixPlanGrid\")"))
+        .Read(read => read.Action("QuickFixPlans_Read", "QuickFixPlans").Data("sendForgery"))
+        .Create(create => create.Action("QuickFixPlans_Create", "QuickFixPlans").Data("sendForgery"))
+        .Update(update => update.Action("QuickFixPlans_Update", "QuickFixPlans").Data("sendForgery")))
+)

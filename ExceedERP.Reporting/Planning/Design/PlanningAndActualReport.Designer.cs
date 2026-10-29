@@ -247,6 +247,17 @@
             this.textBox224 = new Telerik.Reporting.TextBox();
             this.textBox228 = new Telerik.Reporting.TextBox();
             this.textBox221 = new Telerik.Reporting.TextBox();
+            this.totalHeaderTextBox = new Telerik.Reporting.TextBox();
+            this.totalPlanHeaderTextBox = new Telerik.Reporting.TextBox();
+            this.totalActualHeaderTextBox = new Telerik.Reporting.TextBox();
+            this.totalPercentHeaderTextBox = new Telerik.Reporting.TextBox();
+            this.totalPlanTextBox = new Telerik.Reporting.TextBox();
+            this.totalActualTextBox = new Telerik.Reporting.TextBox();
+            this.totalPercentTextBox = new Telerik.Reporting.TextBox();
+            this.grandTotalLabelTextBox = new Telerik.Reporting.TextBox();
+            this.grandTotalPlanTextBox = new Telerik.Reporting.TextBox();
+            this.grandTotalActualTextBox = new Telerik.Reporting.TextBox();
+            this.grandTotalPercentTextBox = new Telerik.Reporting.TextBox();
             this.headerSubReportLandScape1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReportLandScape();
             this.FiscalYearODS = new Telerik.Reporting.ObjectDataSource();
             this.WorkUnitobjectDataSource = new Telerik.Reporting.ObjectDataSource();
@@ -1072,6 +1083,130 @@
             this.textBox221.StyleName = "";
             this.textBox221.Value = "Yearly Remaining";
             // 
+            // totalHeaderTextBox
+            // 
+            this.totalHeaderTextBox.Name = "totalHeaderTextBox";
+            this.totalHeaderTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.35D), Telerik.Reporting.Drawing.Unit.Inch(0.21987117826938629D));
+            this.totalHeaderTextBox.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.totalHeaderTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.totalHeaderTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.totalHeaderTextBox.Style.Color = System.Drawing.Color.White;
+            this.totalHeaderTextBox.Style.Font.Bold = true;
+            this.totalHeaderTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.totalHeaderTextBox.StyleName = "";
+            this.totalHeaderTextBox.Value = "Total";
+            // 
+            // totalPlanHeaderTextBox
+            // 
+            this.totalPlanHeaderTextBox.Name = "totalPlanHeaderTextBox";
+            this.totalPlanHeaderTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45D), Telerik.Reporting.Drawing.Unit.Inch(0.22923453152179718D));
+            this.totalPlanHeaderTextBox.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.totalPlanHeaderTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.totalPlanHeaderTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.totalPlanHeaderTextBox.Style.Color = System.Drawing.Color.White;
+            this.totalPlanHeaderTextBox.Style.Font.Bold = true;
+            this.totalPlanHeaderTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.totalPlanHeaderTextBox.StyleName = "";
+            this.totalPlanHeaderTextBox.Value = "Plan";
+            // 
+            // totalActualHeaderTextBox
+            // 
+            this.totalActualHeaderTextBox.Name = "totalActualHeaderTextBox";
+            this.totalActualHeaderTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45D), Telerik.Reporting.Drawing.Unit.Inch(0.22923453152179718D));
+            this.totalActualHeaderTextBox.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.totalActualHeaderTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.totalActualHeaderTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.totalActualHeaderTextBox.Style.Color = System.Drawing.Color.White;
+            this.totalActualHeaderTextBox.Style.Font.Bold = true;
+            this.totalActualHeaderTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.totalActualHeaderTextBox.StyleName = "";
+            this.totalActualHeaderTextBox.Value = "Actual";
+            // 
+            // totalPercentHeaderTextBox
+            // 
+            this.totalPercentHeaderTextBox.Name = "totalPercentHeaderTextBox";
+            this.totalPercentHeaderTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45D), Telerik.Reporting.Drawing.Unit.Inch(0.22923453152179718D));
+            this.totalPercentHeaderTextBox.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.totalPercentHeaderTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.totalPercentHeaderTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.totalPercentHeaderTextBox.Style.Color = System.Drawing.Color.White;
+            this.totalPercentHeaderTextBox.Style.Font.Bold = true;
+            this.totalPercentHeaderTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.totalPercentHeaderTextBox.StyleName = "";
+            this.totalPercentHeaderTextBox.Value = "%";
+            // 
+            // totalPlanTextBox
+            // 
+            this.totalPlanTextBox.Format = "{0:N2}";
+            this.totalPlanTextBox.Name = "totalPlanTextBox";
+            this.totalPlanTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45D), Telerik.Reporting.Drawing.Unit.Inch(0.24310654401779175D));
+            this.totalPlanTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.totalPlanTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.totalPlanTextBox.Style.Padding.Left = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.totalPlanTextBox.Style.Padding.Right = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.totalPlanTextBox.StyleName = "";
+            this.totalPlanTextBox.Value = "=Fields.TotalPlan";
+            // 
+            // totalActualTextBox
+            // 
+            this.totalActualTextBox.Format = "{0:N2}";
+            this.totalActualTextBox.Name = "totalActualTextBox";
+            this.totalActualTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45D), Telerik.Reporting.Drawing.Unit.Inch(0.24310654401779175D));
+            this.totalActualTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.totalActualTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.totalActualTextBox.Style.Padding.Left = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.totalActualTextBox.Style.Padding.Right = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.totalActualTextBox.StyleName = "";
+            this.totalActualTextBox.Value = "=Fields.TotalActual";
+            // 
+            // totalPercentTextBox
+            // 
+            this.totalPercentTextBox.Format = "{0:N2}%";
+            this.totalPercentTextBox.Name = "totalPercentTextBox";
+            this.totalPercentTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45D), Telerik.Reporting.Drawing.Unit.Inch(0.24310654401779175D));
+            this.totalPercentTextBox.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.totalPercentTextBox.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.totalPercentTextBox.Style.Padding.Left = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.totalPercentTextBox.Style.Padding.Right = Telerik.Reporting.Drawing.Unit.Point(0D);
+            this.totalPercentTextBox.StyleName = "";
+            this.totalPercentTextBox.Value = "=Fields.TotalPercent";
+            // 
+            // grandTotalLabelTextBox
+            // 
+            this.grandTotalLabelTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(1.79D));
+            this.grandTotalLabelTextBox.Name = "grandTotalLabelTextBox";
+            this.grandTotalLabelTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalLabelTextBox.Style.Font.Bold = true;
+            this.grandTotalLabelTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalLabelTextBox.Value = "Grand Total:";
+            // 
+            // grandTotalPlanTextBox
+            // 
+            this.grandTotalPlanTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.05D), Telerik.Reporting.Drawing.Unit.Inch(1.79D));
+            this.grandTotalPlanTextBox.Name = "grandTotalPlanTextBox";
+            this.grandTotalPlanTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalPlanTextBox.Style.Font.Bold = true;
+            this.grandTotalPlanTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalPlanTextBox.Value = "= Format(\"Plan: {0:N2}\", Fields.GrandTotalPlan)";
+            // 
+            // grandTotalActualTextBox
+            // 
+            this.grandTotalActualTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.9D), Telerik.Reporting.Drawing.Unit.Inch(1.79D));
+            this.grandTotalActualTextBox.Name = "grandTotalActualTextBox";
+            this.grandTotalActualTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalActualTextBox.Style.Font.Bold = true;
+            this.grandTotalActualTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalActualTextBox.Value = "= Format(\"Actual: {0:N2}\", Fields.GrandTotalActual)";
+            // 
+            // grandTotalPercentTextBox
+            // 
+            this.grandTotalPercentTextBox.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.75D), Telerik.Reporting.Drawing.Unit.Inch(1.79D));
+            this.grandTotalPercentTextBox.Name = "grandTotalPercentTextBox";
+            this.grandTotalPercentTextBox.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.9D), Telerik.Reporting.Drawing.Unit.Inch(0.3D));
+            this.grandTotalPercentTextBox.Style.Font.Bold = true;
+            this.grandTotalPercentTextBox.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.grandTotalPercentTextBox.Value = "= Format(\"Achievement: {0:N2}%\", Fields.GrandTotalPercent)";
+            // 
             // headerSubReportLandScape1
             // 
             this.headerSubReportLandScape1.Name = "HeaderSubReportLandScape";
@@ -1090,7 +1225,7 @@
             // 
             // detail
             // 
-            this.detail.Height = Telerik.Reporting.Drawing.Unit.Inch(1.8624600172042847D);
+            this.detail.Height = Telerik.Reporting.Drawing.Unit.Inch(2.25D);
             this.detail.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox32,
             this.textBox33,
@@ -1098,7 +1233,11 @@
             this.textBox15,
             this.textBox17,
             this.textBox16,
-            this.table1});
+            this.table1,
+            this.grandTotalLabelTextBox,
+            this.grandTotalPlanTextBox,
+            this.grandTotalActualTextBox,
+            this.grandTotalPercentTextBox});
             this.detail.Name = "detail";
             // 
             // textBox32
@@ -1472,6 +1611,9 @@
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.40585038065910339D)));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.49970555305480957D)));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.4372422993183136D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.45D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.45D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.45D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.12556527554988861D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.11754124611616135D)));
             this.table4.Body.SetCellContent(0, 41, this.textBox2, 2, 1);
@@ -1520,6 +1662,9 @@
             this.table4.Body.SetCellContent(0, 45, this.textBox225, 2, 1);
             this.table4.Body.SetCellContent(0, 46, this.textBox229, 2, 1);
             this.table4.Body.SetCellContent(0, 3, this.textBox6, 2, 1);
+            this.table4.Body.SetCellContent(0, 47, this.totalPlanTextBox, 2, 1);
+            this.table4.Body.SetCellContent(0, 48, this.totalActualTextBox, 2, 1);
+            this.table4.Body.SetCellContent(0, 49, this.totalPercentTextBox, 2, 1);
             tableGroup2.Name = "group67";
             tableGroup1.ChildGroups.Add(tableGroup2);
             tableGroup1.Name = "group66";
@@ -1776,6 +1921,30 @@
             tableGroup101.ChildGroups.Add(tableGroup106);
             tableGroup101.Name = "group62";
             tableGroup101.ReportItem = this.textBox221;
+            Telerik.Reporting.TableGroup totalPlanLeafGroup = new Telerik.Reporting.TableGroup();
+            totalPlanLeafGroup.Name = "totalPlanLeafGroup";
+            Telerik.Reporting.TableGroup totalPlanGroup = new Telerik.Reporting.TableGroup();
+            totalPlanGroup.ChildGroups.Add(totalPlanLeafGroup);
+            totalPlanGroup.Name = "totalPlanGroup";
+            totalPlanGroup.ReportItem = this.totalPlanHeaderTextBox;
+            Telerik.Reporting.TableGroup totalActualLeafGroup = new Telerik.Reporting.TableGroup();
+            totalActualLeafGroup.Name = "totalActualLeafGroup";
+            Telerik.Reporting.TableGroup totalActualGroup = new Telerik.Reporting.TableGroup();
+            totalActualGroup.ChildGroups.Add(totalActualLeafGroup);
+            totalActualGroup.Name = "totalActualGroup";
+            totalActualGroup.ReportItem = this.totalActualHeaderTextBox;
+            Telerik.Reporting.TableGroup totalPercentLeafGroup = new Telerik.Reporting.TableGroup();
+            totalPercentLeafGroup.Name = "totalPercentLeafGroup";
+            Telerik.Reporting.TableGroup totalPercentGroup = new Telerik.Reporting.TableGroup();
+            totalPercentGroup.ChildGroups.Add(totalPercentLeafGroup);
+            totalPercentGroup.Name = "totalPercentGroup";
+            totalPercentGroup.ReportItem = this.totalPercentHeaderTextBox;
+            Telerik.Reporting.TableGroup totalColumnGroup = new Telerik.Reporting.TableGroup();
+            totalColumnGroup.ChildGroups.Add(totalPlanGroup);
+            totalColumnGroup.ChildGroups.Add(totalActualGroup);
+            totalColumnGroup.ChildGroups.Add(totalPercentGroup);
+            totalColumnGroup.Name = "totalColumnGroup";
+            totalColumnGroup.ReportItem = this.totalHeaderTextBox;
             this.table4.ColumnGroups.Add(tableGroup1);
             this.table4.ColumnGroups.Add(tableGroup3);
             this.table4.ColumnGroups.Add(tableGroup5);
@@ -1794,6 +1963,7 @@
             this.table4.ColumnGroups.Add(tableGroup87);
             this.table4.ColumnGroups.Add(tableGroup94);
             this.table4.ColumnGroups.Add(tableGroup101);
+            this.table4.ColumnGroups.Add(totalColumnGroup);
             this.table4.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox166,
             this.textBox162,
@@ -1900,7 +2070,14 @@
             this.textBox221,
             this.textBox123,
             this.textBox224,
-            this.textBox228});
+            this.textBox228,
+            this.totalPlanTextBox,
+            this.totalActualTextBox,
+            this.totalPercentTextBox,
+            this.totalHeaderTextBox,
+            this.totalPlanHeaderTextBox,
+            this.totalActualHeaderTextBox,
+            this.totalPercentHeaderTextBox});
             this.table4.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0D));
             this.table4.Name = "table4";
             tableGroup109.Name = "group2";
@@ -1910,7 +2087,7 @@
             tableGroup108.Groupings.Add(new Telerik.Reporting.Grouping(null));
             tableGroup108.Name = "detailTableGroup1";
             this.table4.RowGroups.Add(tableGroup108);
-            this.table4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(20.592388153076172D), Telerik.Reporting.Drawing.Unit.Inch(0.69221222400665283D));
+            this.table4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(21.942388153076172D), Telerik.Reporting.Drawing.Unit.Inch(0.69221222400665283D));
             this.table4.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.table4.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.table4.Style.Padding.Left = Telerik.Reporting.Drawing.Unit.Point(0D);
@@ -2661,6 +2838,17 @@
         private Telerik.Reporting.TextBox textBox224;
         private Telerik.Reporting.TextBox textBox228;
         private Telerik.Reporting.TextBox textBox221;
+        private Telerik.Reporting.TextBox totalHeaderTextBox;
+        private Telerik.Reporting.TextBox totalPlanHeaderTextBox;
+        private Telerik.Reporting.TextBox totalActualHeaderTextBox;
+        private Telerik.Reporting.TextBox totalPercentHeaderTextBox;
+        private Telerik.Reporting.TextBox totalPlanTextBox;
+        private Telerik.Reporting.TextBox totalActualTextBox;
+        private Telerik.Reporting.TextBox totalPercentTextBox;
+        private Telerik.Reporting.TextBox grandTotalLabelTextBox;
+        private Telerik.Reporting.TextBox grandTotalPlanTextBox;
+        private Telerik.Reporting.TextBox grandTotalActualTextBox;
+        private Telerik.Reporting.TextBox grandTotalPercentTextBox;
         private Telerik.Reporting.TextBox textBox6;
         private Telerik.Reporting.TextBox textBox5;
         private Telerik.Reporting.ReportHeaderSection reportHeaderSection1;

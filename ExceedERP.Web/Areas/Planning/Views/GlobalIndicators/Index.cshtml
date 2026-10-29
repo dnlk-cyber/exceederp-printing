@@ -1,12 +1,27 @@
 ﻿<legend>Indicators</legend>
+@Html.Partial("_PlanningHierarchyImport")
+
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.GlobalIndicator>()
       .Name("grid")
       .Columns(columns =>
       {
           columns.Bound(c => c.GlobalIndicatorId).Title("S.N").Width(60);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").Title("Department").EditorTemplateName("WorkUnit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
           columns.Bound(c => c.Indicator).Width(250);
+          columns.Bound(c => c.IsActive).ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsActive#' " +
+             "# if (IsActive) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>"
+             ).Width(100);
           columns.Bound(c => c.Description).Width(250);
-          columns.Command(command => { command.Edit(); command.Destroy(); });
+          columns.Command(command => {
+              command.Edit();
+              command.Custom("").Click("EnableOrDisableActive").Text("Enable or Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable ", @id = "enableDisable" });
+
+              command.Destroy();
+          }).Width(300);
       })
       .ToolBar(toolbar => {
           toolbar.Create();
@@ -14,15 +29,69 @@
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Pageable()
       .Filterable()
+      .Events(ev => ev.DataBound("onDataBound"))
       .Scrollable(h=>h.Height(550))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(sort=>sort.Add(x=>x.GlobalIndicatorId).Descending())
           .Model(model => { model.Id(p => p.GlobalIndicatorId);
               model.Field(p => p.GlobalIndicatorId).Editable(false);
+              model.Field(p => p.IsActive).Editable(false);
           })
-          .Read(read => read.Action("GlobalIndicators_Read", "GlobalIndicators"))
-          .Create(create => create.Action("GlobalIndicators_Create", "GlobalIndicators"))
-          .Update(update => update.Action("GlobalIndicators_Update", "GlobalIndicators"))
-          .Destroy(destroy => destroy.Action("GlobalIndicators_Destroy", "GlobalIndicators"))
+          .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("GlobalIndicators_Read", "GlobalIndicators").Data("sendForgery"))
+          .Create(create => create.Action("GlobalIndicators_Create", "GlobalIndicators").Data("sendForgery"))
+          .Update(update => update.Action("GlobalIndicators_Update", "GlobalIndicators").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("GlobalIndicators_Destroy", "GlobalIndicators").Data("sendForgery"))
       )
 )
+
+<script>
+    
+    function EnableOrDisableActive(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#grid" ).data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.GlobalIndicatorId;
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("EnableOrDisable", "GlobalIndicators")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if (model.IsActive) {
+                //$(this).find(".k-grid-cmd-EnableOrDisable").hide();
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+
+
+        });
+
+
+    }
+</script>

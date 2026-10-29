@@ -15,30 +15,22 @@ using System.IO;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Planning.Controllers
 {
-    [AuthorizeRoles(PlanningRoles.Planning_Admin, PlanningRoles.Planning_User)]
+    [AuthorizeRoles(PlanningRoles.Planning_Admin,
+                    PlanningRoles.Planning_User,
+                    HrmConstants.HRDepartmentHead,
+                    HrmConstants.HREmployeeSelfService)]
     public class ActualSelfCaresController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {
-            var objectives = db.Objectives.Select(O => new
-            {
-                O.ObjectiveId,
-                O.Name,
-                O.Description
-
-            }).ToList();
-            var indicators = db.Indicators.Select(I => new
-            {
-                I.IndicatorId,
-                I.Name,
-                I.Description,
-                I.KPIType
-            }).ToList();
+            var objectives = PlanningSelfCareHelper.GetDepartmentObjectiveList(db, User.Identity.Name);
+            var indicators = PlanningSelfCareHelper.GetDepartmentIndicatorList(db, User.Identity.Name);
             var fiscalYears = from f in db.GLFiscalYears
                               join
                     p in db.Plans on f.GlFiscalYearId equals p.GlFiscalYearId
@@ -51,7 +43,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             ViewData["GlFiscalYears"] = fiscalYears.DistinctByField(x => x.GlFiscalYearId).ToList();
             ViewData["Objectives"] = objectives;
             ViewData["Indicators"] = indicators;
-            ViewData["GlobalIndicators"] = db.GlobalIndicators.Select(x => new { x.GlobalIndicatorId, x.Indicator });
+            ViewData["GlobalIndicators"] = PlanningSelfCareHelper.GetDepartmentGlobalIndicatorList(db, User.Identity.Name);
             ViewData["periods"] = db.GLPeriods.ToList().Select(x => new { x.GLPeriodId, period = x.Name }).ToList();
             ViewData["departmentLists"] = db.MainCompanyStructures.ToList();
 

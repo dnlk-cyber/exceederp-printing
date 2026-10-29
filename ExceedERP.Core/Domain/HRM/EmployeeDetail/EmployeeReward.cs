@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
@@ -31,8 +31,17 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Display(Name = "Reason for Reward ")]
         public string ReasonForReward { get; set; }
         public string AwardedBy { get; set; }
+        public decimal? Salary { get; set; }
+        [Display(Name = "Person of Salary ")]
+        public decimal? PersonOfSalary { get; set; }
         public decimal? Amount { get; set; }
         public string Unit { get; set; }
+        [Display(Name = "Fiscal_Year", ResourceType = typeof(Localization.Resources))]
+        public int? GlFiscalYearId { get; set; }
+        [Display(Name = "HR_Attendance_EmpPayrollNoDaysWorked_PeriodId", ResourceType = typeof(Localization.Resources))]
+        public int? GLPeriodId { get; set; }
+        [Display(Name = "Account")]
+        public string PayrollAccount { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
     }
@@ -45,6 +54,38 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         Vacation,
         Others
     }
+    public class RewardSetting
+    {
+        [Key]
+        public int RewardSettingId { get; set; }
+        /// <summary>
+        /// Minimum number of months an employee must serve to be eligible for a reward.
+        /// </summary>
+        [Display(Name = "Minimum Months Required for Reward")]
+        public int MinimumMonthsRequired { get; set; } = 6;
+
+        /// <summary>
+        /// Whether employees who are newly hired (less than MinimumMonthsRequired) are allowed rewards.
+        /// </summary>
+        [Display(Name = "Allow New Employees")]
+        public bool AllowNewEmployees { get; set; } = false;
+
+        /// <summary>
+        /// Whether employees who are transferred within the MinimumMonthsRequired period are allowed rewards.
+        /// </summary>
+        
+        [Display(Name = "Allow Recently Transferred Employees")]
+        public bool AllowTransferredEmployees { get; set; } = false;
+
+        /// <summary>
+        /// Whether employees with active disciplinary actions are allowed rewards.
+        /// </summary>
+        [Display(Name = "Allow Employees with Disciplinary Records")]
+        public bool AllowDisciplinedEmployees { get; set; } = false;
+        [Display(Name = "Maximum Months Disciplined Employees Must Wait")]
+        public int MaximumDisciplinedMonthsRequired { get; set; } = 6;
+    }
+
 
 
 }

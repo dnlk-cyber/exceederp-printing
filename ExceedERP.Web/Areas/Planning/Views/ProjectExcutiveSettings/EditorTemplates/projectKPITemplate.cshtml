@@ -9,7 +9,7 @@
                                     .DataValueField("ProjectKPIId")
                                     .DataSource(dataSource =>
                                     {
-                                        dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }))
+                                        dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery"))
                                             .ServerFiltering(false);
                                     })
                                     .Filter("contains")

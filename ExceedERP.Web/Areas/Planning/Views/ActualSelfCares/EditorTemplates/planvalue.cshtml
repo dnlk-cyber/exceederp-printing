@@ -5,7 +5,7 @@
             .DataValueField("monthlyPlanId")
             .DataSource(dataSource =>
             {
-                dataSource.Read(read => read.Action("GetPlannedForActual", "PlanningDataProvider", new { Area = "Planning" }).Data("filterObjective"))
+                dataSource.Read(read => read.Action("GetPlannedForActual", "PlanningDataProvider", new { Area = "Planning" }).Data("sendForgery").Data("filterObjective"))
                     .ServerFiltering(true);
             })
             .Filter("contains")

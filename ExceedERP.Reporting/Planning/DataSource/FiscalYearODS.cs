@@ -19,6 +19,24 @@ namespace ExceedERP.Reporting.Planning.DataSource
 
             return db.GLFiscalYears.ToList();
         }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<FiscalYearValue> GetFiscalYearValues()
+        {
+            return db.GLFiscalYears
+                .OrderByDescending(x => x.DateFrom)
+                .Select(x => new FiscalYearValue
+                {
+                    FiscalYear = x.DateFrom.Year,
+                    Name = x.Name
+                })
+                .ToList();
+        }
     }
-    
+
+    public class FiscalYearValue
+    {
+        public int FiscalYear { get; set; }
+        public string Name { get; set; }
+    }
 }

@@ -52,10 +52,10 @@
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-                  .Read(read => read.Action("ProjectPlanSelfCares_Read", "ProjectPlanSelfCares"))
-                  .Create(create => create.Action("ProjectPlanSelfCares_Create", "ProjectPlanSelfCares"))
-                  .Update(update => update.Action("ProjectPlanSelfCares_Update", "ProjectPlanSelfCares"))
-                  .Destroy(destroy => destroy.Action("ProjectPlanSelfCares_Destroy", "ProjectPlanSelfCares"))
+                  .Read(read => read.Action("ProjectPlanSelfCares_Read", "ProjectPlanSelfCares").Data("sendForgery"))
+                  .Create(create => create.Action("ProjectPlanSelfCares_Create", "ProjectPlanSelfCares").Data("sendForgery"))
+                  .Update(update => update.Action("ProjectPlanSelfCares_Update", "ProjectPlanSelfCares").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectPlanSelfCares_Destroy", "ProjectPlanSelfCares").Data("sendForgery"))
               ).ClientDetailTemplateId("project_Plan_Self_details")
 )
 
@@ -94,9 +94,9 @@
                   .Model(model => { model.Id(p => p.ProjectMonthlyPlanId);
                       model.Field(p => p.GLPeriodId).Editable(false);
                   })
-                  .Read(read => read.Action("ProjectMonthlyPlans_Read", "ProjectMonthlyPlans",new { pMId = "#=ProjectPlanId#" }))
-                  .Update(update => update.Action("ProjectMonthlyPlans_Update", "ProjectMonthlyPlans"))
-                  .Destroy(destroy => destroy.Action("ProjectMonthlyPlans_Destroy", "ProjectMonthlyPlans"))
+                  .Read(read => read.Action("ProjectMonthlyPlans_Read", "ProjectMonthlyPlans",new { pMId = "#=ProjectPlanId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("ProjectMonthlyPlans_Update", "ProjectMonthlyPlans").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectMonthlyPlans_Destroy", "ProjectMonthlyPlans").Data("sendForgery"))
               ).ClientDetailTemplateId("project_weekly_plan_self_detail")
               .ToClientTemplate()
     )
@@ -132,10 +132,10 @@
               .DataSource(dataSource => dataSource
                   .Ajax()
                   .Model(model => model.Id(p => p.ProjectWeeklyPlanId))
-                  .Read(read => read.Action("ProjectWeeklyPlans_Read", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }))
-                  .Create(create => create.Action("ProjectWeeklyPlans_Create", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }))
-                  .Update(update => update.Action("ProjectWeeklyPlans_Update", "ProjectWeeklyPlans"))
-                  .Destroy(destroy => destroy.Action("ProjectWeeklyPlans_Destroy", "ProjectWeeklyPlans"))
+                  .Read(read => read.Action("ProjectWeeklyPlans_Read", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }).Data("sendForgery"))
+                  .Create(create => create.Action("ProjectWeeklyPlans_Create", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("ProjectWeeklyPlans_Update", "ProjectWeeklyPlans").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("ProjectWeeklyPlans_Destroy", "ProjectWeeklyPlans").Data("sendForgery"))
               ).ToClientTemplate()
         )
             </text>);
