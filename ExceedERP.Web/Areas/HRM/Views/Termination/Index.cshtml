@@ -182,7 +182,6 @@
         .Filterable()
         .Events(x =>
         {
-            x.DetailExpand("onDetailExpand");
             x.DataBound("onDataBound");
             x.Save("GetDate");
             x.Edit("GetDate");
@@ -693,68 +692,32 @@
 </script>
 
 <script>
-    var masterId = 0;
-    var empId = 0;
-    function onDetailExpand(e) {
-        var masterRow = e.masterRow;
-        var masterGrid = $("#TerminationGrid").data("kendoGrid");
-        var masterDataItem = masterGrid.dataItem(masterRow);
-        masterId = masterDataItem.TerminationId;
-        empId = masterDataItem.EmployeeId;
-    }
-    
     function filterEmployees() {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
         };
     }
 
-
-    function Paid(e)
-    {
-        // Prevent default anchor behavior if necessary
-        e.preventDefault();
-
-        // 1. Get the current grid row and the data item associated with it
-        var tr = $(e.currentTarget).closest("tr");
-    
-        // Find the grid instance that contains this row
-        var grid = tr.closest(".k-grid").data("kendoGrid");
-        var dataItem = grid.dataItem(tr);
-
-        if (!dataItem) {
-            return;
-        }
-
-        // 2. Extract the fiscal year ID and Employee ID directly from the data item
-        var fiscalYearId = dataItem.GlFiscalYearId;
-    
-        // Since the parent/master row provides the EmployeeId in your client template, 
-        // you can access it via dataItem.EmployeeId (or via the parent grid context if needed)
-        var employeeId = dataItem.EmployeeId; 
-
-        if (employeeId && fiscalYearId) {
+    function Paid() {
+        var Gidd = $("#GlFiscalYearId").data("kendoDropDownList");
+        var gid = Gidd.value();
+        var Idd = $("#EmployeeId").data("kendoDropDownList");
+        var id = Idd.value();
+        if (id !== null && gid !== null) {
             $.ajax({
-                url: '@Url.Action("Paid", "Termination", new { Area = "HRM" })',
-                data: { employeeId: employeeId, fiscalYearId: fiscalYearId },
+                url: '@Url.Action("Paid", "Termination")',
+                data: { employeeId: id, fiscalYearId: gid },
                 type: 'POST',
                 cache: false,
                 success: function (result) {
                     if (result === true) {
                         alert("Paid successfully");
-                        grid.dataSource.read(); // Refresh grid to reflect changes
                     } else {
                         alert("Paid not successfully");
                     }
-                },
-                error: function () {
-                    alert("An error occurred while processing the request.");
                 }
             });
-        } else {
-            alert("Employee ID or Fiscal Year ID is missing.");
         }
-
     }
 
     function sync_handler(e) {

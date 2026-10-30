@@ -1455,8 +1455,10 @@
     <Compile Include="Areas\HRM\Controllers\Discipline\HRMContributionSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\HRMDataProviderController.cs" />
     <Compile Include="Areas\HRM\Controllers\HRMJobsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\CompanyLeaveWorkflowSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\GenerateLeaveEntitlementController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveConfigurationsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeaveEntitlementHistoryController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveEntitlementSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveEntitleStartingDateController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveModel.cs" />
@@ -1793,6 +1795,8 @@
     <Compile Include="Areas\HRM\Controllers\Template\TemplatesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Template\TemplateTypeSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Termination\LeaveTerminationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Termination\StaffDebtorBalanceController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Termination\TerminationSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\DepartmentNeedAssessmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\EducationRequestStatusController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\EmployeesInAssessmentsController.cs" />
@@ -7998,6 +8002,8 @@
     <Content Include="Areas\Planning\Views\Shared\EditorTemplates\workUnit.cshtml" />
     <Content Include="Areas\Planning\Views\Shared\_PlanningHierarchyImport.cshtml" />
     <Content Include="Areas\Planning\Views\StrategicPlans\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\TemplateHeaderImage\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\DisciplinaryCase\EditorTemplates\ListOfEmployee.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

@@ -10,7 +10,7 @@
                     .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetMonths", "HRMDataProvider", new { area = "HRM" }).Data("filterMonth"))
+                              dataSource.Read(read => read.Action("GetMonths", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterMonth"))
                                  .ServerFiltering(true);
                           })
                          .ValuePrimitive(true)

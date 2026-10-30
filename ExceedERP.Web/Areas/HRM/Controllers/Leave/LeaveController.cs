@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -22,11 +21,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     public class LeaveController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         HRMInputs inputs = new HRMInputs();
-        public static DateTime To { get; set; }
-        public static string ToAmharic { get; set; }
-        public static DateTime From { get; set; }
-        public static string FromAmharic { get; set; }
         public ActionResult Index()
         {
 
@@ -35,12 +31,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         private void PopulateViewData()
         {
-            var periodList = db.GLFiscalYears;
-            ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
-            db.Configuration.ProxyCreationEnabled = false;
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
-            ViewData["AllEmployeeList"] =db.Person_Employee.AsQueryable();
+            ViewData["PeriodList"] = CacheData.GetFiscalYearCaches().Select(
+            i => new
+            {
+                Name = i.Name,
+                GlFiscalYearId = i.Id,
+            }).AsQueryable();
+
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+              i => new
+              {
+                  FullNameAmharic = i.AmharicName,
+                  FullNameaEnglish = i.Name,
+                  EmployeeId = i.Id,
+              }).AsQueryable();
+            ViewData["AllEmployeeList"] = CacheData.GetEmployeeCaches().Select(
+              i => new
+              {
+                  FullNameAmharic = i.AmharicName,
+                  FullNameaEnglish = i.Name,
+                  EmployeeId = i.Id,
+              }).AsQueryable();
+
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
         }
         public ActionResult GetEmployees([DataSourceRequest] DataSourceRequest request)
         {
@@ -75,23 +89,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
 
             return Json(periodList.Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
-        }
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromAmharic")
-            {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else if (name == "ToAmharic")
-            {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-
-
         }
 
         public ActionResult RemoveRedundantLeaves()
@@ -132,38 +129,75 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AuthorizeRoles(HrmConstants.HRLeaveAdmin, HrmConstants.HRAdmin, HrmConstants.HRLeaveUser)]
         public ActionResult Leaves_Read([DataSourceRequest]DataSourceRequest request)
         {
-            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<int> employees = inputs.GetUserBranchAllEmployees(User.Identity.Name);
-            IQueryable<Core.Domain.HRM.LeaveManagment.Leave> leaves = db.Leaves.Where(x => employees.Contains(x.EmployeeId));
-            DataSourceResult result = leaves.ToDataSourceResult(request, leave => new
-            {
-                TakenLeaveId = leave.TakenLeaveId,
-                EmployeeId = leave.EmployeeId,
-                LeaveType = leave.LeaveType,
-                Amount = leave.Amount,
-                GlFiscalYearId = leave.GlFiscalYearId,
-                From = leave.From,
-                To = leave.To,
-                OrgName = leave.OrgName,
-                Before = leave.Before,
-                After = leave.After,
-                Remark = leave.Remark,
-                EmployeeCode = leave.EmployeeCode,
-                FromAmharic = leave.FromAmharic,
-                ToAmharic = leave.ToAmharic,
-                DateCreated = leave.DateCreated,
-                LastModified = leave.LastModified,
-                CreatedBy = leave.CreatedBy,
-                ModifiedBy = leave.ModifiedBy,
-                OrgBranchName = leave.OrgBranchName,
-                Hours = leave.Hours,
-                Day = leave.Day,
-                MorningOrAfternoon = leave.MorningOrAfternoon,
-                LeaveActionTypes = leave.LeaveActionTypes
-            });
+            List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            HashSet<int> employeeIds = new HashSet<int>( db.Placements.Where(x => myBranches.Contains(x.BranchId)).OrderByDescending(x => x.AssignmentDate).Select(x=>x.EmployeeId));
 
+            // Apply projection before filtering to reduce data transfer
+            var query = db.Leaves
+                .Where(x => employeeIds.Contains(x.EmployeeId))
+                .Select(leave => new
+                {
+                    leave.TakenLeaveId,
+                    leave.EmployeeId,
+                    leave.LeaveType,
+                    leave.Amount,
+                    leave.GlFiscalYearId,
+                    leave.From,
+                    leave.To,
+                    leave.OrgName,
+                    leave.Before,
+                    leave.After,
+                    leave.Remark,
+                    leave.EmployeeCode,
+                    leave.FromAmharic,
+                    leave.ToAmharic,
+                    leave.DateCreated,
+                    leave.LastModified,
+                    leave.CreatedBy,
+                    leave.ModifiedBy,
+                    leave.OrgBranchName,
+                    leave.Hours,
+                    leave.Day,
+                    leave.MorningOrAfternoon,
+                    leave.LeaveActionTypes
+                });
+
+            DataSourceResult result = query.ToDataSourceResult(request);
             return Json(result);
         }
+        //public ActionResult Leaves_Read([DataSourceRequest]DataSourceRequest request)
+        //{
+        //    List<int> employees = inputs.GetUserBranchAllEmployees(User.Identity.Name);
+        //    IQueryable<Core.Domain.HRM.LeaveManagment.Leave> leaves = db.Leaves.Where(x => employees.Contains(x.EmployeeId));
+        //    DataSourceResult result = leaves.ToDataSourceResult(request, leave => new
+        //    {
+        //        TakenLeaveId = leave.TakenLeaveId,
+        //        EmployeeId = leave.EmployeeId,
+        //        LeaveType = leave.LeaveType,
+        //        Amount = leave.Amount,
+        //        GlFiscalYearId = leave.GlFiscalYearId,
+        //        From = leave.From,
+        //        To = leave.To,
+        //        OrgName = leave.OrgName,
+        //        Before = leave.Before,
+        //        After = leave.After,
+        //        Remark = leave.Remark,
+        //        EmployeeCode = leave.EmployeeCode,
+        //        FromAmharic = leave.FromAmharic,
+        //        ToAmharic = leave.ToAmharic,
+        //        DateCreated = leave.DateCreated,
+        //        LastModified = leave.LastModified,
+        //        CreatedBy = leave.CreatedBy,
+        //        ModifiedBy = leave.ModifiedBy,
+        //        OrgBranchName = leave.OrgBranchName,
+        //        Hours = leave.Hours,
+        //        Day = leave.Day,
+        //        MorningOrAfternoon = leave.MorningOrAfternoon,
+        //        LeaveActionTypes = leave.LeaveActionTypes
+        //    });
+
+        //    return Json(result);
+        //}
 
         [AuthorizeRoles(HrmConstants.HRLeaveUser)]
         [AcceptVerbs(HttpVerbs.Post)]
@@ -206,9 +240,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         .FirstOrDefault(x => x.EmployeeId == leave.EmployeeId && x.GlFiscalYearId == leave.GlFiscalYearId);
                 if (leavePlans != null)
                 {
-                    if (From.Date >= leavePlans.From.Date && To.Date <= leavePlans.To.Date)
+                    if (leave.From.Date >= leavePlans.From.Date && leave.To.Date <= leavePlans.To.Date)
                     {
-                        leave.Amount = Convert.ToDecimal((To.Date - From.Date).TotalDays);
+                        leave.Amount = Convert.ToDecimal((leave.To.Date - leave.From.Date).TotalDays);
                         if (leave.Amount > leavePlans.LeaveAmount)
                         {
                             messages = "The requested amount is greater than your plan!!";
@@ -217,7 +251,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         }
 
                     }
-                    else if (From.Date < leavePlans.From.Date || To.Date > leavePlans.To.Date)
+                    else if (leave.From.Date < leavePlans.From.Date || leave.To.Date > leavePlans.To.Date)
                     {
                         ModelState.AddModelError("", "Date you select is out of your Plan date range!!");
                         //return new JavaScriptResult() { Script = "alert('" + messages + "');" };
@@ -239,20 +273,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var leavetaken = db.Leaves.FirstOrDefault(x => x.EmployeeId == leave.EmployeeId && x.GlFiscalYearId == leave.GlFiscalYearId);
             if (leave != null)
             {
-                if (From.Date >= leave.From && From.Date <= leave.To)
+                if (leave.From.Date >= leave.From && leave.From.Date <= leave.To)
                 {
                     ModelState.AddModelError("", "Intial date over lap other leave taken date");
                 }
-                if (To.Date >= leave.From && To.Date <= leave.To)
+                if (leave.To.Date >= leave.From && leave.To.Date <= leave.To)
                 {
                     ModelState.AddModelError("", "End date over lap other leave taken date");
                 }
             }
-            if (FromAmharic == null || ToAmharic == null)
+            if (string.IsNullOrEmpty(leave.FromAmharic)|| string.IsNullOrEmpty(leave.ToAmharic))
             {
                 ModelState.AddModelError("", "Date form and to values are mandatory!!");
             }
-            else if (From.Date > To.Date)
+            else if (leave.From.Date > leave.To.Date)
             {
                 ModelState.AddModelError("", "Please Check the date range!!");
             }
@@ -265,13 +299,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 {
                     foreach (var h in holidayList)
                     {
-                        if (h.Date >= From && h.Date <= To)
+                        if (h.Date >= leave.From && h.Date <= leave.To)
                         {
                             count++;
                         }
                     }
                 }
-                weekDays = GetWeekDays(From, To);
+                weekDays = GetWeekDays(leave.From, leave.To);
 
                 var entity = new Core.Domain.HRM.LeaveManagment.Leave
                 {
@@ -279,15 +313,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     LeaveType = leave.LeaveType,
                     Amount = leave.Amount,
                     GlFiscalYearId = leave.GlFiscalYearId,
-                    From = From,
-                    To = To,
+                    From = leave.From,
+                    To = leave.To,
                     OrgName = leave.OrgName,
                     Before = leave.Before,
                     After = leave.After,
                     Remark = leave.Remark,
                     EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == leave.EmployeeId).EmployeeCode,
-                    FromAmharic = FromAmharic,
-                    ToAmharic = ToAmharic,
+                    FromAmharic = leave.FromAmharic,
+                    ToAmharic = leave.ToAmharic,
                     DateCreated = leave.DateCreated,
                     LastModified = leave.LastModified,
                     CreatedBy = leave.CreatedBy,
@@ -297,8 +331,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     Day = leave.Day,
                     MorningOrAfternoon = leave.MorningOrAfternoon,
                 };
-                entity.From = From;
-                entity.To = To;
+                entity.From = leave.From;
+                entity.To = leave.To;
 
                 if (entity.LeaveType != LeaveType.ANNUAL)
                 {
@@ -311,14 +345,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 if (entity.LeaveType == LeaveType.ANNUAL)
                 {
-                    entity.Amount = To.Subtract(From).Days + 1 - count;
+                    entity.Amount = leave.To.Subtract(leave.From).Days + 1 - count;
                     entity.Amount = entity.Amount - Convert.ToDecimal(weekDays);
                     if (leave.Day == LeaveDay.Half_Day)
                     {
-                        decimal checkWeekEnd = To.Subtract(From).Days + 1 - count;
-                        double amt = GetHalf(From, To);
-                        double notHalf = GetNotHalf(From, To);
-                        bool isHalf = IsHalf(From, To);
+                        decimal checkWeekEnd = leave.To.Subtract(leave.From).Days + 1 - count;
+                        double amt = GetHalf(leave.From, leave.To);
+                        double notHalf = GetNotHalf(leave.From, leave.To);
+                        bool isHalf = IsHalf(leave.From, leave.To);
                         if (isHalf)
                         {
                             entity.Amount = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
@@ -341,7 +375,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 {
                     // entity.Amount = To.Subtract(From).Days;
 
-                    entity.Amount = To.Subtract(From).Days + 1;
+                    entity.Amount = leave.To.Subtract(leave.From).Days + 1;
 
                     if (entity.Day == LeaveDay.Half_Day&&entity.LeaveType != LeaveType.DayOff)
                     {
@@ -512,21 +546,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
+                if (leave.FromAmharic == null)
                 {
-                    FromAmharic = leave.FromAmharic;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]),
+                    leave.FromAmharic = leave.FromAmharic;
+                    var splitDate = leave.FromAmharic.Split('/');
+                    leave.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]),
                         Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
                 }
-                if (ToAmharic == null)
+                if (leave.ToAmharic == null)
                 {
-                    ToAmharic = leave.ToAmharic;
-                    var splitDate = FromAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]),
+                    leave.ToAmharic = leave.ToAmharic;
+                    var splitDate = leave.FromAmharic.Split('/');
+                    leave.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]),
                         Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
                 }
-                if (From.Date > To.Date)
+                if (leave.From.Date > leave.To.Date)
                 {
                     ModelState.AddModelError("", "Please Check the date range!!");
                 }
@@ -537,13 +571,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     {
                         foreach (var h in holidayList)
                         {
-                            if (h.Date >= From && h.Date <= To)
+                            if (h.Date >= leave.From && h.Date <= leave.To)
                             {
                                 count++;
                             }
                         }
                     }
-                    weekDays = GetWeekDays(From, To);
+                    weekDays = GetWeekDays(leave.From, leave.To);
                     var entity = new Core.Domain.HRM.LeaveManagment.Leave
                     {
                         TakenLeaveId = leave.TakenLeaveId,
@@ -551,8 +585,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         LeaveType = leave.LeaveType,
                         Amount = leave.Amount,
                         GlFiscalYearId = leave.GlFiscalYearId,
-                        From = From,
-                        To = To,
+                        From = leave.From,
+                        To = leave.To,
                         OrgName = leave.OrgName,
                         Before = leave.Before,
                         After = leave.After,
@@ -562,8 +596,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                 .GetEmployees()
                                 .FirstOrDefault(x => x.PersonId == leave.EmployeeId)
                                 .EmployeeCode,
-                        FromAmharic = FromAmharic,
-                        ToAmharic = ToAmharic,
+                        FromAmharic = leave.FromAmharic,
+                        ToAmharic = leave.ToAmharic,
                         DateCreated = leave.DateCreated,
                         LastModified = leave.LastModified,
                         CreatedBy = leave.CreatedBy,
@@ -613,7 +647,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                     if (entity.LeaveType == LeaveType.ANNUAL)
                     {
-                        entity.Amount = To.Subtract(From).Days + 1 - count;
+                        entity.Amount = leave.To.Subtract(leave.From).Days + 1 - count;
                         entity.Amount = entity.Amount - Convert.ToDecimal(weekDays);
                         if (leave.Day == LeaveDay.Half_Day)
                         {
@@ -626,7 +660,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     }
                     else
                     {
-                        entity.Amount = To.Subtract(From).Days;
+                        entity.Amount = leave.To.Subtract(leave.From).Days;
                     }
 
 

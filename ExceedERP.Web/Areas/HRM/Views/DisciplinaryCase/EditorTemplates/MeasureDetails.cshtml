@@ -8,7 +8,7 @@
                      .CascadeFrom("MeasuresId")
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetMeasureDetails", "HRMDataProvider", new { area = "HRM" }).Data("filterMeasure"))
+          dataSource.Read(read => read.Action("GetMeasureDetails", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterMeasure"))
               .ServerFiltering(true);
       })
                  .ValuePrimitive(true)

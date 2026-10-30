@@ -3072,6 +3072,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Competency> Competencies { get; set; }
         public DbSet<JobTitleCode> JobTitleCodes { get; set; }
         public DbSet<Termination> Terminations { get; set; }
+        public DbSet<StaffDebtorBalance> StaffDebtorBalances { get; set; }
 
         public DbSet<TerminationPMValidation> TerminationPMValidations { get; set; }
 

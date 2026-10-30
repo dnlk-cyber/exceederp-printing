@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;

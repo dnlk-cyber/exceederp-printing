@@ -67,47 +67,57 @@
         <div class="row template-editor-row">
             <div class="col-md-8">
                 <div class="template-section-card">
-                    <h5><i class="fa fa-edit"></i> Document Content @if (!string.IsNullOrEmpty(ViewBag.WaterMarkUrl as string)) { <span class="template-watermark-badge" title="The company watermark shows faintly behind your text, matching the printed output"><i class="fa fa-tint"></i> Watermark preview on</span> }</h5>
+                    <h5><i class="fa fa-edit"></i> Document Content @if (!string.IsNullOrEmpty(ViewBag.WaterMarkUrl as string))
+                    {<span class="template-watermark-badge" title="The company watermark shows faintly behind your text, matching the printed output"><i class="fa fa-tint"></i> Watermark preview on</span>}</h5>
                     <div class="form-group">
                         @(Html.Kendo().EditorFor(model => model.Document)
-                                     .Name("Document")
-                                     .HtmlAttributes(new { style = "width:100%" })
-                                     .Tools(tools => tools
-                                                     .Clear()
-                                                     .FontName(font => font
-                                                         .Add("Nyala", "Nyala")
-                                                         .Add("Abyssinica SIL", "Abyssinica SIL")
-                                                         .Add("Times New Roman", "Times New Roman")
-                                                         .Add("Calibri", "Calibri")
-                                                         .Add("Arial", "Arial")
-                                                         .Add("Tahoma", "Tahoma")
-                                                         .Add("Verdana", "Verdana")
-                                                         .Add("Ebrima", "Ebrima")
-                                                         .Add("Segoe UI", "Segoe UI")
-                                                     )
-                                                     .FontSize()
-                                                     .Formatting()
-                                                     .Bold()
-                                                     .Italic()
-                                                     .Underline()
-                                                     .Strikethrough()
-                                                     .SubScript()
-                                                     .SuperScript()
-                                                     .BackColor()
-                                                     .CleanFormatting()
-                                                     .JustifyLeft()
-                                                     .JustifyCenter()
-                                                     .JustifyRight()
-                                                     .JustifyFull()
-                                                     .InsertUnorderedList()
-                                                     .InsertOrderedList()
-                                                     .Outdent()
-                                                     .Indent()
-                                                     .TableEditing()
-                                                     .CreateLink()
-                                                     .Unlink()
-                                                     .ViewHtml()
-                            )
+                                            .Name("Document")
+                                            .HtmlAttributes(new { style = "width:100%" })
+                                            .Tools(tools => tools
+                                                .Clear()
+                                                .FontName(font => font
+                                                    .Add("Nyala", "Nyala")
+                                                    .Add("Abyssinica SIL", "Abyssinica SIL")
+                                                    .Add("Times New Roman", "Times New Roman")
+                                                    .Add("Calibri", "Calibri")
+                                                    .Add("Cambria", "Cambria")
+                                                    .Add("Garuda", "Garuda")
+                                                    .Add("Garamond", "Garamond")
+                                                    .Add("Georgia", "Georgia")
+                                                    .Add("Arial", "Arial")
+                                                    .Add("Helvetica", "Helvetica")
+                                                    .Add("Tahoma", "Tahoma")
+                                                    .Add("Verdana", "Verdana")
+                                                    .Add("Trebuchet MS", "Trebuchet MS")
+                                                    .Add("Century Gothic", "Century Gothic")
+                                                    .Add("Ebrima", "Ebrima")
+                                                    .Add("Segoe UI", "Segoe UI")
+                                                    .Add("Open Sans", "Open Sans")
+                                                    .Add("Roboto", "Roboto")
+                                                )
+                                                .FontSize()
+                                                .Formatting()
+                                                .Bold()
+                                                .Italic()
+                                                .Underline()
+                                                .Strikethrough()
+                                                .SubScript()
+                                                .SuperScript()
+                                                .BackColor()
+                                                .CleanFormatting()
+                                                .JustifyLeft()
+                                                .JustifyCenter()
+                                                .JustifyRight()
+                                                .JustifyFull()
+                                                .InsertUnorderedList()
+                                                .InsertOrderedList()
+                                                .Outdent()
+                                                .Indent()
+                                                .TableEditing()
+                                                .CreateLink()
+                                                .Unlink()
+                                                .ViewHtml()
+                                            )
                         )
                         @Html.ValidationMessageFor(model => model.Document, "", new { @class = "text-danger" })
                     </div>
@@ -366,5 +376,36 @@
                 chip.classList.toggle("is-hidden", !match);
             });
         });
+    });
+    $(document).ready(function () {
+        var editor = $("#Document").data("kendoEditor");
+        if (editor) {
+            // Build the line spacing control layout
+            var lineSpacingHtml = '<span class="k-tool-group" style="padding: 2px 6px; display: inline-flex; align-items: center; gap: 5px; border-left: 1px solid #c5c5c5; margin-left: 4px;">' +
+                '<span style="font-size: 11px; font-weight: 600; color: #444;">Line Height:</span>' +
+                '<select id="editorLineSpacing" class="form-control input-sm" style="height: 24px; padding: 0 4px; font-size: 11px; display: inline-block; width: auto; background: #fff; border: 1px solid #ccc; border-radius: 3px;">' +
+                '<option value="1.0">1.0 (Single)</option>' +
+                '<option value="1.15">1.15</option>' +
+                '<option value="1.5" selected>1.5 (Standard)</option>' +
+                '<option value="2.0">2.0 (Double)</option>' +
+                '</select></span>';
+
+            // Append it cleanly to the Kendo Editor toolbar
+            $(editor.wrapper).find(".k-editor-toolbar").append(lineSpacingHtml);
+
+            // Bind the change event to modify line-height of the active paragraph/block
+            $(document).on("change", "#editorLineSpacing", function () {
+                var val = $(this).val();
+                var range = editor.getSelection();
+                var container = range.commonAncestorContainer;
+
+                var $node = $(container).closest("p, div, li, h1, h2, h3");
+                if ($node.length === 0) {
+                    $node = $(editor.body);
+                }
+                $node.css("line-height", val);
+                editor.trigger("change");
+            });
+        }
     });
 </script>

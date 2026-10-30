@@ -1,0 +1,96 @@
+@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Template Header Image</legend>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Company.TemplateHeaderImage>()
+              .Name("headerGrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Name);
+                  columns.Bound(c => c.IsNeened).Title("Is Needed").ClientTemplate("<input type='checkbox' disabled = 'true' #=IsNeened ? checked='checked' :'' # >").Width(100);
+
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Delete);
+                  }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text("Add new Header");
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+              .Scrollable(h => h.Height(550))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.TemplateHeaderImageId))
+                  .Read(read => read.Action("TemplateHeaderImage_Read", "TemplateHeaderImage").Data("sendForgery"))
+                  .Create(create => create.Action("TemplateHeaderImage_Create", "TemplateHeaderImage").Data("sendForgery"))
+                  .Update(update => update.Action("TemplateHeaderImage_Update", "TemplateHeaderImage").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("TemplateHeaderImage_Destroy", "TemplateHeaderImage").Data("sendForgery"))
+              ).ClientDetailTemplateId("header_image_detail_template")
+        )
+
+<script type="text/kendo-template" id="header_image_detail_template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_#=TemplateHeaderImageId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+         items.Add().Text("Header Image").Content(
+            @<text>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div>
+                            @HeaderImage()
+                        </div>
+                        <div class="image-container-box">
+                            <img class="rectuangular-large-img" src="~/Content/Image/WaterMark/#=HeaderImageFileName#" />
+                        </div>
+                    </div>
+                </div>
+
+            </text>);
+        }).ToClientTemplate()
+    )
+</script>
+
+
+
+@helper HeaderImage()
+{
+    @(Html.Kendo().Upload()
+        .Name("headerImage")
+        .HtmlAttributes(new { @id = "header_uploader_#=TemplateHeaderImageId#" })
+        .Messages(msg =>
+        {
+            msg.Select("<i class = \"fa fa-upload\"></i> Upload Photo");
+        })
+        .ShowFileList(false)
+        .Async(s => s.Save("TemplateHeaderImage_Upload", "TemplateHeaderImage", new { id = "#=TemplateHeaderImageId#" })
+        )
+        .HtmlAttributes(new { accept = "image/*" })
+        .Events(events => events.Complete(
+            @<text>
+                function(e) {
+                var ddl = $("\\#headerGrid").data("kendoGrid");
+                ddl.dataSource.read();
+                }
+            </text>
+                  ))
+               .ToClientTemplate()
+    )
+}
+
+<style>
+    .rectuangular-large-img {
+        max-height: 400px;
+        width: auto;
+        border: 1px solid #e6e6e6;
+        box-shadow: 1px 2px 2px #888888;
+    }
+</style>

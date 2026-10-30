@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -20,7 +21,9 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRCompanyAdmin,HrmConstants.HRCompanyUser,
+                    HrmConstants.HRAdmin,HrmConstants.HRDepartmentHead,
+                    HrmConstants.HREmployeeSelfService)]
     public class CommitteeController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -38,10 +41,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         {
             ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
             ViewData["DisciplinaryCases"] = db.DisciplinaryCases.Select(x=>new
-            {x.DisciplinaryCaseId,
-            x.NatureofTransgression
+            {
+                x.DisciplinaryCaseId,
+                x.NatureofTransgression
             }).ToList();
+
             ViewData["committeType"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.COMMITTEE_TYPE).ToList();
+
         }
 
         public void GetCommitteType()

@@ -10,7 +10,9 @@ using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
+using System;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
@@ -19,14 +21,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
     public class DisciplineMeasuresController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        string ErrorMessage = "";
         public ActionResult Index()
         {
             return View();
         }
         private bool CheckDisciplineValidation(int id)
         {
-            ErrorMessage = "";
 
 
             #region DisciplineMeasures
@@ -34,7 +34,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             if (DisciplineMeasures != null)
             {
 
-                ErrorMessage = "You cannot delete this Discipline Measures.Please delete Measure detail information first.";
+                //var ErrorMessage = "You cannot delete this Discipline Measures.Please delete Measure detail information first.";
                 return false;
 
 
@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             if (DisciplineMeasuresType != null)
             {
 
-                ErrorMessage = "You cannot delete this Discipline Measures.Please delete Measure type information first.";
+                //ErrorMessage = "You cannot delete this Discipline Measures.Please delete Measure type information first.";
                 return false;
 
 
@@ -56,7 +56,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             if (DisciplineRecord != null)
             {
 
-                ErrorMessage = "You cannot delete this Discipline Measures.Please delete Employees Discipline Record information first.";
+                //ErrorMessage = "You cannot delete this Discipline Measures.Please delete Employees Discipline Record information first.";
                 return false;
 
 
@@ -68,6 +68,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         [AuthorizeRoles(HrmConstants.HRDisciplineUser, HrmConstants.HRAdmin)]
         public ActionResult DisciplineMeasures_Read([DataSourceRequest]DataSourceRequest request)
         {
+           
             IQueryable<DisciplineMeasures> disciplinemeasures = db.DisciplineMeasures;
             DataSourceResult result = disciplinemeasures.ToDataSourceResult(request, disciplineMeasures => new
             {

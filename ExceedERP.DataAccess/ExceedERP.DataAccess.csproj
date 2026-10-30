@@ -129,6 +129,14 @@
     <Compile Include="Migrations\202610271343456_PlanningandHRmModuleChangeMigration.Designer.cs">
       <DependentUpon>202610271343456_PlanningandHRmModuleChangeMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610300640016_CommiteandDciplinechanges.cs" />
+    <Compile Include="Migrations\202610300640016_CommiteandDciplinechanges.Designer.cs">
+      <DependentUpon>202610300640016_CommiteandDciplinechanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202610300704451_DciplinemeasuresInmoney.cs" />
+    <Compile Include="Migrations\202610300704451_DciplinemeasuresInmoney.Designer.cs">
+      <DependentUpon>202610300704451_DciplinemeasuresInmoney.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -177,6 +185,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610271343456_PlanningandHRmModuleChangeMigration.resx">
       <DependentUpon>202610271343456_PlanningandHRmModuleChangeMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610300640016_CommiteandDciplinechanges.resx">
+      <DependentUpon>202610300640016_CommiteandDciplinechanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610300704451_DciplinemeasuresInmoney.resx">
+      <DependentUpon>202610300704451_DciplinemeasuresInmoney.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

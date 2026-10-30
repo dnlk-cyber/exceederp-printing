@@ -3,7 +3,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -17,17 +19,15 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-    [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
+     [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
     public class DisciplinaryCaseCourtController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime TransgressionDate { get; set; }
-        public static string TransgressionDateAm { get; set; }
         HRMInputs inputs = new HRMInputs();
-        string ErrorMessage = "";
         public ActionResult Index()
         {
             PopulateViewData();
@@ -52,43 +52,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
             return Json(periodList.Select(p => new { GLPeriodId = p.GLPeriodId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
-        private bool CheckDisciplineValidation(int id)
-        {
-            ErrorMessage = "";
-
-
-            #region DisciplineMeasures
-            var DisciplineMeasures = db.EmpDisciplinaryHearing.Where(x => x.DisciplinaryCaseId == id).FirstOrDefault();
-            if (DisciplineMeasures != null)
-            {
-
-                ErrorMessage = "You cannot delete this Discipline Case.Please delete  Disciplinary Hearing information first.";
-                return false;
-
-
-            }
-            #endregion
-            #region DisciplineMeasuresType
-            var DisciplineMeasuresType = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == id).FirstOrDefault();
-            if (DisciplineMeasuresType != null)
-            {
-
-                ErrorMessage = "You cannot delete this Discipline Case.Please delete Discipline Measure information first.";
-                return false;
-
-
-            }
-            #endregion
-         
-            return true;
-        }
+      
         public void SetDate(string name, string value)
         {
             if (name == "TransgressionDateAm")
             {
-                TransgressionDateAm = value;
+                var TransgressionDateAm = value;
                 var splitDate = TransgressionDateAm.Split('/');
-                TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
             
         }
@@ -135,30 +106,38 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Create([DataSourceRequest]DataSourceRequest request, DisciplinaryCase disciplinaryCase)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(disciplinaryCase.TransgressionDateAm))
+                {
+                    ModelState.AddModelError("", " Date fields is  mandatory");
+                    return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    disciplinaryCase.TransgressionDate = HrHelper.ParseEthiopicDate(disciplinaryCase.TransgressionDateAm);
+                }
+
+            }
+            else
+            {
+
+                disciplinaryCase.TransgressionDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(disciplinaryCase.TransgressionDate.Day, disciplinaryCase.TransgressionDate.Month, disciplinaryCase.TransgressionDate.Year);
+
+            }
             if (ModelState.IsValid)
             {
-                  if (TransgressionDateAm == null )
-                {
-                    ModelState.AddModelError("", "Transgression Date  value is mandatory!!");
-                }
-                  else if (TransgressionDate.Date > DateTime.Now.Date)
-                {
-
-                    ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
-                }
-               
-                else
-                 {
-               
+                
                 var entity = new DisciplinaryCase
                 {
                     EmployeeId = disciplinaryCase.EmployeeId ,
-                    TransgressionDate = TransgressionDate,
+                    TransgressionDate = disciplinaryCase.TransgressionDate,
                     NatureofTransgression = disciplinaryCase.NatureofTransgression,
                     Evidence = disciplinaryCase.Evidence,
                     Remark = disciplinaryCase.Remark,
                     EmployeeCode =inputs. GetEmployees(User.Identity.Name ).Where (x=> x.PersonId== disciplinaryCase .EmployeeId ).FirstOrDefault ().EmployeeCode ,
-                    TransgressionDateAm = TransgressionDateAm,
+                    TransgressionDateAm = disciplinaryCase.TransgressionDateAm,
                     DateCreated = DateTime .Now ,
                     LastModified = disciplinaryCase.LastModified,
                     CreatedBy = User.Identity .Name ,
@@ -169,7 +148,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 db.DisciplinaryCases.Add(entity);
                 db.SaveChanges();
                 disciplinaryCase.DisciplinaryCaseId = entity.DisciplinaryCaseId;
-            }
+            
             }
 
             return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
@@ -179,31 +158,38 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Update([DataSourceRequest]DataSourceRequest request, DisciplinaryCase disciplinaryCase)
         {
             ModelState.Clear();
-            if (ModelState.IsValid)
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
             {
-                if (TransgressionDateAm == null)
+                if (string.IsNullOrEmpty(disciplinaryCase.TransgressionDateAm))
                 {
-                    TransgressionDateAm = disciplinaryCase.TransgressionDateAm;
-                    var splitDate = TransgressionDateAm.Split('/');
-                    TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                    ModelState.AddModelError("", " Date fields is  mandatory");
+                    return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
                 }
-                if (TransgressionDate.Date > DateTime.Now.Date)
-                {
-
-                    ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
-                }
-
                 else
                 {
+                    disciplinaryCase.TransgressionDate = HrHelper.ParseEthiopicDate(disciplinaryCase.TransgressionDateAm);
+                }
+
+            }
+            else
+            {
+
+                disciplinaryCase.TransgressionDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(disciplinaryCase.TransgressionDate.Day, disciplinaryCase.TransgressionDate.Month, disciplinaryCase.TransgressionDate.Year);
+
+            }
+            if (ModelState.IsValid)
+            {
+               
                     var entity = new DisciplinaryCase
                     {
                         DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
                         EmployeeId = disciplinaryCase.EmployeeId,
-                        TransgressionDate = TransgressionDate,
+                        TransgressionDate = disciplinaryCase.TransgressionDate,
                         NatureofTransgression = disciplinaryCase.NatureofTransgression,
                         Evidence = disciplinaryCase.Evidence,
                         Remark = disciplinaryCase.Remark,
-                        TransgressionDateAm = TransgressionDateAm,
+                        TransgressionDateAm = disciplinaryCase.TransgressionDateAm,
                         EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == disciplinaryCase.EmployeeId).FirstOrDefault().EmployeeCode,
                         DateCreated = disciplinaryCase.DateCreated,
                         LastModified = DateTime.Now,
@@ -215,7 +201,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                     db.DisciplinaryCases.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
-                }
+                
             }
 
             return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
@@ -225,14 +211,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Destroy([DataSourceRequest]DataSourceRequest request, DisciplinaryCase disciplinaryCase)
         {
             ModelState.Clear();
+            var DisciplineMeasures = db.EmpDisciplinaryHearing.Where(x => x.DisciplinaryCaseId == disciplinaryCase.DisciplinaryCaseId).FirstOrDefault();
+            if (DisciplineMeasures != null)
+            {
+
+                ModelState.AddModelError("", "You cannot delete this Discipline Case.Please delete  Disciplinary Hearing information first.");
+                return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+
+
+            }
+            var DisciplineMeasuresType = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == disciplinaryCase.DisciplinaryCaseId).FirstOrDefault();
+            if (DisciplineMeasuresType != null)
+            {
+
+                ModelState.AddModelError("", "You cannot delete this Discipline Case.Please delete Discipline Measure information first");
+                return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+
+
+            }
+
             if (ModelState.IsValid)
             {
-                if (!CheckDisciplineValidation(disciplinaryCase.DisciplinaryCaseId))
-                {
-                    ModelState.AddModelError("", ErrorMessage);
-                }
-                else
-                {
+                
                     var entity = new DisciplinaryCase
                     {
                         DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
@@ -255,7 +255,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                     db.DisciplinaryCases.Attach(entity);
                     db.DisciplinaryCases.Remove(entity);
                     db.SaveChanges();
-                }
+                
             }
 
             return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));

@@ -5,7 +5,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Core.Domain.HRM.Discipline
 {
-    public class DisciplinaryCase:TrackUserOperation 
+    public class DisciplinaryCase: DepartmentNewOperations
     {
         [Key]
         public int DisciplinaryCaseId { get; set; }
@@ -32,13 +32,6 @@ namespace ExceedERP.Core.Domain.HRM.Discipline
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
         public bool IsActive { get; set; }
-        //public string Status { get; set; }
-        //public bool isSendForApproval { get; set; }
-        //public bool isOnlineApproved { get; set; }
-        //public string OnlineApprovedBy { get; set; }
-        //public DateTime? OnlineApprovedTime { get; set; }
-        //public bool isVoid { get; set; }
-        //public string VoidBy { get; set; }
-        //public DateTime? VoidTime { get; set; }
+     
     }
 }

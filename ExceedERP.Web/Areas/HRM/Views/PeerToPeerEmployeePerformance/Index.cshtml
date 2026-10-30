@@ -43,10 +43,11 @@
                                       .Filter("contains")
                                       .DataTextField("Name")
                                       .DataValueField("GlFiscalYearId")
+                                      .Events(e => e.Change("onFiscalYearChange"))
                                       .DataSource(dataSource =>
                                        {
 
-                                           dataSource.Read(read => read.Action("GetFiscalYear", "PeerToPeerEmployeePerformance", new { area = "HRM" }))
+                                           dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                            .ServerFiltering(false);
                                        })
                                 )
@@ -66,7 +67,7 @@
                                       .DataTextField("Name")
                                       .DataSource(dataSource =>
                                       {
-                                          dataSource.Read(read => read.Action("GetPeriodList", "PeerToPeerEmployeePerformance", new { area = "HRM" }).Data("filterPeriod"))
+                                          dataSource.Read(read => read.Action("GetPeriodOrQuarterList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
                                           .ServerFiltering(true);
                                       })
                                     .DataValueField("QuarterId")
@@ -87,12 +88,13 @@
                                         .Filter("contains")
                                         .DataTextField("FullNameaEnglish")
                                         .DataValueField("EmployeeId")
-
+                                        .Events(ev => ev.Change("onEmployeeChange"))
+                                        .CascadeFrom("Period")
                                          .DataSource(dataSource =>
                                          {
                                              //GetEmployeesFromPeertopeer
-                                             dataSource.Read(read => read.Action("GetEmployeesFromPeertopeerForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
-                                             .ServerFiltering(false);
+                                             dataSource.Read(read => read.Action("GetEmployeesFromPeertopeerForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }).Data("filterByFiscalYearAndPeriod")/*.Data("sendForgery")*/)
+                                             .ServerFiltering(true);
                                          })
 
                                         .HtmlAttributes(new { style = "width: 150px;" })
@@ -114,7 +116,7 @@
                                        .DataSource(dataSource =>
                                        {
                                            //GetPeerTopeerEvaluationCriterias
-                                           dataSource.Read(read => read.Action("GetPeerTopeerEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("filterEvaluationCriteria"))
+                                           dataSource.Read(read => read.Action("GetPeerTopeerEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEvaluationCriteria"))
                                            .ServerFiltering(true);
                                        })
                                        .HtmlAttributes(new { style = "width: 250px;" })
@@ -241,7 +243,7 @@
                                  model.Field(p => p.Result).Editable(false);
 
                              })
-                        .Read(read => read.Action("EmployeeMeasurements_Read", "PeerToPeerEmployeePerformance").Data("filterdata"))
+                        .Read(read => read.Action("EmployeeMeasurements_Read", "PeerToPeerEmployeePerformance").Data("sendForgery").Data("filterdata"))
                             ).ClientDetailTemplateId("peertemplate"))
 
 
@@ -290,9 +292,9 @@
                                                    model.Field(p => p.PerformanceActionId).Editable(false);
                                                }
                                                )
-                                            .Read(read => read.Action("PerformanceActions_Read", "PeerToPeerEmployeePerformance", new { empMeasurId = "#=EmpMeasurementId#" }))
-                                            .Update(update => update.Action("PerformanceActions_Update", "PeerToPeerEmployeePerformance"/*, new { defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" }*/))
-                                             //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance"))
+                                            .Read(read => read.Action("PerformanceActions_Read", "PeerToPeerEmployeePerformance", new { empMeasurId = "#=EmpMeasurementId#" }).Data("sendForgery"))
+                                            .Update(update => update.Action("PerformanceActions_Update", "PeerToPeerEmployeePerformance"/*, new { defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" }*/).Data("sendForgery"))
+                                             //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
                                              ).ToClientTemplate()
                                     )
 
@@ -453,6 +455,12 @@
 
 <script>
 
+    function filterByFiscalYearAndPeriod() {
+        return {
+            fiscalyear: $("#GlFiscalYearId").val(),
+            glperiod: $("#Period").val(),
+        };
+    }
     function filterPeriod() {
         return {
             GlFiscalYearId: $("#GlFiscalYearId").val()
@@ -461,10 +469,25 @@
 
     function filterEvaluationCriteria() {
         return {
-            level: $("#Evaluation").val()
+            level: $("#Evaluation").val(),
+            empId: $("#EmployeeId").val()
         };
     }
 
+    function onEmployeeChange(e) {
+        var evaluationCriteriaDropDown = $("#EvaluationCriteriaId").data("kendoDropDownList");
+        if (evaluationCriteriaDropDown) {
+            evaluationCriteriaDropDown.dataSource.read(); // Triggers reload of the second dropdown
+            evaluationCriteriaDropDown.value(""); // Optional: Clear previously selected value
+        }
+    }
+    function onFiscalYearChange(e) {
+        var periodDropDown = $("#Period").data("kendoDropDownList");
+        if (periodDropDown) {
+            periodDropDown.dataSource.read(); // Triggers reload of the second dropdown
+            periodDropDown.value(""); // Optional: Clear previously selected value
+        }
+    }
 </script>
 
 <script>

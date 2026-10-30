@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -12,11 +13,12 @@ using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-
-    [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
+    
+     [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
     public class EmpDisciplinaryHearingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -57,43 +59,59 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult EmpDisciplinaryHearing_Create([DataSourceRequest]DataSourceRequest request, EmpDisciplinaryHearing empDisciplinaryHearing, int id)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(empDisciplinaryHearing.HearingDateAmharic))
+                {
+                    ModelState.AddModelError("", " Hearing Date field is mandatory");
+                    return Json(new[] { empDisciplinaryHearing }.ToDataSourceResult(request, ModelState));
+                }
+
+                empDisciplinaryHearing.HearingDate = HrHelper.ParseEthiopicDate(empDisciplinaryHearing.HearingDateAmharic);
+
+
+            }
+            else
+            {
+
+                empDisciplinaryHearing.HearingDateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(empDisciplinaryHearing.HearingDate.Day, empDisciplinaryHearing.HearingDate.Month, empDisciplinaryHearing.HearingDate.Year);
+
+            }
+            if (HearingDate.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Hearing Date should be less or equal to the current date!!");
+                return Json(new[] { empDisciplinaryHearing }.ToDataSourceResult(request, ModelState));
+
+            }
+            empDisciplinaryHearing.DisciplinaryCaseId = id;
             if (ModelState.IsValid)
             {
-                if (HearingDateAmharic == null)
-                {
-                    ModelState.AddModelError("", "Hearing Date is mandatory!!");
-                }
-                else  if (HearingDate.Date > DateTime.Now.Date)
-                {
-
-                    ModelState.AddModelError("", "Hearing Date should be less or equal to the current date!!");
-                }
                
                
-                else
+                var entity = new EmpDisciplinaryHearing
                 {
-                    var entity = new EmpDisciplinaryHearing
-                    {
 
-                        DisciplinaryCaseId = id,
-                        HearingDate = HearingDate,
-                        HearingOutcome = empDisciplinaryHearing.HearingOutcome,
-                        Remark = empDisciplinaryHearing.Remark,
-                        HearingDateAmharic = HearingDateAmharic
-                    };
+                    DisciplinaryCaseId = id,
+                    HearingDate = empDisciplinaryHearing.HearingDate,
+                    HearingOutcome = empDisciplinaryHearing.HearingOutcome,
+                    Remark = empDisciplinaryHearing.Remark,
+                    HearingDateAmharic = empDisciplinaryHearing.HearingDateAmharic
+                };
 
-                    db.EmpDisciplinaryHearing.Add(entity);
-                    db.SaveChanges();
-                    empDisciplinaryHearing.DisciplinaryHearingId = entity.DisciplinaryHearingId;
+                db.EmpDisciplinaryHearing.Add(entity);
+                db.SaveChanges();
+                empDisciplinaryHearing.DisciplinaryHearingId = entity.DisciplinaryHearingId;
 
-                    #region operation log
+                #region operation log
 
-                    //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                    UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryHearing", "Success", User.Identity.Name, User.Identity.Name + " add employee Displine Hearing hearing date " + entity.HearingDateAmharic, Modules.HRM);
+                UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryHearing", "Success", User.Identity.Name, User.Identity.Name + " add employee Displine Hearing hearing date " + entity.HearingDateAmharic, Modules.HRM);
 
-                    #endregion
-                }
+                #endregion
+                
             }
 
             return Json(new[] { empDisciplinaryHearing }.ToDataSourceResult(request, ModelState));
@@ -103,46 +121,59 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult EmpDisciplinaryHearing_Update([DataSourceRequest]DataSourceRequest request, EmpDisciplinaryHearing empDisciplinaryHearing)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(empDisciplinaryHearing.HearingDateAmharic))
+                {
+                    ModelState.AddModelError("", " Hearing  field is mandatory");
+                    return Json(new[] { empDisciplinaryHearing }.ToDataSourceResult(request, ModelState));
+                }
+
+                empDisciplinaryHearing.HearingDate = HrHelper.ParseEthiopicDate(empDisciplinaryHearing.HearingDateAmharic);
+
+
+            }
+            else
+            {
+
+                empDisciplinaryHearing.HearingDateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(empDisciplinaryHearing.HearingDate.Day, empDisciplinaryHearing.HearingDate.Month, empDisciplinaryHearing.HearingDate.Year);
+
+            }
+            if (HearingDate.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Hearing Date should be less or equal to the current date!!");
+                return Json(new[] { empDisciplinaryHearing }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
-                if (HearingDateAmharic == null)
+               
+                var entity = new EmpDisciplinaryHearing
                 {
-                    HearingDateAmharic = empDisciplinaryHearing.HearingDateAmharic;
-                    var splitDate = HearingDateAmharic.Split('/');
-                    HearingDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (HearingDate.Date > DateTime.Now.Date)
-                {
+                    DisciplinaryHearingId = empDisciplinaryHearing.DisciplinaryHearingId,
 
-                    ModelState.AddModelError("", "Hearing Date should be less or equal to the current date!!");
-                }
+                    DisciplinaryCaseId = empDisciplinaryHearing.DisciplinaryCaseId,
+                    HearingDate = empDisciplinaryHearing.HearingDate,
+                    HearingOutcome = empDisciplinaryHearing.HearingOutcome,
+                    Remark = empDisciplinaryHearing.Remark,
+                    HearingDateAmharic = empDisciplinaryHearing.HearingDateAmharic
+                };
 
-                else
-                {
-                    var entity = new EmpDisciplinaryHearing
-                    {
-                        DisciplinaryHearingId = empDisciplinaryHearing.DisciplinaryHearingId,
+                db.EmpDisciplinaryHearing.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
 
-                        DisciplinaryCaseId = empDisciplinaryHearing.DisciplinaryCaseId,
-                        HearingDate = HearingDate,
-                        HearingOutcome = empDisciplinaryHearing.HearingOutcome,
-                        Remark = empDisciplinaryHearing.Remark,
-                        HearingDateAmharic = HearingDateAmharic
-                    };
+                #region operation log
 
-                    db.EmpDisciplinaryHearing.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
+                //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                    #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryHearing", "Success", User.Identity.Name, User.Identity.Name + " update employee Displine Hearing hearing date " + entity.HearingDateAmharic, Modules.HRM);
 
-                    //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                #endregion
 
-                    UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryHearing", "Success", User.Identity.Name, User.Identity.Name + " update employee Displine Hearing hearing date " + entity.HearingDateAmharic, Modules.HRM);
-
-                    #endregion
-
-                }
+                
             }
 
             return Json(new[] { empDisciplinaryHearing }.ToDataSourceResult(request, ModelState));

@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
@@ -14,12 +15,11 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-
+ 
     [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
     public class DisciplineMeasuresDetailController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        string ErrorMessage = "";
         public ActionResult Index()
         {
 
@@ -27,23 +27,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             return View();
         }
 
-        private bool CheckDisciplineValidation(int id)
-        {
-            ErrorMessage = "";
-
-            #region DisciplineRecord
-            var DisciplineRecord = db.DisciplineRecord.Where(x => x.DetailMeasuresId == id).FirstOrDefault();
-            if (DisciplineRecord != null)
-            {
-
-                ErrorMessage = "You cannot delete this Measure Detail.Please delete Employees Discipline Record information first.";
-                return false;
-
-
-            }
-            #endregion
-            return true;
-        }
         private void GetMeasureDetail()
         {
             var measureDetails = db.DisciplineMeasuresDetail;
@@ -60,6 +43,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             {
                 DetailMeasuresId = disciplineMeasuresDetail.DetailMeasuresId,
                 MeasuresId = disciplineMeasuresDetail.MeasuresId,
+                Rank = disciplineMeasuresDetail.Rank,
                 Level = disciplineMeasuresDetail.Level,
                 Description = disciplineMeasuresDetail.Description,
                 Remark = disciplineMeasuresDetail.Remark
@@ -79,6 +63,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 {
                     MeasuresId = id,
                     Level = disciplineMeasuresDetail.Level,
+                    Rank = disciplineMeasuresDetail.Rank,
                     Description = disciplineMeasuresDetail.Description,
                     Remark = disciplineMeasuresDetail.Remark
                 };
@@ -110,6 +95,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                     DetailMeasuresId = disciplineMeasuresDetail.DetailMeasuresId,
                     MeasuresId = disciplineMeasuresDetail.MeasuresId,
                     Level = disciplineMeasuresDetail.Level,
+                    Rank = disciplineMeasuresDetail.Rank,
                     Description = disciplineMeasuresDetail.Description,
                     Remark = disciplineMeasuresDetail.Remark
                 };
@@ -134,19 +120,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult DisciplineMeasuresDetail_Destroy([DataSourceRequest]DataSourceRequest request, DisciplineMeasuresDetail disciplineMeasuresDetail)
         {
+
+         
+            var DisciplineRecord = db.DisciplineRecord.Where(x => x.DetailMeasuresId == disciplineMeasuresDetail.DetailMeasuresId).FirstOrDefault();
+            if (DisciplineRecord != null)
+            {
+
+                ModelState.AddModelError("", "You cannot delete this Measure Detail.Please delete Employees Discipline Record information first.");
+                return Json(new[] { disciplineMeasuresDetail }.ToDataSourceResult(request, ModelState));
+
+            }
+              
             if (ModelState.IsValid)
             {
-                if (!CheckDisciplineValidation(disciplineMeasuresDetail.DetailMeasuresId))
-                {
-                    ModelState.AddModelError("", ErrorMessage);
-                }
-                else
-                {
+               
+               
                     var entity = new DisciplineMeasuresDetail
                     {
                         DetailMeasuresId = disciplineMeasuresDetail.DetailMeasuresId,
                         MeasuresId = disciplineMeasuresDetail.MeasuresId,
                         Level = disciplineMeasuresDetail.Level,
+                        Rank = disciplineMeasuresDetail.Rank,
                         Description = disciplineMeasuresDetail.Description,
                         Remark = disciplineMeasuresDetail.Remark
                     };
@@ -156,7 +150,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                     db.DisciplineMeasuresDetail.Attach(entity);
                     db.DisciplineMeasuresDetail.Remove(entity);
                     db.SaveChanges();
-                }
+                
             }
             return Json(new[] { disciplineMeasuresDetail }.ToDataSourceResult(request, ModelState));
         }

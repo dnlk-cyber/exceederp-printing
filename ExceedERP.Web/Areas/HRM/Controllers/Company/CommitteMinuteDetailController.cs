@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
@@ -16,6 +17,7 @@ using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
@@ -23,8 +25,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
     public class CommitteMinuteDetailsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static string DateAmharic { get; set; }
-        public static DateTime Date { get; set; }
         public ActionResult Index()
         {
             PopulateViewData();
@@ -40,24 +40,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         {
             if (name == "DateAmharic")
             {
-                DateAmharic = value;
+                string DateAmharic = value;
                 var splitDate = DateAmharic.Split('/');
-                Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+               DateTime Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
             }
 
         }
 
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin, HrmConstants.HRDisciplineUser)]
-        public ActionResult CommitteMinuteDetails_Read([DataSourceRequest]DataSourceRequest request, string committeeMinut, int id)
+        public ActionResult CommitteMinuteDetails_Read([DataSourceRequest]DataSourceRequest request,  int id)
         {
-            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.CommitteeId == id);
+            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.DisciplinaryCaseId == id);
 
             DataSourceResult result = committeminutes.ToDataSourceResult(request, committeMinute => new
             {
                 CommitteMinuteId = committeMinute.CommitteMinuteId,
                 CommitteeId = committeMinute.CommitteeId,
-                //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
+                DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                 FileNo = committeMinute.FileNo,
                 Agenda = committeMinute.Agenda,
                 PlaceOfMetting = committeMinute.PlaceOfMetting,
@@ -79,19 +79,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public ActionResult CommitteMinuteDetails_Create([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute, int id)
         {
             ModelState.Clear();
-            var splitDate = committeMinute.DateAmharic.Split('/');
-            Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(committeMinute.DateAmharic))
+                {
+                    ModelState.AddModelError("", " Transgression Date field is mandatory");
+                    return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+                }
+
+                committeMinute.Date = HrHelper.ParseEthiopicDate(committeMinute.DateAmharic);
+
+
+            }
+            else
+            {
+
+                committeMinute.DateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(committeMinute.Date.Day, committeMinute.Date.Month, committeMinute.Date.Year);
+
+            }
+            if (committeMinute.Date.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Date should be less or equal to the current date!!");
+                return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+
+            }
+            committeMinute.DisciplinaryCaseId = id;
             if (ModelState.IsValid)
             {
                 var entity = new CommitteMinute
                 {
-                    CommitteeId = id,
+                    CommitteeId = committeMinute.CommitteeId,
+                    DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                     FileNo = committeMinute.FileNo,
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
                     DateAmharic = committeMinute.DateAmharic,
-                    Date = Date,
+                    Date = committeMinute.Date,
                     OrgBranchName = committeMinute.OrgBranchName,
                     DateCreated = DateTime.Now,
                     LastModified = committeMinute.LastModified,
@@ -116,13 +143,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public ActionResult CommitteMinuteDetails_Update([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(committeMinute.DateAmharic))
+                {
+                    ModelState.AddModelError("", " Date field is mandatory");
+                    return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+                }
+
+                committeMinute.Date = HrHelper.ParseEthiopicDate(committeMinute.DateAmharic);
+
+
+            }
+            else
+            {
+
+                committeMinute.DateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(committeMinute.Date.Day, committeMinute.Date.Month, committeMinute.Date.Year);
+
+            }
+            if (committeMinute.Date.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Date should be less or equal to the current date!!");
+                return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
-                if (committeMinute.DateAmharic == null)
-                {
-                    var splitDate = committeMinute.DateAmharic.Split('/');
-                    Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
+               
                 var entity = new CommitteMinute
                 {
                     CommitteeId = committeMinute.CommitteeId,
@@ -132,7 +181,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     DateAmharic = committeMinute.DateAmharic,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
-                    Date = Date,
+                    Date = committeMinute.Date,
                     OrgBranchName = committeMinute.OrgBranchName,
                     DateCreated = committeMinute.DateCreated,
                     LastModified = DateTime.Now,
@@ -158,8 +207,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
                 var entity = new CommitteMinute
                 {
-                    CommitteeId = committeMinute.CommitteeId,
                     CommitteMinuteId = committeMinute.CommitteMinuteId,
+                    CommitteeId = committeMinute.CommitteeId,
+                    DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                     FileNo = committeMinute.FileNo,
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
@@ -224,10 +274,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 if (file.ContentLength > 0)
                 {
                     var fileName = Path.GetFileName(file.FileName);
-                    var path =  Path.Combine(
+                    var path = Path.Combine(
                             Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
                                            AttachmentType.MINUTE), fileName);
-                    var mainPath =  Path.Combine(
+                    var mainPath = Path.Combine(
                             Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
                                            AttachmentType.MINUTE));
                     if (!Directory.Exists(mainPath))

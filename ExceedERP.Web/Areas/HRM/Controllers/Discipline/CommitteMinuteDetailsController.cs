@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
@@ -22,8 +24,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
     {
         // GET: HRM/CommitteMinuteDetails
         private ExceedDbContext db = new ExceedDbContext();
-        public static string DateAmharic { get; set; }
-        public static DateTime Date { get; set; }
+      
         //public ActionResult Index()
         //{
         //    PopulateViewData();
@@ -35,33 +36,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
         //    ViewData["Committees"] = committees;
         //}
-        public void SetDate(string name, string value)
-        {
-            if (name == "DateAmharic")
-            {
-                DateAmharic = value;
-                var splitDate = DateAmharic.Split('/');
-                Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+        //public void SetDate(string name, string value)
+        //{
+        //    if (name == "DateAmharic")
+        //    {
+        //        DateAmharic = value;
+        //        var splitDate = DateAmharic.Split('/');
+        //        Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
-            }
+        //    }
 
-        }
+        //}
    
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin, HrmConstants.HRDisciplineUser)]
-        public ActionResult CommitteMinute_Read([DataSourceRequest]DataSourceRequest request, string committeeMinut, int id)
+        public ActionResult CommitteMinute_Read([DataSourceRequest]DataSourceRequest request, int desciId)
         {
-            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.CommitteeId == id).AsQueryable();
+            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.CommitteeId == desciId).AsQueryable();
 
             DataSourceResult result = committeminutes.ToDataSourceResult(request, committeMinute => new {
 
-                //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                 CommitteMinuteId = committeMinute.CommitteMinuteId,
                 CommitteeId = committeMinute.CommitteeId,
                 FileNo = committeMinute.FileNo,
                 Agenda = committeMinute.Agenda,
                 PlaceOfMetting = committeMinute.PlaceOfMetting,
                 Remark = committeMinute.Remark,
-                Date = Date,
+                Date = committeMinute.Date,
                 OrgBranchName = committeMinute.OrgBranchName,
                 DateCreated = committeMinute.DateCreated,
                 LastModified = committeMinute.LastModified,
@@ -74,29 +74,54 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         }
    
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CommitteMinute_Create([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute, int id)
+        public ActionResult CommitteMinute_Create([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute, int desciId)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(committeMinute.DateAmharic))
+                {
+                    ModelState.AddModelError("", " Transgression Date field is mandatory");
+                    return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+                }
+
+                committeMinute.Date = HrHelper.ParseEthiopicDate(committeMinute.DateAmharic);
+
+
+            }
+            else
+            {
+
+                committeMinute.DateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(committeMinute.Date.Day, committeMinute.Date.Month, committeMinute.Date.Year);
+
+            }
+            if (committeMinute.Date.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Date should be less or equal to the current date!!");
+                return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+
+            }
+            committeMinute.DisciplinaryCaseId = desciId;
+
             if (ModelState.IsValid)
             {
-                var splitDate = committeMinute.DateAmharic.Split('/');
-                Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
+                
                 var entity = new CommitteMinute
                 {
-                    //DisciplinaryCaseId = id,
-                    CommitteeId = id,
+                    CommitteeId = committeMinute.CommitteeId,
                     FileNo = committeMinute.FileNo,
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
-                    Date = Date,
+                    Date = committeMinute.Date,
                     OrgBranchName = committeMinute.OrgBranchName,
                     DateCreated = DateTime.Now,
                     LastModified = committeMinute.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = committeMinute.ModifiedBy,
-                    DateAmharic = DateAmharic
+                    DateAmharic = committeMinute.DateAmharic
                 };
 
 
@@ -121,30 +146,51 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult CommitteMinute_Update([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(committeMinute.DateAmharic))
+                {
+                    ModelState.AddModelError("", " Date field is mandatory");
+                    return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+                }
+
+                committeMinute.Date = HrHelper.ParseEthiopicDate(committeMinute.DateAmharic);
+
+
+            }
+            else
+            {
+
+                committeMinute.DateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(committeMinute.Date.Day, committeMinute.Date.Month, committeMinute.Date.Year);
+
+            }
+            if (committeMinute.Date.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Date should be less or equal to the current date!!");
+                return Json(new[] { committeMinute }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
-                if (DateAmharic == null)
-                {
-                    DateAmharic = committeMinute.DateAmharic;
-                    var splitDate = DateAmharic.Split('/');
-                    Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
+                
                 var entity = new CommitteMinute
                 {
-                    //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
+                    DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                     CommitteeId = committeMinute.CommitteeId,
                     CommitteMinuteId = committeMinute.CommitteMinuteId,
                     FileNo = committeMinute.FileNo,
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
-                    Date = Date,
+                    Date = committeMinute.Date,
                     OrgBranchName = committeMinute.OrgBranchName,
                     DateCreated = committeMinute.DateCreated,
                     LastModified = DateTime.Now,
                     CreatedBy = committeMinute.CreatedBy,
                     ModifiedBy = User.Identity.Name,
-                    DateAmharic = DateAmharic
+                    DateAmharic = committeMinute.DateAmharic
                 };
 
                 db.CommitteMinutes.Attach(entity);
@@ -172,14 +218,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
                 var entity = new CommitteMinute
                 {
-                    //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
+                    DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                     CommitteeId = committeMinute.CommitteeId,
                     CommitteMinuteId = committeMinute.CommitteMinuteId,
                     FileNo = committeMinute.FileNo,
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
-                    Date = Date,
+                    Date = committeMinute.Date,
                     OrgBranchName = committeMinute.OrgBranchName,
                     DateCreated = committeMinute.DateCreated,
                     LastModified = committeMinute.LastModified,

@@ -7,7 +7,7 @@
                     .DataValueField("GLPeriodId")
            .DataSource(dataSource =>
            {
-               dataSource.Read(read => read.Action("GetPeriod", "Addition", new { area = "HRM" }))
+               dataSource.Read(read => read.Action("GetPeriod", "Addition", new { area = "HRM" }).Data("sendForgery"))
                  .ServerFiltering(false);
            })
           .ValuePrimitive(true)

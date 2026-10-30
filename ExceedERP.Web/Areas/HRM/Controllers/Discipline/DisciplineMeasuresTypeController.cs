@@ -15,7 +15,7 @@ using System;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-
+  
     [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
     public class DisciplineMeasuresTypeController : BaseController
     {
@@ -35,9 +35,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
                 ExpireYear = disciplineMeasures.ExpireYear,
                 PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
-                Remark = disciplineMeasures.Remark ,
+                Month = disciplineMeasures.Month,
+                IsDeductedFromSalary = disciplineMeasures.IsDeductedFromSalary,
+                SalaryDeductionPercentage = disciplineMeasures.SalaryDeductionPercentage,
+                Day = disciplineMeasures.Day,
+                Remark = disciplineMeasures.Remark,
                 IsByMoney = disciplineMeasures.IsByMoney,
-                Amount = disciplineMeasures.Amount
+                Amount = disciplineMeasures.Amount,
+                Rank = disciplineMeasures.Rank,
+                DateCreated = disciplineMeasures.DateCreated,
+                CreatedBy = disciplineMeasures.CreatedBy,
+                LastModified = disciplineMeasures.LastModified,
+                ModifiedBy = disciplineMeasures.ModifiedBy
             });
 
             return Json(result);
@@ -47,26 +56,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult DisciplineMeasuresType_Create([DataSourceRequest]DataSourceRequest request, DisciplineMeasuresType disciplineMeasures, int id)
         {
+            disciplineMeasures.DetailMeasuresId = id;
             if (ModelState.IsValid)
             {
-                var entity = new DisciplineMeasuresType
-                {
-                    MeasuresId = disciplineMeasures.MeasuresId,
-                    DetailMeasuresId = id,
-                    DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
-                    ExpireYear = disciplineMeasures.ExpireYear,
-                    PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
-                    Remark = disciplineMeasures.Remark ,
-                    IsByMoney = disciplineMeasures.IsByMoney,
-                    Amount = disciplineMeasures.Amount
-                };
-
+                var entity = GetMappedObject(disciplineMeasures);
                 db.DisciplineMeasuresType.Add(entity);
                 db.SaveChanges();
                 disciplineMeasures.DisciplineTypeId = entity.DisciplineTypeId;
-
                 #region operation log
-
                 // var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
                 UserHelper.OperationLog(Request.UserHostAddress, "DisciplineMeasuresType", "Success", User.Identity.Name, User.Identity.Name + " add displine Measure Type expire year called " + entity.ExpireYear + "at date" + DateTime.Today, Modules.HRM);
@@ -83,28 +80,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         {
             if (ModelState.IsValid)
             {
-                var entity = new DisciplineMeasuresType
-                {
-                    MeasuresId = disciplineMeasures.MeasuresId,
-                    DetailMeasuresId = disciplineMeasures.DetailMeasuresId,
-                    DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
-                    ExpireYear = disciplineMeasures.ExpireYear,
-                    PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
-                    Remark = disciplineMeasures.Remark ,
-                    IsByMoney = disciplineMeasures.IsByMoney,
-                    Amount = disciplineMeasures.Amount
-                };
-
+                var entity = GetMappedObject(disciplineMeasures);
                 db.DisciplineMeasuresType.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-
                 #region operation log                
 
                 UserHelper.OperationLog(Request.UserHostAddress, "DisciplineMeasuresType", "Success", User.Identity.Name, User.Identity.Name + " add displine Measure Type expire year called " + entity.ExpireYear+"at date"+DateTime.Today, Modules.HRM);
 
                 #endregion
-
             }
 
             return Json(new[] { disciplineMeasures }.ToDataSourceResult(request, ModelState));
@@ -116,17 +100,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         {
             if (ModelState.IsValid)
             {
-                var entity = new DisciplineMeasuresType
-                {
-                    MeasuresId = disciplineMeasures.MeasuresId,
-                    DetailMeasuresId = disciplineMeasures.DetailMeasuresId,
-                    DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
-                    ExpireYear = disciplineMeasures.ExpireYear,
-                    PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
-                    Remark = disciplineMeasures.Remark ,
-                    IsByMoney = disciplineMeasures.IsByMoney ,
-                    Amount = disciplineMeasures.Amount
-                };
+                var entity = GetMappedObject(disciplineMeasures);
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted discipline measures type information of Discipline Type Id " + disciplineMeasures.DisciplineTypeId);
                 #endregion
@@ -137,7 +111,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
             return Json(new[] { disciplineMeasures }.ToDataSourceResult(request, ModelState));
         }
+        private DisciplineMeasuresType GetMappedObject(DisciplineMeasuresType disciplineMeasures)
+        {
+            var entity = new DisciplineMeasuresType
+            {
+                MeasuresId = disciplineMeasures.MeasuresId,
+                DetailMeasuresId = disciplineMeasures.DetailMeasuresId,
+                DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
+                ExpireYear = disciplineMeasures.ExpireYear,
+                PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
+                IsDeductedFromSalary = disciplineMeasures.IsDeductedFromSalary,
+                SalaryDeductionPercentage = disciplineMeasures.SalaryDeductionPercentage,
+                Month = disciplineMeasures.Month,
+                Day = disciplineMeasures.Day,
+                Remark = disciplineMeasures.Remark,
+                IsByMoney = disciplineMeasures.IsByMoney,
+                Amount = disciplineMeasures.Amount,
+                Rank = disciplineMeasures.Rank,
+                DateCreated = disciplineMeasures.DateCreated,
+                CreatedBy = disciplineMeasures.CreatedBy,
+                LastModified = disciplineMeasures.LastModified,
+                ModifiedBy = disciplineMeasures.ModifiedBy
+            };
 
+            return entity;
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

@@ -10,10 +10,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
-    public class LeaveEntitleStartingDateController : Controller
+    public class LeaveEntitleStartingDateController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 

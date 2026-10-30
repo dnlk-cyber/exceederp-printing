@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -14,10 +14,10 @@ using System;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
@@ -25,63 +25,55 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
     public class DisciplinaryCaseController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime TransgressionDate { get; set; }
-        public static string TransgressionDateAm { get; set; }
+        private readonly CacheData CacheData = new CacheData();
         HRMInputs inputs = new HRMInputs();
-        string ErrorMessage = "";
         public ActionResult Index()
         {
             PopulateViewData();
             return View();
         }
+      
         private void PopulateViewData()
         {
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
-            GetMeasureDetail();
-            GetMeasure();
-            var periodList = db.GLPeriods.ToList();
-            ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<GLPeriod>();
 
-            ViewData["Committees"] = db.Committees.ToList();
+           
+           
+           
+            ViewData["PeriodList"] = db.GLPeriods.Select(
+           i => new
+           {
+               Name = i.Name,
+               GLPeriodId = i.GLPeriodId,
+           }).AsQueryable();
+
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+               i => new
+               {
+                   FullNameAmharic = i.AmharicName,
+                   FullNameWithOutCode = i.AmharicName,
+                   FullName = i.Name,
+                   FullNameaEnglish = i.Name,
+                   FullNameCode =i.Code+"-"+ i.Name,
+                   EmployeeId = i.Id,
+                   PersonId = i.Id,
+                   EmployeeCode = i.Code
+               }).AsQueryable();
+
+
+            ViewData["Committees"] = db.Committees.AsQueryable();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate??true;
+            ViewData["isManual"] = db.GeneralJobtitleSettings.FirstOrDefault()?.IsManual;
+            ViewData["Measures"] = db.DisciplineMeasures.AsQueryable();
+            ViewData["MeasuresDetails"] = db.DisciplineMeasuresDetail.AsQueryable();
         }
-        private bool CheckDisciplineValidation(int id)
-        {
-            ErrorMessage = "";
 
-
-            #region DisciplineMeasures
-            var DisciplineMeasures = db.EmpDisciplinaryHearing.Where(x => x.DisciplinaryCaseId == id).FirstOrDefault();
-            if (DisciplineMeasures != null)
-            {
-
-                ErrorMessage = "You cannot delete this Discipline Case.Please delete  Disciplinary Hearing information first.";
-                return false;
-
-
-            }
-            #endregion
-            #region DisciplineMeasuresType
-            var DisciplineMeasuresType = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == id).FirstOrDefault();
-            if (DisciplineMeasuresType != null)
-            {
-
-                ErrorMessage = "You cannot delete this Discipline Case.Please delete Discipline Measure information first.";
-                return false;
-
-
-            }
-            #endregion
-
-            return true;
-        }
         public void SetDate(string name, string value)
         {
             if (name == "TransgressionDateAm")
             {
-                TransgressionDateAm = value;
+               var TransgressionDateAm = value;
                 var splitDate = TransgressionDateAm.Split('/');
-                TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
 
         }
@@ -102,7 +94,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             IQueryable<DisciplinaryCase> disciplinarycases = db.DisciplinaryCases.Where(x => employees.Contains(x.EmployeeId));
             DataSourceResult result = disciplinarycases.ToDataSourceResult(request, disciplinaryCase => new
             {
@@ -119,6 +110,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 CreatedBy = disciplinaryCase.CreatedBy,
                 ModifiedBy = disciplinaryCase.ModifiedBy,
                 OrgBranchName = disciplinaryCase.OrgBranchName,
+                IsOnlineApproved = disciplinaryCase.IsOnlineApproved,
+                OnlineApprovedBy = disciplinaryCase.OnlineApprovedBy,
+                OnlineApprovedTime = disciplinaryCase.OnlineApprovedTime,
                 IsActive = disciplinaryCase.IsActive
 
             });
@@ -156,15 +150,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Create([DataSourceRequest]DataSourceRequest request, DisciplinaryCase disciplinaryCase)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(disciplinaryCase.TransgressionDateAm))
+                {
+                    ModelState.AddModelError("", " Transgression Date field is mandatory");
+                    return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+                }
+
+                disciplinaryCase.TransgressionDate = HrHelper.ParseEthiopicDate(disciplinaryCase.TransgressionDateAm);
+
+
+            }
+            else
+            {
+
+                disciplinaryCase.TransgressionDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(disciplinaryCase.TransgressionDate.Day, disciplinaryCase.TransgressionDate.Month, disciplinaryCase.TransgressionDate.Year);
+
+            }
             var discipline = db.DisciplinaryCases.Where(x => x.EmployeeId == disciplinaryCase.EmployeeId).ToList();
 
-            if (TransgressionDateAm == null)
-            {
-                ModelState.AddModelError("", "Transgression Date  value is mandatory!!");
-            }
-            if (TransgressionDate.Date > DateTime.Now.Date)
+           
+            if (disciplinaryCase.TransgressionDate.Date > DateTime.Now.Date)
             {
                 ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
+                return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+
             }
 
             if (ModelState.IsValid)
@@ -172,12 +184,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 var entity = new DisciplinaryCase
                 {
                     EmployeeId = disciplinaryCase.EmployeeId,
-                    TransgressionDate = TransgressionDate,
+                    TransgressionDate = disciplinaryCase.TransgressionDate,
                     NatureofTransgression = disciplinaryCase.NatureofTransgression,
                     Evidence = disciplinaryCase.Evidence,
                     Remark = disciplinaryCase.Remark,
                     EmployeeCode = inputs.GetEmployees(User.Identity.Name).Where(x => x.PersonId == disciplinaryCase.EmployeeId).FirstOrDefault().EmployeeCode,
-                    TransgressionDateAm = TransgressionDateAm,
+                    TransgressionDateAm = disciplinaryCase.TransgressionDateAm,
                     DateCreated = DateTime.Now,
                     LastModified = disciplinaryCase.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -218,12 +230,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         {
             ModelState.Clear();
 
-            if (disciplinaryCase.TransgressionDateAm != null)
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
             {
-                var splitDate = disciplinaryCase.TransgressionDateAm.Split('/');
-                disciplinaryCase.TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (string.IsNullOrEmpty(disciplinaryCase.TransgressionDateAm))
+                {
+                    ModelState.AddModelError("", " Transgression Date field is mandatory");
+                    return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+                }
+
+                disciplinaryCase.TransgressionDate = HrHelper.ParseEthiopicDate(disciplinaryCase.TransgressionDateAm);
+
+
             }
-            if (TransgressionDate.Date > DateTime.Now.Date)
+            else
+            {
+
+                disciplinaryCase.TransgressionDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(disciplinaryCase.TransgressionDate.Day, disciplinaryCase.TransgressionDate.Month, disciplinaryCase.TransgressionDate.Year);
+
+            }
+            if (disciplinaryCase.TransgressionDate.Date > DateTime.Now.Date)
             {
                 ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
             }
@@ -234,11 +260,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 {
                     DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
                     EmployeeId = disciplinaryCase.EmployeeId,
-                    TransgressionDate = TransgressionDate,
+                    TransgressionDate = disciplinaryCase.TransgressionDate,
                     NatureofTransgression = disciplinaryCase.NatureofTransgression,
                     Evidence = disciplinaryCase.Evidence,
                     Remark = disciplinaryCase.Remark,
-                    TransgressionDateAm = TransgressionDateAm,
+                    TransgressionDateAm = disciplinaryCase.TransgressionDateAm,
                     EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == disciplinaryCase.EmployeeId).FirstOrDefault().EmployeeCode,
                     DateCreated = disciplinaryCase.DateCreated,
                     LastModified = DateTime.Now,
@@ -278,11 +304,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
 
             }
-
-            if (!CheckDisciplineValidation(disciplinaryCase.DisciplinaryCaseId))
+            var DisciplineMeasures = db.EmpDisciplinaryHearing.Where(x => x.DisciplinaryCaseId == disciplinaryCase.DisciplinaryCaseId).FirstOrDefault();
+            if (DisciplineMeasures != null)
             {
-                ModelState.AddModelError("", ErrorMessage);
+
+                ModelState.AddModelError("", "You cannot delete this Discipline Case.Please delete  Disciplinary Hearing information first.");
+                return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+
+
             }
+            var DisciplineMeasuresType = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == disciplinaryCase.DisciplinaryCaseId).FirstOrDefault();
+            if (DisciplineMeasuresType != null)
+            {
+
+                ModelState.AddModelError("", "You cannot delete this Discipline Case.Please delete Discipline Measure information first");
+                return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+
+
+            }
+
 
             if (ModelState.IsValid)
             {

@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common.HRM;
+﻿using ExceedERP.Core.Domain.Common.HRM;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail

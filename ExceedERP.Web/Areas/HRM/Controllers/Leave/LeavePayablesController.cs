@@ -239,7 +239,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             db.SaveChanges();
 
             // Get Tax Setting
-            //var taxSetting = db.ExpenseAndTaxSettings.FirstOrDefault();
+            var taxSetting = db.ExpenseAndTaxSettings.FirstOrDefault();
             //var tax = db.GLTaxRates.FirstOrDefault();
 
             // Create Payment Line (single logic)
@@ -248,10 +248,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 PaymentRequest = paymentRequest, // use navigation instead of ID
                 Amount = payableDetail.NetPayment,
-                TaxAmount =  payableDetail.BasicSalaryIncomeTax,
+                TaxAmount = taxSetting != null ? payableDetail.BasicSalaryIncomeTax : 0,
                 TotalAmount = payableDetail.NetPayment,
 
-                ItemName =  "0",
+                ItemName = taxSetting?.ApSetupItemId.ToString() ?? "0",
                 GLTaxRateID = null,
 
                 Description = "Payable Leave Payment",

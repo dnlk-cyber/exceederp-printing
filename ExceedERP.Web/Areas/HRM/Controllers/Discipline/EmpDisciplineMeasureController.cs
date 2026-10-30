@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -12,16 +13,15 @@ using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-
-    [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
+    
+     [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
     public class EmpDisciplineMeasureController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime DecisionDate { get; set; }
-        public static string DecisionDateAmharic { get; set; }
         public ActionResult Index()
         {
             return View();
@@ -30,9 +30,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         {
             if (name == "DecisionDateAm")
             {
-                DecisionDateAmharic = value;
+               string  DecisionDateAmharic = value;
                 var splitDate = DecisionDateAmharic.Split('/');
-                DecisionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+               DateTime DecisionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
 
         }
@@ -60,48 +60,63 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult EmpDisciplineMeasure_Create([DataSourceRequest]DataSourceRequest request, EmpDisciplineMeasure empDisciplineMeasure, int id)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(empDisciplineMeasure.DecisionDateAm))
+                {
+                    ModelState.AddModelError("", " Decision Date field is mandatory");
+                    return Json(new[] { empDisciplineMeasure }.ToDataSourceResult(request, ModelState));
+                }
+
+                empDisciplineMeasure.DecisionDate = HrHelper.ParseEthiopicDate(empDisciplineMeasure.DecisionDateAm);
+
+
+            }
+            else
+            {
+
+                empDisciplineMeasure.DecisionDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(empDisciplineMeasure.DecisionDate.Day, empDisciplineMeasure.DecisionDate.Month, empDisciplineMeasure.DecisionDate.Year);
+
+            }
+            if (empDisciplineMeasure.DecisionDate.Date > DateTime.Now.Date.Date)
+            {
+
+                ModelState.AddModelError("", "Decision Date should be less or equal to the current date!!");
+                return Json(new[] { empDisciplineMeasure }.ToDataSourceResult(request, ModelState));
+
+            }
+            empDisciplineMeasure.DisciplinaryCaseId = id;
             if (ModelState.IsValid)
             {
-                if (DecisionDateAmharic == null)
-                {
-                    ModelState.AddModelError("", "Decsion date value  is mandatory!!");
-                }
-                else if (DecisionDate.Date > DateTime.Now.Date)
+                
+                var entity = new EmpDisciplineMeasure
                 {
 
-                    ModelState.AddModelError("", "Decision Date should be less or equal to the current date!!");
-                }
+                    DisciplinaryCaseId = id,
+                    MeasuresId = empDisciplineMeasure.MeasuresId,
+                    DetailMeasuresId = empDisciplineMeasure.DetailMeasuresId,
+                    DecisionDate = empDisciplineMeasure.DecisionDate,
+                    IsExpired = empDisciplineMeasure.IsExpired,
+                    IsReversedByAppeal = empDisciplineMeasure.IsReversedByAppeal,
+                    Remark = empDisciplineMeasure.Remark,
+                    Month = empDisciplineMeasure.Month,
+                    DecisionDateAm = empDisciplineMeasure.DecisionDateAm
+                };
 
-              
-                else
-                {
-                    var entity = new EmpDisciplineMeasure
-                    {
+                db.EmpDisciplineMeasure.Add(entity);
+                db.SaveChanges();
+                empDisciplineMeasure.EmpDisciplineMeasureId = entity.EmpDisciplineMeasureId;
 
-                        DisciplinaryCaseId = id,
-                        MeasuresId = empDisciplineMeasure.MeasuresId,
-                        DetailMeasuresId = empDisciplineMeasure.DetailMeasuresId,
-                        DecisionDate = DecisionDate,
-                        IsExpired = empDisciplineMeasure.IsExpired,
-                        IsReversedByAppeal = empDisciplineMeasure.IsReversedByAppeal,
-                        Remark = empDisciplineMeasure.Remark,
-                        Month = empDisciplineMeasure.Month,
-                        DecisionDateAm = DecisionDateAmharic
-                    };
+                #region operation log
 
-                    db.EmpDisciplineMeasure.Add(entity);
-                    db.SaveChanges();
-                    empDisciplineMeasure.EmpDisciplineMeasureId = entity.EmpDisciplineMeasureId;
+                //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                    #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryMeasure", "Success", User.Identity.Name, User.Identity.Name + " add employee Displine measure decision Date " + entity.DecisionDateAm, Modules.HRM);
 
-                    //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                #endregion
 
-                    UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryMeasure", "Success", User.Identity.Name, User.Identity.Name + " add employee Displine measure decision Date " + entity.DecisionDateAm, Modules.HRM);
-
-                    #endregion
-
-                }
+                
             }
 
             return Json(new[] { empDisciplineMeasure }.ToDataSourceResult(request, ModelState));
@@ -111,48 +126,63 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult EmpDisciplineMeasure_Update([DataSourceRequest]DataSourceRequest request, EmpDisciplineMeasure empDisciplineMeasure)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(empDisciplineMeasure.DecisionDateAm))
+                {
+                    ModelState.AddModelError("", " Decision Date field is mandatory");
+                    return Json(new[] { empDisciplineMeasure }.ToDataSourceResult(request, ModelState));
+                }
+
+                empDisciplineMeasure.DecisionDate = HrHelper.ParseEthiopicDate(empDisciplineMeasure.DecisionDateAm);
+
+
+            }
+            else
+            {
+
+                empDisciplineMeasure.DecisionDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(empDisciplineMeasure.DecisionDate.Day, empDisciplineMeasure.DecisionDate.Month, empDisciplineMeasure.DecisionDate.Year);
+
+            }
+            DateTime tommorow = DateTime.Now.AddDays(1);
+            if (empDisciplineMeasure.DecisionDate >= tommorow.Date)
+            {
+
+                ModelState.AddModelError("", "Decision Date should be less or equal to the current date!!");
+                return Json(new[] { empDisciplineMeasure }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
-                if (DecisionDateAmharic == null)
+                
+                var entity = new EmpDisciplineMeasure
                 {
-                    DecisionDateAmharic = empDisciplineMeasure.DecisionDateAm;
-                    var splitDate = DecisionDateAmharic.Split('/');
-                    DecisionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (DecisionDate.Date > DateTime.Now.Date)
-                {
+                    EmpDisciplineMeasureId = empDisciplineMeasure.EmpDisciplineMeasureId,
 
-                    ModelState.AddModelError("", "Decision Date should be less or equal to the current date!!");
-                }
-                else
-                {
-                    var entity = new EmpDisciplineMeasure
-                    {
-                        EmpDisciplineMeasureId = empDisciplineMeasure.EmpDisciplineMeasureId,
+                    DisciplinaryCaseId = empDisciplineMeasure.DisciplinaryCaseId,
+                    MeasuresId = empDisciplineMeasure.MeasuresId,
+                    DetailMeasuresId = empDisciplineMeasure.DetailMeasuresId,
+                    DecisionDate = empDisciplineMeasure.DecisionDate,
+                    IsExpired = empDisciplineMeasure.IsExpired,
+                    Month = empDisciplineMeasure.Month,
+                    IsReversedByAppeal = empDisciplineMeasure.IsReversedByAppeal,
+                    Remark = empDisciplineMeasure.Remark,
+                    DecisionDateAm = empDisciplineMeasure.DecisionDateAm
+                };
 
-                        DisciplinaryCaseId = empDisciplineMeasure.DisciplinaryCaseId,
-                        MeasuresId = empDisciplineMeasure.MeasuresId,
-                        DetailMeasuresId = empDisciplineMeasure.DetailMeasuresId,
-                        DecisionDate = DecisionDate,
-                        IsExpired = empDisciplineMeasure.IsExpired,
-                        Month = empDisciplineMeasure.Month,
-                        IsReversedByAppeal = empDisciplineMeasure.IsReversedByAppeal,
-                        Remark = empDisciplineMeasure.Remark,
-                        DecisionDateAm = DecisionDateAmharic
-                    };
+                db.EmpDisciplineMeasure.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
 
-                    db.EmpDisciplineMeasure.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
+                #region operation log
 
-                    #region operation log
+                //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                    //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryMeasure", "Success", User.Identity.Name, User.Identity.Name + " update employee Displine measure decision Date " + entity.DecisionDateAm, Modules.HRM);
 
-                    UserHelper.OperationLog(Request.UserHostAddress, "EmpDisciplinaryMeasure", "Success", User.Identity.Name, User.Identity.Name + " update employee Displine measure decision Date " + entity.DecisionDateAm, Modules.HRM);
-
-                    #endregion
-                }
+                #endregion
+                
             }
 
             return Json(new[] { empDisciplineMeasure }.ToDataSourceResult(request, ModelState));
