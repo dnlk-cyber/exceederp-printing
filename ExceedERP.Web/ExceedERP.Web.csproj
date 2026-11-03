@@ -1493,6 +1493,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceMappingCourtController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceTypeRuleController.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1670,6 +1671,7 @@
     <Compile Include="Areas\HRM\Controllers\Recruitment\ApplicantRegistrationController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Recruitment\ApplicantScreeningResultAttachmentsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ApplicantScreeningResultController.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1677,6 +1679,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Areas\HRM\Controllers\Recruitment\CheckUpController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EducationFieldDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EducationLevelDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferDGMValidationsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferGMValidationsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestDepartmentValidationsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestHRsController.cs" />
@@ -1690,22 +1696,35 @@
     <Compile Include="Areas\HRM\Controllers\Recruitment\GeneralSettingController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Recruitment\InternalApplicantEducationsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\InternalApplicantExamResultController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Recruitment\InternalApplicantExperiencesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\InternalApplicantsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\InternalApplicantScreeningResultController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Recruitment\InternalApplicantScreeningResultSelfCareController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\InternalRecruitmentCriteriaTypeSettingsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\InternalVacancyEligibilitySettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\InterviewerController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\PassSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\RecruitmentPlanController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Recruitment\RecruitmentRequestDGMValidationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\RecruitmentRequestGMValidationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\RecruitmentRequestPMValidationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\RecruitmentRequestProjectHRValidationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\RecruitmentRequestSecondValidationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\RelatedEducationFieldDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ScreeningEducationFieldsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ScreeningEducationLevelsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ScreeningExperienceJobtitlesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ScreeningSettingsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\VacancyDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\VacancyLanguagesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\VacancyTrackingController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\AllInternalApplicantsController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ApplicationFormHRController.cs" />
@@ -1812,6 +1831,7 @@
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingPlanDepartmentReadController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingPlanSummaryController.cs" />
     <Compile Include="Areas\HRM\HRMAreaRegistration.cs" />
+    <Compile Include="Areas\HRM\Models\VacancyDTO.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\AssignTicketController.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\ChangeManagement\ChangeApprovalsController.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\ChangeManagement\ChangeRequestsController.cs" />
@@ -8004,6 +8024,9 @@
     <Content Include="Areas\Planning\Views\StrategicPlans\Index.cshtml" />
     <Content Include="Areas\HRM\Views\TemplateHeaderImage\Index.cshtml" />
     <Content Include="Areas\HRM\Views\DisciplinaryCase\EditorTemplates\ListOfEmployee.cshtml" />
+    <Content Include="Areas\HRM\Views\AllowanceSettings\EditorTemplates\JobTitle.cshtml" />
+    <Content Include="Areas\HRM\Views\AllowanceSettings\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\Allowance\EditorTemplates\GetRank.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
@@ -9916,7 +9939,6 @@
     <Folder Include="Areas\Health\Models\" />
     <Folder Include="Areas\Health\Views\Shared\" />
     <Folder Include="Areas\HRM\Controllers\Dashboard\" />
-    <Folder Include="Areas\HRM\Models\" />
     <Folder Include="Areas\HRM\Views\CloseVacancy\" />
     <Folder Include="Areas\HRM\Views\CommitteeMember\" />
     <Folder Include="Areas\HRM\Views\CommitteMinuteDetails\" />

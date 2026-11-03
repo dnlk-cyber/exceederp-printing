@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
 {
-
+    
     public class EmployeeTransferRequest : DepartmentNewOperations
     {
         public int EmployeeTransferRequestId { get; set; }
@@ -21,7 +21,7 @@ namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
         [DisplayName("To Work Unit")]
         public int OrgStructureId { get; set; }
         [DisplayName("From Work Unit")]
-        public int? FromOrgStructureId { get; set; }
+        public int? FromOrgStructureId { get; set; }       
         public string Reason { get; set; }
         [Display(Name = "Request Date")]
         [DataType(DataType.Date)]
@@ -62,7 +62,7 @@ namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
         public bool IsGMApproved { get; set; }
         public string GMApprovedBy { get; set; }
         public DateTime? GMApprovedTime { get; set; }
-
+       
         public virtual ICollection<TransferRequestDetail> TransferRequestDetails { get; set; }
         public virtual ICollection<TransferRequestValidation> TransferRequestValidations { get; set; }
         public virtual ICollection<TransferRequestDGMValidation> TransferRequestDGMValidations { get; set; }

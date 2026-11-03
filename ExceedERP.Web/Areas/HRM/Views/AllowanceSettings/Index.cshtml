@@ -1,0 +1,93 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Allowance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend >@Resources.NavigatorBenefit_EmployeeAllowance  @Resources.Settings</legend>
+@(Html.Kendo().Grid<AllowanceSetting>()
+          .Name("AllowanceSettinggrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AllowanceType).EditorTemplateName("Enum").Width (160);
+          columns.Bound(c => c.IsOnlyForHead).ClientTemplate(
+               "<input type='checkbox' disabled = 'true' value='#= IsOnlyForHead#' " +
+               "# if (IsOnlyForHead) { #" +
+               "checked='checked'" +
+               "# } #" +
+               "/>"
+               ).Width(160);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitle").Width(150);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          });
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 550px;" })
+                   .Groupable()
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                   .Filterable()
+                  .Scrollable()
+              .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"AllowanceSettinggrid\")");
+                   events.RequestStart("onRequestStart(\"AllowanceSettinggrid\")");
+                   events.RequestEnd("onRequestEnd(\"AllowanceSettinggrid\")");
+
+               })
+
+          .Model(model => model.Id(p => p.AllowanceSettingId))
+          .Read(read => read.Action("AllowanceSettings_Read", "AllowanceSettings").Data("sendForgery"))
+          .Create(create => create.Action("AllowanceSettings_Create", "AllowanceSettings").Data("sendForgery"))
+          .Update(update => update.Action("AllowanceSettings_Update", "AllowanceSettings").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("AllowanceSettings_Destroy", "AllowanceSettings").Data("sendForgery"))
+      )
+)
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

@@ -12,6 +12,19 @@
           columns.Bound(c => c.AllowanceType).EditorTemplateName("Enum");
           columns.Bound(c => c.TaxTrasholdAmount);
           columns.Bound(c => c.Percentage);
+          columns.Bound(c => c.DeductOnAbsence).Width(160).Title("Deduct On Absence ?").ClientTemplate(
+                  "<input type='checkbox' disabled = 'true' value='#= DeductOnAbsence #' " +
+                  "# if (DeductOnAbsence) { #" +
+                  "checked='checked'" +
+                  "# } #" +
+                  "/>"
+                  );
+           columns.Bound(c => c.DeductOnLeave).Width(160).Title("Deduct On Leave ?").ClientTemplate(
+                     "<input type='checkbox' disabled = 'true' value='#= DeductOnLeave #' " +
+                     "# if (DeductOnLeave) { #" +
+                     "checked='checked'" +
+                     "# } #" +
+                     "/>");
           columns.Bound(c => c.Remark);
           columns.Command(command =>
           {
@@ -34,7 +47,7 @@
                     })
               .Editable(editable => editable.Mode(GridEditMode.InLine))
                                    .HtmlAttributes(new { style = "height: 550px;" })
-                           .Groupable()
+                          
                           .Sortable(sortable =>
                           {
                               sortable.SortMode(GridSortMode.SingleColumn);
@@ -63,28 +76,13 @@
                       model.Field(p => p.AllowanceType).Editable(false);
                   }
                   )
-                  .Read(read => read.Action("AllowanceTypeRule_Read", "AllowanceTypeRule"))
-                  .Create(create => create.Action("AllowanceTypeRule_Create", "AllowanceTypeRule"))
-                  .Update(update => update.Action("AllowanceTypeRule_Update", "AllowanceTypeRule"))
+                  .Read(read => read.Action("AllowanceTypeRule_Read", "AllowanceTypeRule").Data("sendForgery"))
+                  .Create(create => create.Action("AllowanceTypeRule_Create", "AllowanceTypeRule").Data("sendForgery"))
+                  .Update(update => update.Action("AllowanceTypeRule_Update", "AllowanceTypeRule").Data("sendForgery"))
               )
 )
     <script>
-        //function error_handler(e) {
-        //    if (e.errors) {
-        //        var message = "Errors:\n";
-        //        $.each(e.errors, function(key, value) {
-        //            if ('errors' in value) {
-        //                $.each(value.errors, function() {
-        //                    message += this + "\n";
-        //                });
-        //            }
-        //        });
-        //        alert(message);
-
-        //    }
-
-        //}
-
+       
         function sync_handler(e) {
             this.read();
 

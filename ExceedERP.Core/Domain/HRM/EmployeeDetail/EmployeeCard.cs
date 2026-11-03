@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.HRM.Allowance;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 {
@@ -21,6 +21,14 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public virtual Person_Employee Employee { get; set; }
         [Display(Name = "To Employee")]
         public int? ToEmployeeId { get; set; }
+        [DisplayName("From Work Unit")]
+        public int? FromOrgStructureId { get; set; }
+        [DisplayName("From Business Unit ")]
+        public int? FromBusinessUnitId { get; set; }
+        [Display(Name = "From Branch")]
+        public int FromBranchId { get; set; }
+        [Display(Name = "From JobTitle")]
+        public int? FromLookupId { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_OrgStructureId", ResourceType = typeof(Localization.Resources))]
         public int OrgStructureId { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_Branch", ResourceType = typeof(Localization.Resources))]
@@ -28,7 +36,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Display(Name = "HR_EmployeeDetail_Placement_JobTitleName", ResourceType = typeof(Localization.Resources))]
         public int LookupId { get; set; }
         [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
-        public int BusinessUnitId { get; set; }
+        public int? BusinessUnitId { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? FromDate { get; set; }
@@ -47,8 +55,14 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public bool IsActive { get; set; }
         [Display(Name = "each Record Primary Key(Idex) ")]
         public int EachPrimaryId { get; set; }
+        [Display(Name = "Action Type")]
         public EmployeeCardType CardType { get; set; }
+        [Display(Name = "Action taken")]
         public string ActionTaken { get; set; }
+        public string ActionTakenBy { get; set; }
+        public DateTime? ActionTakenDate { get; set; }
+      
+
     }
 
     public enum EmployeeCardType
@@ -60,6 +74,8 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         Delegation,
         Accident,
         Temination,
+        Password_Reset,
+        EmployeeTransfer,
         Others
 
     }

@@ -134,6 +134,7 @@ using ExceedERP.Core.Domain.CRM.TenderManagement;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.Core.Domain.HRM.Payroll.BackPays;
 using ExceedERP.Core.Domain.HRM.HRMLoans;
+using ExceedERP.Core.Domain.HRM.TrainingEducation.EducationOpportunity;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -599,6 +600,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExpenseAndTaxSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HRMContributionSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeProbationSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalApplicantEducationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InternalApplicantExperienceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmpPayrollNoDaysWorkedEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AllowanceGenerationSettingEntityTypeConfiguration());
@@ -842,6 +845,7 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Configurations.Add(new RecruitmentVacancyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantEducationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EducationFieldSettingEntityTypeConfiguration());
             //recrutment 
             modelBuilder.Configurations.Add(new RecruitmentRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RecruitmentRequestProjectHRValidationConfiguration());
@@ -2948,6 +2952,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<EmployeeCard> EmployeeCards { get; set; }
         public DbSet<EmployeeReward> EmployeeRewards { get; set; }
         public DbSet<EmployeeProbationSetting> EmployeeProbationSettings { get; set; }
+        public DbSet<InternalApplicantEducation> InternalApplicantEducations { get; set; }
+        public DbSet<InternalApplicantExperience> InternalApplicantExperiences { get; set; }
 
         #region Payroll
 
@@ -3219,6 +3225,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ClearanceProvider> ClearanceProvideres { get; set; }
         public DbSet<ClearanceProviderDetail> ClearanceProviderDetails { get; set; }
 
+        public DbSet<EducationFieldSetting> EducationFieldSettings { get; set; }
         public DbSet<ApplicantEducation> ApplicantEducation { get; set; }
         public DbSet<RecruitmetnInterviewerPerseon> RecruitmetnInterviewerPerseons { get; set; }
         public DbSet<ExperienceOrganizationTypeSetting> ExperienceOrganizationTypeSettings { get; set; }

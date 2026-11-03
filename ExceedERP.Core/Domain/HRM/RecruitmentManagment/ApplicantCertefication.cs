@@ -1,8 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
 {
-    public class ApplicantCertefication
+   public class ApplicantCertefication
     {
         public int ApplicantCerteficationId { get; set; }
         public int ApplicantDetailId { get; set; }

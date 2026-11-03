@@ -1,5 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+using System.Collections.Generic;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
@@ -18,8 +21,9 @@ namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
         public VacancyType VacancyType { get; set; }
         [Display(Name = "HR_RecruitmentManagment_Vacancy_VaccancyCode", ResourceType = typeof(Localization.Resources))]
         public string VacancyCode { get; set; }
- 
         public int Rank { get; set; }
+        [Display(Name = "Number of Applicant")]
+        public int? NumberOfApplicant { get; set; }
         public bool Check { get; set; }
         public bool IsTransfered { get; set; }
        

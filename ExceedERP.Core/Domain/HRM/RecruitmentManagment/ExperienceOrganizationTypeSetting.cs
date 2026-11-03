@@ -1,10 +1,15 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Localization;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
 {
-    public class ExperienceOrganizationTypeSetting
+   public class ExperienceOrganizationTypeSetting
     {
         public int ExperienceOrganizationTypeSettingId { get; set; }
         [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.OrganizationType))]

@@ -18,7 +18,7 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
         public decimal Percentage { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
-         
-
+        public bool DeductOnAbsence { get; set; }
+        public bool DeductOnLeave { get; set; }
     }
 }

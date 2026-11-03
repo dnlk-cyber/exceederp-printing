@@ -3,13 +3,17 @@ using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -89,6 +93,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 CurrentResult = applicantExamResult.CurrentResult,
                 Total = applicantExamResult.Total,
                 ExamType = applicantExamResult.ExamType,
+                IsInterview = applicantExamResult.ExamType==ExamType.INTERVIEW,
+                ActualValue = applicantExamResult.ActualValue,
                 Remark = applicantExamResult.Remark,
             });
 
@@ -100,12 +106,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult InternalApplicantExamResult_Create([DataSourceRequest]DataSourceRequest request, InternalApplicantExamResult applicantExamResult, int id)
         {
             ModelState.Clear();
+            if (applicantExamResult.SettingValue < applicantExamResult.CurrentResult)
+            {
+                ModelState.AddModelError("File", $" The result must be less or equal to the setting value =>{applicantExamResult.SettingValue}!!");
+
+                return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
+            }
             if (ModelState.IsValid)
             {
-                if (applicantExamResult.SettingValue < applicantExamResult.CurrentResult)
-                {
-                    return new JavaScriptResult() { Script = "alert('" + " The result must be less or equal to the setting value!!" + "');" };
-                }
+                
                 var entity = new InternalApplicantExamResult
                 {
                     InternalApplicantScreeningId = id,
@@ -113,6 +122,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     CurrentResult = applicantExamResult.CurrentResult,
                     Total = applicantExamResult.Total,
                     ExamType = applicantExamResult.ExamType,
+                    ActualValue = applicantExamResult.ActualValue,
                     Remark = applicantExamResult.Remark,
                 };
 
@@ -142,6 +152,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     CurrentResult = applicantExamResult.CurrentResult,
                     Total = applicantExamResult.Total,
                     ExamType = applicantExamResult.ExamType,
+                    ActualValue = applicantExamResult.ActualValue,
                     Remark = applicantExamResult.Remark,
                 };
 
@@ -167,6 +178,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     CurrentResult = applicantExamResult.CurrentResult,
                     Total = applicantExamResult.Total,
                     ExamType = applicantExamResult.ExamType,
+                    ActualValue = applicantExamResult.ActualValue,
                     Remark = applicantExamResult.Remark,
                 };
                 #region delete log

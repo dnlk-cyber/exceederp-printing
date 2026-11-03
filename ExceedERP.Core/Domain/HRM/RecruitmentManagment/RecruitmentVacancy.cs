@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM.HRMPlan;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
 {

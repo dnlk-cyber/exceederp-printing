@@ -10,7 +10,6 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
         public int AllowanceMappingId { get; set; }
         public int AllowanceDefinationId { get; set; }
         public virtual AllowanceDefination AllowanceDefination { get; set; }
-
         [Display(Name = "HR_Allowance_AllowanceDefination_LookupId", ResourceType = typeof(Localization.Resources))]
         public int LookupId { get; set; }
         public virtual Lookup Lookup { get; set; }

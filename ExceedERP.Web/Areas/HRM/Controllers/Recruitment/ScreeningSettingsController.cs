@@ -1,11 +1,18 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain;
+using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Controllers;
 
@@ -30,7 +37,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ViewData["OrganizationType"] = db.ExperienceOrganizationTypeSettings.ToList();
             ViewData["ExperienceJobtitle"] = db.ExperienceJobTitles.ToList();
             ViewData["Lookups"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-            ViewData["LookupsExternalExperienceJobTitleForInternalApplicants"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.Jobtitle_External_Experience);
+            ViewData["LookupsExternalExperienceJobTitleForInternalApplicants"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.JOB_TITLE||x.LookupType ==LookUpTypes.OLD_JOB_TITLE);
         }
 
         // GET: HRM/EducationLevelSettings/Details/5
@@ -43,9 +50,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 OrganizationType = screeningSetting.OrganizationType,
                 ScreeningSettingId = screeningSetting.ScreeningSettingId,
                 VacancyId = screeningSetting.VacancyId,
-                ExperienceYear = screeningSetting.ExperienceYear,
-                Language = screeningSetting.Language,
-                Gender = screeningSetting.Gender
+                IsPercentage = screeningSetting.IsPercentage,
+                MiniExperiencePercentage = screeningSetting.MiniExperiencePercentage,
+                IsBasedOnMaxExperience = screeningSetting.IsBasedOnMaxExperience,
+                ApplyEducationRanking = screeningSetting.ApplyEducationRanking,
+               
 
             });
 
@@ -58,15 +67,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             if (ModelState.IsValid)
             {
-                var entity = new ScreeningSetting
-                {
-                    OrganizationType = screeningSetting.OrganizationType,
-                    VacancyId = screeningSetting.VacancyId,
-                    ExperienceYear = screeningSetting.ExperienceYear,
-                    Language = screeningSetting.Language,
-                    Gender = screeningSetting.Gender
-                };
-
+                var entity = GetMappedObject(screeningSetting);
                 db.ScreeningSettings.Add(entity);
                 db.SaveChanges();
                 screeningSetting.ScreeningSettingId = entity.ScreeningSettingId;
@@ -83,16 +84,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             if (ModelState.IsValid)
             {
-                var entity = new ScreeningSetting
-                {
-                    ScreeningSettingId = screeningSetting.ScreeningSettingId,
-                    OrganizationType = screeningSetting.OrganizationType,
-                    VacancyId = screeningSetting.VacancyId,
-                    ExperienceYear = screeningSetting.ExperienceYear,
-                    Language = screeningSetting.Language,
-                    Gender = screeningSetting.Gender
-                };
-
+                var entity = GetMappedObject(screeningSetting);
                 db.ScreeningSettings.Attach(entity);
                 db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
@@ -110,15 +102,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             if (ModelState.IsValid)
             {
-                var entity = new ScreeningSetting
-                {
-                    ScreeningSettingId = screeningSetting.ScreeningSettingId,
-                    OrganizationType = screeningSetting.OrganizationType,
-                    VacancyId = screeningSetting.VacancyId,
-                    ExperienceYear = screeningSetting.ExperienceYear,
-                    Language = screeningSetting.Language,
-                    Gender = screeningSetting.Gender
-                };
+                var entity = GetMappedObject(screeningSetting);
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Education Level setting" + screeningSetting.ScreeningSettingId);
                 #endregion
@@ -131,6 +115,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { screeningSetting }.ToDataSourceResult(request, ModelState));
         }
 
+        private ScreeningSetting GetMappedObject(ScreeningSetting screeningSetting)
+        {
+            var entity = new ScreeningSetting
+            {
+                ScreeningSettingId = screeningSetting.ScreeningSettingId,
+                OrganizationType = screeningSetting.OrganizationType,
+                VacancyId = screeningSetting.VacancyId,
+                IsPercentage = screeningSetting.IsPercentage,
+                MiniExperiencePercentage = screeningSetting.MiniExperiencePercentage,
+                IsBasedOnMaxExperience = screeningSetting.IsBasedOnMaxExperience,
+                ApplyEducationRanking = screeningSetting.ApplyEducationRanking,
+
+            };
+            return entity;
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

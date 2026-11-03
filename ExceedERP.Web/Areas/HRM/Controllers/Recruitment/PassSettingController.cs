@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -15,8 +16,8 @@ using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
+  
+   [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
     public class PassSettingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

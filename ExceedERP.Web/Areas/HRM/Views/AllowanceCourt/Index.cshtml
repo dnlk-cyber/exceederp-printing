@@ -46,10 +46,10 @@
                                                                   )
                         
           .Model(model => model.Id(p => p.AllowanceDefinationId))
-          .Read(read => read.Action("AllowanceDefinations_Read", "Allowance"))
-          .Create(create => create.Action("AllowanceDefinations_Create", "Allowance"))
-          .Update(update => update.Action("AllowanceDefinations_Update", "Allowance"))
-          .Destroy(destroy => destroy.Action("AllowanceDefinations_Destroy", "Allowance"))
+          .Read(read => read.Action("AllowanceDefinations_Read", "Allowance").Data("sendForgery"))
+          .Create(create => create.Action("AllowanceDefinations_Create", "Allowance").Data("sendForgery"))
+          .Update(update => update.Action("AllowanceDefinations_Update", "Allowance").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("AllowanceDefinations_Destroy", "Allowance").Data("sendForgery"))
       ).ClientDetailTemplateId ("template")
 )
 <script id="template" type="text/kendo-tmpl">
@@ -98,10 +98,10 @@
                                                   model.Id(p => p.AllowanceMappingId);
                                                   
                                               })
-                                                                              .Read(read => read.Action("AllowanceMappings_Read", "AllowanceMappingCourt", new { id = "#=AllowanceDefinationId#" }))
-                                                                                                                          .Create(create => create.Action("AllowanceMappings_Create", "AllowanceMappingCourt", new { idTwo = "#=AllowanceDefinationId#" }))
-                                                          .Update(update => update.Action("AllowanceMappings_Update", "AllowanceMappingCourt"))
-                                                          .Destroy(destroy => destroy.Action("AllowanceMappings_Destroy", "AllowanceMappingCourt"))
+                                                                              .Read(read => read.Action("AllowanceMappings_Read", "AllowanceMappingCourt", new { id = "#=AllowanceDefinationId#" }).Data("sendForgery"))
+                                                                                                                          .Create(create => create.Action("AllowanceMappings_Create", "AllowanceMappingCourt", new { idTwo = "#=AllowanceDefinationId#" }).Data("sendForgery"))
+                                                          .Update(update => update.Action("AllowanceMappings_Update", "AllowanceMappingCourt").Data("sendForgery"))
+                                                          .Destroy(destroy => destroy.Action("AllowanceMappings_Destroy", "AllowanceMappingCourt").Data("sendForgery"))
                           ).ToClientTemplate()
                     )
 

@@ -1,17 +1,31 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Localization;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
 {
-    public class InternalApplicants
+   public class InternalApplicants
     {
         public int InternalApplicantsId { get; set; }
         public int ApplicationFormId { get; set; }
         [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.Employee))]
         public int? EmployeeId { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_Branch", ResourceType = typeof(Localization.Resources))]
+        public int? BranchId { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_OrgStructureId", ResourceType = typeof(Localization.Resources))]
+        public int? OrgStructureId { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_JobTitleName", ResourceType = typeof(Localization.Resources))]
+        public int? LookupId { get; set; }
+        [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
+        public int? BusinessUnitId { get; set; }
         [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.ApplicantName))]
         public string ApplicantName { get; set; }
         [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.Gender))]

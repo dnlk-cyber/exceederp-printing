@@ -1,14 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
@@ -56,18 +63,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult ApplicantExperience_Create([DataSourceRequest]DataSourceRequest request, ApplicantExperience applicantExperience, int id)
         {
             ModelState.Clear();
-
-            if (applicantExperience.FromAm != null)
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
             {
-                var splitDate = applicantExperience.FromAm.Split('/');
-                applicantExperience.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            if (applicantExperience.ToAm != null)
-            {
-                var splitDate = applicantExperience.ToAm.Split('/');
-                applicantExperience.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
+                if (string.IsNullOrEmpty(applicantExperience.FromAm)
+                || string.IsNullOrEmpty(applicantExperience.ToAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { applicantExperience }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    applicantExperience.From = HrHelper.ParseEthiopicDate(applicantExperience.FromAm);
+                    applicantExperience.To = HrHelper.ParseEthiopicDate(applicantExperience.ToAm);
+                }
 
+            }
+            else 
+            {
+                if(applicantExperience.From.HasValue)
+                    applicantExperience.FromAm = XAPI.EthiopicDateTime.GetEthiopicDate(applicantExperience.From.Value.Day, applicantExperience.From.Value.Month, applicantExperience.From.Value.Year);
+                if(applicantExperience.To.HasValue)
+                    applicantExperience.ToAm = XAPI.EthiopicDateTime.GetEthiopicDate(applicantExperience.To.Value.Day, applicantExperience.To.Value.Month, applicantExperience.To.Value.Year);
+
+            }
+           
             if (ModelState.IsValid)
             {
                 var entity = new ApplicantExperience
@@ -97,15 +117,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
             ModelState.Clear();
 
-            if (applicantExperience.FromAm != null)
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
             {
-                var splitDate = applicantExperience.FromAm.Split('/');
-                applicantExperience.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (string.IsNullOrEmpty(applicantExperience.FromAm)
+                || string.IsNullOrEmpty(applicantExperience.ToAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { applicantExperience }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    applicantExperience.From = HrHelper.ParseEthiopicDate(applicantExperience.FromAm);
+                    applicantExperience.To = HrHelper.ParseEthiopicDate(applicantExperience.ToAm);
+                }
+
             }
-            if (applicantExperience.ToAm != null)
+            else
             {
-                var splitDate = applicantExperience.ToAm.Split('/');
-                applicantExperience.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (applicantExperience.From.HasValue)
+                    applicantExperience.FromAm = XAPI.EthiopicDateTime.GetEthiopicDate(applicantExperience.From.Value.Day, applicantExperience.From.Value.Month, applicantExperience.From.Value.Year);
+                if (applicantExperience.To.HasValue)
+                    applicantExperience.ToAm = XAPI.EthiopicDateTime.GetEthiopicDate(applicantExperience.To.Value.Day, applicantExperience.To.Value.Month, applicantExperience.To.Value.Year);
+
             }
 
             if (ModelState.IsValid)

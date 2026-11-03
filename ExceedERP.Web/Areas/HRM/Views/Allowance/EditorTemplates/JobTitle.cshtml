@@ -1,14 +1,14 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Localization
-@using ExceedERP.Core.Domain.Common
 @(Html.Kendo().DropDownListFor(m => m)
- .OptionLabel( Resources.Select)
-                            .DataTextField("Description")
-                                    .DataValueField("LookupId")
-      .DataSource(dataSource =>
+     .OptionLabel( Resources.Select)
+     .DataTextField("Description")
+     .DataValueField("LookupId")
+     .Filter("contains")
+     .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetAllowance", "HRMDataProvider", new { area = "HRM" }))
+          dataSource.Read(read => read.Action("GetAllowance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
               .ServerFiltering(false);
       })
-                    .ValuePrimitive( true)
+      .ValuePrimitive( true)
 )

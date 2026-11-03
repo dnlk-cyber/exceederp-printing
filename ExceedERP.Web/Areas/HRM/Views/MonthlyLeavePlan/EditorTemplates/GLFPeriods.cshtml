@@ -9,7 +9,7 @@
                        .CascadeFrom("GlFiscalYearId")
                        .DataSource(dataSource =>
                        {
-                           dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("filterperiods"))
+                           dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterperiods"))
                                .ServerFiltering(true);
                        })
 

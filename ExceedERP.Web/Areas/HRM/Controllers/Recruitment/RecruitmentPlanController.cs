@@ -6,8 +6,10 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Company;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -331,8 +333,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult RecruitmentPlans_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<RecruitmentPlan> recruitmentplans = db.RecruitmentPlans.Where(x => mybraches.Contains(x.OrgBranchName) && x.NoOfVacantPost > 0);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<RecruitmentPlan> recruitmentplans = db.RecruitmentPlans.Where(x => mybraches.Contains(x.BranchId) && x.NoOfVacantPost > 0);
             DataSourceResult result = recruitmentplans.ToDataSourceResult(request, recruitmentPlan => new
             {
                 RecruitmentPlanId = recruitmentPlan.RecruitmentPlanId,

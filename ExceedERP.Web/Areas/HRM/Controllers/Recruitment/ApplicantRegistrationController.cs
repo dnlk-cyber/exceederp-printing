@@ -1,30 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using ExceedERP.Core.Domain;
+﻿using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
-using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Controllers;
-using ExceedERP.Web.Models;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.HRM.EmployeeDetail;
-using ExceedERP.Core.Domain.HRM.TrainingEducation;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Web.Areas.HRM.Models;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Models;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Data.OleDb;
-using System.Web.Hosting;
-using System.Net.Http.Headers;
-using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Configuration;
+using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
@@ -38,7 +34,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public static decimal EduField { get; set; }
         public static decimal RelevantExp { get; set; }
         public static decimal RelatedExp { get; set; }
-        public static decimal Gender { get; set; }
+        //public static decimal Gender { get; set; }
         public static decimal Disabliy { get; set; }
         public static decimal Profile { get; set; }
         public static decimal Training { get; set; }
@@ -51,6 +47,300 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             PopulateViewData();
             return View();
         }
+
+        //[HttpGet]
+        //public async Task<ActionResult> ImportApplicantsFromAPIexisted(int id,int regId)
+        //{
+        //    var vaccancy = db.VaccancyPlans.Find(id);
+        //    if (vaccancy == null || string.IsNullOrEmpty(vaccancy.VaccancyCode))
+        //    {
+        //        return Json(new { success = true, Message = "vacancy code not found" }, JsonRequestBehavior.AllowGet);
+
+        //    }
+        //    //string code = vaccancy.VaccancyCode;
+        //    string code = "Ext-CO-36-2025";
+        //    string apiUrl = $"https://jobs.occ-oro.com/api/occ-vacancies/vacancy/{code}";
+        //    string token = "bFAH1ZJmU6oGTr4EXBywPGft73LaYVxWIgQOzjAp5nMbkdqRLEu8vctFhK2sXeMliDTgNJr7V9CWoYZUBpxA3qS0nf4MYhwKE";
+
+        //    VacancyResponseDto vacancyResponse;
+        //    try
+        //    {
+
+        //        using (var client = new HttpClient())
+        //        {
+        //            client.DefaultRequestHeaders.Authorization =
+        //                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        //            var response = await client.GetAsync(apiUrl);
+
+        //            if (!response.IsSuccessStatusCode)
+        //            {
+        //                return Json(new { success = false, Message = "Failed to fetch API data" }, JsonRequestBehavior.AllowGet);
+        //            }
+
+        //            var json = await response.Content.ReadAsStringAsync();
+        //            vacancyResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<VacancyResponseDto>(json);
+        //        }
+
+        //        if (vacancyResponse?.Data?.Vacancy?.Applicants == null ||!vacancyResponse.Data.Vacancy.Applicants.Any())
+        //        {
+        //            return Json(new { success = false, Message = "No applicants found from API" }, JsonRequestBehavior.AllowGet);
+        //        }
+
+
+
+        //        foreach (var applicantDto in vacancyResponse.Data.Vacancy.Applicants)
+        //        {
+        //            // ---------- Applicant Detail ----------
+        //            var applicantDetail = new ApplicantDetail
+        //            {
+        //                ApplicantRegistrationId = regId,
+        //                ApplicantName = applicantDto.First_Name+" "+ applicantDto.Middle_Name+" "+ applicantDto.Last_Name,
+        //                Sex = ParseGender(applicantDto.Sex),
+        //                Age =ToInt(applicantDto.Age),
+        //                Address = applicantDto.Address,
+        //                Training = applicantDto.Training,
+        //                VacancyCode = code,
+        //                Description = applicantDto.Description,
+        //                Language = Enum.TryParse<Languages>(applicantDto.Language, true, out var parsedLang) ? parsedLang : 0,
+        //                FilePath = applicantDto.FilePath,
+        //                FileName = applicantDto.FileName
+        //            };
+        //            db.ApplicantDetails.Add(applicantDetail);
+        //            db.SaveChanges();
+
+        //            // ---------- Applicant Education ----------
+        //            foreach (var edu in applicantDto.Education)
+        //            {
+        //                var applicantEducation = new ApplicantEducation
+        //                {
+        //                    ApplicantRegistrationId = applicantDto.Application_Id,
+        //                    ApplicantDetailId = applicantDetail.ApplicantDetailId,
+        //                    EducationLevelSettingId = 0,
+        //                    EducationFieldSettingId = 0,
+        //                    EducationInstitution = edu.Institution,
+        //                    GraduationDate = null,
+        //                    CGPA = ToDecimal(edu.GPA),
+        //                    Remark = null
+        //                };
+        //                db.ApplicantEducation.Add(applicantEducation);
+        //            }
+
+        //            // ---------- Applicant Experience ----------
+        //            foreach (var exp in applicantDto.Experiences)
+        //            {
+        //                var applicantExperience = new ApplicantExperience
+        //                {
+        //                    ApplicantRegistrationId = applicantDto.Application_Id,
+        //                    ApplicantDetailId = applicantDetail.ApplicantDetailId,
+        //                    OrganizationType = Enum.TryParse<OrganizationType>(exp.OrganizationType, true, out var parsed)? parsed: 0,
+        //                    JobTitleId = 0,
+        //                    Year = 0,
+        //                    OrganizationName = exp.Company,
+        //                    From = exp.Start_Date,
+        //                    FromAm = exp.FromAm,
+        //                    To = exp.End_Date,
+        //                    ToAm = exp.ToAm,
+        //                    Remark = exp.Remark,
+        //                    TotalExperience = exp.TotalExperience
+        //                };
+        //                db.ApplicantExperience.Add(applicantExperience);
+        //            }
+
+        //            db.SaveChanges();
+        //        }
+
+        //        return Json(new { success = true, Message = "Applicants imported successfully" }, JsonRequestBehavior.AllowGet);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { success = false, Message = "Error: " + ex.Message }, JsonRequestBehavior.AllowGet);
+        //    }
+        //}
+
+        [HttpGet]
+        public async Task<ActionResult> ImportApplicantsFromAPI(int vacancyId, int registrationId)
+        {
+            try
+            {
+                // -------------------- Validate Vacancy --------------------
+                var vacancy = db.VaccancyPlans.Find(vacancyId);
+
+                if (vacancy == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "The selected vacancy could not be found."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                
+
+                if (!vacancy.IsActive)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "The selected vacancy has already expired. Please modify it."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+
+                string vacancyCode = vacancy.VaccancyCode;
+
+                string token = WebConfigurationManager.AppSettings["VacancyJwtToken"];
+                string username = WebConfigurationManager.AppSettings["VacancyJwtUsername"];
+                string password = WebConfigurationManager.AppSettings["VacancyJwtPassword"];
+                string vacancyApiUrl = WebConfigurationManager.AppSettings["VacancyApiUrl"];
+                string apiUrl = $"{vacancyApiUrl}/{vacancyCode}";
+               // string token = "bFAH1ZJmU6oGTr4EXBywPGft73LaYVxWIgQOzjAp5nMbkdqRLEu8vctFhK2sXeMliDTgNJr7V9CWoYZUBpxA3qS0nf4MYhwKE";
+
+                VacancyResponseDto apiResponse;
+
+                // -------------------- Call External API --------------------
+                using (var client = new HttpClient { Timeout = TimeSpan.FromMinutes(2) })
+                {
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                    var response = await client.GetAsync(apiUrl);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Failed to retrieve applicant data from the external recruitment system."
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    var jsonResult = await response.Content.ReadAsStringAsync();
+                    apiResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<VacancyResponseDto>(jsonResult);
+                }
+
+                // -------------------- Validate API Response --------------------
+                var jobApplications = apiResponse?.Vacancy?.JobApplications;
+
+                if (jobApplications == null || !jobApplications.Any())
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "No applicants were found for the selected vacancy."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                // -------------------- Import Applicants --------------------
+                foreach (var application in jobApplications)
+                {
+                    var applicant = application.Applicant;
+
+                    if (applicant == null)
+                        continue;
+
+                    string fullName = string.Join(" ", new[]
+                    {
+                        applicant.First_Name,
+                        applicant.Middle_Name,
+                        applicant.Last_Name
+                    }.Where(x => !string.IsNullOrWhiteSpace(x)));
+
+                    bool alreadyExists = db.ApplicantDetails.Any(x =>
+                        x.ApplicantName == fullName &&
+                        x.VacancyCode == vacancyCode &&
+                        x.ApplicantRegistrationId == registrationId);
+
+                    if (alreadyExists)
+                        continue;
+                    // ---------- Applicant Detail ----------
+                    var applicantDetail = new ApplicantDetail
+                    {
+                        ApplicantRegistrationId = registrationId,
+                        ApplicantName = fullName,
+                        Sex = ParseGender(applicant.Sex),
+                        Age = ToInt(applicant.Age),
+                        Address = applicant.Address,
+                        Training = null,
+                        VacancyCode = vacancyCode,
+                        Description = applicant.Description,
+                        Language =  Languages.Not_Required,
+                        FilePath = $"{vacancyApiUrl}/{application.Resume}",
+                        FileName = Path.GetFileName(application.Resume)
+                    };
+
+                    db.ApplicantDetails.Add(applicantDetail);
+                    db.SaveChanges(); 
+                    // Required to generate ApplicantDetailId
+
+                    // ---------- Applicant Education ----------
+                    if (applicant.Education != null && applicant.Education.Any())
+                    {
+                        foreach (var edu in applicant.Education)
+                        {
+                            var education = new ApplicantEducation
+                            {
+                                ApplicantRegistrationId = registrationId,
+                                ApplicantDetailId = applicantDetail.ApplicantDetailId,
+                                EducationLevelSettingId = 0,
+                                EducationFieldSettingId = 0,
+                                EducationInstitution = edu.Institution,
+                                GraduationDate = null,
+                                CGPA = ToDecimal(edu.GPA),
+                                Remark = edu.Level
+                            };
+
+                            db.ApplicantEducation.Add(education);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    // ---------- Applicant Experience ----------
+                    if (applicant.Experiences != null && applicant.Experiences.Any())
+                    {
+                        foreach (var exp in applicant.Experiences)
+                        {
+                            var experience = new ApplicantExperience
+                            {
+                                ApplicantRegistrationId = registrationId,
+                                ApplicantDetailId = applicantDetail.ApplicantDetailId,
+                                OrganizationType = Enum.TryParse<OrganizationType>(
+                                                        exp.OrganizationType, true, out var orgType)
+                                                        ? orgType
+                                                        : OrganizationType.All,
+                                JobTitleId = 0,
+                                Year = 0,
+                                OrganizationName = exp.Company,
+                                From = exp.Start_Date,
+                                FromAm = HrHelper.GetECDate(exp.Start_Date.Value),
+                                To = exp.End_Date,
+                                ToAm = HrHelper.GetECDate(exp.End_Date.Value),
+                                Remark = exp.Position,
+                                TotalExperience = "0"
+                            };
+
+                            db.ApplicantExperience.Add(experience);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Applicants have been imported successfully."
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "An unexpected error occurred while importing applicants.",
+                    error = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         private void PopulateViewData()
         {
 
@@ -63,18 +353,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             }
             GetEducationFiled();
             GetEducationLevel();
-            var media = db.Lookups.Where(x => x.LookupType == LookUpTypes.MEDIA);
-            ViewData["Media"] = media;     
-            ViewData["Vacancy"] = db.VaccancyPlans.ToList();
-            ViewData["recruitmentVacancy"] = db.RecruitmentVacancy.ToList();
-            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            ViewData["Media"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.MEDIA).AsQueryable();
+            ViewData["Vacancy"] = db.VaccancyPlans.AsQueryable();
+            ViewData["recruitmentVacancy"] = db.RecruitmentVacancy.AsQueryable();
+            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).AsQueryable();
             ViewData["JobTitle"] = jobtitles;
             ViewData["branch"] = db.Branch.ToList();
-            ViewData["EducationLevel"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
-            ViewData["EducationField"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
-            ViewData["ExperienceOrgType"] = db.ExperienceOrganizationTypeSettings.ToList();
-            ViewData["ExperienceJobTitle"] = db.ExperienceJobTitles.ToList();
-            ViewData["Lookups"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            ViewData["EducationLevel"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL).AsQueryable();
+            ViewData["EducationField"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).AsQueryable();
+            ViewData["ExperienceOrgType"] = db.ExperienceOrganizationTypeSettings.AsQueryable();
+            ViewData["ExperienceJobTitle"] = db.ExperienceJobTitles.AsQueryable();
+            ViewData["Lookups"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).AsQueryable();
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
         }
         public JsonResult GetJobTitle(string VacancyId)
         {
@@ -104,7 +395,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         private bool CheckAppRegnValidation(int id)
         {
-            var ErrorMessage = "";
 
 
             #region ApplicantScreeningResult
@@ -133,8 +423,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             var ApplicantTraining = db.ApplicantTraining.Where(x => x.ApplicantRegistrationId == id).FirstOrDefault();
             if (ApplicantTraining != null)
             {
-
-                ErrorMessage = "You cannot delete this Applicant .Please delete Applicant Training information first.";
                 return false;
 
 
@@ -144,8 +432,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             var ApplicantEducation = db.ApplicantEducation.Where(x => x.ApplicantRegistrationId == id).FirstOrDefault();
             if (ApplicantEducation != null)
             {
-
-                ErrorMessage = "You cannot delete this Applicant .Please delete Applicant Education information first.";
                 return false;
 
 
@@ -190,7 +476,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     }
                     else if (s.Attribute == "GENDER")
                     {
-                        Gender = Convert.ToDecimal(s.CurrentValue);
+                        //Gender = Convert.ToDecimal(s.CurrentValue);
                     }
                     else if (s.Attribute == "DISABILITY")
                     {
@@ -226,11 +512,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         public int GetBranch(int id)
         {
-            var vacancy = db.VaccancyPlans.FirstOrDefault(x=>x.VacancyId == id);
+            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == id);
             if (vacancy != null)
             {
-                var branch = db.Branch.FirstOrDefault(x=>x.BranchId == vacancy.BranchId);
-                if(branch != null)
+                var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
+                if (branch != null)
                 {
                     return branch.BranchId;
                 }
@@ -240,7 +526,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult ApplicantRegistration_Read([DataSourceRequest]DataSourceRequest request, string id)
         {
-               IQueryable<ApplicantRegistration> applicantregistration = db.ApplicantRegistration;
+            IQueryable<ApplicantRegistration> applicantregistration = db.ApplicantRegistration;
 
 
             DataSourceResult result = applicantregistration.ToDataSourceResult(request, applicantRegistration => new
@@ -256,6 +542,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 VacancyType = applicantRegistration.VacancyType,
                 MediaVacancyCode = applicantRegistration.MediaVacancyCode,
                 VacancyCode = applicantRegistration.VacancyCode,
+                NumberOfApplicant = applicantRegistration.NumberOfApplicant,
                 JobtitleName = applicantRegistration.JobtitleName,
                 IsTransfered = applicantRegistration.IsTransfered,
                 BranchId = GetBranch(applicantRegistration.VacancyId)
@@ -282,11 +569,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult ApplicantRegistration_Create([DataSourceRequest]DataSourceRequest request, ApplicantRegistration applicantRegistration)
         {
             ModelState.Clear();
-
-            int vacancyId = 0;
             string jobTitle = "";
             string vacancyCode = "";
-            var mediaVacancyCode = "";           
+            var mediaVacancyCode = "";
 
             vacancyCode = db.VaccancyPlans.Find(applicantRegistration.VacancyId)?.VaccancyCode;
             mediaVacancyCode = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == applicantRegistration.VacancyId)?.MediaVacancyCode;
@@ -316,8 +601,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     LastModified = applicantRegistration.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = applicantRegistration.ModifiedBy,
-                    VacancyType = GetType(applicantRegistration.VacancyId.ToString()),               
-                   
+                    VacancyType = GetType(applicantRegistration.VacancyId.ToString()),
+
                 };
 
                 db.ApplicantRegistration.Add(entity);
@@ -335,12 +620,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult ApplicantRegistration_Update([DataSourceRequest]DataSourceRequest request, ApplicantRegistration applicantRegistration)
         {
             ModelState.Clear();
-
-            int vacancyId = 0;
             string jobTitle = "";
             string vacancyCode = "";
             var mediaVacancyCode = "";
-          
+
 
             vacancyCode = db.VaccancyPlans.Find(applicantRegistration.VacancyId)?.VaccancyCode;
             mediaVacancyCode = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == applicantRegistration.VacancyId)?.MediaVacancyCode;
@@ -349,11 +632,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             if (vac != null)
             {
                 var look = db.Lookups.FirstOrDefault(x => x.LookupId == vac.JobTitle);
-                if(look != null)
+                if (look != null)
                 {
                     jobTitle = look.Description;
                 }
-               
+
             }
 
             if (ModelState.IsValid)
@@ -376,24 +659,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     db.Entry(applicant).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
                 }
-                //var entity = new ApplicantRegistration
-                //{
-                //    VacancyId = vacancyId,
-                //    IsTransfered = false,
-                //    JobtitleName = applicantRegistration.JobtitleName,
-                //    RegisterBy = FullName,
-                //    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                //    DateCreated = DateTime.Now,
-                //    LastModified = applicantRegistration.LastModified,
-                //    CreatedBy = User.Identity.Name,
-                //    ModifiedBy = applicantRegistration.ModifiedBy,
-                //    VacancyType = GetType(applicantRegistration.VacancyId.ToString()),
-                //    RegistrationDate = DateTime.Now
-                //};
-
-                //db.ApplicantRegistration.Attach(entity);
-                //db.Entry(entity).State = EntityState.Modified;
-                //db.SaveChanges();
+               
 
             }
 
@@ -547,20 +813,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                             if (vacancy == null)
                             {
                                 //   ModelState.AddModelError("", "you should enter correct vacancy code");
-                                string message = "you should enter correct vacancy code at line "+ j;
+                                string message = "you should enter correct vacancy code at line " + j;
                                 return new JavaScriptResult() { Script = "alert('" + message + "');" };
                             }
                             else
                             {
                                 vacancyId = vacancy.VacancyId;
-                                
-                                    var look = db.Lookups.FirstOrDefault(x => x.LookupId == vacancy.JobTitle);
-                                if(look != null)
+
+                                var look = db.Lookups.FirstOrDefault(x => x.LookupId == vacancy.JobTitle);
+                                if (look != null)
                                 {
                                     jobTitle = look.Description;
                                 }
-                                  
-                                
+
+
                                 var applicantReg = db.ApplicantRegistration.FirstOrDefault(x => x.VacancyId == vacancyId);
                                 if (applicantReg == null)
                                 {
@@ -794,6 +1060,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
         //    return RedirectToAction("Index");
         //}
+        private static int ToInt(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return 0;
+
+            // Try parse normally
+            if (int.TryParse(input, out var result))
+                return result;
+
+            // Remove non-digits and retry
+            var digitsOnly = new string(input.Where(char.IsDigit).ToArray());
+            return int.TryParse(digitsOnly, out result) ? result : 0;
+        }
+
+        private static decimal ToDecimal(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return 0m;
+
+            if (decimal.TryParse(input, out var result))
+                return result;
+
+            // Remove everything except digits and decimal point
+            var clean = new string(input.Where(c => char.IsDigit(c) || c == '.' || c == ',').ToArray());
+
+            return decimal.TryParse(clean, out result) ? result : 0m;
+        }
+        private Gender ParseGender(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return Gender.MALE; // default
+
+            input = input.Trim().ToLower();
+
+            if (input == "m" || input == "male" || input == "1")
+                return Gender.MALE;
+
+            if (input == "f" || input == "female" || input == "2")
+                return Gender.FEMALE;
+
+            // fallback
+            return Gender.MALE;
+        }
 
         protected override void Dispose(bool disposing)
         {

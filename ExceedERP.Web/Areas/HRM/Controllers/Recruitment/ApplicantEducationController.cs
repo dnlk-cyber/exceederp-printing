@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -14,7 +18,7 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-
+ 
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
     public class ApplicantEducationController : BaseController
     {
@@ -53,8 +57,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 ApplicantRegistrationId = applicantEducation.ApplicantRegistrationId,
                 ApplicantDetailId = applicantEducation.ApplicantDetailId,
                 ApplicantEducationId = applicantEducation.ApplicantEducationId,
+                EducationInstitution = applicantEducation.EducationInstitution,
                 EducationLevelSettingId = applicantEducation.EducationLevelSettingId,
                 EducationFieldSettingId = applicantEducation.EducationFieldSettingId,
+                GraduationDate = applicantEducation.GraduationDate,
+                CGPA = applicantEducation.CGPA,
                 Remark = applicantEducation.Remark
 
             });
@@ -75,6 +82,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     ApplicantRegistrationId = applicantEducation.ApplicantRegistrationId,
                     ApplicantDetailId = id,
                     EducationFieldSettingId = applicantEducation.EducationFieldSettingId,
+                    GraduationDate = applicantEducation.GraduationDate,
+                    EducationInstitution = applicantEducation.EducationInstitution,
+                    CGPA = applicantEducation.CGPA,
                     Remark = applicantEducation.Remark
                 };
 
@@ -103,6 +113,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     ApplicantEducationId = applicantEducation.ApplicantEducationId,
                     ApplicantDetailId = applicantEducation.ApplicantDetailId,
                     EducationFieldSettingId = applicantEducation.EducationFieldSettingId,
+                    GraduationDate = applicantEducation.GraduationDate,
+                    EducationInstitution = applicantEducation.EducationInstitution,
+                    CGPA = applicantEducation.CGPA,
                     Remark = applicantEducation.Remark
                 };
 
@@ -131,6 +144,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     ApplicantEducationId = applicantEducation.ApplicantEducationId,
                     ApplicantDetailId = applicantEducation.ApplicantDetailId,
                     EducationFieldSettingId = applicantEducation.EducationFieldSettingId,
+                    GraduationDate = applicantEducation.GraduationDate,
+                    EducationInstitution = applicantEducation.EducationInstitution,
+                    CGPA = applicantEducation.CGPA,
                     Remark = applicantEducation.Remark
                 };
                 #region delete log

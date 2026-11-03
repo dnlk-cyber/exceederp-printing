@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Allowance;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
@@ -15,7 +14,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 {
-     [Authorize(Roles = HR_Admin + "," + HR_Benefit_Admin + "," + HR_Benefit_User)]
+    [Authorize(Roles = HR_Admin + "," + HR_Benefit_Admin + "," + HR_Benefit_User)]
     public class AllowanceTypeRuleController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -30,35 +29,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult AllowanceTypeRule_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<AllowanceTypeRule> allowancetyperule = db.AllowanceTypeRule;
-            if (!allowancetyperule.Any())
+
+            #region initialize allowance types
+            using (var db = new ExceedDbContext())
             {
-                var allowanceType = Enum.GetValues(typeof (AllowanceType))
-                    .Cast<AllowanceType>()
-                    .ToList();
-                foreach (var a in allowanceType)
+                // Get all AllowanceType enum values
+                var allEnumValues = Enum.GetValues(typeof(AllowanceType))
+                                        .Cast<AllowanceType>()
+                                        .ToList();
+
+                // Get existing AllowanceTypes from DB
+                var existingTypes = db.AllowanceTypeRule
+                                      .Select(r => r.AllowanceType)
+                                      .ToList();
+
+                // Find missing enum values not in DB
+                var missingTypes = allEnumValues.Except(existingTypes).ToList();
+
+                if (missingTypes.Any())
                 {
-                 
-                    db = new ExceedDbContext();
-                  
-                    var entity = new AllowanceTypeRule
+                    var newEntities = missingTypes.Select(a => new AllowanceTypeRule
                     {
                         AllowanceType = a,
                         TaxTrasholdAmount = 0,
                         Percentage = 0,
+                        DeductOnAbsence = false,
+                        DeductOnLeave = false,
                         Remark = ""
-                    };
+                    });
 
-                    db.AllowanceTypeRule.Add(entity);
+                    db.AllowanceTypeRule.AddRange(newEntities);
                     db.SaveChanges();
                 }
-
             }
+            #endregion
+
 
             DataSourceResult result = allowancetyperule.ToDataSourceResult(request, allowanceTypeRule => new {
                 AllowanceTypeRuleId = allowanceTypeRule.AllowanceTypeRuleId,
                 AllowanceType = allowanceTypeRule.AllowanceType,
                 TaxTrasholdAmount = allowanceTypeRule.TaxTrasholdAmount,
                 Percentage = allowanceTypeRule.Percentage,
+                DeductOnAbsence = allowanceTypeRule.DeductOnAbsence,
+                DeductOnLeave = allowanceTypeRule.DeductOnLeave,
                 Remark = allowanceTypeRule.Remark,
                 DateCreated = allowanceTypeRule.DateCreated,
                 LastModified = allowanceTypeRule.LastModified,
@@ -80,6 +93,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     AllowanceType = allowanceTypeRule.AllowanceType,
                     TaxTrasholdAmount = allowanceTypeRule.TaxTrasholdAmount,
                     Percentage = allowanceTypeRule.Percentage,
+                    DeductOnAbsence = allowanceTypeRule.DeductOnAbsence,
+                    DeductOnLeave = allowanceTypeRule.DeductOnLeave,
                     Remark = allowanceTypeRule.Remark,
                     DateCreated = DateTime .Now ,
                     LastModified = allowanceTypeRule.LastModified,
@@ -169,6 +184,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     AllowanceType = allowanceTypeRule.AllowanceType,
                     TaxTrasholdAmount = allowanceTypeRule.TaxTrasholdAmount,
                     Percentage = allowanceTypeRule.Percentage,
+                    DeductOnAbsence = allowanceTypeRule.DeductOnAbsence,
+                    DeductOnLeave = allowanceTypeRule.DeductOnLeave,
                     Remark = allowanceTypeRule.Remark,
                     DateCreated = allowanceTypeRule.DateCreated,
                     LastModified = DateTime .Now ,

@@ -21,6 +21,7 @@ using ExceedERP.Core.Domain.HRM.Severance;
 using System;
 using ExceedERP.Core.Domain.HRM.Payroll.Setting;
 using ExceedERP.Core.Domain.HRM.HRMLoans;
+using ExceedERP.Core.Domain.HRM.TrainingEducation.EducationOpportunity;
 
 namespace ExceedERP.DataAccess
 {
@@ -96,6 +97,26 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("EmployeeProbationSettings", "HRM");
             this.HasKey<int>(o => o.EmployeeProbationSettingId);
+
+        }
+    }
+    public class InternalApplicantEducationEntityTypeConfiguration : EntityTypeConfiguration<InternalApplicantEducation>
+    {
+
+        public InternalApplicantEducationEntityTypeConfiguration()
+        {
+            this.ToTable("InternalApplicantEducations", "HRM");
+            this.HasKey<int>(o => o.InternalApplicantEducationId);
+
+        }
+    }
+    public class InternalApplicantExperienceEntityTypeConfiguration : EntityTypeConfiguration<InternalApplicantExperience>
+    {
+
+        public InternalApplicantExperienceEntityTypeConfiguration()
+        {
+            this.ToTable("InternalApplicantExperiences", "HRM");
+            this.HasKey<int>(o => o.InternalApplicantExperienceId);
 
         }
     }
@@ -1826,6 +1847,15 @@ namespace ExceedERP.DataAccess
         {
             this.ToTable("ApplicantEducation", "HRM");
             this.HasKey<int>(o => o.ApplicantEducationId);
+        }
+    }
+
+    public class EducationFieldSettingEntityTypeConfiguration : EntityTypeConfiguration<EducationFieldSetting>
+    {
+        public EducationFieldSettingEntityTypeConfiguration()
+        {
+            this.ToTable("EducationFieldSettings", "HRM");
+            this.HasKey<int>(o => o.EducationFieldSettingId);
         }
     }
     public class ApplicantionFormEntityTypeConfiguration : EntityTypeConfiguration<ApplicantionForm>

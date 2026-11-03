@@ -22,6 +22,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     public class LeavePlan_PesonalController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
+
         HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
@@ -41,6 +43,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             ViewData["PeriodList"] = db.GLFiscalYears
                             .AsNoTracking()
                             .ToList();
+
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+                  i => new
+                  {
+                      FullNameAmharic = i.AmharicName,
+                      FullNameaEnglish = i.Name,
+                      FullName = i.Name,
+                      FullNameCode = i.Code + " " + i.Name,
+                      EmployeeCode = i.Code,
+                      EmployeeId = i.Id,
+
+                  }).AsQueryable();
 
         }
 

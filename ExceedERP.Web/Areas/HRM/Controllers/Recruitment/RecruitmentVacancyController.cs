@@ -3,21 +3,26 @@ using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Hubs;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-
+    
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin,  HrmConstants.HRRecruitmentUser)]
     public class RecruitmentVacancyController : ExceedERP.Web.Controllers.BaseController
     {
@@ -37,6 +42,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         private void PopulateViewData()
         {
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
+
             var vacancies = db.VaccancyPlans.ToList();
             ViewData["Vacancy"] = vacancies;
             GetOrganizations();
@@ -101,8 +108,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult RecruitmentPlans_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<Vacancy> vacancies = db.VaccancyPlans.Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Vacancy> vacancies = db.VaccancyPlans.Where(x => mybraches.Contains(x.BranchId));
             List<Vacancy> vacancyPlan = new List<Vacancy>();
 
 
@@ -269,8 +276,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         public ActionResult RecruitmentVacancy_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<RecruitmentVacancy> recruitmentvacancy = db.RecruitmentVacancy.Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<RecruitmentVacancy> recruitmentvacancy = db.RecruitmentVacancy/*.Where(x => mybraches.Contains(x.b))*/;
             DataSourceResult result = recruitmentvacancy.ToDataSourceResult(request, recruitmentVacancy => new
             {
                 RecruitmentVacancyId = recruitmentVacancy.RecruitmentVacancyId,
@@ -352,6 +359,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult RecruitmentVacancy_Create([DataSourceRequest]DataSourceRequest request, RecruitmentVacancy recruitmentVacancy)
         {
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(recruitmentVacancy.FromAmh)
+                || string.IsNullOrEmpty(recruitmentVacancy.ToAmh))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { recruitmentVacancy }.ToDataSourceResult(request, ModelState));
+                }
+              
+                recruitmentVacancy.From = HrHelper.ParseEthiopicDate(recruitmentVacancy.FromAmh);
+                recruitmentVacancy.To = HrHelper.ParseEthiopicDate(recruitmentVacancy.ToAmh);
+          
+
+            }
+            else
+            {
+
+                recruitmentVacancy.FromAmh = XAPI.EthiopicDateTime.GetEthiopicDate(recruitmentVacancy.From.Value.Day, recruitmentVacancy.From.Value.Month, recruitmentVacancy.From.Value.Year);
+                recruitmentVacancy.ToAmh = XAPI.EthiopicDateTime.GetEthiopicDate(recruitmentVacancy.To.Value.Day, recruitmentVacancy.To.Value.Month, recruitmentVacancy.To.Value.Year);
+
+            }
             if (ModelState.IsValid)
             {
                 var entity = new RecruitmentVacancy
@@ -394,14 +423,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             if (recruitment != null && recruitment.RecruitmentSource == RecruitmentSource.EXTERNAL)
             {
 
-                var aaa = recruitmentVacancies.Where(x => x.RecruitmentSource == RecruitmentSource.INTERNAL);
+                var aaa = recruitmentVacancies.Where(x => x.RecruitmentSource == RecruitmentSource.INTERNAL
+                                                            ||x.RecruitmentSource ==RecruitmentSource.INTERNALPROMOTION
+                                                            ||x.RecruitmentSource ==RecruitmentSource.INTERNALTRANSFER);
                 if (aaa.Any())
                 {
                     ModelState.AddModelError("", "Internal and External Vacancy Cannot have the same Media Code");
                 }
             }
 
-            if (recruitment != null && recruitment.RecruitmentSource == RecruitmentSource.INTERNAL)
+            if (recruitment != null &&( recruitment.RecruitmentSource == RecruitmentSource.INTERNAL 
+                                                || recruitment.RecruitmentSource == RecruitmentSource.INTERNALPROMOTION
+                                                            || recruitment.RecruitmentSource == RecruitmentSource.INTERNALTRANSFER))
             {
                 var aaa = recruitmentVacancies.Where(x => x.RecruitmentSource == RecruitmentSource.EXTERNAL);
                 if (aaa.Any())
@@ -467,7 +500,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                             {
                                 UserId = UserInformationHelper.GetEmployeeUserId(empId),
                                 Title = "New Vacancy Announcement",
-                                Message = "There is New Vacancies"
+                                Message = "There is New Vacancies",
+                                URL = "/HRM/RecruitmentVacancy/"
+
                             };
 
                             Notify.NotifyUser(notif);                        
@@ -489,6 +524,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult RecruitmentVacancy_Update([DataSourceRequest]DataSourceRequest request, RecruitmentVacancy recruitmentVacancy)
         {
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(recruitmentVacancy.FromAmh)
+                || string.IsNullOrEmpty(recruitmentVacancy.ToAmh))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { recruitmentVacancy }.ToDataSourceResult(request, ModelState));
+                }
+
+                recruitmentVacancy.From = HrHelper.ParseEthiopicDate(recruitmentVacancy.FromAmh);
+                recruitmentVacancy.To = HrHelper.ParseEthiopicDate(recruitmentVacancy.ToAmh);
+
+
+            }
+            else
+            {
+
+                recruitmentVacancy.FromAmh = XAPI.EthiopicDateTime.GetEthiopicDate(recruitmentVacancy.From.Value.Day, recruitmentVacancy.From.Value.Month, recruitmentVacancy.From.Value.Year);
+                recruitmentVacancy.ToAmh = XAPI.EthiopicDateTime.GetEthiopicDate(recruitmentVacancy.To.Value.Day, recruitmentVacancy.To.Value.Month, recruitmentVacancy.To.Value.Year);
+
+            }
             if (ModelState.IsValid)
             {
                 var entity = new RecruitmentVacancy

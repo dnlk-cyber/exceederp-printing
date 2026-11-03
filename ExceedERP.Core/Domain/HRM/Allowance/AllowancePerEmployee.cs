@@ -9,6 +9,7 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
     /// <summary>   An allowance per employee. </summary>
     ///
     /// <remarks>   Mekanehiwot, 10/31/2016. </remarks>
+    /// <remarks>   Modified by Kibrom Abera , 10/28/2024-Now(04/08/2026). </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public class AllowancePerEmployee :TrackUserOperation 
@@ -18,9 +19,7 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
         [Required]
         [Display(Name = "HR_Allowance_AllowancePerEmployee_AllowanceDefnId", ResourceType = typeof(Localization.Resources))]
         public int AllowanceDefinationId { get; set; }
-        public virtual AllowanceDefination AllowanceDefination
-        {
-            get; set; }
+        public virtual AllowanceDefination AllowanceDefination{ get; set; }
         [NotMapped]
         [Display(Name = "Allowance")]
         public int[] AllowanceDefinationIds { get; set; }

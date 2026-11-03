@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
@@ -15,12 +18,16 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
 
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
+    [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.EmployeeTransferAdmin, 
+        HrmConstants.EmployeeTransferApprover, HrmConstants.HRDepartmentHead,
+        HrmConstants.HREmployeeSelfService)]
     public class EmployeeTransferRequestDetailsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-     
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
+
+        [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.EmployeeTransferAdmin,
+        HrmConstants.EmployeeTransferApprover, HrmConstants.HRDepartmentHead,
+        HrmConstants.HREmployeeSelfService)]
         public ActionResult EmployeeTransferRequestDetails_Read([DataSourceRequest]DataSourceRequest request, int empTRId)
         {
             IQueryable<TransferRequestDetail> requestDetails = db.TransferRequestDetails.Where(x=>x.EmployeeTransferRequestId==empTRId);
@@ -42,7 +49,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(result);
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
+        [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.EmployeeTransferAdmin,
+               HrmConstants.EmployeeTransferApprover, HrmConstants.HRDepartmentHead,
+               HrmConstants.HREmployeeSelfService)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestDetails_Create([DataSourceRequest]DataSourceRequest request, TransferRequestDetail requestDetail, int empTRId)
         {
@@ -61,7 +70,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { requestDetail }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
+        [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.EmployeeTransferAdmin,
+               HrmConstants.EmployeeTransferApprover, HrmConstants.HRDepartmentHead,
+               HrmConstants.HREmployeeSelfService)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestDetails_Update([DataSourceRequest]DataSourceRequest request, TransferRequestDetail requestDetail)
         {
@@ -80,7 +91,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { requestDetail }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin)]
+        [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.EmployeeTransferAdmin,
+               HrmConstants.EmployeeTransferApprover, HrmConstants.HRDepartmentHead,
+               HrmConstants.HREmployeeSelfService)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestDetails_Destroy([DataSourceRequest]DataSourceRequest request, TransferRequestDetail requestDetail)
         {

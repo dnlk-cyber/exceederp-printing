@@ -29,6 +29,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     {
         private ExceedDbContext db = new ExceedDbContext();
         private readonly CacheData CacheData = new CacheData();
+
         //HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
@@ -36,6 +37,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             PopulateViewData();
             return View();
         }
+
         private void PopulateViewData()
         {
             ViewData["PeriodList"] = CacheData.GetFiscalYearCaches().Select(

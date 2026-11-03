@@ -9,8 +9,14 @@
                   .Name("MonthlyLeavePlangrid")
                   .Columns(columns =>
                   {
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(180);
-                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFiscalYear").Width(150);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameaEnglish")
+                                                                .EditorTemplateName("ActiveEmployees")
+                                                                .Filterable(ftb => ftb.Multi(true).Search(true))
+                                                                .Width(180);
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name")
+                                                                .EditorTemplateName("GLFiscalYear")
+                                                                .Filterable(ftb => ftb.Multi(true).Search(true))
+                                                                .Width(150);
 
                       columns.Command(command =>
                       {
@@ -58,70 +64,74 @@
                           events.RequestEnd("onRequestEnd(\"MonthlyLeavePlangrid\")");
                       })
                       .Model(model => model.Id(p => p.MonthlyLeavePlanId))
-                      .Read(read => read.Action("MonthlyLeavePlans_Read", "MonthlyLeavePlan"))
-                      .Create(create => create.Action("MonthlyLeavePlans_Create", "MonthlyLeavePlan"))
-                      .Update(update => update.Action("MonthlyLeavePlans_Update", "MonthlyLeavePlan"))
-                      .Destroy(destroy => destroy.Action("MonthlyLeavePlans_Destroy", "MonthlyLeavePlan"))
+                      .Read(read => read.Action("MonthlyLeavePlans_Read", "MonthlyLeavePlan").Data("sendForgery"))
+                      .Create(create => create.Action("MonthlyLeavePlans_Create", "MonthlyLeavePlan").Data("sendForgery"))
+                      .Update(update => update.Action("MonthlyLeavePlans_Update", "MonthlyLeavePlan").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("MonthlyLeavePlans_Destroy", "MonthlyLeavePlan").Data("sendForgery"))
                    ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                    .Name("tabstrip_#=MonthlyLeavePlanId#")
-                                            .SelectedIndex(0)
-                                            .Items(items =>
-                                             {
+        .Name("tabstrip_#=MonthlyLeavePlanId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
 
-                                                 items.Add().Text(Resources.Leave_Plan_Detail).Content(
+                   items.Add().Text(Resources.Leave_Plan_Detail).Content(
                     @<text>
                         @(Html.Kendo().Grid<MonthlyLeavePlanDetail>()
-                                                                             .Name("MonthlyLeavePlanDetailGrid")
-                                                                 .Columns(columns =>
-                                                                 {
-                                                                             columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriods").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                             columns.Bound(c => c.Amount);
-                                                                             columns.Bound(c => c.Remark);
-                                                                             columns.Command(command =>
-                                                                             {
+                            .Name("MonthlyLeavePlanDetailGrid")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriods").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+                                columns.Bound(c => c.Amount);
+                                columns.Bound(c => c.Remark);
+                                columns.Command(command =>
+                                {
 
-                                                                                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
 
-                                                                                 command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                                                                             }).Width(200);
-                                                                         })
-                                                                                                 //.ToolBar(toolbar =>
-                                                                                                 //{
+                                }).Width(200);
 
-                                                                                                 //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
-                                                                                                 //})
-                                                                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                 .Selectable(selectable =>
-                                                                 {
-                                                                             selectable.Mode(GridSelectionMode.Single);
-                                                                             selectable.Type(GridSelectionType.Row);
-                                                                         })
-                                                                 .Scrollable(h => h.Height(300))
+                            })
+                            //.ToolBar(toolbar =>
+                            //{
 
-                                                                 .DataSource(dataSource => dataSource
-                                                                     .Ajax()
-                                                                              .Events(events =>
-                                                                              {
-                                                                                          events.Error("error_handler(\"MonthlyLeavePlanDetailGrid\")");
-                                                                                          events.RequestStart("onRequestStart(\"MonthlyLeavePlanDetailGrid\")");
-                                                                                          events.RequestEnd("onRequestEnd(\"MonthlyLeavePlanDetailGrid\")");
-                                                                                      })
+                            //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
-                                                                     .Model(model =>
-                                                                     {
-                                                                                 model.Id(p => p.MonthlyLeavePlanDetailId);
-                                                                                 model.Field(p => p.GLPeriodId).Editable(false);
-                                                                             })
-                                                                             .Read(read => read.Action("MonthlyLeavePlanDetail_Read", "MonthlyLeavePlanDetail", new { Area = "HRM", id = "#=MonthlyLeavePlanId#" }))
-                                                                             .Create(create => create.Action("MonthlyLeavePlanDetail_Create", "MonthlyLeavePlanDetail", new { Area = "HRM", id = "#=MonthlyLeavePlanId#" }))
-                                                                     .Update(update => update.Action("MonthlyLeavePlanDetail_Update", "MonthlyLeavePlanDetail"))
-                                                                     .Destroy(destroy => destroy.Action("MonthlyLeavePlanDetail_Destroy", "MonthlyLeavePlanDetail"))
-                                                                 ).ToClientTemplate()
+                            //})
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Scrollable(h => h.Height(300))
+
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"MonthlyLeavePlanDetailGrid\")");
+                                    events.RequestStart("onRequestStart(\"MonthlyLeavePlanDetailGrid\")");
+                                    events.RequestEnd("onRequestEnd(\"MonthlyLeavePlanDetailGrid\")");
+
+
+                                })
+
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.MonthlyLeavePlanDetailId);
+                                    model.Field(p => p.GLPeriodId).Editable(false);
+                                })
+                                        .Read(read => read.Action("MonthlyLeavePlanDetail_Read", "MonthlyLeavePlanDetail", new { Area = "HRM", id = "#=MonthlyLeavePlanId#" }).Data("sendForgery"))
+                                        .Create(create => create.Action("MonthlyLeavePlanDetail_Create", "MonthlyLeavePlanDetail", new { Area = "HRM", id = "#=MonthlyLeavePlanId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("MonthlyLeavePlanDetail_Update", "MonthlyLeavePlanDetail").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("MonthlyLeavePlanDetail_Destroy", "MonthlyLeavePlanDetail").Data("sendForgery"))
+                            ).ToClientTemplate()
                         )
 
                     </text>
@@ -131,7 +141,8 @@
 
 
 
-                                     }).ToClientTemplate())
+
+        }).ToClientTemplate())
 </script>
 
 <script>

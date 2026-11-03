@@ -47,7 +47,7 @@
           if (HttpContext.Current.User.IsInRole("HR_Leave_User")
           || HttpContext.Current.User.IsInRole("HR_Department_Head"))
           {
-              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           }
           if (HttpContext.Current.User.IsInRole("HR_Admin")
               || HttpContext.Current.User.IsInRole("HR_Leave_Admin")
@@ -291,7 +291,7 @@
             var dataItem = e.sender.dataItem(row);
             if (dataItem.IsDepartmentOnlineApproved) {
 
-                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-edit").show();
                 row.find(".k-grid-delete").remove();
                 // $(".k-grid-top").show();
 

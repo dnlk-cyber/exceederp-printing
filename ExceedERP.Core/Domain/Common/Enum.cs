@@ -287,15 +287,61 @@ namespace ExceedERP.Core.Domain.Common
         Others
 
     }
+
     public enum ExamType
     {
         [Display(Name = "Enum_RecruitmentSetting_THEORY_EXAM", ResourceType = typeof(Resources))]
         THEORY_EXAM,
+
         [Display(Name = "Enum_RecruitmentSetting_PRACTICAL_EXAM", ResourceType = typeof(Resources))]
         PRACTICAL_EXAM,
+
         [Display(Name = "Enum_RecruitmentSetting_INTERVIEW", ResourceType = typeof(Resources))]
         INTERVIEW,
+
+        [Display(Name = "Gender")]
+        GENDER,
+
+        [Display(Name = "Disability")]
+        DISABILITY,
+
+        [Display(Name = "Performance")]
+        PERFORMANCE,
+
+        [Display(Name = "Discipline")]
+        DISCIPLINE,
+
+        [Display(Name = "Related Experience")]
+        RELATED_EXPERIENCE,
+
+        [Display(Name = "Non-Related Experience")]
+        NON_RELATED_EXPERIENCE,
+
+        [Display(Name = "Relevant Experience")]
+        RELEVANT_EXPERIENCE,
+
+        [Display(Name = "Total Experience")]
+        TOTAL_EXPERIENCE,
+
+        [Display(Name = "Education Level")]
+        EDUCATION_LEVEL,
+
+        [Display(Name = "Others")]
+        OTHERS,
+
+        [Display(Name = "Knowledge Related")]
+        KNOWLEDGE_RELATED,
+
+        [Display(Name = "Skill Related")]
+        SKILL_RELATED,
+
+        [Display(Name = "Personality")]
+        PERSONALITY,
+
+        [Display(Name = "Communication Skill")]
+        COMMUNICATION_SKILL
     }
+
     public enum RetireTypeSetting
     {
         Heads,

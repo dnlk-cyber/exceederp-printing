@@ -16,12 +16,11 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
 
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRDepartmentHead, HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin)]
     public class EmployeeTransferRequestDepartmentValidationsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
      
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult EmployeeTransferRequestDepartmentValidations_Read([DataSourceRequest]DataSourceRequest request, int employeeTansReqId)
         {
             IQueryable<TransferRequestDepartmentValidation> requestValidations = db.TransferRequestDepartmentValidations.Where(x=>x.EmployeeTransferRequestId== employeeTansReqId);
@@ -41,7 +40,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(result);
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestDepartmentValidations_Create([DataSourceRequest]DataSourceRequest request, TransferRequestDepartmentValidation requestValidation, int employeeTansReqId)
         {
@@ -49,11 +47,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             var record = db.EmployeeTransferRequests.Find(employeeTansReqId);
             if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved", "cannot manipulate this record,it is already approved");
-
-            var lines = db.TransferRequestDetails.Where(x => x.EmployeeTransferRequestId == employeeTansReqId);
-            if (!lines.Any())
-                ModelState.AddModelError("lines", "Please add line items");
-
             if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
 
@@ -77,9 +70,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                         record.IsDepartmentOnlineApproved = true;
                         record.DepartmentOnlineApprovedBy = User.Identity.Name;
                         record.DepartmentOnlineApprovedTime = DateTime.Now;
-                        db.Entry(record).State = EntityState.Modified;
-                        db.SaveChanges();
-
                       
                     }
 
@@ -87,15 +77,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     {
                         record.IsDepartmentSendForApproval = false;
                         record.Status = "Rejected";
-                        db.Entry(record).State = EntityState.Modified;
-                        db.SaveChanges();
+                      
                     }
                     if (requestValidation.Status == ApprovalStatuses.Pending)
                     {
-                        record.IsDepartmentSendForApproval = false;
+                        record.IsDepartmentSendForApproval = true;
                         record.Status = "Pending";
-                        db.Entry(record).State = EntityState.Modified;
-                        db.SaveChanges();
+                 
                     }
 
                     requestValidation.EmployeeTransferRequestId = employeeTansReqId;
@@ -103,6 +91,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     requestValidation.CreatedBy = User.Identity.Name;
                     var entity = GetMappedObject(requestValidation);
                     db.TransferRequestDepartmentValidations.Add(entity);
+                    db.Entry(record).State = EntityState.Modified;
                     db.SaveChanges();
                     requestValidation.TransferRequestDepartmentValidationId = entity.TransferRequestDepartmentValidationId;
                     #region operation log
@@ -113,7 +102,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { requestValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestDepartmentValidations_Update([DataSourceRequest]DataSourceRequest request, TransferRequestDepartmentValidation requestValidation)
         {
@@ -132,7 +120,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { requestValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestDepartmentValidations_Destroy([DataSourceRequest]DataSourceRequest request, TransferRequestDepartmentValidation requestValidation)
         {

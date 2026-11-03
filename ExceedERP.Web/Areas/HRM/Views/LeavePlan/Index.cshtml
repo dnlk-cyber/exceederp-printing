@@ -305,6 +305,13 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval) {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").remove();
+                // $(".k-grid-top").show();
+
+            }
             if (dataItem.IsDepartmentOnlineApproved) {
 
                 row.find(".k-grid-edit").remove();

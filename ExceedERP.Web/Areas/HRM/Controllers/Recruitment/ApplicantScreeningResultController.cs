@@ -1,16 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -19,6 +16,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
@@ -37,11 +35,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             List<Vacancy> list = new List<Vacancy>();
             var vacancies = db.VaccancyPlans.ToList();
 
-            ViewData["Vacancy"] = db.VaccancyPlans.Select(x=>new { x.VacancyId,x.VaccancyCode}).ToList(); ;
-            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            ViewData["Vacancy"] = db.VaccancyPlans.Select(x=>new { x.VacancyId,x.VaccancyCode}).AsQueryable(); ;
+            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).Select(x=>new { x.LookupId,x.Description}).AsQueryable();
             ViewData["JobTitle"] = jobtitles;
 
-            ViewData["branch"] = db.Branch.ToList();
+            ViewData["branch"] = db.Branch.AsQueryable();
 
         }
         public decimal GetTotalResult(int id)
@@ -56,27 +54,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         public string PassOrFail(int applicantScreeningId, int vacancyId)
         {
-            var applicantExam = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == applicantScreeningId).ToList();
+            var sum = db.ApplicantExamResult
+                .Where(x => x.ApplicantScreeningId == applicantScreeningId)
+                .Sum(x => (double?)x.CurrentResult) ?? 0;
 
-            if (applicantExam.Any())
-            {
-                var sum = applicantExam.Sum(x => x.CurrentResult);
+            var passScore = db.RecruitmentApplicantPassSettings
+                .Where(x => x.VacancyId == vacancyId)
+                .Select(x => (double?)x.PassScore)
+                .FirstOrDefault();
 
-                var passScore = db.RecruitmentApplicantPassSettings.FirstOrDefault(x => x.VacancyId == vacancyId);
-                if (passScore != null)
-                {
-                    if (sum >= Convert.ToDecimal(passScore.PassScore))
-                    {
-                        return "Pass";
-                    }
-                    else
-                    {
-                        return "Fail";
-                    }
-                }
-            }
-            return "Check Pass Setting";
+            if (!passScore.HasValue)
+                return "Check Pass Setting";
+
+            return sum >= passScore.Value ? "Pass" : "Fail";
         }
+
         public int GetVacancyId(int applicantScreenResultId)
         {
 
@@ -215,7 +207,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     ApplicantScreenResultId = applicantScreeningResult.ApplicantScreenResultId,
                     Remark = applicantScreeningResult.Remark,
                 };
-
                 db.ApplicantScreenResults.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -395,383 +386,451 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         public JsonResult ScreenAndGenerateApplicants(int vacancyId)
         {
-            List<ApplicantDetail> applicantList = new List<ApplicantDetail>();
-
-            var result = new
+            try
             {
-                status = "Fail",
-                message = "Can't find screening setting"
-            };
+                var screening = db.ScreeningSettings.FirstOrDefault(x => x.VacancyId == vacancyId);
+                if (screening == null)
+                    return Json(new { status = "Fail", message = "Can't find screening setting" }, JsonRequestBehavior.AllowGet);
 
-            var applicantScreening = db.ScreeningSettings.FirstOrDefault(x => x.VacancyId == vacancyId);
-            if (applicantScreening != null)
-            {
-                var eduLevelScreening = db.ScreeningEducationLevels.Where(x => x.ScreeingSettingId == applicantScreening.ScreeningSettingId).ToList().Select(x => x.EducationLevelId);
-                var eduFieldScreening = db.ScreeningEducationFields.Where(x => x.ScreeingSettingId == applicantScreening.ScreeningSettingId).ToList().Select(x => x.EducationFieldId);
-                var expJobtitle = db.ScreeningExperienceJobtitles.Where(x => x.ScreeingSettingId == applicantScreening.ScreeningSettingId).ToList().Select(x => x.ExperienceJobTitleId);
+                var vacancy = db.VaccancyPlans.Find(screening.VacancyId);
+                if (vacancy == null)
+                    return Json(new { status = "Fail", message = "No such vacancy" }, JsonRequestBehavior.AllowGet);
 
-                var applicantRegistration = db.ApplicantRegistration.FirstOrDefault(x => x.VacancyId == applicantScreening.VacancyId);
+                var eduLevelIds = db.ScreeningEducationLevels
+                    .Where(x => x.ScreeingSettingId == screening.ScreeningSettingId)
+                    .Select(x => x.EducationLevelId)
+                    .ToList();
 
-                if (applicantRegistration != null)
+                var eduFieldIds = db.ScreeningEducationFields
+                    .Where(x => x.ScreeingSettingId == screening.ScreeningSettingId)
+                    .Select(x => x.EducationFieldId)
+                    .ToList();
+
+                var expJobTitleIds = db.ScreeningExperienceJobtitles
+                    .Where(x => x.ScreeingSettingId == screening.ScreeningSettingId)
+                    .Select(x => x.ExperienceJobTitleId)
+                    .ToList();
+
+                var applicantReg = db.ApplicantRegistration.FirstOrDefault(x => x.VacancyId == screening.VacancyId);
+                if (applicantReg == null)
+                    return Json(new { status = "Fail", message = "No such applicant registration" }, JsonRequestBehavior.AllowGet);
+
+                // 1. Get ALL registered applicants without filtering out any up front
+                var applicants = db.ApplicantDetails
+                    .Where(x => x.ApplicantRegistrationId == applicantReg.ApplicantRegistrationId)
+                    .ToList();
+
+                if (!applicants.Any())
+                    return Json(new { status = "Fail", message = "No applicants found for this vacancy" }, JsonRequestBehavior.AllowGet);
+
+                var vacancyLanguages = db.VacancyLanguages
+                    .Where(x => x.VacancyId == vacancyId && x.IsRequired)
+                    .Select(x => x.LanguageName.Trim().ToLower())
+                    .ToList();
+
+                var screenResult = db.ApplicantScreenResults.FirstOrDefault(x => x.VacancyId == screening.VacancyId);
+                if (screenResult == null)
                 {
-                    var applicantDetails = db.ApplicantDetails.Where(x => x.ApplicantRegistrationId == applicantRegistration.ApplicantRegistrationId).ToList();
+                    screenResult = new ApplicantScreenResult { VacancyId = screening.VacancyId };
+                    db.ApplicantScreenResults.Add(screenResult);
+                    db.SaveChanges();
+                }
 
-                    // screening with Gender
-                    if (applicantScreening.Gender == GenderForVacancyGender.MALE || applicantScreening.Gender == GenderForVacancyGender.FEMALE)
-                    {
-                        applicantDetails = applicantDetails.Where(x => x.Sex.ToString() == applicantScreening.Gender.ToString()).ToList();
-                    }
+                var examSettings = db.InternalRecruitmentCriteriaTypeSettings
+                    .Where(x => x.ExamSource == RecruitmentSource.EXTERNAL)
+                    .ToList();
 
-                    if (applicantScreening.Language != Languages.Not_Required)
-                    {
-                        applicantDetails = applicantDetails.Where(x => x.Language.ToString().Trim().ToLower() == applicantScreening.Language.ToString().Trim().ToLower()).ToList();
-                    }
+                if (!examSettings.Any())
+                    return Json(new { status = "Fail", message = "No exam/criteria settings found. You have to set the Exam Type Criteria settings first before screening and generating applicants." }, JsonRequestBehavior.AllowGet);
 
-                    foreach (var app in applicantDetails)
+                // 2. Evaluate all applicants
+                foreach (var app in applicants)
+                {
+                    bool isPassed = true;
+                    var failReasons = new List<string>();
+
+                    // Criterion A: Gender Check
+                    if (vacancy.Gender == GenderForVacancyGender.MALE || vacancy.Gender == GenderForVacancyGender.FEMALE)
                     {
-                        // screening with Education Level and field
-                        var appEducation = db.ApplicantEducation.FirstOrDefault(x => x.ApplicantDetailId == app.ApplicantDetailId && eduLevelScreening.Contains(x.EducationLevelSettingId) && eduFieldScreening.Contains(x.EducationFieldSettingId));
-                        if (appEducation != null)
+                        if (app.Sex.ToString() != vacancy.Gender.ToString())
                         {
-                            // screening with experience jobtitle
-                            var applicantExperiences = db.ApplicantExperience.Where(x => x.ApplicantDetailId == app.ApplicantDetailId && expJobtitle.Contains(x.JobTitleId)).ToList();
-                            double sumOfExp = 0;
-                            double expYear = 0;
-                            foreach (var appExp in applicantExperiences)
-                            {
-                                sumOfExp = sumOfExp + (appExp.To - appExp.From).Value.Days;
-                            }
-
-                            expYear = sumOfExp / 365;
-
-                            //var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == applicantScreening.VacancyId);
-                            //if (vacancy != null)
-                            //{
-                            if (applicantScreening.ExperienceYear <= expYear)
-                            {
-                                if (applicantScreening.OrganizationType != OrganizationType.All)
-                                {
-                                    var expOrgTypes = db.ApplicantExperience.Where(x => x.ApplicantDetailId == app.ApplicantDetailId && x.OrganizationType == applicantScreening.OrganizationType).ToList();
-                                    if (expOrgTypes.Any())
-                                    {
-                                        applicantList.Add(app);
-                                    }
-                                }
-                                else
-                                {
-                                    applicantList.Add(app);
-                                }
-
-                            }
-
-                            // }
+                            isPassed = false;
+                            failReasons.Add($"Gender mismatch (Required: {vacancy.Gender})");
                         }
                     }
-                    if (applicantList.Any())
+
+                    // Criterion B: Language Check
+                    if (vacancyLanguages.Any())
                     {
-                        var checkExit = db.ApplicantScreenResults.FirstOrDefault(x => x.VacancyId == applicantScreening.VacancyId);
-                        if (checkExit != null)
+                        string appLang = app.Language != Languages.Not_Required ? app.Language.ToString().Trim().ToLower() : "";
+                        if (!vacancyLanguages.Contains(appLang))
                         {
-                            foreach (var app in applicantList)
-                            {
-                                var checkApp = db.ApplicantScreenings.FirstOrDefault(x => x.ApplicantDetailId == app.ApplicantDetailId);
-
-                                if (checkApp != null)
-                                {
-                                    checkApp.ApplicantScreenResultId = checkExit.ApplicantScreenResultId;
-                                    checkApp.ApplicantDetailId = app.ApplicantDetailId;
-                                    checkApp.ApplicantName = app.ApplicantName;
-                                    checkApp.Address = app.Address;
-                                    checkApp.Sex = app.Sex;
-                                    checkApp.Age = app.Age;
-
-                                    db.Entry(checkApp).State = EntityState.Modified;
-                                    db.SaveChanges();
-
-                                    int countExamTypes = Enum.GetNames(typeof(ExamType)).Length;
-
-                                    for (int i = 0; i < countExamTypes; i++)
-                                    {
-                                        var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == (ExamType)i && x.ExamSource == RecruitmentSource.EXTERNAL);
-
-                                        if (settingValue != null)
-                                        {
-                                            var appExam = db.ApplicantExamResult.FirstOrDefault(x => x.ExamType == (ExamType)i && x.ApplicantScreeningId == checkApp.ApplicantScreeningId);
-
-                                            if (appExam != null)
-                                            {
-                                                appExam.ApplicantScreeningId = checkApp.ApplicantScreeningId;
-                                                appExam.ExamType = (ExamType)i;
-                                                appExam.SettingValue = settingValue.SettingVlaue;
-
-                                                db.Entry(appExam).State = EntityState.Modified;
-                                                db.SaveChanges();
-                                            }
-                                            else
-                                            {
-                                                var aer = new ApplicantExamResult();
-
-                                                aer.ApplicantScreeningId = checkApp.ApplicantScreeningId;
-                                                aer.ExamType = (ExamType)i;
-                                                aer.SettingValue = settingValue.SettingVlaue;
-
-                                                db.ApplicantExamResult.Add(aer);
-                                                db.SaveChanges();
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-                                else
-                                {
-                                    var asd = new ApplicantScreening();
-
-                                    asd.ApplicantScreenResultId = checkExit.ApplicantScreenResultId;
-                                    asd.ApplicantDetailId = app.ApplicantDetailId;
-                                    asd.ApplicantName = app.ApplicantName;
-                                    asd.Address = app.Address;
-                                    asd.Sex = app.Sex;
-                                    asd.Age = app.Age;
-
-                                    db.ApplicantScreenings.Add(asd);
-                                    db.SaveChanges();
-
-                                    int countExamTypes = Enum.GetNames(typeof(ExamType)).Length;
-
-                                    for (int i = 0; i < countExamTypes; i++)
-                                    {
-                                        var aer = new ApplicantExamResult();
-
-                                        var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == (ExamType)i && x.ExamSource == RecruitmentSource.EXTERNAL);
-
-                                        if (settingValue != null)
-                                        {
-                                            aer.ApplicantScreeningId = asd.ApplicantScreeningId;
-                                            aer.ExamType = (ExamType)i;
-                                            aer.SettingValue = settingValue.SettingVlaue;
-
-                                            db.ApplicantExamResult.Add(aer);
-                                            db.SaveChanges();
-                                        }
-
-                                    }
-                                }
-                            }
-
-                            result = new
-                            {
-                                status = "OK",
-                                message = "Successfull Updated"
-                            };
+                            isPassed = false;
+                            failReasons.Add("Does not meet language requirements");
                         }
-                        else
-                        {
-                            var asr = new ApplicantScreenResult();
-
-                            asr.VacancyId = applicantScreening.VacancyId;
-
-                            db.ApplicantScreenResults.Add(asr);
-                            db.SaveChanges();
-
-                            foreach (var app in applicantList)
-                            {
-                                var checkApp = db.ApplicantScreenings.FirstOrDefault(x => x.ApplicantDetailId == app.ApplicantDetailId);
-
-                                if (checkApp == null)
-                                {
-                                    var asd = new ApplicantScreening();
-
-                                    asd.ApplicantScreenResultId = asr.ApplicantScreenResultId;
-                                    asd.ApplicantDetailId = app.ApplicantDetailId;
-                                    asd.ApplicantName = app.ApplicantName;
-                                    asd.Address = app.Address;
-                                    asd.Sex = app.Sex;
-                                    asd.Age = app.Age;
-
-                                    db.ApplicantScreenings.Add(asd);
-                                    db.SaveChanges();
-
-                                    int countExamTypes = Enum.GetNames(typeof(ExamType)).Length;
-
-                                    for (int i = 0; i < countExamTypes; i++)
-                                    {
-                                        var aer = new ApplicantExamResult();
-
-                                        var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == (ExamType)i && x.ExamSource == RecruitmentSource.EXTERNAL);
-
-                                        if (settingValue != null)
-                                        {
-                                            aer.ApplicantScreeningId = asd.ApplicantScreeningId;
-                                            aer.ExamType = (ExamType)i;
-                                            aer.SettingValue = settingValue.SettingVlaue;
-
-                                            db.ApplicantExamResult.Add(aer);
-                                            db.SaveChanges();
-                                        }
-
-                                    }
-                                }
-
-                            }
-
-                            result = new
-                            {
-                                status = "OK",
-                                message = "Successfull Generated"
-                            };
-                        }
-
                     }
-                    else
+
+                    // Criterion C: Education Check
+                    var appEducation = db.ApplicantEducation.FirstOrDefault(x =>
+                        x.ApplicantDetailId == app.ApplicantDetailId &&
+                        eduLevelIds.Contains(x.EducationLevelSettingId) &&
+                        eduFieldIds.Contains(x.EducationFieldSettingId));
+
+                    if (appEducation == null)
                     {
-                        var applicantListsReturn = new
+                        isPassed = false;
+                        failReasons.Add("Education level or field criteria not met");
+                    }
+
+                    // Criterion D: Experience Check
+                    var applicantExps = db.ApplicantExperience
+                        .Where(x => x.ApplicantDetailId == app.ApplicantDetailId && expJobTitleIds.Contains(x.JobTitleId))
+                        .ToList();
+
+                    double totalDays = applicantExps
+                        .Where(e => e.From.HasValue && e.To.HasValue)
+                        .Sum(e => (e.To.Value - e.From.Value).TotalDays);
+
+                    double expYears = Math.Round(totalDays / 365.0, 2);
+
+                    if (expYears < vacancy.TotalYearOfExperience)
+                    {
+                        isPassed = false;
+                        failReasons.Add($"Experience insufficient ({expYears} yrs vs {vacancy.TotalYearOfExperience} yrs required)");
+                    }
+
+                    // Criterion E: Organization Type Check
+                    if (screening.OrganizationType != OrganizationType.All)
+                    {
+                        bool hasMatchingOrgType = db.ApplicantExperience
+                            .Any(x => x.ApplicantDetailId == app.ApplicantDetailId && x.OrganizationType == screening.OrganizationType);
+
+                        if (!hasMatchingOrgType)
                         {
-                            status = "Fail",
-                            message = "No applicant pass the screening"
+                            isPassed = false;
+                            failReasons.Add($"Experience with Organization Type {screening.OrganizationType} missing");
+                        }
+                    }
+
+                    // 3. Save or Update ApplicantScreening record for EVERY applicant
+                    var screeningRecord = db.ApplicantScreenings.FirstOrDefault(x => x.ApplicantDetailId == app.ApplicantDetailId && x.ApplicantScreenResultId == screenResult.ApplicantScreenResultId)
+                        ?? new ApplicantScreening
+                        {
+                            ApplicantScreenResultId = screenResult.ApplicantScreenResultId,
+                            ApplicantDetailId = app.ApplicantDetailId,
+                            ApplicantName = app.ApplicantName,
+                            Address = app.Address,
+                            Sex = app.Sex,
+                            Age = app?.Age ?? 0
                         };
 
-                        return Json(applicantListsReturn);
+                    // Set screening outcome values
+                    screeningRecord.IsPassed = isPassed;
+                    screeningRecord.Status = isPassed ? "Pass" : "Fail";
+                    screeningRecord.Remark = isPassed ? $"Passed (Exp: {expYears} yrs)" : string.Join("; ", failReasons);
+                    screeningRecord.Experience = Convert.ToDecimal(expYears); // If field exists on your model
+
+                    if (screeningRecord.ApplicantScreeningId == 0)
+                        db.ApplicantScreenings.Add(screeningRecord);
+                    else
+                        db.Entry(screeningRecord).State = EntityState.Modified;
+
+                    db.SaveChanges();
+
+                    // 4. Generate/Update Exam records (only for Passed applicants, or remove 'if (isPassed)' if all can be tested)
+                    if (isPassed)
+                    {
+                        foreach (var exam in examSettings)
+                        {
+                            var existingExam = db.ApplicantExamResult.FirstOrDefault(x =>
+                                x.ApplicantScreeningId == screeningRecord.ApplicantScreeningId &&
+                                x.ExamType == exam.ExamType);
+
+                            if (existingExam == null)
+                            {
+                                db.ApplicantExamResult.Add(new ApplicantExamResult
+                                {
+                                    ApplicantScreeningId = screeningRecord.ApplicantScreeningId,
+                                    ExamType = exam.ExamType,
+                                    SettingValue = exam.SettingVlaue
+                                });
+                            }
+                            else
+                            {
+                                existingExam.SettingValue = exam.SettingVlaue;
+                                db.Entry(existingExam).State = EntityState.Modified;
+                            }
+                        }
+                        db.SaveChanges();
                     }
                 }
-                else
+
+                return Json(new
                 {
-                    var resultapplicantregistraion = new
-                    {
-                        status = "Fail",
-                        message = "No such applicant registration"
-                    };
-
-                    return Json(resultapplicantregistraion);
-                }
+                    status = "OK",
+                    message = "Applicants screened and results generated successfully."
+                }, JsonRequestBehavior.AllowGet);
             }
-
-
-            return Json(result);
-        }
-        public string GenerateProfile(int applicantScreeningId)
-        {
-            var applicantScreening = db.ApplicantScreenings.FirstOrDefault(x => x.ApplicantScreeningId == applicantScreeningId);
-            if (applicantScreening != null)
+            catch (Exception ex)
             {
-                var profile = new Person_Employee();
-
-                string Fname = "";
-                string Mname = "";
-                string Lname = "";
-
-                int splitLength = applicantScreening.ApplicantName.Split(' ').Length;
-
-                for (int i = 0; i < splitLength; i++)
+                return Json(new
                 {
-                    if (i == 0)
-                    {
-                        Fname = applicantScreening.ApplicantName.Split(' ')[0];
-                    }
-                    else if (i == 1)
-                    {
-                        Mname = applicantScreening.ApplicantName.Split(' ')[1];
-                    }
-                    else if (i == 2)
-                    {
-                        Lname = applicantScreening.ApplicantName.Split(' ')[2];
-                    }
-                }
-                if(Mname == "")
-                {
-                    Mname = "Unkown";
-                }
-                if (Lname =="")
-                {
-                    Lname = "Unknown";
-
-                }
-
-                profile.EmployeeCode = "Not Generated";
-                profile.FirstNameEnglish = Fname;
-                profile.FirstName = Fname;
-                profile.MiddleNameEnglish = Mname;
-                profile.MiddleName = Mname;
-                profile.LastNameEnglish = Lname;
-                profile.LastName = Lname;
-                profile.Gender = applicantScreening.Sex;
-                profile.Region = 0;
-                profile.Religion = 0;
-                profile.Status = 0;
-                profile.IsActive = true;
-                //if (applicantScreening.Sex == Gender.MALE)
-                //{
-                //     profile.Gender = Gender.MALE;
-                //}
-                //else if (applicantScreening.Sex == Gender.FEMALE)
-                //{
-                //     profile.Gender = Gender.FEMALE;
-                //}
-
-                profile.DateCreated = DateTime.Now;
-                DateTime currentDate = DateTime.Now;
-
-                // Calculate birth date by subtracting age from current date
-                DateTime birthDate = currentDate.AddYears(-applicantScreening.Age);
-                profile.DateOfBirth = birthDate;
-                // profile.EffectiveDate = DateTime.Now;
-                profile.HiredDate = DateTime.Now;
-                //profile.OrginalHiredDate = DateTime.Now;
-                //profile.TerminationDate = DateTime.Now;
-                profile.HiredDateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-                profile.DateOfBirthAm = XAPI.EthiopicDateTime.GetEthiopicDate(birthDate.Day, birthDate.Month, birthDate.Year);
-                db.Person_Employee.Add(profile);
-                db.SaveChanges();
-
-                var appEducations = db.ApplicantEducation.Where(x => x.ApplicantDetailId == applicantScreening.ApplicantDetailId).ToList();
-                foreach (var edu in appEducations)
-                {
-                    var education = new Education();
-
-                    //education.Level = edu.EducationLevelSettingId;
-                    //education.Field = edu.EducationFieldSettingId;
-                    //education.EmployeeId = profile.EmployeeId;
-                    //education.Institution = edu.EducationInstitution;
-
-                    db.Education.Add(education);
-                    db.SaveChanges();
-
-                }
-
-                var appExperiences = db.ApplicantExperience.Where(x => x.ApplicantDetailId == applicantScreening.ApplicantDetailId).ToList();
-                foreach (var exp in appExperiences)
-                {
-                    var experience = new Experience();
-
-                    //experience.Type = exp.OrganizationType;
-                    //experience.Jobtitle = exp.JobTitleId;
-                    experience.EmployeeId = profile.EmployeeId;
-                    experience.OrgFullAddress = "Hiring Campany";
-                    experience.Organozation = "Hiring Campnay";
-                    experience.ClearanceDateTime =  DateTime.Now;
-                    experience.From =  exp.From.Value;
-                    experience.FromExAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(exp.From.Value.Day, exp.From.Value.Month, exp.From.Value.Year); 
-                    experience.To =  exp.To.Value;
-                    experience.ToExAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(exp.To.Value.Day, exp.To.Value.Month, exp.To.Value.Year);
-                    experience.EmployeeId = profile.EmployeeId;
-
-                    db.Experiences.Add(experience);
-                    db.SaveChanges();
-
-                }
-                /// change status //// 
-                /// 
-                applicantScreening.IsProfileGenerated = true;
-
-                db.Entry(applicantScreening).State = EntityState.Modified;
-                db.SaveChanges();
-
-
-                return "true";
+                    status = "Fail",
+                    message = ex.ToString()
+                }, JsonRequestBehavior.AllowGet);
             }
-            return "false";
         }
+        public JsonResult GenerateProfile(int applicantScreeningId)
+        {
+            var applicantScreening = db.ApplicantScreenings
+                .FirstOrDefault(x => x.ApplicantScreeningId == applicantScreeningId);
+
+            if (applicantScreening == null)
+            {
+                return Json(new
+                {
+                    Status = "FAIL",
+                    Message = "Employee not found."
+                });
+            }
+
+            if (applicantScreening.IsProfileGenerated)
+            {
+                return Json(new
+                {
+                    Status = "FAIL",
+                    Message = "Profile already generated."
+                });
+            }
+
+            var names = applicantScreening.ApplicantName?
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var fName = names?.Length > 0 ? names[0] : "Unknown";
+            var mName = names?.Length > 1 ? names[1] : "Unknown";
+            var lName = names?.Length > 2 ? names[2] : "Unknown";
+
+            var currentDate = DateTime.Now;
+            var birthDate = currentDate.AddYears(-applicantScreening.Age);
+
+            var profile = new Person_Employee
+            {
+                EmployeeCode = "Not Generated",
+
+                FirstNameEnglish = fName,
+                FirstName = fName,
+
+                MiddleNameEnglish = mName,
+                MiddleName = mName,
+
+                LastNameEnglish = lName,
+                LastName = lName,
+
+                Gender = applicantScreening.Sex,
+                Region = 0,
+                Religion = 0,
+                Status = 0,
+                IsActive = true,
+
+                DateCreated = currentDate,
+                DateOfBirth = birthDate,
+                HiredDate = currentDate,
+
+                HiredDateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(
+                    currentDate.Day,
+                    currentDate.Month,
+                    currentDate.Year),
+
+                DateOfBirthAm = XAPI.EthiopicDateTime.GetEthiopicDate(
+                    birthDate.Day,
+                    birthDate.Month,
+                    birthDate.Year)
+            };
+
+            db.Person_Employee.Add(profile);
+            db.SaveChanges();
+
+            var appEducations = db.ApplicantEducation
+                .Where(x => x.ApplicantDetailId == applicantScreening.ApplicantDetailId)
+                .ToList();
+
+            foreach (var edu in appEducations)
+            {
+                var education = new Education
+                {
+                    EduLevel = edu.EducationLevelSettingId,
+                    EduField = edu.EducationFieldSettingId,
+                    OrganizationName = edu.EducationInstitution??"x",
+                    OrgAddress = edu?.Remark??"AA",
+                    EmployeeId = profile.EmployeeId,
+                    From = edu.GraduationDate,
+                    To = edu.GraduationDate.HasValue? edu.GraduationDate.Value:DateTime.Now
+                };
+
+                db.Education.Add(education);
+            }
+
+            var appExperiences = db.ApplicantExperience
+                .Where(x => x.ApplicantDetailId == applicantScreening.ApplicantDetailId)
+                .ToList();
+
+            foreach (var exp in appExperiences)
+            {
+                if (!exp.From.HasValue || !exp.To.HasValue)
+                    continue;
+
+                var experience = new Experience
+                {
+                    EmployeeId = profile.EmployeeId,
+                    OrgFullAddress = "Hiring Company",
+                    Organozation = "Hiring Company",
+                    ClearanceDateTime = currentDate,
+
+                    From = exp.From.Value,
+                    FromExAmharic = HrHelper.GetECDate(exp.From.Value),
+
+                    To = exp.To.Value,
+                    ToExAmharic = HrHelper.GetECDate(exp.To.Value)
+                };
+
+                db.Experiences.Add(experience);
+            }
+
+            applicantScreening.IsProfileGenerated = true;
+
+            db.Entry(applicantScreening).State = EntityState.Modified;
+
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Status = "SUCCESS",
+                Message = "Profile generated successfully."
+            });
+        }
+        //public JsonResult GenerateProfile(int applicantScreeningId)
+        //{
+        //    var applicantScreening = db.ApplicantScreenings.FirstOrDefault(x => x.ApplicantScreeningId == applicantScreeningId);
+        //    if(applicantScreening == null)
+        //    {
+        //        return Json(new
+        //        {
+        //            Status = "FAIL",
+        //            Message = "Employee not found."
+        //        });
+        //    }
+        //    if (applicantScreening.IsProfileGenerated)
+        //    {
+        //        return Json(new
+        //        {
+        //            Status = "FAIL",
+        //            Message = "already Generating."
+        //        });
+
+        //    }
+        //    var names = (applicantScreening.ApplicantName ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+        //    if (names.Length < 2)
+        //    {
+        //        return Json(new
+        //        {
+        //            Status = "FAIL",
+        //            Message = "Applicant name must contain at least First Name and Middle Name."
+        //        });
+        //    }
+
+        //    var fName = names[0];
+        //    var mName = names[1];
+        //    var lName = names.Length > 2 ? names[2] : "Unknown";
+        //    if (applicantScreening != null)
+        //    {
+        //        var profile = new Person_Employee();
+
+
+        //        profile.EmployeeCode = "Not Generated";
+        //        profile.FirstNameEnglish = fName;
+        //        profile.FirstName = fName;
+        //        profile.MiddleNameEnglish = mName;
+        //        profile.MiddleName = mName;
+        //        profile.LastNameEnglish = lName;
+        //        profile.LastName = lName;
+        //        profile.Gender = applicantScreening.Sex;
+        //        profile.Region = 0;
+        //        profile.Religion = 0;
+        //        profile.Status = 0;
+        //        profile.IsActive = true;
+        //        //if (applicantScreening.Sex == Gender.MALE)
+        //        //{
+        //        //     profile.Gender = Gender.MALE;
+        //        //}
+        //        //else if (applicantScreening.Sex == Gender.FEMALE)
+        //        //{
+        //        //     profile.Gender = Gender.FEMALE;
+        //        //}
+
+        //        profile.DateCreated = DateTime.Now;
+        //        DateTime currentDate = DateTime.Now;
+
+        //        // Calculate birth date by subtracting age from current date
+        //        DateTime birthDate = currentDate.AddYears(-applicantScreening.Age);
+        //        profile.DateOfBirth = birthDate;
+        //        // profile.EffectiveDate = DateTime.Now;
+        //        profile.HiredDate = DateTime.Now;
+        //        //profile.OrginalHiredDate = DateTime.Now;
+        //        //profile.TerminationDate = DateTime.Now;
+        //        profile.HiredDateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+        //        profile.DateOfBirthAm = XAPI.EthiopicDateTime.GetEthiopicDate(birthDate.Day, birthDate.Month, birthDate.Year);
+        //        db.Person_Employee.Add(profile);
+        //        db.SaveChanges();
+
+        //        var appEducations = db.ApplicantEducation.Where(x => x.ApplicantDetailId == applicantScreening.ApplicantDetailId).ToList();
+        //        foreach (var edu in appEducations)
+        //        {
+        //            var education = new Education();
+
+        //            education.EduLevel = edu.EducationLevelSettingId;
+        //            education.EduField = edu.EducationFieldSettingId;
+        //            education.EmployeeId = profile.EmployeeId;
+        //            education.OrganizationName = edu.EducationInstitution;
+
+        //            db.Education.Add(education);
+        //            db.SaveChanges();
+
+        //        }
+
+        //        var appExperiences = db.ApplicantExperience.Where(x => x.ApplicantDetailId == applicantScreening.ApplicantDetailId).ToList();
+        //        foreach (var exp in appExperiences)
+        //        {
+        //            var experience = new Experience();
+
+        //            //experience.Type = exp.OrganizationType;
+        //            //experience.Jobtitle = exp.JobTitleId;
+        //            experience.EmployeeId = profile.EmployeeId;
+        //            experience.OrgFullAddress = "Hiring Campany";
+        //            experience.Organozation = "Hiring Campnay";
+        //            experience.ClearanceDateTime =  DateTime.Now;
+        //            experience.From =  exp.From.Value;
+        //            experience.FromExAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(exp.From.Value.Day, exp.From.Value.Month, exp.From.Value.Year); 
+        //            experience.To =  exp.To.Value;
+        //            experience.ToExAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(exp.To.Value.Day, exp.To.Value.Month, exp.To.Value.Year);
+        //            experience.EmployeeId = profile.EmployeeId;
+
+        //            db.Experiences.Add(experience);
+        //            db.SaveChanges();
+
+        //        }
+        //        /// change status //// 
+        //        /// 
+        //        applicantScreening.IsProfileGenerated = true;
+
+        //        db.Entry(applicantScreening).State = EntityState.Modified;
+        //        db.SaveChanges();
+
+
+        //        return "true";
+        //    }
+        //    return "false";
+        //}
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

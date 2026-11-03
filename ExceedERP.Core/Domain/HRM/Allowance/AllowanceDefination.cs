@@ -7,7 +7,7 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
     ///
     /// <remarks>    Mekanehiwot, 10/31/2016. </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
     public class AllowanceDefination : TrackUserOperation
     {
         [Key]
@@ -28,5 +28,6 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
         //public int? LookupId { get; set; }
         [Display(Name = "HR_Allowance_AllowanceDefination_AmtPercent", ResourceType = typeof(Localization.Resources))]
         public FixedContPecntType AmtPercent { get; set; }
+        public PayrollCategory Category { get; set; }
     }
 }

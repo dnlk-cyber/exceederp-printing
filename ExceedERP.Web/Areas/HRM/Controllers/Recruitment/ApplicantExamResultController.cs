@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -16,7 +15,7 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-
+  
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class ApplicantExamResultController : BaseController
     {
@@ -77,6 +76,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 ApplicantScreeningId = applicantExamResult.ApplicantScreeningId,
                 SettingValue = applicantExamResult.SettingValue,
                 CurrentResult = applicantExamResult.CurrentResult,
+                ActualValue = applicantExamResult.ActualValue,
                 ExamType = applicantExamResult.ExamType,
                 Remark = applicantExamResult.Remark,
             });
@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var settingValue = db.ExamTypeSettings.FirstOrDefault(x=>x.ExamType == applicantExamResult.ExamType && x.ExamSource == RecruitmentSource.EXTERNAL);
+                var settingValue = db.InternalRecruitmentCriteriaTypeSettings.FirstOrDefault(x=>x.ExamType == applicantExamResult.ExamType && x.ExamSource == RecruitmentSource.EXTERNAL);
                 if(settingValue != null)
                 {
                     applicantExamResult.SettingValue = settingValue.SettingVlaue;
@@ -101,6 +101,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     ApplicantScreeningId = id,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
+                    ActualValue = applicantExamResult.ActualValue,
                     ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
                 };
@@ -119,7 +120,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
             if (ModelState.IsValid)
             {
-                var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == applicantExamResult.ExamType && x.ExamSource == RecruitmentSource.EXTERNAL);
+                var settingValue = db.InternalRecruitmentCriteriaTypeSettings.FirstOrDefault(x => x.ExamType == applicantExamResult.ExamType && x.ExamSource == RecruitmentSource.EXTERNAL);
                 if (settingValue != null)
                 {
                     applicantExamResult.SettingValue = settingValue.SettingVlaue;
@@ -131,6 +132,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     ApplicantScreeningId = applicantExamResult.ApplicantScreeningId,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
+                    ActualValue = applicantExamResult.ActualValue,
                     ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
                 };
@@ -155,6 +157,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     ApplicantScreeningId = applicantExamResult.ApplicantScreeningId,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
+                    ActualValue = applicantExamResult.ActualValue,
                     ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
                 };
