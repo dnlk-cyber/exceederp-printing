@@ -34,10 +34,10 @@
           .DataSource(dataSource => dataSource
               .Ajax()
               .Model(model => model.Id(p => p.TrainingEvaluationSettingCategoryId))
-              .Read(read => read.Action("TrainingEvaluationCriteriaCategories_Read", "TrainingEvaluationCriteriaCategories"))
-              .Create(create => create.Action("TrainingEvaluationCriteriaCategories_Create", "TrainingEvaluationCriteriaCategories"))
-              .Update(update => update.Action("TrainingEvaluationCriteriaCategories_Update", "TrainingEvaluationCriteriaCategories"))
-              .Destroy(destroy => destroy.Action("TrainingEvaluationCriteriaCategories_Destroy", "TrainingEvaluationCriteriaCategories"))
+              .Read(read => read.Action("TrainingEvaluationCriteriaCategories_Read", "TrainingEvaluationCriteriaCategories").Data("sendForgery"))
+              .Create(create => create.Action("TrainingEvaluationCriteriaCategories_Create", "TrainingEvaluationCriteriaCategories").Data("sendForgery"))
+              .Update(update => update.Action("TrainingEvaluationCriteriaCategories_Update", "TrainingEvaluationCriteriaCategories").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("TrainingEvaluationCriteriaCategories_Destroy", "TrainingEvaluationCriteriaCategories").Data("sendForgery"))
           ).ClientDetailTemplateId("detail")
 )
 
@@ -90,12 +90,11 @@
                                   }
                                             )
 
-                                  .Model(model =>
-                                              model.Id(p => p.TrainingEvaluationCriteriaId))
-                                  .Read(read => read.Action("TrainingEvaluationCriterias_Read", "TrainingEvaluationCriteria", new { Area = "HRM", id = "#=TrainingEvaluationSettingCategoryId#" }))
-                                  .Create(create => create.Action("TrainingEvaluationCriterias_Create", "TrainingEvaluationCriteria", new { Area = "HRM", id = "#=TrainingEvaluationSettingCategoryId#" }))
-                                  .Update(update => update.Action("TrainingEvaluationCriterias_Update", "TrainingEvaluationCriteria"))
-                                  .Destroy(destroy => destroy.Action("TrainingEvaluationCriterias_Destroy", "TrainingEvaluationCriteria"))
+                                  .Model(model =>model.Id(p => p.TrainingEvaluationCriteriaId))
+                                  .Read(read => read.Action("TrainingEvaluationCriterias_Read", "TrainingEvaluationCriteria", new { Area = "HRM", id = "#=TrainingEvaluationSettingCategoryId#" }).Data("sendForgery"))
+                                  .Create(create => create.Action("TrainingEvaluationCriterias_Create", "TrainingEvaluationCriteria", new { Area = "HRM", id = "#=TrainingEvaluationSettingCategoryId#" }).Data("sendForgery"))
+                                  .Update(update => update.Action("TrainingEvaluationCriterias_Update", "TrainingEvaluationCriteria").Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("TrainingEvaluationCriterias_Destroy", "TrainingEvaluationCriteria").Data("sendForgery"))
                       ).ToClientTemplate()
                         )
                     </text>

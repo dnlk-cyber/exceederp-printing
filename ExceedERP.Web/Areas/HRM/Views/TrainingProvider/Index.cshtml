@@ -2,6 +2,7 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <legend>@Resources.NavigatorTraining_TrainingProvider</legend>
 @(Html.Kendo().Grid<MainCompany>()
@@ -63,10 +64,10 @@
                    })
 
           .Model(model => model.Id(p => p.MainCompanyId))
-          .Read(read => read.Action("Companies_Read", "TrainingProvider"))
-          .Create(create => create.Action("Companies_Create", "TrainingProvider"))
-          .Update(update => update.Action("Companies_Update", "TrainingProvider"))
-          .Destroy(destroy => destroy.Action("Companies_Destroy", "TrainingProvider"))
+          .Read(read => read.Action("Companies_Read", "TrainingProvider").Data("sendForgery"))
+          .Create(create => create.Action("Companies_Create", "TrainingProvider").Data("sendForgery"))
+          .Update(update => update.Action("Companies_Update", "TrainingProvider").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Companies_Destroy", "TrainingProvider").Data("sendForgery"))
           ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
@@ -85,8 +86,17 @@
                           columns.Bound(c => c.Type).Width(100).EditorTemplateName("Enum");
                           columns.Bound(c => c.Description).Width (100);
                           columns.Bound(c => c.IdNumber).Width(100);
-                          columns.Bound(c => c.IssueDateIdAm).EditorTemplateName("Calander").Width(150);
-                          columns.Bound(c => c.ExpiryDateAm).EditorTemplateName("Calander").Width(150);
+                          if (useEthiopian)
+                          {
+                              columns.Bound(c => c.IssueDateIdAm).EditorTemplateName("Calander").Width(150);
+                              columns.Bound(c => c.ExpiryDateAm).EditorTemplateName("Calander").Width(150);
+                          }
+                          else
+                          {
+                              columns.Bound(c => c.IssueDate).Width(100);
+                              columns.Bound(c => c.ExpiryDate).Width(100);
+                          }
+
                           columns.Bound(c => c.Issuer).Width(150);
                           columns.Bound(c => c.Remark).Width(100);
                           columns.Command(command =>
@@ -110,23 +120,23 @@
                       })
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Scrollable()
-                                      .Events(e => { e.Edit("GetIdentificationDate"); 
-                                       e.Save("GetIdentificationDate");})
+                                      .Events(e => { e.Edit("GetIdentificationDate");
+                                          e.Save("GetIdentificationDate");})
                                                          .DataSource(dataSource => dataSource
                           .Ajax()
                                    .Events(events =>
-                                         {
-                                             events.Error("error_handler(\"IdentificationGrid_#=MainCompanyId#\")");
-                                             events.RequestStart("onRequestStart(\"IdentificationGrid_#=MainCompanyId#\")");
-                                             events.RequestEnd("onRequestEnd(\"IdentificationGrid_#=MainCompanyId#\")");
-                                         })
-                      
-                                                   
+                                   {
+                                       events.Error("error_handler(\"IdentificationGrid_#=MainCompanyId#\")");
+                                       events.RequestStart("onRequestStart(\"IdentificationGrid_#=MainCompanyId#\")");
+                                       events.RequestEnd("onRequestEnd(\"IdentificationGrid_#=MainCompanyId#\")");
+                                   })
+
+
                           .Model(model => model.Id(i => i.IdentificationId))
-                          .Read(read => read.Action("Identifications_Read", "Identification", new {Area = "Common", id = "#=MainCompanyId#"}))
-                          .Create(create => create.Action("Identifications_Create", "Identification", new {Area = "Common", id = "#=MainCompanyId#"}))
-                                  .Update(update => update.Action("Identifications_Update", "Identification", new { Area = "Common" }))
-                                  .Destroy(destroy => destroy.Action("Identifications_Destroy", "Identification", new { Area = "Common" }))
+                          .Read(read => read.Action("Identifications_Read", "Identification", new {Area = "Common", id = "#=MainCompanyId#"}).Data("sendForgery"))
+                          .Create(create => create.Action("Identifications_Create", "Identification", new {Area = "Common", id = "#=MainCompanyId#"}).Data("sendForgery"))
+                                  .Update(update => update.Action("Identifications_Update", "Identification", new { Area = "Common" }).Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("Identifications_Destroy", "Identification", new { Area = "Common" }).Data("sendForgery"))
                       ).ToClientTemplate()
                       )
 
@@ -179,10 +189,10 @@
                                                  })
                                                  
                           .Model(model => model.Id(p => p.AddressId))
-                          .Read(read => read.Action("Addresses_Read", "Addresse", new {Area = "Common", id = "#=MainCompanyId#", addressReferenceType = "TrainingProvider"}))
-                          .Create(create => create.Action("Addresses_Create", "Addresse", new {Area = "Common", id = "#=MainCompanyId#", addressReferenceType = "TrainingProvider"}))
-                                  .Update(update => update.Action("Addresses_Update", "Addresse", new { Area = "Common" }))
-                                  .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }))
+                          .Read(read => read.Action("Addresses_Read", "Addresse", new {Area = "Common", id = "#=MainCompanyId#", addressReferenceType = "TrainingProvider"}).Data("sendForgery"))
+                          .Create(create => create.Action("Addresses_Create", "Addresse", new {Area = "Common", id = "#=MainCompanyId#", addressReferenceType = "TrainingProvider"}).Data("sendForgery"))
+                                  .Update(update => update.Action("Addresses_Update", "Addresse", new { Area = "Common" }).Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }).Data("sendForgery"))
                       ).ToClientTemplate()
                       )
             </text>
@@ -222,15 +232,72 @@
                                                          })
                                                    
                           .Model(model => model.Id(p => p.IndustryInvolvedID))
-                          .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new {Area = "Common", referenceIndustryInvolvment = "#=MainCompanyId#"}))
-                          .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new {Area = "Common", referenceIndustryInvolvment = "#=MainCompanyId#"}))
-                                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved", new { Area = "Common" }))
-                                  .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved", new { Area = "Common" }))
+                          .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new {Area = "Common", referenceIndustryInvolvment = "#=MainCompanyId#"}).Data("sendForgery"))
+                          .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new {Area = "Common", referenceIndustryInvolvment = "#=MainCompanyId#"}).Data("sendForgery"))
+                                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved", new { Area = "Common" }).Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved", new { Area = "Common" }).Data("sendForgery"))
                       ).ToClientTemplate()
                       )
 
+            </text>);
+
+          items.Add().Text("Provided Training").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.TrainingEducation.ProvidedTraining>()
+                    .Name("ProvidedTrainingGrid_#=MainCompanyId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.TrainingName)
+                            .Title("Training Name").Width(200);
+
+                        columns.Bound(c => c.Description)
+                            .Title("Description").Width(200);
+
+                        columns.Bound(c => c.Duration).Title("Duration").Width(200);
+
+                        columns.Bound(c => c.DurationUnit).Title("Duration Unit").Width(140);
+
+                        columns.Command(command =>
+                        {
+                            command.Edit()
+                                .UpdateText(Resources.ActionButton_Update)
+                                .CancelText(Resources.ActionButton_CancelUpdate)
+                                .Text(Resources.ActionButton_Edit);
+
+                            command.Destroy()
+                                .Text(Resources.ActionButton_Cancel);
+                        })/*.Width(200)*/;
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"ProvidedTrainingGrid_#=MainCompanyId#\")");
+                            events.RequestStart("onRequestStart(\"ProvidedTrainingGrid_#=MainCompanyId#\")");
+                            events.RequestEnd("onRequestEnd(\"ProvidedTrainingGrid_#=MainCompanyId#\")");
+                        })
+                        .Model(model =>
+                        {
+                            model.Id(p => p.ProvidedTrainingId);
+                        })
+                        .Read(read => read.Action("ProvidedTrainings_Read","ProvidedTraining",new{Area = "HRM", mainCompanyId = "#=MainCompanyId#"}).Data("sendForgery"))
+
+                        .Create(create => create.Action("ProvidedTrainings_Create", "ProvidedTraining", new {Area = "HRM", mainCompanyId = "#=MainCompanyId#"}).Data("sendForgery"))
+
+                        .Update(update => update.Action("ProvidedTrainings_Update","ProvidedTraining", new {Area = "HRM" }).Data("sendForgery"))
+
+                        .Destroy(destroy => destroy.Action("ProvidedTrainings_Destroy", "ProvidedTraining", new {Area = "HRM" }).Data("sendForgery"))
+                    )
+                    .ToClientTemplate()
+                )
             </text>
-                  );
+        );
               //*****************************************************************************************************//
           }).ToClientTemplate())
 </script>

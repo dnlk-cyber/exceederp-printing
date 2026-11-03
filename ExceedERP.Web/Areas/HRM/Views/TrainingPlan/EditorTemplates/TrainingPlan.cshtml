@@ -25,7 +25,7 @@
                               .DataValueField("OrgStructureId")
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       })
                 )
@@ -46,7 +46,7 @@
                       .OptionLabel(Resources.Select)
                                 .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                     .ServerFiltering(false);
                           })
                       .DataTextField("Name")
@@ -68,7 +68,7 @@
                   .OptionLabel(Resources.Select)
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetCourseList", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetCourseList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       })
                                           .DataTextField("Description")

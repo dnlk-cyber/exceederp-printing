@@ -19,9 +19,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.TraineeId))
-          .Read(read => read.Action("Trainee_Read", "Trainee"))
-          .Create(create => create.Action("Trainee_Create", "Trainee"))
-          .Update(update => update.Action("Trainee_Update", "Trainee"))
-          .Destroy(destroy => destroy.Action("Trainee_Destroy", "Trainee"))
+          .Read(read => read.Action("Trainee_Read", "Trainee").Data("sendForgery"))
+          .Create(create => create.Action("Trainee_Create", "Trainee").Data("sendForgery"))
+          .Update(update => update.Action("Trainee_Update", "Trainee").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Trainee_Destroy", "Trainee").Data("sendForgery"))
       )
 )

@@ -1,8 +1,4 @@
-﻿@using System.Collections
-@using ExceedERP.Web.Areas.HRM.Controllers
-@using ExceedERP.Web.Areas.HRM.Controllers.Company
-@using Kendo.Mvc.UI
-@using ExceedERP.Core.Localization
+﻿@using Kendo.Mvc.UI
 @model ExceedERP.Core.Domain.HRM.SelfCare.TrainingApplicant
 
 
@@ -20,7 +16,7 @@
                       .DataValueField("OrgStructureId")
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetDepartmentOfHeads", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetDepartmentOfHeads", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                               .ServerFiltering(false);
                       })
                       .ValuePrimitive(true)
@@ -43,7 +39,7 @@
                               .DataValueField("LookupId")
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetCourseList", "HRMDataProvider", new { area = "HRM" }))
+                                  dataSource.Read(read => read.Action("GetCourseList", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                       .ServerFiltering(false);
                               })
                               .ValuePrimitive(true)

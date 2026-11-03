@@ -4,195 +4,379 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool requiresAdditionalApproval = ViewData["approval"] as bool? ?? false;
 }
-<legnd >@Resources.NavigatorTraining_TrainingApplicantStatus</legnd>
-@(Html.Kendo().Grid<TrainingApplicant>()
-          .Name("TrainingApplicantgrid")
-      .Columns(columns =>
-      {
-          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(150);
-          columns.Bound(c => c.NoofTrainee).Width(150);
-          columns.Bound(c => c.DateAmharic).Width(150);
-          columns.Bound(c => c.TrainingRequestType).EditorTemplateName("Enum").Width(150);
-          columns.Bound(c => c.Remark).Width (150);
-          //columns.Command(command =>
-          //{
-          //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);
-          //}).Width(180);
-      })
-      .ToolBar(toolbar => {
-          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-      })
-            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest").Window(window => { window.Title("Training Request"); window.Scrollable(false); }))
-         .Selectable(selectable =>
-         {
-             selectable.Mode(GridSelectionMode.Single);
-             selectable.Type(GridSelectionType.Row);
-         })
-             .Events(e =>
-             {
 
-                 e.DetailExpand("onDetailExpandUser");
-             })
-             .Scrollable(h => h.Height(500))
-                 .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-                 .Filterable()
-                 .Pageable(pageable => pageable
+<div class="training-applicant-container">
+    <div class="erp-header-card">
+        <h2 class="erp-page-title">
+            <i class="fa fa-user-graduate text-primary"></i>
+            @Resources.NavigatorTraining_TrainingApplicantStatus
+        </h2>
+    </div>
+
+    @(Html.Kendo().Grid<TrainingApplicant>()
+                  .Name("TrainingApplicantgrid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.TrainingApplicantId).Title("#").Width(80);
+                      columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name")
+                             .EditorTemplateName("Department")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(200);
+                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description")
+                             .EditorTemplateName("Course")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(180);
+                      columns.Bound(c => c.NoofTrainee).Title("No. of Trainees").Width(130);
+                      columns.Bound(c => c.DateAmharic).Title("Date (E.C.)").Width(140);
+                      columns.Bound(c => c.TrainingRequestType).EditorTemplateName("Enum")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(150);
+                      columns.Bound(c => c.Remark).Width(150);
+                      columns.Command(command =>
+                      {
+                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                      }).Title("Actions").Width(180);
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                      .TemplateName("TrainingRequest")
+                      .Window(window =>
+                      {
+                          window.Title("Training Request");
+                          window.Scrollable(false);
+                          window.Width(720);
+                      }))
+                  .Selectable(selectable =>
+                  {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Events(e =>
+                  {
+                      e.DetailExpand("onDetailExpandUser");
+                      e.DataBound("onDataBound");
+                  })
+                  .Scrollable(h => h.Height(520))
+                  .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+                  .Filterable()
+                  .Pageable(pageable => pageable
                       .Input(true)
                       .Numeric(false)
                       .Refresh(true)
                       .PageSizes(true)
-                                            .ButtonCount(5))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-              //.Sort(sort => sort.Add("DateCreated").Descending()) 
-              .Events(events =>
-              {
-                  events.Error("error_handler(\"TrainingApplicantgrid\")");
-                  events.RequestStart("onRequestStart(\"TrainingApplicantgrid\")");
-                  events.RequestEnd("onRequestEnd(\"TrainingApplicantgrid\")");
-              })
+                      .ButtonCount(5))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Sort(sort => sort.Add(x => x.TrainingApplicantId).Descending())
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"TrainingApplicantgrid\")");
+                          events.RequestStart("onRequestStart(\"TrainingApplicantgrid\")");
+                          events.RequestEnd("onRequestEnd(\"TrainingApplicantgrid\")");
+                      })
+                      .Model(model => model.Id(p => p.TrainingApplicantId))
+                      .Read(read => read.Action("TrainingApplicants_Read", "TrainingApplicantStatus").Data("sendForgery"))
+                      .Create(create => create.Action("TrainingApplicants_Create", "TrainingApplicantStatus").Data("sendForgery"))
+                      .Update(update => update.Action("TrainingApplicants_Update", "TrainingApplicantStatus").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("TrainingApplicants_Destroy", "TrainingApplicantStatus").Data("sendForgery"))
+                  )
+                  .ClientDetailTemplateId("template")
+    )
+</div>
 
-          .Model(model => model.Id(p => p.TrainingApplicantId))
-              .Read(read => read.Action("TrainingApplicants_Read", "TrainingApplicantStatus"))
-              .Create(create => create.Action("TrainingApplicants_Create", "TrainingApplicantStatus"))
-              .Update(update => update.Action("TrainingApplicants_Update", "TrainingApplicantStatus"))
-              .Destroy(destroy => destroy.Action("TrainingApplicants_Destroy", "TrainingApplicantStatus"))
-          ).ClientDetailTemplateId("template")
-      )
-
+<!-- Hierarchy Detail Template -->
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                  .Name("tabstrip_#=TrainingApplicantId#")
-          .SelectedIndex(0)
-          .Items(items =>
-          {
-              items.Add().Text(Resources .HR_RequestStatus ).Content(
-                @<text>
-                @*    <legend>Status</legend>*@
-
-                    @(Html.Kendo().Grid<RequestesStatus>()
-                                  .Name("RequestesStatusgrid_#=TrainingApplicantId#")
-                          .Columns(columns =>
+                          .Name("tabstrip_#=TrainingApplicantId#")
+                          .SelectedIndex(0)
+                          .Items(items =>
                           {
-                              //columns.Bound(c => c.RequestId);
-                              columns.Bound(c => c.DateReqStatAm).Width(150);
-                              columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(300);
-                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                              columns.Bound(c => c.Remark).Width(150);
-                              columns.Command(command =>
-                              {
-                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                  //  command.Destroy().Text(Resources.ActionButton_Cancel);
-                              }).Width(180);
-                          })
-                          .ToolBar(toolbar =>
-                          {
-                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                          })
-                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          .Scrollable()
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
-                                      .Events(events =>
-                                      {
-                                          events.Error("error_handler(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
-                                          events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
-                                          events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
-                                      })
+                  // Tab 1: Standard First-Level Request Status
+                  items.Add().Text(Resources.HR_RequestStatus).Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<RequestesStatus>()
+                                                          .Name("RequestesStatusgrid_#=TrainingApplicantId#")
+                                                          .Columns(columns =>
+                                                          {
+                                                              columns.Bound(c => c.DateReqStatAm).Title("Date (E.C.)").Width(140);
+                                                              columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove")
+                                                         .Filterable(ftb => ftb.Multi(true).Search(true))
+                                                         .Width(220);
+                                                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic")
+                                                         .Title("Approver")
+                                                         .Width(160)
+                                                         .Filterable(ftb => ftb.Multi(true).Search(true));
+                                                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name")
+                                                         .Title("Department")
+                                                         .Width(160)
+                                                         .Filterable(ftb => ftb.Multi(true).Search(true));
+                                                              columns.Bound(c => c.Remark).Width(160);
+                                                              columns.Command(command =>
+                                                              {
+                                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                              .Model(model =>
-                              {
-                                  model.Id(p => p.RequestStatusId);
-                                  model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                              })
-                                            .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }))
-                                            .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType2 = "Training" }))
-                                           .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                           .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
-                          ).ToClientTemplate()
-                    )
+                                                              }).Title("Actions").Width(180);
+                                                          })
+                                                          .ToolBar(toolbar => toolbar.Create().Text(Resources.ActionButton_AddNewRecord))
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .Scrollable()
+                                                          .Events(ev => ev.DataBound("onDetailDataBound"))
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .Events(events =>
+                                                              {
+                                                                  events.Error("error_handler(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                                                  events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                                                  events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                                              })
+                                                              .Model(model =>
+                                                              {
+                                                                  model.Id(p => p.RequestStatusId);
+                                                                  model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                  model.Field(p => p.DateReqStatAm).Editable(false);
+                                                                  model.Field(p => p.ApproverDepartment).Editable(false);
+                                                                  model.Field(p => p.ApproverId).Editable(false);
+                                                              })
+                                                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }).Data("sendForgery"))
+                                                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType2 = "Training" }).Data("sendForgery"))
+                                                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                                                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
+                                                          ).ToClientTemplate()
+                                    )
+                                </text>);
 
+                          // Tab 2: Additional / Second Validation (Conditionally Rendered)
+                          //if (requiresAdditionalApproval)
+                          //            {
+                          items.Add().Text("Second Validation").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<TrainingApplicantSecondValidation>()
+                                                          .Name("SecondValidationGrid_#=TrainingApplicantId#")
+                                                          .Columns(columns =>
+                                                          {
+                                                              columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatuses").Title("Decision").Width(140);
+                                                              columns.Bound(c => c.Remark).Title("Remark").Width(220);
+                                                              columns.Bound(c => c.CreatedBy).Title("Validated By").Width(140);
+                                                              columns.Bound(c => c.DateCreated).Title("Date Validated").Format("{0:yyyy-MM-dd HH:mm}").Width(150);
+                                                              columns.Command(command =>
+                                                              {
+                                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                </text>
-                  );
-              //*****************************************************************************************************//
-
-          }).ToClientTemplate())
+                                                              }).Title("Actions").Width(200);
+                                                          })
+                                                          .ToolBar(toolbar =>
+                                                          {
+                                                              toolbar.Create().Text("Add Second Validation");
+                                                          })
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .Scrollable()
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .Events(events =>
+                                                              {
+                                                                  events.Error("error_handler(\"SecondValidationGrid_#=TrainingApplicantId#\")");
+                                                                  events.RequestStart("onRequestStart(\"SecondValidationGrid_#=TrainingApplicantId#\")");
+                                                                  events.RequestEnd("onRequestEnd(\"SecondValidationGrid_#=TrainingApplicantId#\")");
+                                                              })
+                                                              .Model(model =>
+                                                              {
+                                                                  model.Id(p => p.TrainingApplicantSecondValidationId);
+                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                              })
+                                                              .Read(read => read.Action("TrainingApplicantSecondValidations_Read", "TrainingApplicantSecondValidation", new { area = "HRM", id = "#=TrainingApplicantId#" }).Data("sendForgery"))
+                                                              .Create(create => create.Action("TrainingApplicantSecondValidations_Create", "TrainingApplicantSecondValidation", new { area = "HRM", id = "#=TrainingApplicantId#" }).Data("sendForgery"))
+                                                              .Update(update => update.Action("TrainingApplicantSecondValidations_Update", "TrainingApplicantSecondValidation", new { area = "HRM" }).Data("sendForgery"))
+                                                              .Destroy(destroy => destroy.Action("TrainingApplicantSecondValidations_Destroy", "TrainingApplicantSecondValidation", new { area = "HRM" }).Data("sendForgery"))
+                                                          ).ToClientTemplate()
+                                    )
+                                </text>);
+                              //}
+                              items.Add().Text(Resources.UploadFile).Content(
+                    @<text>
+                        @trainingApplicantAttachment()
+                    </text>);
+              }).ToClientTemplate())
 </script>
-<style>
-    div.k-edit-form-container {
-        width: 700px;
-    }
-</style>
+
+@helper trainingApplicantAttachment()
+{
+    @(Html.Kendo().Grid<TrainingApplicantAttachment>()
+                  .Name("TrainingApplicantAttachmentGrid_#=TrainingApplicantId#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.FileName)
+                             .Title("File Name")
+                             .ClientTemplate("<a href='/HRM/TrainingApplicantAttachment/DownloadAttachment?attachmentId=\\#=TrainingApplicantAttachmentId\\#'><i class='fa fa-download text-primary'></i>&nbsp;&nbsp;\\#=FileName\\#</a>")
+                             .Width(220);
+
+                      columns.Bound(c => c.Description).Title("Description").Width(150);
+
+                      columns.Template(e => { })
+                             .Title("Download")
+                             .ClientTemplate("<a href='/HRM/TrainingApplicantAttachment/DownloadAttachment?attachmentId=\\#=TrainingApplicantAttachmentId\\#' class='btn btn-xs btn-default'><i class='fa fa-download text-primary'></i> Download</a>")
+                             .Width(110);
+
+                      columns.Template(e => { })
+                             .Title("Open")
+                             .ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank' class='btn btn-xs btn-default'><i class='fa fa-folder-open text-info'></i> Open</a>")
+                             .Width(100);
+
+                      columns.Command(command =>
+                      {
+                          command.Destroy().Text("Delete");
+                      }).Title("Actions").Width(120);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Template(@<text>
+                        <div class="attachment-upload-toolbar">
+                            @(Html.Kendo().Upload()
+                                          .Name("file")
+                                          .Async(a => a.Save("TrainingApplicantAttachments_Create", "TrainingApplicantAttachment", new { area = "HRM", id = "#=TrainingApplicantId#" }))
+                                          .Events(e => e.Complete("onUploadSuccess")
+                                                        .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 50 * 1024 * 1024); }")
+                                                        .Error("onUploadError"))
+                                          .ShowFileList(false)
+                                          .ToClientTemplate()
+                            )
+                        </div>
+                    </text>);
+                            })
+                            .Scrollable(h => h.Height("auto"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"TrainingApplicantAttachmentGrid_#=TrainingApplicantId#\")");
+                                    events.RequestStart("onRequestStart(\"TrainingApplicantAttachmentGrid_#=TrainingApplicantId#\")");
+                                    events.RequestEnd("onRequestEnd(\"TrainingApplicantAttachmentGrid_#=TrainingApplicantId#\")");
+                                })
+                                .Model(model => model.Id(p => p.TrainingApplicantAttachmentId))
+                                .Read(read => read.Action("TrainingApplicantAttachments_Read", "TrainingApplicantAttachment", new { trainingApplicantId = "#=TrainingApplicantId#" }).Data("sendForgery"))
+                                .Create(create => create.Action("TrainingApplicantAttachments_Create", "TrainingApplicantAttachment", new { id = "#=TrainingApplicantId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("TrainingApplicantAttachments_Update", "TrainingApplicantAttachment").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("TrainingApplicantAttachments_Destroy", "TrainingApplicantAttachment").Data("sendForgery"))
+                            ).ToClientTemplate()
+    )
+}
 <script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
-
     function sync_handler(e) {
         this.read();
-
     }
+
+    var masterId = 0;
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
-
         var masterGrid = $("#TrainingApplicantgrid").data("kendoGrid");
-
         var masterDataItem = masterGrid.dataItem(masterRow);
 
         masterId = masterDataItem.TrainingApplicantId;
         var gridName = "#RequestesStatusgrid_" + masterId;
+        var secondGridName = "#SecondValidationGrid_" + masterId;
+
         $.ajax({
             url: '@Url.Action("CheckStatus", "TrainingApplicant")',
-
             data: { masterId: masterId },
             type: 'POST',
             cache: false,
             success: function (result) {
-                r = result;
-                if (r == "true") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-add", gridName).hide();
-                }
-                else if (r == "approved") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                    $(".k-grid-edit", gridName).hide();
-                    $(".k-grid-delete", gridName).hide();
-                }
-                else if (r == "Dapproved") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                    $(".k-grid-edit", gridName).show();
-                    $(".k-grid-delete", gridName).show();
-                }
-                else {
-                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                if (result == "true") {
+                    $(gridName).find(".k-toolbar").hide();
                     $(".k-grid-add", gridName).show();
+                    $(".k-grid-edit, .k-grid-delete", gridName).hide();
+                } else if (result == "approved") {
+                    $(gridName).find(".k-toolbar").hide();
+                    $(".k-grid-top, .k-grid-edit, .k-grid-delete", gridName).hide();
+                } else if (result == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide();
+                    $(".k-grid-top", gridName).show();
+                    $(".k-grid-edit, .k-grid-delete", gridName).hide();
+                } else {
+                    $(gridName).find(".k-toolbar").show();
+                    $(".k-grid-add", gridName).show();
+                    $(".k-grid-edit, .k-grid-delete", gridName).hide();
                 }
 
+                // If Middle (Second) Online Approved, lock Second Validation grid controls
+                if (masterDataItem.IsMiddleOnlineApproved) {
+                    $(secondGridName).find(".k-toolbar").hide();
+                    $(".k-grid-top, .k-grid-edit, .k-grid-delete", secondGridName).hide();
+                }
+            }
+        });
+    }
+
+    function onUploadSuccess(e) {
+        $("#TrainingApplicantAttachmentGrid_" + masterId).data("kendoGrid").dataSource.read();
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+
+            if (dataItem.IsSendForApproval === true || dataItem.IsDepartmentSendForApproval) {
+                row.css("background-color", "#e2e8f0");
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").remove();
             }
 
-        });
+            if (dataItem.IsOnlineApproved) {
+                row.css("background-color", "#dcfce7");
+                row.find(".k-grid-edit, .k-grid-delete").remove();
+            }
+        }
+    }
 
+    function onDetailDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+
+            if (dataItem.Status == 0 || dataItem.Status == 1 || dataItem.Status == 3) {
+                row.find(".k-grid-edit, .k-grid-delete").remove();
+                row.find(".k-grid-top").show();
+            }
+            if (dataItem.Status == 2) {
+                row.find(".k-grid-edit, .k-grid-delete, .k-grid-top").remove();
+            }
+        }
     }
 </script>
+
+<style>
+    div.k-edit-form-container {
+        width: 720px;
+    }
+
+    .training-applicant-container {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin-top: 10px;
+    }
+
+    .erp-header-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 12px 18px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 12px;
+    }
+
+    .erp-page-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>

@@ -6,73 +6,76 @@
 }
 <legend>@Resources.NavigatorTraining_TrainingPlan</legend>
 @(Html.Kendo().Grid<TrainingPlan>()
-                      .Name("TrainingPlangrid")
-                  .Columns(columns =>
-                  {
-                      columns.ForeignKey(c => c.WorkUnit, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").EditorTemplateName("OrgSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
-                      columns.ForeignKey(c => c.Course, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
-                      columns.Bound(c => c.NoofTrainee).Width(120);
-                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TargetGroupList"], "LookupId", "Description").EditorTemplateName("TargetGroup").Width(120);
-                      columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["Companies"], "MainCompanyId", "TradeName").EditorTemplateName("Companies").Width(120);
-                      columns.Bound(c => c.CostPerPerson).Width(120);
-                      columns.Bound(c => c.TotalCost).Width(100);
-                      columns.Bound(c => c.Remark).Width(100);
-                      columns.Command(command =>
-                      {
-                          if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-                          {
+       .Name("TrainingPlangrid")
+       .Columns(columns =>
+       {
+           columns.ForeignKey(c => c.WorkUnit, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").EditorTemplateName("OrgSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+           columns.ForeignKey(c => c.Course, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+           columns.Bound(c => c.NoofTrainee).Width(120);
+           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TargetGroupList"], "LookupId", "Description").EditorTemplateName("TargetGroup").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+           columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["Companies"], "MainCompanyId", "TradeName").EditorTemplateName("Companies").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+           columns.Bound(c => c.CostPerPerson).Width(120);
+           columns.Bound(c => c.TotalCost).Width(100);
+           columns.Bound(c => c.Remark).Width(100);
+           columns.Command(command =>
+           {
+               if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+               {
 
-                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                          }
-                          if (HttpContext.Current.User.IsInRole("HR_Admin"))
-                          {
-                              command.Destroy().Text(Resources.ActionButton_Cancel);
-                          }
-                      }).Width(190);
-                  })
-                  .ToolBar(toolbar =>
-                  {
-                      if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-                      {
+                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+               }
 
-                          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                      }
-                  })
-                         .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("TrainingPlan").Window(window => { window.Title(Resources.NavigatorTraining_TrainingPlan); window.Scrollable(false); })
-                         )
-                      .Selectable(selectable =>
-                      {
-                          selectable.Mode(GridSelectionMode.Single);
-                          selectable.Type(GridSelectionType.Row);
-                      })
-                         .Scrollable(h => h.Height(500))
-                             .Groupable()
-                                      .Sortable(sortable =>
-                                      {
-                                          sortable.SortMode(GridSortMode.SingleColumn);
-                                      })
-                          .Filterable()
-                             .Pageable(pageable => pageable
-                                                        .Input(true)
-                                                        .Numeric(false)
-                                                        .Refresh(true)
-                                                        .PageSizes(true)
-                                                        .ButtonCount(5))
-                  .DataSource(dataSource => dataSource
+               if (HttpContext.Current.User.IsInRole("HR_Admin"))
+               {
+                   command.Destroy().Text(Resources.ActionButton_Cancel);
+               }
+           }).Width(190);
 
-                      .Ajax()
-                              .Sort(sort => sort.Add("DateCreated").Descending())
 
-                          .Events(events =>
-                          {
-                              events.Error("error_handler(\"TrainingPlangrid\")");
-                              events.RequestStart("onRequestStart(\"TrainingPlangrid\")");
-                              events.RequestEnd("onRequestEnd(\"TrainingPlangrid\")");
-                          })
+       })
+    .ToolBar(toolbar =>
+    {
+        if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+        {
 
-                      .Model(model =>
-                      {
+            // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+        }
+    })
+            .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("TrainingPlan").Window(window => { window.Title(Resources.NavigatorTraining_TrainingPlan); window.Scrollable(false); })
+            )
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+            .Scrollable(h => h.Height(500))
+                .Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+            .Filterable()
+                .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+
+        .Ajax()
+                .Sort(sort => sort.Add("DateCreated").Descending())
+
+            .Events(events =>
+            {
+                events.Error("error_handler(\"TrainingPlangrid\")");
+                events.RequestStart("onRequestStart(\"TrainingPlangrid\")");
+                events.RequestEnd("onRequestEnd(\"TrainingPlangrid\")");
+            })
+
+        .Model(model =>
+        {
                           model.Id(p => p.TrainingPlanId);
                           model.Field(p => p.WorkUnit).Editable(false);
                           model.Field(p => p.GlFiscalYearId).Editable(false);
@@ -81,10 +84,10 @@
                           model.Field(p => p.TotalCost).Editable(false);
                       }
           )
-          .Read(read => read.Action("TrainingPlans_Read", "TrainingPlan"))
-          .Create(create => create.Action("TrainingPlans_Create", "TrainingPlan"))
-          .Update(update => update.Action("TrainingPlans_Update", "TrainingPlan"))
-          .Destroy(destroy => destroy.Action("TrainingPlans_Destroy", "TrainingPlan"))
+          .Read(read => read.Action("TrainingPlans_Read", "TrainingPlan").Data("sendForgery"))
+          .Create(create => create.Action("TrainingPlans_Create", "TrainingPlan").Data("sendForgery"))
+          .Update(update => update.Action("TrainingPlans_Update", "TrainingPlan").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("TrainingPlans_Destroy", "TrainingPlan").Data("sendForgery"))
       )
 )
 <style type="text/css">

@@ -3,271 +3,229 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
-<legend>Training Evaluation and Feedback</legend>
-@(Html.Kendo().Grid<CourseTracking>()
+
+<div class="course-eval-feedback-container">
+    <!-- Master Header Card -->
+    <div class="erp-header-card">
+        <div class="erp-header-left">
+            <h2 class="erp-page-title">
+                <i class="fa fa-graduation-cap text-primary"></i>
+                Training Evaluation &amp; Feedback
+            </h2>
+            <span class="header-indicator-pill">
+                <i class="fa fa-clipboard-check text-primary"></i> Post-Training Reviews
+            </span>
+        </div>
+        <div class="erp-header-right">
+            <span class="erp-mode-pill">
+                Calendar: <strong>@(useEthiopian ? "Ethiopic (E.C.)" : "Gregorian (G.C.)")</strong>
+            </span>
+        </div>
+    </div>
+
+    <!-- Master Grid -->
+    @(Html.Kendo().Grid<CourseTracking>()
                   .Name("CourseTrackingGrid")
-              .Columns(columns =>
-              {
-                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(100);
-      //columns.ForeignKey(c => c.TrainingPlanId, (IEnumerable)ViewData["plan"], "TrainingPlanId", "NoofTrainee").EditorTemplateName("TrainingPlan").Width(120);
-      columns.Bound(x => x.NoOfTrainee).Width(120);
-                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
-                  columns.Bound(c => c.FromAmharic).Width(80);
-                  columns.Bound(c => c.ToAmharic).Width(80);
-                  columns.Bound(c => c.Cost).Width(70);
-                  columns.Bound(c => c.TrainingType).EditorTemplateName("Enum").Width(110);
-                  columns.Bound(c => c.TrainingTerm).EditorTemplateName("Enum").Width(120);
-                  columns.Bound(c => c.TrainingLocation).EditorTemplateName("Enum").Width(120);
-                  columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["ProviderList"], "MainCompanyId", "TradeName").EditorTemplateName("TrainingProvider").Width(120);
-      //columns.Bound(c => c.Remark);
-      columns.Command(command =>
-        {
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name")
+                             .Title("Fiscal Year")
+                             .EditorTemplateName("GLFPeriod")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(150);
 
-                  }).Width(200);
-              })
-              .ToolBar(toolbar =>
-              {
+                      columns.Bound(x => x.NoOfTrainee)
+                             .Title("Trainees")
+                             .HeaderHtmlAttributes(new { style = "text-align:center;" })
+                             .HtmlAttributes(new { style = "text-align:center; font-weight:700;" })
+                             .Width(140);
 
+                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description")
+                             .Title("Course Title")
+                             .EditorTemplateName("Course")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(190);
 
-              })
-                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CourseTracking").Window(window => { window.Title(Resources.NavigatorTraining_CourseTracking); window.Scrollable(false); }))
-                       .Scrollable(h => h.Height(500))
-                           .Groupable()
-                                    .Sortable(sortable =>
-                                    {
-                                        sortable.SortMode(GridSortMode.SingleColumn);
-                                    })
-                        .Filterable()
+                      if (useEthiopian)
+                      {
+                          columns.Bound(c => c.FromAmharic).Title("Start (E.C.)").Width(130);
+                          columns.Bound(c => c.ToAmharic).Title("End (E.C.)").Width(130);
+                      }
+                      else
+                      {
+                          columns.Bound(c => c.From).Title("Start Date").Format("{0:yyyy-MM-dd}").Width(150);
+                          columns.Bound(c => c.To).Title("End Date").Format("{0:yyyy-MM-dd}").Width(140);
+                      }
 
-                           .Pageable(pageable => pageable
-                                                      .Input(true)
-                                                      .Numeric(false)
-                                                      .Refresh(true)
-                                                      .PageSizes(true)
-                                                      .ButtonCount(5))
-                    .DataSource(dataSource => dataSource
-                        .Ajax()
-                                  .Events(events =>
-                                      {
-                                          events.Error("error_handler(\"CourseTrackingGrid\")");
-                                          events.RequestStart("onRequestStart(\"CourseTrackingGrid\")");
-                                          events.RequestEnd("onRequestEnd(\"CourseTrackingGrid\")");
-                                      })
+                      columns.Bound(c => c.Cost)
+                             .Title("Cost")
+                             .Format("{0:N2}")
+                             .HtmlAttributes(new { style = "text-align:right; font-weight:600;" })
+                             .HeaderHtmlAttributes(new { style = "text-align:right;" })
+                             .Width(140);
 
-                        .Model(model => model.Id(p => p.CourseTrackingId))
-                        .Read(read => read.Action("CourseTrackings_Read", "TrainingEvaluationAndFeedback"))
-                        .Create(create => create.Action("CourseTrackings_Create", "CourseTracking"))
-                        .Update(update => update.Action("CourseTrackings_Update", "CourseTracking"))
-                        .Destroy(destroy => destroy.Action("CourseTrackings_Destroy", "CourseTracking"))
-                            ).ClientDetailTemplateId("template")
-)
+                      columns.Bound(c => c.TrainingType).Title("Type").EditorTemplateName("Enum").Width(120);
+                      columns.Bound(c => c.TrainingTerm).Title("Term").EditorTemplateName("Enum").Width(120);
+                      columns.Bound(c => c.TrainingLocation).Title("Location").EditorTemplateName("Enum").Width(140);
 
+                      columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["ProviderList"], "MainCompanyId", "TradeName")
+                             .Title("Provider")
+                             .EditorTemplateName("TrainingProvider")
+                             .Filterable(ftb => ftb.Multi(true).Search(true))
+                             .Width(190);
+
+                      columns.Command(command =>
+                      {
+              // Reserved for commands if needed
+          }).Width(200);
+                  })
+                  .ToolBar(toolbar => { })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                      .TemplateName("CourseTracking")
+                      .Window(window =>
+                      {
+                          window.Title(Resources.NavigatorTraining_CourseTracking);
+                          window.Scrollable(false);
+                          window.Width(720);
+                      }))
+                  .Scrollable(h => h.Height(520))
+                  .Groupable()
+                  .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+                  .Filterable()
+                  .Pageable(pageable => pageable
+                      .Input(true)
+                      .Numeric(false)
+                      .Refresh(true)
+                      .PageSizes(true)
+                      .ButtonCount(5))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Sort(x => x.Add(y => y.CourseTrackingId).Descending())
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"CourseTrackingGrid\")");
+                          events.RequestStart("onRequestStart(\"CourseTrackingGrid\")");
+                          events.RequestEnd("onRequestEnd(\"CourseTrackingGrid\")");
+                      })
+                      .Model(model => model.Id(p => p.CourseTrackingId))
+                      .Read(read => read.Action("CourseTrackings_Read", "TrainingEvaluationAndFeedback").Data("sendForgery"))
+                      .Create(create => create.Action("CourseTrackings_Create", "CourseTracking").Data("sendForgery"))
+                      .Update(update => update.Action("CourseTrackings_Update", "CourseTracking").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("CourseTrackings_Destroy", "CourseTracking").Data("sendForgery"))
+                  )
+                  .ClientDetailTemplateId("template")
+    )
+</div>
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                          .Name("tabstrip_#=CourseTrackingId#")
-                  .SelectedIndex(0)
-                  .Items(items =>
-                  {
-                  items.Add().Text("Training Evaluation").Content(
-                    @<text>
+                    .Name("tabstrip_#=CourseTrackingId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
 
-                        @(Html.Kendo().Grid<TrainingEvaluation>()
-                             .Name("TrainingEvaluationGrid#=CourseTrackingId#")
-                        .Columns(columns =>
-                        {
-                            columns.ForeignKey(c => c.CriteriaId, (IEnumerable)ViewData["Criterias"], "TrainingEvaluationCriteriaId", "Criteria").EditorTemplateName("CriteriaLists").Width(120);
-                            columns.Bound(c => c.Score).Width(200);
-
-                            columns.Command(command =>
-                            {
-                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-
-                                command.Destroy().Text(Resources.ActionButton_Cancel);
-
-                            }).Width(200);
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                            if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-                            {
-                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                            }
-                        })
-                        .Editable(editable => editable.Mode(GridEditMode.InLine))
-                        .Scrollable(h => h.Height(500))
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                                    //.Events().Update()
-                                    .Events(events =>
-                                    {
-                                        events.Error("error_handler(\"TrainingEvaluationGrid#=CourseTrackingId#\")");
-                                        events.RequestStart("onRequestStart(\"TrainingEvaluationGrid#=CourseTrackingId#\")");
-                                        events.RequestEnd("onRequestEnd(\"TrainingEvaluationGrid#=CourseTrackingId#\")");
-                                    })
-
-                            .Model(model => model.Id(p => p.TrainingEvaluationId))
-                                    .Read(read => read.Action("TrainingEvaluation_Read", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }))
-                                    .Create(create => create.Action("TrainingEvaluation_Create", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }))
-                            .Update(update => update.Action("TrainingEvaluation_Update", "TrainingEvaluationAndFeedback"))
-                            .Destroy(destroy => destroy.Action("TrainingEvaluation_Destroy", "TrainingEvaluationAndFeedback"))
-                        ).ToClientTemplate()
-                        )
-
-                    </text>
-                                  );
-
-                      items.Add().Text("Feedback").Content(
+                        items.Add().Text("Training Evaluation").Content(
                         @<text>
+                            <div style="display: #= IsCompleted ? 'block' : 'none' #;">
+                                @(Html.Kendo().Grid<TrainingEvaluation>()
+                                                      .Name("TrainingEvaluationGrid#=CourseTrackingId#")
+                                                      .Columns(columns =>
+                                                      {
+                                                                  columns.ForeignKey(c => c.CriteriaId, (IEnumerable)ViewData["Criterias"], "TrainingEvaluationCriteriaId", "Criteria")
+                                                                         .EditorTemplateName("CriteriaLists")
+                                                                         .Filterable(ftb => ftb.Multi(true).Search(true))
+                                                                         .Width(120);
+                                                                  columns.Bound(c => c.Score).Width(200);
+                                                                  columns.Command(command =>
+                                                                  {
+                                                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                  }).Width(200);
+                                                              })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                                  if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                                                                  {
+                                                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                  }
 
-                            @(Html.Kendo().Grid<TrainingFeedback>()
-                             .Name("TrainingEvaluationAndFeedback#=CourseTrackingId#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(c => c.FeedBack).Width(200);
+                                                              })
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable(h => h.Height(500))
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(events =>
+                                                          {
+                                                                      events.Error("error_handler(\"TrainingEvaluationGrid#=CourseTrackingId#\")");
+                                                                      events.RequestStart("onRequestStart(\"TrainingEvaluationGrid#=CourseTrackingId#\")");
+                                                                      events.RequestEnd("onRequestEnd(\"TrainingEvaluationGrid#=CourseTrackingId#\")");
+                                                                  })
+                                                          .Model(model => model.Id(p => p.TrainingEvaluationId))
+                                                          .Read(read => read.Action("TrainingEvaluation_Read", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                          .Create(create => create.Action("TrainingEvaluation_Create", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                          .Update(update => update.Action("TrainingEvaluation_Update", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                          .Destroy(destroy => destroy.Action("TrainingEvaluation_Destroy", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                      ).ToClientTemplate()
+                                )
+                                </div>
 
-                            columns.Command(command =>
-                            {
-
-                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-
-                                command.Destroy().Text(Resources.ActionButton_Cancel);
-
-                            }).Width(150);
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                            if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-                            {
-                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                            }
-                        })
-                        .Editable(editable => editable.Mode(GridEditMode.InLine))
-                        .Scrollable(h => h.Height(500))
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                                    //.Events().Update()
-                                    .Events(events =>
-                                    {
-                                        events.Error("error_handler(\"TrainingEvaluationAndFeedback#=CourseTrackingId#\")");
-                                        events.RequestStart("onRequestStart(\"TrainingEvaluationAndFeedback#=CourseTrackingId#\")");
-                                        events.RequestEnd("onRequestEnd(\"TrainingEvaluationAndFeedback#=CourseTrackingId#\")");
-                                    })
-
-                            .Model(model => model.Id(p => p.TrainingFeedbackId))
-                                    .Read(read => read.Action("TrainingFeedback_Read", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }))
-                                    .Create(create => create.Action("TrainingFeedback_Create", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }))
-                            .Update(update => update.Action("TrainingFeedback_Update", "TrainingEvaluationAndFeedback"))
-                            .Destroy(destroy => destroy.Action("TrainingFeedback_Destroy", "TrainingEvaluationAndFeedback"))
-                        ).ToClientTemplate()
-                            )
-
+                                <div class="completion-gate-alert" style="display: #= IsCompleted ? 'none' : 'flex' #;">
+                                    <i class="fa fa-lock"></i>
+                                    <span>Evaluation is restricted. It will unlock once this trainee has completed the training.</span>
+                                </div>
                         </text>
-                                  );
+                              );
 
-                          }).ToClientTemplate())
+                        items.Add().Text("Feedback").Content(
+            @<text>
+                <div style="display: #= IsCompleted ? 'block' : 'none' #;">
+                    @(Html.Kendo().Grid<TrainingFeedback>()
+                                                                  .Name("TrainingEvaluationAndFeedback#=CourseTrackingId#")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                                      columns.Bound(c => c.FeedBack).Width(200);
+                                                                      columns.Command(command =>
+                                                                      {
+                                                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                      }).Width(150);
+                                                                  })
+                                                                  .ToolBar(toolbar =>
+                                                                  {
+                                                                      if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                                                                      {
+                                                                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                      }
+                                                                  })
+                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                  .Scrollable(h => h.Height(400))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .Model(model => model.Id(p => p.TrainingFeedbackId))
+                                                                      .Read(read => read.Action("TrainingFeedback_Read", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                                      .Create(create => create.Action("TrainingFeedback_Create", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                                      .Update(update => update.Action("TrainingFeedback_Update", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                                      .Destroy(destroy => destroy.Action("TrainingFeedback_Destroy", "TrainingEvaluationAndFeedback", new { id = "#=CourseTrackingId#" }).Data("sendForgery"))
+                                                                  ).ToClientTemplate()
+                    )
+                </div>
+                <div class="completion-gate-alert" style="display: #= IsCompleted ? 'none' : 'flex' #;">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    <span>Feedback can only be submitted after the training end date has passed.</span>
+                </div>
+            </text>
+);
+}).ToClientTemplate())
 </script>
 
-
-
-<style>
-    .dropdown-header {
-        border-width: 0 0 1px 0;
-        text-transform: uppercase;
-    }
-
-        .dropdown-header > span {
-            display: inline-block;
-            padding: 10px;
-        }
-
-            .dropdown-header > span:first-child {
-                width: 50px;
-            }
-
-    #customers-list .k-item {
-        line-height: 1em;
-        min-width: 300px;
-    }
-
-    /* Material Theme padding adjustment*/
-
-    .k-material #customers-list .k-item,
-    .k-material #customers-list .k-item.k-state-hover,
-    .k-materialblack #customers-list .k-item,
-    .k-materialblack #customers-list .k-item.k-state-hover {
-        padding-left: 5px;
-        border-left: 0;
-    }
-
-    #customers-list .k-item > span {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        display: inline-block;
-        vertical-align: top;
-        margin: 20px 10px 10px 5px;
-    }
-
-        #customers-list .k-item > span:first-child {
-            -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
-            -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
-            margin: 10px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-size: 100%;
-            background-repeat: no-repeat;
-        }
-
-    #customers-list h3 {
-        font-size: 1.2em;
-        font-weight: normal;
-        margin: 0 0 1px 0;
-        padding: 0;
-    }
-
-    #customers-list p {
-        margin: 0;
-        padding: 0;
-        font-size: .8em;
-    }
-</style>
-
-
-<style>
-    div.k-edit-form-container {
-        width: 700px;
-    }
-</style>
 <script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
-
     function sync_handler(e) {
         this.read();
-
     }
-</script>
 
-<script>
     function GetDate() {
-
         var x = AssignDate();
         var y = x;
         $("#FromAmharic").trigger("change");
@@ -279,26 +237,16 @@
                 data: { name: y[o].id, value: y[o].date },
                 type: 'GET',
                 cache: false,
-                success: function (result) {
-                    r = result;
-                }
-
+                success: function (result) { }
             });
         }
     }
 
-</script>
-<script>
     function AssignDate() {
-        var list = AssignDates();
-        return list;
+        return AssignDates();
     }
 
-</script>
-<script>
     function Branch() {
-
-
         var value = this.value(),
             grid = $("#CourseTrackingGrid").data("kendoGrid");
 
@@ -309,3 +257,134 @@
         }
     }
 </script>
+
+<!-- Scoped Styling for the Master Grid -->
+<style>
+    .course-eval-feedback-container {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: #1e293b;
+        margin-top: 10px;
+    }
+
+        /* Master Card Header */
+        .course-eval-feedback-container .erp-header-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 14px 20px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .course-eval-feedback-container .erp-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .course-eval-feedback-container .erp-page-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .course-eval-feedback-container .header-indicator-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            color: #334155;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+        }
+
+        .course-eval-feedback-container .erp-mode-pill {
+            font-size: 12px;
+            color: #475569;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* Master Grid Container & High-Contrast Headers */
+        .course-eval-feedback-container #CourseTrackingGrid {
+            border-radius: 8px !important;
+            border: 1px solid #cbd5e1 !important;
+            font-size: 12.5px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+            .course-eval-feedback-container #CourseTrackingGrid .k-grid-header {
+                background-color: #e2e8f0 !important;
+                border-bottom: 2px solid #cbd5e1 !important;
+            }
+
+                .course-eval-feedback-container #CourseTrackingGrid .k-grid-header th.k-header {
+                    background-color: #e2e8f0 !important;
+                    padding: 10px 12px !important;
+                    border-color: #cbd5e1 !important;
+                    vertical-align: middle !important;
+                }
+
+                    .course-eval-feedback-container #CourseTrackingGrid .k-grid-header th.k-header,
+                    .course-eval-feedback-container #CourseTrackingGrid .k-grid-header th.k-header .k-link {
+                        color: #0f172a !important;
+                        font-weight: 800 !important;
+                        font-size: 12px !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 0.6px !important;
+                        line-height: 1.4 !important;
+                    }
+
+                        .course-eval-feedback-container #CourseTrackingGrid .k-grid-header th.k-header .k-grid-filter {
+                            color: #334155 !important;
+                            opacity: 0.85 !important;
+                        }
+
+                            .course-eval-feedback-container #CourseTrackingGrid .k-grid-header th.k-header .k-grid-filter:hover {
+                                color: #0284c7 !important;
+                                opacity: 1 !important;
+                            }
+
+            /* Master Grid Rows */
+            .course-eval-feedback-container #CourseTrackingGrid tbody td {
+                padding: 9px 12px !important;
+                border-color: #f1f5f9 !important;
+                color: #1e293b !important;
+            }
+
+            .course-eval-feedback-container #CourseTrackingGrid tbody tr:hover {
+                background-color: #f8fafc !important;
+            }
+
+    /* Fallback Gate Notification in Details */
+    .completion-gate-alert {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #fffbeb;
+        border: 1px solid #fde68a;
+        color: #b45309;
+        padding: 12px 16px;
+        margin: 15px;
+        font-weight: 600;
+        font-size: 12px;
+        border-radius: 6px;
+    }
+
+    div.k-edit-form-container {
+        width: 720px;
+    }
+</style>

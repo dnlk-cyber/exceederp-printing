@@ -92,9 +92,9 @@
                                         model.Field(p => p.Type).Editable(false);
 
                                     })
-              .Read(read => read.Action("TrainingAssessments_Read", "TrainingAssessment"))
-                 .Create(create => create.Action("Transfer_Create", "TrainingAssessment"))
-                .Update(update => update.Action("Transfer_Create", "TrainingAssessment"))
+              .Read(read => read.Action("TrainingAssessments_Read", "TrainingAssessment").Data("sendForgery"))
+                 .Create(create => create.Action("Transfer_Create", "TrainingAssessment").Data("sendForgery"))
+                .Update(update => update.Action("Transfer_Create", "TrainingAssessment").Data("sendForgery"))
 
                           )
 

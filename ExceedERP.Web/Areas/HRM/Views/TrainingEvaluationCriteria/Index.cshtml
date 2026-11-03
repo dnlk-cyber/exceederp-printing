@@ -18,9 +18,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.TrainingEvaluationCriteriaId))
-          .Read(read => read.Action("TrainingEvaluationCriterias_Read", "TrainingEvaluationCriteria"))
-          .Create(create => create.Action("TrainingEvaluationCriterias_Create", "TrainingEvaluationCriteria"))
-          .Update(update => update.Action("TrainingEvaluationCriterias_Update", "TrainingEvaluationCriteria"))
-          .Destroy(destroy => destroy.Action("TrainingEvaluationCriterias_Destroy", "TrainingEvaluationCriteria"))
+          .Read(read => read.Action("TrainingEvaluationCriterias_Read", "TrainingEvaluationCriteria").Data("sendForgery"))
+          .Create(create => create.Action("TrainingEvaluationCriterias_Create", "TrainingEvaluationCriteria").Data("sendForgery"))
+          .Update(update => update.Action("TrainingEvaluationCriterias_Update", "TrainingEvaluationCriteria").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("TrainingEvaluationCriterias_Destroy", "TrainingEvaluationCriteria").Data("sendForgery"))
       )
 )
