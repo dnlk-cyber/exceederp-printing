@@ -137,6 +137,10 @@
     <Compile Include="Migrations\202610300704451_DciplinemeasuresInmoney.Designer.cs">
       <DependentUpon>202610300704451_DciplinemeasuresInmoney.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611031343347_ExceedAppMigration.cs" />
+    <Compile Include="Migrations\202611031343347_ExceedAppMigration.Designer.cs">
+      <DependentUpon>202611031343347_ExceedAppMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -191,6 +195,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610300704451_DciplinemeasuresInmoney.resx">
       <DependentUpon>202610300704451_DciplinemeasuresInmoney.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611031343347_ExceedAppMigration.resx">
+      <DependentUpon>202611031343347_ExceedAppMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
