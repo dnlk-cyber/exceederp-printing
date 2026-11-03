@@ -32,6 +32,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         //HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
+
             PopulateViewData();
             return View();
         }
