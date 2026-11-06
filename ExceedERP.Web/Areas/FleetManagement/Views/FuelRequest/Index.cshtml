@@ -1,0 +1,411 @@
+@model ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequest
+@{
+    ViewBag.Title = "Fuel Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Fuel Request</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequest>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.FuelRequestId).Title("No").Width(60);
+                      columns.ForeignKey(c => c.RequestorId, (IEnumerable)ViewData["Requestor"], "Value", "Text").EditorTemplateName("RequestorTemplate").Title("Requestor").Width(100);
+                      columns.Bound(c => c.RequestDate).Format("{0:yyyy-MM-dd}").Width(100);
+                      columns.ForeignKey(c => c.DepartmentId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("DepartmentTemplate").Width(130);
+                      columns.ForeignKey(c => c.DivisionId, (IEnumerable)ViewData["Division"], "OrgStructureId", "Name").EditorTemplateName("DivisionTemplate").Width(130);
+                      columns.Bound(c => c.PhoneNumber).Title("Telebirr Phone").Width(120);
+                      columns.Bound(c => c.TotalAmount).Format("{0:n2}").Width(100);
+                      columns.Bound(c => c.Status).Width(120);
+                      columns.Command(command =>
+                      {
+                          command.Custom("SendToFinance").Text("Send to Finance").Click("sendToFinance");
+                          command.Edit();
+                          command.Destroy();
+                      }).Width(320);
+                  })
+                  .ToolBar(commands =>
+                  {
+                      commands.Create();
+                  })
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+                      editable.DisplayDeleteConfirmation("Are you sure you want to remove this fuel request?");
+                  })
+                  .Events(ev => { ev.DataBound("onDataBound"); })
+                  .Events(ev => { ev.DetailExpand("detailExpand"); })
+                  .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+                  .Sortable()
+                  .Filterable()
+                  .Scrollable(h => h.Height(520))
+                  .ClientDetailTemplateId("template")
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .PageSize(20)
+                      .Sort(sort => sort.Add(e => e.FuelRequestId).Descending())
+                      .Model(model =>
+                      {
+                          model.Id(p => p.FuelRequestId);
+                          model.Field(p => p.RequestDate).DefaultValue(DateTime.Today);
+                          model.Field(p => p.TotalAmount).Editable(false);
+                          model.Field(p => p.Status).Editable(false);
+                      })
+                      .Events(ev => ev
+                          .Error("error_handler(\"grid\")")
+                          .RequestStart("onRequestStart(\"grid\")")
+                          .RequestEnd("onRequestEnd(\"grid\")"))
+                      .Create(update => update.Action("FuelRequest_Create", "FuelRequest").Data("sendForgery"))
+                      .Read(read => read.Action("FuelRequest_Read", "FuelRequest").Data("sendForgery"))
+                      .Update(update => update.Action("FuelRequest_Update", "FuelRequest").Data("sendForgery"))
+                      .Destroy(update => update.Action("FuelRequest_Destroy", "FuelRequest").Data("sendForgery"))
+
+
+                  ))
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                    .Name("FuelReqst#=FuelRequestId#")
+                                                                    .SelectedIndex(0)
+                                                                    .Items(items =>
+                                                                    {
+                                                                        items.Add().Text("Detail").Content(@<text>
+                                                                            <div class="row">
+                                                                                <div class="col-md-4">
+                                                                                    <ul>
+
+                                                                                        <li><b>Total Amount:</b> #= kendo.toString(TotalAmount, 'n2') #</li>
+                                                                                        <li><b>Remark:</b> #= Remark || '' #</li>
+                                                                                    </ul>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <ul>
+                                                                                        <li><b>Created By:</b> #= CreatedBy || '' # (#= DateCreated ? kendo.toString(kendo.parseDate(DateCreated), 'yyyy-MM-dd') : '' #)</li>
+                                                                                        <li><b>Sent to Finance By:</b> #= SendForApprovalBy || '' # (#= SendForApprovalTime ? kendo.toString(kendo.parseDate(SendForApprovalTime), 'yyyy-MM-dd') : '' #)</li>
+                                                                                        <li><b>Finance Approved By:</b> #= FinanceApprovedBy || '' # (#= FinanceApprovedTime ? kendo.toString(kendo.parseDate(FinanceApprovedTime), 'yyyy-MM-dd') : '' #)</li>
+                                                                                        # if (FinanceRejectionReason) { #
+                                                                                        <li style="color:rgb(201,48,44);"><b>Rejection Reason:</b> #= FinanceRejectionReason #</li>
+                                                                                        # } #
+                                                                                    </ul>
+                                                                                </div>
+                                                                            </div>
+                                                                            <a href='@Url.Action("FuelRequestCuponDesign","FleetPrint")/?id=#=FuelRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                                                        </text>);
+
+                                                                                items.Add().Text("Fuel Request Detail")
+            .Content(@<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequestDetail>()
+                                                                                      .Name("detailGrid_#=FuelRequestId#")
+                                                                                      .Columns(columns =>
+                                                                                      {
+                                                                                                  columns.Bound(c => c.FuelRequestDetailId).Title("No").Width(60);
+                                                                                                  columns.Bound(c => c.RequestDate).Format("{0:yyyy-MM-dd}").Width(100);
+                                                                                                  columns.Bound(c => c.PlateNo).Width(100);
+                                                                                                  columns.Bound(c => c.VehicleType).Width(110);
+                                                                                                  columns.Bound(c => c.SideNo).Width(80);
+                                                                                                  columns.Bound(c => c.Driver).Width(130);
+                                                                                                  columns.Bound(c => c.DepartmentName).Width(130);
+                                                                                                  columns.Bound(c => c.DivisionName).Width(110);
+                                                                                                  columns.Bound(c => c.OpeningKM).Format("{0:n0}").Width(90);
+                                                                                                  columns.Bound(c => c.ClosingKM).Format("{0:n0}").Width(90);
+                                                                                                  columns.Bound(c => c.DistanceKM).Format("{0:n0}").Width(90);
+                                                                                                  columns.Bound(c => c.FuelConsumedL).Title("Fuel Consumed L").Format("{0:n2}").Width(100);
+                                                                                                  columns.Bound(c => c.FuelFilledL).Title("Fuel Filled L").Format("{0:n2}").Width(100);
+                                                                                                  columns.Bound(c => c.ConsumptionKMPerL).Title("KM/L").Format("{0:n2}").Width(80);
+                                                                                                  columns.Bound(c => c.OperationalDays).Width(90);
+                                                                                                  columns.Bound(c => c.RecieptNo).Width(100);
+                                                                                                  columns.Bound(c => c.TotalAmount).Format("{0:n2}").Width(100);
+                                                                                                  columns.Bound(c => c.FuelOwnerPhoneNumber).Title("Telebirr Phone").Width(120);
+                                                                                                  columns.Command(command =>
+                          {
+                                                  command.Edit();
+                                                  command.Destroy();
+                                              }).Width(320);
+                                                                                              })
+                                                                                      .ToolBar(commands =>
+                                                                                      {
+                                                                                                  commands.Create();
+                                                                                              })
+                                                                                      .Editable(editable =>
+                                                                                      {
+                                                                                                  editable.Mode(GridEditMode.PopUp).TemplateName("FuelRequestEditor").Window(x => x.Title("Fuel Request").Width(900));
+                                                                                                  editable.DisplayDeleteConfirmation("Are you sure you want to remove this fuel request?");
+                                                                                              })
+                                                                                      .Events(ev => { ev.DataBound("onDetailDataBound"); ev.Edit("onEdit"); })
+                                                                                      .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+                                                                                      .Sortable()
+                                                                                      .Filterable()
+                                                                                      .Scrollable(h => h.Height(520))
+                                                                                      //.ClientDetailTemplateId("template")
+                                                                                      .DataSource(dataSource => dataSource
+                                                                                          .Ajax()
+                                                                                          .PageSize(20)
+                                                                                          .Sort(sort => sort.Add(e => e.FuelRequestDetailId).Descending())
+                                                                                          .Model(model =>
+                                                                                          {
+                                                                                                      model.Id(p => p.FuelRequestDetailId);
+                                                                                                      model.Field(p => p.RequestDate).DefaultValue(DateTime.Today);
+                                                                                                  })
+                                                                                          .Events(ev => ev
+                                                                                              .Error("error_handler(\"detailGrid_#=FuelRequestId#\")")
+                                                                                              .RequestStart("onRequestStart(\"detailGrid_#=FuelRequestId#\")")
+                                                                                              .RequestEnd("onRequestEnd(\"detailGrid_#=FuelRequestId#\")"))
+                                                                                          .Create(create => create.Action("FuelRequest_Create", "FuelRequestDetail", new { id = "#=FuelRequestId#" }).Data("sendForgery"))
+                                                                                          .Read(read => read.Action("FuelRequest_Read", "FuelRequestDetail", new { id = "#=FuelRequestId#" }).Data("sendForgery"))
+                                                                                          .Update(update => update.Action("FuelRequest_Update", "FuelRequestDetail").Data("sendForgery"))
+                                                                                          .Destroy(destroy => destroy.Action("FuelRequest_Destroy", "FuelRequestDetail").Data("sendForgery"))
+                                                                                      ).ToClientTemplate())
+            </text>);
+                                                                    items.Add().Text("Attachment").Content(@<text>
+
+                                                                        @FileUpload()
+
+                                                                    </text>);
+                                                                        }).ToClientTemplate()
+    )
+</script>
+
+@helper FileUpload()
+{
+    <text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequestDocument>
+                                ()
+                                .Name("CompanyDocument#=FuelRequestId#")
+
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(x => x.FuelRequestDocumentId).Hidden(true);
+                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/FleetManagement/FuelRequest/DownloadBoloDocument?CompanyDocumentId=\\#=FuelRequestDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(200);
+                                    columns.Command(command =>
+                                {
+                                    command.Destroy();
+                                }).Width(580);
+                                })
+                              .ToolBar(t => t.Template(
+                                        @<text>
+                                            @(Html.Kendo().Upload()
+                                                                    .Name("attachments")
+                                                                    .Async(a => a.Save("Attachment_Create", "FuelRequest", new { id = "#=FuelRequestId #" }))
+                                                                    .Events(e => e.Complete("onUploadSuccess").Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 2 * 1024 * 1024); }")
+                                                                    .Error("onUploadError")
+                                                                    )
+                                                                    .ShowFileList(false)
+                                                                    .ToClientTemplate()
+                                            )
+                                        </text>
+                                                        ))
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                .HtmlAttributes(new { style = "height: 350px;" })
+                                                .Sortable(sortable =>
+                                                {
+                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                })
+                                                .Scrollable()
+                                                .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                // .Events(x => x.DataBound("onDataBoundLines"))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Events(ev => ev
+                                                    .Error("error_handler(\"CompanyDocument#=FuelRequestId#\")")
+                                                    .RequestStart("onRequestStart(\"CompanyDocument#=FuelRequestId#\")")
+                                                    .RequestEnd("onRequestEnd(\"CompanyDocument#=FuelRequestId#\")"))
+                                                    .Model(model => model.Id(p => p.FuelRequestDocumentId))
+                                                    .Read(read => read.Action("Doc_Read", "FuelRequest", new { id = "#=FuelRequestId#", area = "FleetManagement" }).Data("sendForgery"))
+                                                    .Destroy(destroy => destroy.Action("Doc_Delete", "FuelRequest", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                    ).ToClientTemplate())
+    </text>
+}
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 860px;
+    }
+</style>
+
+
+<script type="text/javascript">
+    var isSendForFinance = false;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isSendForFinance = masterDataItem.IsSendForApproval;
+    }
+    function onDataBound() {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit, .k-grid-delete, .k-grid-SendToFinance").remove();
+            }
+            if (dataItem.IsFinanceApproved) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+        });
+    }
+    function onDetailDataBound() {
+        var grid = this;
+        if (isSendForFinance) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isSendForFinance) {
+                $(this).find(".k-grid-edit, .k-grid-delete").remove();
+            }
+            if (isSendForFinance) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+        });
+    }
+
+    // Existing rows: lock Opening KM when a previous request exists for the vehicle.
+    function onEdit(e) {
+        if (!e.model.isNew() && e.model.FleetId) { loadFleetInfo(); }
+    }
+
+    function sendToFinance(e) {
+        e.preventDefault();
+        var grid = this;
+        var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+        if (!confirm("Send fuel request " + dataItem.FuelRequestId + " to Finance for approval?")) { return; }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForFinanceApproval", "FuelRequest", new { area = "FleetManagement" })',
+            data: $.extend({ id: dataItem.FuelRequestId }, sendForgery()),
+            success: function (result) {
+                if (result.success) { grid.dataSource.read(); } else { alert(result.message); }
+            },
+            error: function () { alert("Error occurred"); }
+        });
+    }
+
+    function filterFuelFleet() {
+        var ddl = $("#FleetId").data("kendoDropDownList");
+        return { text: ddl ? ddl.filterInput.val() : "" };
+    }
+    function filterFuelOperator() {
+        var ddl = $("#OperatorId").data("kendoDropDownList");
+        return { text: ddl ? ddl.filterInput.val() : "" };
+    }
+
+    // Opening KM / Fuel Consumed / Operational Days derive from the previous request of the same vehicle.
+    @*function loadFleetInfo(e) {
+        var model = $("#detailGrid_#=FuelRequestId#").data("kendoGrid").editable.options.model;
+        var fleetId = model.get("FleetId");
+        if (!fleetId) { return; }
+        var date = model.get("RequestDate");
+        $.getJSON('@Url.Action("GetFleetInfo", "FuelRequestDetail", new { area = "FleetManagement" })',
+            { id: fleetId, requestDate: date ? kendo.toString(date, "yyyy-MM-dd") : null, excludeId: model.get("FuelRequestDetailId") || 0 },
+            function (info) {
+                if (!info) { return; }
+                model.set("PlateNo", info.PlateNo);
+                model.set("VehicleTypeId", info.VehicleTypeId);
+                model.set("VehicleType", info.VehicleType);
+                model.set("SideNo", info.SideNo);
+                model.set("Driver", info.Driver);
+                if (info.OperatorId && !model.get("OperatorId")) { model.set("OperatorId", info.OperatorId); }
+                model.set("FuelConsumedL", info.FuelConsumedL);
+                model.set("OperationalDays", info.OperationalDays);
+                var opening = $("#OpeningKM").data("kendoNumericTextBox");
+                if (info.HasPrevious) {
+                    model.set("OpeningKM", info.OpeningKM);
+                    if (opening) { opening.enable(false); }
+                } else if (opening) {
+                    opening.enable(true);
+                }
+                recalcFuel();
+            });
+    }*@
+    function loadFleetInfo(e) {
+    @*var dropdown = e.sender;
+    // Find the popup editor containing the dropdown
+    var popup = dropdown.wrapper.closest(".k-window");
+
+    // Find the grid associated with the popup
+    var gridElement = popup.find(".k-grid");
+
+    // If the grid is not inside the popup, find the detail grid
+    var grid = gridElement.data("kendoGrid");
+
+    if (!grid) {
+        grid = popup.closest(".k-grid").data("kendoGrid");
+    }
+
+    if (!grid) {
+        console.error("Could not find the Kendo Grid.");
+        return;
+    }
+
+    // Get the model being edited from the popup form
+    var model = grid.editable && grid.editable.options
+        ? grid.editable.options.model
+        : null;
+
+    if (!model) {
+        console.error("Could not find the model being edited.");
+        return;
+    }
+
+    var fleetId = model.get("FleetId");
+
+    if (!fleetId) {
+        return;
+    }
+
+    var date = model.get("RequestDate");
+
+    $.getJSON(
+        '@Url.Action("GetFleetInfo", "FuelRequestDetail", new { area = "FleetManagement" })',
+        {
+            id: fleetId,
+            requestDate: date
+                ? kendo.toString(date, "yyyy-MM-dd")
+                : null,
+            excludeId: model.get("FuelRequestDetailId") || 0
+        },
+        function (data) {
+            console.log("Fleet information:", data);
+
+            // Add your field updates here based on the
+            // properties returned by GetFleetInfo.
+        }
+    ).fail(function (xhr, status, error) {
+        console.error("Failed to load fleet information:", error);
+    });*@
+    }
+    function onUploadSuccess(e) {
+        var gridname = "#CompanyDocument" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+    function globalOnSelect(e) {
+
+    }
+    function onUploadError(e) {
+
+    }
+    function filterRequestor() {
+        return {
+            text: $("#RequestorId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    //function recalcFuel() {
+    //    var model = $("#grid").data("kendoGrid").editable.options.model;
+    //    var opening = parseFloat(model.get("OpeningKM")) || 0;
+    //    var closing = parseFloat(model.get("ClosingKM")) || 0;
+    //    var consumed = parseFloat(model.get("FuelConsumedL")) || 0;
+    //    var filled = parseFloat(model.get("FuelFilledL")) || 0;
+    //    var price = parseFloat(model.get("UnitPrice")) || 0;
+    //    var distance = Math.max(closing - opening, 0);
+    //    model.set("DistanceKM", distance);
+    //    model.set("ConsumptionKMPerL", consumed > 0 ? Math.round(distance / consumed * 100) / 100 : 0);
+    //    model.set("TotalAmount", Math.round(filled * price * 100) / 100);
+    //}
+    function recalcFuel() {
+
+    }
+</script>

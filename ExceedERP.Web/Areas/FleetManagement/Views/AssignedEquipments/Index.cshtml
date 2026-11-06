@@ -9,12 +9,16 @@
                             columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").EditorTemplateName("EquipmentNameEditor").Title("Equipment Name").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
                             columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["FleetsAssignedEquip"], "Id", "Name").EditorTemplateName("FleetEditor").Title("Plate No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
                             columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").EditorTemplateName("OperatorNameEditor").Title("Operator Name").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
-                            columns.Bound(e => e.ReturnDate).Width(100);
+                            //columns.Bound(e => e.StartDate).Title("Start Date").Width(100);
+                            columns.Bound(e => e.AssignedDate).Title("Assigned Date").Width(100);
+                            columns.Bound(e => e.AssignedTime).Title("Assigned Time").Width(100);
+                            columns.Bound(e => e.EndDate).Title("Returned Date").Width(100);
+                            columns.Bound(e => e.ReturnedTime).Title("Returned Time").Width(100);
                             columns.Bound(e => e.StartOdometr).Width(100);
                             columns.Bound(e => e.EndOdometer).Width(100);
                             columns.Bound(e => e.NetOdometer).Width(100);
-                            columns.Bound(e => e.StartDate).Title("Sent Date").Width(100);
-                            columns.Bound(e => e.EndDate).Title("Arrival Date").Width(100);
+                            //columns.Bound(e => e.StartDate).Title("Sent Date").Width(100);
+                            // columns.Bound(e => e.EndDate).Title("Arrival Date").Width(100);
                             columns.Bound(e => e.ArrivalPlace).Title("Arrival Place").Width(100);
                             //columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); }).Title("Action").Width(200);
                             columns.Command(command => { command.Destroy().Text(" Accept Equipment "); command.Edit(); }).Width(200);
@@ -35,8 +39,10 @@
                                 model.Field(p => p.OperatorId).Editable(false);
                                 model.Field(p => p.EquipmentNameID).Editable(false);
                                 model.Field(p => p.FleetId).Editable(false);
+                                model.Field(p => p.EndDate).Editable(false);
+                                model.Field(p => p.AssignedDate).Editable(false);
+                                model.Field(p => p.AssignedTime).Editable(false);
                                 model.Field(p => p.StartOdometr).Editable(false);
-                                model.Field(p => p.ReturnDate).Editable(false);
                                 model.Field(p => p.ArrivalPlace).Editable(false);
                             })
                             .Events(ev => ev

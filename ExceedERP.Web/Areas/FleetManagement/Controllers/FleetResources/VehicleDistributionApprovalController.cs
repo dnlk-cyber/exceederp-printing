@@ -42,6 +42,28 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(dsResult);
             
         }
+        [AuthorizeRoles(FleetManagementRoles.ResourceRequestor, FleetManagementRoles.ResourceApprover)]
+        public ActionResult VehicleDistributionSecApproval_Read([DataSourceRequest]DataSourceRequest request, string EId)
+        {
+
+            //Guid Id = Guid.Parse(EId);
+
+            IQueryable<VehicleDistributionSecondValidation> fleetApproval = db.VehicleDistributionSecondValidation.Where(x => x.VehicleDistributionID == EId);
+            var dsResult = fleetApproval.ToDataSourceResult(request, model => new VehicleDistributionSecondValidation
+            {
+                CreatedBy = model.CreatedBy,
+                DateCreated = model.DateCreated,
+                LastModified = model.LastModified,
+                ModifiedBy = model.ModifiedBy,
+                remark = model.remark,
+                Status = model.Status,
+                VehicleDistributionSecondValidationId = model.VehicleDistributionSecondValidationId,
+                VehicleDistributionID = model.VehicleDistributionID
+
+            });
+            return Json(dsResult);
+            
+        }
 
 
 
@@ -69,6 +91,34 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
             return RedirectToActionPermanent("Index", "EquipmentDistribution", new { area = "FleetManagement" });
+        }
+        public JsonResult VehicleDistribution_SendForSecondOnlineApproval(Guid Id)
+        {
+
+           // Guid Id = Guid.Parse(EId);
+            var vehicleDistrubution = db.VehicleDistribution.FirstOrDefault(x => x.VehicleDistributionID == Id);
+            if (vehicleDistrubution != null)
+            {
+                var assignedEquipments = db.AssignedEquipment.Where(x => x.RequestedEquipmentId == vehicleDistrubution.RequestID);
+               
+                    vehicleDistrubution.IsSecondSendForApproval = true;
+                    vehicleDistrubution.SecondSendForApprovalTime = DateTime.Now;
+                    vehicleDistrubution.SecondSendForApprovalBy = User.Identity.Name;
+                    vehicleDistrubution.Status = "Waiting Second Approval";
+
+                   // db.VehicleDistribution.Attach(vehicleDistrubution);
+                    db.Entry(vehicleDistrubution).State = EntityState.Modified;
+                    db.SaveChanges();
+                
+                
+            }
+            var formattedData = new
+            {
+                Message = "Send For Second Approval",
+                Status = "OK"
+            };
+
+            return Json(formattedData,JsonRequestBehavior.AllowGet);
         }
 
         [AuthorizeRoles(FleetManagementRoles.RentApprover)]
@@ -165,6 +215,104 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 db.VehicleDistributionApproval.Add(approval);
                 db.SaveChanges();
                 VehicleDistributionApproval.VehicleDistributionApprovalID = approval.VehicleDistributionApprovalID;
+            }
+            catch (Exception e)
+            {             
+            }
+            return Json(new[] { VehicleDistributionApproval }.ToDataSourceResult(request));
+        }[AuthorizeRoles(FleetManagementRoles.RentApprover)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult VehicleDistribution_SecApprove([DataSourceRequest]DataSourceRequest request, VehicleDistributionApproval VehicleDistributionApproval, Guid EId)
+        {
+            try
+            {
+                //Guid Id = Guid.Parse(EId);
+                if (VehicleDistributionApproval.Status == MaintenanceConst.Approved)
+                {
+                    var entity = db.VehicleDistribution.Where(x => x.VehicleDistributionID == EId).FirstOrDefault();
+                    entity.IsSecondOnlineApproved = true;
+                    entity.SecondOnlineApprovedBy = User.Identity.Name;
+                    entity.SecondOnlineApprovedTime = DateTime.Now;
+                    entity.Status = MaintenanceConst.Approved;
+                    //b.VehicleDistribution.Attach(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
+                    var checkAssignment=db.VehicleDemand.Where(x => x.VehicleDemandId == entity.RequestID).FirstOrDefault();
+                    if (checkAssignment != null)
+                    {
+                        checkAssignment.IsAssigned = true;
+                        db.VehicleDemand.Attach(checkAssignment);
+                        db.Entry(checkAssignment).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    var fetchRequst = db.RequestedEquipments.FirstOrDefault(x => x.RequestNumber == entity.RequestID);
+                        if(fetchRequst!=null)
+                    {
+                        fetchRequst.IsAssigned = true;
+                        db.Entry(fetchRequst).State = EntityState.Modified;
+                        db.SaveChanges();
+                        var assignments = db.AssignedEquipment.Where(x => x.RequestedEquipmentId == fetchRequst.RequestedEquipmentId).ToList();
+                        foreach(var ae in assignments)
+                        {
+                            ae.IsAssigned = true;
+                            db.Entry(ae).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                        var additionalDistributions = db.VehicleDistribution.Where(x => x.ParentId == EId.ToString()).ToList();
+                        foreach(var distribution in additionalDistributions)
+                        {
+                            entity = db.VehicleDistribution.Where(x => x.VehicleDistributionID == distribution.VehicleDistributionID).FirstOrDefault();
+                            entity.IsOnlineApproved = true;
+                            entity.OnlineApprovedBy = User.Identity.Name;
+                            entity.OnlineApprovedTime = DateTime.Now;
+                            entity.Status = MaintenanceConst.Approved;
+                            db.VehicleDistribution.Attach(entity);
+                            db.Entry(entity).State = EntityState.Modified;
+                            db.SaveChanges();
+                           checkAssignment = db.VehicleDemand.Where(x => x.VehicleDemandId == entity.RequestID).FirstOrDefault();
+                            if (checkAssignment != null)
+                            {
+                                checkAssignment.IsAssigned = true;
+                                //db.VehicleDemand.Attach(checkAssignment);
+                                db.Entry(checkAssignment).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            fetchRequst = db.RequestedEquipments.FirstOrDefault(x => x.RequestNumber == entity.RequestID);
+                            if (fetchRequst != null)
+                            {
+                                fetchRequst.IsAssigned = true;
+                                db.Entry(fetchRequst).State = EntityState.Modified;
+                                db.SaveChanges();
+                                var assignments = db.AssignedEquipment.Where(x => x.RequestedEquipmentId == fetchRequst.RequestedEquipmentId).ToList();
+                                foreach (var ae in assignments)
+                                {
+                                    ae.IsAssigned = true;
+                                    db.Entry(ae).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                }
+                if (VehicleDistributionApproval.Status == MaintenanceConst.Rejected)
+                {
+                    var entity = db.VehicleDistribution.Where(x => x.VehicleDistributionID == EId).FirstOrDefault();
+                    entity.IsSecondSendForApproval = false;
+                    db.VehicleDistribution.Attach(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                var approval = new VehicleDistributionSecondValidation()
+                {
+                    Status = VehicleDistributionApproval.Status,
+                    VehicleDistributionID = EId.ToString(),
+                    remark = VehicleDistributionApproval.Remark,
+                    DateCreated = DateTime.Now,
+                    CreatedBy = User.Identity.Name,
+                };
+                db.VehicleDistributionSecondValidation.Add(approval);
+                db.SaveChanges();
+                //VehicleDistributionApproval.VehicleDistributionApprovalID = approval.VehicleDistributionApprovalID;
             }
             catch (Exception e)
             {             

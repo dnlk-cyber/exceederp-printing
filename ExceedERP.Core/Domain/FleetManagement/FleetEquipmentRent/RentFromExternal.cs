@@ -21,7 +21,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public Guid? ExpKey { get; set; } // self-ref when it expires
         public bool IsExpired { get; set; }
         public bool IsReplaced { get; set; }
-        [Display(Name = "Operator")]
+        [Display(Name = "Assigned Driver")]
         public Guid? OperatorId { get; set; }
         public enum EquipmentTypeenum { DoubleCap, Dump, Track, Excavator }
         public enum FuelCoveredenum { Supplier, Customer }
@@ -59,6 +59,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public string ProjectLocation { get; set; }
         [DisplayName("Project Location")]
         public int BranchId { get; set; }
+        [DisplayName("Department")]
+        public int? DepartmentId { get; set; }
         [Required]
         [DisplayName("Unit Of Work ")]
         public string UnitOfWorkMeasurement { get; set; }
@@ -76,7 +78,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public string BankSlipNo { get; set; }
 
         //[DataType(DataType.Currency)]
-        [DisplayName("Advance Payment")]
+        [DisplayName("Payment Amount")]
         public int? AdvancePayment { get; set; }
 
         [Required]
@@ -103,6 +105,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public string PlateNo { get; set; }
         [Display(Name = "Hp/Cc")]
         public string HP_CC { get; set; }
+        [Display(Name = "Assigned Driver")]
         public string Operator { get; set; } 
     }
 
@@ -122,10 +125,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public Guid FleetId { get; set; }
         [DisplayName("Rent Type")]
         public RentType RentType { get; set; }
+        // Only applicable when the equipment type's TimeSheetType is LightVehicle.
+        [DisplayName("Day Type")]
+        public RentDayType? DayType { get; set; }
 
         [DisplayName(" Rental Rate  ")]
         public decimal RentalRate { get; set; }
         public decimal PayableIdleHrPercent { get; set; }
+        [Required]
         public decimal Vat { get; set; }
         //public decimal Tot { get; set; }
         public bool IsOnlineApproved { get; set; }
@@ -150,6 +157,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public string FleetId { get; set; }
         public decimal CostSheetAmount { get; set; }
         public bool IsFullPayment { get; set; }
+        public bool IsCreatedAfterUpdate { get; set; }
+        public bool IsSummaryCalculated { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateFrom { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateTo { get; set; }
+        [NotMapped]
+        public bool IsAdvancePayed { get; set; }
     }
     public class RentFromExternalDocument : TrackUserOperation
     {

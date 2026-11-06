@@ -101,6 +101,14 @@ namespace ExceedERP.Core.Domain.FleetManagement
         [Display(Name ="Per Month"), Description("Per Month")]
         Per_Month
     }
+    /// <summary>Daily rental basis for rented light vehicles.</summary>
+    public enum RentDayType
+    {
+        [Display(Name = "Full Day"), Description("Full Day")]
+        FullDay,
+        [Display(Name = "Half Day"), Description("Half Day")]
+        HalfDay
+    }
     public enum CheckListType
     {
         Engine_Parts,

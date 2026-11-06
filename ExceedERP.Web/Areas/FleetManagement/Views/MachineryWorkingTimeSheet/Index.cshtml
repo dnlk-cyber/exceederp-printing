@@ -38,8 +38,10 @@
                                 columns.Bound(c => c.NetHour).Title("Net Working HR").Width(120);
                             }
                             columns.Bound(c => c.OilConsumption).Title("Oil Consumption").Width(100);
+    columns.Bound(c => c.ExcavatorWorkType).Title("Excavator Work Type").Width(100);
     columns.Bound(c => c.DownHours).Title("Down Hour").Width(100);
     columns.Bound(c => c.DownHourRate).Title("Down Rate").Width(100);
+    //columns.Bound(c => c.FleetsID).Title("Down Rate").Width(100);
     if (!IsMCG)
     {
         columns.Bound(c => c.DownReason).Title("Down Reason").Width(100);
@@ -72,8 +74,7 @@
     columns.Bound(c => c.Remark).Title("Remark").Width(100);
 
     columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
-    if (IsMCG || isMIDROC)
-    {
+  
         columns.Template(@<text></text>)
                                                         .ClientTemplate(
                                                         "# if (!TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
@@ -101,7 +102,7 @@
                                                         "# } #")
                                                         .Title("Reject")
                                                         .Width(60);
-                                }
+                               
                             })
                                             .ToolBar(toolbar =>
                                             {
@@ -111,9 +112,6 @@
                                                         <span class="k-icon k-i-plus"></span>
                                                         Add New Record
                                                     </a>
-                                                    <!-- Conditional content -->
-                                                    @if (isMIDROC||IsMCG)
-                                                                {
                                                         <label style="margin-left:20px;">Branch:</label>
                                                         @(Html.Kendo().DropDownList()
                                                                                             .Name("branchDropdown")
@@ -148,10 +146,6 @@
                                                                 onclick="RejectSelected()">
                                                             Reject Selected
                                                         </button>
-                                                                }
-                                                    /**/
-                                                    /**/
-                                                    /**/
 
                                                 </text>);
                                                     })
@@ -163,6 +157,7 @@
 
                                                                                 .Events(e => e.DataBound("dataBound"))
                                                                                 .Events(e => e.DetailExpand("onDetailExpand"))
+                                                                                .Events(e => e.Edit("onTimesheetEdit"))
                                                                                 .Scrollable(s => s.Height(550))
                                                                                 .DataSource(dataSource => dataSource
                                                                                 .Ajax()
@@ -785,9 +780,15 @@ $(document).ready(function () {
 
                 });
     }
+    function onTimesheetEdit(e) {
+        if (!e.model.isNew() && e.model.FleetsID) {
+            toggleExternalOperator(e.model.FleetsID);
+        }
+    }
     function onFleetChange(e) {
-    var fleetId = this.value();
-
+        toggleExternalOperator(this.value());
+    }
+    function toggleExternalOperator(fleetId) {
     if (!fleetId) return;
 
     $.ajax({
@@ -801,9 +802,16 @@ $(document).ready(function () {
                 $('#ProcurementSupplierID').data("kendoDropDownList").trigger("change");
                 $("#internalOperatorDiv").show();
                 $("#externalOperatorDiv").show();
-            } else {
+            } if (!res.isExternal) {
                 $("#internalOperatorDiv").show();
                 $("#externalOperatorDiv").hide();
+            }
+            if (res.IsExcavator && res.isExternal) {
+                $("#excavatorChecker").show();
+            }
+            if (!res.IsExcavator) {
+                $("#excavatorChecker").hide();
+
             }
 
         }

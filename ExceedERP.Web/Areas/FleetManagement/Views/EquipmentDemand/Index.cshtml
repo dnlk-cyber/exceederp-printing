@@ -21,7 +21,13 @@
           columns.Bound(e => e.FromBranchName).Width(150)/*.EditorTemplateName("FromBranchEditor")*/;
           columns.Bound(e => e.FromStructureName).Width(120)/*.EditorTemplateName("FromStructureEditor")*/;
           columns.Bound(e => e.ReasonForTravel).Width(120);
+          columns.Bound(e => e.Location).Width(100);
           columns.Bound(e => e.RequestDate).Width(100);
+          columns.Bound(e => e.RequestTime)
+                 .Title("Request Time")
+                 .Width(140)
+                 .EditorTemplateName("RequestTimeEditor")
+                 .Format("{0:hh\\:mm}");
           columns.Bound(e => e.IsAssigned).Width(100);
           columns.Bound(e => e.Status).Width(100);
           columns.Bound(e => e.Num).Visible(false);

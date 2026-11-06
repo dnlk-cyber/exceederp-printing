@@ -28,6 +28,7 @@
               columns.Bound(c => c.OperatorName).Width(140).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.Lessor).Title("Lessor").Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.PlateNo).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.IsOnlineApproved).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
               if (IsMCG)
               {
                   columns.Bound(e => e.Unit).Title("Unit").Width(120);

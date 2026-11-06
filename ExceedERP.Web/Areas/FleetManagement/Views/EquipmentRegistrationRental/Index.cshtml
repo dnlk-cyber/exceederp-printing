@@ -15,8 +15,8 @@
                           columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").Width(130);
                           columns.Bound(e => e.UnitNum).Width(100);
                           columns.Bound(e => e.PlateNumber).Width(100);
-                          //columns.Bound(e => e.WayOfSupplyenum).Width(100);
                           columns.Bound(e => e.Model).Width(100);
+                          columns.Bound(e => e.IsExcavator).Width(100);
                           columns.Bound(e => e.SerialNo).Title("Serial/Chasis No.").Width(100);
                           columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "Id", "Name").Width(100).Title("Branch");
                           columns.Bound(e => e.ApprovalStatus).Hidden();
@@ -57,6 +57,7 @@
                               });
                              editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment");
                          })
+                             //.Events(ev=>ev.Edit("onEdit"))
                              .HtmlAttributes(new { style = "height: 500px;" })
                              .Pageable(pageable => pageable
                                 .Input(true)

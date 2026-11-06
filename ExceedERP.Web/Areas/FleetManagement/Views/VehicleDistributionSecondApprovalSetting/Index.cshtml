@@ -1,0 +1,43 @@
+﻿<legend> Vehicle Distribution Second Approval Setting</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistributionSecondApprovalSetting>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      //columns.Bound(c => c.VehicleDistributionSecondApprovalSettingId).Title("No").Width(70);
+                      columns.Bound(c => c.NeedsSecondApproval).Title("Needs Second Approval").Width(90);
+                      columns.Bound(c => c.Remark).Width(100).Title("Description");
+
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+                  })
+                   .ToolBar(toolbar =>
+                   {
+                       toolbar.Create();
+                   })
+
+                    .Scrollable(s => s.Height(250))
+                    .Sortable()
+                    .Filterable()
+                    .Editable(editable => editable.Mode(GridEditMode.InLine)
+                    )
+                    .Pageable(pageable => pageable
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.VehicleDistributionSecondApprovalSettingId))
+                      .Read(read => read.Action("Read", "VehicleDistributionSecondApprovalSetting").Data("sendForgery"))
+                      .Create(create => create.Action("Create", "VehicleDistributionSecondApprovalSetting").Data("sendForgery"))
+                      .Update(update => update.Action("Update", "VehicleDistributionSecondApprovalSetting").Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("Destroy", "VehicleDistributionSecondApprovalSetting").Data("sendForgery"))
+                       .PageSize(5)
+                  )
+)
+
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+</style>

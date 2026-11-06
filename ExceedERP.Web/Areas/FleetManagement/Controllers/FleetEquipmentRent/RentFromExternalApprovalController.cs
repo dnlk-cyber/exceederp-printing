@@ -58,8 +58,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
                 Remark = approval.Remark,
                 Status = approval.Status,
-                DateCreated = DateTime.Now,
-                CreatedBy = User.Identity.Name
+                DateCreated = approval.DateCreated,
+                CreatedBy = approval.CreatedBy,
 
 
             }));
@@ -157,7 +157,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 fleet.RentFromExternalNum = rentFromExternal.Num;
                 fleet.IsContractTerminated = false;
                 fleet.RentId = rentFromExternal.RentFromExternalID;
+                item.IsContractTerminated = false;
+                db.Entry(item).State = EntityState.Modified;
                 db.Entry(fleet).State = EntityState.Modified;
+                
             }
             db.SaveChanges();
         }

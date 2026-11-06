@@ -213,9 +213,37 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
+            @Html.LabelFor(model => model.ThirdParty, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.ThirdParty).HtmlAttributes(new { style = "width:100%", placeholder = "Third party name" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
             @Html.LabelFor(model => model.Attachment, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
             <div>
-                @Html.Kendo().TextBoxFor(model => model.Attachment).HtmlAttributes(new { style = "width:100%" })
+                @Html.HiddenFor(model => model.Attachment)
+                @Html.HiddenFor(model => model.StagedAttachmentToken)
+                @(Html.Kendo().Upload()
+                    .Name("insuranceFile")
+                    .Multiple(false)
+                    .ShowFileList(false)
+                    .Async(a => a.Save("InsuranceAttachment_Stage", "InsuranceRegistration", new { area = "FleetManagement" }).AutoUpload(true))
+                    .Validation(v => v.AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".pdf" }).MaxFileSize(2 * 1024 * 1024))
+                    .Events(e => e.Success("onInsuranceFileStaged").Error("onUploadError")))
+                <small id="insuranceFileName" class="text-muted"></small>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.AttachmentDescription, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.AttachmentDescription).HtmlAttributes(new { style = "width:100%", placeholder = "Describe the attached document" })
             </div>
         </div>
     </div>

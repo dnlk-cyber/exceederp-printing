@@ -271,16 +271,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
           if (ModelState.IsValid)
             {
                 var inspectedEquipment = db.RentalInspections.FirstOrDefault(x => x.RentalInspectionId == rentalInspectionValidation.RentalInspectionId);
-                var fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentTypeID && x.PlateNumber == inspectedEquipment.PlateNo);
-                if(fleet==null)
+                var fleet = inspectedEquipment.PlateNo != null?db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentNameID && x.PlateNumber == inspectedEquipment.PlateNo):null;
+                if(fleet==null&& inspectedEquipment.ChasisSerialNo!=null)
                 {
-                    fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentTypeID && x.SerialNo == inspectedEquipment.ChasisSerialNo);
+                    fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentNameID && x.ChasisNumber == inspectedEquipment.ChasisSerialNo);
                 }
-                if (fleet==null)
-                {
-                    fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentTypeID && x.Model == inspectedEquipment.Model);
-                }
-                
+                //if (fleet==null)
+                //{
+                //    fleet = db.Fleets.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID && x.EquipmentNameID == inspectedEquipment.EquipmentNameID && x.SerialNo == inspectedEquipment.EngineSerialNo);
+                //}
+               
                
                 #region Register Equipment
                 if (rentalInspectionValidation.Status == ApprovalStatuses.Approve)
@@ -310,6 +310,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                             Location = inspectedEquipment.BranchId.ToString(),
                             HistoricalCost = "",
                             Model = inspectedEquipment.Model,
+                            RentalInspectionRef = inspectedEquipment.RentalInspectionId.ToString(),
                             IsReturned = false,
                             Capacity = inspectedEquipment.Capacity,
                             IsExternal = true,
@@ -358,60 +359,155 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
 
                         };
-                        db.Fleets.Add(equipment);
-                        db.SaveChanges();
-
-                        inspectedEquipment.IsOnlineApproved = true;
-
-                        db.Entry(inspectedEquipment).State = EntityState.Modified;
-                        db.SaveChanges();
-                        if (fleet != null && fleet.IsContractTerminated)
+                        try
                         {
-                            var entity = new RentalInspectionValidation
-                            {
-                                RentalInspectionValidationId = rentalInspectionValidation.RentalInspectionValidationId,
-                                RentalInspectionId = rentalInspectionValidation.RentalInspectionId,
-                                Status = rentalInspectionValidation.Status,
-                                Remark = rentalInspectionValidation.Remark
-                            };
-                            db.RentalInspectionValidations.Attach(entity);
-                            db.Entry(entity).State = EntityState.Modified;
+                            db.Fleets.Add(equipment);
                             db.SaveChanges();
-                            #region operation log
-                            UserHelper.OperationLog(Request.UserHostAddress, "Rental inspection ", "Success", User.Identity.Name, $"updated rental inspection {entity.RentalInspectionId} ", Modules.FleetManagement);
-                            #endregion
                         }
+                        catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                        {
+                            var sqlEx = ex.InnerException;
 
-                    }
-                }
-                else
-                {
-                    if(fleet!=null&&!fleet.IsContractTerminated)
-                    {
-                        ModelState.AddModelError("existing contract", "Existing fleet contract is not terminated");
-                    }
-                    if(fleet!=null&&fleet.IsContractTerminated)
-                    {
-                        var entity = new RentalInspectionValidation
+                            while (sqlEx.InnerException != null)
+                            {
+                                sqlEx = sqlEx.InnerException;
+                            }
+
+                            throw new Exception(sqlEx.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex.ToString());
+                            throw;
+                        }
+                        inspectedEquipment.IsOnlineApproved = true;
+                        try
+                        {
+                            db.Entry(inspectedEquipment).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                        {
+                            var sqlEx = ex.InnerException;
+
+                            while (sqlEx.InnerException != null)
+                            {
+                                sqlEx = sqlEx.InnerException;
+                            }
+
+                            throw new Exception(sqlEx.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex.ToString());
+                            throw;
+                        }
+                        var Valnentity = new RentalInspectionValidation
                         {
                             RentalInspectionValidationId = rentalInspectionValidation.RentalInspectionValidationId,
                             RentalInspectionId = rentalInspectionValidation.RentalInspectionId,
                             Status = rentalInspectionValidation.Status,
                             Remark = rentalInspectionValidation.Remark
                         };
-                        db.RentalInspectionValidations.Attach(entity);
-                        db.Entry(entity).State = EntityState.Modified;
-                        db.SaveChanges();
-                        #region operation log
-                        UserHelper.OperationLog(Request.UserHostAddress, "Rental inspection ", "Success", User.Identity.Name, $"updated rental inspection {entity.RentalInspectionId} ", Modules.FleetManagement);
-                        #endregion
+                        //db.RentalInspectionValidations.Attach(Valnentity);
+
+                        try
+                        {
+                            db.Entry(Valnentity).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                        {
+                            var sqlEx = ex.InnerException;
+
+                            while (sqlEx.InnerException != null)
+                            {
+                                sqlEx = sqlEx.InnerException;
+                            }
+
+                            throw new Exception(sqlEx.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex.ToString());
+                            throw;
+                        }
                     }
+                    else
+                    {
+                      
+                        if (fleet != null && !fleet.IsContractTerminated)
+                        {
+                            ModelState.AddModelError("existing contract", "Existing fleet contract is not terminated");
+                        }
+                        
+                        if (fleet != null && fleet.IsContractTerminated)
+                        {
+                            fleet.RentalInspectionRef = inspectedEquipment.RentalInspectionId.ToString();
+                            db.Entry(fleet).State = EntityState.Modified;
+                            db.SaveChanges();
+                            var Valnentity = new RentalInspectionValidation
+                            {
+                                RentalInspectionValidationId = rentalInspectionValidation.RentalInspectionValidationId,
+                                RentalInspectionId = rentalInspectionValidation.RentalInspectionId,
+                                Status = rentalInspectionValidation.Status,
+                                Remark = rentalInspectionValidation.Remark
+                            };
+                            //db.RentalInspectionValidations.Attach(Valnentity);
+                           
+                            try
+                            {
+                                db.Entry(Valnentity).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                            {
+                                var sqlEx = ex.InnerException;
 
-                }
+                                while (sqlEx.InnerException != null)
+                                {
+                                    sqlEx = sqlEx.InnerException;
+                                }
+
+                                throw new Exception(sqlEx.Message);
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                                throw;
+                            }
+                            #region operation log
+                            UserHelper.OperationLog(Request.UserHostAddress, "Rental inspection ", "Success", User.Identity.Name, $"updated rental inspection {Valnentity.RentalInspectionId} ", Modules.FleetManagement);
+                            #endregion
+                        }
+
+                    }
+                        
+
+                    }                
+                else
+                {
+                    inspectedEquipment.IsSendForApproval = false;
+                    inspectedEquipment.SendForApprovalBy = null;
+                    db.Entry(inspectedEquipment).State = EntityState.Modified;
+                    db.SaveChanges();
+                var entity = new RentalInspectionValidation
+                {
+                    RentalInspectionValidationId = rentalInspectionValidation.RentalInspectionValidationId,
+                    RentalInspectionId = rentalInspectionValidation.RentalInspectionId,
+                    Status = rentalInspectionValidation.Status,
+                    Remark = rentalInspectionValidation.Remark
+                };
+                db.RentalInspectionValidations.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Rental inspection ", "Success", User.Identity.Name, $"updated rental inspection {entity.RentalInspectionId} ", Modules.FleetManagement);
                 #endregion
-
-               
             }
+            #endregion
+
+        }
             return Json(new[] { rentalInspectionValidation }.ToDataSourceResult(request, ModelState));
         }
         public ActionResult RentalInspection_Destroy([DataSourceRequest] DataSourceRequest request, RentalInspection rentalInspection)

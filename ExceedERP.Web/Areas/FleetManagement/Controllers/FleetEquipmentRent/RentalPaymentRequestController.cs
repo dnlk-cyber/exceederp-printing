@@ -138,6 +138,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 IsVoid = rentalPaymentRequest.IsVoid,
                 Paid = rentalPaymentRequest.Paid,
                 VoidBy = rentalPaymentRequest.VoidBy,
+                PlateNumber = db.RentalPaymentRequestLines.FirstOrDefault(x=>x.RentalPaymentRequestId==rentalPaymentRequest.RentalPaymentRequestId)?.FleetId.ToString()??"",
                 VoidTime = rentalPaymentRequest.VoidTime,
                 
             });
@@ -146,8 +147,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         public ActionResult RentalPaymentRequests_Create([DataSourceRequest] DataSourceRequest request, RentalPaymentRequest rentalPaymentRequest)
          {
             var durations = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == rentalPaymentRequest.GLPeriodId);
-           
 
+            rentalPaymentRequest.Status = "Pending";
             if (ModelState.IsValid)
 
             {
@@ -159,6 +160,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BranchId = rentalPaymentRequest.BranchId,
                     ReasonofPayment = rentalPaymentRequest.ReasonofPayment,
                     RequestDate = rentalPaymentRequest.RequestDate,
+                    Status = rentalPaymentRequest.Status,
                     Refference = rentalPaymentRequest.Refference,
                     Remark = rentalPaymentRequest.Remark,
                     GLPeriodId = rentalPaymentRequest.GLPeriodId,

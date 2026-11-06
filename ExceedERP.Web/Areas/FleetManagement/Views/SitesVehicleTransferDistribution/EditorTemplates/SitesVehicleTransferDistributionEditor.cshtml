@@ -1,0 +1,163 @@
+@using ExceedERP.Core.Domain.FleetManagement
+@using ExceedERP.Helpers
+@model ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Request No</label>
+            @Html.Kendo().TextBoxFor(m => m.RequestNumber).HtmlAttributes(new { style = "width:100%", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="col-sm-8 req-info">
+        <div class="row">
+            <div class="col-sm-6"><label>Requested By:</label><span id="ReqRequestedBy"></span></div>
+            <div class="col-sm-6"><label>Request Date:</label><span id="ReqRequestDate"></span></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4"><label>Category:</label><span id="ReqCategory"></span></div>
+            <div class="col-sm-4"><label>Type:</label><span id="ReqType"></span></div>
+            <div class="col-sm-4"><label>Equipment:</label><span id="ReqName"></span></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4"><label>Destination:</label><span id="ReqDestination"></span></div>
+            <div class="col-sm-4"><label>Period:</label><span id="ReqPeriod"></span></div>
+            <div class="col-sm-4"><label>Reason:</label><span id="ReqReason"></span></div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="ReqEquipmentNameID" />
+<hr />
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Plate/Serial No</label>
+            @(Html.Kendo().DropDownListFor(m => m.FleetsID)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Plate No")
+                .HtmlAttributes(new { style = "width:100%" })
+                .ValuePrimitive(true)
+              .DataSource(d => d.Read(r => r.Action("GetPlateNoForSiteVehicleTransfer", "FleetManagementDataProvider").Data("filterPlateNo"))
+                .ServerFiltering(true)
+                )
+                .Events(e => e.Change("onPlateNumberChange")))
+            @Html.ValidationMessageFor(m => m.FleetsID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Initial Site (From)</label>
+            @Html.Kendo().TextBoxFor(m => m.InitialSite).HtmlAttributes(new { style = "width:100%", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Odometer</label>
+            @Html.Kendo().TextBoxFor(m => m.OdoMeter).HtmlAttributes(new { style = "width:100%" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Operator One</label>
+            @(Html.Kendo().DropDownListFor(m => m.OperatorId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Operator")
+                 .ValuePrimitive(true)
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d => d.Read(r => r.Action("GetOperatorForVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Operator Two</label>
+            @(Html.Kendo().DropDownListFor(m => m.SecondOperatorId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter(FilterType.Contains)
+                .ValuePrimitive(true)
+                .OptionLabel("Select Operator")
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d => d.Read(r => r.Action("GetOperatorForVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Transfer Mode</label>
+            @(Html.Kendo().DropDownListFor(m => m.TransferMode)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .HtmlAttributes(new { style = "width:100%" })
+                .BindTo(EnumExtension.EnumToSelectList(typeof(TransferMode))))
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Equipment Condition</label>
+            @(Html.Kendo().DropDownListFor(m => m.EquipmentCondition)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .HtmlAttributes(new { style = "width:100%" })
+                .BindTo(EnumExtension.EnumToSelectList(typeof(EquipmentCondition))))
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Fuel Amount</label>
+            @(Html.Kendo().DropDownListFor(m => m.FuelAmount)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .HtmlAttributes(new { style = "width:100%" })
+                .BindTo(EnumExtension.EnumToSelectList(typeof(FuelAmount))))
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Hydraulic</label>
+            @(Html.Kendo().DropDownListFor(m => m.Hydrolic)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .HtmlAttributes(new { style = "width:100%" })
+                .BindTo(EnumExtension.EnumToSelectList(typeof(HydrolicAmount))))
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Battery Status</label>
+            @(Html.Kendo().DropDownListFor(m => m.BatteryStatus)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .HtmlAttributes(new { style = "width:100%" })
+                .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.BatteryStatus))))
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Battery Ampere</label>
+            @Html.Kendo().TextBoxFor(m => m.BatteryAmpere).HtmlAttributes(new { style = "width:100%" })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Battery Qty</label>
+            @Html.Kendo().TextBoxFor(m => m.BatteryQuantity).HtmlAttributes(new { style = "width:100%" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Description</label>
+            @Html.TextAreaFor(m => m.Description, new { @class = "k-textbox", style = "width:100%", rows = 2 })
+        </div>
+    </div>
+</div>

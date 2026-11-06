@@ -37,6 +37,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public decimal Odometer { get; set; }
         [Display(Name ="Branch")]
         public int BranchId { get; set; }
+        [Display(Name = "Department")]
+        public int? DepartmentId { get; set; }
         [Display(Name ="Operator One")]
         public Guid OperatorId { get; set; }
         [Display(Name = "Operator Two")]
@@ -48,5 +50,15 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [Display(Name = "Equipment Name")]
         public Guid EquipmentNameId { get; set; }
 
+    }
+    public class DriverAssignmentDocument
+    {
+        public int DriverAssignmentDocumentId { get; set; }
+        public string DriverAssignmentId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
     }
 }

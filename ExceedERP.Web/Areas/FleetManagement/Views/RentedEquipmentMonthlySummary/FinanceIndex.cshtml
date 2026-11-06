@@ -10,97 +10,98 @@
 
 }
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentMonthlyPaymentSummary>()
-                                            .Name("grid")
-                                            .Columns(columns =>
-                                            {
-                                                columns.Bound(x => x.RentedEquipmentMonthlyPaymentSummaryId).Title("Row No").Width(100);
-                                                columns.ForeignKey(x => x.GlPeriodId, (IEnumerable)ViewData["Period"], "Id", "Name").Title("GL Period").Width(100);
-                                                columns.Bound(x => x.EquipmentType).Title("Equipment Type").Width(100);
-                                                columns.Bound(x => x.PlateNo).Title("Plate No").Width(100);
-                                                columns.Bound(x => x.OperatorName).Title("Operator").Width(100);
-                                                columns.Bound(x => x.BranchName).Title("Branch").Width(100);
-                                                columns.Bound(x => x.CustomerName).Title("Customer Name").Width(100);
-                                                columns.Bound(x => x.RentalRateHour)
-                                                    .Title("Rate / Hour")
-                                                    .Format("{0:n2}").Width(100);
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(x => x.RentedEquipmentMonthlyPaymentSummaryId).Title("Row No").Width(100);
+        columns.ForeignKey(x => x.GlPeriodId, (IEnumerable)ViewData["Period"], "Id", "Name").Title("GL Period").Width(100);
+        columns.Bound(x => x.EquipmentType).Title("Equipment Type").Width(100);
+        columns.Bound(x => x.PlateNo).Title("Plate No").Width(100);
+        columns.Bound(x => x.OperatorName).Title("Operator").Width(100);
+        columns.Bound(x => x.IsAdvanceSummary).Title("Is Advance Summary").Width(100);
+        columns.Bound(x => x.BranchName).Title("Branch").Width(100);
+        columns.Bound(x => x.CustomerName).Title("Customer Name").Width(100);
+        columns.Bound(x => x.RentalRateHour)
+            .Title("Rate / Hour")
+            .Format("{0:n2}").Width(100);
 
-                                                columns.Bound(x => x.AgreementDate)
-                                                    .Title("Agreement Date")
-                                                    .Format("{0:yyyy-MM-dd}").Width(100);
-                                                columns.Bound(x => x.TotalWorkedHR)
-                                                    .Title("Worked HR")
-                                                    .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.AgreementDate)
+            .Title("Agreement Date")
+            .Format("{0:yyyy-MM-dd}").Width(100);
+        columns.Bound(x => x.TotalWorkedHR)
+            .Title("Worked HR")
+            .Format("{0:n2}").Width(100);
 
-                                                columns.Bound(x => x.GrossBeforeVat)
-                                                    .Title("Gross")
-                                                    .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.GrossBeforeVat)
+            .Title("Gross")
+            .Format("{0:n2}").Width(100);
 
-                                                columns.Bound(x => x.VAT)
-                                                    .Title("VAT")
-                                                    .Format("{0:n2}").Width(100);
-                                                columns.Bound(x => x.TotalWithVat)
-                                                    .Title("Total With VAT && TOT")
-                                                    .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.VAT)
+            .Title("VAT")
+            .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.TotalWithVat)
+            .Title("Total With VAT && TOT")
+            .Format("{0:n2}").Width(100);
 
-                                                columns.Bound(x => x.AdvancePayedWithVat)
-                                                    .Title("Advance")
-                                                    .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.AdvancePayedWithVat)
+            .Title("Advance")
+            .Format("{0:n2}").Width(100);
 
-                                                columns.Bound(x => x.MaintenanceCost)
-                                                    .Title("Maintenance Cost")
-                                                    .Format("{0:n2}").Width(100);
-                                                columns.Bound(x => x.SparePartCost)
-                                                    .Title("Sparepart Cost")
-                                                    .Format("{0:n2}").Width(100);
-                                                columns.Bound(x => x.OilLubCost)
-                                                    .Title("OilLub Cost")
-                                                    .Format("{0:n2}").Width(100);
-                                                columns.Bound(x => x.FuelCost)
-                                                    .Title("Fuel Cost")
-                                                    .Format("{0:n2}").Width(100);
-                                                columns.Bound(x => x.Deductable)
-                                                    .Title("Deductable")
-                                                    .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.MaintenanceCost)
+            .Title("Maintenance Cost")
+            .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.SparePartCost)
+            .Title("Sparepart Cost")
+            .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.OilLubCost)
+            .Title("OilLub Cost")
+            .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.FuelCost)
+            .Title("Fuel Cost")
+            .Format("{0:n2}").Width(100);
+        columns.Bound(x => x.Deductable)
+            .Title("Deductable")
+            .Format("{0:n2}").Width(100);
 
-                                                columns.Bound(x => x.NetPayable)
-                                                    .Title("Net Payable")
-                                                    .Format("{0:n2}").Width(100);
-                                                columns.Command(command =>
-                                                {
-                                                    command.Edit();
-                                                    command.Destroy();
-                                                    if (istimeSheetSummaryCreator)
-                                                    {
-                                                        command.Custom("PrepareCostSheet").Click("PrepareTimeSheet");
-                                                    }
-                                                    if (istimeSheetSummaryChecker)
-                                                    {
-                                                        command.Custom("CheckCostSheet").Click("CheckTimeSheet");
-                                                        command.Custom("CheckerRejectCostSheet").Click("RejectTimeSheet");
-                                                    }
-                                                    if (istimeSheetSummaryApprover)
-                                                    {
-                                                        command.Custom("ApproveCostSheet").Click("ApproveTimeSheet");
-                                                        command.Custom("ApproverRejectCostSheet").Click("RejectTimeSheet");
-                                                    }
-                                                    if (istimeSheetSummaryAuthorizer)
-                                                    {
+        columns.Bound(x => x.NetPayable)
+            .Title("Net Payable")
+            .Format("{0:n2}").Width(100);
+        columns.Command(command =>
+        {
+            command.Edit();
+            command.Destroy();
+            if (istimeSheetSummaryCreator)
+            {
+                command.Custom("PrepareCostSheet").Click("PrepareTimeSheet");
+            }
+            if (istimeSheetSummaryChecker)
+            {
+                command.Custom("CheckCostSheet").Click("CheckTimeSheet");
+                command.Custom("CheckerRejectCostSheet").Click("RejectTimeSheet");
+            }
+            if (istimeSheetSummaryApprover)
+            {
+                command.Custom("ApproveCostSheet").Click("ApproveTimeSheet");
+                command.Custom("ApproverRejectCostSheet").Click("RejectTimeSheet");
+            }
+            if (istimeSheetSummaryAuthorizer)
+            {
 
-                                                        command.Custom("AuthorizeCostSheet").Click("TimeSheetAuthorize");
-                                                        command.Custom("AuthorizerRejectCostSheet").Click("RejectTimeSheet");
-                                                    }
-                                                    if (isDGMApprover)
-                                                    {
+                command.Custom("AuthorizeCostSheet").Click("TimeSheetAuthorize");
+                command.Custom("AuthorizerRejectCostSheet").Click("RejectTimeSheet");
+            }
+            if (isDGMApprover)
+            {
 
-                                                        command.Custom("DGM_Approve").Click("DGM_Approve");
-                                                        command.Custom("RejectCostSheet").Click("RejectTimeSheet");
-                                                    }
-                                                }
-                                                    ).Title("Action").Width(300);
+                command.Custom("DGM_Approve").Click("DGM_Approve");
+                command.Custom("RejectCostSheet").Click("RejectTimeSheet");
+            }
+        }
+            ).Title("Action").Width(300);
 
-                                            })
-                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                            .Sortable()
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Sortable()
                             .Events(ev =>
                             {
                                 ev.DataBound("summaryDataBound");
@@ -164,31 +165,28 @@
 .Content(
 @<text>
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentDailyOperation>()
-                                                         .Name("detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#")
-                                                         .Columns(columns =>
-                                                         {
-                                                                     columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
-                                                                     columns.Bound(x => x.MorningTimeStart).Title("Mornning Time Start").Width(100);
-                                                                     columns.Bound(x => x.MorningTimeEnd).Title("Mornning Time End").Width(100);
-                                                                     columns.Bound(x => x.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
-                                                                     columns.Bound(x => x.AfternoonTimeEnd).Title("Afternoon Time end").Width(100);
-                                                                     columns.Bound(x => x.NightTimeStart).Title("Night Time Start").Width(100);
-                                                                     columns.Bound(x => x.NightTimeEnd).Title("Night Time End").Width(100);
-                                                                     columns.Bound(x => x.PayedIdleHR).Title("Down Hour").Width(100);
-                                                                     columns.Bound(x => x.TotalPayedHR)
-                                                         .Title("Total Paid Hour")
-                                                         .Width(120);
-                                                         // .ClientTemplate("#= (WorkingHour || 0) + (PayedIdleHour || 0) #");
-                                                         columns.Bound(x => x.InitialEngineHour).Title("Initial KM/EH").Width(100);
-                                                                     columns.Bound(x => x.FinalEngineHour).Title("Final KM/EH").Width(100);
-                                                                     columns.Bound(x => x.DifferenceEngineHour).Title("Difference KM/EH").Width(100);
-                                                                     columns.Bound(x => x.FuelInLiter).Title("Fuel In Litre").Width(100);
-                                                                     columns.Bound(x => x.FuelKMReading).Title("Fuel KM Reading").Width(100);
-                                                                     columns.Bound(x => x.DownHour).Title("Down Hour").Width(100);
-                                                                     columns.Bound(x => x.IdleReasonList).Title("Idle Reason").Width(150);
-                                                                     columns.Bound(x => x.OperatorName).Title("Operator Name").Width(100);
-                                                                     columns.Bound(x => x.SiteFormanName).Title("Site Forman").Width(100);
-                                                                 }
+                  .Name("detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
+                      columns.Bound(x => x.MorningTimeStart).Title("Mornning Time Start").Width(100);
+                      columns.Bound(x => x.MorningTimeEnd).Title("Mornning Time End").Width(100);
+                      columns.Bound(x => x.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
+                      columns.Bound(x => x.AfternoonTimeEnd).Title("Afternoon Time end").Width(100);
+                      columns.Bound(x => x.NightTimeStart).Title("Night Time Start").Width(100);
+                      columns.Bound(x => x.NightTimeEnd).Title("Night Time End").Width(100);
+                      columns.Bound(x => x.PayedIdleHR).Title("Down Hour").Width(100);
+
+                      columns.Bound(x => x.InitialEngineHour).Title("Initial KM/EH").Width(100);
+                      columns.Bound(x => x.FinalEngineHour).Title("Final KM/EH").Width(100);
+                      columns.Bound(x => x.DifferenceEngineHour).Title("Difference KM/EH").Width(100);
+                      columns.Bound(x => x.FuelInLiter).Title("Fuel In Litre").Width(100);
+                      columns.Bound(x => x.FuelKMReading).Title("Fuel KM Reading").Width(100);
+                      
+                      columns.Bound(x => x.OperatorName).Title("Operator Name").Width(100);
+                      columns.Bound(x => x.SiteFormanName).Title("Site Forman").Width(100);
+
+                                                         }
                                                          )
                                              .Sortable()
                                              .Filterable()
@@ -201,8 +199,8 @@
                                                  .PageSize(20)
                                                  .Model(model =>
                                                  {
-                                                             model.Id(p => p.RentedEquipmentDailyOperationId);
-                                                         })
+                                                     model.Id(p => p.RentedEquipmentDailyOperationId);
+                                                 })
                                              .Events(ev => ev
                                                   .Error("error_handler(\"detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
                                                   .RequestStart("onRequestStart(\"detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
@@ -215,40 +213,40 @@
         .Content(
         @<text>
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.RentedEquipmentDailyOperation>()
-                                                                                                           .Name("costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#")
-                                                                                                           .Columns(columns =>
-                                                                                                           {
-                                                                                                                       columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
-                                                                                                                       columns.Bound(x => x.MorningTimeStart).Title("Mornning Time Start").Width(100);
-                                                                                                                       columns.Bound(x => x.MorningTimeEnd).Title("Mornning Time End").Width(100);
-                                                                                                                       columns.Bound(x => x.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
-                                                                                                                       columns.Bound(x => x.AfternoonTimeEnd).Title("Afternoon Time end").Width(100);
-                                                                                                                       columns.Bound(x => x.NightTimeStart).Title("Night Time Start").Width(100);
-                                                                                                                       columns.Bound(x => x.NightTimeEnd).Title("Night Time End").Width(100);
-                                                                                                           // columns.Bound(x => x.WorkedHR).Title("Total Time").Width(150);
-                                                                                                           columns.Bound(x => x.PayedIdleHR).Title("Payed Idle HR").Width(100);
-                                                                                                                       columns.Bound(x => x.TotalPayedHR).Title("Total Time").Width(100);
-                                                                                                                   }
-                                                                                                           )
-                                                                                               .Sortable()
-                                                                                               .Filterable()
-                                                                                               .Pageable(page => page.Refresh(true).PageSizes(true))
-                                                                                               .Scrollable()
-                                                                                               .HtmlAttributes(new { style = "Width:800px" })
-                                                                                               //.HtmlAttributes(new { style = "height: 1000px;" })
-                                                                                               .DataSource(dataSource => dataSource
-                                                                                                   .Ajax()
-                                                                                                   .PageSize(20)
-                                                                                                   .Model(model =>
-                                                                                                   {
-                                                                                                               model.Id(p => p.RentedEquipmentDailyOperationId);
-                                                                                                           })
-                                                                                               .Events(ev => ev
-                                                                                                    .Error("error_handler(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
-                                                                                                    .RequestStart("onRequestStart(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
-                                                                                                    .RequestEnd("onRequestEnd(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")"))
-                                                                                                   .Read(read => read.Action("Detail_Read", "RentedEquipmentMonthlySummary", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#", area = "FleetManagement" }))
-                                                                                               ).ToClientTemplate()
+                              .Name("costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#")
+                              .Columns(columns =>
+                              {
+                                          columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
+                                          columns.Bound(x => x.MorningTimeStart).Title("Mornning Time Start").Width(100);
+                                          columns.Bound(x => x.MorningTimeEnd).Title("Mornning Time End").Width(100);
+                                          columns.Bound(x => x.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
+                                          columns.Bound(x => x.AfternoonTimeEnd).Title("Afternoon Time end").Width(100);
+                                          columns.Bound(x => x.NightTimeStart).Title("Night Time Start").Width(100);
+                                          columns.Bound(x => x.NightTimeEnd).Title("Night Time End").Width(100);
+                              // columns.Bound(x => x.WorkedHR).Title("Total Time").Width(150);
+                              columns.Bound(x => x.PayedIdleHR).Title("Payed Idle HR").Width(100);
+                                          columns.Bound(x => x.TotalPayedHR).Title("Total Time").Width(100);
+                                      }
+                              )
+                  .Sortable()
+                  .Filterable()
+                  .Pageable(page => page.Refresh(true).PageSizes(true))
+                  .Scrollable()
+                  .HtmlAttributes(new { style = "Width:800px" })
+                  //.HtmlAttributes(new { style = "height: 1000px;" })
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .PageSize(20)
+                      .Model(model =>
+                      {
+                                  model.Id(p => p.RentedEquipmentDailyOperationId);
+                              })
+                  .Events(ev => ev
+                       .Error("error_handler(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                       .RequestStart("onRequestStart(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
+                       .RequestEnd("onRequestEnd(\"costdetailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")"))
+                      .Read(read => read.Action("Detail_Read", "RentedEquipmentMonthlySummary", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#", area = "FleetManagement" }))
+                  ).ToClientTemplate()
             )
         </text>);
                                        items.Add().Text("Validation").Content(

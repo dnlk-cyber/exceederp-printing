@@ -9,6 +9,18 @@ namespace ExceedERP.Core.Domain.FleetManagement
     public class FleetConst
     {
         public const string FleetOIDStatus = "Fleet OID Status";
+        public const string MCGOIDStatus = "Daily Equipment Status Summary Report";
+        public const string MCGEquipmentDownStatus = "Equipment Down Status Report";
+        public const string MCGEquipmentStatusForm = "Equipment Status Report Form";
+        public const string EquipmentTransferRequestForm = "Equipment Transfer Request Form";
+        public const string ActiveVehicleReport = "Active Vehicle Report";
+        public const string FuelRequestConsumptionReport = "Fuel Consumption Report";
+        public const string DriverAssignmentReport = "Driver Assignment Report";
+        public const string ExternalRentalReport = "External Rental Report";
+        public const string FleetByCategoryReport = "Fleet By Category Report";
+        public const string FleetUtilizationReport = "Fleet Utilization Report";
+        public const string FuelExpenditureByDepartmentReport = "Fuel Expenditure By Department Report";
+        public const string MaintenancePerformanceReport = "Maintenance Performance And Expenditure Report";
         public const string MachineryTimesheet = "Machinery Timesheet Report";
         public const string LightVehicleTimesheet = "LightVehicle Timesheet Report";
         public const string DumpTruckTimesheet = "Dump Truck Timesheet Report";
@@ -28,6 +40,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string DryLoadingCostsheetSummary = "Dry Loading Costsheet Summary Report";
         public const string WagondrillCostsheet = "Wagon Drill Costsheet Report";
         public const string WagondrillCostsheetSummary = "Wagon Drill Costsheet Summary Report";
+        public const string WagondrillTimesheetSummary = "Wagon Drill Time Sheet Form";
 
         public const string ExternalMachineryTimesheet = "External Machinery Timesheet Report";
         public const string ExternalLightVehicleTimeSheet = "External LightVehicle Timesheet Report";
@@ -41,9 +54,14 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string HeadOfficeSummary = "Head Office Summary Report";
         public const string ProjectSummaryReport = "Project Summary Report";
 
+        public const string EquipmentPoolReport = "Equipment Pool Report";
+        public const string EquipmentUtilizationAndRentalCost = "Equipment Utilization And Rental Cost";
+        public const string EquipmentUtilizationHour = "Equipment Utilization Hourly";
         public const string TyreReport = "Tyre Report";
         public const string BatteryConsumption = "Battery Consumption";
         public const string RentFromExternal = "Rent From External Report";
+        public const string RentalPaymentRequest = "Renal Payment Request";
+        public const string RentalAdvancePaymentRequest = "Renal Advance Payment Request";
 
         public const string EquipmentMaintenaceSummary = "Equipment Maintenance Summary Report";
         public const string EquipmentMechanicSummary = "Equipment Mechanic Summary Report";

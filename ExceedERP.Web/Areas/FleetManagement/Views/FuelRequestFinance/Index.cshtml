@@ -1,0 +1,231 @@
+@model ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequest
+@{
+    ViewBag.Title = "Fuel Request (Finance)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+   
+<legend>Fuel Request - Finance Approval &amp; Telebirr Payment</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequest>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.FuelRequestId).Title("No").Width(60);
+                      columns.ForeignKey(c => c.RequestorId, (IEnumerable)ViewData["Requestor"], "Value", "Text").EditorTemplateName("RequestorTemplate").Title("Requestor").Width(100);
+                      columns.Bound(c => c.RequestDate).Format("{0:yyyy-MM-dd}").Width(100);
+                      columns.ForeignKey(c => c.DepartmentId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("DepartmentTemplate").Width(130);
+                      columns.Bound(c => c.PhoneNumber).Title("Telebirr Phone").Width(120);
+                      columns.Bound(c => c.TotalAmount).Format("{0:n2}").Width(100);
+                      columns.Bound(c => c.Status).Width(120);
+                      columns.Command(command =>
+                      {
+                          command.Custom("Approve").Text("Approve").Click("financeAction");
+                          command.Custom("Reject").Text("Reject").Click("financeAction");
+                      }).Width(320);
+                  })
+                  .ToolBar(commands =>
+                  {
+                      commands.Create();
+                  })
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+                      editable.DisplayDeleteConfirmation("Are you sure you want to remove this fuel request?");
+                  })
+                  .Events(ev => { ev.DataBound("onDataBound"); })
+                  .Events(ev => { ev.DetailExpand("detailExpand"); })
+                  .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+                  .Sortable()
+                  .Filterable()
+                  .Scrollable(h => h.Height(520))
+                  .ClientDetailTemplateId("template")
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .PageSize(20)
+                      .Sort(sort => sort.Add(e => e.FuelRequestId).Descending())
+                      .Model(model =>
+                      {
+                          model.Id(p => p.FuelRequestId);
+                          model.Field(p => p.RequestDate).DefaultValue(DateTime.Today);
+                          model.Field(p => p.TotalAmount).Editable(false);
+                          model.Field(p => p.Status).Editable(false);
+                      })
+                      .Events(ev => ev
+                          .Error("error_handler(\"grid\")")
+                          .RequestStart("onRequestStart(\"grid\")")
+                          .RequestEnd("onRequestEnd(\"grid\")"))
+                      .Create(update => update.Action("FuelRequest_Create", "FuelRequest").Data("sendForgery"))
+                      .Read(read => read.Action("FuelRequest_Read", "FuelRequestFinance").Data("sendForgery"))
+                      //.Update(update => update.Action("FuelRequest_Update", "FuelRequest").Data("sendForgery"))
+                      //.Destroy(update => update.Action("FuelRequest_Destroy", "FuelRequest").Data("sendForgery"))
+
+
+                  ))
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                    .Name("FuelReqst#=FuelRequestId#")
+                                                    .SelectedIndex(0)
+                                                    .Items(items =>
+                                                    {
+                                                        items.Add().Text("Detail").Content(@<text>
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <ul>
+
+                                                                        <li><b>Total Amount:</b> #= kendo.toString(TotalAmount, 'n2') #</li>
+                                                                        <li><b>Remark:</b> #= Remark || '' #</li>
+                                                                    </ul>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <ul>
+                                                                        <li><b>Created By:</b> #= CreatedBy || '' # (#= DateCreated ? kendo.toString(kendo.parseDate(DateCreated), 'yyyy-MM-dd') : '' #)</li>
+                                                                        <li><b>Sent to Finance By:</b> #= SendForApprovalBy || '' # (#= SendForApprovalTime ? kendo.toString(kendo.parseDate(SendForApprovalTime), 'yyyy-MM-dd') : '' #)</li>
+                                                                        <li><b>Finance Approved By:</b> #= FinanceApprovedBy || '' # (#= FinanceApprovedTime ? kendo.toString(kendo.parseDate(FinanceApprovedTime), 'yyyy-MM-dd') : '' #)</li>
+                                                                        # if (FinanceRejectionReason) { #
+                                                                        <li style="color:rgb(201,48,44);"><b>Rejection Reason:</b> #= FinanceRejectionReason #</li>
+                                                                        # } #
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </text>);
+
+                                                                items.Add().Text("Fuel Request Detail")
+                    .Content(@<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequestDetail>()
+                                                                              .Name("detailGrid_#=FuelRequestId#")
+                                                                              .Columns(columns =>
+                                                                              {
+                                                                                          columns.Bound(c => c.FuelRequestDetailId).Title("No").Width(60);
+                                                                                          columns.Bound(c => c.RequestDate).Format("{0:yyyy-MM-dd}").Width(100);
+                                                                                          columns.Bound(c => c.PlateNo).Width(100);
+                                                                                          columns.Bound(c => c.VehicleType).Width(110);
+                                                                                          columns.Bound(c => c.SideNo).Width(80);
+                                                                                          columns.Bound(c => c.Driver).Width(130);
+                                                                                          columns.Bound(c => c.DepartmentName).Width(130);
+                                                                                          columns.Bound(c => c.DivisionName).Width(110);
+                                                                                          columns.Bound(c => c.OpeningKM).Format("{0:n0}").Width(90);
+                                                                                          columns.Bound(c => c.ClosingKM).Format("{0:n0}").Width(90);
+                                                                                          columns.Bound(c => c.DistanceKM).Format("{0:n0}").Width(90);
+                                                                                          columns.Bound(c => c.FuelConsumedL).Title("Fuel Consumed L").Format("{0:n2}").Width(100);
+                                                                                          columns.Bound(c => c.FuelFilledL).Title("Fuel Filled L").Format("{0:n2}").Width(100);
+                                                                                          columns.Bound(c => c.ConsumptionKMPerL).Title("KM/L").Format("{0:n2}").Width(80);
+                                                                                          columns.Bound(c => c.OperationalDays).Width(90);
+                                                                                          columns.Bound(c => c.TotalAmount).Format("{0:n2}").Width(100);
+                                                                                          columns.Bound(c => c.FuelOwnerPhoneNumber).Title("Telebirr Phone").Width(120);
+                                                                                          columns.Command(command =>
+                                          {
+                                                                  command.Edit();
+                                                                  command.Destroy();
+                                                              }).Width(320);
+                                                                                      })
+                                                                              .ToolBar(commands =>
+                                                                              {
+                                                                                          commands.Create();
+                                                                                      })
+                                                                              .Editable(editable =>
+                                                                              {
+                                                                                          editable.Mode(GridEditMode.PopUp).TemplateName("FuelRequestEditor").Window(x => x.Title("Fuel Request").Width(900));
+                                                                                          editable.DisplayDeleteConfirmation("Are you sure you want to remove this fuel request?");
+                                                                                      })
+                                                                              .Events(ev => { ev.DataBound("onDetailDataBound");  })
+                                                                              .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+                                                                              .Sortable()
+                                                                              .Filterable()
+                                                                              .Scrollable(h => h.Height(520))
+                                                                              //.ClientDetailTemplateId("template")
+                                                                              .DataSource(dataSource => dataSource
+                                                                                  .Ajax()
+                                                                                  .PageSize(20)
+                                                                                  .Sort(sort => sort.Add(e => e.FuelRequestDetailId).Descending())
+                                                                                  .Model(model =>
+                                                                                  {
+                                                                                              model.Id(p => p.FuelRequestDetailId);
+                                                                                              model.Field(p => p.RequestDate).DefaultValue(DateTime.Today);
+                                                                                          })
+                                                                                  .Events(ev => ev
+                                                                                      .Error("error_handler(\"detailGrid_#=FuelRequestId#\")")
+                                                                                      .RequestStart("onRequestStart(\"detailGrid_#=FuelRequestId#\")")
+                                                                                      .RequestEnd("onRequestEnd(\"detailGrid_#=FuelRequestId#\")"))
+                                                                                  .Create(create => create.Action("FuelRequest_Create", "FuelRequestDetail", new { id = "#=FuelRequestId#" }).Data("sendForgery"))
+                                                                                  .Read(read => read.Action("FuelRequest_Read", "FuelRequestDetail", new { id = "#=FuelRequestId#" }).Data("sendForgery"))
+                                                                                  .Update(update => update.Action("FuelRequest_Update", "FuelRequestDetail").Data("sendForgery"))
+                                                                                  .Destroy(destroy => destroy.Action("FuelRequest_Destroy", "FuelRequestDetail").Data("sendForgery"))
+                                                                              ).ToClientTemplate())
+                    </text>);
+                                                }).ToClientTemplate()
+    )
+</script>
+
+
+
+
+<script type="text/javascript">
+        var isSendForFinance = false;
+    function detailExpand(e) {
+            masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isSendForFinance = masterDataItem.IsSendForApproval;
+    }
+    function onDataBound() {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsSendForApproval) {
+            $(this).find(".k-grid-edit, .k-grid-delete, .k-grid-SendToFinance").remove();
+        }
+            if (dataItem.IsFinanceApproved) {
+                $(this).addClass("k-state-FleetApproved");
+                $(this).find(".k-grid-Approve, .k-grid-Reject, .k-grid-SendToFinance").remove();
+            }
+          
+    });
+}
+    function onDetailDataBound() {
+        var grid = this;
+        if (isSendForFinance) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isSendForFinance) {
+            $(this).find(".k-grid-edit, .k-grid-delete").remove();
+        }
+            if (isSendForFinance) {
+            $(this).addClass("k-state-FleetApproved");
+            }
+    });
+}
+
+    var financeUrls = {
+        Approve: '@Url.Action("Approve", "FuelRequestFinance", new { area = "FleetManagement" })',
+        Reject: '@Url.Action("Reject", "FuelRequestFinance", new { area = "FleetManagement" })'
+    };
+
+    // Command name (k-grid-<Name>) doubles as the action key
+    function financeAction(e) {
+        e.preventDefault();
+        var grid = this;
+        var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+        var action = Object.keys(financeUrls).filter(function (k) { return $(e.currentTarget).hasClass("k-grid-" + k); })[0];
+        if (!action) { return; }
+
+        var data = { id: dataItem.FuelRequestId };
+        if (action === "Approve") {
+            if (!confirm("Approve fuel request " + dataItem.FuelRequestId + " (" + kendo.toString(dataItem.TotalAmount, "n2") + " Birr)?")) { return; }
+        } else if (action === "Reject") {
+            var reason = prompt("Rejection reason:");
+            if (reason === null) { return; }
+            data.reason = reason;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: financeUrls[action],
+            data: $.extend(data, sendForgery()),
+            success: function (result) {
+                if (result.success) { grid.dataSource.read(); } else { alert(result.message); }
+            },
+            error: function () { alert("Error occurred"); }
+        });
+    }
+</script>

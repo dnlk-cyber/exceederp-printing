@@ -104,15 +104,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 Description = s.Description,
                 FleetsID = s.FleetsID,
-                PlateNo = s.Fleet.PlateNumber,
+                //PlateNo = s.Fleet.PlateNumber,
                 ToDate = s.ToDate,
                 StartingDate = s.StartingDate,
                 DestinationSite = s.DestinationSite,
                 InitialSite = s.InitialSite,
                 OperatorId = s.OperatorId,
                 SecondOperatorId = s.SecondOperatorId,
-                //EquipmentTypeId = s.Fleet.EquipmentIdentityID.ToString(),
-                Remark = s.Fleet.PlateNumber + " -- " + s.Fleet.EquipmentName,
+                Remark = s.Fleet!=null?(s.Fleet.PlateNumber + " -- " + s.Fleet.EquipmentName):null,
+                PlateNo = s.Fleet != null ? s.Fleet.PlateNumber : null,
                 SitesVehicleTransferID = s.SitesVehicleTransferID  ,
                 IsOnlineApproved = s.IsOnlineApproved,
                 IsSendForApproval = s.IsSendForApproval,
@@ -358,7 +358,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
-        private void ChangeSiteTransferOnFleet(Guid fleetId, int branchId)
+        private void ChangeSiteTransferOnFleet(Guid? fleetId, int branchId)
         {
             var fleet = db.Fleets.Find(fleetId);
             var FixedAsset = db.AssetRegistrations.FirstOrDefault(x => x.AssetRegistrationId == fleet.AssetId);

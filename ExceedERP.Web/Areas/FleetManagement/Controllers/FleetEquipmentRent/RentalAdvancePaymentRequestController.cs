@@ -156,6 +156,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     ModelState.AddModelError("No agrement", "No agreement started with a given date");
                 }
             }
+            var rentFromExternalEquipments = db.RentFromExternalEquipments.Where(x => rentFromExternalIds.Contains(x.RentFromExternalId)).ToList();
+            foreach (var equipment in rentFromExternalEquipments)
+            {
+                var advances = db.RentalEquipmentAdvancePayment.Where(x => x.RentFromExternalEquipmentId == equipment.RentFromExternalEquipmentId && x.FleetId != equipment.FleetId.ToString()).ToList();
+                foreach (var advance in advances)
+                {
+                    advance.FleetId = equipment.FleetId.ToString();
+                    db.Entry(advance).State = EntityState.Modified;
+
+                }
+            }
+            db.SaveChanges();
             var advancetoBePayed = new RentalEquipmentAdvancePayment();
             var payedAdvanceIds = db.RentalAdvancePaymentRequest.Where(x => x.FleetId == rentalPaymentRequest.FleetId).Select(x => x.AdvancePaymentId).ToList();
             if (payedAdvanceIds.Any())
@@ -189,7 +201,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             {
                 plate = fleet.Model;
             }
-             var equipment = db.RentFromExternalEquipments.FirstOrDefault(x => x.RentFromExternalEquipmentId == advancetoBePayed.RentFromExternalEquipmentId);
+             //var equipment = db.RentFromExternalEquipments.FirstOrDefault(x => x.RentFromExternalEquipmentId == advancetoBePayed.RentFromExternalEquipmentId);
 
             if (ModelState.IsValid)
 
@@ -363,6 +375,59 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
             return null;
+        }
+
+        // Authorization step between department approval and finance; only authorized requests reach finance.
+        [HttpPost]
+        public JsonResult AuthorizeRequest(int id)
+        {
+            var record = db.RentalAdvancePaymentRequest.Find(id);
+            string err = null;
+            if (record == null) err = "Record not found.";
+            else if (record.IsVoid) err = "This record is void.";
+            else if (!record.IsDepartmentOnlineApproved) err = "The request must be approved by the department before it can be authorized.";
+            else if (record.IsOnlineApproved) err = "This request is already authorized.";
+            if (err != null)
+                return Json(new { Message = err, Status = "NOT_OK" }, JsonRequestBehavior.AllowGet);
+
+            record.IsOnlineApproved = true;
+            record.OnlineApprovedBy = User.Identity.Name;
+            record.OnlineApprovedTime = DateTime.Now;
+            record.Status = "Authorized";
+            record.ModifiedBy = User.Identity.Name;
+            record.LastModified = DateTime.Now;
+            db.Entry(record).State = EntityState.Modified;
+            db.SaveChanges();
+            UserHelper.OperationLog(Request.UserHostAddress, "Rental advance payment request authorization", "Success", User.Identity.Name, $"authorized rental advance payment request {id}", Modules.FleetManagement);
+            return Json(new { Message = "Request authorized.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+        }
+
+        // Rejecting re-opens the request so the requester can correct and resend it for department approval.
+        [HttpPost]
+        public JsonResult RejectAuthorization(int id, string reason)
+        {
+            var record = db.RentalAdvancePaymentRequest.Find(id);
+            string err = null;
+            if (record == null) err = "Record not found.";
+            else if (record.IsVoid) err = "This record is void.";
+            else if (!record.IsDepartmentOnlineApproved) err = "Only department-approved requests can be rejected here.";
+            else if (record.IsOnlineApproved) err = "This request is already authorized.";
+            else if (record.IsFinanceSendForApproval || record.IsFinanceApproved || record.Paid) err = "This request is already in finance.";
+            if (err != null)
+                return Json(new { Message = err, Status = "NOT_OK" }, JsonRequestBehavior.AllowGet);
+
+            record.IsOnlineApproved = false;
+            record.IsDepartmentOnlineApproved = false;
+            record.IsDepartmentSendForApproval = false;
+            record.Status = "Authorization Rejected";
+            record.ModifiedBy = User.Identity.Name;
+            record.LastModified = DateTime.Now;
+            db.Entry(record).State = EntityState.Modified;
+            // Clear old department approvals so the same approver can approve the resubmission.
+            db.RentalAdvancePaymentRequestDepartmentValidation.RemoveRange(db.RentalAdvancePaymentRequestDepartmentValidation.Where(x => x.RentalAdvancePaymentRequestId == id));
+            db.SaveChanges();
+            UserHelper.OperationLog(Request.UserHostAddress, "Rental advance payment request authorization", "Rejected", User.Identity.Name, $"rejected authorization of rental advance payment request {id}: {reason}", Modules.FleetManagement);
+            return Json(new { Message = "Request rejected and returned to the requester.", Status = "OK" }, JsonRequestBehavior.AllowGet);
         }
         //public RentalValidation CheckNull(RentalPaymentRequest rentalPaymentRequest)
         //{

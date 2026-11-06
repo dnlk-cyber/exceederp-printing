@@ -1,0 +1,45 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentalEquipmentAdvancePayment
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                Payment Amount
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model=>model.AdvancePayed)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                Is Full Payment
+                <div>
+                    @(Html.Kendo().CheckBoxFor(model => model.IsFullPayment)
+                     )
+                </div>
+            </div>
+        </div>
+       
+
+    </div>
+    <div class="row" id="dateId">
+        <div class="col-md-3">
+            <div class="form-group">
+                Date From
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.DateFrom)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                Date To
+                <div>
+                    @Html.Kendo().DatePickerFor(model=>model.DateTo)
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

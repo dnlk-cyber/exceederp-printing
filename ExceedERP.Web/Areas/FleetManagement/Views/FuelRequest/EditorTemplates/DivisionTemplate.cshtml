@@ -1,0 +1,8 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+  .DataTextField("Name")
+  .ValuePrimitive(true)
+  .DataValueField("OrgStructureId")
+  .Filter(FilterType.Contains)
+  .OptionLabel("Select Division")
+  .HtmlAttributes(new { style = "width:100%" })
+  .DataSource(d => d.Read(r => r.Action("GetFuelRequestDepartments", "FuelRequest").Data("sendForgery")).ServerFiltering(false)))

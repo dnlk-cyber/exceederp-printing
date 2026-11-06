@@ -193,6 +193,20 @@
             </div>
         </div>
     </div>
+    <div class="col-sm-2" id="excavatorChecker">
+        <div class="form-group">
+            Excavator WorkType
+            <div>
+                @(Html.Kendo().DropDownListFor(model=>model.ExcavatorWorkType)
+         .DataValueField("Value")
+         .DataTextField("Text")
+         .OptionLabel("Select")
+         .ValuePrimitive(true)
+         .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.ExcavatorWorkType)))
+        )
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row">

@@ -518,6 +518,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             Name = i.Name,
             Id = i.Id
         }).AsQueryable();
+            ViewData["EquipmentCategorys"] = equitsCats;
+            ViewData["EquipmentSubCategorys"] = equipSubCats;
+            ViewData["EquipmentNames"] = equipSubCatNames;
             var assets = db.AssetRegistrations.Select(s => new {
                 Id = s.AssetRegistrationId,
                 Name = s.Name
@@ -533,9 +536,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Value = s.OperatorID,
                 Text = s.FullName
             });
-            ViewData["EquipmentCategorys"] = equitsCats;
-            ViewData["EquipmentSubCategorys"] = equipSubCats;
-            ViewData["EquipmentNames"] = equipSubCatNames;
+          
             ViewData["FixedAssets"] = assets;
             ViewData["VehicleParts"] = db.VehiclePart.ToList();
             ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.ToList();
@@ -1095,7 +1096,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     fleets.ModifiedBy = User.Identity.Name;
                     fleets.LastModified = DateTime.Now;
                     fleets.Battery = Asset.Battery?.DefaultValue();
-                    fleets.ChasisNumber = Asset?.MotorNo.DefaultValue();
+                    fleets.ChasisNumber = Asset?.ChassisNo.DefaultValue();
                     fleets.EngineNumber = Asset?.EngineNo.DefaultValue();
                     fleets.EngineModel = Asset?.MotorNo.DefaultValue();
                     fleets.Manufacturer = Asset?.Manufacturer.DefaultValue();
@@ -1261,7 +1262,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         fleets.ModifiedBy = User.Identity.Name;
                         fleets.LastModified = DateTime.Now;
                         fleets.Battery = Asset.Battery;
-                        fleets.ChasisNumber = Asset.MotorNo;
+                        fleets.ChasisNumber = Asset.ChassisNo;
                         fleets.EngineNumber = Asset.EngineNo;
                         fleets.EngineModel = Asset.MotorNo;
                         fleets.Manufacturer = Asset.Manufacturer;
@@ -2443,7 +2444,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         ServiceName = s.ServiceName,
                         Remark = job.Odometer.ToString(),
                         DateCreated = s.DateCreated,
-                        Section = GetSection(s.ServiceID),
+                        //Section = GetSection(s.ServiceID),
                         Efficency = JobCost
 
                     }));

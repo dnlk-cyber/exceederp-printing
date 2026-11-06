@@ -628,11 +628,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameID).AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
-                fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(searchKey.ToLower()) || x.SerialNo.ToLower().Contains(searchKey.ToLower())).AsQueryable();
+                fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(searchKey.ToLower()) || x.SerialNo.ToLower().Contains(searchKey.ToLower())|| x.ChasisNumber.ToLower().Contains(searchKey.ToLower())||x.UnitNum.ToLower().Contains(searchKey.ToLower())).AsQueryable();
             }
             var result = fleets.Select(s => new
             {
-                Text = s.PlateNumber + "/" + s.SerialNo,
+                Text = s.PlateNumber + "/" + s.SerialNo + "/"+s.ChasisNumber + "/"+s.UnitNum,
                 Value = s.FleetsID
             }).ToList();
 
@@ -662,12 +662,17 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(UoMs, JsonRequestBehavior.AllowGet);
         }
         public ActionResult GetEquipmentSubCategories(Guid equipmentIdentityId, string search)
-        {
+       {
             var equipmentIdentity = db.EquipmentIdentity.Find(equipmentIdentityId);
 
             var assetCategory = db.FixedAssetCategories.Find(equipmentIdentity.FixedAssetCategoryId);
 
-            var equipSubCats = db.FixedAssetSubCategories.Select(s => new
+            var equipSubCats = db.FixedAssetSubCategories.ToList();
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                equipSubCats = equipSubCats.Where(x => search.Contains(x.SubCategoryName)).ToList();
+            }
+                var result=equipSubCats.Select(s => new
             {
                 Id = s.FixedAssetSubCategoryID,
                 s.CategoryCode,
@@ -676,10 +681,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             if (equipmentIdentity != null)
             {
-                equipSubCats = equipSubCats.Where(q => q.CategoryCode == assetCategory.CategoryCode).ToList();
+                result = result.Where(q => q.CategoryCode == assetCategory.CategoryCode).ToList();
             }
 
-            return Json(equipSubCats, JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetEquipmentSubCategoryNames(Guid equipmentTypeId, string search)
@@ -741,6 +746,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(equipTypes, JsonRequestBehavior.AllowGet);
 
         }
+        
         public ActionResult GetEquipmentNamesFromEquipmentType(Guid equipmentTypeId, string text)
         {
 
@@ -840,6 +846,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        
         public ActionResult GetEquipmentNamesNullable(Guid? equipmentTypeId, string text)
         {
             var equipmentNames = db.EquipmentName.Where(x => x.EquipmentTypeId == equipmentTypeId).ToList();
@@ -873,7 +880,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         public JsonResult GetExternalFleetForRentFromExternalEquipment(Guid? equipmentNameID, string search)
         {
-            var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameID && x.WayOfSupplyenum == WayOfSupplyenum.Rental);
+            var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameID && x.WayOfSupplyenum == WayOfSupplyenum.Rental&&x.IsContractTerminated==true);
             if (!string.IsNullOrWhiteSpace(search))
             {
                 fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(search.ToLower()) || x.SerialNo.ToLower().Contains(search.ToLower())|| x.Model.ToLower().Contains(search.ToLower()));
@@ -1064,7 +1071,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             //var existingPlates = db.ExternalRentedEquipments.Where(x => x.EquipmentNameID == equipmentNameId).Select(x => x.FleetId).ToList();
             var existingPlates = db.AssignedEquipment.Where(x => x.EquipmentNameID == equipmentNameId&&x.IsAssigned==true).Select(x => x.FleetId).ToList();
-            var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameId &&!existingPlates.Contains(x.FleetsID) && (x.Status == MaintenanceConst.ACTIVE || x.Status == null || x.Status == ""));
+            var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameId &&!existingPlates.Contains(x.FleetsID));
             if (!string.IsNullOrWhiteSpace(text))
             {
                 fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()));
@@ -1201,84 +1208,90 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             });
             return Json(data, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetFleetIdTimesheetNew( string text,string timeSheetType)
+        public JsonResult GetFleetIdTimesheetNew(string text, string timeSheetType)
         {
             var fleets = db.Fleets.AsQueryable();
-            var externalIds = fleets.Where(x => x.IsExternal).Select(x=>x.FleetsID).ToList();
-            //fleets = fleets.Where(x => !externalIds.Contains(x.FleetsID));
-            var externalFleets = db.Fleets.Where(x => externalIds.Contains(x.FleetsID)&&x.RentId==null).Select(x=>x.FleetsID).ToList();
-            fleets = fleets.Where(x => !externalFleets.Contains(x.FleetsID));
-            if (timeSheetType=="LightVehicle")
+            var externalIds = fleets.Where(x => x.IsExternal).Select(x => x.FleetsID).ToList();
+            var companySetting = db.RequestToInspections.FirstOrDefault();
+            //var externalFleets = db.Fleets.Where(x => externalIds.Contains(x.FleetsID)).Select(x => x.FleetsID).ToList();
+
+            if (companySetting != null && companySetting.Remark == "MCG")
             {
-                var EquipmentTypes = db.EquipmentType.Where(x => x.TimeSheetType == TimeSheetType.LightVehicle).Select(x=>x.EquipmentTypeID).ToList();
-                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)&&!x.IsContractTerminated).AsQueryable();
+               var externalFleets = db.Fleets.Where(x => externalIds.Contains(x.FleetsID) && (x.RentFromExternalNum == null || x.IsContractTerminated)).Select(x => x.FleetsID).ToList();
+                fleets = fleets.Where(x => !externalFleets.Contains(x.FleetsID));
+            }
+           
+            if (timeSheetType == "LightVehicle")
+            {
+                var EquipmentTypes = db.EquipmentType.Where(x => x.TimeSheetType == TimeSheetType.LightVehicle).Select(x => x.EquipmentTypeID).ToList();
+                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)).AsQueryable();
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
+                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.ChasisNumber.ToLower().Contains(text.ToLower()) || x.UnitNum.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
                 }
                 var data = fleets.Select(s => new FleetViewModel
                 {
-                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.Model,
+                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.ChasisNumber + " " + s.UnitNum + " " + s.Model,
                     FleetsID = s.FleetsID
                 }).AsQueryable();
                 return Json(data, JsonRequestBehavior.AllowGet);
             }
-            if (timeSheetType=="DumpTruck")
+            if (timeSheetType == "DumpTruck")
             {
                 var EquipmentTypes = db.EquipmentType.Where(x => x.TimeSheetType == TimeSheetType.DumpTruck).Select(x => x.EquipmentTypeID).ToList();
-                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)&&!x.IsContractTerminated).AsQueryable();
+                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)).AsQueryable();
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
+                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.ChasisNumber.ToLower().Contains(text.ToLower()) || x.UnitNum.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
                 }
                 var data = fleets.Select(s => new FleetViewModel
                 {
-                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.Model,
+                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.ChasisNumber + " " + s.UnitNum + " " + s.Model,
                     FleetsID = s.FleetsID
                 }).AsQueryable();
                 return Json(data, JsonRequestBehavior.AllowGet);
             }
-            if (timeSheetType=="DryLoading")
+            if (timeSheetType == "DryLoading")
             {
                 var EquipmentTypes = db.EquipmentType.Where(x => x.TimeSheetType == TimeSheetType.DryLoading).Select(x => x.EquipmentTypeID).ToList();
-                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)&&!x.IsContractTerminated).AsQueryable();
+                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)).AsQueryable();
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
+                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.ChasisNumber.ToLower().Contains(text.ToLower()) || x.UnitNum.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
                 }
                 var data = fleets.Select(s => new FleetViewModel
                 {
-                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.Model,
+                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.ChasisNumber + " " + s.UnitNum + " " + s.Model,
                     FleetsID = s.FleetsID
                 }).AsQueryable();
                 return Json(data, JsonRequestBehavior.AllowGet);
             }
-            if (timeSheetType=="Machinery")
+            if (timeSheetType == "Machinery")
             {
                 var EquipmentTypes = db.EquipmentType.Where(x => x.TimeSheetType == TimeSheetType.Machinery).Select(x => x.EquipmentTypeID).ToList();
-                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)&&!x.IsContractTerminated).AsQueryable();
+                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)).AsQueryable();
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
+                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.ChasisNumber.ToLower().Contains(text.ToLower()) || x.UnitNum.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
                 }
                 var data = fleets.Select(s => new FleetViewModel
                 {
-                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.Model,
+                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.ChasisNumber + " " + s.UnitNum + " " + s.Model,
                     FleetsID = s.FleetsID
                 }).AsQueryable();
                 return Json(data, JsonRequestBehavior.AllowGet);
             }
-            if (timeSheetType=="WagonDrill")
+            if (timeSheetType == "WagonDrill")
             {
                 var EquipmentTypes = db.EquipmentType.Where(x => x.TimeSheetType == TimeSheetType.WagonDrill).Select(x => x.EquipmentTypeID).ToList();
-                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)&&!x.IsContractTerminated).AsQueryable();
+                fleets = fleets.Where(x => EquipmentTypes.Contains(x.EquipmentTypeID)).AsQueryable();
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
+                    fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.ChasisNumber.ToLower().Contains(text.ToLower()) || x.UnitNum.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
                 }
                 var data = fleets.Select(s => new FleetViewModel
                 {
-                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.Model,
+                    PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.ChasisNumber + " " + s.UnitNum + " " + s.Model,
                     FleetsID = s.FleetsID
                 }).AsQueryable();
                 return Json(data, JsonRequestBehavior.AllowGet);
@@ -1286,16 +1299,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var fleetss = db.Fleets.AsQueryable();
             if (!string.IsNullOrWhiteSpace(text))
             {
-                fleetss = fleetss.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower())|| x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
+                fleetss = fleetss.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.ChasisNumber.ToLower().Contains(text.ToLower()) || x.UnitNum.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower()) || x.Model.ToLower().Contains(text.ToLower())).AsQueryable();
             }
             var dataa = fleets.Select(s => new FleetViewModel
             {
-                PlateNumber = s.PlateNumber + " " + s.SerialNo+" "+s.Model,
+                PlateNumber = s.PlateNumber + " " + s.SerialNo + " " + s.ChasisNumber + " " + s.UnitNum + " " + s.Model,
                 FleetsID = s.FleetsID
             });
             return Json(dataa, JsonRequestBehavior.AllowGet);
-            }
-            //public JsonResult GetFleetIdTimesheetNew(Guid equipmentNameId, string text)
+        }
+        //public JsonResult GetFleetIdTimesheetNew(Guid equipmentNameId, string text)
         //{
 
         //    var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameId).AsQueryable();
@@ -1345,7 +1358,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID.ToString() == fleetId);
             int? supplierID=null;
-            var extEquipment = db.RentFromExternalEquipments.FirstOrDefault(x=>x.FleetId.ToString()==fleetId);
+            var extEquipment = db.RentFromExternalEquipments.Where(x=>x.FleetId.ToString()==fleetId&&!x.IsContractTerminated).OrderByDescending(x=>x.RentFromExternalEquipmentId).FirstOrDefault();
             if(extEquipment!=null)
             {
                 supplierID = db.RentFromExternal.FirstOrDefault(x => x.RentFromExternalID == extEquipment.RentFromExternalId)?.ProcurementSupplierID;
@@ -1357,6 +1370,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 EquipmentName=fleet.EquipmentNameID,
                 EquipmentType=fleet.EquipmentTypeID,
                 SupplierId= supplierID,
+                IsExcavator=fleet.IsExcavator,
             }, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetFleetTimesheetSerialNumber(/*TimeSheetType timeSheetEquipmentType, */string text, Guid equipmentNameId)

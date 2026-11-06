@@ -785,6 +785,7 @@
     <Compile Include="Domain\FleetManagement\FuelManagement\Fuel.cs" />
     <Compile Include="Domain\FleetManagement\FuelManagement\FuelInventory.cs" />
     <Compile Include="Domain\FleetManagement\FuelManagement\FuelIssueApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FuelManagement\FuelRequest.cs" />
     <Compile Include="Domain\FleetManagement\FuelManagement\FuelType.cs" />
     <Compile Include="Domain\FleetManagement\GlobalENUM.cs" />
     <Compile Include="Domain\FleetManagement\InternalRentalRate.cs" />

@@ -146,6 +146,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         assignedEquip.ReturnDate = DateTime.Now;
                         assignedEquip.FleetId = fleet.FleetsID;
                         assignedEquip.RequestedDate = DateTime.Now;
+                        assignedEquip.AssignedTime = assignedEquipment.AssignedTime;
+                        assignedEquip.AssignedDate = assignedEquipment.AssignedDate;
                         assignedEquip.OperatorId = assignedEquipment.OperatorId;
                         assignedEquip.RequestNumber = additionalRequest.RequestedEquipmentId;
                         assignedEquip.NetOdometer = 0;
@@ -187,6 +189,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         assignedEquipment.RequestedDate = DateTime.Now;
                         assignedEquipment.RequestNumber = Guid.Parse(createRequestNumber);
                         assignedEquipment.NetOdometer = 0;
+                        assignedEquipment.AssignedTime = assignedEquipment.AssignedTime;
+                        assignedEquipment.AssignedDate = assignedEquipment.AssignedDate;
                         assignedEquipment.ReturnDate = DateTime.Now;
                         decimal totalkm = assignedEquipment.AsphaltKm + assignedEquipment.GravelKm;
                         assignedEquipment.NumberHourPerKm = totalkm.ToString();
@@ -500,7 +504,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 StartOdometr = assignedEquipment.StartOdometr,
                 EndOdometer = assignedEquipment.EndOdometer,
                 NetOdometer = assignedEquipment.NetOdometer,
-                OperatorId = assignedEquipment.OperatorId,
+                AssignedTime = assignedEquipment.AssignedTime,
+               OperatorId = assignedEquipment.OperatorId,
                 OperatorFullName=GetOperatorFullName(assignedEquipment.OperatorId),
                 ReturnDate = assignedEquipment.ReturnDate,
                 VehicleDemandId = assignedEquipment.VehicleDemandId,
@@ -537,6 +542,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 RequestNumber = assignedEquipments.RequestNumber,
                 AssignedDate = assignedEquipments.AssignedDate,
+                AssignedTime = assignedEquipments.AssignedTime,
                 FleetId = assignedEquipments.FleetId,
                 EquipmentNameID = assignedEquipments.EquipmentNameID,
                 EquipmentName = assignedEquipments.EquipmentName,
@@ -565,6 +571,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 EquipmentNameID = a.EquipmentNameID,
                 FleetId = a.FleetId,
                 AssignedDate = a.AssignedDate,
+                AssignedTime = a.AssignedTime,
+                ReturnedTime = a.ReturnedTime,
                 RequestDesc = " -- " + a.EquipmentName + " -- " + a.Quantity,
                 EquipmentName = a.EquipmentName,
                 //Type = a.Type,
@@ -728,7 +736,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     assignedEquip.EndOdometer = assignedEquipment.EndOdometer;
                     assignedEquip.ReturnDate = DateTime.Now;
-                    
+                    assignedEquip.ReturnedTime = assignedEquipment.ReturnedTime;
                     assignedEquip.ModifiedBy = User.Identity.Name;
                     assignedEquip.LastModified = DateTime.Now;
                     assignedEquip.NetOdometer = assignedEquipment.EndOdometer - assignedEquipment.StartOdometr;

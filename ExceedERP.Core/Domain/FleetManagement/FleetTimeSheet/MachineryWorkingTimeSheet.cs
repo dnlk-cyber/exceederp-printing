@@ -139,9 +139,15 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal FinalEHR { get; set; }
         public decimal DifferenceEHR { get; set; }
         public decimal FuelKMR { get; set; }
+        public ExcavatorWorkType? ExcavatorWorkType { get; set; }
         public decimal? MaintenanceFuel { get; set; }
         public DownReasonList? ReasonForDown { get; set; }
         public IdleReasonList? ReasonForIdle { get; set; }
+    }
+    public enum ExcavatorWorkType
+    {
+        Jackhammer,
+        Akafa
     }
 
 }

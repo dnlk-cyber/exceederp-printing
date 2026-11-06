@@ -42,6 +42,7 @@
                                                    .Enable(false)
                                                    .AutoBind(false)
                                                    .CascadeFrom("EquipmentIdentityID")
+                                                   .Events(ev => ev.Change("onRentEquipmentTypeChange").DataBound("onRentEquipmentTypeChange"))
                 )
             </div>
         </div>
@@ -94,6 +95,16 @@
                                                          .OptionLabel(" Select ")
                                                          .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.RentType))))
                 @Html.ValidationMessageFor(model => model.RentType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2" id="dayTypeGroup" style="display:none">
+        <div class="form-group">
+            <label>Day Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.DayType)
+                                                         .OptionLabel(" Select ")
+                                                         .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.RentDayType))))
             </div>
         </div>
     </div>

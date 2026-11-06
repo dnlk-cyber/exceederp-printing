@@ -72,11 +72,13 @@
                             .DataTextField("Text")
                             .DataValueField("Value")
                             .Filter(FilterType.Contains)
+                            .ValuePrimitive(true)
                             .OptionLabel("Select")
                             .DataSource(d => d.Read(r => r.Action("GetFleetForPlanAndEvaluation", "FleetManagementDataProvider")
                                 .Data("sendForgery")
                                 .Data("filterPlateNo"))
                                 .ServerFiltering(false))
+                                
                             .HtmlAttributes(new { style = "width:100%", onchange = "onPlateNumberChange()" }) // Add onchange event
                 )
             </div>
@@ -185,6 +187,7 @@
                 .DataTextField("Text")
                 .DataValueField("Value")
                 .Filter(FilterType.Contains)
+                .ValuePrimitive(true)
                 .OptionLabel("Select Operator")
                 .DataSource(d => d.Read(r => r.Action("GetOperatorForVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery"))
                 .ServerFiltering(false))
@@ -201,6 +204,7 @@
                 .DataTextField("Text")
                 .DataValueField("Value")
                 .Filter(FilterType.Contains)
+                .ValuePrimitive(true)
                 .OptionLabel("Select Operator")
                 .DataSource(d => d.Read(r => r.Action("GetOperatorForVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery"))
                 .ServerFiltering(false)).ValuePrimitive(true)

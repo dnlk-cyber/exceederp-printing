@@ -1,5 +1,6 @@
 ﻿
 @using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
+@using ExceedERP.Core.Domain.FleetManagement
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -167,7 +168,24 @@
                                             @*<li>@Html.ActionLink("Time Sheet", "Index", "DistributionTimeSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>*@
                                             <li>@Html.ActionLink("Driver Transfer", "Index", "DriverTransfer", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
                                             <li>@Html.ActionLink("Drivers Assignment", "Index", "DriverAssignment", new { area = "FleetManagement" }, new { target = "_blank" })</li>
-                                            <li>@Html.ActionLink("Site Transfer", "Index", "SitesVehicleTransfer", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
+                                        }
+                                        @if (HttpContext.Current.User.IsInRole(FleetManagementRoles.ResourceRequestor)
+                                           || HttpContext.Current.User.IsInRole(FleetManagementRoles.ResourceRequestChecker)
+                                           || HttpContext.Current.User.IsInRole(FleetManagementRoles.ResourceRequestApprover))
+                                        {
+                                            <li>@Html.ActionLink("Site Transfer Request", "Index", "SitesVehicleTransfer", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
+                                        }
+                                        @if (HttpContext.Current.User.IsInRole(FleetManagementRoles.ResourceDistributor)
+                                           || HttpContext.Current.User.IsInRole(FleetManagementRoles.ResourceDistributionChecker)
+                                           || HttpContext.Current.User.IsInRole(FleetManagementRoles.ResourceDistributionApprover))
+                                        {
+                                            <li>@Html.ActionLink("Site Transfer Distribution", "Index", "SitesVehicleTransferDistribution", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
+                                        }
+                                        @if (HttpContext.Current.User.IsInRole(FleetManagementRoles.RentApprover)
+                                           || HttpContext.Current.User.IsInRole(FleetManagementRoles.FleetAdmin)
+                                           || HttpContext.Current.User.IsInRole(FleetManagementRoles.ResourceApprover))
+                                        {
+                                            <li>@Html.ActionLink("Site Transfer Fleet Approval", "Index", "SitesVehicleTransferFleet", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
                                         }
                                         <li> @Html.ActionLink("Assigned Equipments", "Index", "AssignedEquipments", new { area = "FleetManagement" }, new { target = "_blank" })</li>
 

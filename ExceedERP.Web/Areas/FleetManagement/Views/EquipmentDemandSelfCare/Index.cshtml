@@ -20,6 +20,7 @@
               columns.Bound(e => e.FromBranchName).Width(150)/*.EditorTemplateName("FromBranchEditor")*/;
               columns.Bound(e => e.FromStructureName).Width(120)/*.EditorTemplateName("FromStructureEditor")*/;
               columns.Bound(e => e.ReasonForTravel).Width(120);
+              columns.Bound(e => e.Location).Width(100);
               columns.Bound(e => e.RequestDate).Width(100);
               columns.Bound(e => e.IsAssigned).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsAssigned #' " + " # if (IsAssigned) { #" + "checked='checked'" + "# } #" + " />");
               columns.Bound(e => e.Status).Width(100);

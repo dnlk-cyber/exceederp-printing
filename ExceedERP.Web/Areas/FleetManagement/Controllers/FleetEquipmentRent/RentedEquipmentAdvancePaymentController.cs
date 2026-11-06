@@ -30,6 +30,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
                 AdvanceWithTax = x.AdvanceWithTax,
                 VAT = x.VAT,
                 Tot = x.Tot,
+                DateFrom=x.DateFrom,
+                DateTo=x.DateTo,
+                IsSummaryCalculated=x.IsSummaryCalculated,
+                IsCreatedAfterUpdate = x.IsCreatedAfterUpdate,
                 CostSheetAmount=x.CostSheetAmount,
                 IsFullPayment=x.IsFullPayment,
                 FleetId = x.FleetId,
@@ -37,28 +41,59 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
                 DateCreated = x.DateCreated,
                 LastModified =x.LastModified,
                 ModifiedBy= x.ModifiedBy,
+                IsAdvancePayed=checkIfPayed(x.RentalEquipmentAdvancePaymentId)
             });
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        private bool checkIfPayed(int id)
+        {
+            var isPayed = false;
+            var advancePayement = db.RentalAdvancePaymentRequest.FirstOrDefault(x => x.AdvancePaymentId == id);
+            if(advancePayement!=null)
+            {
+                isPayed = true;
+            }
+            return isPayed;
+
         }
 
         public ActionResult Create([DataSourceRequest]DataSourceRequest request, RentalEquipmentAdvancePayment advancePayment, int id)
         {
-            var existing = db.RentalEquipmentAdvancePayment.Where(x => x.RentFromExternalEquipmentId == id).OrderByDescending(x => x.RentalEquipmentAdvancePaymentId).FirstOrDefault();
-                if(existing!=null)
+            //var existing = db.RentalEquipmentAdvancePayment.Where(x => x.RentFromExternalEquipmentId == id).OrderByDescending(x => x.RentalEquipmentAdvancePaymentId).FirstOrDefault();
+            //    if(existing!=null)
+            //{
+            //    if(existing.IsFullPayment)
+            //    {
+            //        if(existing.CostSheetAmount<existing.AdvancePayed)
+            //        {
+            //            ModelState.AddModelError("not completed", "Previous agreement is not completed");
+            //        }
+            //    }
+            //    if(!existing.IsFullPayment)
+            //    {
+            //        ModelState.AddModelError("not completed", "Advance payment is already payed for this equipment");
+            //    }
+            //}
+            var equipment = db.RentFromExternalEquipments.FirstOrDefault(x => x.RentFromExternalEquipmentId == id);
+            if (advancePayment.IsFullPayment)
             {
-                if(existing.IsFullPayment)
+                var glPeriod = db.GLPeriods.FirstOrDefault(x =>
+                    x.DateFrom <= advancePayment.DateFrom &&
+                    x.DateTo >= advancePayment.DateTo
+                );
+                if(glPeriod==null)
                 {
-                    if(existing.CostSheetAmount<existing.AdvancePayed)
-                    {
-                        ModelState.AddModelError("not completed", "Previous agreement is not completed");
-                    }
+                    ModelState.AddModelError("out of range", "The selected dates are not with in the same period");
                 }
-                if(!existing.IsFullPayment)
+                var existingAdvance = db.RentalEquipmentAdvancePayment.FirstOrDefault(x => x.FleetId == equipment.FleetId.ToString() && x.DateTo > advancePayment.DateFrom);
+                if (existingAdvance != null)
                 {
-                    ModelState.AddModelError("not completed", "Advance payment is already payed for this equipment");
+                    ModelState.AddModelError("date mismuch", "You have advance payed whose date to is after the selected date from");
                 }
             }
-            var equipment = db.RentFromExternalEquipments.FirstOrDefault(x => x.RentFromExternalEquipmentId == id);
+
+            
+
                 if(ModelState.IsValid)
             {
                 var entity = new RentalEquipmentAdvancePayment()
@@ -66,10 +101,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
                     RentFromExternalEquipmentId = id,
                     FleetId = equipment.FleetId.ToString(),
                     AdvanceWithTax = advancePayment.AdvancePayed * equipment.Vat + advancePayment.AdvancePayed,
+                    DateFrom = advancePayment.DateFrom,
+                    DateTo = advancePayment.DateTo,
                     AdvancePayed = advancePayment.AdvancePayed,
                     VAT = advancePayment.AdvancePayed*equipment.Vat,
                     //Tot = advancePayment.AdvancePayed*equipment.Tot,
                     IsFullPayment = advancePayment.IsFullPayment,
+                    IsCreatedAfterUpdate = true,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now
                 };
@@ -81,12 +119,35 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
         }
         public ActionResult Update([DataSourceRequest]DataSourceRequest request, RentalEquipmentAdvancePayment advancePayment)
         {
-            var existing = db.RentalEquipmentAdvancePayment.First(x => x.RentalEquipmentAdvancePaymentId == advancePayment.RentalEquipmentAdvancePaymentId);
+            var existing = db.RentalEquipmentAdvancePayment.FirstOrDefault(x => x.RentalEquipmentAdvancePaymentId == advancePayment.RentalEquipmentAdvancePaymentId&&!x.IsSummaryCalculated);
+            if(existing==null)
+            {
+                    ModelState.AddModelError("summary calculated", "Timesheet summary is already generated you can not update this");
+                
+            }
             var equipment = db.RentFromExternalEquipments.FirstOrDefault(x => x.RentFromExternalEquipmentId == advancePayment.RentFromExternalEquipmentId);
+            if (advancePayment.IsFullPayment)
+            {
+                var glPeriod = db.GLPeriods.FirstOrDefault(x =>
+                    x.DateFrom <= advancePayment.DateFrom &&
+                    x.DateTo >= advancePayment.DateTo
+                );
+                if (glPeriod == null)
+                {
+                    ModelState.AddModelError("out of range", "The selected dates are not with in the same period");
+                }
+                var existingAdvance = db.RentalEquipmentAdvancePayment.FirstOrDefault(x => x.FleetId == equipment.FleetId.ToString() && x.DateTo > advancePayment.DateFrom);
+                if (existingAdvance != null)
+                {
+                    ModelState.AddModelError("date mismuch", "You have advance payed whose date to is after the selected date from");
+                }
+            }
             if (ModelState.IsValid)
             {
                     existing.AdvancePayed = advancePayment.AdvancePayed;
                     existing.FleetId = equipment.FleetId.ToString();
+                    existing.DateFrom = advancePayment.DateFrom;
+                    existing.DateTo = advancePayment.DateTo;
                     existing.IsFullPayment = advancePayment.IsFullPayment;
                     existing.ModifiedBy = User.Identity.Name;
                     existing.DateCreated = DateTime.Now;
@@ -98,7 +159,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
         }
         public ActionResult Destroy([DataSourceRequest]DataSourceRequest request, RentalEquipmentAdvancePayment advancePayment)
         {
-            var existing = db.RentalEquipmentAdvancePayment.First(x => x.RentalEquipmentAdvancePaymentId == advancePayment.RentalEquipmentAdvancePaymentId);
+            var existing = db.RentalEquipmentAdvancePayment.FirstOrDefault(x => x.RentalEquipmentAdvancePaymentId == advancePayment.RentalEquipmentAdvancePaymentId && !x.IsSummaryCalculated);
+            if (existing == null)
+            {
+                ModelState.AddModelError("summary calculated", "Timesheet summary exists you can not update this");
+
+            }
             ModelState.Remove("AdvanceWithTax");
                 if(ModelState.IsValid)
             {

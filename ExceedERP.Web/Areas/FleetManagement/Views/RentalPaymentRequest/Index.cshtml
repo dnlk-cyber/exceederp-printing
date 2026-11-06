@@ -10,20 +10,21 @@
                     .Name("grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(c => c.RentalPaymentRequestId).Title("#").Filterable(false).Width(50);
-
+                        columns.Bound(c => c.RentalPaymentRequestId).Filterable(true).Title("#").Width(50);
                         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullName").Title("Employee Name").Width(130);
-                        columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(130);
-                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Id", "Name").Title("Business Unit").Width(120);
+                        columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Supplier Name").Width(130);
+                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Id", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Business Unit").Width(120);
                         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Title("Branch").Width(110);
                         columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GLPeriod"], "GLPeriodId", "Name").Title("Period").Width(110);
                         columns.ForeignKey(c => c.GLFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "GlFiscalYearId", "Name").Title("FiscalYear").Width(110);
+                        columns.ForeignKey(c => c.PlateNumber, (IEnumerable)ViewData["Fleet"], "Value", "Text").Title("Plate Number").Width(110);
                         columns.Bound(c => c.DurationFrom).Title("Duration From").Width(100);
                         columns.Bound(c => c.DurationTo).Title("Duration To").Width(120);
                         columns.Bound(c => c.ReasonofPayment).Title("Reason of Payment").Width(120);
                         columns.Bound(c => c.RequestDate).Title("Request Date").Width(100);
                         columns.Bound(c => c.Refference).Title("Refference").Width(100);
                         columns.Bound(c => c.WithHoldingTax).Format("{0:P0}").Title("Witholding Tax").Width(100);
+                        columns.Bound(c => c.Status).Title("Status").Width(75);
                         columns.Bound(c => c.Remark).Title("Remark").Width(75);
                         columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); command.Custom("Authorize").Click("AuthorizePaymentRequest");
                             command.Custom("Reject").Click("RejectAuthorization");
@@ -351,7 +352,6 @@
                 // toastr.warnning(result.Message);
                 alert(result.Message);
                 var recordStatus = result.Status;
-                location.reload(true);
             }, //end succ
             error: function (result) {
                 alert(result);
@@ -415,6 +415,9 @@
             if (!masterDataItem.IsDepartmentOnlineApproved) {
                 $(this).find(".k-grid-Authorize").remove();
                 $(this).find(".k-grid-Reject").remove();
+            }
+            if (masterDataItem.IsDepartmentOnlineApproved &&!masterDataItem.IsAuthorized) {
+                $(this).find(".k-state-DepApproved").remove();
             }
             if (masterDataItem.IsDepartmentOnlineApproved && masterDataItem.IsAuthorized) {
                 $(this).find(".k-grid-Authorize").remove();
@@ -555,7 +558,6 @@
         },
         success: function (res) {
             alert(res.Message);
-            location.reload(true);
         },
         error: function (xhr) {
             console.log(xhr.responseText);
@@ -572,7 +574,6 @@
             success: function (result) {
 
                 alert(result.Message)
-                location.reload(true);
             },
             error: function (result) {
                 alert(result.Message);
@@ -611,8 +612,11 @@ function RejectAuthorization(e) {
 
     .row .col-sm-2 {
         width: 150px;
+   }
+    .k-state-DepApproved
+    {
+        background-color:cadetblue;
     }
-
     .row {
         margin: auto;
     }

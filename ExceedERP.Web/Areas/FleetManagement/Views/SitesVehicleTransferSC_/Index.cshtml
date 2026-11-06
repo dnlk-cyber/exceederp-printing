@@ -1,0 +1,172 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.FleetManagement
+@using ExceedERP.Core.Domain.FleetManagement.FleetResource
+@model ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+@{
+    var user = HttpContext.Current.User;
+    var canRequest = user.IsInRole(FleetManagementRoles.ResourceRequestor);
+    var canCheck = user.IsInRole(FleetManagementRoles.ResourceRequestChecker);
+    var canApprove = user.IsInRole(FleetManagementRoles.ResourceRequestApprover);
+}
+<legend>Equipment Request</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.RequestNumber).Title("Request No").Width(110);
+        columns.Bound(e => e.RequestDate).Format("{0:yyyy-MM-dd}").Width(110);
+        columns.ForeignKey(e => e.EquipmentIdentityID, (IEnumerable)ViewData["EquipmentCategory"], "Value", "Text").Title("Category").Width(130);
+        columns.ForeignKey(e => e.EquipmentTypeID, (IEnumerable)ViewData["EquipmentType"], "Value", "Text").Title("Type").Width(130);
+        columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Title("Equipment Name").Width(140);
+        columns.ForeignKey(e => e.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Title("Destination Site").Width(140);
+        columns.Bound(e => e.StartingDate).Format("{0:yyyy-MM-dd}").Width(110);
+        columns.Bound(e => e.ToDate).Format("{0:yyyy-MM-dd}").Width(110);
+        columns.Bound(e => e.TransferReason).Width(150);
+        columns.Bound(e => e.PlateNo).Title("Assigned Plate No").Filterable(false).Sortable(false).Width(130);
+        columns.Bound(e => e.Status).Width(150);
+        if (canRequest)
+        {
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+        }
+    })
+    .ToolBar(toolbar =>
+    {
+        if (canRequest) { toolbar.Create().Text("New Request"); }
+    })
+    .Editable(editable =>
+    {
+        editable.Window(w => w.Title("Site Transfer Request"));
+        editable.Mode(GridEditMode.PopUp).TemplateName("SitesVehicleTransferEditor");
+        editable.DisplayDeleteConfirmation("Are You Sure To Remove This Request?");
+    })
+    .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+    .Sortable()
+    .Filterable()
+    .Scrollable(h => h.Height(500))
+    .ClientDetailTemplateId("template")
+    .Events(events => events.DataBound("onDataBound"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Sort(sort => sort.Add(f => f.DateCreated).Descending())
+        .Model(model =>
+        {
+            model.Id(p => p.SitesVehicleTransferID);
+            model.Field(p => p.RequestNumber).Editable(false);
+            model.Field(p => p.Status).Editable(false);
+            model.Field(p => p.PlateNo).Editable(false);
+        })
+        .Events(ev => ev.Error("error_handler(\"grid\")").RequestStart("onRequestStart(\"grid\")").RequestEnd("onRequestEnd(\"grid\")"))
+        .Create(update => update.Action("SitesVehicleTransfer_Create", "SitesVehicleTransferSC_", new { area = "FleetManagement" }).Data("sendForgery"))
+        .Read(read => read.Action("SitesVehicleTransfer_Read", "SitesVehicleTransferSC_", new { area = "FleetManagement" }).Data("sendForgery"))
+        .Update(update => update.Action("SitesVehicleTransfer_Update", "SitesVehicleTransferSC_", new { area = "FleetManagement" }).Data("sendForgery"))
+        .Destroy(update => update.Action("SitesVehicleTransfer_Destroy", "SitesVehicleTransferSC_", new { area = "FleetManagement" }).Data("sendForgery"))
+    )
+)
+
+<script id="template" type="text/kendo-tmpl">
+    <div class="box">
+        <div class="box-col">
+            @*<a href='@Url.Action("SiteVehicleTransferSC_", "FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+            @if (canCheck)
+            {
+                <text>
+                    # if (!IsRequestChecked && Status != "@SitesVehicleTransferStatus.Rejected") { #
+                    <a href="javascript:void(0)" onclick="workflowAction('CheckRequest', '#=SitesVehicleTransferID#')" title="Check Request"><i class="fa fa-check-square-o fa-2x"></i></a>
+
+                    # } #
+                </text>
+            }
+            @if (canApprove)
+            {
+                <text>
+                    # if (IsRequestChecked && !IsRequestApproved) { #
+                    <a href="javascript:void(0)" onclick="workflowAction('ApproveRequest', '#=SitesVehicleTransferID#')" title="Approve Request"><i class="fa fa-thumbs-up fa-2x"></i></a>
+                    <a href="javascript:void(0)" onclick="rejectRequest('#=SitesVehicleTransferID#')" title="Reject Request"><i class="fa fa-times-circle fa-2x" style="color:rgb(201,48,44)"></i></a>
+                    # } #
+                </text>
+            }
+            <a href='@Url.Action("EquipmentRequestDesign","FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group"><label>Requested By:</label> <span>#=RequestedBy || ''#</span></div>
+            <div class="form-group"><label>Request Date:</label> <span>#=RequestDate ? kendo.toString(kendo.parseDate(RequestDate), 'yyyy-MM-dd') : ''#</span></div>
+            <div class="form-group"><label>Description:</label> <span>#=Description || ''#</span></div>
+            <div class="form-group"><label>Remark:</label> <span>#=Remark || ''#</span></div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group"><label>Checked By:</label> <span>#=RequestCheckedBy || ''#</span> <span>#=RequestCheckedDate ? kendo.toString(kendo.parseDate(RequestCheckedDate), 'yyyy-MM-dd') : ''#</span></div>
+            <div class="form-group"><label>Approved By:</label> <span>#=RequestApprovedBy || ''#</span> <span>#=RequestApprovedDate ? kendo.toString(kendo.parseDate(RequestApprovedDate), 'yyyy-MM-dd') : ''#</span></div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group"><label>Vehicle Assigned:</label> <span>#=IsRequestReceived ? (PlateNo || 'Yes') : 'Not yet'#</span></div>
+            <div class="form-group"><label>Fleet Approved:</label> <span>#=IsOnlineApproved ? 'Yes' : 'No'#</span></div>
+        </div>
+    </div>
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container { width: 760px; }
+</style>
+
+<script type="text/javascript">
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsRequestChecked == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            if (dataItem.IsOnlineApproved == true) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+        });
+    }
+
+    var workflowUrls = {
+        CheckRequest: '@Url.Action("CheckRequest", "SitesVehicleTransferSC_", new { area = "FleetManagement" })',
+        ApproveRequest: '@Url.Action("ApproveRequest", "SitesVehicleTransferSC_", new { area = "FleetManagement" })'
+    };
+    function workflowAction(action, id) {
+        $.ajax({
+            type: "POST",
+            url: workflowUrls[action],
+            data: $.extend({ id: id }, sendForgery()),
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status == "OK") { $("#grid").data("kendoGrid").dataSource.read(); }
+            },
+            error: function () { alert("Error occurred"); }
+        });
+    }
+
+    function rejectRequest(id) {
+        var remark = prompt("Rejection remark:");
+        if (remark === null) { return; }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RejectRequest", "SitesVehicleTransferSC_", new { area = "FleetManagement" })',
+            data: $.extend({ id: id, remark: remark }, sendForgery()),
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status == "OK") { $("#grid").data("kendoGrid").dataSource.read(); }
+            },
+            error: function () { alert("Error occurred"); }
+        });
+    }
+
+    function filterEquipmentTypes() {
+        return { equipmentIdentityId: $("#EquipmentIdentityID").val(), search: $("#EquipmentTypeID").data("kendoDropDownList").filterInput.val() };
+    }
+    function filterEquipmentNames() {
+        return { equipmentTypeId: $("#EquipmentTypeID").val(), text: $("#EquipmentNameID").data("kendoDropDownList").filterInput.val() };
+    }
+    function filterBranch() {
+        return { searchKey: $("#BranchId").data("kendoDropDownList").filterInput.val() };
+    }
+</script>

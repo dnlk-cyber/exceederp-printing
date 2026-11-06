@@ -50,6 +50,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                  }).AsQueryable();
                 ViewData["BusinessUnits"] = businessUnits;
             }
+            var vds = db.VehicleDistributionSecondApprovalSetting.FirstOrDefault(x=>x.NeedsSecondApproval);
+            ViewBag.Setting = vds != null;
             ViewData["Fleets"] = db.Fleets.Select(s => new {
                 Id = s.FleetsID,
                 s.OrgBranchName,
@@ -224,6 +226,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 FromStructureName = v.FromStructureName,
                 EquipmentStatus = v.EquipmentStatus,
                 Reference = v.Reference,
+                IsSecondSendForApproval = v.IsSecondSendForApproval,
+                IsSecondOnlineApproved = v.IsSecondOnlineApproved,
                 IsOnlineApproved = v.IsOnlineApproved,
                 IsSendForApproval = v.IsSendForApproval,
                 CreatedBy = v.CreatedBy,

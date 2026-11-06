@@ -182,7 +182,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 phoneNumber = x.phoneNumber,
                 PlateNumber = x.PlateNumber,
                 ReasonForTravel = x.ReasonForTravel,
+                Location = x.Location,
                 Remark = x.Remark,
+                RequestTime = x.RequestTime,
                 RequestDate = x.RequestDate,
                 RequestingBranchName = x.RequestingBranchName,
                 RequestingStructureName = x.RequestingStructureName,
@@ -206,21 +208,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult VehicleDemand_Create([DataSourceRequest] DataSourceRequest request, VehicleDemand VehicleDemand, string id)
+        public ActionResult VehicleDemand_Create([DataSourceRequest] DataSourceRequest request, VehicleDemand vd, string id)
         {
             #region data 
-            if (VehicleDemand.EmployeeId == 0)
+            if (vd.EmployeeId == 0)
             {
                 ModelState.AddModelError("requester", "Please select requestor");
             }
-            if (VehicleDemand.EmployeeId != 0)
+            if (vd.EmployeeId != 0)
             {
-                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == VehicleDemand.EmployeeId && x.isCurrent);
+                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == vd.EmployeeId && x.isCurrent);
                 if (placement != null)
                 {
-                    VehicleDemand.OrgStructureId = placement.OrgStructureId;
-                    VehicleDemand.BranchId = placement.BranchId;
-                    VehicleDemand.BusinessUnitId = placement.BusinessUnitId;
+                    vd.OrgStructureId = placement.OrgStructureId;
+                    vd.BranchId = placement.BranchId;
+                    vd.BusinessUnitId = placement.BusinessUnitId;
                 }
                 else
                 {
@@ -232,12 +234,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             //VehicleDemand.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
             #endregion
             ModelState.Remove("VehicleDemandId");
-           
-            if (VehicleDemand.ReasonForTravel == null)
+           // vd.RequestTime = DateTime.Parse(vd.RequestTime).ToString("HH:mm");
+            if (vd.ReasonForTravel == null)
             {
                 ModelState.AddModelError(string.Empty, "Place Added Reason for Travel");
             }
-            if (VehicleDemand.StartingDate > VehicleDemand.ToDate)
+            if (vd.StartingDate > vd.ToDate)
             {
                 ModelState.Clear();
                 ModelState.AddModelError("", "Start Date is Above End Date");
@@ -250,30 +252,30 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     RequestNumber = int.Parse(vehicleDemand.RequestNumber.ToString()) + 1;
                 }
-                VehicleDemand.Status = MaintenanceConst.Pending;
-                VehicleDemand.VehicleDemandId = Guid.NewGuid();
-                VehicleDemand.RequestNumber = RequestNumber;
+                vd.Status = MaintenanceConst.Pending;
+                vd.VehicleDemandId = Guid.NewGuid();
+                vd.RequestNumber = RequestNumber;
                 if(id!=null)
                 {
-                    VehicleDemand.ServiceCenterJobId = id;
+                    vd.ServiceCenterJobId = id;
                 }
-                VehicleDemand.DateCreated = DateTime.Now;
-                VehicleDemand.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-                
-                VehicleDemand.CreatedBy = User.Identity.Name;
+                vd.DateCreated = DateTime.Now;
+                vd.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+
+                vd.CreatedBy = User.Identity.Name;
                 //VehicleDemand.BranchId = 3;
-                VehicleDemand.BranchId = GetBranch(VehicleDemand.EmployeeId).BranchId;
+                vd.BranchId = GetBranch(vd.EmployeeId).BranchId;
                 //VehicleDemand.BusinessUnitId = 2;
-                VehicleDemand.BusinessUnitId = GetCompStruct(VehicleDemand.EmployeeId).OrgStructureId;
-                if (VehicleDemand != null)
+                vd.BusinessUnitId = GetCompStruct(vd.EmployeeId).OrgStructureId;
+                if (vd != null)
                 {
-                    _VehicleDemandService.Insert(VehicleDemand);
+                    _VehicleDemandService.Insert(vd);
                     #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Equipment demand registration", "Success", User.Identity.Name, $"created equipment demand {VehicleDemand.VehicleDemandId}", Modules.FleetManagement);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Equipment demand registration", "Success", User.Identity.Name, $"created equipment demand {vd.VehicleDemandId}", Modules.FleetManagement);
                     #endregion
                 }
             }
-            return Json(new[] { VehicleDemand }.ToDataSourceResult(request,ModelState));
+            return Json(new[] { vd }.ToDataSourceResult(request,ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]

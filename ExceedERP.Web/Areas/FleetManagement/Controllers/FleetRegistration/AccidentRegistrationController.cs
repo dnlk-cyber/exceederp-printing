@@ -63,6 +63,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 CostcoveredbyInsurance = a.CostcoveredbyInsurance,
                 CostcoveredbyOperator = a.CostcoveredbyOperator,
                 CostcoveredbyOtherBodies = a.CostcoveredbyOtherBodies,
+                CoveredByOtherBodies = a.CoveredByOtherBodies,
                 Description = a.Description,
                 LevelOfDamage = a.LevelOfDamage,
                 WitnessInYourCar = a.WitnessInYourCar,

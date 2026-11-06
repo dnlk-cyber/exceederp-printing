@@ -104,8 +104,7 @@
                 }
                 //columns.Bound(c => c.TimeSheetStatus).Width(150);
                 columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
-                if (IsMCG || IsMidroc)
-                {
+
                     columns.Template(@<text></text>)
                              .ClientTemplate(
                              "# if (!TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
@@ -133,7 +132,7 @@
                              "# } #")
                              .Title("Reject")
                              .Width(60);
-                    }
+                    
                 })
    .ToolBar(toolbar =>
    {
@@ -143,9 +142,7 @@
               <span class="k-icon k-i-plus"></span>
               Add New Record
           </a>
-          <!-- Conditional content -->
-          @if (IsMidroc || IsMCG)
-                      {
+          <!-- Conditional content -->      
 
               <label style="margin-left:20px;">Branch:</label>
               @(Html.Kendo().DropDownList()
@@ -181,7 +178,7 @@
                       onclick="RejectSelected()">
                   Reject Selected
               </button>
-                      }
+                      
          
 
       </text>);
@@ -192,6 +189,7 @@
                                   .Pageable()
                                   .Events(e => e.DataBound("dataBound"))
                                   .Events(e => e.DetailExpand("onDetailExpand"))
+                                  .Events(e => e.Edit("onTimesheetEdit"))
                                   .Filterable()
                                   .Scrollable(s => s.Height(550))
                                   .DataSource(dataSource => dataSource
@@ -812,8 +810,15 @@ $(document).ready(function () {
         }
     });
 
+    function onTimesheetEdit(e) {
+        if (!e.model.isNew() && e.model.FleetsID) {
+            toggleExternalOperator(e.model.FleetsID);
+        }
+    }
     function onFleetChange(e){
-    var fleetId = this.value();
+        toggleExternalOperator(this.value());
+    }
+    function toggleExternalOperator(fleetId) {
     if (!fleetId) return;
     $.ajax({
         url: '@Url.Action("GetFleetIsExternal", "FleetManagementDataProvider")',

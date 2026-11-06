@@ -2292,7 +2292,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         ServiceName = s.ServiceName,
                         Remark = job.Odometer.ToString(),
                         DateCreated = s.DateCreated,
-                        Section = GetSection(s.ServiceID),
+                        //Section = GetSection(s.ServiceID),
                         Efficency = JobCost
 
                     }));

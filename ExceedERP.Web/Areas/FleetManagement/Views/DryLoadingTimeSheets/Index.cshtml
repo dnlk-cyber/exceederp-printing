@@ -59,9 +59,9 @@
           columns.Bound(c => c.TimeSheetStatus).Width(100);
           //columns.Bound(c => c.TimeSheetStatus).Width(100);
           columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
-          if (IsMCG || isMIDROC)
-          {
-              columns.Template(@<text></text>)
+          //if (IsMCG || isMIDROC)
+          //{
+          columns.Template(@<text></text>)
                                .ClientTemplate(
                                "# if (!TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
                                    "<input type='checkbox' class='approveCheckbox' />" +
@@ -88,7 +88,7 @@
                                "# } #")
                                .Title("Reject")
                                .Width(60);
-              }
+              //}
           })
                       .ToolBar(toolbar =>
                       {
@@ -98,9 +98,6 @@
                                 <span class="k-icon k-i-plus"></span>
                                 Add New Record
                             </a>
-                            <!-- Conditional content -->
-                            @if (isMIDROC || IsMCG)
-                                        {
                                 <label style="margin-left:20px;">Branch:</label>
                                 @(Html.Kendo().DropDownList()
                                                                     .Name("branchDropdown")
@@ -137,7 +134,7 @@
                                         onclick="RejectApproved()">
                                     Reject Approved
                                 </button>
-                                        }
+                                        
                             /**/
                             /**/
                             /**/

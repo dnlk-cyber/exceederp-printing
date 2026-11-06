@@ -77,6 +77,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 {
                     if(rentalPaymentRequestDepartmentValidation.Status == ApprovalStatuses.Approve)
                     {
+                        record.IsFinalApproval = true;
                         if (record.IsFinalApproval)
                         {
                             record.Status = "Approved";

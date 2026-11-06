@@ -260,12 +260,22 @@ public ActionResult Index(TimeSheetType dumpTruck)
                     .Select(x => x.ChasisNumber)
                     .FirstOrDefault();
                 }
+                DateTime startDate = dumpTruckTimeSheet.Date.Date;
+                DateTime endDate = startDate.AddDays(1);
+
                 var lubItems = db.IssueItems
                 .Where(ii =>
-                        ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
-                        && OilLubItems.Contains(ii.ItemCode)).ToList();
+                ii.Issue.PlateNo == plateNo
+                && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
+                && OilLubItems.Contains(ii.ItemCode))
+                .ToList();
+                //var lubItems = db.IssueItems
+                //.Where(ii =>
+                //        ii.Issue.PlateNo == plateNo
+                //        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                //            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                //        && OilLubItems.Contains(ii.ItemCode)).ToList();
                 dumpTruckTimeSheet.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 dumpTruckTimeSheet.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
                 plateNo = db.Fleets
@@ -289,8 +299,8 @@ public ActionResult Index(TimeSheetType dumpTruck)
                 var issuedOilItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && oilItems.Contains(ii.ItemCode)).ToList();
                 dumpTruckTimeSheet.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 dumpTruckTimeSheet.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -315,20 +325,20 @@ public ActionResult Index(TimeSheetType dumpTruck)
                 var issuedSpareItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allSparePartItems.Contains(ii.ItemCode)).ToList();
                 var issuedBatteryItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allBatteryItems.Contains(ii.ItemCode)).ToList();
                 var issuedTyreItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allTyreItems.Contains(ii.ItemCode)).ToList();
                 dumpTruckTimeSheet.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
                 dumpTruckTimeSheet.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -652,11 +662,13 @@ public ActionResult Index(TimeSheetType dumpTruck)
                     .Select(x => x.ChasisNumber)
                     .FirstOrDefault();
                 }
+                DateTime startDate = dumpTruckTimeSheet.Date.Date;
+                DateTime endDate = startDate.AddDays(1);
                 var lubItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && OilLubItems.Contains(ii.ItemCode)).ToList();
                 dumpTruckTimeSheet.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 dumpTruckTimeSheet.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -681,8 +693,8 @@ public ActionResult Index(TimeSheetType dumpTruck)
                 var issuedOilItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && oilItems.Contains(ii.ItemCode)).ToList();
                 dumpTruckTimeSheet.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 dumpTruckTimeSheet.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -707,20 +719,20 @@ public ActionResult Index(TimeSheetType dumpTruck)
                 var issuedSpareItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allSparePartItems.Contains(ii.ItemCode)).ToList();
                 var issuedBatteryItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allBatteryItems.Contains(ii.ItemCode)).ToList();
                 var issuedTyreItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(dumpTruckTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allTyreItems.Contains(ii.ItemCode)).ToList();
                 dumpTruckTimeSheet.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
                 dumpTruckTimeSheet.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;

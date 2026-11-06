@@ -5,7 +5,9 @@
 @using ExceedERP.Core.Domain.Inventory
 <legend> Equipment Distribution </legend>
 
-
+@{
+    bool neesSecondApproval = ViewBag.Setting == true;
+}
 <script type="text/javascript">
 
     function filterEquipmentIdentity() {
@@ -112,8 +114,12 @@
                                                                 <div class="box-col">
                                                                     #if(IsOnlineApproved)
                                                                     {#
-
                                                                     <a href='@Url.Action("EquipmentDistribution", "FleetPrint")/?Id=#=VehicleDistributionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                                    #}
+                                                                    if(IsOnlineApproved&&!IsSecondSendForApproval)
+                                                                    {#
+
+                                                                    <a onclick='return sendForSecondApproval("#=VehicleDistributionID#")' href="\#" title="Send For Second Approval"><i class="fa fa-share-square fa-2x"></i></a>
                                                                     #}#
                                                                     # if (IsSendForApproval == false || IsSendForApproval == "false")
                                                                     {#
@@ -125,7 +131,7 @@
                                                             <button type="button" class="btn btn-primary">Duration <span class="badge"> #=Remark#</span></button>
 
                                                             <div class="row">
-                                                                <div class="col-md-1">
+                                                                <div class="col-md-1"> 
                                                                 </div>
                                                                 <div class="col-md-6" style="margin-top:20px;">
                                                                     <ul>
@@ -287,8 +293,13 @@
                                                     @<text>@FuelReqisition()</text>);
                                                                                                                 items.Add().Text("Approval").Content(
                                                         @<text>@Approval()</text>);
+                                                                            if (neesSecondApproval)
+                                                                            {
+                                                                                items.Add().Text("Second Approval").Content(
+                                                        @<text>@SecondApproval()</text>);
+                                                                                }
 
-                                                                                                                    })
+                                                                            })
 
                                                                 .ToClientTemplate())
 </script>
@@ -393,6 +404,42 @@
                                 )
                                 .ToClientTemplate())
 }
+@helper SecondApproval()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistributionSecondValidation>()
+                            .Name("VehicleDistributionSecApproval#=VehicleDistributionID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                                columns.Bound(o => o.remark).Title("Remark").Width(200);
+                                columns.Bound(c => c.CreatedBy).Width(150);
+                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                columns.Command(command => { command.Edit(); }).Width(250);
+                            }).ToolBar(toolbar => toolbar.Create()).Events(ev =>
+                            {
+                                ev.DataBound("approveonSecDataBound");
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(5)
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.VehicleDistributionID);
+                                    model.Field(p => p.CreatedBy).Editable(false);
+                                    model.Field(p => p.DateCreated).Editable(false);
+                                })
+                                .Events(ev => ev
+                                .Error("error_handler(\"VehicleDistributionSecApproval#=VehicleDistributionID#\")")
+                                .RequestStart("onRequestStart(\"VehicleDistributionSecApproval#=VehicleDistributionID#\")")
+                                .RequestEnd("onRequestEnd(\"VehicleDistributionSecApproval#=VehicleDistributionID#\")"))
+                                .Create(update => update.Action("VehicleDistribution_SecApprove", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }).Data("sendForgery"))
+                                .Read(read => read.Action("VehicleDistributionSecApproval_Read", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }).Data("sendForgery"))
+                                .Update(update => update.Action("VehicleDistribution_SecApprove", "VehicleDistributionApproval").Data("sendForgery"))
+                                )
+                                .ToClientTemplate())
+}
 <script id="assignedItems" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
                                 .Name("tabStrip_#=RequestedEquipmentId#")
@@ -405,14 +452,13 @@
                                                                     .Name("AssignedConfirmedEquipmentgrid_#=RequestedEquipmentId#")
                                                                     .Columns(columns =>
                                                                     {
-                                                                    // columns.Bound(c => c.RequestedEquipmentId).Width(280);
-                                                                    //columns.Bound(c => c.AssignedEquipmentID).Width(280); ;
-                                                                   // columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name")
-                                                                               //.EditorTemplateName("EquipmentNameEditor").Title("Equipment Name").Width(140);
+                                                                   
                                                                                 columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["FleetsAssignedEquip"], "Id", "Name")
                                                                                 .EditorTemplateName("EquipmentAssignmentEditor").Title("Plate No").Width(140);
                                                                                 columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name")
                                                                                 .EditorTemplateName("OperatorNameEditorDist").Title("Operator Name").Width(140);
+                                                                                columns.Bound(o => o.AssignedDate).Title("Assigned Date").Width(120);
+                                                                                columns.Bound(o => o.AssignedTime).Title("Assigned Time").Width(120);
                                                                                 columns.Bound(o => o.StartOdometr).Width(120);
                                                                                 columns.Bound(o => o.EndOdometer).Width(120);
                                                                                 columns.Bound(o => o.NetOdometer).Width(120);
@@ -1383,6 +1429,8 @@
     var masterId;
     var status;
     var IsApproved;
+    var IsSecApproved;
+    var IsSecSendForApproval;
     var IsSendForApproved;
     function filterRequest() {
     return {
@@ -1478,6 +1526,8 @@
 
             reqId = masterDataItem.RequestID;
             IsApproved = masterDataItem.IsOnlineApproved;
+            IsSecApproved = masterDataItem.IsSecondOnlineApproved;
+            IsSecSendForApproval = masterDataItem.IsSecondSendForApproval;
             IsSendForApproved = masterDataItem.IsSendForApproval;
             masterId = masterDataItem.RequestID;
             codeId = masterDataItem.RequestedEquipmentId;
@@ -1648,6 +1698,21 @@
             var dataItem = grid.dataItem(this);
             if (dataItem.Status == "Approve" || IsApproved == true) {
                 console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    } function approveonSecDataBound(e) {
+        var grid = this;
+        if (IsSecApproved) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        if (!IsSecSendForApproval) {
+            grid.wrapper.find(".k-grid-add").hide();
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+           
+            if (IsSecApproved) {
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
             }
@@ -1992,7 +2057,18 @@
             }
         });
     }
+    function sendForSecondApproval(id) {
 
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VehicleDistribution_SendForSecondOnlineApproval", "VehicleDistributionApproval")',
+            data: { Id:id},
+            success: function (res) {
+                alert(res.Message);
+                location.reload(true);
+            }
+        })
+    }
 
     //------------------------------------------------------------- Fuel Requestion ----------------------------------------------------------------------
 

@@ -21,6 +21,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 
         public Guid SitesVehicleTransferID { get; set; }
 
+        [DisplayName("Request No")]
+        public string RequestNumber { get; set; }
         [Display(Name = "Equipment Category")]
         public Guid EquipmentIdentityID { get; set; }
         [Display(Name = "Equipment Type")]
@@ -28,7 +30,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [Display(Name = "Equipment Name")]
         public Guid EquipmentNameID { get; set; }
         [DisplayName(" Plate No")]
-        public Guid FleetsID { get; set; }
+        public Guid? FleetsID { get; set; }
         [DisplayName("Starting Date")]
         [Required]
         [DataType(DataType.Date)]
@@ -55,6 +57,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string Description { get; set; }
         [NotMapped]
         public string PlateNo { get; set; }
+        // Distribution editor selection; the grid id field itself is read-only on the client
+        [NotMapped]
+        public Guid? RequestId { get; set; }
         //[NotMapped]
         //public string EquipmentTypeId { get; set; }
         [DisplayName("Fuel Amount")]
@@ -72,7 +77,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string BatteryQuantity { get; set; }
         [DisplayName("Transfered Operator")]
         public string TransferedOperator { get; set; }
-        public Guid OperatorId { get; set; }
+        public Guid? OperatorId { get; set; }
         public Guid? SecondOperatorId { get; set; }
         [DisplayName("Loaded Plate No")]
         public string LoadedPlateNo { get; set; }
@@ -86,6 +91,56 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string DGMApprovedBy { get; set; }
         public DateTime? DGMApprovalDate { get; set; }
         public TransferStatus? TransferStatus {get;set;}
+
+        // Stage 1: request (equipment type/name only, no specific vehicle yet)
+        [DisplayName("Request Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? RequestDate { get; set; }
+        [DisplayName("Requested By")]
+        public string RequestedBy { get; set; }
+        public bool IsRequestChecked { get; set; }
+        [DisplayName("Checked By")]
+        public string RequestCheckedBy { get; set; }
+        public DateTime? RequestCheckedDate { get; set; }
+        public bool IsRequestApproved { get; set; }
+        [DisplayName("Approved By")]
+        public string RequestApprovedBy { get; set; }
+        public DateTime? RequestApprovedDate { get; set; }
+
+        // Stage 2: request receival - receiver assigns a specific vehicle
+        public bool IsRequestReceived { get; set; }
+        [DisplayName("Request Received By")]
+        public string RequestReceivedBy { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public bool IsDistributionChecked { get; set; }
+        [DisplayName("Distribution Checked By")]
+        public string DistributionCheckedBy { get; set; }
+        public DateTime? DistributionCheckedDate { get; set; }
+        public bool IsDistributionApproved { get; set; }
+        [DisplayName("Distribution Approved By")]
+        public string DistributionApprovedBy { get; set; }
+        public DateTime? DistributionApprovedDate { get; set; }
+
+        // Stage 3 (fleet): Accept -> SendForApproval (inherited IsSendForApproval) -> Approve (inherited IsOnlineApproved)
+        public bool IsAccepted { get; set; }
+        [DisplayName("Accepted By")]
+        public string AcceptedBy { get; set; }
+        public DateTime? AcceptedTime { get; set; }
+    }
+
+    public static class SitesVehicleTransferStatus
+    {
+        public const string Draft = "Draft";
+        public const string RequestChecked = "Request Checked";
+        public const string RequestApproved = "Request Approved";
+        public const string VehicleAssigned = "Vehicle Assigned";
+        public const string DistributionChecked = "Distribution Checked";
+        public const string WaitingFleetApproval = "Waiting Fleet Approval";
+        public const string Accepted = "Accepted";
+        public const string WaitingApproval = "Waiting Approval";
+        public const string Approved = "Approved";
+        public const string Rejected = "Rejected";
     }
     public enum TransferStatus
     {

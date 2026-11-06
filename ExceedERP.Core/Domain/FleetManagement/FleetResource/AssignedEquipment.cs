@@ -72,6 +72,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime ReturnDate { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Assigned Time")]
+        public DateTime? AssignedTime { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Returned Time")]
+        public DateTime? ReturnedTime { get; set; }
         public int VehicleDemandId { get; set; } // Parent => RequestEquipment 
     }
     public partial class AssignedEquipmentDTO : Operations

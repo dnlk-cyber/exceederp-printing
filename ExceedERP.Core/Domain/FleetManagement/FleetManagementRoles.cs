@@ -31,6 +31,10 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string ResourceUser = "Resource_User";
         public const string ResourceRequestApprover = "Resource_Request_Approver";
         public const string ResourceApprover = "Resource_Approver";
+        // Site vehicle transfer workflow
+        public const string ResourceRequestChecker = "Resource_Request_Checker";
+        public const string ResourceDistributionChecker = "Resource_Distribution_Checker";
+        public const string ResourceDistributionApprover = "Resource_Distribution_Approver";
         public const string TyreRequestor = "Tyre_Requestor";
         public const string TyreApprover = "Tyre_Approver";
         public const string TyreUser = "Tyre_User";

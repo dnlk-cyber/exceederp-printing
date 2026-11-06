@@ -5,172 +5,236 @@
 }
 <legend>Driver Assignment</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.DriverAssignment>()
-      .Name("grid")
-      .Columns(columns =>
-      {
-          
-          columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
-          columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
-          columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
-          columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["equipmentName"], "Id", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-          columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(120);
-          columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").Width(120);
-          columns.ForeignKey(e => e.SecondOperatorId, (System.Collections.IEnumerable)ViewData["OperatorTwo"], "Id", "Name").Width(120);
-                   columns.Bound(e => e.StartingDate).Title("Starting Date").Format("{0:d}").Width(100);
-          columns.Bound(e => e.Status).Width(100);
-          columns.Command(command =>
+          .Name("grid")
+          .Columns(columns =>
           {
-              command.Edit(); command.Destroy();
-          }).Width(250);
+
+              columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+              columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+              columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+              columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["equipmentName"], "Id", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+              columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(120);
+              columns.ForeignKey(e => e.DepartmentId, (System.Collections.IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Title("Department").Width(140);
+              columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").Width(120);
+              columns.ForeignKey(e => e.SecondOperatorId, (System.Collections.IEnumerable)ViewData["OperatorTwo"], "Id", "Name").Width(120);
+              columns.Bound(e => e.StartingDate).Title("Starting Date").Format("{0:d}").Width(100);
+              columns.Bound(e => e.Status).Width(100);
+              columns.Command(command =>
+              {
+                  command.Edit(); command.Destroy();
+              }).Width(250);
 
 
-      }).Events(ev =>
-      {
-          ev.DetailExpand("onDetailExpand");
-          ev.DataBound("onDataBound");
+          }).Events(ev =>
+          {
+              ev.DetailExpand("onDetailExpand");
+              ev.DataBound("onDataBound");
 
-      })
-      .ToolBar(commands => commands.Create())
-      .Editable(editable =>
-      {
-          editable.Mode(GridEditMode.PopUp).TemplateName("DriverVehicleAssignmentEditor").Window(x => x.Title(" Driver Assignemnt "));
-          editable.DisplayDeleteConfirmation("Are You Sure To Remove Driver Assignment");
-      })
-          .HtmlAttributes(new { style = "height: 520px;" })
-                      .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
+          })
+          .ToolBar(commands =>
+          {
+              commands.Create();
+              commands.Custom().Text("Driver Assignment Report").Url(Url.Action("DriverAssignmentReport", "FleetReport", new { area = "FleetManagement" })).HtmlAttributes(new { target = "_blank", @class = "k-button pull-right" });
+          })
+          .Editable(editable =>
+          {
+              editable.Mode(GridEditMode.PopUp).TemplateName("DriverVehicleAssignmentEditor").Window(x => x.Title(" Driver Assignemnt "));
+              editable.DisplayDeleteConfirmation("Are You Sure To Remove Driver Assignment");
+          })
+              .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
 
-                            .Scrollable()
-                            .Sortable()
-                            .Filterable()
-                            //.Groupable()
-                            .Scrollable(h => h.Height(500))
-                                            .ClientDetailTemplateId("template")
-                                         .Events(ev => {
-                                             ev.DetailExpand("onDetailExpandUser");
-                                             ev.DataBound("onDataBound");
-                                         })
-               .DataSource(dataSource => dataSource
-          .Ajax()
-          .Sort(sort => sort.Add(e => e.DateCreated).Descending())
-      
-                   .Model(model =>
-                   {
-                       model.Id(p => p.DriverAssignmentId);
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                //.Groupable()
+                                .Scrollable(h => h.Height(500))
+                                                .ClientDetailTemplateId("template")
+                                             .Events(ev =>
+                                             {
+                                                 ev.DetailExpand("onDetailExpandUser");
+                                                 ev.DataBound("onDataBound");
+                                             })
+                   .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort => sort.Add(e => e.DateCreated).Descending())
 
-                   })
-                         .Events(ev => ev
-                                .Error("error_handler(\"grid\")")
-                                .RequestStart("onRequestStart(\"grid\")")
-                                .RequestEnd("onRequestEnd(\"grid\")"))
-                  .Create(update => update.Action("DriverAssignment_Create", "DriverAssignment").Data("sendForgery"))
-                  .Read(read => read.Action("DriverAssignment_Read", "DriverAssignment").Data("sendForgery"))
-                  .Update(update => update.Action("DriverAssignment_Update", "DriverAssignment").Data("sendForgery"))
-                  .Destroy(update => update.Action("DriverAssignment_Destroy", "DriverAssignment").Data("sendForgery"))
-      ))
+                       .Model(model =>
+                       {
+                           model.Id(p => p.DriverAssignmentId);
+
+                       })
+                             .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                      .Create(update => update.Action("DriverAssignment_Create", "DriverAssignment").Data("sendForgery"))
+                      .Read(read => read.Action("DriverAssignment_Read", "DriverAssignment").Data("sendForgery"))
+                      .Update(update => update.Action("DriverAssignment_Update", "DriverAssignment").Data("sendForgery"))
+                      .Destroy(update => update.Action("DriverAssignment_Destroy", "DriverAssignment").Data("sendForgery"))
+          ))
 
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                            .Name("tabStrip_#=DriverAssignmentId#")
-            .SelectedIndex(0)
-            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-            .Items(items =>
-            {
-                items.Add().Text("Detail").Content(
-                    @<text>
-                        <legend>Detail</legend>
+                                                            .Name("tabStrip_#=DriverAssignmentId#")
+                            .SelectedIndex(0)
+                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                            .Items(items =>
+                            {
+                                items.Add().Text("Detail").Content(
+                                    @<text>
+                                        <legend>Detail</legend>
 
-                        <div class="box">
+                                        <div class="box">
 
-                            <div class="box-col">
+                                            <div class="box-col">
 
-                                # if (!IsSendForApproval)
-                                {#
-                                <a href='@Url.Action("DriverVehicleTransfer_SendForOnlineApproval", "DriverAssignmentApproval")/?EId=#=DriverAssignmentId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                # }#
-                            </div>
-                        </div>
+                                                # if (!IsSendForApproval)
+                                                {#
+                                                <a href='@Url.Action("DriverVehicleTransfer_SendForOnlineApproval", "DriverAssignmentApproval")/?EId=#=DriverAssignmentId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                # }#
+                                            </div>
+                                        </div>
 
-                        <div class="row">
-                            <div class="col-md-1">
-                            </div>
-                            <div class="col-md-6" style="margin-top:20px;">
-                                <ul>
-                                    <li>
-                                        @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
-                                    </li>
-                                    <li>
-                                        @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
-                                    </li>
-                                    <li>
-                                        @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
-                                    </li>
-                                    <li>
-                                        @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
-                                    </li>
-                                </ul>
-
-
-
-
-                            </div>
-
-                        </div>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-6" style="margin-top:20px;">
+                                                <ul>
+                                                    <li>
+                                                        @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
+                                                    </li>
+                                                    <li>
+                                                        @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+                                                    </li>
+                                                    <li>
+                                                        @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
+                                                    </li>
+                                                    <li>
+                                                        @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
+                                                    </li>
+                                                </ul>
 
 
 
-                    </text>
+
+                                            </div>
+
+                                        </div>
 
 
-            );
-                items.Add().Text("Approval").Content(@<text>
-     
-                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.DriverTransferApproval>()
-                        .Name("DriverTransferApproval#=DriverAssignmentId#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126); 
 
-                            columns.Bound(o => o.Remark).Width(200);
-                            columns.Bound(c => c.CreatedBy).Width(150);
-                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                            columns.Command(command => { command.Edit(); }).Width(250);
+                                    </text>
 
-                        }).Events(ev =>
-                        {
-                            ev.DataBound("approveonDataBound");
-                        })
-                        .ToolBar(commands => commands.Create())
-                        .Editable(editable => editable.Mode(GridEditMode.InLine))
-                        .DataSource(dataSource => dataSource
-                        .Ajax()
-                        .PageSize(5)
-                        .Model(model =>
-                        {
-                            model.Id(p => p.DriverTransferApprovalID);
-                            model.Field(p => p.CreatedBy).Editable(false);
-                            model.Field(p => p.DateCreated).Editable(false);
-                        })
-                        .Events(ev => ev
-                        .Error("error_handler(\"DriverTransferApproval#=DriverAssignmentId#\")")
-                        .RequestStart("onRequestStart(\"DriverTransferApproval#=DriverAssignmentId#\")")
-                        .RequestEnd("onRequestEnd(\"DriverTransferApproval#=DriverAssignmentId#\")"))
-                        .Create(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
-                        .Read(read => read.Action("DriverVehicleTransferApproval_Read", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
-                        .Update(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
-                        )
-                        .ToClientTemplate())
-                </text>
-                );
-            })
-                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+
+                                            ); items.Add().Text("Attachment").Content(@<text>
+
+                                                @FileUpload()
+
+                                            </text>);
+                                                items.Add().Text("Approval").Content(@<text>
+
+                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.DriverTransferApproval>()
+                                                                            .Name("DriverTransferApproval#=DriverAssignmentId#")
+                                                                            .Columns(columns =>
+                                                                            {
+                                                                                                columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                                                                                                columns.Bound(o => o.Remark).Width(200);
+                                                                                                columns.Bound(c => c.CreatedBy).Width(150);
+                                                                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                                                columns.Command(command => { command.Edit(); }).Width(250);
+
+                                                                                            }).Events(ev =>
+                                                                                {
+                                                                                                    ev.DataBound("approveonDataBound");
+                                                                                                })
+                                                                            .ToolBar(commands => commands.Create())
+                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                            .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                            .PageSize(5)
+                                                                            .Model(model =>
+                                                                            {
+                                                                                                model.Id(p => p.DriverTransferApprovalID);
+                                                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                                                            })
+                                                                            .Events(ev => ev
+                                                                            .Error("error_handler(\"DriverTransferApproval#=DriverAssignmentId#\")")
+                                                                            .RequestStart("onRequestStart(\"DriverTransferApproval#=DriverAssignmentId#\")")
+                                                                            .RequestEnd("onRequestEnd(\"DriverTransferApproval#=DriverAssignmentId#\")"))
+                                                                            .Create(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
+                                                                            .Read(read => read.Action("DriverVehicleTransferApproval_Read", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
+                                                                            .Update(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
+                                                                            )
+                                                                            .ToClientTemplate())
+                                                </text>
+                                                    );
+                                                    })
+                                                                                                                                                                                                                                                                                                                                                                                                            .ToClientTemplate())
 </script>
+@helper FileUpload()
+{
+    <text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.DriverAssignmentDocument>
+                                ()
+                                .Name("CompanyDocument#=DriverAssignmentId#")
 
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(x => x.DriverAssignmentDocumentId).Hidden(true);
+                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/FleetManagement/DriverAssignment/DownloadDocument?CompanyDocumentId=\\#=DriverAssignmentDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(200);
+                                    columns.Command(command =>
+                                {
+                                    command.Destroy();
+                                }).Width(580);
+                                })
+                              .ToolBar(t => t.Template(
+                                        @<text>
+                                            @(Html.Kendo().Upload()
+                                                                    .Name("attachments")
+                                                                    .Async(a => a.Save("Attachment_Create", "DriverAssignment", new { id = "#=DriverAssignmentId #" }))
+                                                                    .Events(e => e.Complete("onUploadSuccess").Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 2 * 1024 * 1024); }")
+                                                                    .Error("onUploadError")
+                                                                    )
+                                                                    .ShowFileList(false)
+                                                                    .ToClientTemplate()
+                                            )
+                                        </text>
+                                                        ))
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                .HtmlAttributes(new { style = "height: 350px;" })
+                                                .Sortable(sortable =>
+                                                {
+                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                })
+                                                .Scrollable()
+                                                .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                // .Events(x => x.DataBound("onDataBoundLines"))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Events(ev => ev
+                                                    .Error("error_handler(\"CompanyDocument#=DriverAssignmentId#\")")
+                                                    .RequestStart("onRequestStart(\"CompanyDocument#=DriverAssignmentId#\")")
+                                                    .RequestEnd("onRequestEnd(\"CompanyDocument#=DriverAssignmentId#\")"))
+                                                    .Model(model => model.Id(p => p.DriverAssignmentDocumentId))
+                                                    .Read(read => read.Action("Doc_Read", "DriverAssignment", new { id = "#=DriverAssignmentId#", area = "FleetManagement" }).Data("sendForgery"))
+                                                    .Destroy(destroy => destroy.Action("Doc_Delete", "DriverAssignment", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                    ).ToClientTemplate())
+    </text>
+}
 <style type="text/css">
     div.k-edit-form-container {
         width: 700px;
@@ -183,7 +247,7 @@
             Id: $("#EquipmentTypeID").val()
         };
     }
-   
+
     var IsApproved;
     var driverAssignmentId;
     function onDetailExpandUser(e) {
@@ -205,7 +269,7 @@
 
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-           
+
             if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
                 console.log("Approved");
                 $(this).find(".k-grid-edit").remove();
@@ -241,6 +305,16 @@
         return {
             text: $("#SecondOperatorId").data("kendoDropDownList").filterInput.val()
         }
+    }
+    function onUploadSuccess(e) {
+        var gridname = "#CompanyDocument" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+    function globalOnSelect(e) {
+
+    }
+    function onUploadError(e) {
+
     }
     function filterEquipmentNames() {
         var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");

@@ -157,6 +157,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                                            FI.Payment,
                                            FI.Description,
                                            FI.PolicyNo,
+                                           FI.ThirdParty,
                                            FI.ThirdPartyInsurance,
                                            FI.ComprehensiveInsurance,
                                            FI.InsuranceType,
@@ -187,6 +188,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                                       f.Description,
                                       f.PolicyNo,
                                       f.Payment,
+                                      f.ThirdParty,
                                       f.ThirdPartyInsurance,
                                       f.ComprehensiveInsurance,
                                       f.InsuranceType,
@@ -235,6 +237,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     InsuranceCoverTypeId= fleetsInsurance.InsuranceCoverTypeId,
                     Description = fleetsInsurance.Description,
                     PolicyNo = fleetsInsurance.PolicyNo,
+                    ThirdParty = fleetsInsurance.ThirdParty,
                     ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance,
                     ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance,
                     InsuranceType = fleetsInsurance.InsuranceType,
@@ -247,6 +250,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 db.FleetInsurance.Add(entity);
                 db.SaveChanges();
                 fleetsInsurance.FleetInsuranceId = entity.FleetInsuranceId;
+                fleetsInsurance.Attachment = AttachStagedFile(entity, fleetsInsurance.StagedAttachmentToken, fleetsInsurance.AttachmentDescription);
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Fleet insurance registration", "Success", User.Identity.Name, $"created insurance registration {entity.FleetInsuranceId} ", Modules.FleetManagement);
                 #endregion
@@ -273,6 +277,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     Description = fleetsInsurance.Description,
                     InsuranceCoverTypeId= fleetsInsurance.InsuranceCoverTypeId,
                     PolicyNo = fleetsInsurance.PolicyNo,
+                    ThirdParty = fleetsInsurance.ThirdParty,
                     ThirdPartyInsurance = fleetsInsurance.ThirdPartyInsurance,
                     ComprehensiveInsurance = fleetsInsurance.ComprehensiveInsurance,
                     InsuranceType = fleetsInsurance.InsuranceType,
@@ -284,6 +289,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 db.FleetInsurance.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                fleetsInsurance.Attachment = AttachStagedFile(entity, fleetsInsurance.StagedAttachmentToken, fleetsInsurance.AttachmentDescription);
                 if(fleetsInsurance.AddToHistory==true)
                 {
                     var fleetInsuranceHistory = new FleetInsuranceHistory();
@@ -361,9 +367,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         }
         public ActionResult FleetInsuranceDoc_Delete([DataSourceRequest]DataSourceRequest request, FleetInsuranceDocument model)
         {
-            var fleetInsurance = db.FleetInsuranceDocuments.FirstOrDefault(x => x.FleetInsuranceId == model.FleetInsuranceDocumentId);
-            db.FleetInsuranceDocuments.Remove(fleetInsurance);
-            db.SaveChanges();
+            var fleetInsurance = db.FleetInsuranceDocuments.FirstOrDefault(x => x.FleetInsuranceDocumentId == model.FleetInsuranceDocumentId);
+            if (fleetInsurance != null)
+            {
+                db.FleetInsuranceDocuments.Remove(fleetInsurance);
+                db.SaveChanges();
+            }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
         public ActionResult DownloadCompanyDocument(int CompanyDocumentId)
@@ -375,13 +384,78 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         
         #region Docs
 
+        private static readonly string[] AttachmentExtensions = { ".jpg", ".jpeg", ".png", ".pdf" };
+        private const int AttachmentMaxSize = 2 * 1024 * 1024;
+
+        /// <summary>Editor upload: stores the file under a pending token until the insurance record is saved.</summary>
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult InsuranceAttachment_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> attachments, int id)
+        public ActionResult InsuranceAttachment_Stage(IEnumerable<HttpPostedFileBase> insuranceFile)
+        {
+            var file = insuranceFile?.FirstOrDefault(f => f != null && f.ContentLength > 0);
+            if (file == null)
+            {
+                return Json(new { error = "No file received." });
+            }
+            var ext = Path.GetExtension(file.FileName).ToLower();
+            if (!AttachmentExtensions.Contains(ext))
+            {
+                return Json(new { error = "Invalid file type. Allowed: jpg, png, pdf." });
+            }
+            if (file.ContentLength > AttachmentMaxSize)
+            {
+                return Json(new { error = $"File size exceeds the {AttachmentMaxSize / (1024 * 1024)} MB limit." });
+            }
+            string pendingDir = Server.MapPath("~/App_Data/Insurance/Pending");
+            Directory.CreateDirectory(pendingDir);
+            string token = Guid.NewGuid().ToString("N");
+            string fileName = Path.GetFileName(file.FileName);
+            file.SaveAs(Path.Combine(pendingDir, token + "_" + fileName));
+            return Json(new { token, fileName });
+        }
+
+        /// <summary>Moves a staged editor upload into the insurance folder and records it as a document. Returns the stored file name.</summary>
+        private string AttachStagedFile(FleetInsurance entity, string token, string description)
+        {
+            if (string.IsNullOrWhiteSpace(token) || !Guid.TryParseExact(token, "N", out _))
+            {
+                return entity.Attachment;
+            }
+            string pendingDir = Server.MapPath("~/App_Data/Insurance/Pending");
+            var staged = Directory.Exists(pendingDir) ? Directory.GetFiles(pendingDir, token + "_*").FirstOrDefault() : null;
+            if (staged == null)
+            {
+                return entity.Attachment;
+            }
+            string fileName = Path.GetFileName(staged).Substring(token.Length + 1);
+            string targetDir = Server.MapPath("~/App_Data/Insurance/InsuranceReg" + entity.FleetInsuranceId);
+            Directory.CreateDirectory(targetDir);
+            string target = Path.Combine(targetDir, fileName);
+            if (System.IO.File.Exists(target))
+            {
+                System.IO.File.Delete(target);
+            }
+            System.IO.File.Move(staged, target);
+            db.FleetInsuranceDocuments.Add(new FleetInsuranceDocument
+            {
+                FleetInsuranceId = entity.FleetInsuranceId,
+                FileName = fileName,
+                FilePath = target,
+                FileExtension = Path.GetExtension(fileName),
+                Description = description
+            });
+            entity.Attachment = fileName;
+            db.Entry(entity).Property(x => x.Attachment).IsModified = true;
+            db.SaveChanges();
+            return fileName;
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult InsuranceAttachment_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> attachments, int id, string description)
         {
             if (attachments != null)
             {
-                string[] AllowedExtensions = { ".jpg", ".png", ".pdf" };
-                int MaxFileSize = 2 * 1024 * 1024;
+                string[] AllowedExtensions = AttachmentExtensions;
+                int MaxFileSize = AttachmentMaxSize;
 
                 string subPath = "~/App_Data/Insurance/" + "InsuranceReg" + id.ToString();
 
@@ -416,7 +490,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                             {
                                 FileName = Path.GetFileName(file.FileName),
                                 FleetInsuranceId = id,
-                                FilePath = physicalPath
+                                FilePath = physicalPath,
+                                FileExtension = fileExtension,
+                                Description = description
 
                             });
                             db.SaveChanges();

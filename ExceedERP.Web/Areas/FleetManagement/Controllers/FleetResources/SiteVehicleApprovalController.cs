@@ -77,7 +77,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return RedirectToActionPermanent("Index", "SitesVehicleTransfer", new { area = "FleetManagement" });
         }
-        private void ChangeSiteTransferOnFleet(Guid fleetId, int branchId)
+        private void ChangeSiteTransferOnFleet(Guid? fleetId, int branchId)
         {
             var fleet = db.Fleets.Find(fleetId);
             var FixedAsset = db.AssetRegistrations.FirstOrDefault(x => x.AssetRegistrationId == fleet.AssetId);
@@ -105,7 +105,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 Guid Id = Guid.Parse(EId);
                 var entity = db.SitesVehicleTransfer.Where(x => x.SitesVehicleTransferID == Id).FirstOrDefault();
-                var fleet = db.Fleets.Where(x => x.FleetsID == entity.FleetsID).FirstOrDefault();
+                var fleet = entity?.FleetsID != null ? db.Fleets.Where(x => x.FleetsID == entity.FleetsID).FirstOrDefault() : null;
+                if (entity == null || fleet == null)
+                {
+                    ModelState.AddModelError("", "No vehicle has been assigned to this transfer yet");
+                    return Json(new[] { SiteVehicleApproval }.ToDataSourceResult(request, ModelState));
+                }
                
                 var AssetRegistrations = db.AssetRegistrations.Where(x => x.Tag == fleet.UnitNum).FirstOrDefault();
                 if (SiteVehicleApproval.Status == MaintenanceConst.Approved)
@@ -113,14 +118,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     entity.IsOnlineApproved = true;
                     entity.OnlineApprovedBy = User.Identity.Name;
                     entity.OnlineApprovedTime = DateTime.Now;
-                    entity.Status = MaintenanceConst.Approved;
+                    entity.Status = SitesVehicleTransferStatus.Approved;
 
                     db.SitesVehicleTransfer.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
 
                     // Change Branch on Fleet table
-                    ChangeSiteTransferOnFleet(entity.FleetsID, entity.BranchId);
+                    ChangeSiteTransferOnFleet(entity.FleetsID.Value, entity.BranchId);
 
                     var Location_Track = db.LocationTrackings.Where(x=>x.IsCurrent).FirstOrDefault();
                     var Branch = db.Branch.Where(x=>x.Name == entity.DestinationSite).FirstOrDefault();
@@ -152,6 +157,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 if (SiteVehicleApproval.Status == MaintenanceConst.Rejected)
                 {
                     entity.IsSendForApproval = false;
+                    entity.Status = SitesVehicleTransferStatus.Rejected;
+                    entity.Remark = SiteVehicleApproval.Remark;
 
                     db.SitesVehicleTransfer.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;

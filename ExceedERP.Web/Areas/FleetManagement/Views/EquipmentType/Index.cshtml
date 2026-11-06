@@ -174,9 +174,34 @@
         };
     }
 
+    //function filterFixedAssetSubCategrories() {
+    //    return {
+    //        equipmentCategoryId: $("#EquipmentIdentityID").val(),
+    //    };
+    //}
+
+     function onChangeSubCategory(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetFixedAssetSubCategoryById", "FleetManagementDataProvider")',
+            data: { assetSubCategoryId: this.value() },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                $("#EquipmentTypeName").val(result.Name).trigger("change");
+                $("#Description").val(result.Description).trigger("change");
+
+
+            }
+        });
+
+    }
+</script>
+<script>
     function filterFixedAssetSubCategrories() {
         return {
-            equipmentCategoryId: $("#EquipmentIdentityID").val()
+            equipmentIdentityId: $("#EquipmentIdentityID").val(),
+            search: $("#FixedAssetSubCategoryId").data("kendoDropDownList").filterInput.val()
         };
     }
 

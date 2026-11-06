@@ -42,9 +42,28 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
         }
 
 
+        public JsonResult IsLightVehicleType(Guid id)
+        {
+            var isLight = db.EquipmentType.Where(x => x.EquipmentTypeID == id)
+                .Select(x => x.TimeSheetType == Core.Domain.FleetManagement.FleetRegistration.TimeSheetType.LightVehicle)
+                .FirstOrDefault();
+            return Json(isLight, JsonRequestBehavior.AllowGet);
+        }
+
+        // Day Type is only meaningful for light vehicles; clear it otherwise.
+        private void NormalizeDayType(RentFromExternalEquipment model)
+        {
+            var isLight = db.EquipmentType.Where(x => x.EquipmentTypeID == model.EquipmentTypeID)
+                .Select(x => x.TimeSheetType == Core.Domain.FleetManagement.FleetRegistration.TimeSheetType.LightVehicle)
+                .FirstOrDefault();
+            if (!isLight) model.DayType = null;
+            else if (model.DayType == null) model.DayType = Core.Domain.FleetManagement.RentDayType.FullDay;
+        }
+
         public JsonResult RentFromExternalEquipment_Create([DataSourceRequest] DataSourceRequest request, RentFromExternalEquipment model, Guid Id)
         {
             model.RentFromExternalId = Id;
+            NormalizeDayType(model);
             var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == model.FleetId);
             if(!fleet.IsContractTerminated)
             {
@@ -101,7 +120,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetEquipmentRent
         }
         public JsonResult RentFromExternalEquipment_Update([DataSourceRequest] DataSourceRequest request, RentFromExternalEquipment model)
         {
-
+            NormalizeDayType(model);
             if (ModelState.IsValid)
             {
                 var companySetting = db.RequestToInspections.FirstOrDefault();

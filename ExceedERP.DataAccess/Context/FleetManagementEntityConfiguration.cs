@@ -126,6 +126,14 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(p => p.CouponFuelId);
             }
         }
+        public class FuelRequestDocumentEntityTypeConfiguration : EntityTypeConfiguration<FuelRequestDocument>
+        {
+            public FuelRequestDocumentEntityTypeConfiguration()
+            {
+                this.ToTable("FuelRequestDocument", "FleetManagement");
+                this.HasKey<int>(p => p.FuelRequestDocumentId);
+            }
+        }
         public class TimeSheetExceptionEntityTypeConfiguration : EntityTypeConfiguration<TimeSheetException>
         {
             public TimeSheetExceptionEntityTypeConfiguration()
@@ -1128,6 +1136,33 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
+        public class DriverAssignmentDocumentEntityTypeConfiguration : EntityTypeConfiguration<DriverAssignmentDocument>
+        {
+
+            public DriverAssignmentDocumentEntityTypeConfiguration()
+            {
+                this.ToTable("DriverAssignmentDocument", "FleetManagement");
+                this.HasKey<int>(t => t.DriverAssignmentDocumentId);
+
+            }
+        }
+
+        public class FuelRequestEntityTypeConfiguration : EntityTypeConfiguration<FuelRequest>
+        {
+            public FuelRequestEntityTypeConfiguration()
+            {
+                this.ToTable("FuelRequest", "FleetManagement");
+                this.HasKey<int>(t => t.FuelRequestId);
+            }
+        }
+        public class FuelRequestDetailEntityTypeConfiguration : EntityTypeConfiguration<FuelRequestDetail>
+        {
+            public FuelRequestDetailEntityTypeConfiguration()
+            {
+                this.ToTable("FuelRequestDetail", "FleetManagement");
+                this.HasKey<int>(t => t.FuelRequestDetailId);
+            }
+        }
 
         public class TimeSheetApprovalEntityTypeConfiguration : EntityTypeConfiguration<TimeSheetApproval>
         {
@@ -1923,6 +1958,27 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("VehicleDistribution", "FleetManagement");
                 this.HasKey<Guid>(t => t.VehicleDistributionID);
+
+            }
+        }
+         
+
+        public class VehicleDistributionSecondValidationEntityTypeConfiguration : EntityTypeConfiguration<VehicleDistributionSecondValidation>
+        {
+
+            public VehicleDistributionSecondValidationEntityTypeConfiguration()
+            {
+                this.ToTable("VehicleDistributionSecondValidation", "FleetManagement");
+                this.HasKey<int>(t => t.VehicleDistributionSecondValidationId);
+
+            }
+        }public class VehicleDistributionSecondApprovalSettingEntityTypeConfiguration : EntityTypeConfiguration<VehicleDistributionSecondApprovalSetting>
+        {
+
+            public VehicleDistributionSecondApprovalSettingEntityTypeConfiguration()
+            {
+                this.ToTable("VehicleDistributionSecondApprovalSetting", "FleetManagement");
+                this.HasKey<int>(t => t.VehicleDistributionSecondApprovalSettingId);
 
             }
         }

@@ -134,6 +134,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 NetHour= machineryWorkingTimeSheet.NetHour,
                 WorkType= machineryWorkingTimeSheet.WorkType,
                 Remark = machineryWorkingTimeSheet.Remark,
+                ExcavatorWorkType = machineryWorkingTimeSheet.ExcavatorWorkType,
                 BatteryCost = machineryWorkingTimeSheet.BatteryCost,
 
                 FuelType = machineryWorkingTimeSheet.FuelType,
@@ -207,6 +208,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
         public ActionResult MachineryWorkingTimeSheets_Create([DataSourceRequest] DataSourceRequest request, MachineryWorkingTimeSheet machineryWorkingTimeSheet)
         {
             var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID);
+            if (fleet.IsExcavator && machineryWorkingTimeSheet.ExcavatorWorkType == null)
+            {
+                ModelState.AddModelError("select excavator work type", "You have to select either jachamer or akafa for excavator");
+            }
             machineryWorkingTimeSheet.EquipmentCategoryId = fleet.EquipmentIdentityID;
             machineryWorkingTimeSheet.EquipmentTypeId = fleet.EquipmentTypeID;
             machineryWorkingTimeSheet.EquipmentNameId = fleet.EquipmentNameID;
@@ -246,12 +251,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     .Select(x => x.ChasisNumber)
                     .FirstOrDefault();
                 }
+                DateTime startDate = machineryWorkingTimeSheet.Date.Date;
+                DateTime endDate = startDate.AddDays(1);
+
                 var lubItems = db.IssueItems
                 .Where(ii =>
-                        ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
-                        && OilLubItems.Contains(ii.ItemCode)).ToList();
+                ii.Issue.PlateNo == plateNo
+                && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
+                && OilLubItems.Contains(ii.ItemCode))
+                .ToList();
                 machineryWorkingTimeSheet.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 machineryWorkingTimeSheet.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
                 plateNo = db.Fleets
@@ -275,8 +284,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedOilItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && oilItems.Contains(ii.ItemCode)).ToList();
                 machineryWorkingTimeSheet.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 machineryWorkingTimeSheet.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -301,20 +310,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedSpareItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allSparePartItems.Contains(ii.ItemCode)).ToList();
                 var issuedBatteryItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allBatteryItems.Contains(ii.ItemCode)).ToList();
                 var issuedTyreItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allTyreItems.Contains(ii.ItemCode)).ToList();
                 machineryWorkingTimeSheet.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
                 machineryWorkingTimeSheet.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -438,7 +447,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     NumberOfHoles = machineryWorkingTimeSheet.NumberOfHoles,
                     Unit = fleet.Unit,
                     Volume = fleet.Volume,
-
                     TotalTime = machineryWorkingTimeSheet.TotalTime,
                     SparePartCost = machineryWorkingTimeSheet.SparePartCost,
                     OilCost = machineryWorkingTimeSheet.OilCost,
@@ -448,6 +456,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     OilConsumption = machineryWorkingTimeSheet.OilConsumption,
 
                     HoleDepth = machineryWorkingTimeSheet.HoleDepth,
+                    ExcavatorWorkType = machineryWorkingTimeSheet.ExcavatorWorkType,
                     FuelConsumption = machineryWorkingTimeSheet.FuelConsumption,
                     FuelRate = machineryWorkingTimeSheet.FuelRate,
                     IdleHours = machineryWorkingTimeSheet.IdleHours,
@@ -592,6 +601,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
         public ActionResult MachineryWorkingTimeSheets_Update([DataSourceRequest] DataSourceRequest request, MachineryWorkingTimeSheet machineryWorkingTimeSheet)
         {
             var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == machineryWorkingTimeSheet.FleetsID);
+            if(fleet.IsExcavator&& machineryWorkingTimeSheet.ExcavatorWorkType==null)
+            {
+                ModelState.AddModelError("select excavator work type", "You have to select either jachamer or akafa for excavator");
+            }
             machineryWorkingTimeSheet.EquipmentCategoryId = fleet.EquipmentIdentityID;
             machineryWorkingTimeSheet.EquipmentTypeId = fleet.EquipmentTypeID;
             machineryWorkingTimeSheet.EquipmentNameId = fleet.EquipmentNameID;
@@ -629,12 +642,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     .Select(x => x.ChasisNumber)
                     .FirstOrDefault();
                 }
+                DateTime startDate = machineryWorkingTimeSheet.Date.Date;
+                DateTime endDate = startDate.AddDays(1);
+
                 var lubItems = db.IssueItems
                 .Where(ii =>
-                        ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
-                        && OilLubItems.Contains(ii.ItemCode)).ToList();
+                ii.Issue.PlateNo == plateNo
+                && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
+                && OilLubItems.Contains(ii.ItemCode))
+                .ToList();
+                //var lubItems = db.IssueItems
+                //.Where(ii =>
+                //        ii.Issue.PlateNo == plateNo
+                //        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                //            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                //        && OilLubItems.Contains(ii.ItemCode)).ToList();
                 machineryWorkingTimeSheet.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 machineryWorkingTimeSheet.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
                 plateNo = db.Fleets
@@ -658,8 +681,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedOilItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && oilItems.Contains(ii.ItemCode)).ToList();
                 machineryWorkingTimeSheet.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 machineryWorkingTimeSheet.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -684,20 +707,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedSpareItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allSparePartItems.Contains(ii.ItemCode)).ToList();
                 var issuedBatteryItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allBatteryItems.Contains(ii.ItemCode)).ToList();
                 var issuedTyreItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(machineryWorkingTimeSheet.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allTyreItems.Contains(ii.ItemCode)).ToList();
                 machineryWorkingTimeSheet.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
                 machineryWorkingTimeSheet.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -824,6 +847,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     DownReason = machineryWorkingTimeSheet.DownReason,
                     ReasonForDown = machineryWorkingTimeSheet.ReasonForDown,
                     ReasonForIdle = machineryWorkingTimeSheet.ReasonForIdle,
+                    ExcavatorWorkType = machineryWorkingTimeSheet.ExcavatorWorkType,
                     NetHour = machineryWorkingTimeSheet.NetHour,
                     WorkType = machineryWorkingTimeSheet.WorkType,
                     Remark = machineryWorkingTimeSheet.Remark,

@@ -26,10 +26,7 @@
 
         });
     }
-
-
 </script>
-
 
 <div class="row">
     <div class="col-sm-2">
@@ -180,9 +177,9 @@
 <div class="row">
     <div class="col-sm-2">
         <div class="form-group">
-            @Html.LabelFor(model => model.CostcoveredbyOtherBodies, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            @Html.LabelFor(model => model.CoveredByOtherBodies, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
             <div>
-                @Html.Kendo().TextBoxFor(model => model.CostcoveredbyOtherBodies).HtmlAttributes(new { style = "width:100%" })
+                @Html.Kendo().TextBoxFor(model => model.CoveredByOtherBodies).HtmlAttributes(new { style = "width:100%", placeholder = "Name of the other body" })
             </div>
         </div>
     </div>

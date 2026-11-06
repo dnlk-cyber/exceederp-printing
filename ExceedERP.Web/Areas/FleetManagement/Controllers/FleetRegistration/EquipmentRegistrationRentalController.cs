@@ -100,107 +100,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public static Fleets GetAssetLocation(Fleets fleet, List<AssetRegistration> assetRegistrations, List<Branch> branches)
         {
 
-            //if (assetRegistrations != null)
-            //{
-
-
-            //    if (assetRegistrations.Any())
-            //    {
-
-            //        var Asset = assetRegistrations.Where(x => x.Tag == fleet.UnitNum).FirstOrDefault();
-
-            //        if (Asset != null)
-            //        {
-            //            if (Asset.Condition != null)
-            //            {
-            //                fleet.IFRSCondition = Asset.Condition.Name;
-            //            }
-
-            //            if (fleet.Location == "Not Assigned" || fleet.Location == "UnAssigned" || string.IsNullOrWhiteSpace(fleet.Location))
-            //            {
-            //                var branch = branches.Where(x => x.BranchId == Asset.BranchId).FirstOrDefault();
-            //                if (branch != null)
-            //                {
-            //                    fleet.Location = branch.Name;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                fleet.Location = fleet.Location;
-            //            }
-            //        }
-            //    }
-            //}
             return fleet;
         }
         public static Fleets GetAssetDependancies(Fleets fleet, List<AssetRegistration> assetRegistrations)
         {
-            //if (assetRegistrations != null)
-            //{
-
-
-            //    if (assetRegistrations.Any())
-            //    {
-
-            //        var Asset = assetRegistrations.Where(x => x.Tag == fleet.UnitNum).FirstOrDefault();
-
-            //        if (Asset != null)
-            //        {
-
-
-
-            //                fleet.SerialNo = Asset.SerialNo;
-
-            //                fleet.ChasisNumber =  Asset.ChassisNo;
-
-
-            //            if (fleet.Location == "Not Assigned" || string.IsNullOrWhiteSpace(fleet.Location))
-            //            {
-            //                fleet.Location = Asset.Location;
-            //            }
-
-            //                fleet.Model = Asset.ModelNo;
-
-            //            fleet.EngineNumber = Asset.EngineNo;
-            //            fleet.PlateNumber = Asset.PlateNo;
-            //            fleet.EquipmentName = Asset.Name;
-            //            if (Asset.Condition != null)
-            //            {
-            //                fleet.Condition = Asset.Condition.Name;
-            //            }
-            //        }
-            //    }
-            //}
-
+          
 
 
             return fleet;
         }
         public static FleetViewModel GetAssetDependancies(FleetViewModel fleet)
         {
-            //var Assets = System.Runtime.Caching.MemoryCache.Default["AssetList"] as List<AssetRegistration>;
-
-            //if (Assets != null)
-            //{
-
-            //    if (Assets.Any())
-            //    {
-
-            //        var Asset = Assets.Where(x => x.Tag == fleet.UnitNum).FirstOrDefault();
-
-            //        if (Asset != null)
-            //        {
-
-
-            //            fleet.PlateNumber = Asset.PlateNo;
-            //            fleet.SerialNo = Asset.SerialNo;
-            //            fleet.ChasisNumber = Asset.ChassisNo;
-            //            fleet.EquipmentName = Asset.Name;
-            //        }
-            //    }
-            //}
-            //fleet.FleetsID = fleet.FleetsID;
-
+            
             return fleet;
         }
 
@@ -830,6 +741,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 EquipmentTypeID = f.EquipmentTypeID,
                 FleetPhoto = f.FleetPhoto,
                 FleetsID = f.FleetsID,
+                IsExcavator = f.IsExcavator,
                 Location = f.Location,
                 IFRSCondition = f.IFRSCondition,
                 LastMaintained = f.LastMaintained,
@@ -1104,6 +1016,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         fleets.TypeOfFuel = Asset.FuelType;
                         fleets.Tyre = Asset.Tyre;
                         fleets.Model = Asset.ModelNo;
+                        fleets.IsExcavator = fleets.IsExcavator;
                         fleets.SupplierCompany = Asset.Supplier;
                         fleets.HistoricalCost = Asset.PurchasePrice.ToString();
                         fleets.DepreciationCost = (int)(Asset.PurchasePrice - Asset.BookValue);
@@ -1168,6 +1081,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     fleets.TyreSize = fleets.TyreSize;
                     fleets.TypeOfFuel = fleets.TypeOfFuel;
                     fleets.Tyre = fleets.Tyre;
+                    fleets.IsExcavator = fleets.IsExcavator;
                     fleets.Model = fleets.Model;
                     fleets.SupplierCompany = fleets.SupplierCompany;
                     fleets.HistoricalCost = fleets.HistoricalCost;
@@ -2271,7 +2185,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         ServiceName = s.ServiceName,
                         Remark = job.Odometer.ToString(),
                         DateCreated = s.DateCreated,
-                        Section = GetSection(s.ServiceID),
+                        //Section = GetSection(s.ServiceID),
                         Efficency = JobCost
 
                     }));
@@ -2616,6 +2530,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         fleets.DepreciationCost = (int)(Asset.PurchasePrice - Asset.BookValue);
                         fleets.PurchasedDate = Asset.PurchaseDate;
                         fleets.RentType = fleets.RentType;
+                        fleets.IsExcavator = fleets.IsExcavator;
                         fleets.IdealRentalRate = fleets.IdealRentalRate;
                         fleets.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
                         fleets.Condition = Asset.Condition.Name;

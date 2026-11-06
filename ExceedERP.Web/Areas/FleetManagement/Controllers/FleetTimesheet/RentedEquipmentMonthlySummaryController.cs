@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
@@ -89,8 +90,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 IsWagonDrill = x.IsWagonDrill,
                 IsRejected = x.IsRejected,
                 CustomerName = x.CustomerName,
-                SparePartCost=x.SparePartCost,
-                OilLubCost=x.OilLubCost,
+                SparePartCost = x.SparePartCost,
+                OilLubCost = x.OilLubCost,
+                DateFrom=x.DateFrom,
+                DateTo=x.DateTo,
                 MaintenanceCost = x.MaintenanceCost,
                 FuelCost = x.FuelCost,
                 TimeSheetApprovedBy = x.TimeSheetApprovedBy,
@@ -127,12 +130,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 TimeSheetIsDepartmentManagerApproved = x.TimeSheetIsDepartmentManagerApproved,
                 GrossBeforeVat = x.GrossBeforeVat,
                 VAT = x.VAT,
-                //TOT = x.TOT,
+                IsAdvanceSummary = x.IsAdvanceSummary,
                 TotalWithVat = x.TotalWithVat,
                 AdvancePayedWithVat = x.AdvancePayedWithVat,
                 Deductable = x.Deductable,
                 NetPayable = x.NetPayable,
-                TotalWorkedHR = x.TotalWorkedHR
+                TotalWorkedHR = x.TotalWorkedHR,
+                SummaryStatus = getSummaryStatus(x.RentedEquipmentMonthlyPaymentSummaryId),
+                PayedIdleHour = db.RentedEquipmentDailyOperation.Where(y=>y.RentedEquipmentMonthlyPaymentSummaryId==x.RentedEquipmentMonthlyPaymentSummaryId).Sum(z=>(decimal?)z.PayedIdleHR)??0,
+                WorkedHour=db.RentedEquipmentDailyOperation.Where(y=>y.RentedEquipmentMonthlyPaymentSummaryId==x.RentedEquipmentMonthlyPaymentSummaryId).Sum(z=>(decimal?)z.WorkedHR)??0,
             });
 
             return Json(result);
@@ -164,6 +170,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 OilLubCost = x.OilLubCost,
                 MaintenanceCost = x.MaintenanceCost,
                 FuelCost = x.FuelCost,
+                DateFrom = x.DateFrom,
+                DateTo = x.DateTo,
                 AgreementNo = x.AgreementNo,
                 RentalRateHour = x.RentalRateHour,
                 RentalRateDay = x.RentalRateDay,
@@ -212,12 +220,53 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 //TOT = x.TOT,
                 TotalWithVat = x.TotalWithVat,
                 AdvancePayedWithVat = x.AdvancePayedWithVat,
+                IsAdvanceSummary = x.IsAdvanceSummary,
                 Deductable = x.Deductable,
                 NetPayable = x.NetPayable,
-                TotalWorkedHR = x.TotalWorkedHR
+                TotalWorkedHR = x.TotalWorkedHR,
+                SummaryStatus = getSummaryStatus(x.RentedEquipmentMonthlyPaymentSummaryId),
+                PayedIdleHour = db.RentedEquipmentDailyOperation.Where(y => y.RentedEquipmentMonthlyPaymentSummaryId == x.RentedEquipmentMonthlyPaymentSummaryId&&y.IsDetailUpdated).Sum(z => (decimal?)z.PayedIdleHR) ?? 0,
+                WPayedIdleHour = db.WagonDrillDailyOperation.Where(y => y.RentedEquipmentMonthlyPaymentSummaryId == x.RentedEquipmentMonthlyPaymentSummaryId&&y.IsDetailUpdated).Sum(z => (decimal?)z.PayedIdleHour) ?? 0,
+                WorkedHour = db.RentedEquipmentDailyOperation.Where(y => y.RentedEquipmentMonthlyPaymentSummaryId == x.RentedEquipmentMonthlyPaymentSummaryId).Sum(z => (decimal?)z.WorkedHR) ?? 0,
             });
 
             return Json(result);
+        }
+        private string getSummaryStatus(int id)
+        {
+            var summary = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.RentedEquipmentMonthlyPaymentSummaryId == id);
+            string Status = "";
+            if(summary.TimeSheetIsEquipmentAdminChecked)
+            {
+                Status = "Status: Timesheet Equipment Admin Checked";
+            }
+            if (summary.TimeSheetIsOfficeEngineerChecked)
+            {
+                Status = "Status: Timesheet Office Engineer Checked";
+            }
+            if (summary.TimeSheetIsConstructionEngineerApproved)
+            {
+                Status = "Status: Timesheet Construction Engineer Approved";
+            } if (summary.TimeSheetIsDepartmentManagerApproved)
+            {
+                Status = "Status: Timesheet Department Manager Approved";
+            } if (summary.TimeSheetIsPrepared)
+            {
+                Status = "Status: Cost Sheet Prepared";
+            } if (summary.TimeSheetIsChecked)
+            {
+                Status = "Status: Cost Sheet Checked";
+            } if (summary.TimeSheetIsApproved)
+            {
+                Status = "Status: Cost Sheet Approved";
+            } if (summary.TimeSheetIsAuthorized)
+            {
+                Status = "Status: Cost Sheet Authorized";
+            } if (summary.TimeSheetIsDGMApproved)
+            {
+                Status = "Status: Cost Sheet Department General Manager Approved";
+            }
+            return Status;
         }
         public ActionResult Finance_Read([DataSourceRequest] DataSourceRequest request)
         {
@@ -253,6 +302,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 TimeSheetIsChecked = x.TimeSheetIsChecked,
                 IsRejected = x.IsRejected,
                 SparePartCost = x.SparePartCost,
+                DateFrom = x.DateFrom,
+                DateTo = x.DateTo,
                 OilLubCost = x.OilLubCost,
                 MaintenanceCost = x.MaintenanceCost,
                 FuelCost = x.FuelCost,
@@ -300,6 +351,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 GrossBeforeVat = x.GrossBeforeVat,
                 VAT = x.VAT,
                 //TOT = x.TOT,
+                IsAdvanceSummary = x.IsAdvanceSummary,
                 TotalWithVat = x.TotalWithVat,
                 AdvancePayedWithVat = x.AdvancePayedWithVat,
                 Deductable = x.Deductable,
@@ -405,26 +457,70 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             {
                 ModelState.AddModelError("payment not allowed", "You can not create summary before agreement date");
             }
-            var existingSummary = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.GlPeriodId == rentedEqupmentSummary.GlPeriodId && x.FleetId == rentedEqupmentSummary.FleetId);
-            if(existingSummary!=null)
+            if (!rentedEqupmentSummary.IsAdvanceSummary)
             {
-                ModelState.AddModelError("payment not allowed", "Summary already exists");
+                var existingSummary = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.GlPeriodId == rentedEqupmentSummary.GlPeriodId && x.FleetId == rentedEqupmentSummary.FleetId && !x.IsAdvanceSummary);
+                if (existingSummary != null)
+                {
+
+                    ModelState.AddModelError("payment not allowed", "Summary already exists");
+                }
+            }          
+            var advancePaymentRecord = new RentalEquipmentAdvancePayment();
+            var advancePayedRecord = new RentalEquipmentAdvancePayment();
+            if (rentedEqupmentSummary.IsAdvanceSummary)
+            {
+                advancePaymentRecord = db.RentalEquipmentAdvancePayment.FirstOrDefault(x => x.IsCreatedAfterUpdate && x.IsFullPayment && !x.IsSummaryCalculated&&x.FleetId== rentedEqupmentSummary.FleetId);
+                if (advancePaymentRecord == null||advancePaymentRecord.RentalEquipmentAdvancePaymentId==0)
+                {
+                    ModelState.AddModelError("payment not allowed", "There is no full advance payed");
+                }
+                else
+                {
+                    advancePaymentRecord.IsSummaryCalculated = true;
+                }
             }
-            decimal advancePayed = db.RentalEquipmentAdvancePayment.Where(x => x.RentFromExternalEquipmentId == equipmentRent.RentFromExternalEquipmentId).OrderByDescending(x => x.RentalEquipmentAdvancePaymentId).FirstOrDefault()?.AdvancePayed ?? 0;
+            decimal advancePayed = 0;
+            if(rentedEqupmentSummary.IsAdvanceSummary)
+            {
+                advancePayed = advancePaymentRecord?.AdvancePayed ?? 0;
+
+            }
+            else
+            {
+                advancePayedRecord= db.RentalEquipmentAdvancePayment.Where(x => x.RentFromExternalEquipmentId == equipmentRent.RentFromExternalEquipmentId && x.FleetId == rentedEqupmentSummary.FleetId&&!x.IsFullPayment).OrderByDescending(x => x.RentalEquipmentAdvancePaymentId).FirstOrDefault();
+                if (advancePayedRecord != null && advancePayedRecord.RentalEquipmentAdvancePaymentId!=0)
+                {
+                    advancePayed = advancePayedRecord?.AdvancePayed ?? 0;
+                    advancePayedRecord.IsSummaryCalculated = true;
+
+                }
+            }
             var equipmentType = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == fleet.EquipmentTypeID);
             if (ModelState.IsValid)
             {
-               
                 if (equipmentType!=null)
                 {
                     if (equipmentType.TimeSheetType == TimeSheetType.LightVehicle)
                     {
-                        var timeSheets = db.LightVehicleTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
-                        var notApproved = timeSheets.FirstOrDefault(x => !x.CostSheetApproved);
-                        if(notApproved!=null)
+                        var timeSheets = new List<LightVehicleTimeSheet>();
+                        if(!rentedEqupmentSummary.IsAdvanceSummary)
                         {
-                            ModelState.AddModelError("notApproved", "Approve all costsheets before creating summary");
+                            timeSheets=db.LightVehicleTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                            var fullAdvancePayments = db.RentalEquipmentAdvancePayment.Where(x => x.DateFrom >= GlPeriod.DateFrom && x.DateTo <= GlPeriod.DateTo && x.FleetId == rentedEqupmentSummary.FleetId&&x.IsFullPayment).ToList();
+                                timeSheets.RemoveAll(timesht =>
+                                                fullAdvancePayments.Any(advancePayment =>
+                                                    timesht.Date >= advancePayment.DateFrom &&
+                                                    timesht.Date <= advancePayment.DateTo
+                                                ));
+                          
+                                                   
                         }
+                        else
+                        {
+                            timeSheets = db.LightVehicleTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= advancePaymentRecord.DateFrom && x.Date <= advancePaymentRecord.DateTo).ToList();
+                        }
+                       
                         var groupedTimeSheets = timeSheets.GroupBy(x => x.ProcurementSupplierID);
                         foreach (var g in groupedTimeSheets)
                         {
@@ -436,9 +532,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 var first = groupedTimeSheet.First();
                                 var entity = new RentedEquipmentMonthlyPaymentSummary();
                                 entity.BranchId = lastTimeSheet.BranchId;
-                                entity.BranchName = db.Branch.FirstOrDefault(x => x.BranchId == lastTimeSheet.BranchId)?.Name ?? "";
+                                entity.BranchName = ""; //db.Branch.FirstOrDefault(x => x.BranchId == lastTimeSheet.BranchId)?.Name ?? "";
                                 entity.CreatedBy = User.Identity.Name;
                                 entity.DateCreated = DateTime.Now;
+                                if(rentedEqupmentSummary.IsAdvanceSummary)
+                                {
+                                    entity.IsAdvanceSummary = true;
+                                    if(advancePaymentRecord!=null&&advancePaymentRecord.RentalEquipmentAdvancePaymentId != 0)
+                                    {
+                                        entity.AdvancePaymentId = advancePaymentRecord.RentalEquipmentAdvancePaymentId;
+                                    }
+                                }
+                                if (advancePayedRecord!=null&&advancePayedRecord.RentalEquipmentAdvancePaymentId != 0)
+                                {
+                                    entity.AdvancePaymentId = advancePayedRecord.RentalEquipmentAdvancePaymentId;
+                                }
+                                entity.GlPeriodId = rentedEqupmentSummary.GlPeriodId;
                                 entity.GlPeriodId = rentedEqupmentSummary.GlPeriodId;
                                 entity.EquipmentTypeId = fleet.EquipmentTypeID.ToString();
                                 entity.EquipmentType = equipmentType.EquipmentTypeName;
@@ -453,7 +562,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 }
                                 if (entity.PlateNo == null)
                                 {
-                                    entity.PlateNo = fleet.Model;
+                                    entity.PlateNo = fleet.UnitNum;
                                 }
                                 entity.TimeSheetPreparedBy = User.Identity.Name;
                                 entity.CustomerName = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == first.ProcurementSupplierID)?.Name ?? "";
@@ -461,7 +570,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 //entity.GrossBeforeVat = timeSheets.Sum(x => (decimal?)x.TotalTime * equipmentRent.RentalRate) ?? 0;
                                 foreach (var timesheet in groupedTimeSheet)
                                 {
-                                    entity.GrossBeforeVat += timesheet.TotalTime * timesheet.RentalRate;
+                                    entity.GrossBeforeVat += timesheet.NetHour * equipmentRent.RentalRate;
                                     entity.MaintenanceCost += timesheet.MaintenanceCost;
                                     entity.SparePartCost += timesheet.SparePartCost;
                                     entity.OilLubCost += timesheet.OilCost+timesheet.GreaseCost;
@@ -472,7 +581,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 //entity.AdvancePayedWithVat = advancePayed;
                                 entity.Deductable = groupedTimeSheet.Sum(x => (decimal?)x.MaintenanceCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.OilCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.GreaseCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.SparePartCost) ?? 0;
                                 entity.NetPayable = entity.TotalWithVat - entity.Deductable;
-                                entity.TotalWorkedHR = groupedTimeSheet.Sum(x => (decimal?)x.TotalTime) ?? 0;
+                                entity.TotalWorkedHR = groupedTimeSheet.Sum(x => (decimal?)x.NetHour) ?? 0;
 
                                 entity.AgreementNo = rentFromExternal.Num.ToString();
                                 entity.RentalRateHour = equipmentRent.RentalRate;
@@ -514,7 +623,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                     timeSheetDetail.NightTimeEnd = timesheet.NightTimeEnd;
                                     timeSheetDetail.NightTimeStart = timesheet.NightTimeStart;
                                     timeSheetDetail.PayedIdleHR = timesheet.IdleHours;
-                                    timeSheetDetail.TotalPayedHR = timesheet.TotalTime;
+                                    timeSheetDetail.TotalPayedHR = timesheet.NetHour;
                                     timeSheetDetail.WorkedHR = timesheet.NetHour;
                                     timeSheetDetail.Date = timesheet.Date;
                                     timeSheetDetail.MaintenanceCost = timesheet.MaintenanceCost;
@@ -549,16 +658,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                     db.RentedEquipmentDailyOperation.Add(timeSheetDetail);
                                     db.SaveChanges();
                                 }
+                                if (advancePaymentRecord != null&&advancePaymentRecord.RentalEquipmentAdvancePaymentId!=0)
+                                {
+                                    db.Entry(advancePaymentRecord).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                if (advancePayedRecord != null&&advancePayedRecord.RentalEquipmentAdvancePaymentId!=0)
+                                {
+                                    db.Entry(advancePayedRecord).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
                             }
                         }
                     }
                     if (equipmentType.TimeSheetType== TimeSheetType.DryLoading)
                     {
-                        var timeSheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.TripStartDate >= GlPeriod.DateFrom && x.TripStartDate <= GlPeriod.DateTo).ToList();
-                        var notApproved = timeSheets.FirstOrDefault(x => !x.CostSheetApproved);
-                        if (notApproved != null)
+                        //var timeSheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.TripStartDate >= GlPeriod.DateFrom && x.TripStartDate <= GlPeriod.DateTo).ToList();
+                        var timeSheets = new List<DryLoadingTimeSheet>();
+                        if (!rentedEqupmentSummary.IsAdvanceSummary)
                         {
-                            ModelState.AddModelError("notApproved", "Approve all costsheets before creating summary");
+                            timeSheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.TripStartDate >= GlPeriod.DateFrom && x.TripStartDate <= GlPeriod.DateTo).ToList();
+
+                        }
+                        else
+                        {
+                            timeSheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.TripStartDate >= advancePaymentRecord.DateFrom && x.TripStartDate <= advancePaymentRecord.DateTo).ToList();
                         }
                         var entity = new RentedEquipmentMonthlyPaymentSummary();
 
@@ -587,7 +711,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                         //entity.GrossBeforeVat = timeSheets.Sum(x => (decimal?)x.TotalTime * equipmentRent.RentalRate) ?? 0;
                         foreach (var timesheet in timeSheets)
                         {
-                            entity.GrossBeforeVat += timesheet.TotalTime * timesheet.RentalRate;
+                            entity.GrossBeforeVat += timesheet.NetworkingHour * equipmentRent.RentalRate;
                             entity.MaintenanceCost += timesheet.MaintenanceCost;
                             entity.SparePartCost += timesheet.SparePartCost;
                             entity.OilLubCost += timesheet.OilCost + timesheet.GreaseCost;
@@ -598,7 +722,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                         entity.AdvancePayedWithVat = advancePayed;
                         entity.Deductable = timeSheets.Sum(x=>(decimal?)x.MaintenanceCost)??0+timeSheets.Sum(x=>(decimal?)x.OilCost)??0+timeSheets.Sum(x=>(decimal?)x.GreaseCost)??0+timeSheets.Sum(x=>(decimal?)x.SparePartCost)??0;
                         entity.NetPayable = entity.TotalWithVat-entity.Deductable;
-                        entity.TotalWorkedHR = timeSheets.Sum(x => (decimal?)x.TotalTime) ?? 0;
+                        entity.TotalWorkedHR = timeSheets.Sum(x => (decimal?)x.NetworkingHour) ?? 0;
                         entity.BranchId = fleet.BranchId;
                         entity.BranchName = db.Branch.FirstOrDefault(x => x.BranchId == fleet.BranchId)?.Name ?? "";
                         entity.AgreementNo = rentFromExternal.Num.ToString();
@@ -633,11 +757,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     }
                     if (equipmentType.TimeSheetType== TimeSheetType.DumpTruck)
                     {
-                        var timeSheets = db.DumpTruckTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
-                        var notApproved = timeSheets.FirstOrDefault(x => !x.CostSheetApproved);
-                        if (notApproved != null)
+                        //var timeSheets = db.DumpTruckTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                        var timeSheets = new List<DumpTruckTimeSheet>();
+                        if (!rentedEqupmentSummary.IsAdvanceSummary)
                         {
-                            ModelState.AddModelError("notApproved", "Approve all costsheets before creating summary");
+                            timeSheets = db.DumpTruckTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                            var fullAdvancePayments = db.RentalEquipmentAdvancePayment.Where(x => x.DateFrom >= GlPeriod.DateFrom && x.DateTo <= GlPeriod.DateTo && x.FleetId == rentedEqupmentSummary.FleetId && x.IsFullPayment).ToList();
+                            timeSheets.RemoveAll(timesht =>
+                                            fullAdvancePayments.Any(advancePayment =>
+                                                timesht.Date >= advancePayment.DateFrom &&
+                                                timesht.Date <= advancePayment.DateTo
+                                            ));
+                        }
+                        else
+                        {
+                            timeSheets = db.DumpTruckTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= advancePaymentRecord.DateFrom && x.Date <= advancePaymentRecord.DateTo).ToList();
                         }
                         var groupedTimeSheets = timeSheets.GroupBy(x => x.ProcurementSupplierID);
                         foreach (var g in groupedTimeSheets)
@@ -653,6 +787,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 entity.BranchName = db.Branch.FirstOrDefault(x => x.BranchId == lastTimeSheet.BranchId)?.Name ?? "";
                                 entity.CreatedBy = User.Identity.Name;
                                 entity.DateCreated = DateTime.Now;
+                                if (rentedEqupmentSummary.IsAdvanceSummary)
+                                {
+                                    entity.IsAdvanceSummary = true;
+                                    if (advancePaymentRecord != null && advancePaymentRecord.RentalEquipmentAdvancePaymentId != 0)
+                                    {
+                                        entity.AdvancePaymentId = advancePaymentRecord.RentalEquipmentAdvancePaymentId;
+                                    }
+                                }
+                                if (advancePayedRecord != null && advancePayedRecord.RentalEquipmentAdvancePaymentId != 0)
+                                {
+                                    
+                                    entity.AdvancePaymentId = advancePayedRecord.RentalEquipmentAdvancePaymentId;
+                                }
                                 entity.GlPeriodId = rentedEqupmentSummary.GlPeriodId;
                                 entity.EquipmentTypeId = fleet.EquipmentTypeID.ToString();
                                 entity.EquipmentType = equipmentType.EquipmentTypeName;
@@ -667,7 +814,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 }
                                 if (entity.PlateNo == null)
                                 {
-                                    entity.PlateNo = fleet.Model;
+                                    entity.PlateNo = fleet.UnitNum;
                                 }
                                 entity.TimeSheetPreparedBy = User.Identity.Name;
                                 entity.CustomerName = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == first.ProcurementSupplierID)?.Name ?? "";
@@ -675,7 +822,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 //entity.GrossBeforeVat = timeSheets.Sum(x => (decimal?)x.TotalTime * equipmentRent.RentalRate) ?? 0;
                                 foreach (var timesheet in groupedTimeSheet)
                                 {
-                                    entity.GrossBeforeVat += timesheet.TotalTime * timesheet.RentalRate;
+                                    entity.GrossBeforeVat += timesheet.NetworkingHour * equipmentRent.RentalRate;
                                     entity.MaintenanceCost += timesheet.MaintenanceCost;
                                     entity.SparePartCost += timesheet.SparePartCost;
                                     entity.OilLubCost += timesheet.OilCost + timesheet.GreaseCost;
@@ -686,7 +833,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 //entity.AdvancePayedWithVat = advancePayed;
                                 entity.Deductable = groupedTimeSheet.Sum(x => (decimal?)x.MaintenanceCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.OilCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.GreaseCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.SparePartCost) ?? 0;
                                 entity.NetPayable = entity.TotalWithVat - entity.Deductable;
-                                entity.TotalWorkedHR = groupedTimeSheet.Sum(x => (decimal?)x.TotalTime) ?? 0;
+                                entity.TotalWorkedHR = groupedTimeSheet.Sum(x => (decimal?)x.NetworkingHour) ?? 0;
 
                                 entity.AgreementNo = rentFromExternal.Num.ToString();
                                 entity.RentalRateHour = equipmentRent.RentalRate;
@@ -728,7 +875,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                     timeSheetDetail.NightTimeEnd = timesheet.NightTimeEnd;
                                     timeSheetDetail.NightTimeStart = timesheet.NightTimeStart;
                                     timeSheetDetail.PayedIdleHR = timesheet.IdleHour;
-                                    timeSheetDetail.TotalPayedHR = timesheet.TotalTime;
+                                    timeSheetDetail.TotalPayedHR = timesheet.NetworkingHour;
                                     timeSheetDetail.WorkedHR = timesheet.NetworkingHour;
                                     timeSheetDetail.Date = timesheet.Date;
                                     timeSheetDetail.MaintenanceCost = timesheet.MaintenanceCost;
@@ -763,16 +910,36 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                     db.RentedEquipmentDailyOperation.Add(timeSheetDetail);
                                     db.SaveChanges();
                                 }
+                                if (advancePaymentRecord != null && advancePaymentRecord.RentalEquipmentAdvancePaymentId != 0)
+                                {
+                                    db.Entry(advancePaymentRecord).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                if (advancePayedRecord != null && advancePayedRecord.RentalEquipmentAdvancePaymentId != 0)
+                                {
+                                    db.Entry(advancePayedRecord).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
                             }
                         }
                     }
                     if (equipmentType.TimeSheetType== TimeSheetType.WagonDrill)
                     {
-                        var timeSheets = db.WagonDrillTimesheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
-                        var notApproved = timeSheets.FirstOrDefault(x => !x.CostSheetApproved);
-                        if (notApproved != null)
+                        //var timeSheets = db.WagonDrillTimesheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                        var timeSheets = new List<WagonDrillTimesheet>();
+                        if (!rentedEqupmentSummary.IsAdvanceSummary)
                         {
-                            ModelState.AddModelError("notApproved", "Approve all costsheets before creating summary");
+                            timeSheets = db.WagonDrillTimesheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                            var fullAdvancePayments = db.RentalEquipmentAdvancePayment.Where(x => x.DateFrom >= GlPeriod.DateFrom && x.DateTo <= GlPeriod.DateTo && x.FleetId == rentedEqupmentSummary.FleetId && x.IsFullPayment).ToList();
+                            timeSheets.RemoveAll(timesht =>
+                                            fullAdvancePayments.Any(advancePayment =>
+                                                timesht.Date >= advancePayment.DateFrom &&
+                                                timesht.Date <= advancePayment.DateTo
+                                            ));
+                        }
+                        else
+                        {
+                            timeSheets = db.WagonDrillTimesheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= advancePaymentRecord.DateFrom && x.Date <= advancePaymentRecord.DateTo).ToList();
                         }
                         var groupedTimeSheets = timeSheets.GroupBy(x => x.ProcurementSupplierID);
                         foreach (var g in groupedTimeSheets)
@@ -788,6 +955,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 
                                 entity.CreatedBy = User.Identity.Name;
                                 entity.DateCreated = DateTime.Now;
+                                if (rentedEqupmentSummary.IsAdvanceSummary)
+                                {
+                                    entity.IsAdvanceSummary = true;
+                                    if (advancePaymentRecord != null && advancePaymentRecord.RentalEquipmentAdvancePaymentId != 0)
+                                    {
+                                        entity.AdvancePaymentId = advancePaymentRecord.RentalEquipmentAdvancePaymentId;
+                                    }
+                                }
+                                if (advancePayedRecord != null && advancePayedRecord.RentalEquipmentAdvancePaymentId != 0)
+                                {
+                                    entity.AdvancePaymentId = advancePayedRecord.RentalEquipmentAdvancePaymentId;
+                                }
                                 entity.GlPeriodId = rentedEqupmentSummary.GlPeriodId;
                                 entity.EquipmentTypeId = fleet.EquipmentTypeID.ToString();
                                 entity.EquipmentType = equipmentType.EquipmentTypeName;
@@ -810,7 +989,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                 //entity.GrossBeforeVat = timeSheets.Sum(x => (decimal?)x.TotalTime * equipmentRent.RentalRate) ?? 0;
                                 foreach (var timesheet in groupedTimeSheet)
                                 {
-                                    entity.GrossBeforeVat += Math.Round(timesheet.OperationDrilledHoleDepth * timesheet.NumberOfHolesDrilled * timesheet.RateInMeter, 2);
+                                    entity.GrossBeforeVat += Math.Round(timesheet.OperationDrilledHoleDepth * timesheet.NumberOfHolesDrilled * equipmentRent.RentalRate, 2);
                                     entity.MaintenanceCost += timesheet.MaintenanceCost;
                                     entity.SparePartCost += timesheet.SparePartCost;
                                     entity.OilLubCost += timesheet.OilCost + timesheet.GreaseCost;
@@ -894,16 +1073,36 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                                     db.WagonDrillDailyOperation.Add(timeSheetDetail);
                                     db.SaveChanges();
                                 }
+                                if (advancePaymentRecord != null && advancePaymentRecord.RentalEquipmentAdvancePaymentId != 0)
+                                {
+                                    db.Entry(advancePaymentRecord).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                if (advancePayedRecord != null && advancePayedRecord.RentalEquipmentAdvancePaymentId != 0)
+                                {
+                                    db.Entry(advancePayedRecord).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
                             }
                         }
                     }
                     if (equipmentType.TimeSheetType == TimeSheetType.Machinery)
                     {
-                        var timeSheets = db.MachineryWorkingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
-                        var notApproved = timeSheets.FirstOrDefault(x => !x.CostSheetApproved);
-                        if (notApproved != null)
+                        //var timeSheets = db.MachineryWorkingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                        var timeSheets = new List<MachineryWorkingTimeSheet>();
+                        if (!rentedEqupmentSummary.IsAdvanceSummary)
                         {
-                            ModelState.AddModelError("notApproved", "Approve all costsheets before creating summary");
+                            timeSheets = db.MachineryWorkingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                            var fullAdvancePayments = db.RentalEquipmentAdvancePayment.Where(x => x.DateFrom >= GlPeriod.DateFrom && x.DateTo <= GlPeriod.DateTo && x.FleetId == rentedEqupmentSummary.FleetId && x.IsFullPayment).ToList();
+                            timeSheets.RemoveAll(timesht =>
+                                            fullAdvancePayments.Any(advancePayment =>
+                                                timesht.Date >= advancePayment.DateFrom &&
+                                                timesht.Date <= advancePayment.DateTo
+                                            ));
+                        }
+                        else
+                        {
+                            timeSheets = db.MachineryWorkingTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= advancePaymentRecord.DateFrom && x.Date <= advancePaymentRecord.DateTo).ToList();
                         }
                         var groupedTimeSheets = timeSheets.GroupBy(x => x.ProcurementSupplierID);
                         foreach (var g in groupedTimeSheets)
@@ -911,119 +1110,265 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                             var timesheetsByProject = g.GroupBy(x => x.BranchId);
                             foreach (var groupedTimeSheet in timesheetsByProject)
                             {
-                                var lastTimeSheet = groupedTimeSheet.OrderByDescending(x => x.MachineryWorkingTimeSheetId).FirstOrDefault();
-                                var first = groupedTimeSheet.First();
-                                var entity = new RentedEquipmentMonthlyPaymentSummary();
-                                entity.BranchId = lastTimeSheet.BranchId;
-                                entity.BranchName = db.Branch.FirstOrDefault(x => x.BranchId == lastTimeSheet.BranchId)?.Name ?? "";
+                                if(fleet.IsExcavator)
+                                {
+                                    var groupedExcavators = groupedTimeSheet.GroupBy(x => x.ExcavatorWorkType);
+                                    foreach(var groupedExcavator in groupedExcavators)
+                                        {
+                                        var lastTimeSheet = groupedExcavator.OrderByDescending(x => x.MachineryWorkingTimeSheetId).FirstOrDefault();
+                                        var first = groupedExcavator.First();
+                                        var entity = new RentedEquipmentMonthlyPaymentSummary();
+                                        entity.BranchId = lastTimeSheet.BranchId;
+                                        entity.BranchName = db.Branch.FirstOrDefault(x => x.BranchId == lastTimeSheet.BranchId)?.Name ?? "";
 
-                                entity.CreatedBy = User.Identity.Name;
-                                entity.DateCreated = DateTime.Now;
-                                entity.GlPeriodId = rentedEqupmentSummary.GlPeriodId;
-                                entity.EquipmentTypeId = fleet.EquipmentTypeID.ToString();
-                                entity.EquipmentType = equipmentType.EquipmentTypeName;
-                                entity.FleetId = fleet.FleetsID.ToString();
-                                if (fleet.PlateNumber != null)
-                                {
-                                    entity.PlateNo = fleet.PlateNumber;
-                                }
-                                if (entity.PlateNo == null)
-                                {
-                                    entity.PlateNo = fleet.SerialNo;
-                                }
-                                if (entity.PlateNo == null)
-                                {
-                                    entity.PlateNo = fleet.Model;
-                                }
-                                entity.TimeSheetPreparedBy = User.Identity.Name;
-                                entity.CustomerName = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == first.ProcurementSupplierID)?.Name ?? "";
-                                entity.OperatorName = groupedTimeSheet.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo && x.ExternalOperatorName != null).OrderByDescending(x => x.MachineryWorkingTimeSheetId).FirstOrDefault()?.ExternalOperatorName;
-                                //entity.GrossBeforeVat = timeSheets.Sum(x => (decimal?)x.TotalTime * equipmentRent.RentalRate) ?? 0;
-                                foreach (var timesheet in groupedTimeSheet)
-                                {
-                                    entity.GrossBeforeVat += timesheet.TotalTime * timesheet.RentalRate;
-                                    entity.MaintenanceCost += timesheet.MaintenanceCost;
-                                    entity.SparePartCost += timesheet.SparePartCost;
-                                    entity.OilLubCost += timesheet.OilCost + timesheet.GreaseCost;
-                                }
-                                entity.VAT = entity.GrossBeforeVat * (equipmentRent.Vat);
-                                //entity.TOT = entity.GrossBeforeVat * (equipmentRent.Tot);
-                                entity.TotalWithVat = entity.GrossBeforeVat + entity.VAT;
-                                //entity.AdvancePayedWithVat = advancePayed;
-                                entity.Deductable = groupedTimeSheet.Sum(x => (decimal?)x.MaintenanceCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.OilCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.GreaseCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.SparePartCost) ?? 0;
-                                entity.NetPayable = entity.TotalWithVat - entity.Deductable;
-                                entity.TotalWorkedHR = groupedTimeSheet.Sum(x => (decimal?)x.TotalTime) ?? 0;
-                                entity.AgreementNo = rentFromExternal.Num.ToString();
-                                entity.RentalRateHour = equipmentRent.RentalRate;
-                                entity.TimeSheetEquipmentAdminOfficerPreparedBy = User.Identity.Name;
-                                entity.TimeSheetEquipmentAdminOfficerPreparedDate = DateTime.Now;
-                                entity.RentalRateDay = equipmentRent.RentalRate * 11;
-                                entity.AgreementDate = rentFromExternal?.StartDate ?? DateTime.Now;
-                                entity.TimeSheetPreparedDate = DateTime.Now;
-                                //entity.TimeSheetCheckedBy = summary.TimeSheetCheckedBy;
-                                entity.TimeSheetCheckedDate = DateTime.Now;
-                                // entity.TimeSheetIsChecked = summary.TimeSheetIsChecked;
-                                //entity.IsRejected = summary.IsRejected;
-                                // entity.TimeSheetApprovedBy = summary.TimeSheetApprovedBy;
-                                entity.TimeSheetApprovalDate = DateTime.Now;
-                                //entity.TimeSheetIsApproved = summary.TimeSheetIsApproved;
-                                //entity.TimeSheetAuthorizedBy = summary.TimeSheetAuthorizedBy;
-                                entity.TimeSheetAuthorizedDate = DateTime.Now;
-                                // entity.TimeSheetIsAuthorized = summary.TimeSheetIsAuthorized;
-                                // entity.TimeSheetDGMApprovedBy = summary.TimeSheetDGMApprovedBy;
-                                entity.TimeSheetDGMApprovalDate = DateTime.Now;
-                                //entity.TimeSheetIsDGMApproved = summary.TimeSheetIsDGMApproved;
-                                //var 
-                                //entity.GrossBeforeVat = summary.GrossBeforeVat;
+                                        entity.CreatedBy = User.Identity.Name;
+                                        entity.DateCreated = DateTime.Now;
+                                        if (rentedEqupmentSummary.IsAdvanceSummary)
+                                        {
+                                            entity.IsAdvanceSummary = true;
+                                            if (advancePaymentRecord != null && advancePaymentRecord.RentalEquipmentAdvancePaymentId != 0)
+                                            {
+                                                entity.AdvancePaymentId = advancePaymentRecord.RentalEquipmentAdvancePaymentId;
+                                            }
+                                        }
+                                        if (advancePayedRecord != null && advancePayedRecord.RentalEquipmentAdvancePaymentId != 0)
+                                        {
+                                            entity.AdvancePaymentId = advancePayedRecord.RentalEquipmentAdvancePaymentId;
+                                        }
+                                        entity.GlPeriodId = rentedEqupmentSummary.GlPeriodId;
+                                        entity.EquipmentTypeId = fleet.EquipmentTypeID.ToString();
+                                        entity.EquipmentType = equipmentType.EquipmentTypeName;
+                                        entity.FleetId = fleet.FleetsID.ToString();
+                                        if (fleet.PlateNumber != null)
+                                        {
+                                            entity.PlateNo = fleet.PlateNumber;
+                                        }
+                                        if (entity.PlateNo == null)
+                                        {
+                                            entity.PlateNo = fleet.SerialNo;
+                                        }
+                                        if (entity.PlateNo == null)
+                                        {
+                                            entity.PlateNo = fleet.Model;
+                                        }
+                                        entity.TimeSheetPreparedBy = User.Identity.Name;
+                                        entity.CustomerName = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == first.ProcurementSupplierID)?.Name ?? "";
+                                        entity.OperatorName = groupedExcavator.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo && x.ExternalOperatorName != null).OrderByDescending(x => x.MachineryWorkingTimeSheetId).FirstOrDefault()?.ExternalOperatorName;
+                                        //entity.GrossBeforeVat = timeSheets.Sum(x => (decimal?)x.TotalTime * equipmentRent.RentalRate) ?? 0;
+                                        foreach (var timesheet in groupedExcavator)
+                                        {
+                                            entity.GrossBeforeVat += timesheet.NetHour * equipmentRent.RentalRate;
+                                            entity.MaintenanceCost += timesheet.MaintenanceCost;
+                                            entity.SparePartCost += timesheet.SparePartCost;
+                                            entity.OilLubCost += timesheet.OilCost + timesheet.GreaseCost;
+                                        }
+                                        entity.VAT = entity.GrossBeforeVat * (equipmentRent.Vat);
+                                        //entity.TOT = entity.GrossBeforeVat * (equipmentRent.Tot);
+                                        entity.TotalWithVat = entity.GrossBeforeVat + entity.VAT;
+                                        //entity.AdvancePayedWithVat = advancePayed;
+                                        entity.Deductable = groupedExcavator.Sum(x => (decimal?)x.MaintenanceCost) ?? 0 + groupedExcavator.Sum(x => (decimal?)x.OilCost) ?? 0 + groupedExcavator.Sum(x => (decimal?)x.GreaseCost) ?? 0 + groupedExcavator.Sum(x => (decimal?)x.SparePartCost) ?? 0;
+                                        entity.NetPayable = entity.TotalWithVat - entity.Deductable;
+                                        entity.TotalWorkedHR = groupedExcavator.Sum(x => (decimal?)x.NetHour) ?? 0;
+                                        entity.AgreementNo = rentFromExternal.Num.ToString();
+                                        entity.RentalRateHour = equipmentRent.RentalRate;
+                                        entity.TimeSheetEquipmentAdminOfficerPreparedBy = User.Identity.Name;
+                                        entity.TimeSheetEquipmentAdminOfficerPreparedDate = DateTime.Now;
+                                        entity.RentalRateDay = equipmentRent.RentalRate * 11;
+                                        entity.AgreementDate = rentFromExternal?.StartDate ?? DateTime.Now;
+                                        entity.TimeSheetPreparedDate = DateTime.Now;
+                                        //entity.TimeSheetCheckedBy = summary.TimeSheetCheckedBy;
+                                        entity.TimeSheetCheckedDate = DateTime.Now;
+                                        // entity.TimeSheetIsChecked = summary.TimeSheetIsChecked;
+                                        //entity.IsRejected = summary.IsRejected;
+                                        // entity.TimeSheetApprovedBy = summary.TimeSheetApprovedBy;
+                                        entity.TimeSheetApprovalDate = DateTime.Now;
+                                        //entity.TimeSheetIsApproved = summary.TimeSheetIsApproved;
+                                        //entity.TimeSheetAuthorizedBy = summary.TimeSheetAuthorizedBy;
+                                        entity.TimeSheetAuthorizedDate = DateTime.Now;
+                                        // entity.TimeSheetIsAuthorized = summary.TimeSheetIsAuthorized;
+                                        // entity.TimeSheetDGMApprovedBy = summary.TimeSheetDGMApprovedBy;
+                                        entity.TimeSheetDGMApprovalDate = DateTime.Now;
+                                        //entity.TimeSheetIsDGMApproved = summary.TimeSheetIsDGMApproved;
+                                        //var 
+                                        //entity.GrossBeforeVat = summary.GrossBeforeVat;
 
 
 
-                                db.RentedEquipmentMonthlyPaymentSummary.Add(entity);
-                                db.SaveChanges();
-                                //var timeSheets = db.LightVehicleTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
-                                foreach (var timesheet in groupedTimeSheet)
-                                {
-                                    var timeSheetDetail = new RentedEquipmentDailyOperation();
-                                    timeSheetDetail.RentedEquipmentMonthlyPaymentSummaryId = entity.RentedEquipmentMonthlyPaymentSummaryId;
-                                    timeSheetDetail.AfternoonTimeEnd = timesheet.AfternoonTimeEnd;
-                                    timeSheetDetail.AfternoonTimeStart = timesheet.AfternoonTimeStart;
-                                    timeSheetDetail.MorningTimeEnd = timesheet.MorningTimeEnd;
-                                    timeSheetDetail.MorningTimeStart = timesheet.MorningTimeStart;
-                                    timeSheetDetail.NightTimeEnd = timesheet.NightTimeEnd;
-                                    timeSheetDetail.NightTimeStart = timesheet.NightTimeStart;
-                                    timeSheetDetail.PayedIdleHR = timesheet.IdleHours;
-                                    timeSheetDetail.TotalPayedHR = timesheet.TotalTime;
-                                    timeSheetDetail.WorkedHR = timesheet.NetHour;
-                                    timeSheetDetail.Date = timesheet.Date;
-                                    timeSheetDetail.MaintenanceCost = timesheet.MaintenanceCost;
-                                    timeSheetDetail.SparePartCost = timesheet.SparePartCost;
-                                    timeSheetDetail.OilLubCost = timesheet.OilCost + timesheet.GreaseCost;
-                                    timeSheetDetail.Activity = timesheet.WorkType;
-                                    timeSheetDetail.Volume = fleet.Volume;
-                                    timeSheetDetail.Unit = fleet.Unit.ToString();
-                                    timeSheetDetail.FuelKMReading = timesheet.FuelKMR;
-                                    timeSheetDetail.FuelInLiter = timesheet.FuelConsumption;
-                                    timeSheetDetail.FinalEngineHour = timesheet.FinalEHR;
-                                    timeSheetDetail.InitialEngineHour = timesheet.InitialEHR;
-                                    timeSheetDetail.DifferenceEngineHour = timesheet.DifferenceEHR;
-                                    //if (timesheet.TimeSheetApprovedBy != null)
-                                    //{
-                                    //    timeSheetDetail.SiteFormanName = UserInformationHelper.GetEmployeeFullName(timesheet.TimeSheetApprovedBy);
-                                    //}
-                                    timeSheetDetail.DownHour = timesheet.DownHours;
-                                    // timeSheetDetail.DownReasonList = timesheet..Value;
-                                    if (timesheet.ReasonForDown.HasValue)
-                                    {
-                                        timeSheetDetail.DownReasonList = timesheet.ReasonForDown.Value;
+                                        db.RentedEquipmentMonthlyPaymentSummary.Add(entity);
+                                        db.SaveChanges();
+                                        //var timeSheets = db.LightVehicleTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                                        foreach (var timesheet in groupedExcavator)
+                                        {
+                                            var timeSheetDetail = new RentedEquipmentDailyOperation();
+                                            timeSheetDetail.RentedEquipmentMonthlyPaymentSummaryId = entity.RentedEquipmentMonthlyPaymentSummaryId;
+                                            timeSheetDetail.AfternoonTimeEnd = timesheet.AfternoonTimeEnd;
+                                            timeSheetDetail.AfternoonTimeStart = timesheet.AfternoonTimeStart;
+                                            timeSheetDetail.MorningTimeEnd = timesheet.MorningTimeEnd;
+                                            timeSheetDetail.MorningTimeStart = timesheet.MorningTimeStart;
+                                            timeSheetDetail.NightTimeEnd = timesheet.NightTimeEnd;
+                                            timeSheetDetail.NightTimeStart = timesheet.NightTimeStart;
+                                            timeSheetDetail.PayedIdleHR = timesheet.IdleHours;
+                                            timeSheetDetail.TotalPayedHR = timesheet.NetHour;
+                                            timeSheetDetail.WorkedHR = timesheet.NetHour;
+                                            timeSheetDetail.Date = timesheet.Date;
+                                            timeSheetDetail.MaintenanceCost = timesheet.MaintenanceCost;
+                                            timeSheetDetail.SparePartCost = timesheet.SparePartCost;
+                                            timeSheetDetail.OilLubCost = timesheet.OilCost + timesheet.GreaseCost;
+                                            timeSheetDetail.Activity = timesheet.WorkType;
+                                            timeSheetDetail.Volume = fleet.Volume;
+                                            timeSheetDetail.Unit = fleet.Unit.ToString();
+                                            timeSheetDetail.FuelKMReading = timesheet.FuelKMR;
+                                            timeSheetDetail.FuelInLiter = timesheet.FuelConsumption;
+                                            timeSheetDetail.FinalEngineHour = timesheet.FinalEHR;
+                                            timeSheetDetail.InitialEngineHour = timesheet.InitialEHR;
+                                            timeSheetDetail.DifferenceEngineHour = timesheet.DifferenceEHR;
+                                            //if (timesheet.TimeSheetApprovedBy != null)
+                                            //{
+                                            //    timeSheetDetail.SiteFormanName = UserInformationHelper.GetEmployeeFullName(timesheet.TimeSheetApprovedBy);
+                                            //}
+                                            timeSheetDetail.DownHour = timesheet.DownHours;
+                                            // timeSheetDetail.DownReasonList = timesheet..Value;
+                                            if (timesheet.ReasonForDown.HasValue)
+                                            {
+                                                timeSheetDetail.DownReasonList = timesheet.ReasonForDown.Value;
+                                            }
+                                            if (timesheet.ReasonForIdle.HasValue)
+                                            {
+                                                timeSheetDetail.IdleReasonList = timesheet.ReasonForIdle.Value;
+                                            }
+                                            timeSheetDetail.OperatorName = timesheet.ExternalOperatorName;
+                                            db.RentedEquipmentDailyOperation.Add(timeSheetDetail);
+                                            db.SaveChanges();
+                                        }
                                     }
-                                    if (timesheet.ReasonForIdle.HasValue)
+                                }
+                                else
+                                {
+                                    var lastTimeSheet = groupedTimeSheet.OrderByDescending(x => x.MachineryWorkingTimeSheetId).FirstOrDefault();
+                                    var first = groupedTimeSheet.First();
+                                    var entity = new RentedEquipmentMonthlyPaymentSummary();
+                                    entity.BranchId = lastTimeSheet.BranchId;
+                                    entity.BranchName = db.Branch.FirstOrDefault(x => x.BranchId == lastTimeSheet.BranchId)?.Name ?? "";
+
+                                    entity.CreatedBy = User.Identity.Name;
+                                    entity.DateCreated = DateTime.Now;
+                                    entity.GlPeriodId = rentedEqupmentSummary.GlPeriodId;
+                                    entity.EquipmentTypeId = fleet.EquipmentTypeID.ToString();
+                                    entity.EquipmentType = equipmentType.EquipmentTypeName;
+                                    entity.FleetId = fleet.FleetsID.ToString();
+                                    if (fleet.PlateNumber != null)
                                     {
-                                        timeSheetDetail.IdleReasonList = timesheet.ReasonForIdle.Value;
+                                        entity.PlateNo = fleet.PlateNumber;
                                     }
-                                    timeSheetDetail.OperatorName = timesheet.ExternalOperatorName;
-                                    db.RentedEquipmentDailyOperation.Add(timeSheetDetail);
+                                    if (entity.PlateNo == null)
+                                    {
+                                        entity.PlateNo = fleet.SerialNo;
+                                    }
+                                    if (entity.PlateNo == null)
+                                    {
+                                        entity.PlateNo = fleet.Model;
+                                    }
+                                    entity.TimeSheetPreparedBy = User.Identity.Name;
+                                    entity.CustomerName = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == first.ProcurementSupplierID)?.Name ?? "";
+                                    entity.OperatorName = groupedTimeSheet.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo && x.ExternalOperatorName != null).OrderByDescending(x => x.MachineryWorkingTimeSheetId).FirstOrDefault()?.ExternalOperatorName;
+                                    //entity.GrossBeforeVat = timeSheets.Sum(x => (decimal?)x.TotalTime * equipmentRent.RentalRate) ?? 0;
+                                    foreach (var timesheet in groupedTimeSheet)
+                                    {
+                                        entity.GrossBeforeVat += timesheet.NetHour * equipmentRent.RentalRate;
+                                        entity.MaintenanceCost += timesheet.MaintenanceCost;
+                                        entity.SparePartCost += timesheet.SparePartCost;
+                                        entity.OilLubCost += timesheet.OilCost + timesheet.GreaseCost;
+                                    }
+                                    entity.VAT = entity.GrossBeforeVat * (equipmentRent.Vat);
+                                    //entity.TOT = entity.GrossBeforeVat * (equipmentRent.Tot);
+                                    entity.TotalWithVat = entity.GrossBeforeVat + entity.VAT;
+                                    //entity.AdvancePayedWithVat = advancePayed;
+                                    entity.Deductable = groupedTimeSheet.Sum(x => (decimal?)x.MaintenanceCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.OilCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.GreaseCost) ?? 0 + groupedTimeSheet.Sum(x => (decimal?)x.SparePartCost) ?? 0;
+                                    entity.NetPayable = entity.TotalWithVat - entity.Deductable;
+                                    entity.TotalWorkedHR = groupedTimeSheet.Sum(x => (decimal?)x.NetHour) ?? 0;
+                                    entity.AgreementNo = rentFromExternal.Num.ToString();
+                                    entity.RentalRateHour = equipmentRent.RentalRate;
+                                    entity.TimeSheetEquipmentAdminOfficerPreparedBy = User.Identity.Name;
+                                    entity.TimeSheetEquipmentAdminOfficerPreparedDate = DateTime.Now;
+                                    entity.RentalRateDay = equipmentRent.RentalRate * 11;
+                                    entity.AgreementDate = rentFromExternal?.StartDate ?? DateTime.Now;
+                                    entity.TimeSheetPreparedDate = DateTime.Now;
+                                    //entity.TimeSheetCheckedBy = summary.TimeSheetCheckedBy;
+                                    entity.TimeSheetCheckedDate = DateTime.Now;
+                                    // entity.TimeSheetIsChecked = summary.TimeSheetIsChecked;
+                                    //entity.IsRejected = summary.IsRejected;
+                                    // entity.TimeSheetApprovedBy = summary.TimeSheetApprovedBy;
+                                    entity.TimeSheetApprovalDate = DateTime.Now;
+                                    //entity.TimeSheetIsApproved = summary.TimeSheetIsApproved;
+                                    //entity.TimeSheetAuthorizedBy = summary.TimeSheetAuthorizedBy;
+                                    entity.TimeSheetAuthorizedDate = DateTime.Now;
+                                    // entity.TimeSheetIsAuthorized = summary.TimeSheetIsAuthorized;
+                                    // entity.TimeSheetDGMApprovedBy = summary.TimeSheetDGMApprovedBy;
+                                    entity.TimeSheetDGMApprovalDate = DateTime.Now;
+                                    //entity.TimeSheetIsDGMApproved = summary.TimeSheetIsDGMApproved;
+                                    //var 
+                                    //entity.GrossBeforeVat = summary.GrossBeforeVat;
+
+
+
+                                    db.RentedEquipmentMonthlyPaymentSummary.Add(entity);
                                     db.SaveChanges();
+                                    //var timeSheets = db.LightVehicleTimeSheets.Where(x => x.FleetsID.ToString() == rentedEqupmentSummary.FleetId && x.Date >= GlPeriod.DateFrom && x.Date <= GlPeriod.DateTo).ToList();
+                                    foreach (var timesheet in groupedTimeSheet)
+                                    {
+                                        var timeSheetDetail = new RentedEquipmentDailyOperation();
+                                        timeSheetDetail.RentedEquipmentMonthlyPaymentSummaryId = entity.RentedEquipmentMonthlyPaymentSummaryId;
+                                        timeSheetDetail.AfternoonTimeEnd = timesheet.AfternoonTimeEnd;
+                                        timeSheetDetail.AfternoonTimeStart = timesheet.AfternoonTimeStart;
+                                        timeSheetDetail.MorningTimeEnd = timesheet.MorningTimeEnd;
+                                        timeSheetDetail.MorningTimeStart = timesheet.MorningTimeStart;
+                                        timeSheetDetail.NightTimeEnd = timesheet.NightTimeEnd;
+                                        timeSheetDetail.NightTimeStart = timesheet.NightTimeStart;
+                                        timeSheetDetail.PayedIdleHR = timesheet.IdleHours;
+                                        timeSheetDetail.TotalPayedHR = timesheet.NetHour;
+                                        timeSheetDetail.WorkedHR = timesheet.NetHour;
+                                        timeSheetDetail.Date = timesheet.Date;
+                                        timeSheetDetail.MaintenanceCost = timesheet.MaintenanceCost;
+                                        timeSheetDetail.SparePartCost = timesheet.SparePartCost;
+                                        timeSheetDetail.OilLubCost = timesheet.OilCost + timesheet.GreaseCost;
+                                        timeSheetDetail.Activity = timesheet.WorkType;
+                                        timeSheetDetail.Volume = fleet.Volume;
+                                        timeSheetDetail.Unit = fleet.Unit.ToString();
+                                        timeSheetDetail.FuelKMReading = timesheet.FuelKMR;
+                                        timeSheetDetail.FuelInLiter = timesheet.FuelConsumption;
+                                        timeSheetDetail.FinalEngineHour = timesheet.FinalEHR;
+                                        timeSheetDetail.InitialEngineHour = timesheet.InitialEHR;
+                                        timeSheetDetail.DifferenceEngineHour = timesheet.DifferenceEHR;
+                                        //if (timesheet.TimeSheetApprovedBy != null)
+                                        //{
+                                        //    timeSheetDetail.SiteFormanName = UserInformationHelper.GetEmployeeFullName(timesheet.TimeSheetApprovedBy);
+                                        //}
+                                        timeSheetDetail.DownHour = timesheet.DownHours;
+                                        // timeSheetDetail.DownReasonList = timesheet..Value;
+                                        if (timesheet.ReasonForDown.HasValue)
+                                        {
+                                            timeSheetDetail.DownReasonList = timesheet.ReasonForDown.Value;
+                                        }
+                                        if (timesheet.ReasonForIdle.HasValue)
+                                        {
+                                            timeSheetDetail.IdleReasonList = timesheet.ReasonForIdle.Value;
+                                        }
+                                        timeSheetDetail.OperatorName = timesheet.ExternalOperatorName;
+                                        db.RentedEquipmentDailyOperation.Add(timeSheetDetail);
+                                        db.SaveChanges();
+                                    }
+                                    if (advancePaymentRecord != null && advancePaymentRecord.RentalEquipmentAdvancePaymentId != 0)
+                                    {
+                                        db.Entry(advancePaymentRecord).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                    if (advancePayedRecord != null && advancePayedRecord.RentalEquipmentAdvancePaymentId != 0)
+                                    {
+                                        db.Entry(advancePayedRecord).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
                                 }
+                               
                             }
                         }
                     }
@@ -1050,11 +1395,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var wagonDrillDetails = db.WagonDrillDailyOperation.Where(x => x.RentedEquipmentMonthlyPaymentSummaryId == paymentSummary.RentedEquipmentMonthlyPaymentSummaryId).ToList();
                 foreach(var detail in wagonDrillDetails)
                 {
-                    if(paymentSummary.RentalRateHour!=0)
-                        existing.GrossBeforeVat+= Math.Round(detail.NumberOfHolesDrilled * detail.OperationDrilledHoleDepth * paymentSummary.RentalRateHour, 2);
+                    if (paymentSummary.RentalRateHour != 0)
+                    {
+                        existing.GrossBeforeVat += Math.Round(detail.NumberOfHolesDrilled * detail.OperationDrilledHoleDepth * paymentSummary.RentalRateHour, 2);
+                        //if (detail.IsDetailUpdated)
+                        //{
+                        //    existing.GrossBeforeVat += Math.Round(detail.PayedIdleHour * paymentSummary.RentalRateHour, 2);
+                        //}
+                        }
                     else
                     {
                         existing.GrossBeforeVat += Math.Round(detail.NumberOfHolesDrilled * detail.OperationDrilledHoleDepth * detail.OperationRateForMeter, 2);
+                        //if (detail.IsDetailUpdated)
+                        //{
+                        //    existing.GrossBeforeVat += Math.Round(detail.PayedIdleHour * detail.OperationRateForMeter, 2);
+                        //}
                     }
                 }
                 }
@@ -1115,15 +1470,96 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             ModelState.Remove("IsWagonDrill");
             ModelState.Remove("Paid");
             ModelState.Remove("TotalAmount");
+
             var existingSummary = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.RentedEquipmentMonthlyPaymentSummaryId == summary.RentedEquipmentMonthlyPaymentSummaryId);
             var details = db.RentedEquipmentDailyOperation.Where(x => x.RentedEquipmentMonthlyPaymentSummaryId == summary.RentedEquipmentMonthlyPaymentSummaryId).ToList();
             db.RentedEquipmentDailyOperation.RemoveRange(details);
             db.SaveChanges();
+            if (existingSummary.AdvancePaymentId != null)
+            {
+                var advancePayment = db.RentalEquipmentAdvancePayment.FirstOrDefault(x => x.RentalEquipmentAdvancePaymentId == existingSummary.AdvancePaymentId);
+                if(advancePayment!=null)
+                {
+                    advancePayment.IsSummaryCalculated = false;
+                    db.Entry(advancePayment).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+            }
             db.RentedEquipmentMonthlyPaymentSummary.Remove(existingSummary);
             db.SaveChanges();
             return Json(new[] { summary }.ToDataSourceResult(request, ModelState));
         }
-        public ActionResult CheckTimeSheetSummery(int id)
+        public ActionResult Update_Detail([DataSourceRequest] DataSourceRequest request, RentedEquipmentDailyOperation dailyOperation)
+        {
+            var detail = db.RentedEquipmentDailyOperation.FirstOrDefault(x => x.RentedEquipmentDailyOperationId == dailyOperation.RentedEquipmentDailyOperationId);
+            if (!detail.IsDetailUpdated)
+            {
+                var parent = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.RentedEquipmentMonthlyPaymentSummaryId == detail.RentedEquipmentMonthlyPaymentSummaryId);
+                parent.TotalWorkedHR += dailyOperation.PayedIdleHR;
+                detail.TotalPayedHR += dailyOperation.PayedIdleHR;
+                detail.PayedIdleHR = dailyOperation.PayedIdleHR;
+                detail.IsDetailUpdated = true;
+                db.Entry(detail).State = EntityState.Modified;
+                db.SaveChanges();
+                db.Entry(parent).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            else
+            {
+                var parent = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.RentedEquipmentMonthlyPaymentSummaryId == detail.RentedEquipmentMonthlyPaymentSummaryId);
+                parent.TotalWorkedHR -= detail.PayedIdleHR;
+                parent.TotalWorkedHR += dailyOperation.PayedIdleHR;
+                detail.TotalPayedHR -= detail.PayedIdleHR;
+                detail.TotalPayedHR += dailyOperation.PayedIdleHR;
+                detail.PayedIdleHR = dailyOperation.PayedIdleHR;
+                db.Entry(detail).State = EntityState.Modified;
+                db.SaveChanges();
+                db.Entry(parent).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return Json(new[] { dailyOperation }.ToDataSourceResult(request, ModelState));
+        }public ActionResult Update_WDetail([DataSourceRequest] DataSourceRequest request, WagonDrillDailyOperation dailyOperation)
+        {
+            ModelState.Remove("TotalAmount");
+            ModelState.Remove("TotalTime");
+            ModelState.Remove("NetAmount");
+            ModelState.Remove("TotalCost");
+            ModelState.Remove("TOT");
+            ModelState.Remove("VAT");
+            ModelState.Remove("IdleRateHour");
+            ModelState.Remove("IdleAmount");
+            ModelState.Remove("GrossBeforeVat");
+            var detail = db.WagonDrillDailyOperation.FirstOrDefault(x => x.WagonDrillDailyOperationId == dailyOperation.WagonDrillDailyOperationId);
+            if (!detail.IsDetailUpdated)
+            {
+                var parent = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.RentedEquipmentMonthlyPaymentSummaryId == detail.RentedEquipmentMonthlyPaymentSummaryId);
+                parent.TotalWorkedHR += dailyOperation.PayedIdleHour;
+                parent.PayedIdleHour += dailyOperation.PayedIdleHour;
+                detail.PayedIdleHour= dailyOperation.PayedIdleHour;
+                detail.IsDetailUpdated = true;
+                db.Entry(detail).State = EntityState.Modified;
+                db.SaveChanges();
+                db.Entry(parent).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            else
+            {
+                var parent = db.RentedEquipmentMonthlyPaymentSummary.FirstOrDefault(x => x.RentedEquipmentMonthlyPaymentSummaryId == detail.RentedEquipmentMonthlyPaymentSummaryId);
+                parent.TotalWorkedHR -= detail.PayedIdleHour;
+                parent.PayedIdleHour -= detail.PayedIdleHour;
+                parent.TotalWorkedHR += dailyOperation.PayedIdleHour;
+                parent.PayedIdleHour += dailyOperation.PayedIdleHour;
+                detail.PayedIdleHour -= detail.PayedIdleHour;
+                detail.PayedIdleHour += dailyOperation.PayedIdleHour;
+                db.Entry(detail).State = EntityState.Modified;
+                db.SaveChanges();
+                db.Entry(parent).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return Json(new[] { dailyOperation }.ToDataSourceResult(request, ModelState));
+        }
+            public ActionResult CheckTimeSheetSummery(int id)
         {
 
             //Guid Id = Guid.Parse(EId);
@@ -1208,7 +1644,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
 
-        }  public ActionResult CheckConstructionEngineerTimeSheetSummery(int id)
+        }
+        public ActionResult CheckConstructionEngineerTimeSheetSummery(int id)
         {
 
             //Guid Id = Guid.Parse(EId);

@@ -1,0 +1,7 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+  .DataTextField("Text")
+  .DataValueField("Value")
+  .Filter(FilterType.Contains)
+  .OptionLabel("Select Requestor")
+  .HtmlAttributes(new { style = "width:100%" })
+  .DataSource(d => d.Read(r => r.Action("GetEmployeeForTravelOrder", "FleetManagementDataProvider").Data("filterRequestor")).ServerFiltering(false)))

@@ -22,17 +22,26 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal OperationDrilledHoleDepth { get;set;}
         public decimal NumberOfHolesDrilled { get;set;}
         public string CustomerName { get; set; }
+        public int? AdvancePaymentId { get; set; }
         public string OperatorName { get; set; }
         public int OperatorId { get; set; }
         public int BranchId { get; set; }
         public string BranchName { get; set; }
         public string AgreementNo { get; set; }
+        
+        [DataType(DataType.Date)]
+        public DateTime? DateFrom { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateTo { get; set; }
+        public bool IsAdvanceSummary { get; set; }
         public decimal RentalRateHour { get; set; }
         public decimal RentalRateDay { get; set; }
         public DateTime AgreementDate { get; set; }
         public string TimeSheetPreparedBy { get; set; }
         public DateTime TimeSheetPreparedDate { get; set; }    
         public bool TimeSheetIsPrepared { get; set; }
+        [NotMapped]
+        public string SummaryStatus { get; set; }
         public string TimeSheetCheckedBy { get; set; }
         public DateTime TimeSheetCheckedDate { get; set; }
         public bool TimeSheetIsChecked { get; set; }
@@ -50,6 +59,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal VAT { get; set; }
         //public decimal TOT { get; set; }
         public decimal TotalWithVat { get; set; }
+        [NotMapped]
+        public decimal PayedIdleHour { get; set; }
+        [NotMapped]
+        public decimal WPayedIdleHour { get; set; }
+        [NotMapped]
+        public decimal WorkedHour { get; set; }
         public decimal AdvancePayedWithVat { get; set; }
         public decimal Deductable { get; set; }
         public decimal NetPayable { get; set; }
@@ -151,6 +166,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public string Activity { get; set; }
         public string Unit { get; set; }
         public decimal Volume { get; set; }
+        public bool IsDetailUpdated { get; set;}
     }
     public class WagonDrillDailyOperation
     {
@@ -172,6 +188,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal IdleAmount { get; set; }
         public decimal InitialEngineHour { get; set; }
         public decimal FinalEngineHour { get; set; }
+        public bool IsDetailUpdated { get; set; }
         public decimal DifferenceEngineHour { get; set; }
         public decimal DownHour { get; set; }
         public IdleReasonList IdleReasonList { get; set; }

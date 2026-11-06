@@ -24,6 +24,7 @@
                    columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Id", "Name").Title("Business unit").Width(100);
                    columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
                    columns.Bound(c => c.ExternalOperatorName).Title("External Operator").Width(100);
+                   columns.Bound(c => c.Date).Width(100);
                    if (isMIDROC == false)
                    {
                        columns.Bound(c => c.FuelInLiter).Width(100);
@@ -62,8 +63,7 @@
 
 
                    columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
-                   if (IsMCG || isMIDROC)
-                   {
+                  
                        columns.Template(@<text></text>)
                                                   .ClientTemplate(
                                                   "# if (!TimeSheetSendForAproval&& !TimeSheetApproved) { #" +
@@ -91,7 +91,7 @@
                                                   "# } #")
                                                   .Title("Reject")
                                                   .Width(60);
-                       }
+                       
                    })
                              .ToolBar(toolbar =>
                              {
@@ -101,9 +101,6 @@
                                         <span class="k-icon k-i-plus"></span>
                                         Add New Record
                                     </a>
-                                    <!-- Conditional content -->
-                                    @if (isMIDROC||IsMCG)
-                                                {
                                         <label style="margin-left:20px;">Branch:</label>
                                         @(Html.Kendo().DropDownList()
                                                                             .Name("branchDropdown")
@@ -123,12 +120,12 @@
                                         )
 
                                         <button class="k-button k-primary" onclick="generateTimesheet()">
-                                            Request Approval
+                                            Auto Generate
                                         </button>
                                         <button type="button"
                                                 class="k-button k-primary"
                                                 onclick="SendForApprovalSelected()">
-                                            Approve Selected
+                                            Send For Approval
                                         </button><button type="button"
                                                 class="k-button k-primary"
                                                 onclick="ApproveSelected()">
@@ -138,10 +135,6 @@
                                                 onclick="RejectSelected()">
                                             Reject Selected
                                         </button>
-                                                }
-                                    /**/
-                                    /**/
-                                    /**/
 
                                 </text>);
                                     })
@@ -152,6 +145,7 @@
                                       .Filterable()
                                       .Events(e => e.DataBound("dataBound"))
                                       .Events(e => e.DetailExpand("onDetailExpand"))
+                                      .Events(e => e.Edit("onTimesheetEdit"))
                                       .Scrollable(s => s.Height(550))
                                       .DataSource(dataSource => dataSource
                                           .Ajax()
@@ -667,9 +661,15 @@ $(document).ready(function () {
             fleetDropdown.trigger("change");
         }
     });
+    function onTimesheetEdit(e) {
+        if (!e.model.isNew() && e.model.FleetsID) {
+            toggleExternalOperator(e.model.FleetsID);
+        }
+    }
     function onFleetChange(e) {
-    var fleetId = this.value();
-
+        toggleExternalOperator(this.value());
+    }
+    function toggleExternalOperator(fleetId) {
     if (!fleetId) return;
 
     $.ajax({

@@ -66,6 +66,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Value = x.BranchId,
                 Name = x.Name
             }).AsQueryable();
+            ViewData["Department"] = db.MainCompanyStructures.Where(x => x.Parent > 0)
+                .Select(x => new { x.OrgStructureId, x.Name }).ToList();
             var fetchSetting = db.RequestToInspections.FirstOrDefault();
             string isECWC = (fetchSetting != null && fetchSetting.Remark == "ECWC") ? "ECWC" : "Not";
 
@@ -155,6 +157,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             db.SaveChanges();
         }
+        public JsonResult GetRentDepartments()
+        {
+            return Json(db.MainCompanyStructures.Where(x => x.Parent > 0).OrderBy(x => x.Name)
+                .Select(x => new { x.OrgStructureId, x.Name }).ToList(), JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult RentFromExternal_Read([DataSourceRequest] DataSourceRequest request)
         {
             FleetCostHelper FleetCostHelper = new FleetCostHelper();
@@ -197,6 +205,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 PlateNo = GetPlateNo(a.RentFromExternalID),
                 HP_CC = a.HP_CC,
                 BranchId = a.BranchId,
+                DepartmentId = a.DepartmentId,
                 Hour = a.Hour,
                 OperatorId = a.OperatorId,
                 IsReplaced = a.IsReplaced,
@@ -245,6 +254,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 PlateNo = GetPlateNo(a.RentFromExternalID),
                 HP_CC = a.HP_CC,
                 BranchId = a.BranchId,
+                DepartmentId = a.DepartmentId,
                 Hour = a.Hour,
                 IsExpired = a.IsExpired,
                 OperatorId = a.OperatorId,
@@ -338,6 +348,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 rentFromExternal.HP_CC = model.HP_CC;
                 rentFromExternal.Hour = model.Hour;
                 rentFromExternal.OperatorId = model.OperatorId;
+                rentFromExternal.DepartmentId = model.DepartmentId;
                 rentFromExternal.LastModified = DateTime.Now;
                 rentFromExternal.ModifiedBy = User.Identity.Name;
                 rentFromExternal.OrgBranchName= UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
@@ -360,6 +371,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     Hour = rentFromExternal.Hour,
                     HP_CC = rentFromExternal.HP_CC,
                     BranchId = rentFromExternal.BranchId,
+                    DepartmentId = rentFromExternal.DepartmentId,
                     IsExpired = false,
                     IsReplaced = false,
                     ExpKey = rentFromExternal.RentFromExternalID,
@@ -384,6 +396,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                             IdleRentalRate = equip.IdleRentalRate,
                             RentalRate = equip.RentalRate,
                             RentType = equip.RentType,
+                            DayType = equip.DayType,
                             RentFromExternalId = entity.RentFromExternalID
                         };
                         db.RentFromExternalEquipments.Add(rentEquip);

@@ -1,0 +1,97 @@
+@using ExceedERP.Core.Domain.FleetManagement
+@model ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Equipment Category</label>
+            @(Html.Kendo().DropDownListFor(m => m.EquipmentIdentityID)
+                .DataTextField("Name")
+                .DataValueField("Id")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Category")
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Equipment Type</label>
+            @(Html.Kendo().DropDownListFor(m => m.EquipmentTypeID)
+                .DataTextField("Name")
+                .DataValueField("Id")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Type")
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d => d.Read(r => r.Action("GetEquipmentTypes", "FleetManagementDataProvider").Data("filterEquipmentTypes")).ServerFiltering(true))
+                .Enable(false)
+                .AutoBind(false)
+                .CascadeFrom("EquipmentIdentityID"))
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Equipment Name</label>
+            @(Html.Kendo().DropDownListFor(m => m.EquipmentNameID)
+                .DataTextField("Name")
+                .DataValueField("Id")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Equipment")
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("filterEquipmentNames")).ServerFiltering(true))
+                .Enable(false)
+                .AutoBind(false)
+                .CascadeFrom("EquipmentTypeID"))
+            @Html.ValidationMessageFor(m => m.EquipmentNameID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Request Date</label>
+            @Html.Kendo().DatePickerFor(m => m.RequestDate).HtmlAttributes(new { style = "width:100%" })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Starting Date</label>
+            @Html.Kendo().DatePickerFor(m => m.StartingDate).HtmlAttributes(new { style = "width:100%" })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>To Date</label>
+            @Html.Kendo().DatePickerFor(m => m.ToDate).HtmlAttributes(new { style = "width:100%" })
+            @Html.ValidationMessageFor(m => m.ToDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Destination Site</label>
+            @(Html.Kendo().DropDownListFor(m => m.BranchId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter(FilterType.Contains)
+                .OptionLabel("Select Site")
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d => d.Read(r => r.Action("GetBranchForSiteVehicleTransfer", "FleetManagementDataProvider").Data("sendForgery").Data("filterBranch")).ServerFiltering(true)))
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="form-group">
+            <label>Transfer Reason</label>
+            @Html.Kendo().TextBoxFor(m => m.TransferReason).HtmlAttributes(new { style = "width:100%" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Description</label>
+            @Html.TextAreaFor(m => m.Description, new { @class = "k-textbox", style = "width:100%", rows = 2 })
+        </div>
+    </div>
+</div>

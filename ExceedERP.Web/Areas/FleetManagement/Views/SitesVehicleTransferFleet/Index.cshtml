@@ -1,0 +1,182 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.FleetManagement
+@model ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+@{
+    var IsMCG = (ViewBag.Setting as string) == "MCG";
+}
+<legend>Site Vehicle Transfer - Fleet Approval</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.RequestNumber).Title("Request No").Width(110);
+        columns.Bound(e => e.OrgBranchName).Title("Requesting Site").Width(130);
+        columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Title("Equipment Name").Width(140);
+        columns.Bound(e => e.PlateNo).Title("Plate No").Filterable(false).Sortable(false).Width(120);
+        columns.Bound(e => e.InitialSite).Width(120);
+        columns.ForeignKey(e => e.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Title("Destination Site").Width(140);
+        columns.ForeignKey(e => e.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Title("Operator One").Width(140);
+        columns.ForeignKey(e => e.SecondOperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Title("Operator Two").Width(140);
+        columns.Bound(e => e.StartingDate).Format("{0:yyyy-MM-dd}").Width(110);
+        columns.Bound(e => e.ToDate).Format("{0:yyyy-MM-dd}").Width(110);
+        columns.Bound(e => e.Status).Width(160);
+        if (IsMCG)
+        {
+            columns.Command(command => { command.Custom("AcceptTransfer").Click("AcceptTransfer"); }).Width(150);
+        }
+    })
+    .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+    .Sortable()
+    .Filterable()
+    .Scrollable(h => h.Height(500))
+    .ClientDetailTemplateId("template")
+    .Events(events => events.DataBound("onDataBound").DetailExpand("onDetailExpand"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Sort(sort => sort.Add(f => f.DistributionApprovedDate).Descending())
+        .Model(model => { model.Id(p => p.SitesVehicleTransferID); })
+        .Events(ev => ev.Error("error_handler(\"grid\")").RequestStart("onRequestStart(\"grid\")").RequestEnd("onRequestEnd(\"grid\")"))
+        .Read(read => read.Action("Fleet_Read", "SitesVehicleTransferFleet", new { area = "FleetManagement" }).Data("sendForgery"))
+    )
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabStrip_#=SitesVehicleTransferID#")
+        .SelectedIndex(0)
+        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(@<text>
+                <div class="box">
+                    <div class="box-col">
+                        <a href='@Url.Action("SiteVehicleTransfer", "FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Requested By:</label> <span>#=RequestedBy || ''#</span></div>
+                        <div class="form-group"><label>Request Approved By:</label> <span>#=RequestApprovedBy || ''#</span></div>
+                        <div class="form-group"><label>Transfer Reason:</label> <span>#=TransferReason || ''#</span></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Vehicle Assigned By:</label> <span>#=RequestReceivedBy || ''#</span></div>
+                        <div class="form-group"><label>Distribution Approved By:</label> <span>#=DistributionApprovedBy || ''#</span> <span>#=DistributionApprovedDate ? kendo.toString(kendo.parseDate(DistributionApprovedDate), 'yyyy-MM-dd') : ''#</span></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Fleet Approved By:</label> <span>#=OnlineApprovedBy || ''#</span> <span>#=OnlineApprovedTime ? kendo.toString(kendo.parseDate(OnlineApprovedTime), 'yyyy-MM-dd') : ''#</span></div>
+                    </div>
+                </div>
+            </text>);
+
+            items.Add().Text("Inspection").Content(@<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.VehicleReceptionForm>()
+                    .Name("Inspection_grid_#=SitesVehicleTransferID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Source);
+                        columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customer"], "OrganizationCustomerID", "TradeName").Width(150);
+                        columns.ForeignKey(e => e.TechnicianAssignedId, (IEnumerable)ViewData["Employee"], "Code", "Name").Title("Inspector").Width(150);
+                        columns.Bound(c => c.DateCreated).Title("Date").Format("{0:yyyy-MM-dd}").Width(80);
+                        columns.Bound(c => c.PlateNo).Width(80);
+                        columns.Bound(c => c.VehicleType).Width(80);
+                        columns.Bound(c => c.VehicleModel).Title("Vehicle Model").Width(80);
+                        columns.Bound(c => c.Mileage).Width(100);
+                        columns.Bound(c => c.Fuel).Width(100);
+                        columns.Bound(c => c.Remark).Width(150);
+                    })
+                    .Scrollable(s => s.Height(300))
+                    .Sortable()
+                    .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model => { model.Id(p => p.VehicleReceptionFormId); })
+                        .Read(read => read.Action("VehicleReceptionForm_Read", "FleetVehicleReceptionForm", new { id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                        .Sort(sort => { sort.Add(m => m.VehicleReceptionFormId).Descending(); }).PageSize(10))
+                    .ToClientTemplate())
+            </text>);
+
+            if (!IsMCG)
+            {
+                items.Add().Text("Approval").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVehicleApproval>()
+                        .Name("Approval_#=SitesVehicleTransferID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+                        })
+                        .Events(ev => ev.DataBound("approveonDataBound"))
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                            .Model(model =>
+                            {
+                                model.Id(p => p.SiteVehicleApprovalID);
+                                model.Field(p => p.CreatedBy).Editable(false);
+                                model.Field(p => p.DateCreated).Editable(false);
+                            })
+                            .Events(ev => ev.Error("error_handler(\"Approval_#=SitesVehicleTransferID#\")")
+                                .RequestStart("onRequestStart(\"Approval_#=SitesVehicleTransferID#\")")
+                                .RequestEnd("onRequestEnd(\"Approval_#=SitesVehicleTransferID#\")"))
+                            .Create(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                            .Read(read => read.Action("SiteVehicleApproval_Read", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                            .Update(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                        )
+                        .ToClientTemplate())
+                </text>);
+            }
+        })
+        .ToClientTemplate())
+</script>
+
+<script type="text/javascript">
+    var IsApproved = false;
+
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsOnlineApproved == true) {
+                $(this).addClass("k-state-FleetApproved");
+                $(this).find(".k-grid-AcceptTransfer").remove();
+            }
+        });
+    }
+
+    function onDetailExpand(e) {
+        var dataItem = $("#grid").data("kendoGrid").dataItem(e.masterRow);
+        IsApproved = dataItem.IsOnlineApproved == true;
+    }
+
+    function approveonDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || dataItem.Status == "Approved" || IsApproved == true) {
+                $(this).find(".k-grid-edit").remove();
+            }
+        });
+    }
+
+    function AcceptTransfer(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AcceptTransfer", "SitesVehicleTransferFleet", new { area = "FleetManagement" })',
+            data: $.extend({ id: dataItem.SitesVehicleTransferID }, sendForgery()),
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status == "OK") { $("#grid").data("kendoGrid").dataSource.read(); }
+            },
+            error: function () { alert("Error occurred"); }
+        });
+    }
+</script>

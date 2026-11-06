@@ -1,0 +1,296 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.FleetManagement
+@model ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+@{
+    var user = HttpContext.Current.User;
+    var canAssign = user.IsInRole(FleetManagementRoles.ResourceDistributor);
+    var canCheck = user.IsInRole(FleetManagementRoles.ResourceDistributionChecker);
+    var canApprove = user.IsInRole(FleetManagementRoles.ResourceDistributionApprover);
+}
+<legend>Equipment Transfer Request</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.RequestNumber).Title("Request No").Width(110);
+       // columns.Bound(e => e.OrgBranchName).Title("Requesting Site").Width(130);
+        columns.ForeignKey(e => e.EquipmentIdentityID, (IEnumerable)ViewData["EquipmentCategory"], "Value", "Text").Title("Category").Width(120);
+        columns.ForeignKey(e => e.EquipmentTypeID, (IEnumerable)ViewData["EquipmentType"], "Value", "Text").Title("Type").Width(120);
+        columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Title("Equipment Name").Width(140);
+        columns.Bound(e => e.PlateNo).Title("Plate No").Filterable(false).Sortable(false).Width(120);
+        columns.Bound(e => e.InitialSite).Width(120);
+        columns.ForeignKey(e => e.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Title("Destination Site").Width(140);
+        columns.ForeignKey(e => e.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Title("Operator One").Width(140);
+        columns.ForeignKey(e => e.SecondOperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Title("Operator Two").Width(140);
+        columns.Bound(e => e.StartingDate).Format("{0:yyyy-MM-dd}").Width(110);
+        columns.Bound(e => e.ToDate).Format("{0:yyyy-MM-dd}").Width(110);
+        columns.Bound(e => e.Status).Width(160);
+        if (canAssign)
+        {
+            columns.Command(command => { command.Edit().Text("Assign"); }).Width(120);
+        }
+    })
+    .Editable(editable =>
+    {
+        editable.Window(w => w.Title("Assign Vehicle To Request"));
+        editable.Mode(GridEditMode.PopUp).TemplateName("SitesVehicleTransferDistributionEditor");
+    })
+    .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+    .Sortable()
+    .Filterable()
+    .Scrollable(h => h.Height(500))
+    .ClientDetailTemplateId("template")
+    .Events(events => events.DataBound("onDataBound").Edit("onEdit").DetailExpand("onDetailExpand"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Model(model =>
+        {
+            model.Id(p => p.SitesVehicleTransferID);
+            model.Field(p => p.RequestNumber).Editable(false);
+            model.Field(p => p.Status).Editable(false);
+            model.Field(p => p.PlateNo).Editable(false);
+        })
+        .Events(ev => ev.Error("error_handler(\"grid\")").RequestStart("onRequestStart(\"grid\")").RequestEnd("onRequestEnd(\"grid\")"))
+        .Read(read => read.Action("Distribution_Read", "SitesVehicleTransferDistribution", new { area = "FleetManagement" }).Data("sendForgery"))
+        .Update(update => update.Action("Distribution_Update", "SitesVehicleTransferDistribution", new { area = "FleetManagement" }).Data("sendForgery"))
+        .Sort(sort=>sort.Add(ed=>ed.RequestNumber).Descending())
+    )
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabStrip_#=SitesVehicleTransferID#")
+        .SelectedIndex(0)
+        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(@<text>
+                <div class="box">
+                    <div class="box-col">
+                        @*<a href='@Url.Action("SiteVehicleTransfer", "FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                        <a href='@Url.Action("EquipmentTransferRequestForm", "FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print Equipment Transfer Request Form"><i class="fa fa-file-text-o fa-2x"></i></a>
+                        @if (canCheck)
+                                    {
+                            <text>
+                                # if (!IsDistributionChecked) { #
+                                <a href="javascript:void(0)" onclick="workflowAction('CheckDistribution', '#=SitesVehicleTransferID#')" title="Check Distribution">Check<i class="fa fa-share-square fa-2x"></i></a>
+                                @*<a href="javascript:void(0)" onclick="rejectDistribution('#=SitesVehicleTransferID#')" title="Reject"><i class="fa fa-times-circle fa-2x" style="color:rgb(201,48,44)"></i></a>*@
+                                # } #
+                            </text>
+                                    }
+                        /**/
+                        @if (canApprove)
+                                    {
+                            <text>
+                                # if (IsDistributionChecked && !IsDistributionApproved) { #
+                                <a href="javascript:void(0)" onclick="workflowAction('ApproveDistribution', '#=SitesVehicleTransferID#')" title="Approve Distribution">Approve<i class="fa fa-thumbs-up fa-2x"></i></a><br><br><br>
+                                <a href="javascript:void(0)" onclick="rejectDistribution('#=SitesVehicleTransferID#')" title="Reject">Reject<i class="fa fa-times-circle fa-2x" style="color:rgb(201,48,44)"></i></a>
+                                # } #
+                            </text>
+                                    }
+                        /**/
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Requested By:</label> <span>#=RequestedBy || ''#</span></div>
+                        <div class="form-group"><label>Request Date:</label> <span>#=RequestDate ? kendo.toString(kendo.parseDate(RequestDate), 'yyyy-MM-dd') : ''#</span></div>
+                        <div class="form-group"><label>Transfer Reason:</label> <span>#=TransferReason || ''#</span></div>
+                        <div class="form-group"><label>Remark:</label> <span>#=Remark || ''#</span></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Received By:</label> <span>#=RequestReceivedBy || ''#</span> <span>#=RequestReceivedDate ? kendo.toString(kendo.parseDate(RequestReceivedDate), 'yyyy-MM-dd') : ''#</span></div>
+                        <div class="form-group"><label>Checked By:</label> <span>#=DistributionCheckedBy || ''#</span> <span>#=DistributionCheckedDate ? kendo.toString(kendo.parseDate(DistributionCheckedDate), 'yyyy-MM-dd') : ''#</span></div>
+                        <div class="form-group"><label>Approved By:</label> <span>#=DistributionApprovedBy || ''#</span> <span>#=DistributionApprovedDate ? kendo.toString(kendo.parseDate(DistributionApprovedDate), 'yyyy-MM-dd') : ''#</span></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Odometer:</label> <span>#=OdoMeter || ''#</span></div>
+                        <div class="form-group"><label>Fleet Approved:</label> <span>#=IsOnlineApproved ? 'Yes' : 'No'#</span></div>
+                    </div>
+                </div>
+            </text>);
+
+            items.Add().Text("Parts").Content(@<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferDetail>()
+                    .Name("PartsGrid_#=SitesVehicleTransferID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(o => o.Type).Width(126);
+                        columns.Bound(o => o.SerialNo).Width(126);
+                        columns.Bound(o => o.Quantity).Width(126);
+                        columns.Bound(o => o.Description).Width(120);
+                        columns.Bound(o => o.MissingParts).Width(120);
+                        columns.Bound(o => o.DamagedParts).Width(120);
+                        columns.Bound(c => c.CreatedBy).Width(120);
+                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                        columns.Command(command => { command.Edit(); }).Width(200);
+                    })
+                    .ToolBar(t => t.Create())
+                    .Events(ev => ev.DataBound("lineonDataBound"))
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(5)
+                        .Model(model =>
+                        {
+                            model.Id(p => p.SiteVechicleTransferDetailId);
+                            model.Field(p => p.CreatedBy).Editable(false);
+                            model.Field(p => p.DateCreated).Editable(false);
+                        })
+                        .Create(update => update.Action("SiteVechicleTransferDetail_Create", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                        .Read(read => read.Action("SiteVechicleTransferDetail_Read", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                        .Update(update => update.Action("SiteVechicleTransferDetail_Update", "SiteVechicleTransferDetail").Data("sendForgery"))
+                    )
+                    .ToClientTemplate())
+            </text>);
+
+            items.Add().Text("Tyre").Content(@<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferTyreDetail>()
+                    .Name("TyresGrid_#=SitesVehicleTransferID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(o => o.Type).Width(120);
+                        columns.Bound(o => o.SerialNo).Width(120);
+                        columns.Bound(o => o.Description).Width(126);
+                        columns.Bound(c => c.CreatedBy).Width(150);
+                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                    })
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(5)
+                        .Model(model => { model.Id(p => p.SiteVechicleTransferTyreDetailId); })
+                        .Read(read => read.Action("SiteVechicleTransferTyre_Read", "SiteVechicleTransferTyre", new { Id = "#=SitesVehicleTransferID#" }).Data("sendForgery"))
+                    )
+                    .ToClientTemplate())
+            </text>);
+        })
+        .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container { width: 900px; }
+    .req-info label { font-weight: bold; margin-right: 4px; }
+</style>
+
+<script type="text/javascript">
+    var detailLocked = false;
+
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsDistributionChecked == true) {
+                $(this).find(".k-grid-edit").remove();
+            }
+            if (dataItem.IsOnlineApproved == true) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+        });
+    }
+
+    function onDetailExpand(e) {
+        var dataItem = $("#grid").data("kendoGrid").dataItem(e.masterRow);
+        detailLocked = dataItem.IsDistributionChecked == true;
+        if (detailLocked) {
+            $(".k-grid-top", "#PartsGrid_" + dataItem.SitesVehicleTransferID).hide();
+        }
+    }
+
+    function lineonDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (detailLocked) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+    function onEdit(e) {
+        e.container.find(".k-window-title").text(e.model.IsRequestReceived ? "Edit Vehicle Assignment" : "Assign Vehicle To Request");
+        loadRequestDetail(e.model.SitesVehicleTransferID, e.model.FleetsID);
+    }
+
+    function loadRequestDetail(id, fleetId) {
+        $.ajax({
+            url: '@Url.Action("GetRequestDetail", "SitesVehicleTransferDistribution", new { area = "FleetManagement" })',
+            type: 'GET',
+            data: { id: id },
+            success: function (r) {
+                if (!r) { return; }
+                $("#ReqRequestedBy").text((r.RequestedBy || '') + (r.RequestBranch ? ' (' + r.RequestBranch + ')' : ''));
+                $("#ReqRequestDate").text(r.RequestDate || '');
+                $("#ReqCategory").text(r.EquipmentCategory || '');
+                $("#ReqType").text(r.EquipmentType || '');
+                $("#ReqName").text(r.EquipmentName || '');
+                $("#ReqDestination").text(r.DestinationSite || '');
+                $("#ReqPeriod").text((r.StartingDate || '') + ' - ' + (r.ToDate || ''));
+                $("#ReqReason").text(r.TransferReason || '');
+                $("#ReqEquipmentNameID").val(r.EquipmentNameID);
+
+                var plateDdl = $("#FleetsID").data("kendoDropDownList");
+                plateDdl.enable(true);
+                plateDdl.dataSource.read().then(function () {
+                    if (fleetId) {
+                        plateDdl.value(fleetId);
+                        onPlateNumberChange();
+                    }
+                });
+            }
+        });
+    }
+
+    function filterPlateNo() {
+        return {
+            equipmentNameID: $("#ReqEquipmentNameID").val() || '00000000-0000-0000-0000-000000000000',
+            searchKey: $("#FleetsID").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    function onPlateNumberChange() {
+        var fleetId = $("#FleetsID").data("kendoDropDownList").value();
+        if (!fleetId) { $("#InitialSite").val("").trigger("change"); return; }
+        $.ajax({
+            url: '@Url.Action("GetLocation", "FleetManagementDataProvider")',
+            type: 'GET',
+            data: { PlateNumber: fleetId },
+            success: function (result) {
+                $("#InitialSite").val(result && result.From ? result.From : "").trigger("change");
+            }
+        });
+    }
+
+    var workflowUrls = {
+        CheckDistribution: '@Url.Action("CheckDistribution", "SitesVehicleTransferDistribution", new { area = "FleetManagement" })',
+        ApproveDistribution: '@Url.Action("ApproveDistribution", "SitesVehicleTransferDistribution", new { area = "FleetManagement" })'
+    };
+    function workflowAction(action, id) {
+        $.ajax({
+            type: "POST",
+            url: workflowUrls[action],
+            data: $.extend({ id: id }, sendForgery()),
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status == "OK") { $("#grid").data("kendoGrid").dataSource.read(); }
+            },
+            error: function () { alert("Error occurred"); }
+        });
+    }
+
+    function rejectDistribution(id) {
+        var remark = prompt("Rejection remark:");
+        if (remark === null) { return; }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RejectDistribution", "SitesVehicleTransferDistribution", new { area = "FleetManagement" })',
+            data: $.extend({ id: id, remark: remark }, sendForgery()),
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status == "OK") { $("#grid").data("kendoGrid").dataSource.read(); }
+            },
+            error: function () { alert("Error occurred"); }
+        });
+    }
+</script>

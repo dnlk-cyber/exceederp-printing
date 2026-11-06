@@ -10,22 +10,27 @@
                     .Name("grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(c => c.RentalAdvancePaymentRequestId).Title("#").Filterable(false).Width(50);
+                        columns.Bound(c => c.RentalAdvancePaymentRequestId).Title("#").Filterable(true).Width(80);
                         columns.Bound(c => c.PlateNumber).Title("Plate/Serial Number").Width(150);
                         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullName").Title("Employee Name").Width(130);
-                        columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(130);
-                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Id", "Name").Title("Business Unit").Width(120);
+                        columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["Supplier"], "ProcurementSupplierID", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Supplier Name").Width(130);
+                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Id", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Business Unit").Width(120);
                         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Title("Branch").Width(110);
                        // columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GLPeriod"], "GLPeriodId", "Name").Title("Period").Width(110);
                         //columns.ForeignKey(c => c.GLFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "GlFiscalYearId", "Name").Title("FiscalYear").Width(110);
                         //columns.Bound(c => c.DurationFrom).Title("Duration From").Width(100);
                         columns.Bound(c => c.AgreementStartDate).Format("{0:yyyy-MM-dd}").Title("Agreement Date").Width(120);
                         columns.Bound(c => c.ReasonofPayment).Title("Reason of Payment").Width(120);
-                       // columns.Bound(c => c.AgreementStartDate).Title("Request Date").Width(100);
                         columns.Bound(c => c.Refference).Title("Refference").Width(100);
                         columns.Bound(c => c.TotalAmount).Title("Advance Amount").Width(100);
                         columns.Bound(c => c.Remark).Title("Remark").Width(75);
-                        columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
+                        columns.Bound(c => c.Status).Title("Status").Width(75);
+                        columns.Command(command => {
+                            command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                            command.Destroy().Text("Delete");
+                            command.Custom("Authorize").Text("Authorize").Click("authorizeRow");
+                            command.Custom("RejectAuth").Text("Reject").Click("rejectRow");
+                        }).Title("Action").Width(300);
                     })
                     .ToolBar(toolbar =>
                     {
@@ -38,7 +43,7 @@
                         .Window(win => win.Title("Rental Advance Payment Request").Width(800));
                     })
                     .Pageable()
-                    .Events(e => e.DetailExpand("onDetailExpand"))
+                    .Events(e => e.DetailExpand("detailExpandMasterDepartment"))
                     .Events(e => e.DataBound("onDataBoundExternalPayment"))
                     .Filterable()
                     .Scrollable(s => s.Height(550))
@@ -67,8 +72,9 @@
                   items.Add().Text("Detail").Content(
                         @<text>
                             <p><b>Record Status :#= Status #</b></p>
-                            <a href='@Url.Action("RentalEquipmentAdvancePayment","FleetPrint")/?id=#=RentalAdvancePaymentRequestId#' title="Advance Payment Print"><i class="fa fa-share-square fa-2x"></i></a>
-                            # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
+                            <a href='@Url.Action("RentalEquipmentAdvancePayment","FleetPrint")/?id=#=RentalAdvancePaymentRequestId#' target="_blank" title="Advance Payment Print"><i class="fa fa-print fa-2x"></i></a>
+                            <a href='@Url.Action("RentalAdvancePaymentRequestForm","FleetPrint")/?id=#=RentalAdvancePaymentRequestId#' target="_blank" title="Rental Advance Payment Request Form"><i class="fa fa-file-text-o fa-2x"></i></a>
+                            # if (!IsDepartmentOnlineApproved && !IsDepartmentSendForApproval && !Paid && !IsVoid)
                             {#
                             <a onclick='return sendForApproval("#=RentalAdvancePaymentRequestId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
                             <br />
@@ -132,6 +138,19 @@
                                 </dd>
 
                                 <dt>
+                                    Authorized On
+                                </dt>
+                                <dd>
+                                    #= IsOnlineApproved ? kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') : '-' #
+                                </dd>
+                                <dt>
+                                    Authorized By
+                                </dt>
+                                <dd>
+                                    #= IsOnlineApproved ? OnlineApprovedBy : '-' #
+                                </dd>
+
+                                <dt>
                                     Budget Approved On
                                 </dt>
                                 <dd>
@@ -149,16 +168,13 @@
                                     Finance Approved On
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
-
-
+                                    #= IsFinanceApproved ? kendo.toString(kendo.parseDate(FinanceApprovedTime), 'dd/MM/yyyy') : '-' #
                                 </dd>
                                 <dt>
                                     Approved By
                                 </dt>
                                 <dd>
-                                    #=OnlineApprovedBy #
-
+                                    #= IsFinanceApproved ? FinanceApprovedBy : '-' #
                                 </dd>
                             </dl>
                             # if (!IsDepartmentOnlineApproved)
@@ -341,6 +357,45 @@
             }
         });
     }
+    function authorizeRow(e) {
+        e.preventDefault();
+        var item = this.dataItem($(e.currentTarget).closest("tr"));
+        return authorizeRequest(item.RentalAdvancePaymentRequestId);
+    }
+    function rejectRow(e) {
+        e.preventDefault();
+        var item = this.dataItem($(e.currentTarget).closest("tr"));
+        return rejectRequest(item.RentalAdvancePaymentRequestId);
+    }
+    function authorizeRequest(id) {
+        if (!confirm("Authorize this advance payment request and send it to Finance?")) return false;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AuthorizeRequest", "RentalAdvancePaymentRequest", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status === "OK") $("#grid").data("kendoGrid").dataSource.read();
+            },
+            error: function () { alert("Authorization failed."); }
+        });
+        return false;
+    }
+    function rejectRequest(id) {
+        var reason = prompt("Reason for rejection:");
+        if (reason === null) return false;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RejectAuthorization", "RentalAdvancePaymentRequest", new { area = "FleetManagement" })',
+            data: { id: id, reason: reason },
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status === "OK") $("#grid").data("kendoGrid").dataSource.read();
+            },
+            error: function () { alert("Rejection failed."); }
+        });
+        return false;
+    }
     function getFiscalYear(){
         return { year: $("#GLFiscalYearId").val() };
     }
@@ -369,36 +424,22 @@
         isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
     }
     function onDataBoundExternalPayment() {
-        this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            var masterDataItem = grid.dataItem(this);
-            $(this).find(".k-grid-reject").hide();
-            if (masterDataItem.IsOnlineApproved == true || masterDataItem.IsSendForApproval==true) {
+
+            if (dataItem.IsDepartmentSendForApproval || dataItem.IsDepartmentOnlineApproved ||
+                dataItem.IsFinanceSendForApproval || dataItem.IsFinanceApproved ||
+                dataItem.Paid || dataItem.IsVoid) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-delete").hide();
             }
-            if (masterDataItem.IsSendForApproval == true && masterDataItem.IsOnlineApproved == false) {
-                $(this).addClass("k-state-waiting-approval");
+            // Authorize/Reject only after department approval and before finance.
+            var canAuthorize = dataItem.IsDepartmentOnlineApproved && !dataItem.IsOnlineApproved &&
+                !dataItem.IsFinanceSendForApproval && !dataItem.IsFinanceApproved && !dataItem.Paid && !dataItem.IsVoid;
+            if (!canAuthorize) {
+                $(this).find(".k-grid-Authorize, .k-grid-RejectAuth").hide();
             }
-            if (masterDataItem.IsOnlineApproved == false && masterDataItem.IsSendForApproval == false) {
-                $(this).addClass("k-state-Rejected");
-            }
-            if (dataItem.IsOnlineApproved) {
-
-                $(this).find(".k-grid-approve").hide();
-                //$(this).find(".k-grid-reject").hide();
-
-            }
-            else if (dataItem.IsSendForApproval) {
-
-                $(this).find(".k-grid-approve").show();
-            }
-            else {
-                $(this).find(".k-grid-approve").hide();
-            }
-
         });
     }
     function onDataBoundMasterDepartment(e) {
@@ -447,26 +488,21 @@
 
 
     }
-    function onDataBoundLineDepartment(e) {
-
-        var detailGrid = "#" + e.sender.element[0].id;
-        if (isDeptapproved || isDeptSendForApproval) {
-
-            $(".k-grid-add", detailGrid).hide();
-            $(".k-grid-delete", detailGrid).hide();
-            $(".k-grid-edit", detailGrid).hide();
+   
+    function onDataBoundValidationDepartment() {
+        var grid = this;
+        if (isDeptapproved) {
+            grid.wrapper.find(".k-grid-add").hide();
         }
-    }
-    function onDataBoundValidationDepartment(e) {
-        var detailGrid = "#" + e.sender.element[0].id;
-
-        if (isDeptapproved || isDeptSendForApproval) {
-
-            $(".k-grid-add", detailGrid).hide();
-            $(".k-grid-delete", detailGrid).hide();
-            $(".k-grid-edit", detailGrid).hide();
+        if (!isDeptSendForApproval) {
+            grid.wrapper.find(".k-grid-add").hide();
         }
-        this.table.find(".k-grid-edit").hide();
+        grid.tbody.find("tr[role='row']").each(function () {
+            if (isDeptapproved) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
     }
 
     function filterFleetForAdvancePayment() {

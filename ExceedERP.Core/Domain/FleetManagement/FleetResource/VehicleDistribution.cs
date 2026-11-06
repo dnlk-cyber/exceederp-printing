@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
 
-    public partial class VehicleDistribution : Operations
+    public partial class VehicleDistribution : OperationWithSecondValidation
     {
 
         [Key]
@@ -87,5 +87,17 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public virtual RentRequest RentRequest { get; set; }
 
     }
-   
+    public class VehicleDistributionSecondValidation:TrackUserSettingOperation
+    {
+       public int VehicleDistributionSecondValidationId {get;set;}
+       public string VehicleDistributionID { get;set;}
+       public string Status { get; set; }
+       public string remark { get; set; }
+    }
+   public class VehicleDistributionSecondApprovalSetting : TrackUserSettingOperation
+    {
+        public int VehicleDistributionSecondApprovalSettingId { get; set; }
+        public bool NeedsSecondApproval { get; set; }
+        public string Remark { get; set; }
+    }
 }

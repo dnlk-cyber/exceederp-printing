@@ -19,10 +19,12 @@
                                             columns.Bound(x => x.PlateNo).Title("Plate No").Width(100);
                                             columns.Bound(x => x.OperatorName).Title("Operator Name").Width(100);
                                             columns.Bound(x => x.BranchName).Title("Branch").Width(100);
+                                            columns.Bound(x => x.IsAdvanceSummary).Title("Is Advance Summary").Width(100);
                                             columns.Bound(x => x.CustomerName).Title("Customer Name").Width(100);
                                             columns.Bound(x => x.TotalWorkedHR)
                                                 .Title("Worked HR/Meter")
                                                 .Format("{0:n2}").Width(100);
+                                            
                                             columns.Command(command =>
                                             {
                                                 command.Edit();
@@ -62,6 +64,7 @@
                         .Events(ev =>
                         {
                             ev.DataBound("summaryDataBound");
+                            ev.DetailExpand("summaryDetailExpand");
                         }).HtmlAttributes(new { style = "height: 600px;" })
                                         .Filterable()
                                         .Pageable(page => page.Refresh(true).PageSizes(true))
@@ -95,6 +98,9 @@
                                                 #if(TimeSheetIsDepartmentManagerApproved){#
                                                 <a href='@Url.Action("RentedEquipmentMonthlyTimesheetPaymentSummary","FleetPrint")/?id=#=RentedEquipmentMonthlyPaymentSummaryId#' title="Print Summary"><i class="fa fa-print fa-2x"></i></a>
                                                 #}#
+                                                <div>
+                                                    <strong> #=SummaryStatus# </strong>
+                                                </div>
                                             </text>);
                                                     items.Add().Text("Timesheet Detail")
 .Content(
@@ -111,25 +117,27 @@
                                      columns.Bound(x => x.NightTimeStart).Title("Night Time Start").Width(100);
                                      columns.Bound(x => x.NightTimeEnd).Title("Night Time End").Width(100);
                                      // columns.Bound(x => x.WorkedHR).Title("Total Time").Width(150);
-                                     columns.Bound(x => x.TotalPayedHR).Title("Total Time").Width(100);
                                      columns.Bound(x => x.InitialEngineHour).Title("Initial KM/EH").Width(100);
                                      columns.Bound(x => x.FinalEngineHour).Title("Final KM/EH").Width(100);
                                      columns.Bound(x => x.DifferenceEngineHour).Title("Difference KM/EH").Width(100);
                                      columns.Bound(x => x.FuelInLiter).Title("Fuel In Litre").Width(100);
                                      columns.Bound(x => x.FuelKMReading).Title("Fuel KM Reading").Width(100);
-                                     columns.Bound(x => x.PayedIdleHR).Title("Payed Idle Hour").Width(100);
+                                     columns.Bound(x => x.WorkedHR).Title("Worked Hour").Width(100);
                                      columns.Bound(x => x.IdleReasonList).Title("Idle Reason").Width(150);
-                                     columns.Bound(x => x.DownHour).Title("Down Hour").Width(100);
+                                     columns.Bound(x => x.PayedIdleHR).Title("Payed Idle Hour").Width(100);
+                                     columns.Bound(x => x.TotalPayedHR).Title("Total Time").Width(100);
+                                     //columns.Bound(x => x.DownHour).Title("Down Hour").Width(100);
                                      columns.Bound(x => x.OperatorName).Title("Operator Name").Width(100);
                                      columns.Bound(x => x.SiteFormanName).Title("Site Forman").Width(100);
                                  }
                                  )
                      .Sortable()
-                     .Filterable()
-                     .Pageable(page => page.Refresh(true).PageSizes(true))
-                     .Scrollable()
-                     .HtmlAttributes(new { style = "Width:1500px" })
-                     //.HtmlAttributes(new { style = "height: 1000px;" })
+                                             .Filterable()
+                                             .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(10))
+                                             .Scrollable()
+                                             .HtmlAttributes(new { style = "Width:1500px" })
+                                             //.HtmlAttributes(new { style = "height: 1000px;" })
+                                             
                      .Events(ev=>ev.DataBound("detailDataBound"))
                      .DataSource(dataSource => dataSource
                          .Ajax()
@@ -143,45 +151,48 @@
                           .RequestStart("onRequestStart(\"detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
                           .RequestEnd("onRequestEnd(\"detailGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")"))
                          .Read(read => read.Action("Detail_Read", "RentedEquipmentMonthlySummary", new { id = "#=RentedEquipmentMonthlyPaymentSummaryId#" }))
-                     ).ToClientTemplate()
+                         //.Update(update => update.Action("Detail_Update", "RentedEquipmentMonthlySummary"))
+
+                         ).ToClientTemplate()
     )
 </text>);
 items.Add().Text("Wagon Drill TimeSheet Detail")
 .Content(
 @<text>
+    <a href='@Url.Action("WagonDrillMonthlyTimesheetSummary","FleetPrint")/?id=#=RentedEquipmentMonthlyPaymentSummaryId#' title="Print Wagon Drill Time Sheet" target="_blank"><i class="fa fa-print fa-2x"></i></a>
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.WagonDrillDailyOperation>()
                                  .Name("detailWagonGrid_#=RentedEquipmentMonthlyPaymentSummaryId#")
                                  .Columns(columns =>
                                  {
-                                             columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
-                                             columns.Bound(x => x.NumberOfHolesDrilled).Title("Number Of Holes Drilled").Width(100);
-                                             columns.Bound(x => x.OperationDrilledHoleDepth).Title("Hole Depth").Width(100);
-                                            
-                                             columns.Bound(x => x.InitialEngineHour).Title("Initial KM/EH").Width(100);
-                                             columns.Bound(x => x.FinalEngineHour).Title("Final KM/EH").Width(100);
-                                             columns.Bound(x => x.DifferenceEngineHour).Title("Difference KM/EH").Width(100);
-                                             columns.Bound(x => x.FuelInLiter).Title("Fuel In Litre").Width(100);
-                                             columns.Bound(x => x.FuelKMReading).Title("Fuel KM Reading").Width(100);
-                                             columns.Bound(x => x.PayedIdleHour).Title("Payed Idle Hour").Width(100);
-                                             columns.Bound(x => x.IdleReasonList).Title("Idle Reason").Width(150);
-                                             columns.Bound(x => x.OperatorName).Title("Operator Name").Width(100);
-                                             columns.Bound(x => x.SiteFormanName).Title("Site Forman").Width(100);
-                                         }
+                                     columns.Bound(x => x.Date).Title("Date").Format("{0:yyyy-MM-dd}").Width(100);
+                                     columns.Bound(x => x.NumberOfHolesDrilled).Title("Number Of Holes Drilled").Width(100);
+                                     columns.Bound(x => x.OperationDrilledHoleDepth).Title("Hole Depth").Width(100);
+
+                                     columns.Bound(x => x.InitialEngineHour).Title("Initial KM/EH").Width(100);
+                                     columns.Bound(x => x.FinalEngineHour).Title("Final KM/EH").Width(100);
+                                     columns.Bound(x => x.DifferenceEngineHour).Title("Difference KM/EH").Width(100);
+                                     columns.Bound(x => x.FuelInLiter).Title("Fuel In Litre").Width(100);
+                                     columns.Bound(x => x.FuelKMReading).Title("Fuel KM Reading").Width(100);
+                                     columns.Bound(x => x.PayedIdleHour).Title("Payed Idle Hour").Width(100);
+                                     columns.Bound(x => x.IdleReasonList).Title("Idle Reason").Width(150);
+                                     columns.Bound(x => x.OperatorName).Title("Operator Name").Width(100);
+                                     columns.Bound(x => x.SiteFormanName).Title("Site Forman").Width(100);
+                                 }
                                  )
                      .Sortable()
-                     .Filterable()
-                     .Pageable(page => page.Refresh(true).PageSizes(true))
-                     .Scrollable()
-                     .HtmlAttributes(new { style = "Width:1500px" })
-                     .Events(ev=>ev.DataBound("drillDataBound"))
-                     //.HtmlAttributes(new { style = "height: 1000px;" })
-                     .DataSource(dataSource => dataSource
-                         .Ajax()
-                         .PageSize(20)
+                                             .Filterable()
+                                             .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(10))
+                                             .Scrollable()
+                                             .HtmlAttributes(new { style = "Width:1500px" })
+                                             //.HtmlAttributes(new { style = "height: 1000px;" })
+                                             .DataSource(dataSource => dataSource
+                                                 .Ajax()
+                                                 .PageSize(20)
+                                                
                          .Model(model =>
                          {
-                                     model.Id(p => p.WagonDrillDailyOperationId);
-                                 })
+                             model.Id(p => p.WagonDrillDailyOperationId);
+                         })
                      .Events(ev => ev
                           .Error("error_handler(\"detailWagonGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
                           .RequestStart("onRequestStart(\"detailWagonGrid_#=RentedEquipmentMonthlyPaymentSummaryId#\")")
@@ -196,6 +207,17 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
 
 <script>
     var approvalStage;
+    var issummaryApproved;
+    function summaryDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        issummaryApproved = masterDataItem.TimeSheetIsEquipmentAdminChecked;
+        
+    }
     
             function summaryDataBound() {
         var grid = this;
@@ -252,13 +274,13 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            if (dataItem.TimeSheetIsEquipmentAdminChecked) {
+            if (issummaryApproved) {
 
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
             }
 
-            if (dataItem.PayedIdleHR == 0) {
+            if (dataItem && dataItem.get("PayedIdleHR") == 0) {
                 dataItem.set("IdleReasonList", null);
             }
         });
@@ -266,6 +288,11 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
     function drillDataBound() {
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
+            if (issummaryApproved) {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
             var dataItem = grid.dataItem(this);
             if (dataItem.PayedIdleHour == 0) {
                 dataItem.set("IdleReasonList", null);
@@ -289,7 +316,6 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
         success: function (result) {
             alert(result.Message);
             approvalStage = "Approver";
-            location.reload(true);
         },
         error: function (xhr) {
             alert("Error occurred ");
@@ -310,7 +336,6 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
         success: function (result) {
             alert(result.Message);
             approvalStage = "Approver";
-            location.reload(true);
         },
         error: function (xhr) {
             alert("Error occurred ");
@@ -346,7 +371,6 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
         success: function (result) {
             alert(result.Message);
             approvalStage = "Authorizer";
-            location.reload(true);
         },
         error: function (xhr) {
             alert("Error occurred ");
@@ -371,7 +395,6 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
         success: function (result) {
             alert(result.Message);
             approvalStage = "DGM";
-            location.reload(true);
         },
         error: function (xhr) {
             alert("Error occurred ");
@@ -395,7 +418,6 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
         success: function (result) {
             alert(result.Message);
             approvalStage = "DGM";
-            location.reload(true);
         },
         error: function (xhr) {
             alert("Error occurred ");
@@ -420,7 +442,6 @@ items.Add().Text("Wagon Drill TimeSheet Detail")
         success: function (result) {
             alert(result.Message);
             approvalStage = result.Text;
-            location.reload(true);
         },
         error: function (xhr) {
             alert("Error occurred ");

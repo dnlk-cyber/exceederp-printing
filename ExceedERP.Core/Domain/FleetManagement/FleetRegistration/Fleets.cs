@@ -42,7 +42,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public Guid EquipmentTypeID { get; set; }    
         public int? AssetId { get; set; }
         [DisplayName("  Maintenance Plan ")]
-        public Guid PlannerID { get; set; }
+        public Guid? PlannerID { get; set; }
         [DisplayName(" Equipment Name ")]
         public Guid EquipmentNameID { get; set; }
         public string EquipmentName { get; set; }
@@ -68,6 +68,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public int VehicleReceptionFormId { get; set; }
         [DisplayName(" Operator Name ")]
         public string OperatorName { get; set; }
+        public string RentalInspectionRef { get; set; }
         [DisplayName(" Engine Manufacturer ")]
         public string EngineManufacturer { get; set; }
         [DisplayName(" Location ")]
@@ -88,6 +89,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         // Fk
         [Display(Name ="Rent Num")]
         public int? RentFromExternalNum { get; set; } 
+        public bool IsExcavator { get; set; }
         public string Color { get; set; }
 
         [DisplayName("  Tire Size")]

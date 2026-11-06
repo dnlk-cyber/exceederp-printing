@@ -71,8 +71,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             Text = i.Name,
             Value = i.Id
         }).AsQueryable();
-            ViewData["Fleets"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).AsQueryable();
-            //ViewData["Fleets"] = CacheData.GetFleetsSecondCache().Select(x => new { x.FleetsID, x.PlateNumber }).AsQueryable();
+            //ViewData["Fleets"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).AsQueryable();
+            ViewData["Fleets"] = CacheData.GetFleetsSecondCache().Select(x => new { x.FleetsID, x.PlateNumber }).AsQueryable();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).AsQueryable();
            
             ViewData["operator"] = db.Operator.Select(s => new

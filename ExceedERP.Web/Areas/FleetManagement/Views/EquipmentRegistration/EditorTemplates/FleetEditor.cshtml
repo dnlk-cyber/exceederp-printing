@@ -459,6 +459,7 @@
                                                      <div class="col-md-6">
                                                          @(Html.Kendo().DropDownListFor(model => model.PlannerID).Name("PlannerID")
                                                                .DataTextField("PlannerName")
+                                                               .ValuePrimitive(true)
                                                                .DataValueField("PlannerID").OptionLabel("Select")
                                                                .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "FleetManagementDataProvider").Data("sendForgery"))))
                                                          @Html.ValidationMessageFor(model => model.PlannerID, "", new { @class = "text-danger" })

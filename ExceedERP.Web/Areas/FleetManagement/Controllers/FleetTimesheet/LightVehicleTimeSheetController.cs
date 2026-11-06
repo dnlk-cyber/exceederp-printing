@@ -338,12 +338,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     .Select(x => x.ChasisNumber)
                     .FirstOrDefault();
                 }
+                DateTime startDate = model.Date.Date;
+                DateTime endDate = startDate.AddDays(1);
+
                 var lubItems = db.IssueItems
                 .Where(ii =>
-                        ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
-                        && OilLubItems.Contains(ii.ItemCode)).ToList();
+                ii.Issue.PlateNo == plateNo
+                && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
+                && OilLubItems.Contains(ii.ItemCode))
+                .ToList();
+                //var lubItems = db.IssueItems
+                //.Where(ii =>
+                //        ii.Issue.PlateNo == plateNo
+                //        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
+                //            == DbFunctions.TruncateTime(model.Date)
+                //        && OilLubItems.Contains(ii.ItemCode)).ToList();
                 model.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 model.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
                 plateNo = db.Fleets
@@ -367,8 +377,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedOilItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && oilItems.Contains(ii.ItemCode)).ToList();
                 model.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 model.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -393,20 +403,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedSpareItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allSparePartItems.Contains(ii.ItemCode)).ToList();
                 var issuedBatteryItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allBatteryItems.Contains(ii.ItemCode)).ToList();
                 var issuedTyreItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allTyreItems.Contains(ii.ItemCode)).ToList();
                 model.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
                 model.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -702,11 +712,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     .Select(x => x.ChasisNumber)
                     .FirstOrDefault();
                 }
+                DateTime startDate = model.Date.Date;
+                DateTime endDate = startDate.AddDays(1);
                 var lubItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && OilLubItems.Contains(ii.ItemCode)).ToList();
                 model.GreaseConsumption = lubItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 model.GreaseCost = lubItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -731,8 +743,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedOilItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && oilItems.Contains(ii.ItemCode)).ToList();
                 model.OilConsumption = issuedOilItems.Sum(x => (decimal?)x.IssuedQuantity) ?? 0;
                 model.OilCost = issuedOilItems.Sum(x => (decimal?)x.Total) ?? 0;
@@ -757,20 +769,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 var issuedSpareItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && !allSparePartItems.Contains(ii.ItemCode)).ToList();
                 var issuedBatteryItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allBatteryItems.Contains(ii.ItemCode)).ToList();
                 var issuedTyreItems = db.IssueItems
                 .Where(ii =>
                         ii.Issue.PlateNo == plateNo
-                        && DbFunctions.TruncateTime(ii.Issue.IssueDate)
-                            == DbFunctions.TruncateTime(model.Date)
+                        && ii.Issue.IssueDate >= startDate
+                && ii.Issue.IssueDate < endDate
                         && allTyreItems.Contains(ii.ItemCode)).ToList();
                 model.SparePartCost = issuedSpareItems.Sum(x => (decimal?)x.Total) ?? 0;
                 model.BatteryCost = issuedBatteryItems.Sum(x => (decimal?)x.Total) ?? 0;

@@ -1,0 +1,16 @@
+﻿
+@model DateTime?
+
+@{
+    DateTime? timeValue = Model.HasValue
+        ? DateTime.Today.Add(Model.Value.TimeOfDay)
+        : (DateTime?)null;
+}
+
+@(Html.Kendo().TimePicker()
+        .Name(ViewData.TemplateInfo.GetFullHtmlFieldName(""))
+        .Value(timeValue)
+        .Format("HH:mm")
+        .Interval(15)
+        .HtmlAttributes(new { style = "width:100%" })
+)

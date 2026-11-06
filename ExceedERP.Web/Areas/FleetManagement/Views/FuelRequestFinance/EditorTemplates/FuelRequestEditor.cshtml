@@ -1,0 +1,165 @@
+@model ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelRequestDetail
+
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Request Date</label>
+            <div>@(Html.Kendo().DatePickerFor(m => m.RequestDate).Events(e => e.Change("loadFleetInfo")).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Plate / Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.FleetId)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .ValuePrimitive(true)
+                    .Filter(FilterType.Contains)
+                    .OptionLabel("Select Vehicle")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .Events(ev => ev.Change("loadFleetInfo"))
+                    .DataSource(d => d.Read(r => r.Action("GetFleetsForFuelRequest", "FuelRequest").Data("filterFuelFleet")).ServerFiltering(true)))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Vehicle Type</label>
+            @Html.HiddenFor(m => m.VehicleTypeId)
+            <div>@(Html.Kendo().TextBoxFor(m => m.VehicleType).HtmlAttributes(new { style = "width:100%", @readonly = "readonly" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Side No</label>
+            <div>@(Html.Kendo().TextBoxFor(m => m.SideNo).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Operational Days</label>
+            <div>@(Html.Kendo().IntegerTextBoxFor(m => m.OperationalDays).Min(0).Enable(false).HtmlAttributes(new { style = "width:100%", title = "Days since the previous fuel request of this vehicle" }))</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Driver</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.OperatorId)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .ValuePrimitive(true)
+                    .Filter(FilterType.Contains)
+                    .OptionLabel("Select Driver")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d => d.Read(r => r.Action("GetOperatorsForFuelRequest", "FuelRequest").Data("filterFuelOperator")).ServerFiltering(true)))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Department</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.DepartmentId)
+                    .DataTextField("Name")
+                    .DataValueField("OrgStructureId")
+                    .Filter(FilterType.Contains)
+                    .OptionLabel("Select Department")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d => d.Read(r => r.Action("GetFuelRequestDepartments", "FuelRequest").Data("sendForgery")).ServerFiltering(false)))
+            </div>
+        </div>
+    </div>
+    @*<div class="col-sm-3">
+        <div class="form-group">
+            <label>Division</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.DivisionId)
+                    .DataTextField("Name")
+                    .DataValueField("OrgStructureId")
+                    .Filter(FilterType.Contains)
+                    .OptionLabel("Select Division")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d => d.Read(r => r.Action("GetFuelRequestDivisions", "FuelRequest").Data("sendForgery")).ServerFiltering(false)))
+            </div>
+        </div>
+    </div>*@
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Remark</label>
+            @*<div>@(Html.Kendo().TextBoxFor(m => m.Remark).HtmlAttributes(new { style = "width:100%" }))</div>*@
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Opening KM</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.OpeningKM).Min(0).Decimals(1).Format("n1").Events(e => e.Change("recalcFuel")).HtmlAttributes(new { style = "width:100%", title = "Previous closing KM (editable only for the first request of a vehicle)" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Closing KM</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.ClosingKM).Min(0).Decimals(1).Format("n1").Events(e => e.Change("recalcFuel")).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Distance KM</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.DistanceKM).Decimals(1).Format("n1").Enable(false).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Fuel Consumed (L)</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.FuelConsumedL).Min(0).Decimals(2).Format("n2").Enable(false).HtmlAttributes(new { style = "width:100%", title = "Fuel filled on the previous request" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Fuel Filled (L)</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.FuelFilledL).Min(0).Decimals(2).Format("n2").Events(e => e.Change("recalcFuel")).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Consumption KM/L</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.ConsumptionKMPerL).Decimals(2).Format("n2").Enable(false).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Unit Price</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.UnitPrice).Min(0).Decimals(2).Format("n2").Events(e => e.Change("recalcFuel")).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Total Amount</label>
+            <div>@(Html.Kendo().NumericTextBoxFor(m => m.TotalAmount).Decimals(2).Format("n2").Enable(false).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Fuel Owner / Station</label>
+            <div>@(Html.Kendo().TextBoxFor(m => m.FuelOwnerName).HtmlAttributes(new { style = "width:100%" }))</div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Telebirr Phone No (payee)</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(m => m.FuelOwnerPhoneNumber).HtmlAttributes(new { style = "width:100%", placeholder = "09xxxxxxxx" }))
+                @Html.ValidationMessageFor(m => m.FuelOwnerPhoneNumber)
+            </div>
+        </div>
+    </div>
+</div>
+@Html.HiddenFor(m => m.PlateNo)
+@Html.HiddenFor(m => m.Driver)

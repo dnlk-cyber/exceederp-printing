@@ -14,6 +14,8 @@ using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Maintenance;
+using System.IO;
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class DriverAssignmentController : Controller
@@ -50,6 +52,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
              Name = i.Name,
              BranchId = i.Id
          }).AsQueryable();
+            ViewData["Department"] = db.MainCompanyStructures
+                .Where(x => x.Parent > 0)
+                .Select(x => new { x.OrgStructureId, x.Name }).AsQueryable();
             ViewData["Operators"] = db.Operator.Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName
@@ -63,6 +68,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Name = s.PlateNumber
             });
             return View();
+        }
+
+        public JsonResult GetDriverAssignmentDepartments()
+        {
+            var departments = db.MainCompanyStructures
+                .Where(x => x.Parent > 0)
+                .OrderBy(x => x.Name)
+                .Select(x => new { x.OrgStructureId, x.Name })
+                .ToList();
+            return Json(departments, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult Seed()
@@ -110,6 +125,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 IsSendForApproval = e.IsSendForApproval,
                 Status = e.Status,
                 BranchId = e.BranchId,
+                DepartmentId = e.DepartmentId,
                 EquipmentCategoryId = e.EquipmentCategoryId,
                 EquipmentNameId = e.EquipmentNameId,
                 EquipmentTypeId = e.EquipmentTypeId,
@@ -143,6 +159,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Remark = e.Remark,
                 Status = e.IsOnlineApproved ? MaintenanceConst.Assigned : MaintenanceConst.Pending,
                 BranchId = e.BranchId,
+                DepartmentId = e.DepartmentId,
                 OperatorId = e.OperatorId,
                 SecondOperatorId = e.SecondOperatorId,
                 EquipmentCategoryId = e.EquipmentCategoryId,
@@ -192,6 +209,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         DateCreated = DateTime.Now,
                         Remark = model.Remark,
                         BranchId = model.BranchId,
+                        DepartmentId = model.DepartmentId,
                         OperatorId = model.OperatorId,
                         SecondOperatorId = model.SecondOperatorId
                     };
@@ -269,9 +287,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { DriverAssignment }.ToDataSourceResult(request));
         }
-
-
         
+
+
         public ActionResult UnAssignedEquipment()
         {
 
@@ -286,6 +304,80 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var FixedAssets = db.Fleets.Where(x => x.Status.ToString() == MaintenanceConst.ACTIVE).FirstOrDefault();
 
             return Json(FixedAssets, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult Doc_Read([DataSourceRequest]DataSourceRequest request, string id)
+        {
+            var Doc = db.DriverAssignmentDocument.Where(x => x.DriverAssignmentId == id);
+            return Json(Doc.ToDataSourceResult(request));
+        }
+        public ActionResult Doc_Delete([DataSourceRequest]DataSourceRequest request, DriverAssignmentDocument model)
+        {
+            var Doc = db.DriverAssignmentDocument.FirstOrDefault(x => x.DriverAssignmentDocumentId == model.DriverAssignmentDocumentId);
+            db.DriverAssignmentDocument.Remove(Doc);
+            db.SaveChanges();
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Attachment_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> attachments, string id)
+        {
+            if (attachments != null)
+            {
+                string[] AllowedExtensions = { ".jpg", ".png", ".pdf" };
+                int MaxFileSize = 2 * 1024 * 1024;
+
+                string subPath = "~/App_Data/DriverAssignmentDocument/";
+                string shortPath = "/App_Data/DriverAssignmentDocument/";
+
+                bool exists = Directory.Exists(Server.MapPath(subPath));
+
+                if (!exists)
+                    Directory.CreateDirectory(Server.MapPath(subPath));
+
+                foreach (var file in attachments)
+                {
+                    if (file != null)
+                    {
+                        #region file validation
+                        var fileExtension = Path.GetExtension(file.FileName).ToLower();
+                        if (!AllowedExtensions.Contains(fileExtension))
+                        {
+                            ModelState.AddModelError("File", "Invalid file type.");
+                        }
+                        if (file.ContentLength > MaxFileSize)
+                        {
+                            ModelState.AddModelError("File", $"File size exceeds the {MaxFileSize / (1024 * 1024)} MB limit.");
+                        }
+                        #endregion
+                        if (ModelState.IsValid)
+                        {
+                            string fileName = Path.GetFileName(file.FileName);
+                            string physicalPath = Server.MapPath(subPath + fileName);
+                            //   string physicalPath = Server.MapPath("~/Content/Memberimage/" + FileName);
+                            file.SaveAs(physicalPath);
+                            db.DriverAssignmentDocument.Add(new DriverAssignmentDocument()
+                            {
+                                FileName = Path.GetFileName(file.FileName),
+                                DriverAssignmentId = id,
+                                ShortPath = shortPath,
+                                FilePath = physicalPath
+
+                            });
+                            db.SaveChanges();
+                        }
+                    }
+                }
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Bolo attachment", "Success", User.Identity.Name, $"created attachement under po {id} ", Modules.FleetManagement);
+                #endregion
+            }
+
+            return Json(new[] { attachments }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult DownloadDocument(int CompanyDocumentId)
+        {
+            var record = db.DriverAssignmentDocument.Find(CompanyDocumentId);
+
+            return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
         }
         protected override void Dispose(bool disposing)
         {

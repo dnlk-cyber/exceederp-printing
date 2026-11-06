@@ -64,10 +64,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         //[Required]
         [DataType(DataType.Currency)]
         public Nullable<int> CostcoveredbyOperator { get; set; }
-        [DisplayName("Covered by Other Bodies")]
+        [DisplayName("Cost Covered by Other Bodies")]
         //   [Required]
         [DataType(DataType.Currency)]
         public Nullable<int> CostcoveredbyOtherBodies { get; set; }
+        [DisplayName("Covered by Other Bodies")]
+        public string CoveredByOtherBodies { get; set; }
 
         [NotMapped]
         public string AssetCode { get; set; }

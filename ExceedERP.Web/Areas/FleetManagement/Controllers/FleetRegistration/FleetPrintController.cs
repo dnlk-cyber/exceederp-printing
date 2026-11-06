@@ -1,5 +1,7 @@
 ﻿using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using System;
 using System.Collections.Generic;
@@ -95,6 +97,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.IssueNumber = 1;
             return View();
         }
+        public ActionResult EquipmentRequestDesign(string id)
+        {
+            ViewBag.Id = id;
+            ViewBag.FormTitle = "Equipment Request Report";
+            ViewBag.FormNumber = 1;
+            ViewBag.IssueNumber = 1;
+            return View();
+        }
         public ActionResult RentedEquipmentMonthlyCostsheetPaymentSummary(string id)
         {
             ViewBag.Id = id;
@@ -103,20 +113,65 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.IssueNumber = 1;
             return View();
         }
-        public ActionResult RentalEquipmentPaymentRequest(int id)
+        public ActionResult FuelRequestCuponDesign(string id)
         {
             ViewBag.Id = id;
-            ViewBag.FormTitle = "Rental Payment Request";
+            ViewBag.FormTitle = "Fuel Request Report";
             ViewBag.FormNumber = 1;
             ViewBag.IssueNumber = 1;
             return View();
         }
-        public ActionResult RentalEquipmentAdvancePayment(string id)
+        public ActionResult WagonDrillMonthlyCostsheetPaymentSummary(string id)
         {
             ViewBag.Id = id;
-            ViewBag.FormTitle = "Rental Equipment Advance Payment";
+            ViewBag.FormTitle = "Wagon Drill Rental Payment Evaluation Sheet";
             ViewBag.FormNumber = 1;
             ViewBag.IssueNumber = 1;
+            return View();
+        }
+        public ActionResult WagonDrillMonthlyTimesheetSummary(string id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.WagondrillTimesheetSummary, out string title, out string number, out string issueNumber);
+            ViewBag.Id = id;
+            ViewBag.FormTitle = string.IsNullOrWhiteSpace(title) ? "Time Sheet Form" : title;
+            ViewBag.FormNumber = number;
+            ViewBag.IssueNumber = string.IsNullOrWhiteSpace(issueNumber) ? "1" : issueNumber;
+            return View();
+        }
+        public ActionResult RentalEquipmentPaymentRequest(int id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.RentalPaymentRequest, out string title, out string number, out string issueNumber);
+            ViewBag.IssueNumber = issueNumber;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            ViewBag.Id = id;        
+            return View();
+        }
+        public ActionResult RentalEquipmentAdvancePayment(string id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.RentalAdvancePaymentRequest, out string title, out string number, out string issueNumber);
+            ViewBag.Id = id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            ViewBag.IssueNumber = issueNumber;
+            return View();
+        }
+        public ActionResult RentalAdvancePaymentRequestForm(string id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.RentalAdvancePaymentRequest, out string title, out string number, out string issueNumber);
+            ViewBag.Id = id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            ViewBag.IssueNumber = issueNumber;
+            return View();
+        }
+        public ActionResult EquipmentTransferRequestForm(string id)
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.EquipmentTransferRequestForm, out string title, out string number, out string issueNumber);
+            ViewBag.Id = id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            ViewBag.IssueNumber = issueNumber;
             return View();
         }
         [AuthorizeRoles(FleetManagementRoles.ResourceDistributor)]

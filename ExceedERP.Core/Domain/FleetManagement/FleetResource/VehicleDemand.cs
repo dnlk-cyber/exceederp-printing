@@ -66,8 +66,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime RequestDate { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Request Time")]
+        public DateTime RequestTime { get; set; }
         [DisplayName("Is Assigned")]
         public bool IsAssigned { get; set; }
+        public string Location { get; set; }
         public enum EquipmentStatusenum { New, Good, NeverMind }
 
         public int OrgStructureId { get; set; }
