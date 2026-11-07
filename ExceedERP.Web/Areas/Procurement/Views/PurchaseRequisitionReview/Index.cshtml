@@ -116,8 +116,13 @@
                                         <a onclick='return sendForApproval("#=PurchaseRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
                                         <br />
                                         # } #
+                                         # if (IsOnlineApproved && !IsSecondOnlineApproved)
+                                            {#
+                                              <a href='@Url.Action("PurchaseRequistionPrint", "InventoryPrint", new { area = "Inventory" })/#=PurchaseRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                            <br />
+                                            # } #
 
-                                        # if (IsOnlineApproved || IsDepartmentOnlineApproved)
+                                        # if (IsSecondOnlineApproved)
                                         {#
                                         <a href='@Url.Action("PurchaseRequistionReviewPrint", "ProcurementPrint")/#=PurchaseRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
                                         <br />
