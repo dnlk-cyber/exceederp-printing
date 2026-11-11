@@ -206,6 +206,7 @@
     <Compile Include="Printing\VoucherLaborCost.cs" />
     <Compile Include="Printing\VoucherMaterialCost.cs" />
     <Compile Include="Procurement\GuaranteeHelper.cs" />
+    <Compile Include="Procurement\PurchaseCommitteeHelper.cs" />
     <Compile Include="Procurement\ItemHelper.cs" />
     <Compile Include="Procurement\PaymentHelper.cs" />
     <Compile Include="Procurement\ProcurementIsoDocumentHelper.cs" />

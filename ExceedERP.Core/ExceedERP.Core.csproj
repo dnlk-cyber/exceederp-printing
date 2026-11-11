@@ -1499,6 +1499,7 @@
     <Compile Include="Domain\Procurement\Settings\ProcurementPeriod.cs" />
     <Compile Include="Domain\Procurement\Settings\ProcurementPOType.cs" />
     <Compile Include="Domain\Procurement\Settings\Purchaser.cs" />
+    <Compile Include="Domain\Procurement\Settings\PurchaseCommitteeMember.cs" />
     <Compile Include="Domain\Procurement\Settings\ReportTemplate.cs" />
     <Compile Include="Domain\Procurement\Settings\SupplierCategory.cs" />
     <Compile Include="Domain\Procurement\Settings\SupplierRank.cs" />

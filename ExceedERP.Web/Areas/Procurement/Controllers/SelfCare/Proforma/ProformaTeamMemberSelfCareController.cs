@@ -8,6 +8,7 @@ using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Procurement;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -27,6 +28,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
         public ActionResult ProformaTeamMembers_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
+            PurchaseCommitteeHelper.ApplyToProformaTeam(_db, id, User.Identity.Name);
             IQueryable<ProformaTeamMember> ProformaTeamMember = _db.ProformaTeamMembers.Where(p => p.ProformaTeamId == id);
             DataSourceResult result = ProformaTeamMember.ToDataSourceResult(request, team => new {
                 ProformaTeamMemberId = team.ProformaTeamMemberId,

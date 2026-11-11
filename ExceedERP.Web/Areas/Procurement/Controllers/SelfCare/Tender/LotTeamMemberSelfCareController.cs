@@ -8,6 +8,7 @@ using ExceedERP.Core.Domain.Procurement.Tender.Lots;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Procurement;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -27,6 +28,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
         public ActionResult LotTeamMembers_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
+            PurchaseCommitteeHelper.ApplyToLotTeam(_db, id, User.Identity.Name);
             IQueryable<LotTeamMember> LotTeamMember = _db.LotTeamMembers.Where(p => p.LotTeamId == id);
             DataSourceResult result = LotTeamMember.ToDataSourceResult(request, team => new {
                 LotTeamMemberId = team.LotTeamMemberId,

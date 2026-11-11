@@ -1,0 +1,80 @@
+@using System.Collections
+<legend>Proforma committee</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Settings.PurchaseCommitteeMember>()
+      .Name("proformaCommitteeGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(220).EditorTemplateName("AllEmployeeSelector");
+          columns.Bound(c => c.Title).Width(200);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(220);
+      })
+      .ToolBar(toolbar => toolbar.Create())
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 360px;" })
+      .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+      .Scrollable()
+      .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+      .Filterable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"proformaCommitteeGrid\")")
+              .RequestStart("onRequestStart(\"proformaCommitteeGrid\")")
+              .RequestEnd("onRequestEnd(\"proformaCommitteeGrid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.PurchaseCommitteeMemberId);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+          })
+          .Read(read => read.Action("ProformaCommittee_Read", "PurchaseCommittee"))
+          .Create(create => create.Action("ProformaCommittee_Create", "PurchaseCommittee"))
+          .Update(update => update.Action("ProformaCommittee_Update", "PurchaseCommittee"))
+          .Destroy(destroy => destroy.Action("ProformaCommittee_Destroy", "PurchaseCommittee"))
+      ))
+
+<legend style="margin-top: 24px;">Tender committee</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Settings.PurchaseCommitteeMember>()
+      .Name("tenderCommitteeGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(220).EditorTemplateName("AllEmployeeSelector");
+          columns.Bound(c => c.Title).Width(200);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(220);
+      })
+      .ToolBar(toolbar => toolbar.Create())
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 360px;" })
+      .Pageable(pageable => pageable.Input(true).Numeric(false).Refresh(true).PageSizes(true).ButtonCount(5))
+      .Scrollable()
+      .Sortable(sortable => sortable.SortMode(GridSortMode.SingleColumn))
+      .Filterable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"tenderCommitteeGrid\")")
+              .RequestStart("onRequestStart(\"tenderCommitteeGrid\")")
+              .RequestEnd("onRequestEnd(\"tenderCommitteeGrid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.PurchaseCommitteeMemberId);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+          })
+          .Read(read => read.Action("TenderCommittee_Read", "PurchaseCommittee"))
+          .Create(create => create.Action("TenderCommittee_Create", "PurchaseCommittee"))
+          .Update(update => update.Action("TenderCommittee_Update", "PurchaseCommittee"))
+          .Destroy(destroy => destroy.Action("TenderCommittee_Destroy", "PurchaseCommittee"))
+      ))
+
+<script>
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+</script>

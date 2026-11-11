@@ -97,7 +97,7 @@
                                   items.Add().Text("Detail").Content(
                                     @<text>
 
-                                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                                        # if (!IsOnlineApproved&&!IsSendForApproval&&!IsDepartmentSendForApproval&&!IsDepartmentOnlineApproved)
                                         {#
 
                                         <a onclick='return sendForApproval("#=StoreReturnID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>

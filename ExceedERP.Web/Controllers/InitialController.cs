@@ -286,6 +286,8 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
 			 new ApplicationRole("Property_Inspector","Good receive inspection role","Property"),
 			 new ApplicationRole("Property_Void","Void Stock Transactions","Property"),
 			 new ApplicationRole("Property_Bincard","Update or recalculate bincard transaction","Property"),
+			 new ApplicationRole(InventoryConstants.PropertyStockAdjustmentUser,"Record stock adjustments","Property"),
+			 new ApplicationRole(InventoryConstants.PropertyStockAdjustmentApprover,"Approve stock adjustments","Property"),
 		   #endregion
 			 #region Fixed Asset
 			 new ApplicationRole("FixedAsset_Requisition_User", "Fixed asset requisition user", "Fixed Asset"),

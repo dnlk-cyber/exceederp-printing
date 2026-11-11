@@ -2526,6 +2526,7 @@
     <Compile Include="Areas\Procurement\Controllers\ServiceRequisitionItemController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Settings\ProcurementRuleValueController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Settings\PurchasersController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\Settings\PurchaseCommitteeController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Settings\ReportTemplateController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Settings\ServiceCategoryController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Settings\ServiceItemController.cs" />
@@ -6294,6 +6295,7 @@
     <Content Include="Areas\Procurement\Views\PurchaseRequisitionService\EditorTemplates\ValidationStatus.cshtml" />
     <Content Include="Areas\Procurement\Views\PurchaseRequisitionService\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\Purchasers\Index.cshtml" />
+    <Content Include="Areas\Procurement\Views\PurchaseCommittee\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\PurchaseValidationApproval\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\PurchaseValidationItem\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\PurchaseValidation\Index.cshtml" />
