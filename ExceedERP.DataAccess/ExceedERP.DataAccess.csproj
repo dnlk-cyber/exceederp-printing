@@ -149,6 +149,10 @@
     <Compile Include="Migrations\202611110718417_ExceedAppMigration1.Designer.cs">
       <DependentUpon>202611110718417_ExceedAppMigration1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611160818337_HRMTriaingChangesMigration.cs" />
+    <Compile Include="Migrations\202611160818337_HRMTriaingChangesMigration.Designer.cs">
+      <DependentUpon>202611160818337_HRMTriaingChangesMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -212,6 +216,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202611110718417_ExceedAppMigration1.resx">
       <DependentUpon>202611110718417_ExceedAppMigration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611160818337_HRMTriaingChangesMigration.resx">
+      <DependentUpon>202611160818337_HRMTriaingChangesMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
