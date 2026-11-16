@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
@@ -20,7 +20,7 @@ using EntityState = System.Data.Entity.EntityState;
 namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 {
 
-	[AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
+	[AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead, InventoryConstants.PropertyAdmin, InventoryConstants.PropertyApprover, InventoryConstants.PropertyAuthrizer, InventoryConstants.PropertyRequisitionSecondApprover, InventoryConstants.PropertyUser)]
 	public class FuelRequisitionSelfCareController : Controller
 	{
 		private readonly ExceedDbContext _db = new ExceedDbContext();
@@ -31,6 +31,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 		{
 
 			PopulateViewData();
+			ViewBag.User = User.Identity.Name;
 			return View();
 		}
 		private void PopulateViewData()
@@ -86,6 +87,29 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 		}
 
 
+		public ActionResult FuelRequisitions_Read([DataSourceRequest] DataSourceRequest request)
+		{
+			return StoreRequisitions_Read(request);
+		}
+
+		[AcceptVerbs(HttpVerbs.Post)]
+		public ActionResult FuelRequisitions_Create([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
+		{
+			return StoreRequisitions_Create(request, storeRequisition);
+		}
+
+		[AcceptVerbs(HttpVerbs.Post)]
+		public ActionResult FuelRequisitions_Update([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
+		{
+			return StoreRequisitions_Update(request, storeRequisition);
+		}
+
+		[AcceptVerbs(HttpVerbs.Post)]
+		public ActionResult FuelRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
+		{
+			return StoreRequisitions_Destroy(request, storeRequisition);
+		}
+
 		public ActionResult StoreRequisitions_Read([DataSourceRequest] DataSourceRequest request)
 		{
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -101,7 +125,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
 			var storeRequisitions = _db.StoreRequisitions.Where(x => x.IsFuel == true).Where(x => x.IsForMaintenance == false).ToList();
 
-			if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead)
+			if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyAdmin) || System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyApprover) || System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyAuthrizer) || System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequisitionSecondApprover))
+			{
+				storeRequisitions = storeRequisitions.Where(x => x.IsOnlineApproved || userworkunit.Contains(x.OrgStructureId) || userworkunit.Contains(x.CreatedAtOrgStructureId) || employeeIds.Contains(x.EmployeeId) || x.CreatedBy == User.Identity.Name || x.NextApprover == User.Identity.Name).ToList();
+			}
+			else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead)
 			&& System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
 			{
 				storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
@@ -184,6 +212,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 				IsSecondSendForApproval = storeRequisition.IsSecondSendForApproval,
 				SecondSendForApprovalBy = storeRequisition.SecondSendForApprovalBy,
 				SecondSendForApprovalTime = storeRequisition.SecondSendForApprovalTime,
+				NextApprover = storeRequisition.NextApprover,
 
 				IsOnlineTransferred = storeRequisition.IsOnlineTransferred,
 				IsOnlineTransferredBy = storeRequisition.IsOnlineTransferredBy,
@@ -758,11 +787,92 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 			return null;
 		}
 
+		public JsonResult SendForSecondApproval(int id, string user)
+		{
+			var record = _db.StoreRequisitions.Find(id);
+			if (string.IsNullOrWhiteSpace(user))
+			{
+				var formattedData = new
+				{
+					Message = "Please select approver.",
+					Status = "NOT_OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+			if (record != null && record.IsOnlineApproved && !record.IsSecondSendForApproval && !record.IsSecondOnlineApproved && record.StoreRequisitionItem.Count > 0)
+			{
+				record.Status = Enum.GetName(typeof(OperationStatuses), 9);
+				record.NextApprover = user;
+				record.IsSecondSendForApproval = true;
+				record.SecondSendForApprovalBy = User.Identity.Name;
+				record.SecondSendForApprovalTime = DateTime.Now;
+				_db.StoreRequisitions.Attach(record);
+				_db.Entry(record).State = EntityState.Modified;
+				_db.SaveChanges();
+
+				#region operation log
+				UserHelper.OperationLog(Request.UserHostAddress, "fuel requisition", "Success", User.Identity.Name, $"send for second approval fuel requisition {id} to {user}", Modules.Inventory);
+				#endregion
+				var formattedData = new
+				{
+					Message = "Successfully Sent.",
+					Status = "OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+			if (record == null)
+			{
+				var formattedData = new
+				{
+					Message = "The record is not found.",
+					Status = "NOT_OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+			if (record.StoreRequisitionItem.Count == 0)
+			{
+				var formattedData = new
+				{
+					Message = "Please add line items first.",
+					Status = "NOT_OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+			if (!record.IsOnlineApproved)
+			{
+				var formattedData = new
+				{
+					Message = "The record must be approved before it can be sent for second approval.",
+					Status = "NOT_OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+			if (record.IsSecondSendForApproval)
+			{
+				var formattedData = new
+				{
+					Message = "The record is already sent for second approval.",
+					Status = "NOT_OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+			if (record.IsSecondOnlineApproved)
+			{
+				var formattedData = new
+				{
+					Message = "The record is already second approved.",
+					Status = "NOT_OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+			return null;
+		}
+
 		[AuthorizeRoles(InventoryConstants.PropertyVoid)]
 		public JsonResult Void(int id)
 		{
 			var record = _db.StoreRequisitions.Find(id);
-			if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.StoreRequisitionItem.Count > 0)
+			if (record != null && (record.IsOnlineApproved || record.IsSecondOnlineApproved) && !record.IsVoid && !record.IsOnlineTransferred && record.StoreRequisitionItem.Count > 0)
 			{
 				#region validate issue
 
@@ -854,7 +964,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 				};
 				return Json(formattedData, JsonRequestBehavior.AllowGet);
 			}
-			if (!record.IsOnlineApproved)
+			if (!record.IsOnlineApproved && !record.IsSecondOnlineApproved)
 			{
 				var formattedData = new
 				{

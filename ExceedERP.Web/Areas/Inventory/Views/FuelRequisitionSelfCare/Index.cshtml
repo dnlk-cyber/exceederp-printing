@@ -1,4 +1,4 @@
-﻿@using System.Collections
+@using System.Collections
 @using ExceedERP.Core.Domain.Inventory
 @using Kendo.Mvc.UI
 @{
@@ -126,10 +126,10 @@
 
               //model.Field(p => p.RequestDate).Editable(false);
           })
-          .Read(read => read.Action("FuelRequisitions_Read", "FuelRequisition"))
-          .Create(create => create.Action("FuelRequisitions_Create", "FuelRequisition"))
-          .Update(update => update.Action("FuelRequisitions_Update", "FuelRequisition"))
-          .Destroy(destroy => destroy.Action("FuelRequisitions_Destroy", "FuelRequisition"))
+          .Read(read => read.Action("FuelRequisitions_Read", "FuelRequisitionSelfCare"))
+          .Create(create => create.Action("FuelRequisitions_Create", "FuelRequisitionSelfCare"))
+          .Update(update => update.Action("FuelRequisitions_Update", "FuelRequisitionSelfCare"))
+          .Destroy(destroy => destroy.Action("FuelRequisitions_Destroy", "FuelRequisitionSelfCare"))
 
       ).Resizable(resize => resize.Columns(true))
       .ClientDetailTemplateId("FuelRequisitions"))
@@ -147,7 +147,17 @@
                 <br />
                 # } #
 
-                # if (IsOnlineApproved)
+                # if (IsOnlineApproved && !IsSecondSendForApproval && !IsSecondOnlineApproved)
+                {#
+                <div class="popupwrapper">
+                    <input type="text" disabled="disabled" id="NextApprover" />
+                    <img src="@Url.Content("~/Content/Images/search.png")" onclick="SelectApprover(this)" />
+                </div>
+                <a onclick='return sendForSecondApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Second Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                <br />
+                # } #
+
+                # if (IsOnlineApproved || IsSecondOnlineApproved)
                 {#
                 <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
                 <br />
@@ -197,7 +207,7 @@
                             Modified By
                         </dt>
                         <dd>
-                            #= ModifiedBy #s
+                            #= ModifiedBy #
                         </dd>
                         <dt>
                             Modified Date
@@ -209,7 +219,7 @@
                            Approved By
                         </dt>
                         <dd>
-                            #= OnlineApprovedBy #s
+                            #= OnlineApprovedBy #
                         </dd>
                         <dt>
                             Approval Time
@@ -217,12 +227,24 @@
                         <dd>
                             #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                         </dd>
+                        <dt>
+                           Second Approved By
+                        </dt>
+                        <dd>
+                            #= SecondOnlineApprovedBy != null ? SecondOnlineApprovedBy : '' #
+                        </dd>
+                        <dt>
+                            Second Approval Time
+                        </dt>
+                        <dd>
+                            #= SecondOnlineApprovedTime != null ? kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') : '' #
+                        </dd>
                     </dl>
                 </div>
     
                 <hr>
 
-                # if (IsOnlineApproved&&!IsVoid)
+                # if ((IsOnlineApproved || IsSecondOnlineApproved) && !IsVoid)
                 {#
                 <a onclick='return voidRecord("#=StoreRequisitionID#")' href=' \#' title="Void Record"><i class="fa  fa-bolt fa-2x" style="color:red"></i></a>
 
@@ -339,7 +361,7 @@
 
             </text>
               );
-          @*items.Add().Text("Second Validation").Content(@<text>
+          items.Add().Text("Second Validation").Content(@<text>
     @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
       .Name("FuelRequisitionPropertyValidation_#=StoreRequisitionID#")
       .Columns(columns =>
@@ -361,7 +383,10 @@
                        .Events(x => x.DataBound("onDataBoundSecondValidation"))
       .DataSource(dataSource => dataSource
           .Ajax()
-          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+          .Events(ev => ev
+              .Error("error_handler(\"FuelRequisitionPropertyValidation_#=StoreRequisitionID#\")")
+              .RequestStart("onRequestStart(\"FuelRequisitionPropertyValidation_#=StoreRequisitionID#\")")
+              .RequestEnd("onRequestEnd(\"FuelRequisitionPropertyValidation_#=StoreRequisitionID#\")"))
           .Model(model =>
           {
               model.Id(p => p.StoreRequisitionPropertyValidationID);
@@ -373,7 +398,7 @@
           .Destroy(destroy => destroy.Action("FuelRequisitionPropertyValidations_Destroy", "FuelRequisitionPropertyValidation"))
       ).ToClientTemplate()
     )
-                                                                      </text>);*@
+                                                                      </text>);
 
       }).ToClientTemplate())
     @*============================================================ Store Requisition Property Validation ===============================================================================*@
@@ -477,7 +502,7 @@
         if (conf === true) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("Void", "FuelRequisition", new { area = "Inventory" })',
+                url: '@Url.Action("Void", "FuelRequisitionSelfCare", new { area = "Inventory" })',
                 data: { id: id },
                 success: function (result) {
                     // toastr.warnning(result.Message);
@@ -509,6 +534,48 @@
                 alert(result);
             }
         });
+    }
+
+    var supplierTextBox;
+    var popup;
+    var slectedUser;
+    var isSecondSendForApproval;
+    var nextApprover;
+
+    function SelectApprover(e) {
+        supplierTextBox = $(e).prev('input').attr('id');
+        popup = window.open('/Common/GlobalDataProvider/GetInventorySecondApproverSelector', 'WindowPopup', 'top=100, left=400, width=300, height=220,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setChoice(user) {
+        slectedUser = user;
+        $("#" + supplierTextBox).val(slectedUser).trigger("change");
+    }
+
+    function sendForSecondApproval(id) {
+        var user = $("#NextApprover").val();
+        if (!user || user.length === 0) {
+            alert("Please select approver");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SendForSecondApproval", "FuelRequisitionSelfCare", new { area = "Inventory" })',
+                data: {
+                    id: id,
+                    user: user
+                },
+                success: function (result) {
+                    alert(result.Message);
+                    location.reload(true);
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
     }
 
 
@@ -545,8 +612,70 @@
         }
 
     }
-    //var masterDataItem;
-    //var masterRow;
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var isapproved;
+    var issecondapproved;
+
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+        isSecondSendForApproval = masterDataItem.IsSecondSendForApproval;
+        nextApprover = masterDataItem.NextApprover;
+    }
+
+    function onDataBoundMaster() {
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSecondOnlineApproved) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+
+    function onDataBoundLines(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isapproved || issecondapproved) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    function onDataBoundFisrtValidation(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isapproved || issecondapproved) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    function onDataBoundSecondValidation(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (issecondapproved || !isSecondSendForApproval) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+        var currentuser = @Html.Raw(Json.Encode(ViewBag.User));
+        if (currentuser !== nextApprover) {
+            $(".k-grid-add", detailGrid).hide();
+        }
+    }
+
     //var masterGrid;
     //function detailExpand(e) {
 
