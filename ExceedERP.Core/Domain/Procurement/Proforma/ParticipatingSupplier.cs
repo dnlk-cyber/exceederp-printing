@@ -51,7 +51,7 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public string Address { get; set; }
         [Display(Name = "Telephone")]
         [DataType(DataType.PhoneNumber)]
-        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{6})$", ErrorMessage = "Not a valid Phone number.Should be xxx-xxxx-xxxxxx")]
+        [RegularExpression(@"^((\+?251|0)?9\d{8}|\(?([0-9]{3})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{6}))$", ErrorMessage = "Not a valid phone number. Use +2519xxxxxxxx, 09xxxxxxxx, or 9xxxxxxxx.")]
         public string Telephone { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

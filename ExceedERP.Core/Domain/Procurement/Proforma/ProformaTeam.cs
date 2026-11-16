@@ -11,6 +11,7 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public int ProformaPurchaseID { get; set; }
         public virtual ProformaPurchase ProformaPurchase { get; set; }
         public string Description { get; set; }
+        public bool StandingCommitteeApplied { get; set; }
         public virtual ICollection<ProformaTeamMember> ProformaTeamMembers { get; set; }
         public virtual ICollection<ProformaTeamDecision> ProformaTeamDecisions { get; set; }
     }

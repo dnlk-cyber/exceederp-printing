@@ -18,6 +18,7 @@ namespace ExceedERP.Core.Domain.Inventory
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int StoreRequisitionID { get; set; }
+        public string NextApprover { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<StoreRequisitionItem> StoreRequisitionItem { get; set; }

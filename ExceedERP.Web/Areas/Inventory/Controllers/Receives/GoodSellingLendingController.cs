@@ -10,6 +10,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -285,6 +286,127 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
+            return null;
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = db.GoodSellingAndLendings.Find(id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.GoodSellingAndLendingItems.Count > 0)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                db.GoodSellingAndLendings.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
+
+                var pricesetting = db.AveragePriceSettings.FirstOrDefault();
+                string storecode = record.StoreCode;
+
+                foreach (var i in record.GoodSellingAndLendingItems)
+                {
+                    if (i.QuantitySold <= 0)
+                        continue;
+
+                    string itemCode = i.ItemCode;
+                    var storeItem = db.StoreItemAssignments.FirstOrDefault(x => x.StoreCode == storecode && x.ItemCode == itemCode);
+                    if (storeItem != null)
+                    {
+                        storeItem.Balance = storeItem.Balance + i.QuantitySold;
+                        db.Entry(storeItem).State = EntityState.Modified;
+
+                        var binCardLine = new BinCardLine
+                        {
+                            StoreItemAssignment = storeItem,
+                            ReferenceDoc = "Void SalesDonation_" + record.GoodSellingAndLendingID,
+                            Reference = record.Remark,
+                            Date = record.Date,
+                            ReceivedQTY = i.QuantitySold,
+                            ReceivedUPrice = i.UnitPurchasingPrice,
+                            ReceivedTPrice = i.UnitPurchasingPrice * i.QuantitySold,
+                            BalanceQTY = storeItem.Balance,
+                            BalanceUPrice = i.UnitPurchasingPrice,
+                            BalanceTPrice = i.UnitPurchasingPrice * storeItem.Balance,
+                            StoreCode = record.StoreCode,
+                            GLPeriodId = record.GLPeriodId,
+                            TransactionType = BinCardTransactionTypes.SalesOrLend,
+                            StatusType = BinCardTransactionStatus.Void,
+                            TransactionOrder = BinCardTransactionOrder.VoidSalesOrLend
+                        };
+                        db.BinCardLines.Add(binCardLine);
+                        BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.Date));
+                    }
+
+                    if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
+                    {
+                        var stockItem = db.InventoryItems.Find(itemCode);
+                        if (stockItem != null)
+                        {
+                            stockItem.Balance = stockItem.Balance + i.QuantitySold;
+                            db.Entry(stockItem).State = EntityState.Modified;
+                        }
+                    }
+                }
+
+                db.SaveChanges();
+
+                UserHelper.OperationLog(Request.UserHostAddress, "good selling", "Success", User.Identity.Name, $"void good selling {id} ", Modules.Inventory);
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.GoodSellingAndLendingItems.Count == 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Please add line items first.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsOnlineTransferred)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is transferred to GL.You can not void .",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
             return null;
         }
 

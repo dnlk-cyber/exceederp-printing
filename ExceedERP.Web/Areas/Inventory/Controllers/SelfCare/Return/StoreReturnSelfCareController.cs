@@ -19,7 +19,7 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
 {
 
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
+    [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class StoreReturnSelfCareController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -99,23 +99,25 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
                 }).ToList();
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
         public ActionResult StoreReturns_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<StoreReturn> storereturns = db.StoreReturns.Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<StoreReturn> storereturns = db.StoreReturns;
 
-            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
-                 && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
+            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
-
                 storereturns = storereturns.Where(x => userworkunit.Contains(x.CreatedAtOrgStructureId)
-                //|| x.CreatedAtOrgStructureId == 0//if they are not vis
+                || userworkunit.Contains(x.OrgStructureId)
                 || x.ForwardedTo == User.Identity.Name
                 || x.ForwardedFrom == User.Identity.Name
                 || x.CreatedBy == User.Identity.Name);
-
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyStoreKeeper)
+                || System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyApprover))
+            {
+                storereturns = storereturns.Where(x => userStores.Contains(x.StoreCode));
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
@@ -170,7 +172,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
             return Json(result);
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreReturns_Create([DataSourceRequest]DataSourceRequest request, StoreReturn storeReturn)
         {
@@ -259,7 +261,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
             return Json(new[] { storeReturn }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreReturns_Update([DataSourceRequest]DataSourceRequest request, StoreReturn storeReturn)
         {
@@ -293,6 +295,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
             }
             if (ModelState.IsValid)
             {
+                var existing = db.StoreReturns.Find(storeReturn.StoreReturnID);
                 var entity = new StoreReturn
                 {
                     StoreReturnID = storeReturn.StoreReturnID,
@@ -306,7 +309,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
                     Status = storeReturn.Status,
                     IsForOther = storeReturn.IsForOther,
                     OrgStructureId = storeReturn.OrgStructureId,
-                    CreatedAtOrgStructureId = storeReturn.CreatedAtOrgStructureId,
+                    CreatedAtOrgStructureId = storeReturn.CreatedAtOrgStructureId != 0
+                        ? storeReturn.CreatedAtOrgStructureId
+                        : (existing != null ? existing.CreatedAtOrgStructureId : storeReturn.CreatedAtOrgStructureId),
                     ForBranchId = storeReturn.ForBranchId,
                     ConfirmationLetter = storeReturn.ConfirmationLetter,
                     Remark = storeReturn.Remark,
@@ -325,12 +330,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
                     IsFinalApproval = storeReturn.IsFinalApproval,
                     CurrentApprovalStep = storeReturn.CurrentApprovalStep,
 
-                    IsDepartmentOnlineApproved = storeReturn.IsDepartmentOnlineApproved,
-                    DepartmentOnlineApprovedBy = storeReturn.DepartmentOnlineApprovedBy,
-                    DepartmentOnlineApprovedTime = storeReturn.DepartmentOnlineApprovedTime,
-                    IsDepartmentSendForApproval = storeReturn.IsDepartmentSendForApproval,
-                    DepartmentSendForApprovalBy = storeReturn.DepartmentSendForApprovalBy,
-                    DepartmentSendForApprovalTime = storeReturn.DepartmentSendForApprovalTime,
+                    IsDepartmentOnlineApproved = existing != null ? existing.IsDepartmentOnlineApproved : storeReturn.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = existing != null ? existing.DepartmentOnlineApprovedBy : storeReturn.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = existing != null ? existing.DepartmentOnlineApprovedTime : storeReturn.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = existing != null ? existing.IsDepartmentSendForApproval : storeReturn.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = existing != null ? existing.DepartmentSendForApprovalBy : storeReturn.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = existing != null ? existing.DepartmentSendForApprovalTime : storeReturn.DepartmentSendForApprovalTime,
+                    IsSendForApproval = existing != null ? existing.IsSendForApproval : storeReturn.IsSendForApproval,
+                    SendForApprovalBy = existing != null ? existing.SendForApprovalBy : storeReturn.SendForApprovalBy,
+                    SendForApprovalTime = existing != null ? existing.SendForApprovalTime : storeReturn.SendForApprovalTime,
+                    IssueNumber = existing != null ? existing.IssueNumber : storeReturn.IssueNumber,
+                    JobOrderId = existing != null ? existing.JobOrderId : storeReturn.JobOrderId,
+                    OrgBranchName = existing != null ? existing.OrgBranchName : storeReturn.OrgBranchName,
+                    CreatedBy = existing != null ? existing.CreatedBy : storeReturn.CreatedBy,
+                    DateCreated = existing != null ? existing.DateCreated : storeReturn.DateCreated,
 
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
@@ -348,7 +361,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
             return Json(new[] { storeReturn }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreReturns_Destroy([DataSourceRequest]DataSourceRequest request, StoreReturn storeReturn)
         {
@@ -440,7 +453,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare.Return
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            else if (record.IsSendForApproval)
+            else if (record.IsSendForApproval || record.IsDepartmentSendForApproval)
             {
                 var formattedData = new
                 {

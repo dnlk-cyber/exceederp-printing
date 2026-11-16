@@ -12,6 +12,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender.Lots
         public int LotID { get; set; }
         public virtual Lot Lot { get; set; }
         public string Description { get; set; }
+        public bool StandingCommitteeApplied { get; set; }
         public virtual ICollection<LotTeamMember> LotTeamMembers { get; set; }
         public virtual ICollection<LotTeamDecision> LotTeamDecisions { get; set; }
     }

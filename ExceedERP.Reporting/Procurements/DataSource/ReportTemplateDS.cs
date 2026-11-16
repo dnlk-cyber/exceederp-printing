@@ -331,7 +331,17 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 var team = _db.ProformaTeams.FirstOrDefault(x => x.ProformaPurchaseID == did);
                 if (team != null)
                 {
-                    template.ProformaNote = team.Description; //teamdecision?.Description;
+                    var lines = new List<string>();
+                    if (!string.IsNullOrWhiteSpace(team.Description))
+                        lines.Add(team.Description);
+
+                    var remarks = _db.ProformaTeamDecisions
+                        .Where(x => x.ProformaTeamId == team.ProformaTeamId && x.Description != null && x.Description != "")
+                        .OrderBy(x => x.ProformaTeamDecisionId)
+                        .Select(x => x.Description)
+                        .ToList();
+                    lines.AddRange(remarks);
+                    template.ProformaNote = string.Join(Environment.NewLine, lines);
                 }
                 if (proformaPurchase != null)
                 {

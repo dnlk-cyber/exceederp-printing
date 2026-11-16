@@ -4269,6 +4269,7 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<ContractManagementValidation> ContractManagementValidations { get; set; }
         public DbSet<Purchaser> Purchasers { get; set; }
+        public DbSet<PurchaseCommitteeMember> PurchaseCommitteeMembers { get; set; }
         public DbSet<ContractRenewal> ContractRenewals { get; set; }
 
         public DbSet<ContractRenewalValidation> ContractRenewalValidations { get; set; }

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
@@ -19,14 +20,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment, HrmConstants.HRDepartmentHead, HrmConstants.HREmployeeSelfService)]
         public ActionResult Index()
         {
             return View();
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment, HrmConstants.HRDepartmentHead, HrmConstants.HREmployeeSelfService)]
         public ActionResult FuelRequisitionValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<StoreRequisitionValidation> storerequisitionvalidations = db.StoreRequisitionValidations.Where(sr => sr.StoreRequisitionID == id);
@@ -42,7 +43,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
 
 
-        [AuthorizeRoles(InventoryConstants.UserDepartment)]
+        [AuthorizeRoles(InventoryConstants.UserDepartment, HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FuelRequisitionValidations_Create([DataSourceRequest]DataSourceRequest request, StoreRequisitionValidation storeRequisitionValidation, int id)
         {
@@ -150,7 +151,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(InventoryConstants.UserDepartment)]
+        [AuthorizeRoles(InventoryConstants.UserDepartment, HrmConstants.HRDepartmentHead)]
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FuelRequisitionValidations_Update([DataSourceRequest]DataSourceRequest request, StoreRequisitionValidation storeRequisitionValidation)
@@ -174,7 +175,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(InventoryConstants.UserDepartment)]
+        [AuthorizeRoles(InventoryConstants.UserDepartment, HrmConstants.HRDepartmentHead)]
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FuelRequisitionValidations_Destroy([DataSourceRequest]DataSourceRequest request, StoreRequisitionValidation storeRequisitionValidation)
