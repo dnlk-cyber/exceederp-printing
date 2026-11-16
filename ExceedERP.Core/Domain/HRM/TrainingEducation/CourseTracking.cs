@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -55,6 +57,8 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         [Display(Name = "HR_HRMPlan_TrainingPlan_NoofTrainee", ResourceType = typeof(Localization.Resources))]
         public int NoOfTrainee { get; set; }
         public TrainingRequestType TrainingRequestType { get; set; }
+        [NotMapped]
+        public bool IsCompleted { get; set; }
 
     }
 }                                                

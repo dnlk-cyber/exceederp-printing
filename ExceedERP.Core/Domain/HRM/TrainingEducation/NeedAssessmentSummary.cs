@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -50,7 +51,9 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public bool IsThirdSendForApproval { get; set; }
         public bool IsApproved { get; set; }
         public bool IsRejected { get; set; }
-
+        public bool IsNotified { get; set; }
+        public DateTime? NotifiedDate { get; set; }
+        public string NotifiedBy { get; set; }
     }
     public class NeedAssessmentSummaryDetail
     {

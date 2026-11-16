@@ -1,25 +1,30 @@
-﻿using System;
-using System.Data.Entity;
-using System.IO;
-using System.Linq;
+﻿﻿using System;
+using System.Collections.Generic;
+﻿using System.Data.Entity;
+﻿using System.IO;
+﻿using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
-using Kendo.Mvc.Extensions;
+ using ExceedERP.Core.Domain;
+ using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common.HRM;
+﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Web.Areas.Common.Controllers;
+﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
+ using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
-
+    
     [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser)]
     public class EducationController : BaseController
     {
@@ -111,7 +116,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult Education_Read([DataSourceRequest]DataSourceRequest request, int idEd)
         {
             // HRMInputs.EmployeeId = id;
-            IQueryable<Education> educations = db.Education.Where(x => x.EmployeeId == idEd);
+            IQueryable<Core.Domain.HRM.TrainingEducation.Education> educations = db.Education.Where(x => x.EmployeeId == idEd);
             DataSourceResult result = educations.ToDataSourceResult(request, education => new
             {
                 EmpEduId = education.EmpEduId,
@@ -207,63 +212,90 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
        
         [AuthorizeRoles( HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Education_Create([DataSourceRequest]DataSourceRequest request, Education education, int idEdTwo)
+        public ActionResult Education_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.TrainingEducation.Education education, int idEdTwo)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (datePreference)
+            {
+                if (string.IsNullOrWhiteSpace(education?.ToEAmharic))
+                {
+                    ModelState.AddModelError("", "To Date field is mandatory");
+                    return Json(new[] { education }.ToDataSourceResult(request, ModelState));
+                }
+                if(!string.IsNullOrWhiteSpace(education?.FromEAmharic))
+                    education.From = HrHelper.ParseEthiopicDate(education.FromEAmharic);
+
+                education.To = HrHelper.ParseEthiopicDate(education.ToEAmharic);
+            }
+            else
+            {
+                if(education.From.HasValue)
+                    education.FromEAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(education.From.Value.Day,
+                                                                                        education.From.Value.Month,
+                                                                                        education.From.Value.Year);
+                education.ToEAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(education.To.Day,
+                                                                                    education.To.Month,
+                                                                                    education.To.Year);
+            }
+            if (education.From > DateTime.Now)
+            {
+
+                ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
+                return Json(new[] { education }.ToDataSourceResult(request, ModelState));
+
+            }
+            if (education.From > education.To)
+            {
+
+                ModelState.AddModelError("", "From should be less or equal to To date!!");
+                return Json(new[] { education }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
-                if (ToAmharic == null)
-                {
-                    ModelState.AddModelError("", "Date to value is mandatory!!");
-                }
-                else if (From.Date > DateTime.Now.Date)
-                {
 
-                    ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
-                }
-                else if (From.Date > To.Date)
-                {
 
-                    ModelState.AddModelError("", "Start date should be less or equal to end date!!");
-                }
 
-                else
+                var entity = new Core.Domain.HRM.TrainingEducation.Education
                 {
-                    var entity = new Education
-                    {
                         EmployeeId = idEdTwo,
                         OrganizationName = education.OrganizationName,
                         OrgAddress = education.OrgAddress,
-                        From = Convert.ToDateTime(From.Date),
-                        To = To,
+                        From = education.From,
+                        To = education.To,
                         Score = education.Score,
                         EduLevel = education.EduLevel,
                         EduField = education.EduField,
                         TotalCost = education.TotalCost,
                         PercentCoverdByOrg = education.PercentCoverdByOrg,
                         Remark = education.Remark,
-                        FromEAmharic = FromAmharic,
-                        ToEAmharic = ToAmharic,
+                        FromEAmharic = education.FromEAmharic,
+                        ToEAmharic = education.ToEAmharic,
                         IsHighLevel = education.IsHighLevel,
-                    };
-                    if (String.IsNullOrEmpty(entity.FromEAmharic)) //(entity.From.ToString() == "01/01/0001 12:00:00 AM")
-                    {
+
+                };
+
+                if (string.IsNullOrEmpty(entity.FromEAmharic)) //(entity.From.ToString() == "01/01/0001 12:00:00 AM")
+                {
                         entity.From = null; //new DateTime?();
                         entity.FromEAmharic = null;
-                    }
-                    db.Education.Add(entity);
-                    db.SaveChanges();
-                    education.EmpEduId = entity.EmpEduId;
 
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Education ", "Success", User.Identity.Name, User.Identity.Name + " add Education info for " + person.EmployeeCode,Modules.HRM);
-                        
-                    }
-                    #endregion
                 }
+                db.Education.Add(entity);
+                db.SaveChanges();
+                education.EmpEduId = entity.EmpEduId;
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
+                {
+                        UserHelper.OperationLog(Request.UserHostAddress, "Education ", "Success", User.Identity.Name, User.Identity.Name + " add Education info for " + person.EmployeeCode,Modules.HRM);
+                        
+                }
+                #endregion
+                
             }
 
             return Json(new[] { education }.ToDataSourceResult(request, ModelState));
@@ -271,77 +303,91 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
       
         [AuthorizeRoles( HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Education_Update([DataSourceRequest]DataSourceRequest request, Education education)
+        public ActionResult Education_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.TrainingEducation.Education education)
         {
             ModelState.Clear();
+            bool datePreference = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate ?? true;
+
+            if (datePreference)
+            {
+                if (!string.IsNullOrWhiteSpace(education?.FromEAmharic) )
+                    education.From = HrHelper.ParseEthiopicDate(education.FromEAmharic);
+
+                if (!string.IsNullOrWhiteSpace(education?.ToEAmharic))
+                    education.To = HrHelper.ParseEthiopicDate(education.ToEAmharic);
+               
+
+            }
+            else
+            {
+                if(education.From.HasValue)
+                    education.FromEAmharic =  XAPI.EthiopicDateTime.GetEthiopicDate(education.From.Value.Day,
+                                                                                        education.From.Value.Month,
+                                                                                        education.From.Value.Year);
+
+                education.ToEAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(education.To.Day,
+                                                                                    education.To.Month,
+                                                                                    education.To.Year);
+            }
+            if (education.From.HasValue && education.From > DateTime.Now)
+            {
+
+                ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
+                return Json(new[] { education }.ToDataSourceResult(request, ModelState));
+
+            }
+            if (education.From.HasValue && education.From > education.To)
+            {
+
+                ModelState.AddModelError("", "From should be less or equal to To date!!");
+                return Json(new[] { education }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
+               
+                var entity = new Core.Domain.HRM.TrainingEducation.Education
                 {
-                    FromAmharic = education.FromEAmharic;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                else if (ToAmharic == null)
-                {
-                    ToAmharic = education.ToEAmharic;
-                    var splitDate = ToAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (From.Date > DateTime.Now.Date)
-                {
+                    EmpEduId = education.EmpEduId,
+                    EmployeeId = education.EmployeeId,
+                    OrganizationName = education.OrganizationName,
+                    OrgAddress = education.OrgAddress,
+                    From = education.From,
+                    To = education.To,
+                    Score = education.Score,
+                    EduLevel = education.EduLevel,
+                    EduField = education.EduField,
+                    TotalCost = education.TotalCost,
+                    PercentCoverdByOrg = education.PercentCoverdByOrg,
+                    Remark = education.Remark,
+                    FromEAmharic = education.FromEAmharic,
+                    ToEAmharic = education.ToEAmharic,
+                    IsHighLevel = education.IsHighLevel,
+                };
 
-                    ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
-                }
-                else if (From.Date > To.Date)
+                if (String.IsNullOrEmpty(entity.FromEAmharic)) //(entity.From.ToString() == "01/01/0001 12:00:00 AM")
                 {
+                    entity.From = null; //new DateTime?();
+                    entity.FromEAmharic = null;
+                }
+                db.Education.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
 
-                    ModelState.AddModelError("", "From should be less or equal to To date!!");
-                }
-                else
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
                 {
-                    var entity = new Education
+                    var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                    var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
+                    if (name != null)
                     {
-                        EmpEduId = education.EmpEduId,
-                        EmployeeId = education.EmployeeId,
-                        OrganizationName = education.OrganizationName,
-                        OrgAddress = education.OrgAddress,
-                        From = From,
-                        To = To,
-                        Score = education.Score,
-                        EduLevel = education.EduLevel,
-                        EduField = education.EduField,
-                        TotalCost = education.TotalCost,
-                        PercentCoverdByOrg = education.PercentCoverdByOrg,
-                        Remark = education.Remark,
-                        FromEAmharic = FromAmharic,
-                        ToEAmharic = ToAmharic,
-                        IsHighLevel = education.IsHighLevel,
-                    };
+                        UserHelper.OperationLog(Request.UserHostAddress, "Education ", "Success", User.Identity.Name, name.EmployeeCode + " update Education info of " + person.EmployeeCode,Modules.HRM);
 
-                    if (String.IsNullOrEmpty(entity.FromEAmharic)) //(entity.From.ToString() == "01/01/0001 12:00:00 AM")
-                    {
-                        entity.From = null; //new DateTime?();
-                        entity.FromEAmharic = null;
                     }
-                    db.Education.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                        var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                        var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
-                        if (name != null)
-                        {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Education ", "Success", User.Identity.Name, name.EmployeeCode + " update Education info of " + person.EmployeeCode,Modules.HRM);
-
-                        }
-                    }
-                    #endregion
                 }
+                #endregion
+                
             }
 
             return Json(new[] { education }.ToDataSourceResult(request, ModelState));
@@ -349,12 +395,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
     
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Education_Destroy([DataSourceRequest]DataSourceRequest request, Education education)
+        public ActionResult Education_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.TrainingEducation.Education education)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new Education
+                var entity = new Core.Domain.HRM.TrainingEducation.Education
                 {
                     EmpEduId = education.EmpEduId,
                     EmployeeId = education.EmployeeId,

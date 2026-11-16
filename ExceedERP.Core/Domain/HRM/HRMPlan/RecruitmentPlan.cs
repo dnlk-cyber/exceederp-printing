@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 
 namespace ExceedERP.Core.Domain.HRM.HRMPlan

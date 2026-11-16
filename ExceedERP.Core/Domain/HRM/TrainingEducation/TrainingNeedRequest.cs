@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,13 +14,10 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public int TrainingNeedRequestId { get; set; }
         [Display(Name ="Employee Name")]
         public int EmployeeId { get; set; }
-        [Required]
         public string Prerequest { get; set; }
         [Display(Name = "Employee's Gap")]
-        [Required]
         public string EmployeePerformanceGap { get; set; }
         [Display(Name ="Training need for Gap")]
-        [Required]
         public string TrainingNeedForEmployeePerformanceGap { get; set; }
         [Display(Name = "Training related to Inistitution")]
         public string TheNeedForTrainingRelatedToInistitution { get; set; }
@@ -32,8 +30,14 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         [Display(Name = "HR_TrainingEducation_NeedAssessment_Course", ResourceType = typeof(Localization.Resources))]
         public int LookupId { get; set; }
         public int GlFiscalYearId { get; set; }
+        [Display(Name = "Is For All")]
+        public bool IsForAll { get; set; }
+        [Display(Name = "Employee")]
+        [NotMapped]
+        public int[] ReceiverEmployeeSelected { get; set; }
         public int AssesmentId { get; set; }
         public NeedAssessment assessment { get; set; }
+
    }
     public class TrainingEvaluationBefore
     {

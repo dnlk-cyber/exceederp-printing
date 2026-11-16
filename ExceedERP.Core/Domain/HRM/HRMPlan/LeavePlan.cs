@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////
 // file:	domain\hrm\plan.cs
 //
 // summary:	Implements the plan class
@@ -35,12 +35,13 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         [Display(Name = "HR_HRMPlan_LeavePlan_Period", ResourceType = typeof(Localization.Resources))]
         public int GlFiscalYearId { get; set; }
         public virtual GlFiscalYear GlFiscalYear { get; set; }
+        [Display(Name ="Month")]
+        public int? GLPeriodId { get; set; }
         [DataType(DataType.Date)]
-         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Required ]
         [Display(Name = "HR_HRMPlan_LeavePlan_From", ResourceType = typeof(Localization.Resources))]
         public DateTime From { get; set; }
-        [Required]
         [Display(Name = "HR_HRMPlan_LeavePlan_From", ResourceType = typeof(Localization.Resources))]
         public string FromAmharic { get; set; }
         [DataType(DataType.Date)]
@@ -48,15 +49,12 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         [Required]
         [Display(Name = "HR_HRMPlan_LeavePlan_To", ResourceType = typeof(Localization.Resources))]
         public DateTime To { get; set; }
-        [Required]
         [Display(Name = "HR_HRMPlan_LeavePlan_To", ResourceType = typeof(Localization.Resources))]
         public string ToAmharic { get; set; }
-        [Required]
         [Display(Name = "HR_HRMPlan_LeavePlan_LeaveAmount", ResourceType = typeof(Localization.Resources))]
         public decimal LeaveAmount { get; set; }
         public LeaveDay Day { get; set; }
-        [Display(Name = "Month")]
-        public int? GLPeriodId { get; set; }
+
 
     }
     public class LeavePlanValidation : TrackUserOperation

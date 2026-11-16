@@ -1,5 +1,10 @@
-﻿using System.Data;
+﻿﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -19,7 +24,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
         public ActionResult TrainingEvaluationCriterias_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<TrainingEvaluationCriteria> trainingevaluationcriterias = db.TrainingEvaluationCriterias.Where(x=>x.TrainingEvaluationSettingCategoryId == id);
+            IQueryable<TrainingEvaluationCriteria> trainingevaluationcriterias = db.TrainingEvaluationCriterias
+                .Where(x => x.TrainingEvaluationSettingCategoryId == id && !x.TrainingCourseId.HasValue);
             DataSourceResult result = trainingevaluationcriterias.ToDataSourceResult(request, trainingEvaluationCriteria => new {
                 TrainingEvaluationCriteriaId = trainingEvaluationCriteria.TrainingEvaluationCriteriaId,
                 TrainingEvaluationSettingCategoryId = trainingEvaluationCriteria.TrainingEvaluationSettingCategoryId,
@@ -56,19 +62,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TrainingEvaluationCriterias_Update([DataSourceRequest]DataSourceRequest request, TrainingEvaluationCriteria trainingEvaluationCriteria)
         {
+            var entity = db.TrainingEvaluationCriterias.SingleOrDefault(x =>
+                x.TrainingEvaluationCriteriaId == trainingEvaluationCriteria.TrainingEvaluationCriteriaId && !x.TrainingCourseId.HasValue);
+            if (entity == null) ModelState.AddModelError("", "Select a general evaluation criterion.");
             if (ModelState.IsValid)
             {
-                var entity = new TrainingEvaluationCriteria
-                {
-                    TrainingEvaluationCriteriaId = trainingEvaluationCriteria.TrainingEvaluationCriteriaId,
-                    TrainingEvaluationSettingCategoryId = trainingEvaluationCriteria.TrainingEvaluationSettingCategoryId,
-                    Criteria = trainingEvaluationCriteria.Criteria,
-                    Weight = trainingEvaluationCriteria.Weight,
-                    Result = trainingEvaluationCriteria.Result,
-                };
-
-                db.TrainingEvaluationCriterias.Attach(entity);
-                db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+                entity.TrainingEvaluationSettingCategoryId = trainingEvaluationCriteria.TrainingEvaluationSettingCategoryId;
+                entity.Criteria = trainingEvaluationCriteria.Criteria;
+                entity.Weight = trainingEvaluationCriteria.Weight;
+                entity.Result = trainingEvaluationCriteria.Result;
                 db.SaveChanges();
             }
 
@@ -78,18 +80,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TrainingEvaluationCriterias_Destroy([DataSourceRequest]DataSourceRequest request, TrainingEvaluationCriteria trainingEvaluationCriteria)
         {
+            var entity = db.TrainingEvaluationCriterias.SingleOrDefault(x =>
+                x.TrainingEvaluationCriteriaId == trainingEvaluationCriteria.TrainingEvaluationCriteriaId && !x.TrainingCourseId.HasValue);
+            if (entity == null) ModelState.AddModelError("", "Select a general evaluation criterion.");
             if (ModelState.IsValid)
             {
-                var entity = new TrainingEvaluationCriteria
-                {
-                    TrainingEvaluationCriteriaId = trainingEvaluationCriteria.TrainingEvaluationCriteriaId,
-                    TrainingEvaluationSettingCategoryId = trainingEvaluationCriteria.TrainingEvaluationSettingCategoryId,
-                    Criteria = trainingEvaluationCriteria.Criteria,
-                    Weight = trainingEvaluationCriteria.Weight,
-                    Result = trainingEvaluationCriteria.Result,
-                };
-
-                db.TrainingEvaluationCriterias.Attach(entity);
                 db.TrainingEvaluationCriterias.Remove(entity);
                 db.SaveChanges();
             }

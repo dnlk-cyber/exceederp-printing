@@ -6,13 +6,16 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Company;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.HRM.HRMPlan;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
@@ -123,83 +126,568 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         }
       
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult TrainingNeedRequests_Create([DataSourceRequest]DataSourceRequest request, TrainingNeedRequest trainingNeedRequest, int assesId)
+        public ActionResult TrainingNeedRequests_Create([DataSourceRequest] DataSourceRequest request, TrainingNeedRequest trainingNeedRequest, int assesId)
         {
             ModelState.Clear();
-            var needassessment = db.NeedAssessments.Find(assesId);
-            if(needassessment != null)
-            {
-                trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId;
-                trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining;
-                trainingNeedRequest.LookupId = needassessment.LookupId;
-                trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
-            }
-            var exists = db.TrainingNeedRequests.Where(x => x.AssesmentId == assesId && x.EmployeeId == trainingNeedRequest.EmployeeId).Any();
-            if (exists)
-            {
-                ModelState.AddModelError("exist", "This Employee is Registered. ");
 
-            }
-            var assessment = db.NeedAssessments.Find(assesId);
-            if(assessment != null)
+            // 1. Fetch parent assessment
+            var needassessment = db.NeedAssessments.Find(assesId);
+            if (needassessment == null)
             {
-                var trainee = db.TrainingNeedRequests.Where(x => x.AssesmentId == assesId).Select(x => x.EmployeeId).Count();
-                if(trainee>=assessment.NoOfStaff )
+                ModelState.AddModelError("NotFound", "Assessment record not found.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Sync lookup properties from parent assessment
+            trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId ?? 0;
+            trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining ?? 0;
+            trainingNeedRequest.LookupId = needassessment.LookupId;
+            trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
+            trainingNeedRequest.AssesmentId = assesId;
+
+            // 2. Build the list of Target Employee IDs
+            var targetEmployeeIds = new HashSet<int>();
+
+            // Add selected employees from multi-select if present
+            if (trainingNeedRequest.ReceiverEmployeeSelected != null && trainingNeedRequest.ReceiverEmployeeSelected.Any())
+            {
+                foreach (var empId in trainingNeedRequest.ReceiverEmployeeSelected)
                 {
-                    ModelState.AddModelError("exist", "the number of Employee can't exceed " + assessment.NoOfStaff);
+                    targetEmployeeIds.Add(empId);
                 }
             }
+            else if (trainingNeedRequest.EmployeeId > 0)
+            {
+                targetEmployeeIds.Add(trainingNeedRequest.EmployeeId);
+            }
+
+            // If IsForAll is true, fetch all subordinates under the logged-in user/manager
+            if (trainingNeedRequest.IsForAll)
+            {
+                var myEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                var subordinateIds = EmployeeHelper.GetSubordinates_FilteredByHead(myEmpId);
+
+                foreach (var subId in subordinateIds)
+                {
+                    targetEmployeeIds.Add(subId);
+                }
+            }
+
+            if (!targetEmployeeIds.Any())
+            {
+                ModelState.AddModelError("Employee", "Please select at least one employee.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // 3. Fetch existing employee registrations for this assessment
+            var existingEmployeeIds = db.TrainingNeedRequests
+                .Where(x => x.AssesmentId == assesId)
+                .Select(x => x.EmployeeId)
+                .ToList();
+
+            int currentTraineeCount = existingEmployeeIds.Count;
+            int maxAllowedStaff = needassessment.NoOfStaff;
+
+            // 4. Create entity records for resolved employees
+            foreach (var empId in targetEmployeeIds)
+            {
+                // Skip if employee already registered under this assessment
+                if (existingEmployeeIds.Contains(empId))
+                {
+                    continue;
+                }
+
+                // Capacity check
+                if (currentTraineeCount >= maxAllowedStaff)
+                {
+                    ModelState.AddModelError("exist", "The number of employees cannot exceed " + maxAllowedStaff);
+                    break;
+                }
+
+                var newEntity = new TrainingNeedRequest
+                {
+                    AssesmentId = trainingNeedRequest.AssesmentId,
+                    EmployeeId = empId,
+                    OrgStructureId = trainingNeedRequest.OrgStructureId,
+                    GlFiscalYearId = trainingNeedRequest.GlFiscalYearId,
+                    LookupId = trainingNeedRequest.LookupId,
+                    Prerequest = trainingNeedRequest.Prerequest,
+                    IsForAll = trainingNeedRequest.IsForAll,
+                    EmployeePerformanceGap = trainingNeedRequest.EmployeePerformanceGap,
+                    TrainingNeedForEmployeePerformanceGap = trainingNeedRequest.TrainingNeedForEmployeePerformanceGap,
+                    TheNeedForTrainingRelatedToInistitution = trainingNeedRequest.TheNeedForTrainingRelatedToInistitution,
+                    ExpectedResultFromTraining = trainingNeedRequest.ExpectedResultFromTraining
+                };
+
+                db.TrainingNeedRequests.Add(newEntity);
+                currentTraineeCount++;
+            }
+
             if (ModelState.IsValid)
             {
-                trainingNeedRequest.AssesmentId = assesId;
-                var entity = GetMappedObject(trainingNeedRequest);
-                db.TrainingNeedRequests.Add(entity);
                 db.SaveChanges();
-                trainingNeedRequest.TrainingNeedRequestId = entity.TrainingNeedRequestId;
             }
 
             return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
         }
-     
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult TrainingNeedRequestDepartments_Create([DataSourceRequest] DataSourceRequest request, TrainingNeedRequest trainingNeedRequest, int assesId)
+        {
+            ModelState.Clear();
+
+            // 1. Fetch parent assessment
+            var needassessment = db.NeedAssessments.Find(assesId);
+            if (needassessment == null)
+            {
+                ModelState.AddModelError("NotFound", "Assessment record not found.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Sync lookup properties from parent assessment
+            trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId ?? 0;
+            trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining ?? 0;
+            trainingNeedRequest.LookupId = needassessment.LookupId;
+            trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
+            trainingNeedRequest.AssesmentId = assesId;
+
+            // 2. Build the list of Target Employee IDs
+            var targetEmployeeIds = new HashSet<int>();
+
+            // Add selected employees from multi-select if present
+            if (trainingNeedRequest.ReceiverEmployeeSelected != null && trainingNeedRequest.ReceiverEmployeeSelected.Any())
+            {
+                foreach (var empId in trainingNeedRequest.ReceiverEmployeeSelected)
+                {
+                    targetEmployeeIds.Add(empId);
+                }
+            }
+            else if (trainingNeedRequest.EmployeeId > 0)
+            {
+                targetEmployeeIds.Add(trainingNeedRequest.EmployeeId);
+            }
+
+            // If IsForAll is true, fetch all subordinates under the logged-in user/manager
+            if (trainingNeedRequest.IsForAll)
+            {
+                var myEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                var subordinateIds = EmployeeHelper.GetSubordinates_FilteredByHead(myEmpId);
+
+                foreach (var subId in subordinateIds)
+                {
+                    targetEmployeeIds.Add(subId);
+                }
+            }
+
+            if (!targetEmployeeIds.Any())
+            {
+                ModelState.AddModelError("Employee", "Please select at least one employee.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // 3. Fetch existing employee registrations for this assessment
+            var existingEmployeeIds = db.TrainingNeedRequests
+                .Where(x => x.AssesmentId == assesId)
+                .Select(x => x.EmployeeId)
+                .ToList();
+
+            int currentTraineeCount = existingEmployeeIds.Count;
+            int maxAllowedStaff = needassessment.NoOfStaff;
+
+            // 4. Create entity records for resolved employees
+            foreach (var empId in targetEmployeeIds)
+            {
+                // Skip if employee already registered under this assessment
+                if (existingEmployeeIds.Contains(empId))
+                {
+                    continue;
+                }
+
+                // Capacity check
+                if (currentTraineeCount >= maxAllowedStaff)
+                {
+                    ModelState.AddModelError("exist", "The number of employees cannot exceed " + maxAllowedStaff);
+                    break;
+                }
+
+                var newEntity = new TrainingNeedRequest
+                {
+                    AssesmentId = trainingNeedRequest.AssesmentId,
+                    EmployeeId = empId,
+                    OrgStructureId = trainingNeedRequest.OrgStructureId,
+                    GlFiscalYearId = trainingNeedRequest.GlFiscalYearId,
+                    LookupId = trainingNeedRequest.LookupId,
+                    Prerequest = trainingNeedRequest.Prerequest,
+                    IsForAll = trainingNeedRequest.IsForAll,
+                    EmployeePerformanceGap = trainingNeedRequest.EmployeePerformanceGap,
+                    TrainingNeedForEmployeePerformanceGap = trainingNeedRequest.TrainingNeedForEmployeePerformanceGap,
+                    TheNeedForTrainingRelatedToInistitution = trainingNeedRequest.TheNeedForTrainingRelatedToInistitution,
+                    ExpectedResultFromTraining = trainingNeedRequest.ExpectedResultFromTraining
+                };
+
+                db.TrainingNeedRequests.Add(newEntity);
+                currentTraineeCount++;
+            }
+
+            if (ModelState.IsValid)
+            {
+                db.SaveChanges();
+            }
+
+            return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+        }
+
         [AuthorizeRoles(HrmConstants.HRTrainingUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult TrainingNeedRequests_Update([DataSourceRequest]DataSourceRequest request, TrainingNeedRequest trainingNeedRequest)
+        public ActionResult TrainingNeedRequestDepartments_Update([DataSourceRequest] DataSourceRequest request, TrainingNeedRequest trainingNeedRequest)
         {
             ModelState.Clear();
-            var needassessment = db.NeedAssessments.Find(trainingNeedRequest.AssesmentId);
-            if (needassessment != null)
-            {
-                trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId;
-                trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining;
-                trainingNeedRequest.LookupId = needassessment.LookupId;
-                trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
-            }
-            var exists = db.TrainingNeedRequests.Where(x => x.AssesmentId == trainingNeedRequest.AssesmentId && x.EmployeeId == trainingNeedRequest.EmployeeId&&trainingNeedRequest.TrainingNeedRequestId !=trainingNeedRequest.TrainingNeedRequestId).Any();
-            if (exists)
-            {
-                ModelState.AddModelError("exist", "This Employee is registered. ");
 
-            }
-            var assessment = db.NeedAssessments.Find(trainingNeedRequest.AssesmentId);
-            if (assessment != null)
+            // 1. Fetch parent assessment
+            var needassessment = db.NeedAssessments.Find(trainingNeedRequest.AssesmentId);
+            if (needassessment == null)
             {
-                var trainee = db.TrainingNeedRequests.Where(x => x.AssesmentId == trainingNeedRequest.AssesmentId).Select(x => x.EmployeeId).Count();
-                if (trainee >= assessment.NoOfStaff)
+                ModelState.AddModelError("NotFound", "Assessment record not found.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Sync lookup properties from parent assessment
+            trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId ?? 0;
+            trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining ?? 0;
+            trainingNeedRequest.LookupId = needassessment.LookupId;
+            trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
+
+            // 2. Build the list of Target Employee IDs
+            var targetEmployeeIds = new HashSet<int>();
+
+            // Add selected employees from multi-select if present
+            if (trainingNeedRequest.ReceiverEmployeeSelected != null && trainingNeedRequest.ReceiverEmployeeSelected.Any())
+            {
+                foreach (var empId in trainingNeedRequest.ReceiverEmployeeSelected)
                 {
-                    ModelState.AddModelError("exist", "The number of Employee can't Exceed " + assessment.NoOfStaff);
+                    targetEmployeeIds.Add(empId);
                 }
             }
+            else if (trainingNeedRequest.EmployeeId > 0)
+            {
+                targetEmployeeIds.Add(trainingNeedRequest.EmployeeId);
+            }
+
+            // If IsForAll is true, fetch all subordinates under the primary employee/manager
+            if (trainingNeedRequest.IsForAll && trainingNeedRequest.EmployeeId > 0)
+            {
+
+                var myEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                //
+                var subordinateIds = EmployeeHelper.GetSubordinates_FilteredByHead(myEmpId);
+
+                foreach (var subId in subordinateIds)
+                {
+                    targetEmployeeIds.Add(subId);
+                }
+            }
+
+            if (!targetEmployeeIds.Any())
+            {
+                ModelState.AddModelError("Employee", "Please select at least one employee.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // 3. Fetch existing employee registrations for this assessment (excluding current request ID)
+            var existingEmployeeIds = db.TrainingNeedRequests
+                .Where(x => x.AssesmentId == trainingNeedRequest.AssesmentId && x.TrainingNeedRequestId != trainingNeedRequest.TrainingNeedRequestId)
+                .Select(x => x.EmployeeId)
+                .ToList();
+
+            int currentTraineeCount = existingEmployeeIds.Count;
+            int maxAllowedStaff = needassessment.NoOfStaff;
+
+            // 4. Update existing entity or create additional entities if multiple employees are resolved
+            bool isFirst = true;
+
+            foreach (var empId in targetEmployeeIds)
+            {
+                // Skip if employee already registered under another request
+                if (existingEmployeeIds.Contains(empId))
+                {
+                    continue;
+                }
+
+                // Capacity check
+                if (currentTraineeCount >= maxAllowedStaff)
+                {
+                    ModelState.AddModelError("exist", "The number of employees cannot exceed " + maxAllowedStaff);
+                    break;
+                }
+
+                if (isFirst)
+                {
+                    // Update the existing record currently being edited
+                    trainingNeedRequest.EmployeeId = empId;
+                    var entityToUpdate = GetMappedObject(trainingNeedRequest);
+                    db.TrainingNeedRequests.Attach(entityToUpdate);
+                    db.Entry(entityToUpdate).State = EntityState.Modified;
+
+                    isFirst = false;
+                }
+                else
+                {
+                    // Create new records for additional selected employees or subordinates
+                    var newEntity = new TrainingNeedRequest
+                    {
+                        AssesmentId = trainingNeedRequest.AssesmentId,
+                        EmployeeId = empId,
+                        OrgStructureId = trainingNeedRequest.OrgStructureId,
+                        GlFiscalYearId = trainingNeedRequest.GlFiscalYearId,
+                        LookupId = trainingNeedRequest.LookupId,
+                        Prerequest = trainingNeedRequest.Prerequest,
+                        IsForAll = trainingNeedRequest.IsForAll,
+                        EmployeePerformanceGap = trainingNeedRequest.EmployeePerformanceGap,
+                        TrainingNeedForEmployeePerformanceGap = trainingNeedRequest.TrainingNeedForEmployeePerformanceGap,
+                        TheNeedForTrainingRelatedToInistitution = trainingNeedRequest.TheNeedForTrainingRelatedToInistitution,
+                        ExpectedResultFromTraining = trainingNeedRequest.ExpectedResultFromTraining
+                    };
+
+                    db.TrainingNeedRequests.Add(newEntity);
+                }
+
+                currentTraineeCount++;
+            }
+
             if (ModelState.IsValid)
             {
-                var entity = GetMappedObject(trainingNeedRequest);
-                db.TrainingNeedRequests.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
 
             return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
         }
-    
+        //public ActionResult TrainingNeedRequests_Create([DataSourceRequest]DataSourceRequest request, TrainingNeedRequest trainingNeedRequest, int assesId)
+        //{
+        //    ModelState.Clear();
+        //    var needassessment = db.NeedAssessments.Find(assesId);
+        //    if (needassessment != null)
+        //    {
+        //        trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId ?? 0;
+        //        trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining ?? 0;
+        //        trainingNeedRequest.LookupId = needassessment.LookupId;
+        //        trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
+        //    }
+        //    trainingNeedRequest.AssesmentId = assesId;
+
+        //    if (trainingNeedRequest.ReceiverEmployeeSelected != null)
+        //    {
+        //        var employeeIds = trainingNeedRequest.ReceiverEmployeeSelected.ToList();
+        //        foreach(var employeeId in employeeIds)
+        //        {
+        //            trainingNeedRequest.EmployeeId = employeeId;
+        //            var exists = db.TrainingNeedRequests.Where(x => x.AssesmentId == assesId && x.EmployeeId == trainingNeedRequest.EmployeeId).Any();
+        //            if (exists)
+        //            {
+        //                continue;
+
+        //            }
+        //            var assessment = db.NeedAssessments.Find(assesId);
+        //            if (assessment != null)
+        //            {
+        //                var trainee = db.TrainingNeedRequests.Where(x => x.AssesmentId == assesId).Select(x => x.EmployeeId).Count();
+        //                if (trainee >= assessment.NoOfStaff)
+        //                {
+        //                    ModelState.AddModelError("exist", "the number of Employee can't exceed " + assessment.NoOfStaff);
+        //                }
+        //            }
+        //            if (ModelState.IsValid)
+        //            {
+        //                var entity = new TrainingNeedRequest
+        //                {
+        //                    TrainingNeedRequestId = trainingNeedRequest.TrainingNeedRequestId,
+        //                    AssesmentId = trainingNeedRequest.AssesmentId,
+        //                    EmployeeId = trainingNeedRequest.EmployeeId,
+        //                    OrgStructureId = trainingNeedRequest.OrgStructureId,
+        //                    GlFiscalYearId = trainingNeedRequest.GlFiscalYearId,
+        //                    LookupId = trainingNeedRequest.LookupId,
+        //                    Prerequest = trainingNeedRequest.Prerequest,
+        //                    IsForAll = trainingNeedRequest.IsForAll,
+        //                    EmployeePerformanceGap = trainingNeedRequest.EmployeePerformanceGap,
+        //                    TrainingNeedForEmployeePerformanceGap = trainingNeedRequest.TrainingNeedForEmployeePerformanceGap,
+        //                    TheNeedForTrainingRelatedToInistitution = trainingNeedRequest.TheNeedForTrainingRelatedToInistitution,
+        //                    ExpectedResultFromTraining = trainingNeedRequest.ExpectedResultFromTraining,
+
+        //                };
+        //                db.TrainingNeedRequests.Add(entity);
+
+        //            }
+        //        }
+        //        db.SaveChanges();
+        //        trainingNeedRequest.TrainingNeedRequestId = entity.TrainingNeedRequestId;
+
+
+        //    }
+
+
+        //    return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+        //}
+
+        [AuthorizeRoles(HrmConstants.HRTrainingUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult TrainingNeedRequests_Update([DataSourceRequest] DataSourceRequest request, TrainingNeedRequest trainingNeedRequest)
+        {
+            ModelState.Clear();
+           
+            // 1. Fetch parent assessment
+            var needassessment = db.NeedAssessments.Find(trainingNeedRequest.AssesmentId);
+            if (needassessment == null)
+            {
+                ModelState.AddModelError("NotFound", "Assessment record not found.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Sync lookup properties from parent assessment
+            trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId ?? 0;
+            trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining ?? 0;
+            trainingNeedRequest.LookupId = needassessment.LookupId;
+            trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
+
+            // 2. Build the list of Target Employee IDs
+            var targetEmployeeIds = new HashSet<int>();
+
+            // Add selected employees from multi-select if present
+            if (trainingNeedRequest.ReceiverEmployeeSelected != null && trainingNeedRequest.ReceiverEmployeeSelected.Any())
+            {
+                foreach (var empId in trainingNeedRequest.ReceiverEmployeeSelected)
+                {
+                    targetEmployeeIds.Add(empId);
+                }
+            }
+            else if (trainingNeedRequest.EmployeeId > 0)
+            {
+                targetEmployeeIds.Add(trainingNeedRequest.EmployeeId);
+            }
+
+            // If IsForAll is true, fetch all subordinates under the primary employee/manager
+            if (trainingNeedRequest.IsForAll && trainingNeedRequest.EmployeeId > 0)
+            {
+                
+                var myEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                //
+                var subordinateIds = EmployeeHelper.GetSubordinates_FilteredByHead(myEmpId);
+
+                foreach (var subId in subordinateIds)
+                {
+                    targetEmployeeIds.Add(subId);
+                }
+            }
+
+            if (!targetEmployeeIds.Any())
+            {
+                ModelState.AddModelError("Employee", "Please select at least one employee.");
+                return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+            }
+
+            // 3. Fetch existing employee registrations for this assessment (excluding current request ID)
+            var existingEmployeeIds = db.TrainingNeedRequests
+                .Where(x => x.AssesmentId == trainingNeedRequest.AssesmentId && x.TrainingNeedRequestId != trainingNeedRequest.TrainingNeedRequestId)
+                .Select(x => x.EmployeeId)
+                .ToList();
+
+            int currentTraineeCount = existingEmployeeIds.Count;
+            int maxAllowedStaff = needassessment.NoOfStaff;
+
+            // 4. Update existing entity or create additional entities if multiple employees are resolved
+            bool isFirst = true;
+
+            foreach (var empId in targetEmployeeIds)
+            {
+                // Skip if employee already registered under another request
+                if (existingEmployeeIds.Contains(empId))
+                {
+                    continue;
+                }
+
+                // Capacity check
+                if (currentTraineeCount >= maxAllowedStaff)
+                {
+                    ModelState.AddModelError("exist", "The number of employees cannot exceed " + maxAllowedStaff);
+                    break;
+                }
+
+                if (isFirst)
+                {
+                    // Update the existing record currently being edited
+                    trainingNeedRequest.EmployeeId = empId;
+                    var entityToUpdate = GetMappedObject(trainingNeedRequest);
+                    db.TrainingNeedRequests.Attach(entityToUpdate);
+                    db.Entry(entityToUpdate).State = EntityState.Modified;
+
+                    isFirst = false;
+                }
+                else
+                {
+                    // Create new records for additional selected employees or subordinates
+                    var newEntity = new TrainingNeedRequest
+                    {
+                        AssesmentId = trainingNeedRequest.AssesmentId,
+                        EmployeeId = empId,
+                        OrgStructureId = trainingNeedRequest.OrgStructureId,
+                        GlFiscalYearId = trainingNeedRequest.GlFiscalYearId,
+                        LookupId = trainingNeedRequest.LookupId,
+                        Prerequest = trainingNeedRequest.Prerequest,
+                        IsForAll = trainingNeedRequest.IsForAll,
+                        EmployeePerformanceGap = trainingNeedRequest.EmployeePerformanceGap,
+                        TrainingNeedForEmployeePerformanceGap = trainingNeedRequest.TrainingNeedForEmployeePerformanceGap,
+                        TheNeedForTrainingRelatedToInistitution = trainingNeedRequest.TheNeedForTrainingRelatedToInistitution,
+                        ExpectedResultFromTraining = trainingNeedRequest.ExpectedResultFromTraining
+                    };
+
+                    db.TrainingNeedRequests.Add(newEntity);
+                }
+
+                currentTraineeCount++;
+            }
+
+            if (ModelState.IsValid)
+            {
+                db.SaveChanges();
+            }
+
+            return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+        }
+        //public ActionResult TrainingNeedRequests_Update([DataSourceRequest]DataSourceRequest request, TrainingNeedRequest trainingNeedRequest)
+        //{
+        //    ModelState.Clear();
+        //    var needassessment = db.NeedAssessments.Find(trainingNeedRequest.AssesmentId);
+        //    if (needassessment != null)
+        //    {
+        //        trainingNeedRequest.OrgStructureId = needassessment.OrgStructureId??0;
+        //        trainingNeedRequest.RequiredTraining = needassessment.RequiredTraining??0;
+        //        trainingNeedRequest.LookupId = needassessment.LookupId;
+        //        trainingNeedRequest.GlFiscalYearId = needassessment.GlFiscalYearId;
+        //    }
+        //    var exists = db.TrainingNeedRequests.Where(x => x.AssesmentId == trainingNeedRequest.AssesmentId && x.EmployeeId == trainingNeedRequest.EmployeeId&&trainingNeedRequest.TrainingNeedRequestId !=trainingNeedRequest.TrainingNeedRequestId).Any();
+        //    if (exists)
+        //    {
+        //        ModelState.AddModelError("exist", "This Employee is registered. ");
+
+        //    }
+        //    var assessment = db.NeedAssessments.Find(trainingNeedRequest.AssesmentId);
+        //    if (assessment != null)
+        //    {
+        //        var trainee = db.TrainingNeedRequests.Where(x => x.AssesmentId == trainingNeedRequest.AssesmentId).Select(x => x.EmployeeId).Count();
+        //        if (trainee >= assessment.NoOfStaff)
+        //        {
+        //            ModelState.AddModelError("exist", "The number of Employee can't Exceed " + assessment.NoOfStaff);
+        //        }
+        //    }
+        //    if (ModelState.IsValid)
+        //    {
+        //        var entity = GetMappedObject(trainingNeedRequest);
+        //        db.TrainingNeedRequests.Attach(entity);
+        //        db.Entry(entity).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //    }
+
+        //    return Json(new[] { trainingNeedRequest }.ToDataSourceResult(request, ModelState));
+        //}
+
         [AuthorizeRoles(HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TrainingNeedRequests_Destroy([DataSourceRequest]DataSourceRequest request, TrainingNeedRequest trainingNeedRequest)

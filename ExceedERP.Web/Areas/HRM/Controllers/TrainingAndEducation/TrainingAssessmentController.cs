@@ -6,8 +6,10 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Company;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -118,7 +120,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
       
         public ActionResult TrainingAssessments_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x=>x.IsSendForApproval &&x.IsTransfered);//.Where(x => mybraches.Contains(x.OrgBranchName)&&x.IsTransfered==false);
             DataSourceResult result = needassessments.ToDataSourceResult(request, needAssessment => new
             {
@@ -233,7 +235,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                         trainingPlan = new TrainingPlan();
                         //trainingPlan.GlFiscalYearId = product.MainCompanyId;
                         //trainingPlan.GlFiscalYearId = 5;//check.GlFiscalYearId,  
-                        trainingPlan.WorkUnit = check.OrgStructureId;
+                        trainingPlan.WorkUnit = check.OrgStructureId??0;
                         trainingPlan.LookupId = check.LookupId;
                         trainingPlan.MainCompanyId = check.MainCompanyId;
                         trainingPlan.GlFiscalYearId = check.GlFiscalYearId;

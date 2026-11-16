@@ -27,6 +27,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         }
         private void PopulateViewData()
         {
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
 
             var BusinessTypes = Enum.GetValues(typeof(BusinessType))
                 .Cast<BusinessType>()

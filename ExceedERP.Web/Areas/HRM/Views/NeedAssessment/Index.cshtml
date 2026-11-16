@@ -3,48 +3,47 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+
 }
 
 @(Html.Kendo().TabStrip()
-            .Name("tabstrip")
-            .Animation(animation =>
-                animation.Open(effect =>
-                    effect.Fade(FadeDirection.In)))
-            .Items(tabstrip =>
-            {
-                tabstrip.Add().Text(Resources.NavigatorTraining_DepartmentTrainingPlan)
-                    .Selected(true)
-                    .Content(@<text>
+      .Name("tabstrip")
+      .Animation(animation =>
+        animation.Open(effect =>
+            effect.Fade(FadeDirection.In)))
+        .Items(tabstrip =>
+        {
 
-                        @DepartmentTrainingNeedAssessment()
+            tabstrip.Add()
+            .Text(Resources.NavigatorTraining_DepartmentTrainingPlan)
+            .Selected(true)
+            .Content(@<text>
 
-                    </text>);
-
-                        tabstrip.Add().Text("Training Need Assessment Summary")
-                        .Content(@<text>
-
-                            @TrainingNeedAssessmentSummary()
-
-                        </text>);
-
-                               tabstrip.Add().Text(Resources.NavigatorTraining_NeedAssessment)
-                  .Content(@<text>
-
-                    @TrainingPlan()
+                @DepartmentTrainingNeedAssessment()
 
                 </text>);
+                tabstrip.Add().Text("Training Need Assessment Summary")
+                .Content(@<text>
 
+                    @TrainingNeedAssessmentSummary()
+
+                </text>);
+               tabstrip.Add().Text(Resources.NavigatorTraining_NeedAssessment)
+                  .Content(@<text>
+                    @TrainingPlan()
+                </text>);
               tabstrip.Add().Text(Resources.NavigatorSelfCare_TrainingApplicant)
- .Content(@<text>
-    @TrainingRequest()
-</text>);
+             .Content(@<text>
+                @TrainingRequest()
+            </text>);
     })
 )
 
 
 @helper DepartmentTrainingNeedAssessment()
 {
-
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
     <Legend>@Resources.NavigatorTraining_NeedAssessment</Legend>
 
      @(Html.Kendo().Grid<NeedAssessment>()
@@ -52,25 +51,39 @@
             .Columns(columns =>
             {
                 columns.Select().Width(40);
+                columns.Bound(c => c.AssesmentId).Title("#").Width(90);
                 columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                 columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                 columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                 columns.Bound(c => c.NoOfStaff).Width(100);
                 columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                 columns.ForeignKey(c => c.Type, (IEnumerable)ViewData["TraTypeList"], "LookupId", "Description").EditorTemplateName("TrainingType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
 
-                columns.Bound(c => c.Remark).Width(200);
+                if (useEthiopian)
+                {
+                    columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(150);
+                    columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(150);
+                }
+                else
+                {
+                    columns.Bound(c => c.From).Width(140);
+                    columns.Bound(c => c.To).Width(140);
+                }
+                columns.Bound(c => c.TotalDays).Width(140);
+                columns.Bound(c => c.Remark).Width(140);
+
                 columns.Command(command =>
                 {
-                  command.Custom("send").Text(Resources.HR_Send_For_Approval).Click("SendForApproval").HtmlAttributes(new { @class = "btn btn-success" });
+                    command.Custom("send").Text(Resources.HR_Send_For_Approval).Click("SendForApproval").HtmlAttributes(new { @class = "btn btn-success" });
 
                     if (HttpContext.Current.User.IsInRole("HR_Training_User"))
                     {
-                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                     }
                     if (HttpContext.Current.User.IsInRole("HR_Admin"))
                     {
-                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                        command.Destroy().Text(Resources.ActionButton_Cancel);
 
                     }
                 }).Width(300);
@@ -88,18 +101,18 @@
             <div class="toolbar pull-right">
                 <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
                 @(Html.Kendo().ComboBox()
-                                        .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
-                                        .Name("OrgBranchName")
-                                        .BindTo((IEnumerable)ViewData["Branches"])
-                                        .DataTextField("Name")
-                                        .DataValueField("BranchId")
-                                        .Events(x => x.Change("Branch"))
-                                        .AutoBind(false)
-                                        .HtmlAttributes(new { style = "width: 200px;" })
+                            .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
+                            .Name("OrgBranchName")
+                            .BindTo((IEnumerable)ViewData["Branches"])
+                            .DataTextField("Name")
+                            .DataValueField("BranchId")
+                            .Events(x => x.Change("Branch"))
+                            .AutoBind(false)
+                            .HtmlAttributes(new { style = "width: 200px;" })
 
                 )
                 @(Html.Kendo().Button()
-                         .Name("btn_summary")
+                         .Name("btn_Need_summary")
                          .Content("Summary")
                          .Events(e =>
                          {
@@ -108,7 +121,7 @@
 
                          })
                           .HtmlAttributes(new { @class = "btn btn-success" })
-                          .Enable(false)
+                          .Enable(true)
                 )
 
                 @if (HttpContext.Current.User.IsInRole("HR_Training_User"))
@@ -163,7 +176,7 @@
                 {
                     e.DataBound("onDataBound");
                     e.Change("onMainGridSelectionChange");
-                    e.DetailExpand("onDetailExpandUser");
+                    e.DetailExpand("onDetailNeedAssessmentExpandUser");
 
                 })
               .DataSource(dataSource => dataSource
@@ -177,10 +190,10 @@
                 })
 
                 .Model(model => model.Id(p => p.AssesmentId))
-                .Read(read => read.Action("NeedAssessments_Read", "NeedAssessment"))
-                .Create(create => create.Action("NeedAssessments_Create", "NeedAssessment"))
-                .Update(update => update.Action("NeedAssessments_Update", "NeedAssessment"))
-                .Destroy(destroy => destroy.Action("NeedAssessments_Destroy", "NeedAssessment"))
+                .Read(read => read.Action("NeedAssessments_Read", "NeedAssessment").Data("sendForgery"))
+                .Create(create => create.Action("NeedAssessments_Create", "NeedAssessment").Data("sendForgery"))
+                .Update(update => update.Action("NeedAssessments_Update", "NeedAssessment").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("NeedAssessments_Destroy", "NeedAssessment").Data("sendForgery"))
             ).ClientDetailTemplateId("assessment_Kb_details")
     )
 
@@ -195,9 +208,61 @@
                 @<text>
                     @trainingNeedRequest()
                 </text>);
+               items.Add().Text("Training Need Attachment").Content(
+                @<text>
+                    @trainingNeedAttachment()
+                </text>);
 
             }).ToClientTemplate())
 </script>
+
+@helper trainingNeedAttachment()
+{ 
+    
+     @(Html.Kendo().Grid<NeedAssessmentAttachment>()
+            .Name("NeedAssessmentAttachmentGrid#=AssesmentId#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/NeedAssessmentAttachment/DownloadAttachment?attachmentId=\\#=NeedAssessmentAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                columns.Bound(c => c.Description).Width(100);
+
+                columns.Template(e => { }).ClientTemplate("<a href='/HRM/NeedAssessmentAttachment/DownloadAttachment?attachmentId=\\#=NeedAssessmentAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                columns.Command(command =>
+                {
+                    command.Destroy().Text("Delete");
+                }).Width(300);
+
+            })
+            .ToolBar(toolbar =>
+            {
+            toolbar.Template(@<text>
+                @Html.Kendo().Upload().Name("file").Async(a => a.Save("NeedAssessmentAttachment_Create", "NeedAssessmentAttachment", new {area="HRM", id = "#=AssesmentId#" })).Events(e => e.Complete("onUploadSuccess")
+                                                                                                            .Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 50 * 1024 * 1024); }")
+                                                                .Error("onUploadError")).ShowFileList(false).ToClientTemplate()
+            </text>);
+            })
+
+            .Scrollable(h => h.Height("auto"))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"LeaveRequestAttachementGrid#=AssesmentId#\")");
+                events.RequestStart("onRequestStart(\"LeaveRequestAttachementGrid#=AssesmentId#\")");
+                events.RequestEnd("onRequestEnd(\"LeaveRequestAttachementGrid#=AssesmentId#\")");
+
+            })
+            .Model(model => model.Id(p => p.NeedAssessmentAttachmentId))
+            .Read(read => read.Action("NeedAssessmentAttachment_Read", "NeedAssessmentAttachment", new { id = "#=AssesmentId#" }).Data("sendForgery"))
+            .Create(create => create.Action("NeedAssessmentAttachment_Create", "NeedAssessmentAttachment", new { id = "#=AssesmentId#" }).Data("sendForgery"))
+            .Update(update => update.Action("NeedAssessmentAttachment_Update", "NeedAssessmentAttachment").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("NeedAssessmentAttachment_Destroy", "NeedAssessmentAttachment").Data("sendForgery"))
+            ).ToClientTemplate())
+    
+}
+
 @helper trainingNeedRequest()
 {
     @(Html.Kendo().Grid<TrainingNeedRequest>()
@@ -246,10 +311,10 @@
                 {
                     model.Id(p => p.TrainingNeedRequestId);
                 })
-                .Read(read => read.Action("TrainingNeedRequests_Read", "TrainingNeedRequests", new { aId = "#=AssesmentId#" }))
-                .Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", new { assesId = "#=AssesmentId#" }))
-                .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests"))
-                .Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests"))
+                .Read(read => read.Action("TrainingNeedRequests_Read", "TrainingNeedRequests", new { aId = "#=AssesmentId#" }).Data("sendForgery"))
+                .Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", new { assesId = "#=AssesmentId#" }).Data("sendForgery"))
+                .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests").Data("sendForgery"))
             ).ToClientTemplate()
     )
 }
@@ -316,14 +381,15 @@
                             model.Field(p => p.Type).Editable(false);
                         })
 
-                    .Read(read => read.Action("TrainingAssessments_Read", "TrainingAssessment"))
-                    .Create(create => create.Action("Transfer_Create", "NeedAssessment"))
-                    .Update(update => update.Action("Transfer_Create", "NeedAssessment"))
+                    .Read(read => read.Action("TrainingAssessments_Read", "TrainingAssessment").Data("sendForgery"))
+                    .Create(create => create.Action("Transfer_Create", "NeedAssessment").Data("sendForgery"))
+                    .Update(update => update.Action("Transfer_Create", "NeedAssessment").Data("sendForgery"))
             )
 
     )
 
 }
+
 
 
 @helper TrainingPlan()
@@ -405,10 +471,10 @@
                                 model.Field(p => p.TotalCost).Editable(false);
                             }
                         )
-                        .Read(read => read.Action("TrainingPlans_Read", "TrainingPlan"))
-                        .Create(create => create.Action("TrainingPlans_Create", "TrainingPlan"))
-                        .Update(update => update.Action("TrainingPlans_Update", "TrainingPlan"))
-                        .Destroy(destroy => destroy.Action("TrainingPlans_Destroy", "TrainingPlan"))
+                        .Read(read => read.Action("TrainingPlans_Read", "TrainingPlan").Data("sendForgery"))
+                        .Create(create => create.Action("TrainingPlans_Create", "TrainingPlan").Data("sendForgery"))
+                        .Update(update => update.Action("TrainingPlans_Update", "TrainingPlan").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("TrainingPlans_Destroy", "TrainingPlan").Data("sendForgery"))
                         )
         )*@
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.TrainingEducation.NeedAssessmentSummary>()
@@ -517,10 +583,10 @@
                                  model.Field(p => p.TotalCost).Editable(false);
                              }
                          )
-                         .Read(read => read.Action("NeedAssessmentSummaryForApproval_Read", "NeedAssessmentSummary"))
-                         //.Create(create => create.Action("TrainingPlans_Create", "TrainingPlan"))
-                         //.Update(update => update.Action("TrainingPlans_Update", "TrainingPlan"))
-                         //.Destroy(destroy => destroy.Action("TrainingPlans_Destroy", "TrainingPlan"))
+                         .Read(read => read.Action("NeedAssessmentSummaryForApproval_Read", "NeedAssessmentSummary").Data("sendForgery"))
+                         //.Create(create => create.Action("TrainingPlans_Create", "TrainingPlan").Data("sendForgery"))
+                         //.Update(update => update.Action("TrainingPlans_Update", "TrainingPlan").Data("sendForgery"))
+                         //.Destroy(destroy => destroy.Action("TrainingPlans_Destroy", "TrainingPlan").Data("sendForgery"))
                          ).ClientDetailTemplateId("assessment_Summary_details")
     )
 }
@@ -580,63 +646,64 @@
                                               })
 
                                             .Model(model => model.Id(p => p.TrainingApplicantId))
-                                              .Read(read => read.Action("TrainingApplicants_Read", "TrainingApplicantStatus"))
-                                              .Create(create => create.Action("TrainingApplicants_Create", "TrainingApplicantStatus"))
-                                              .Update(update => update.Action("TrainingApplicants_Update", "TrainingApplicantStatus"))
-                                              .Destroy(destroy => destroy.Action("TrainingApplicants_Destroy", "TrainingApplicantStatus"))
+                                              .Read(read => read.Action("TrainingApplicants_Read", "TrainingApplicantStatus").Data("sendForgery"))
+                                              .Create(create => create.Action("TrainingApplicants_Create", "TrainingApplicantStatus").Data("sendForgery"))
+                                              .Update(update => update.Action("TrainingApplicants_Update", "TrainingApplicantStatus").Data("sendForgery"))
+                                              .Destroy(destroy => destroy.Action("TrainingApplicants_Destroy", "TrainingApplicantStatus").Data("sendForgery"))
                                           ).ClientDetailTemplateId("template")
     )
 
     <script id="template" type="text/kendo-tmpl">
         @(Html.Kendo().TabStrip()
-                                              .Name("tabstrip_#=TrainingApplicantId#")
-                                              .SelectedIndex(0)
-                                              .Items(items =>
-                                              {
-                                                  items.Add().Text(Resources.HR_RequestStatus).Content(
-                                                    @<text>
-                                                        @*    <legend>Status</legend>*@
+                .Name("tabstrip_#=TrainingApplicantId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                    items.Add().Text(Resources.HR_RequestStatus).Content(
+                    @<text>
 
-                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.SelfCare.RequestesStatus>()
-                                                                                .Name("RequestesStatusgrid_#=TrainingApplicantId#")
-                                                                                .Columns(columns =>
-                                                                                {
-                                                                                //columns.Bound(c => c.RequestId);
-                                                                                columns.Bound(c => c.DateReqStatAm).Width(150);
-                                                                                            columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(300);
-                                                                                            columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                            columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                            columns.Bound(c => c.Remark).Width(150);
-                                                                                            columns.Command(command =>
-                                                                                    {
-                                                                                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                  //  command.Destroy().Text(Resources.ActionButton_Cancel);
-                                                                              }).Width(180);
-                                                                                        })
+                                                      
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.SelfCare.RequestesStatus>()
+                                .Name("RequestesStatusgrid_#=TrainingApplicantId#")
+                                .Columns(columns =>
+                                {
+
+                                    //columns.Bound(c => c.RequestId);
+                                    columns.Bound(c => c.DateReqStatAm).Width(150);
+                                    columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(300);
+                                    columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                    columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                    columns.Bound(c => c.Remark).Width(150);
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        //  command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(180);
+                                })
                                                                                               .ToolBar(toolbar =>
                                                                                               {
-                                                                                                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                                      })
+                                                                                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                                              })
                                                                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                               .Scrollable()
                                                                                               .DataSource(dataSource => dataSource
                                                                                                   .Ajax()
                                                                                                           .Events(events =>
                                                                                                           {
-                                                                                                                      events.Error("error_handler(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
-                                                                                                                      events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
-                                                                                                                      events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
-                                                                                                                  })
+                                                                                                              events.Error("error_handler(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                                                                                              events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                                                                                              events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                                                                                          })
 
                                                                                                   .Model(model =>
                                                                                                   {
-                                                                                                              model.Id(p => p.RequestStatusId);
-                                                                                                              model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                                                                                          })
-                                                                                                                                 .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }))
-                                                                                                                                                                                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType2 = "Training" }))
-                                                                                                                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                                                                                                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                                                                                      model.Id(p => p.RequestStatusId);
+                                                                                                      model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                                                  })
+                                                                                                                                 .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }).Data("sendForgery"))
+                                                                                                                                                                                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType2 = "Training" }).Data("sendForgery"))
+                                                                                                                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                                                                                                                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
                                                                                               ).ToClientTemplate()
                                                         )
 
@@ -653,114 +720,108 @@
 {
 
     @(Html.Kendo().Grid<NeedAssessmentSummary>()
-                                      .Name("NeedAssessmentSummarygrid")
-                                      .Columns(columns =>
-                                      {
-                                          columns.Select().Width(40);
-                                          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
-                                          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
-                                          columns.Bound(c => c.NoOfStaff).Width(120);
-                                          columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["Companies"], "MainCompanyId", "TradeName").EditorTemplateName("Companies").Width(120);
-                                          columns.Bound(c => c.CostPerPerson).Width(120);
-                                          columns.Bound(c => c.TotalCost).Width(100);
-                                          columns.Bound(c => c.Remark).Width(100);
-                                          columns.Command(command =>
-                                          {
-                                              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-                                              {
-                                                  // command.Custom("reject").Text("Reject").Click("RejectRequest").HtmlAttributes(new { @class = "fa fa-male btn btn-danger" });
+            .Name("NeedAssessmentSummarygrid")
+            .Columns(columns =>
+            {
+                columns.Select().Width(40);
+                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+                columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
+                columns.Bound(c => c.NoOfStaff).Width(120);
+                columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["Companies"], "MainCompanyId", "TradeName").EditorTemplateName("Companies").Width(120);
+                columns.Bound(c => c.CostPerPerson).Width(120);
+                columns.Bound(c => c.TotalCost).Width(100);
+                columns.Bound(c => c.Remark).Width(100);
+                columns.Command(command =>
+                {
+                    if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                    {
+                        // command.Custom("reject").Text("Reject").Click("RejectRequest").HtmlAttributes(new { @class = "fa fa-male btn btn-danger" });
 
-                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                              }
-                                              if (HttpContext.Current.User.IsInRole("HR_Admin"))
-                                              {
-                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
-                                              }
-                                          }).Width(190);
-                                      })
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                    }
+                    if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                    {
+                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                    }
+                }).Width(190);
 
-                                    .ToolBar(toolbar =>
+            })
+            .ToolBar(toolbar =>
+            {
+
+                toolbar.Template(
+                @<text>
+                    <div class="toolbar">
+                        @*@item.CreateButton(Resources.ActionButton_AddNewRecord).*@
+                        <div class="pull-left">
+
+                            @(Html.Kendo().Button()
+                                    .Name("btn_approve")
+                                    .Content("Send For Approval")
+                                    .Events(e =>
                                     {
-
-                                    toolbar.Template(
-                                    @<text>
-                                        <div class="toolbar">
-                                            @*@item.CreateButton(Resources.ActionButton_AddNewRecord).*@
-                                            <div class="pull-left">
-
-                                                @(Html.Kendo().Button()
-                                                        .Name("btn_approve")
-                                                        .Content("Send For Approval")
-                                                        .Events(e =>
-                                                        {
-                                                            e.Click("onSendClick");
-
-                                                        })
-                                                        .HtmlAttributes(new { @class = "btn btn-success" })
-                                                        .Enable(false)
-                                                )
-                                                @*@(Html.Kendo().Button()
-                                                        .Name("btn_reject")
-                                                        .Content("Reject")
-                                                        .Events(e =>
-                                                        {
-                                                            e.Click("onRejectClick");
-
-                                                        })
-                                                        //.Icon("check")
-                                                        .Enable(false)
-                                                        .HtmlAttributes(new { @class = "btn btn-danger" })
-                                                )*@
-
-
-                                            </div>
-                                        </div>
-                                    </text>);
+                                        e.Click("onSendClick");
 
                                     })
-                                     
-                                     .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("TrainingPlan").Window(window => { window.Title(Resources.NavigatorTraining_TrainingPlan); window.Scrollable(false); })
-                                     )
-                                        .PersistSelection()
-                                        .Scrollable(h => h.Height(500))
-                                        .Events(e =>
-                                        {
-                                            e.Change("onMainGridSelectionChange");
-                                        })
-                                                         .Filterable()
-                                                             .Pageable(pageable => pageable
-                                                                                        .Input(true)
-                                                                                        .Numeric(false)
-                                                                                        .Refresh(true)
-                                                                                        .PageSizes(true)
-                                                                                        .ButtonCount(5))
-                                                  .DataSource(dataSource => dataSource
+                                    .HtmlAttributes(new { @class = "btn btn-success" })
+                                    .Enable(false)
+                            )
+                                              
 
-                                                      .Ajax()
-                                                              .Sort(sort => sort.Add("DateCreated").Descending())
+                                           
+                        </div>
+                                       
+                    </div>
+                                 
+                    </text>);})
+                   .Editable(editable => editable.Mode(GridEditMode.InLine)
+                   .TemplateName("TrainingPlan")
+                   .Window(window => {
+                       window.Title(Resources.NavigatorTraining_TrainingPlan);
+                       window.Scrollable(false);
+                   }))
+                  .PersistSelection()
+                  .Scrollable(h => h.Height(500))
+                  .Events(e =>
+                  {
+                      e.Change("onMainGridSelectionChange");
 
-                                                          .Events(events =>
-                                                          {
-                                                              events.Error("error_handler(\"NeedAssessmentSummarygrid\")");
-                                                              events.RequestStart("onRequestStart(\"NeedAssessmentSummarygrid\")");
-                                                              events.RequestEnd("onRequestEnd(\"NeedAssessmentSummarygrid\")");
-                                                          })
+                  })
+                  .Filterable()
+                  .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                .DataSource(dataSource => dataSource
 
-                                                      .Model(model =>
-                                                      {
-                                                          model.Id(p => p.NeedAssessmentSummaryId);
-                                                          model.Field(p => p.GlFiscalYearId).Editable(false);
-                                                          model.Field(p => p.LookupId).Editable(false);
-                                                          model.Field(p => p.NoOfStaff).Editable(false);
-                                                          model.Field(p => p.TotalCost).Editable(false);
-                                                      }
-                                          )
-                                          .Read(read => read.Action("NeedAssessmentSummary_Read", "NeedAssessmentSummary"))
-                                          .Create(create => create.Action("NeedAssessmentSummary_Create", "NeedAssessmentSummary"))
-                                          .Update(update => update.Action("NeedAssessmentSummary_Update", "NeedAssessmentSummary"))
-                                          .Destroy(destroy => destroy.Action("NeedAssessmentSummary_Destroy", "NeedAssessmentSummary"))
-                                      ).ClientDetailTemplateId("assessment_Summary_details")
-    )
+                    .Ajax()
+                    .Sort(sort => sort.Add("DateCreated").Descending())
+
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"NeedAssessmentSummarygrid\")");
+                    events.RequestStart("onRequestStart(\"NeedAssessmentSummarygrid\")");
+                    events.RequestEnd("onRequestEnd(\"NeedAssessmentSummarygrid\")");
+                })
+
+                .Model(model =>
+                {
+                    model.Id(p => p.NeedAssessmentSummaryId);
+                    model.Field(p => p.GlFiscalYearId).Editable(false);
+                    model.Field(p => p.LookupId).Editable(false);
+                    model.Field(p => p.NoOfStaff).Editable(false);
+                    model.Field(p => p.TotalCost).Editable(false);
+
+
+                })
+                                .Read(read => read.Action("NeedAssessmentSummary_Read", "NeedAssessmentSummary").Data("sendForgery"))
+                                .Create(create => create.Action("NeedAssessmentSummary_Create", "NeedAssessmentSummary").Data("sendForgery"))
+                                .Update(update => update.Action("NeedAssessmentSummary_Update", "NeedAssessmentSummary").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("NeedAssessmentSummary_Destroy", "NeedAssessmentSummary").Data("sendForgery"))
+                            ).ClientDetailTemplateId("assessment_Summary_details")
+)
 
 
 }
@@ -772,57 +833,100 @@
             {
                 items.Add().Text("Training Need Request").Content(
                 @<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.TrainingEducation.TrainingNeedRequest>()
-                                        .Name("Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#")
-                                        .Columns(columns =>
-                                        {
-                                            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                                            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
-                                            columns.Bound(c => c.Prerequest).Width(150);
-                                            columns.Bound(c => c.EmployeePerformanceGap).Width(200);
-                                            columns.Bound(c => c.TrainingNeedForEmployeePerformanceGap).Width(200);
-                                            columns.Bound(c => c.TheNeedForTrainingRelatedToInistitution).Width(200);
-                                            columns.Bound(c => c.ExpectedResultFromTraining).Width(200);
-                                            //columns.Command(command =>
-                                            //{
-                                            //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                            //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                    @(Html.Kendo().Grid<TrainingNeedRequest>()
+                            .Name("Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                                columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
+                                columns.Bound(c => c.Prerequest).Width(150);
+                                columns.Bound(c => c.EmployeePerformanceGap).Width(200);
+                                columns.Bound(c => c.TrainingNeedForEmployeePerformanceGap).Width(200);
+                                columns.Bound(c => c.TheNeedForTrainingRelatedToInistitution).Width(200);
+                                columns.Bound(c => c.ExpectedResultFromTraining).Width(200);
+                                //columns.Command(command =>
+                                //{
+                                //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                //    command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                                            //}).Width(180);
-                                        })
-                                        //.ToolBar(toolbar =>
-                                        //{
-                                        //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                        //})
-                                        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest")
-                                        //.                 Window(window => { window.Title("Training Need Request form");
-                                        //    window.Scrollable(false); })
-                                        //    )
-                                        .Scrollable(h => h.Height(550))
-                                        //.Events(ev=>ev.DetailExpand("onDetailExpand"))
-                                        .DataSource(dataSource => dataSource
-                                            .Ajax()
-                                                    .Events(events =>
-                                                    {
-                                                        events.Error("error_handler(\"Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#\")");
-                                                        events.RequestStart("onRequestStart(\"Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#\")");
-                                                        events.RequestEnd("onRequestEnd(\"Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#\")");
-                                                    })
+                                //}).Width(180);
+                            })
+                            //.ToolBar(toolbar =>
+                            //{
+                            //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            //})
+                            //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest")
+                            //.                 Window(window => { window.Title("Training Need Request form");
+                            //    window.Scrollable(false); })
+                            //    )
+                            .Scrollable(h => h.Height(550))
+                            //.Events(ev=>ev.DetailExpand("onDetailExpand"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#\")");
+                                        events.RequestStart("onRequestStart(\"Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#\")");
+                                        events.RequestEnd("onRequestEnd(\"Training_NeedSumarry_Requestgrid#=NeedAssessmentSummaryId#\")");
+                                    })
 
-                                            .Model(model =>
-                                            {
-                                                model.Id(p => p.TrainingNeedRequestId);
-                                            })
-                                            .Read(read => read.Action("TrainingNeedSummaryRequests_Read", "NeedAssessmentSummary", new {assessmentSummaryId = "#=NeedAssessmentSummaryId#", looKupId = "#=LookupId#", fiscalYearId = "#=GlFiscalYearId#" }))
-                                            //.Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", , new { looKupId = "#=LookupId#", fiscalYearId = "#=GlFiscalYearId#" }))
-                                            // .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests"))
-                                            //.Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests"))
-                                            ).ToClientTemplate()
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.TrainingNeedRequestId);
+                                })
+                                .Read(read => read.Action("TrainingNeedSummaryRequests_Read", "NeedAssessmentSummary", new {assessmentSummaryId = "#=NeedAssessmentSummaryId#", looKupId = "#=LookupId#", fiscalYearId = "#=GlFiscalYearId#" }).Data("sendForgery"))
+                                //.Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", , new { looKupId = "#=LookupId#", fiscalYearId = "#=GlFiscalYearId#" }).Data("sendForgery"))
+                                // .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests").Data("sendForgery"))
+                                //.Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests").Data("sendForgery"))
+                                ).ToClientTemplate()
                     )
                 </text>);
-                    }).ToClientTemplate())
+              items.Add().Text("Need Summary Detail").Content(
+                @<text>
+                    @summaryDetail()
+                 
+                </text>);
+
+
+            }).ToClientTemplate())
 </script>
 
+@helper summaryDetail() { 
+    @(Html.Kendo().Grid<NeedAssessment>()
+            .Name("NeedAssessmentDetailgrid#=NeedAssessmentSummaryId#")
+            .Columns(columns =>
+            {
+                columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                columns.Bound(c => c.NoOfStaff).Width(100);
+                columns.Bound(c => c.TotalDays).Width(140);
+                columns.Bound(c => c.Remark);
+
+                
+            })
+           
+
+               
+              .DataSource(dataSource => dataSource
+                .Ajax()
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"NeedAssessmentDetailgrid#=NeedAssessmentSummaryId#\")");
+                    events.RequestStart("onRequestStart(\"NeedAssessmentDetailgrid#=NeedAssessmentSummaryId#\")");
+                    events.RequestEnd("onRequestEnd(\"NeedAssessmentDetailgrid#=NeedAssessmentSummaryId#\")");
+                })
+
+                .Model(model => model.Id(p => p.AssesmentId))
+                .Read(read => read.Action("NeedAssessmentSummaryDetail_Read", "NeedAssessment",new { area="HRM",id= "#=NeedAssessmentSummaryId#" }).Data("sendForgery"))
+            //.Create(create => create.Action("NeedAssessments_Create", "NeedAssessment").Data("sendForgery"))
+            //.Update(update => update.Action("NeedAssessments_Update", "NeedAssessment").Data("sendForgery"))
+            //.Destroy(destroy => destroy.Action("NeedAssessments_Destroy", "NeedAssessment").Data("sendForgery"))
+            ).ToClientTemplate()
+    )
+
+    }
 
 <style>
     div.k-edit-form-container {
@@ -858,6 +962,14 @@
             OrgStructureId: $("#OrgStructureId").val()
         };
     }
+    function filterDepartment() {
+        return {
+            businessUnitId: $("#BusinessUnitId").val(),
+            searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val(),
+        };
+    }
+
+
 </script>
 <script>
     function Branch() {
@@ -894,25 +1006,25 @@
     //    });
     //    grid.refresh();
     //}
-    $(function () {
-        $('#NeedAssessmentgrid').on('click', '.chkbx', function () {
-            var checked = $(this).is(':checked');
-            var grid = $('#NeedAssessmentgrid').data().kendoGrid;
-            var dataItem = grid.dataItem($(this).closest('tr'));
-            dataItem.set('Check', checked);
-        })
-    })
+    //$(function () {
+    //    $('#NeedAssessmentgrid').on('click', '.chkbx', function () {
+    //        var checked = $(this).is(':checked');
+    //        var grid = $('#NeedAssessmentgrid').data().kendoGrid;
+    //        var dataItem = grid.dataItem($(this).closest('tr'));
+    //        dataItem.set('Check', checked);
+    //    })
+    //})
 
-    function checkAll(ele) {
-        var state = $(ele).is(':checked');
-        var grid = $('#NeedAssessmentgrid').data().kendoGrid;
-        $.each(grid.dataSource.view(), function () {
-            if (this['Check'] != state)
-                this.dirty = true;
-            this['Check'] = state;
-        });
-        grid.refresh();
-    }
+    //function checkAll(ele) {
+    //    var state = $(ele).is(':checked');
+    //    var grid = $('#NeedAssessmentgrid').data().kendoGrid;
+    //    $.each(grid.dataSource.view(), function () {
+    //        if (this['Check'] != state)
+    //            this.dirty = true;
+    //        this['Check'] = state;
+    //    });
+    //    grid.refresh();
+    //}
 </script>
 
 @*<script>
@@ -927,6 +1039,7 @@
     </script>*@
 
 <script>
+    
       function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 
@@ -971,6 +1084,56 @@
         });
 
     }
+
+    var assesmentId = 0;
+    function onDetailNeedAssessmentExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#NeedAssessmentgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        assesmentId = masterDataItem.AssesmentId;
+        var gridName = "#NeedAssessmentAttachmentGrid" + assesmentId;
+        @*$.ajax({
+            url: '@Url.Action("CheckStatus", "TrainingApplicant")',
+
+            data: { masterId: assesmentId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-add", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-add", gridName).show();
+                }
+
+            }
+
+        });*@
+
+    }
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#NeedAssessmentAttachmentGrid" + assesmentId).data("kendoGrid").dataSource.read();
+    }
 </script>
 
 
@@ -987,12 +1150,12 @@
             if (dataItem.IsSendForApproval) {
                 row.css("background-color", "lightGreen");
 
-                row.find(".k-grid-edit").hide();
-                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
                 row.find(".k-grid-send").hide();
             }
 
-            if (dataItem.IsTransfered) {
+            if (dataItem.IsSummarized) {
                 row.css("background-color", "gray");
                 row.css("color", "white");
 
@@ -1038,7 +1201,7 @@
     
     //approval ||
     function onSendClick(e) {
-        if (confirm("Are you sure you want to sent )?")) {
+        if (confirm("Are you sure you want to send for Approval )?")) {
 
             disableeIntegrationButtons();
             var selected = $("#NeedAssessmentSummarygrid").data("kendoGrid").selectedKeyNames();
@@ -1058,6 +1221,41 @@
             });
         }
     }
+    function onSendClickCopy(e) {
+        if (confirm("Are you sure you want to send for Approval ?")) {
+        disableeIntegrationButtons();
+
+        // Get all data from the grid's data source (not just the current page)
+        var grid = $("#NeedAssessmentSummarygrid").data("kendoGrid");
+        var allData = grid.dataSource.view(); // Only returns current page
+
+        // Get full dataset (not paginated)
+        var allIds = [];
+        grid.dataSource.data().forEach(function (item) {
+            allIds.push(item.AssesmentId);
+        });
+
+        if (allIds.length === 0) {
+            alert("No records found to summarize.");
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("SendNeedSummaryForApproval", "NeedAssessmentSummary", new { area = "HRM" })',
+            data: JSON.stringify({ needAssessSummaryIds: allIds }),
+            contentType: "application/json",
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#NeedAssessmentSummarygrid").data("kendoGrid").dataSource.read();
+            },
+            error: function (result) {
+                alert("Error summarizing data.");
+            }
+        });
+    }
+}
+
     function onSummaryApproveClick(e) {
         if (confirm("Are you sure you want to sent )?")) {
 
@@ -1079,7 +1277,31 @@
             });
         }
     }
-    function onSummaryClick(e) {
+    @*function onSummaryClick(e)
+    {
+        if (confirm("Are you sure you want to Summarize?"))
+        {
+            disableeIntegrationButtons();
+
+            $.ajax({
+                url: '@Url.Action("SummarizeNeedSummary", "NeedAssessment", new { area = "HRM" })',
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    alert(result.Message);
+                    $("#NeedAssessmentgrid").data("kendoGrid").dataSource.read();
+                },
+                error: function (result) {
+                    alert(result.Message);
+                    alert("Error summarizing data.");
+                }
+            });
+
+        }
+
+    }*@
+
+    @*function onSummaryClick(e) {
         if (confirm("Are you sure you want Summmarize?")) {
 
             disableeIntegrationButtons();
@@ -1099,7 +1321,37 @@
                 }
             });
         }
+    }*@
+    function onSummaryClick(e) {
+    if (confirm("Are you sure you want to Summarize?")) {
+        disableeIntegrationButtons();
+
+        var grid = $("#NeedAssessmentgrid").data("kendoGrid");
+
+        // Determine if the select-all checkbox is checked
+        var selectAllChecked = grid.thead.find("th.k-header-column-menu input[type='checkbox']").prop("checked");
+
+        // Get selected row keys from current page
+        var selectedIds = grid.selectedKeyNames();
+
+        $.ajax({
+            url: '@Url.Action("SummarizeNeedSummary", "NeedAssessment", new { area = "HRM" })',
+            data: {
+                assessmentIds: selectedIds,
+                selectAll: selectAllChecked
+            },
+            type: 'POST',
+            traditional: true, // IMPORTANT: to pass array of IDs properly
+            success: function (result) {
+                $("#NeedAssessmentgrid").data("kendoGrid").dataSource.read();
+            },
+            error: function (result) {
+                alert("Error during summarization.");
+            }
+        });
     }
+}
+
     @*function onRejectClick(e) {
         if (confirm("Are you sure you want reject?")) {
 
@@ -1145,7 +1397,7 @@
     function disableeIntegrationButtons() {
         $("#btn_approve").data("kendoButton").enable(false);
         $("#btn_summary_approve").data("kendoButton").enable(false);
-        $("#btn_summary").data("kendoButton").enable(false);
+        //$("#btn_summary").data("kendoButton").enable(false);
         //$("#btn_reject").data("kendoButton").enable(false);
         $("#btn_summary_reject").data("kendoButton").enable(false);
     }
@@ -1154,7 +1406,7 @@
         if (selected > 0) {
             $("#btn_approve").data("kendoButton").enable(true);
             $("#btn_summary_approve").data("kendoButton").enable(true);
-            $("#btn_summary").data("kendoButton").enable(true);
+            //$("#btn_summary").data("kendoButton").enable(true);
             //$("#btn_reject").data("kendoButton").enable(true);
             $("#btn_summary_reject").data("kendoButton").enable(true);
 
@@ -1162,7 +1414,7 @@
         else {
             $("#btn_approve").data("kendoButton").enable(false);
             $("#btn_summary_approve").data("kendoButton").enable(false);
-            $("#btn_summary").data("kendoButton").enable(false);
+            //$("#btn_summary").data("kendoButton").enable(false);
             //$("#btn_reject").data("kendoButton").enable(false);
             $("#btn_summary_reject").data("kendoButton").enable(false);
 

@@ -74,10 +74,10 @@
                               model.Field(p => p.NoOfStaff).Editable(false);
                               model.Field(p => p.TotalCost).Editable(false);
                           })
-              .Read(read => read.Action("NeedAssessmentSummary_Read", "NeedAssessmentSummary"))
-              .Create(create => create.Action("NeedAssessmentSummary_Create", "NeedAssessmentSummary"))
-              .Update(update => update.Action("NeedAssessmentSummary_Update", "NeedAssessmentSummary"))
-              .Destroy(destroy => destroy.Action("NeedAssessmentSummary_Destroy", "NeedAssessmentSummary"))
+              .Read(read => read.Action("NeedAssessmentSummary_Read", "NeedAssessmentSummary").Data("sendForgery"))
+              .Create(create => create.Action("NeedAssessmentSummary_Create", "NeedAssessmentSummary").Data("sendForgery"))
+              .Update(update => update.Action("NeedAssessmentSummary_Update", "NeedAssessmentSummary").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("NeedAssessmentSummary_Destroy", "NeedAssessmentSummary").Data("sendForgery"))
           ).ClientDetailTemplateId("assessment_Summary_details")
 )
 <script id="assessment_Summary_details" type="text/kendo-tmpl">
@@ -129,10 +129,10 @@
                             {
                                 model.Id(p => p.TrainingNeedRequestId);
                             })
-                            .Read(read => read.Action("TrainingNeedSummaryRequests_Read", "NeedAssessmentSummary", new { looKupId = "#=LookupId#",fiscalYearId = "#=GlFiscalYearId#" }))
-                            //.Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", , new { looKupId = "#=LookupId#", fiscalYearId = "#=GlFiscalYearId#" }))
-                            // .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests"))
-                            //.Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests"))
+                            .Read(read => read.Action("TrainingNeedSummaryRequests_Read", "NeedAssessmentSummary", new { looKupId = "#=LookupId#",fiscalYearId = "#=GlFiscalYearId#" }).Data("sendForgery"))
+                            //.Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", , new { looKupId = "#=LookupId#", fiscalYearId = "#=GlFiscalYearId#" }).Data("sendForgery"))
+                            // .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests").Data("sendForgery"))
+                            //.Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests").Data("sendForgery"))
                             ).ToClientTemplate()
                            )   
                           </text>);

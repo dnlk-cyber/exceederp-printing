@@ -9,7 +9,6 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
     {
         [Key]
         public int TrainingPlanId { get; set; }
-       
         [Required]
         [Display(Name = "HR_HRMPlan_TrainingPlan_Period", ResourceType = typeof(Localization.Resources))]
         public int GlFiscalYearId { get; set; }
@@ -40,5 +39,7 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         public double TotalCost { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
+        public int? BusinessUnitId { get; set; }
     }
 }

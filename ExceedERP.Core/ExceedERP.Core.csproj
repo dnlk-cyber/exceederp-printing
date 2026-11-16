@@ -1090,6 +1090,7 @@
     <Compile Include="Domain\HRM\TrainingEducation\EmployeesInAssessment.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\NeedAssessment.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\NeedAssessmentAttachment.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\NeedAssessmentEmployee.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\NeedAssessmentSummary.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\ProvidedTraining.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\Trainee.cs" />
@@ -1101,6 +1102,7 @@
     <Compile Include="Domain\HRM\TrainingEducation\TrainingEvaluationCriteria.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingEvaluationCriteriaCategory.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingFeedback.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\TrainingImpactAssessment.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingNeedRequest.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingStatus.cs" />
     <Compile Include="Domain\InfoDesk\ChangeManagement\ChangeRequest.cs" />

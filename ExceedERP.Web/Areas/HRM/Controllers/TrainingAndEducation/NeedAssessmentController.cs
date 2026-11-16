@@ -15,6 +15,7 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
@@ -23,11 +24,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
     public class NeedAssessmentController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
 
         public ActionResult Index()
         {
             HRMInputs inputs = new HRMInputs();
-            ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
+           
+            //ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
             GetCourse();
             GetProvider();
             GetProvider1();
@@ -38,28 +41,82 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         }
         private void PopulateViewData()
         {
-            var employeName = db.Person_Employee.ToList();
-            ViewData["EmployeeName"] = employeName;
-            var structres = db.MainCompanyStructures.AsQueryable();
-            ViewData["organization"] = structres;
-            GetDepartments();
-            var branch = db.Branch.ToList();
-            ViewData["Branches"] = branch;
-            var periodList = db.GLFiscalYears;
-            ViewData["PeriodList"] = periodList;
-            ViewData["allDepartments"] = db.MainCompanyStructures.ToList();
+            
+            ViewData["EmployeeName"] = CacheData.GetEmployeeCaches().Select(
+            i => new
+            {
+                FullNameAmharic = i.Code + "-" + i.AmharicName,
+                FullNameaEnglish = i.Code +"-"+ i.Name,
+                EmployeeCode = i.Code,
+                EmployeeId = i.Id,
+            }).AsQueryable();
+            ViewData["branches"] = CacheData.GetBranchCaches().Select(
+              i => new
+              {
+                  Name = i.Name,
+                  BranchId = i.Id,
+              }).AsQueryable();
+            //var employeName = db.Person_Employee.ToList();
+            //ViewData["EmployeeName"] = employeName;
+            //var structres = db.MainCompanyStructures.AsQueryable();
+            //ViewData["organization"] = structres;
+            //GetDepartments();
+            //var branch = db.Branch.ToList();
+            //ViewData["Branches"] = branch;
+            //var periodList = db.GLFiscalYears;
+            //ViewData["PeriodList"] = periodList;
+            ViewData["PeriodList"] = CacheData.GetFiscalYearCaches().Select(
+                              i => new
+                              {
+                                  Name = i.Name,
+                                  GlFiscalYearId = i.Id,
+                              }).AsQueryable();
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
+              i => new
+              {
+                  Name = i.Name,
+                  BranchId = i.Id,
+              }).AsQueryable(); ;
+
+            ViewData["businessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BusinessUnitId = i.Id,
+               }).AsQueryable(); ; ;
+            ViewData["allDepartments"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+               }).AsQueryable();
+            ViewData["organization"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+               }).AsQueryable();
+            ViewData["Departments"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+               }).AsQueryable();
+            ViewData["jobTitle"] = CacheData.GetJobTitlesCaches().Select(
+              i => new
+              {
+                  Description = i.Name,
+                  LookupId = i.Id,
+              }).AsQueryable();
+            //ViewData["allDepartments"] = db.MainCompanyStructures.ToList();
 
             ViewData["TargetGroup"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.TARGET_GROUP);
+            //var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            //ViewData["businessUnits"] = businessUnits;
+            ViewData["isEthiopicDate"] = db.DatePreferenceSettings.FirstOrDefault()?.UseEthiopianDate;
 
         }
-        public ActionResult FiscalYearTrainingPlanActionPlan()
-        {
-            return View();
-        }
-        public ActionResult TrainingNeedRequestReport()
-        {
-            return View();
-        }
+
         public JsonResult GetTargetGroup()
         {
             var targetGroupList = db.Lookups.AsQueryable().ToList();
@@ -161,37 +218,53 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 return "";
             }
         }
-        public ActionResult SummarizeNeedSummary(int[] assessmentIds)
+        [HttpPost]
+        public ActionResult SummarizeNeedSummary(int[] assessmentIds, bool selectAll = false)
         {
-            var needAssessments = db.NeedAssessments.Where(x => assessmentIds.Contains(x.AssesmentId)).ToList();
-            if (needAssessments.Count() > 0)
+            // Get user branches (if needed)
+            List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            // Start query for assessments sent for approval and not summarized
+            IQueryable<NeedAssessment> query = db.NeedAssessments
+                .Where(x => x.IsSendForApproval && !x.IsSummarized);
+
+            // Filter by provided assessment IDs
+            if (!selectAll && assessmentIds?.Any() == true)
+            {
+                // Use only the selected IDs from the current page
+                query = query.Where(x => assessmentIds.Contains(x.AssesmentId));
+            }
+
+            // Optional: Filter by user's branches
+            // Uncomment the line below if branch filtering is required
+            // query = query.Where(x => myBranches.Contains(x.OrgBranchName));
+
+            // Execute query
+            List<NeedAssessment> needAssessments = query.ToList();
+
+            if (needAssessments.Any())
             {
                 var needAssessmentSummaries = needAssessments
-                    .GroupBy(x => new
-                    {
-                        x.GlFiscalYearId,
-                        x.LookupId,
-                    }).Select(g => new NeedAssessmentSummary
+                    .GroupBy(x => new { x.GlFiscalYearId, x.LookupId })
+                    .Select(g => new NeedAssessmentSummary
                     {
                         GlFiscalYearId = g.Key.GlFiscalYearId,
                         LookupId = g.Key.LookupId,
                         NoOfStaff = g.Sum(s => s.NoOfStaff),
-                        RequiredTraining = 0,
+                        RequiredTraining = g.Sum(x => x.RequiredTraining??0),
                         CostPerPerson = 0,
                         Check = true,
                         DateCreated = DateTime.Now.Date,
-                        CreatedBy = User.Identity.Name,
-                        LastModified = null,
-                        ModifiedBy = null
-
+                        CreatedBy = User.Identity.Name
                     }).ToList();
-                foreach (var needAssessmentSummary in needAssessmentSummaries)
+
+                foreach (var summary in needAssessmentSummaries)
                 {
                     var entity = new NeedAssessmentSummary
                     {
-                        GlFiscalYearId = needAssessmentSummary.GlFiscalYearId,
-                        LookupId = needAssessmentSummary.LookupId,
-                        NoOfStaff = needAssessmentSummary.NoOfStaff,
+                        GlFiscalYearId = summary.GlFiscalYearId,
+                        LookupId = summary.LookupId,
+                        NoOfStaff = summary.NoOfStaff,
                         RequiredTraining = 0,
                         CostPerPerson = 0,
                         IsTransfered = false,
@@ -199,56 +272,88 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                         IsSecondSendForApproval = false,
                         Check = false,
                         DateCreated = DateTime.Now.Date,
-                        CreatedBy = User.Identity.Name,
-                        LastModified = null,
-                        ModifiedBy = null
-
+                        CreatedBy = User.Identity.Name
                     };
+
                     db.NeedAssessmentSummary.Add(entity);
                     db.SaveChanges();
-                    var needAssessmentIds = needAssessments.Where(n => n.GlFiscalYearId == needAssessmentSummary.GlFiscalYearId && n.LookupId == needAssessmentSummary.LookupId).Select(n => n.AssesmentId);
-                    foreach(var assessmentId in needAssessmentIds)
+
+                    var relatedAssessments = needAssessments
+                        .Where(n => n.GlFiscalYearId == summary.GlFiscalYearId 
+                        && n.LookupId == summary.LookupId)
+                        .Select(n => n.AssesmentId);
+
+                    foreach (var assessmentId in relatedAssessments)
                     {
-                        var entity1 = new NeedAssessmentSummaryDetail
+                        db.NeedAssessmentSummaryDetails.Add(new NeedAssessmentSummaryDetail
                         {
                             AssesmentId = assessmentId,
                             AssesmentSummaryId = entity.NeedAssessmentSummaryId
-                        };
-                        db.NeedAssessmentSummaryDetails.Add(entity1);
-                        db.SaveChanges();
+                        });
                     }
+                    db.SaveChanges();
                 }
-                foreach(var assessmentId in assessmentIds)
+
+                // Mark assessments as summarized
+                foreach (var assessment in needAssessments)
                 {
-                    var needAssessmentUpdate = db.NeedAssessments.Find(assessmentId);
-                    if(needAssessmentUpdate != null)
-                    {
-                        needAssessmentUpdate.IsSummarized = true;
-                        db.NeedAssessments.Attach(needAssessmentUpdate);
-                        db.Entry(needAssessmentUpdate).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-
+                    assessment.IsSummarized = true;
+                    db.Entry(assessment).State = EntityState.Modified;
                 }
-
+                db.SaveChanges();
             }
-            return Json("Summarized");
+
+            return Json(new
+            {
+                Message = "SuccessFully Summerized.",
+                Status = "Ok"
+            }, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult NeedAssessments_Read([DataSourceRequest]DataSourceRequest request)
+        private bool GetRejectedStatus(int id)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x=>x.IsSendForApproval && !x.IsSummarized);//.Where(x => mybraches.Contains(x.OrgBranchName));
+            var summaryId = db.NeedAssessmentSummaryDetails
+                              .Where(x => x.AssesmentId == id)
+                              .Select(x => x.AssesmentSummaryId)
+                              .FirstOrDefault();
+
+            if (summaryId == 0) // No matching detail record found
+            {
+                return false;
+            }
+
+            return db.NeedAssessmentSummary
+                     .Where(x => x.NeedAssessmentSummaryId == summaryId)
+                     .Select(x => x.IsRejected)
+                     .FirstOrDefault();
+        }
+        public ActionResult NeedAssessmentSummaryDetail_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            HashSet<int> assesmentIds = new HashSet<int>(db.NeedAssessmentSummaryDetails.Where(x => x.AssesmentSummaryId == id).Select(x => x.AssesmentId));
+            IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x => assesmentIds.Contains(x.AssesmentId)); ;
 
             DataSourceResult result = needassessments.ToDataSourceResult(request, needAssessment => new
             {
                 AssesmentId = needAssessment.AssesmentId,
+                BranchId = needAssessment.BranchId,
                 OrgStructureId = needAssessment.OrgStructureId,
-                GlFiscalYearId = needAssessment.GlFiscalYearId,
+                BusinessUnitId = needAssessment.BusinessUnitId,
                 NoOfStaff = needAssessment.NoOfStaff,
+                GlFiscalYearId = needAssessment.GlFiscalYearId,
                 RequiredTraining = needAssessment.RequiredTraining,
+                IsTransfered = needAssessment.IsTransfered,
                 LookupId = needAssessment.LookupId,
                 Description = needAssessment.Description,
                 Type = needAssessment.Type,
+                From = needAssessment.From,
+                FromAmharic = needAssessment.FromAmharic,
+                To = needAssessment.To,
+                ToAmharic = needAssessment.ToAmharic,
+                TotalDays = needAssessment.TotalDays,
+                IsSecondSendForApproval = needAssessment.IsSecondSendForApproval,
+                IsSendForApproval = needAssessment.IsSendForApproval,
+                IsSummarized = needAssessment.IsSummarized,
+                IsThirdSendForApproval = needAssessment.IsThirdSendForApproval,
+                Check = needAssessment.Check,
                 MainCompanyId = needAssessment.MainCompanyId,
                 DevelopmentRequired = needAssessment.DevelopmentRequired,
                 DevelopmentBy = needAssessment.DevelopmentBy,
@@ -258,51 +363,234 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 CreatedBy = needAssessment.CreatedBy,
                 ModifiedBy = needAssessment.ModifiedBy,
                 OrgBranchName = needAssessment.OrgBranchName,
-                IsTransfered = needAssessment.IsTransfered,
-                IsSendForApproval = needAssessment.IsSendForApproval,
             });
             return Json(result);
         }
+
+        //public ActionResult SummarizeNeedSummary(int[] assessmentIds)
+        //{
+        //    var needAssessments = db.NeedAssessments.Where(x => assessmentIds.Contains(x.AssesmentId)).ToList();
+        //    if (needAssessments.Count() > 0)
+        //    {
+        //        var needAssessmentSummaries = needAssessments
+        //            .GroupBy(x => new
+        //            {
+        //                x.GlFiscalYearId,
+        //                x.LookupId,
+        //            }).Select(g => new NeedAssessmentSummary
+        //            {
+        //                GlFiscalYearId = g.Key.GlFiscalYearId,
+        //                LookupId = g.Key.LookupId,
+        //                NoOfStaff = g.Sum(s => s.NoOfStaff),
+        //                RequiredTraining = g.Sum(x=>x.RequiredTraining),
+        //                CostPerPerson = 0,
+        //                Check = true,
+        //                DateCreated = DateTime.Now.Date,
+        //                CreatedBy = User.Identity.Name,
+        //                LastModified = null,
+        //                ModifiedBy = null
+
+        //            }).ToList();
+        //        foreach (var needAssessmentSummary in needAssessmentSummaries)
+        //        {
+        //            var entity = new NeedAssessmentSummary
+        //            {
+        //                GlFiscalYearId = needAssessmentSummary.GlFiscalYearId,
+        //                LookupId = needAssessmentSummary.LookupId,
+        //                NoOfStaff = needAssessmentSummary.NoOfStaff,
+        //                RequiredTraining = 0,
+        //                CostPerPerson = 0,
+        //                IsTransfered = false,
+        //                IsSendForApproval = false,
+        //                IsSecondSendForApproval = false,
+        //                Check = false,
+        //                DateCreated = DateTime.Now.Date,
+        //                CreatedBy = User.Identity.Name,
+        //                LastModified = null,
+        //                ModifiedBy = null
+
+        //            };
+        //            db.NeedAssessmentSummary.Add(entity);
+        //            db.SaveChanges();
+        //            var needAssessmentIds = needAssessments.Where(n => n.GlFiscalYearId == needAssessmentSummary.GlFiscalYearId && n.LookupId == needAssessmentSummary.LookupId).Select(n => n.AssesmentId);
+        //            foreach(var assessmentId in needAssessmentIds)
+        //            {
+        //                var entity1 = new NeedAssessmentSummaryDetail
+        //                {
+        //                    AssesmentId = assessmentId,
+        //                    AssesmentSummaryId = entity.NeedAssessmentSummaryId
+        //                };
+        //                db.NeedAssessmentSummaryDetails.Add(entity1);
+        //                db.SaveChanges();
+        //            }
+        //        }
+        //        foreach(var assessmentId in assessmentIds)
+        //        {
+        //            var needAssessmentUpdate = db.NeedAssessments.Find(assessmentId);
+        //            if(needAssessmentUpdate != null)
+        //            {
+        //                needAssessmentUpdate.IsSummarized = true;
+        //                db.NeedAssessments.Attach(needAssessmentUpdate);
+        //                db.Entry(needAssessmentUpdate).State = EntityState.Modified;
+        //                db.SaveChanges();
+        //            }
+
+        //        }
+
+        //    }
+        //    return Json("Summarized");
+        //}
+        //public ActionResult NeedAssessments_Read([DataSourceRequest]DataSourceRequest request)
+        //{
+        //    List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+        //    IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x=>x.IsSendForApproval && !x.IsSummarized).AsQueryable();;
+
+        //    DataSourceResult result = needassessments.ToDataSourceResult(request, needAssessment => new
+        //    {
+        //        AssesmentId = needAssessment.AssesmentId,
+        //        OrgStructureId = needAssessment.OrgStructureId,
+        //        BusinessUnitId = needAssessment.BusinessUnitId,
+        //        NoOfStaff = needAssessment.NoOfStaff,
+        //        GlFiscalYearId = needAssessment.GlFiscalYearId,
+        //        RequiredTraining = needAssessment.RequiredTraining,
+        //        IsTransfered = needAssessment.IsTransfered,
+        //        LookupId = needAssessment.LookupId,
+        //        Description = needAssessment.Description,
+        //        Type = needAssessment.Type,
+        //        From = needAssessment.From,
+        //        FromAmharic = needAssessment.FromAmharic,
+        //        To = needAssessment.To,
+        //        ToAmharic = needAssessment.ToAmharic,
+        //        TotalDays = needAssessment.TotalDays,
+        //        IsSecondSendForApproval = needAssessment.IsSecondSendForApproval,
+        //        IsSendForApproval = needAssessment.IsSendForApproval,
+        //        IsSummarized = needAssessment.IsSummarized,
+        //        IsThirdSendForApproval = needAssessment.IsThirdSendForApproval,
+        //        Check = needAssessment.Check,
+        //        MainCompanyId = needAssessment.MainCompanyId,
+        //        DevelopmentRequired = needAssessment.DevelopmentRequired,
+        //        DevelopmentBy = needAssessment.DevelopmentBy,
+        //        Remark = needAssessment.Remark,
+        //        DateCreated = needAssessment.DateCreated,
+        //        LastModified = needAssessment.LastModified,
+        //        CreatedBy = needAssessment.CreatedBy,
+        //        ModifiedBy = needAssessment.ModifiedBy,
+        //        OrgBranchName = needAssessment.OrgBranchName,
+        //        IsRejected = GetRejectedStatus(needAssessment.AssesmentId),
+        //    });
+        //    return Json(result);
+        //}
+        public ActionResult NeedAssessments_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            List<int> myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            var query =
+                from na in db.NeedAssessments
+                join nad in db.NeedAssessmentSummaryDetails
+                    on na.AssesmentId equals nad.AssesmentId into nadGroup
+                from nad in nadGroup.DefaultIfEmpty()
+                join nas in db.NeedAssessmentSummary
+                    on nad.AssesmentSummaryId equals nas.NeedAssessmentSummaryId into nasGroup
+                from nas in nasGroup.DefaultIfEmpty()
+                where na.IsSendForApproval && !na.IsSummarized
+                select new
+                {
+                    AssesmentId = na.AssesmentId,
+                    BranchId = na.BranchId,
+                    OrgStructureId = na.OrgStructureId,
+                    BusinessUnitId = na.BusinessUnitId,
+                    NoOfStaff = na.NoOfStaff,
+                    GlFiscalYearId = na.GlFiscalYearId,
+                    RequiredTraining = na.RequiredTraining,
+                    IsTransfered = na.IsTransfered,
+                    LookupId = na.LookupId,
+                    Description = na.Description,
+                    Type = na.Type,
+                    From = na.From,
+                    FromAmharic = na.FromAmharic,
+                    To = na.To,
+                    ToAmharic = na.ToAmharic,
+                    TotalDays = na.TotalDays,
+                    IsSecondSendForApproval = na.IsSecondSendForApproval,
+                    IsSendForApproval = na.IsSendForApproval,
+                    IsSummarized = na.IsSummarized,
+                    IsThirdSendForApproval = na.IsThirdSendForApproval,
+                    Check = na.Check,
+                    MainCompanyId = na.MainCompanyId,
+                    DevelopmentRequired = na.DevelopmentRequired,
+                    DevelopmentBy = na.DevelopmentBy,
+                    Remark = na.Remark,
+                    DateCreated = na.DateCreated,
+                    LastModified = na.LastModified,
+                    CreatedBy = na.CreatedBy,
+                    ModifiedBy = na.ModifiedBy,
+                    OrgBranchName = na.OrgBranchName,
+                    IsRejected = nas != null && nas.IsRejected
+                };
+
+            DataSourceResult result = query.ToDataSourceResult(request);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult NeedAssessments_Create([DataSourceRequest]DataSourceRequest request, NeedAssessment needAssessment)
         {
             ModelState.Clear();
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employeeId /*&& x.isCurrent*/);
-            if(placement != null)
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeId && x.isCurrent);
+            if (placement == null)
             {
-                needAssessment.OrgStructureId = placement.OrgStructureId;
+                ModelState.AddModelError("", "Please add current placement for this employee");
+                return Json(new[] { needAssessment }.ToDataSourceResult(request, ModelState));
             }
-            if(needAssessment.NoOfStaff <= 0)
+            needAssessment.OrgStructureId = placement.OrgStructureId;
+            needAssessment.BusinessUnitId = placement.BusinessUnitId;
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                // Ethiopic date input
+                if (!string.IsNullOrWhiteSpace(needAssessment.FromAmharic))
+                {
+                    needAssessment.From = HrHelper.ParseEthiopicDate(needAssessment.FromAmharic);
+                }
+
+                if (!string.IsNullOrWhiteSpace(needAssessment.ToAmharic))
+                {
+                    needAssessment.To = HrHelper.ParseEthiopicDate(needAssessment.ToAmharic);
+                }
+            }
+            else
+            {
+                // Gregorian date input, convert to Amharic
+                if (needAssessment.From.HasValue)
+                {
+                    var from = needAssessment.From.Value;
+                    needAssessment.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(from.Day, from.Month, from.Year);
+                }
+
+                if (needAssessment.To.HasValue)
+                {
+                    var to = needAssessment.To.Value;
+                    needAssessment.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(to.Day, to.Month, to.Year);
+                }
+            }
+            if (needAssessment.NoOfStaff <= 0)
             {
                 ModelState.AddModelError("","No of staff should be greater than zero");
+                return Json(new[] { needAssessment }.ToDataSourceResult(request, ModelState));
+
             }
+            needAssessment.IsSendForApproval = true;
+            needAssessment.DateCreated = DateTime.Now;
+            needAssessment.CreatedBy = User.Identity.Name;
+            needAssessment.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+
             if (ModelState.IsValid)
             {
-                var entity = new NeedAssessment
-                {
-                    OrgStructureId = needAssessment.OrgStructureId,
-                    NoOfStaff = needAssessment.NoOfStaff,
-                    RequiredTraining = needAssessment.RequiredTraining,
-                    IsTransfered = false,
-                    IsSendForApproval = true,
-                    GlFiscalYearId = needAssessment.GlFiscalYearId,
-                    LookupId = needAssessment.LookupId,
-                    Description = needAssessment.Description,
-                    Type = needAssessment.Type,
-                    MainCompanyId = needAssessment.MainCompanyId,
-                    DevelopmentRequired = needAssessment.DevelopmentRequired,
-                    DevelopmentBy = needAssessment.DevelopmentBy,
-                    Remark = needAssessment.Remark,
-                    DateCreated = DateTime.Now,
-                    LastModified = needAssessment.LastModified,
-                    CreatedBy = User.Identity.Name,
-                    ModifiedBy = needAssessment.ModifiedBy,
-                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
-
-                };
-
+               
+                var entity = GetMappedObject(needAssessment);
                 db.NeedAssessments.Add(entity);
                 db.SaveChanges();
                 needAssessment.AssesmentId = entity.AssesmentId;
@@ -327,49 +615,55 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult NeedAssessments_Update([DataSourceRequest]DataSourceRequest request, NeedAssessment needAssessment)
         {
             ModelState.Clear();
+            bool datePreference = HrHelper.GetDatePreference();
+            if (datePreference)
+            {
+                // Ethiopic date input
+                if (!string.IsNullOrWhiteSpace(needAssessment.FromAmharic))
+                {
+                    needAssessment.From = HrHelper.ParseEthiopicDate(needAssessment.FromAmharic);
+                }
 
+                if (!string.IsNullOrWhiteSpace(needAssessment.ToAmharic))
+                {
+                    needAssessment.To = HrHelper.ParseEthiopicDate(needAssessment.ToAmharic);
+                }
+            }
+            else
+            {
+                // Gregorian date input, convert to Amharic
+                if (needAssessment.From.HasValue)
+                {
+                    var from = needAssessment.From.Value;
+                    needAssessment.FromAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(from.Day, from.Month, from.Year);
+                }
+
+                if (needAssessment.To.HasValue)
+                {
+                    var to = needAssessment.To.Value;
+                    needAssessment.ToAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(to.Day, to.Month, to.Year);
+                }
+            }
             if (needAssessment.NoOfStaff <= 0)
             {
                 ModelState.AddModelError("", "No of staff should be greater than zero");
-            }
+                return Json(new[] { needAssessment }.ToDataSourceResult(request, ModelState));
 
+            }
+            needAssessment.LastModified = DateTime.UtcNow;
+            needAssessment.ModifiedBy = User.Identity.Name;
             if (ModelState.IsValid)
             {
-                var entity = new NeedAssessment
-                {
-                    AssesmentId = needAssessment.AssesmentId,
-                    OrgStructureId = needAssessment.OrgStructureId,
-
-                    GlFiscalYearId = needAssessment.GlFiscalYearId,
-                    NoOfStaff = needAssessment.NoOfStaff,
-                    RequiredTraining = needAssessment.RequiredTraining,
-                    IsTransfered = false,
-                    LookupId = needAssessment.LookupId,
-                    Description = needAssessment.Description,
-                    Type = needAssessment.Type,
-                    MainCompanyId = needAssessment.MainCompanyId,
-                    DevelopmentRequired = needAssessment.DevelopmentRequired,
-                    DevelopmentBy = needAssessment.DevelopmentBy,
-                    Remark = needAssessment.Remark,
-                    DateCreated = needAssessment.DateCreated,
-                    LastModified = needAssessment.LastModified,
-                    CreatedBy = needAssessment.CreatedBy,
-                    ModifiedBy = needAssessment.ModifiedBy,
-                    OrgBranchName = needAssessment.OrgBranchName,
-                };
-
+                var entity = GetMappedObject(needAssessment);
                 db.NeedAssessments.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-
                 #region operation log
-
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                 var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
                 if (name != null)
                 {
                     UserHelper.OperationLog(Request.UserHostAddress, "Need Assessment ", "Success", User.Identity.Name, name.EmployeeCode + " update Need Assessment Info updated date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-
                 }
 
                 #endregion
@@ -384,27 +678,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new NeedAssessment
-                {
-                    AssesmentId = needAssessment.AssesmentId,
-                    OrgStructureId = needAssessment.OrgStructureId,
-                    NoOfStaff = needAssessment.NoOfStaff,
-                    GlFiscalYearId = needAssessment.GlFiscalYearId,
-                    RequiredTraining = needAssessment.RequiredTraining,
-                    IsTransfered = false,
-                    LookupId = needAssessment.LookupId,
-                    Description = needAssessment.Description,
-                    Type = needAssessment.Type,
-                    MainCompanyId = needAssessment.MainCompanyId,
-                    DevelopmentRequired = needAssessment.DevelopmentRequired,
-                    DevelopmentBy = needAssessment.DevelopmentBy,
-                    Remark = needAssessment.Remark,
-                    DateCreated = needAssessment.DateCreated,
-                    LastModified = needAssessment.LastModified,
-                    CreatedBy = needAssessment.CreatedBy,
-                    ModifiedBy = needAssessment.ModifiedBy,
-                    OrgBranchName = needAssessment.OrgBranchName,
-                };
+                var entity = GetMappedObject(needAssessment);
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted need assessment information of course " + needAssessment.LookupId);
                 #endregion
@@ -415,6 +689,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
             return Json(new[] { needAssessment }.ToDataSourceResult(request, ModelState));
         }
+
+        private NeedAssessment GetMappedObject(NeedAssessment needAssessment)
+        {
+            var entity = new NeedAssessment
+            {
+                AssesmentId = needAssessment.AssesmentId,
+                Role = needAssessment.Role,
+                OrgStructureId = needAssessment.OrgStructureId,
+                BranchId = needAssessment.BranchId,
+                BusinessUnitId = needAssessment.BusinessUnitId,
+                NoOfStaff = needAssessment.NoOfStaff,
+                GlFiscalYearId = needAssessment.GlFiscalYearId,
+                RequiredTraining = needAssessment.RequiredTraining,
+                IsTransfered = needAssessment.IsTransfered,
+                LookupId = needAssessment.LookupId,
+                Description = needAssessment.Description,
+                Type = needAssessment.Type,
+                From = needAssessment.From,
+                FromAmharic = needAssessment.FromAmharic,
+                To = needAssessment.To,
+                ToAmharic = needAssessment.ToAmharic,
+                TotalDays = needAssessment.TotalDays,
+                IsSecondSendForApproval = needAssessment.IsSecondSendForApproval,
+                IsSendForApproval = needAssessment.IsSendForApproval,
+                IsSummarized = needAssessment.IsSummarized,
+                IsThirdSendForApproval = needAssessment.IsThirdSendForApproval,
+                Check = needAssessment.Check,
+                MainCompanyId = needAssessment.MainCompanyId,
+                DevelopmentRequired = needAssessment.DevelopmentRequired,
+                DevelopmentBy = needAssessment.DevelopmentBy,
+                Remark = needAssessment.Remark,
+                DateCreated = needAssessment.DateCreated,
+                LastModified = needAssessment.LastModified,
+                CreatedBy = needAssessment.CreatedBy,
+                ModifiedBy = needAssessment.ModifiedBy,
+                OrgBranchName = needAssessment.OrgBranchName,
+            };
+            return entity;
+        }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Transfer_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<NeedAssessment> needAssessments)
         {
@@ -439,7 +753,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
                         //trainingPlan.GlFiscalYearId = product.MainCompanyId;
                         //trainingPlan.GlFiscalYearId = 5;//check.GlFiscalYearId,  
-                        trainingPlan.WorkUnit = check.OrgStructureId;
+                        trainingPlan.WorkUnit = check.OrgStructureId??0;
                         trainingPlan.LookupId = check.LookupId;
                         trainingPlan.MainCompanyId = check.MainCompanyId;
                         trainingPlan.GlFiscalYearId = check.GlFiscalYearId;

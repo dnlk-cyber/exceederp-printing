@@ -6,6 +6,7 @@
 }
 
 <legend>Training Plan Summary </legend>
+@Html.AntiForgeryToken()
 @(Html.Kendo().Grid<NeedAssessmentSummary>()
       .Name("NeedAssessmentSummarygrid")
       .Columns(columns =>
@@ -190,8 +191,35 @@
                     @summaryDetail()
                  
                 </text>);
-
-
+                items.Add().Text("Evaluation Criteria").Content(
+                @<text>
+                    <p>These criteria apply to this course across training summaries.</p>
+                    @(Html.Kendo().Grid<TrainingEvaluationCriteria>()
+                        .Name("CourseEvaluationCriteria_#=NeedAssessmentSummaryId#")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.TrainingEvaluationSettingCategoryId,
+                                (IEnumerable)ViewData["EvaluationCategories"], "TrainingEvaluationSettingCategoryId", "Name")
+                                .Title("Category").Width(200);
+                            columns.Bound(c => c.Criteria).Title("Criterion");
+                            columns.Bound(c => c.Weight).Width(120);
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(190);
+                        })
+                        .ToolBar(toolbar => toolbar.Create().Text("Add Criterion"))
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .DataSource(dataSource => dataSource.Ajax()
+                            .Model(model => model.Id(c => c.TrainingEvaluationCriteriaId))
+                            .Events(events => events.Error("error_handler(\"CourseEvaluationCriteria_#=NeedAssessmentSummaryId#\")"))
+                            .Read(read => read.Action("EvaluationCriteria_Read", "TrainingPlanSummary", new { summaryId = "#=NeedAssessmentSummaryId#" }))
+                            .Create(create => create.Action("EvaluationCriteria_Create", "TrainingPlanSummary", new { summaryId = "#=NeedAssessmentSummaryId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("EvaluationCriteria_Update", "TrainingPlanSummary", new { summaryId = "#=NeedAssessmentSummaryId#" }).Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("EvaluationCriteria_Destroy", "TrainingPlanSummary", new { summaryId = "#=NeedAssessmentSummaryId#" }).Data("sendForgery")))
+                        .ToClientTemplate())
+                </text>);
            }).ToClientTemplate())
 </script>
 <script id="training_assessment_Summary_details" type="text/kendo-tmpl">
@@ -247,7 +275,7 @@
                         })
                         .Model(model =>
                         {
-                            model.Id(p => p.TrainingNeedRequestId);
+                            model.Id(p => p.TrainingEvaluationBeforeId);
                         })
                         .Read(read => read.Action("TrainingEvaluationBefores_Read", "TrainingEvaluationBefores", new { requestId = "#=TrainingNeedRequestId#" }).Data("sendForgery"))
                         .Create(create => create.Action("TrainingEvaluationBefores_Create", "TrainingEvaluationBefores", new { requestId = "#=TrainingNeedRequestId#" }).Data("sendForgery"))
@@ -456,17 +484,18 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("GenerateEvaluation", "TrainingEvaluationBefores", new { area = "HRM" })',
-            data: { requestId: id },
+            data: $.extend({ requestId: id }, sendForgery()),
             success: function (result) {
                 // toastr.warnning(result.Message);
                 alert(result.Message);
                // recordStatus = result.Status;
-                location.reload(true);
+                $("#TrainingEvaluationBeforegrid" + id).data("kendoGrid").dataSource.read();
             }, //end succ
             error: function (result) {
                 alert(result);
             }
         });
+        return false;
     }
 
 
@@ -476,18 +505,18 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("GenerateEvaluationAfter", "TrainingEvaluationAfters", new { area = "HRM" })',
-            data: { reqId: id },
+            data: $.extend({ reqId: id }, sendForgery()),
             success: function (result) {
                 // toastr.warnning(result.Message);
                 alert(result.Message);
                // recordStatus = result.Status;
-                location.reload(true);
+                $("#TrainingEvaluationAftergrid" + id).data("kendoGrid").dataSource.read();
             }, //end succ
             error: function (result) {
                 alert(result);
             }
         });
-
+        return false;
     }
     
 </script>

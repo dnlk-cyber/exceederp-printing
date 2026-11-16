@@ -1,12 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.Common.Controllers;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -31,15 +40,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
             ViewData["CourseList"] = db.Lookups.ToList();
             ViewData["ProviderList"] = db.Companies.ToList();
-            ViewData["Criterias"] = db.TrainingEvaluationCriterias.ToList();
+            ViewData["Criterias"] = db.TrainingEvaluationCriterias.Where(x => !x.TrainingCourseId.HasValue).ToList();
         }
         public ActionResult CourseTrackings_Read([DataSourceRequest]DataSourceRequest request)
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-            var trainees = db.Trainee.Where(x => x.EmployeeId == empId).ToList().Select(x => x.CourseTrackingId);
+            var trainees = db.Trainee
+                .Where(x => x.EmployeeId == empId)
+                .Select(x => x.CourseTrackingId)
+                .ToList();
 
-            IQueryable<CourseTracking> coursetrackings = db.CourseTrackings.Where(x => trainees.Contains(x.CourseTrackingId));
+            IQueryable<CourseTracking> coursetrackings = db.CourseTrackings
+                .Where(x => trainees.Contains(x.CourseTrackingId));
+
+            var today = DateTime.Today;
 
             DataSourceResult result = coursetrackings.ToDataSourceResult(request, courseTracking => new
             {
@@ -64,11 +79,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 TrainingLocation = courseTracking.TrainingLocation,
                 TrainingTerm = courseTracking.TrainingTerm,
                 IsOnJob = courseTracking.IsOnJob,
+
+                // Marked complete if end date is passed, or use courseTracking.IsCompleted if defined
+                IsCompleted =  courseTracking.To.Date <= today
             });
 
             return Json(result);
         }
-
         public ActionResult TrainingEvaluation_For_CourseTracking_Read([DataSourceRequest]DataSourceRequest request, int traineeId)
         {
             List<TrainingEvaluation> trainigEvaluations = new List<TrainingEvaluation>();

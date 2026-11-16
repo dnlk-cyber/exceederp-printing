@@ -13,7 +13,6 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
-
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
     public class TrainingPlanDepartmentReadController : BaseController
@@ -26,6 +25,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             GetTargetGroup();
             GetPeriod();
             PopulateViewData();
+            TraininigPlans();
             // TraininigPlans();
             return View();
         }
@@ -83,66 +83,61 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 TradeName = p.TradeName
             }), JsonRequestBehavior.AllowGet);
         }
+
         private void TraininigPlans()
         {
-            var assessment = db.NeedAssessments.ToList();
+            // Approved summaries count even when the assessment flag was never set (approvals made before it was).
+            var assessments = db.NeedAssessments
+                .Where(x => x.IsSummarized
+                    && (x.IsThirdSendForApproval
+                        || db.NeedAssessmentSummaryDetails.Any(d => d.AssesmentId == x.AssesmentId && d.Summary.IsApproved)))
+                .ToList();
+            if (!assessments.Any()) return;
 
-            if (assessment.Any())
+            foreach (var need in assessments)
             {
-                foreach (var need in assessment)
+                var trainigRequest = db.TrainingNeedRequests.Where(x => x.AssesmentId == need.AssesmentId);
+                var existingPlan = db.TrainingPlans
+                                .FirstOrDefault(x => x.LookupId == need.LookupId &&
+                                x.GlFiscalYearId==need.GlFiscalYearId);
+                var noOfPeople = trainigRequest.Select(x => x.EmployeeId).Distinct().Count();
+                var costPerPerson = db.NeedAssessmentSummaryDetails.Where(x => x.AssesmentId==need.AssesmentId).Distinct().FirstOrDefault()?.Summary.CostPerPerson??0;
+                if (existingPlan == null)
                 {
-                    var plan = db.TrainingPlans.Where(x => x.LookupId == need.LookupId).FirstOrDefault();
-                    if (plan == null)
+                    var entity = new TrainingPlan
                     {
-                        var level = db.Lookups.Where(x => x.LookupId == need.LookupId).FirstOrDefault();
-                        var entity = new TrainingPlan
-                        {
-                            GlFiscalYearId = 111,
-                            NoofTrainee = need.NoOfStaff,
-                            LookupId = need.LookupId,
-                            MainCompanyId = need.MainCompanyId,
-                            // WorkUnit=Convert.ToInt32(level.Description),
-                            Remark = need.Remark,
-                            DateCreated = DateTime.Now,
-                            LastModified = need.LastModified,
-                            CreatedBy = User.Identity.Name,
-                            ModifiedBy = need.ModifiedBy,
-                            OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                        };
+                        GlFiscalYearId = need.GlFiscalYearId,
+                        NoofTrainee = noOfPeople,
+                        CostPerPerson = costPerPerson,
+                        LookupId = need.LookupId,
+                        BusinessUnitId = need.BusinessUnitId,
+                        WorkUnit = need.OrgStructureId ?? 0,
+                        MainCompanyId = need.MainCompanyId,
+                        TotalCost = (double)costPerPerson * noOfPeople,
+                        Remark = need.Remark,
+                        DateCreated = DateTime.Now,
+                        LastModified = need.LastModified,
+                        CreatedBy = User.Identity.Name,
+                        ModifiedBy = need.ModifiedBy,
+                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    };
 
-                        db.TrainingPlans.Add(entity);
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        var entity = new TrainingPlan
-                        {
-                            TrainingPlanId = plan.TrainingPlanId,
-                            GlFiscalYearId = plan.GlFiscalYearId,
-                            WorkUnit = plan.WorkUnit,
-                            Course = plan.Course,
-                            NoofTrainee = plan.NoofTrainee,
-                            LookupId = plan.LookupId,
-                            MainCompanyId = plan.MainCompanyId,
-                            CostPerPerson = plan.CostPerPerson,
-                            TotalCost = plan.TotalCost,
-                            Remark = plan.Remark,
-                            DateCreated = plan.DateCreated,
-                            LastModified = DateTime.Now,
-                            CreatedBy = plan.CreatedBy,
-                            ModifiedBy = User.Identity.Name,
-                            OrgBranchName = plan.OrgBranchName,
-                        };
-
-                        db.TrainingPlans.Attach(entity);
-                        db.Entry(entity).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
+                    db.TrainingPlans.Add(entity);
                 }
+                else
+                {
+                    existingPlan.NoofTrainee = noOfPeople;
+                    existingPlan.CostPerPerson = costPerPerson;
+                    existingPlan.TotalCost = (double) costPerPerson * noOfPeople;
+                    existingPlan.LastModified = DateTime.Now;
+                    existingPlan.ModifiedBy = User.Identity.Name;
+                    db.Entry(existingPlan).State = EntityState.Modified;
+                }
+
+                db.SaveChanges();
             }
-
-
         }
+
         private JsonResult GetPeriod()
         {
             var periodList = db.GLFiscalYears.AsQueryable();
@@ -153,28 +148,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
             return Json(periodList.Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
+        public ActionResult TrainingPlanDepartment_Read([DataSourceRequest]DataSourceRequest request)
+        {
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            IQueryable<TrainingPlan> trainingplans = db.TrainingPlans/*.Where(x => mybraches.Contains(x.b))*/;// && orgId.Contains(x.WorkUnit));
+            DataSourceResult result = trainingplans.ToDataSourceResult(request, trainingPlan => new
+            {
+                TrainingPlanId = trainingPlan.TrainingPlanId,
+                GlFiscalYearId = trainingPlan.GlFiscalYearId,
+                Course = trainingPlan.Course,
+                WorkUnit = trainingPlan.WorkUnit,
+                NoofTrainee = trainingPlan.NoofTrainee,
+                LookupId = trainingPlan.LookupId,
+                MainCompanyId = trainingPlan.MainCompanyId,
+                CostPerPerson = trainingPlan.CostPerPerson,
+                TotalCost = trainingPlan.TotalCost,
+                Remark = trainingPlan.Remark,
+                DateCreated = trainingPlan.DateCreated,
+                LastModified = trainingPlan.LastModified,
+                CreatedBy = trainingPlan.CreatedBy,
+                ModifiedBy = trainingPlan.ModifiedBy,
+                OrgBranchName = trainingPlan.OrgBranchName,
+            });
+
+            return Json(result);
+        }
+
         public ActionResult TrainingPlanDepartmentRead_Read([DataSourceRequest]DataSourceRequest request)
         {
 
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-            //List<int> orgId = new List<int>();
-            //var placement = db.Placements.FirstOrDefault(x=>x.isCurrent && x.EmployeeId == empId && x.IsHead);
-            //if(placement != null)
-            //{
-            //    var mainCompany = db.MainCompanyStructures.Where(x=>x.Parent == placement.OrgStructureId || x.OrgStructureId == placement.OrgStructureId);
-            //    if(mainCompany.Any())
-            //    {
-            //        var org = mainCompany.Select(x=>x.OrgStructureId);
-            //        if(org.Any())
-            //        {
-            //            orgId.AddRange(org);
-            //        }
-
-            //    }
-            //}
-            IQueryable<TrainingPlan> trainingplans = db.TrainingPlans.Where(x => mybraches.Contains(x.OrgBranchName));// && orgId.Contains(x.WorkUnit));
+            IQueryable<TrainingPlan> trainingplans = db.TrainingPlans/*.Where(x => mybraches.Contains(x.OrgBranchName))*/;// && orgId.Contains(x.WorkUnit));
             DataSourceResult result = trainingplans.ToDataSourceResult(request, trainingPlan => new
             {
                 TrainingPlanId = trainingPlan.TrainingPlanId,
@@ -213,7 +220,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     LookupId = trainingPlan.LookupId,
                     MainCompanyId = trainingPlan.MainCompanyId,
                     WorkUnit = trainingPlan.WorkUnit,
-
                     CostPerPerson = trainingPlan.CostPerPerson,
                     TotalCost = trainingPlan.TotalCost,
                     Remark = trainingPlan.Remark,
@@ -241,6 +247,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 double totalCost = trainingPlan.NoofTrainee * trainingPlan.CostPerPerson;
                 var entity = new TrainingPlan
                 {
+
                     TrainingPlanId = trainingPlan.TrainingPlanId,
                     GlFiscalYearId = trainingPlan.GlFiscalYearId,
                     WorkUnit = trainingPlan.WorkUnit,
@@ -256,6 +263,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     CreatedBy = trainingPlan.CreatedBy,
                     ModifiedBy = User.Identity.Name,
                     OrgBranchName = trainingPlan.OrgBranchName,
+
                 };
 
                 db.TrainingPlans.Attach(entity);

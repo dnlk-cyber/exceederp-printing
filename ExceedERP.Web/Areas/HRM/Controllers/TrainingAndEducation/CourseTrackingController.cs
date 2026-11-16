@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -15,6 +17,8 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
@@ -23,44 +27,78 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
     public class CourseTrackingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static DateTime From { get; set; }
-        public static DateTime To { get; set; }
-        public static string FromAmharic { get; set; }
-        public static string ToAmharic { get; set; }
+        private readonly CacheData CacheData = new CacheData();
+
+    
         public ActionResult Index()
         {
             PopulateViewData();
-            GetPeriod();
-            GetProvider();
-            GetCourse();
-            TrainingType();
-            GetEmployee();
+          
 
             return View();
         }
         private void PopulateViewData()
         {
-            var branch = db.Branch.ToList();
-            ViewData["Branches"] = branch;
+            ViewData["PeriodList"] = CacheData.GetFiscalYearCaches().Select(
+                             i => new
+                             {
+                                 Name = i.Name,
+                                 GlFiscalYearId = i.Id,
+                             }).AsQueryable();
+            ViewData["EmployeeList"] = CacheData.GetEmployeeCaches().Select(
+          i => new
+          {
+              FullNameAmharic = i.AmharicName,
+              FullNameaEnglish = i.Name,
+              FullName = i.Name,
+              FullNameCode = i.Code + " " + i.Name,
+              EmployeeCode = i.Code,
+              EmployeeId = i.Id,
+              PersonId = i.Id,
+          }).AsQueryable();
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
+             i => new
+             {
+                 Name = i.Name,
+                 BranchId = i.Id,
+             }).AsQueryable(); ;
+
+            ViewData["businessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BusinessUnitId = i.Id,
+               }).AsQueryable();
+            ViewData["Departments"] = CacheData.GetWorkUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   OrgStructureId = i.Id,
+               }).AsQueryable();
+            ViewData["CourseList"] = db.Lookups.Where(l => l.LookupType == LookUpTypes.COURSE && l.IsActive).AsQueryable();
+            //var branch = db.Branch.ToList();
+            //ViewData["Branches"] = branch;
             var plans = db.TrainingPlans.ToList();
             ViewData["plan"] = plans;
+            ViewData["ProviderList"] = db.Companies.AsQueryable();
             var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.EDUCATION_LEVEL);
             ViewData["EducationLevel"] = lookups;
-            ViewData["Criterias"] = db.TrainingEvaluationCriterias.ToList();
+            ViewData["Criterias"] = db.TrainingEvaluationCriterias.Where(x => !x.TrainingCourseId.HasValue).ToList();
+            ViewData["TraTypeList"] = db.Lookups.Where(l => l.LookupType == LookUpTypes.COURSE && l.IsActive).AsQueryable();
+            ViewData["isEthiopicDate"] = HrHelper.GetDatePreference();
+
         }
+
         public void SetDate(string name, string value)
         {
             if (name == "FromAmharic")
             {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+         
+                var From = HrHelper.ParseEthiopicDate(value);
             }
             else if (name == "ToAmharic")
             {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var To = HrHelper.ParseEthiopicDate(value);
             }
         }
         public JsonResult GetCourse()
@@ -113,8 +151,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         [AuthorizeRoles(HrmConstants.HRTrainingUser, HrmConstants.HRAdmin)]
         public ActionResult CourseTrackings_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<CourseTracking> coursetrackings = db.CourseTrackings;//.Where(x => mybraches.Contains(x.OrgBranchName));
+            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            IQueryable<CourseTracking> coursetrackings = db.CourseTrackings.AsQueryable();//.Where(x => mybraches.Contains(x.OrgBranchName));
             DataSourceResult result = coursetrackings.ToDataSourceResult(request, courseTracking => new
             {
                 CourseTrackingId = courseTracking.CourseTrackingId,
@@ -160,14 +198,38 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             {
                 no = courseTracking.NoOfTrainee;
             }
-            if (From.Date > To.Date)
+            bool useEthiopian = HrHelper.GetDatePreference();
+            if (useEthiopian)
+            {
+                // User inputs Ethiopian dates → must validate
+                if (string.IsNullOrWhiteSpace(courseTracking.FromAmharic) ||
+                    string.IsNullOrWhiteSpace(courseTracking.ToAmharic))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory.");
+                    return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
+                }
+                // Convert Ethiopic → Gregorian
+                courseTracking.From = HrHelper.ParseEthiopicDate(courseTracking.FromAmharic);
+                courseTracking.To = HrHelper.ParseEthiopicDate(courseTracking.ToAmharic);
+            }
+            else
+            {
+                // User inputs Gregorian dates → must validate
+                if (courseTracking.From == default(DateTime) || courseTracking.To == default(DateTime))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory.");
+                    return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
+                }
+                // Convert Gregorian → Ethiopic for storage
+                courseTracking.FromAmharic = HrHelper.GetECDate(courseTracking.From);
+                courseTracking.ToAmharic = HrHelper.GetECDate(courseTracking.To);
+
+            }
+            if (courseTracking.From.Date > courseTracking.To.Date)
             {
                 ModelState.AddModelError("", "Please check the date range.");
-            }
+                return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
 
-            if (FromAmharic == null || ToAmharic == null)
-            {
-                ModelState.AddModelError("", "Date form and to values are mandatory!!");
             }
 
             if (courseTracking.TrainingType == Core.Domain.Common.TrainingType.EDUCATION)
@@ -186,14 +248,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     TrainingPlanId = courseTracking.TrainingPlanId,
                     NoOfTrainee = no,
                     LookupId = courseTracking.LookupId,
-                    From = From,
-                    To = To,
+                    From = courseTracking.From,
+                    To = courseTracking.To,
                     Cost = courseTracking.Cost,
                     TrainingType = courseTracking.TrainingType,
                     MainCompanyId = courseTracking.MainCompanyId,
                     Remark = courseTracking.Remark,
-                    FromAmharic = FromAmharic,
-                    ToAmharic = ToAmharic,
+                    FromAmharic = courseTracking.FromAmharic,
+                    ToAmharic = courseTracking.ToAmharic,
                     DateCreated = DateTime.Now,
                     LastModified = courseTracking.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -231,35 +293,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         {
             ModelState.Clear();
 
-            //var noOfTrainee = db.TrainingPlans.Where(x => x.LookupId == courseTracking.LookupId)?.ToList().Sum(x => x.NoofTrainee);
-            if (courseTracking.FromAmharic != null)
+            bool useEthiopian = HrHelper.GetDatePreference();
+            if (useEthiopian)
             {
-                var splitDate = courseTracking.FromAmharic.Split('/');
-                courseTracking.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                // User inputs Ethiopian dates → must validate
+                if (string.IsNullOrWhiteSpace(courseTracking.FromAmharic) ||
+                    string.IsNullOrWhiteSpace(courseTracking.ToAmharic))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory.");
+                    return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
+                }
+                // Convert Ethiopic → Gregorian
+                courseTracking.From = HrHelper.ParseEthiopicDate(courseTracking.FromAmharic);
+                courseTracking.To = HrHelper.ParseEthiopicDate(courseTracking.ToAmharic);
             }
             else
             {
-                ModelState.AddModelError("","please select initial date ");
-            }
-            if (courseTracking.ToAmharic != null)
-            {
-                var splitDate = courseTracking.ToAmharic.Split('/');
-                courseTracking.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                // User inputs Gregorian dates → must validate
+                if (courseTracking.From == default(DateTime) || courseTracking.To == default(DateTime))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory.");
+                    return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
+                }
+                // Convert Gregorian → Ethiopic for storage
+                courseTracking.FromAmharic = HrHelper.GetECDate(courseTracking.From);
+                courseTracking.ToAmharic = HrHelper.GetECDate(courseTracking.To);
+
             }
             if (courseTracking.From.Date > courseTracking.To.Date)
             {
                 ModelState.AddModelError("", "Please check the date range.");
+                return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
+
             }
-            //else if (From.Date > DateTime.Now.Date)
-            //{
-
-            //    ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
-            //}
-            //else if (To.Date > DateTime.Now.Date)
-            //{
-
-            //    ModelState.AddModelError("", "End Date should be less or equal to the current date!!");
-            //}
+          
             if (ModelState.IsValid)
             {
                 if (courseTracking.TrainingType == Core.Domain.Common.TrainingType.EDUCATION)
@@ -366,6 +433,72 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             }
 
             return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
+        }
+
+        public JsonResult SendCourseTrackingNotifications(int courseTrackingId)
+        {
+            var courseTracking = db.CourseTrackings
+                .FirstOrDefault(x => x.CourseTrackingId == courseTrackingId);
+
+            if (courseTracking == null)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    Message = "The selected course schedule was not found."
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (courseTracking.To < DateTime.Now)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    Message = "This course has already expired. Please update the schedule before sending notifications."
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            var trainees = db.Trainee
+                .Where(x => x.CourseTrackingId == courseTrackingId)
+                .Select(x => x.EmployeeId)
+                .Distinct()
+                .ToList();
+
+            if (!trainees.Any())
+            {
+                return Json(new
+                {
+                    Success = false,
+                    Message = "No employees are assigned to this course. Please add trainees first."
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            int successCount = 0;
+
+            foreach (var empId in trainees)
+            {
+                var userId = UserInformationHelper.GetEmployeeUserId(empId);
+                var fullName = UserInformationHelper.GetEmployeeFullNameById(empId);
+
+                if (userId == null) continue;
+
+                NotifModels notif = new NotifModels
+                {
+                    UserId = userId,
+                    Title = "📘 Course Assignment Notification",
+                    Message = $"Dear {fullName}, you have been assigned a course. Please review and complete it on time.",
+                    URL = "/HRM/CourseTracking"
+                };
+
+                Notify.NotifyUser(notif);
+                successCount++;
+            }
+
+            return Json(new
+            {
+                Success = true,
+                Message = $"{successCount} employee(s) have been successfully notified."
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

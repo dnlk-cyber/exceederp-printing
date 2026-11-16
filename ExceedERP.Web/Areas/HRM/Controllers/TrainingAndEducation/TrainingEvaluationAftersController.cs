@@ -1,15 +1,21 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Company;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.HRM.HRMPlan;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
@@ -106,60 +112,50 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             };
             return entity;
         }
+        [HttpPost, ValidateAntiForgeryToken, AuthorizeRoles(HrmConstants.HRTrainingUser)]
         public JsonResult GenerateEvaluationAfter(int reqId)
         {
-            //List<TrainingEvaluationBefore> trainingEvaluationBefores = new List<TrainingEvaluationBefore>();
-            var categories = db.TrainingEvaluationCriteriaCategories.ToList();
-            int count = 0;
-            foreach (var category in categories)
+            using (var transaction = db.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                var criterias = db.TrainingEvaluationCriterias.Where(x => x.TrainingEvaluationSettingCategoryId == category.TrainingEvaluationSettingCategoryId).ToList();
-                foreach (var criteria in criterias)
+                var trainingRequest = db.TrainingNeedRequests.Find(reqId);
+                if (trainingRequest == null || !(
+                    from detail in db.NeedAssessmentSummaryDetails
+                    join summary in db.NeedAssessmentSummary on detail.AssesmentSummaryId equals summary.NeedAssessmentSummaryId
+                    where detail.AssesmentId == trainingRequest.AssesmentId && summary.LookupId == trainingRequest.LookupId
+                        && summary.IsThirdSendForApproval && summary.IsApproved && !summary.IsRejected
+                    select summary.NeedAssessmentSummaryId).Any())
+                    return Json(new { Message = "Select a request in an approved training summary.", Status = "not-okay" });
+
+                var courseId = trainingRequest.LookupId;
+                var hasCourseCriteria = db.TrainingEvaluationCriterias.Any(x => x.TrainingCourseId == courseId);
+                var existing = db.TrainingEvaluationAfters.Where(x => x.TrainingNeedRequestId == reqId)
+                    .Select(x => x.TrainingEvaluationCriteriaId);
+                var entries = (from criterion in db.TrainingEvaluationCriterias
+                               join category in db.TrainingEvaluationCriteriaCategories
+                                   on criterion.TrainingEvaluationSettingCategoryId equals category.TrainingEvaluationSettingCategoryId
+                               where (hasCourseCriteria ? criterion.TrainingCourseId == courseId : !criterion.TrainingCourseId.HasValue)
+                                   && !existing.Contains(criterion.TrainingEvaluationCriteriaId)
+                               select new { Criterion = criterion, category.Name }).ToList();
+                db.TrainingEvaluationAfters.AddRange(entries.Select(entry => new TrainingEvaluationAfter
                 {
-                    var exist = db.TrainingEvaluationAfters.Where(x => x.TrainingEvaluationCriteriaId == criteria.TrainingEvaluationCriteriaId
-                                                                        && x.TrainingEvaluationSettingCategoryId == criteria.TrainingEvaluationSettingCategoryId
-                                                                        && x.TrainingNeedRequestId == reqId).Any();
-                    if (!exist)
-                    {
-
-
-
-                        var entity = new TrainingEvaluationAfter
-                        {
-                            TrainingNeedRequestId = reqId,
-                            TrainingEvaluationSettingCategoryId = criteria.TrainingEvaluationSettingCategoryId,
-                            Name = category.Name,
-                            TrainingEvaluationCriteriaId = criteria.TrainingEvaluationCriteriaId,
-                            Criteria = criteria.Criteria,
-                            Weight = criteria.Weight,
-                            Result = criteria.Result
-
-                        };
-                        db.TrainingEvaluationAfters.Add(entity);
-                        db.SaveChanges();
-                        entity.TrainingEvaluationAfterId = entity.TrainingEvaluationAfterId;
-                        count++;
-                    }
-                }
-            }
-            if (count > 0)
-            {
-                var formattedData = new
+                    TrainingNeedRequestId = reqId,
+                    TrainingEvaluationSettingCategoryId = entry.Criterion.TrainingEvaluationSettingCategoryId,
+                    Name = entry.Name,
+                    TrainingEvaluationCriteriaId = entry.Criterion.TrainingEvaluationCriteriaId,
+                    Criteria = entry.Criterion.Criteria,
+                    Weight = entry.Criterion.Weight,
+                    Result = entry.Criterion.Result
+                }));
+                db.SaveChanges();
+                transaction.Commit();
+                return Json(new
                 {
-                    Message = "It has been successfully generated.",
-                    Status = "Okay"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
+                    Message = entries.Count > 0 ? "Evaluation criteria generated." : "No new evaluation criteria found.",
+                    Status = entries.Count > 0 ? "Okay" : "not-okay"
+                });
             }
-            var formattedData1 = new
-            {
-                Message = "no new record found.",
-                Status = "not-okay"
-            };
-            return Json(formattedData1, JsonRequestBehavior.AllowGet);
-
         }
-       
+
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
             var fileContents = Convert.FromBase64String(base64);
