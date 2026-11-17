@@ -147,7 +147,7 @@
                 <br />
                 # } #
 
-                # if (IsOnlineApproved && !IsSecondSendForApproval && !IsSecondOnlineApproved)
+                # if (IsOnlineApproved && !IsSecondSendForApproval && !IsSecondOnlineApproved && !SecondOnlineApprovedBy)
                 {#
                 <div class="popupwrapper">
                     <input type="text" disabled="disabled" id="NextApprover" />
@@ -541,6 +541,7 @@
     var slectedUser;
     var isSecondSendForApproval;
     var nextApprover;
+    var secondApprovedBy;
 
     function SelectApprover(e) {
         supplierTextBox = $(e).prev('input').attr('id');
@@ -626,6 +627,7 @@
         isapproved = masterDataItem.IsOnlineApproved;
         issecondapproved = masterDataItem.IsSecondOnlineApproved;
         isSecondSendForApproval = masterDataItem.IsSecondSendForApproval;
+        secondApprovedBy = masterDataItem.SecondOnlineApprovedBy;
         nextApprover = masterDataItem.NextApprover;
     }
 
@@ -665,7 +667,7 @@
 
     function onDataBoundSecondValidation(e) {
         var detailGrid = "#" + e.sender.element[0].id;
-        if (issecondapproved || !isSecondSendForApproval) {
+        if (issecondapproved || !isSecondSendForApproval || secondApprovedBy) {
             $(".k-grid-add", detailGrid).hide();
             $(".k-grid-delete", detailGrid).hide();
             $(".k-grid-edit", detailGrid).hide();

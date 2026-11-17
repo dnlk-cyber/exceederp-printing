@@ -42,7 +42,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 ObjectiveId = indicator.ObjectiveId
             });
 
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
