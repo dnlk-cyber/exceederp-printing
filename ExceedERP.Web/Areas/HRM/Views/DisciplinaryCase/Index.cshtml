@@ -8,6 +8,7 @@
     bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <Legend>@Resources.NavigatorDiscipline_EmployeeDisciplinaryCase</Legend>
+@Html.ActionLink("Configure Payroll fixed contribution", "Index", "HRMContributionSettings", new { area = "HRM" }, new { @class = "btn btn-link" })
 @(Html.Kendo().Grid<DisciplinaryCase>()
       .Name("DisciplinaryCasegrid")
       .Columns(columns =>

@@ -56,18 +56,24 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.Chatting
         public JsonResult GetChatHistory(string user1Id,string user2Id)
         {
             var user = udb.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
-            if (user.Id != user1Id)
+            if (user == null || string.IsNullOrWhiteSpace(user2Id))
             {
-                user1Id = user.Id;
+                return Json(new object[0], JsonRequestBehavior.AllowGet);
             }
-            var messages = db.Messages.AsNoTracking().ToList()
+            user1Id = user.Id;
+            var history = db.Messages.AsNoTracking()
                      .Where(m => (m.SenderId == user1Id && m.ReceiverId == user2Id) ||
                         (m.SenderId == user2Id && m.ReceiverId == user1Id))
                     .OrderBy(m => m.Timestamp)
+                    .ThenBy(m => m.MessageId)
+                    .ToList();
+            var currentUserName = GetUserName(user1Id);
+            var otherUserName = GetUserName(user2Id);
+            var messages = history
                     .Select(m => new
                     {
-                        Sender = GetUserName( m.SenderId),
-                        Receiver = GetUserName(m.ReceiverId),
+                        Sender = m.SenderId == user1Id ? currentUserName : otherUserName,
+                        Receiver = m.ReceiverId == user1Id ? currentUserName : otherUserName,
                         SenderId = m.SenderId,
                         ReceiverId = m.ReceiverId,
                         Content = m.Content,

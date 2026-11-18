@@ -251,6 +251,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                
                 var leaveReq = db.LeaveRequest.FirstOrDefault(x => x.LeaveRequestId == requestesStatus.RequestId);
+                if (leaveReq?.IsVoid == true)
+                {
+                    ModelState.AddModelError("", "A voided leave request cannot be approved or reopened.");
+                    return Json(new[] { requestesStatus }.ToDataSourceResult(request, ModelState));
+                }
+
                 if (leaveReq != null)
                 {
                     //var supervisorId = EmployeeHelper.GetSupervisor(leaveReq.EmployeeId);
@@ -2182,6 +2188,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                 var requesteEmpId = requestesStatus.RequestId;
                 var leaveReq = db.LeaveRequest.FirstOrDefault(x => x.LeaveRequestId == requestesStatus.RequestId);
+                if (leaveReq?.IsVoid == true)
+                {
+                    ModelState.AddModelError("", "A voided leave request cannot be approved or reopened.");
+                    return Json(new[] { requestesStatus }.ToDataSourceResult(request, ModelState));
+                }
+
                 if (leaveReq != null)
                 {
                     var supervisorId = EmployeeHelper.GetSupervisor(leaveReq.EmployeeId);

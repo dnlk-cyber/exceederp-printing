@@ -7,20 +7,35 @@
 }
 <legend>@Resources.ScreeningSetting</legend>
 @(Html.Kendo().Grid<ScreeningSetting>()
-          .Name("ConfigurationGrid")
+      .Name("ConfigurationGrid")
       .Columns(columns =>
       {
           columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["Vacancy"], "VacancyId", "VaccancyCode").EditorTemplateName("VacancyLists").Width(150);
           columns.Bound(c => c.OrganizationType).Width(150);
-          columns.Bound(c => c.ExperienceYear).Width(150);
-          columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(150);
-          columns.Bound(c => c.Language).Width(150);
+          columns.Bound(c => c.IsPercentage).Width(90).ClientTemplate(
+                      "<input type='checkbox' disabled = 'true' value='#=IsPercentage#' " +
+                      "# if (IsPercentage) { #" +
+                      "checked='checked'" +
+                      "# } #" +
+                      "/>");
+          columns.Bound(c => c.ApplyEducationRanking).Width(160).ClientTemplate(
+                      "<input type='checkbox' disabled = 'true' value='#=ApplyEducationRanking#' " +
+                      "# if (ApplyEducationRanking) { #" +
+                      "checked='checked'" +
+                      "# } #" +
+                      "/>");
+          columns.Bound(c => c.IsBasedOnMaxExperience).Width(130).ClientTemplate(
+                      "<input type='checkbox' disabled = 'true' value='#=IsBasedOnMaxExperience#' " +
+                      "# if (IsBasedOnMaxExperience) { #" +
+                      "checked='checked'" +
+                      "# } #" +
+                      "/>");
+          columns.Bound(c => c.MiniExperiencePercentage).Width(130);
 
-
-          //columns.Bound(c => c.Remark);
           columns.Command(command =>
           {
-              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Edit().UpdateText(Resources.ActionButton_Update)
+                               .CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
               command.Destroy().Text(Resources.ActionButton_Cancel);
           }).Width(200);
       })
@@ -29,38 +44,42 @@
           toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-          .Scrollable(h => h.Height(500))
-                 .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-              .Filterable()
-                 .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
+      .Scrollable(h => h.Height(500))
+      //.Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+        .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(x=>x.Add(sort=>sort.ScreeningSettingId).Descending())
               .Events(events =>
               {
 
                   events.Error("error_handler(\"ConfigurationGrid\")");
                   events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
                   events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
+
+
               })
 
           .Model(model =>
           {
               model.Id(p => p.ScreeningSettingId);
-              model.Field(p => p.Gender).DefaultValue(0);
+              //model.Field(p => p.Gender).DefaultValue(0);
+
           })
-                  .Read(read => read.Action("ScreeningSettings_Read", "ScreeningSettings"))
-                      .Create(create => create.Action("ScreeningSettings_Create", "ScreeningSettings"))
-                  .Update(update => update.Action("ScreeningSettings_Update", "ScreeningSettings"))
-                  .Destroy(destroy => destroy.Action("ScreeningSettings_Destroy", "ScreeningSettings"))
+        .Read(read => read.Action("ScreeningSettings_Read", "ScreeningSettings").Data("sendForgery"))
+            .Create(create => create.Action("ScreeningSettings_Create", "ScreeningSettings").Data("sendForgery"))
+        .Update(update => update.Action("ScreeningSettings_Update", "ScreeningSettings").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("ScreeningSettings_Destroy", "ScreeningSettings").Data("sendForgery"))
       ).ClientDetailTemplateId("EducationLevel")
 )
 
@@ -68,7 +87,7 @@
 
 <script id="EducationLevel" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                  .Name("tabstrip2_#=ScreeningSettingId#")
+        .Name("tabstrip2_#=ScreeningSettingId#")
             .SelectedIndex(0)
             .Items(items =>
              {
@@ -77,7 +96,7 @@
                     @<text>
 
                         @(Html.Kendo().Grid<ScreeningEducationLevel>()
-                                  .Name("EducationLevel#=ScreeningSettingId#")
+                              .Name("EducationLevel#=ScreeningSettingId#")
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.EducationLevelId, (IEnumerable)ViewData["EducationLevel"], "LookupId", "Description").EditorTemplateName("EducationLevelLists").Width(150);
@@ -115,10 +134,10 @@
                                   .Model(model =>
                                               model.Id(p => p.ScreeningEducationLevelId))
 
-                                          .Read(read => read.Action("ScreeningEducationLevels_Read", "ScreeningEducationLevels", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                            .Create(create => create.Action("ScreeningEducationLevels_Create", "ScreeningEducationLevels", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                  .Update(update => update.Action("ScreeningEducationLevels_Update", "ScreeningEducationLevels"))
-                                  .Destroy(destroy => destroy.Action("ScreeningEducationLevels_Destroy", "ScreeningEducationLevels"))
+                                          .Read(read => read.Action("ScreeningEducationLevels_Read", "ScreeningEducationLevels", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                            .Create(create => create.Action("ScreeningEducationLevels_Create", "ScreeningEducationLevels", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                  .Update(update => update.Action("ScreeningEducationLevels_Update", "ScreeningEducationLevels").Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("ScreeningEducationLevels_Destroy", "ScreeningEducationLevels").Data("sendForgery"))
                       ).ToClientTemplate()
                         )
                     </text>
@@ -166,10 +185,10 @@
                                   .Model(model =>
                                               model.Id(p => p.ScreeningEducationFieldId))
 
-                                          .Read(read => read.Action("ScreeningEducationFields_Read", "ScreeningEducationFields", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                            .Create(create => create.Action("ScreeningEducationFields_Create", "ScreeningEducationFields", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                  .Update(update => update.Action("ScreeningEducationFields_Update", "ScreeningEducationFields"))
-                                  .Destroy(destroy => destroy.Action("ScreeningEducationFields_Destroy", "ScreeningEducationFields"))
+                                          .Read(read => read.Action("ScreeningEducationFields_Read", "ScreeningEducationFields", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                            .Create(create => create.Action("ScreeningEducationFields_Create", "ScreeningEducationFields", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                  .Update(update => update.Action("ScreeningEducationFields_Update", "ScreeningEducationFields").Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("ScreeningEducationFields_Destroy", "ScreeningEducationFields").Data("sendForgery"))
                       ).ToClientTemplate()
                         )
                     </text>
@@ -217,10 +236,10 @@
                                   .Model(model =>
                                               model.Id(p => p.ScreeningExperienceJobtitleId))
 
-                                          .Read(read => read.Action("ScreeningExperienceJobtitles_Read", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                            .Create(create => create.Action("ScreeningExperienceJobtitles_Create", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                  .Update(update => update.Action("ScreeningExperienceJobtitles_Update", "ScreeningExperienceJobtitles"))
-                                  .Destroy(destroy => destroy.Action("ScreeningExperienceJobtitles_Destroy", "ScreeningExperienceJobtitles"))
+                                          .Read(read => read.Action("ScreeningExperienceJobtitles_Read", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                            .Create(create => create.Action("ScreeningExperienceJobtitles_Create", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                  .Update(update => update.Action("ScreeningExperienceJobtitles_Update", "ScreeningExperienceJobtitles").Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("ScreeningExperienceJobtitles_Destroy", "ScreeningExperienceJobtitles").Data("sendForgery"))
                       ).ToClientTemplate()
                         )
                     </text>
@@ -231,7 +250,8 @@
                 @<text>
 
                     @(Html.Kendo().Grid<ScreeningExperienceJobtitleForInternal>()
-                                      .Name("ScreeningExperienceJobtitleForInternal#=ScreeningSettingId#")
+                                      
+                         .Name("ScreeningExperienceJobtitleForInternal#=ScreeningSettingId#")
                           .Columns(columns =>
                           {
                               columns.ForeignKey(c => c.ExperienceJobTitleId, (IEnumerable)ViewData["LookupsExternalExperienceJobTitleForInternalApplicants"], "LookupId", "Description").EditorTemplateName("ExperienceJobtitleListForInternal").Width(150);
@@ -269,10 +289,10 @@
                                       .Model(model =>
                                                   model.Id(p => p.ScreeningExperienceJobtitleForInternalId))
 
-                                              .Read(read => read.Action("ScreeningExperienceJobtitleForInternal_Read", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                                .Create(create => create.Action("ScreeningExperienceJobtitleForInternal_Create", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
-                                      .Update(update => update.Action("ScreeningExperienceJobtitleForInternal_Update", "ScreeningExperienceJobtitles"))
-                                      .Destroy(destroy => destroy.Action("ScreeningExperienceJobtitleForInternal_Destroy", "ScreeningExperienceJobtitles"))
+                                              .Read(read => read.Action("ScreeningExperienceJobtitleForInternal_Read", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("ScreeningExperienceJobtitleForInternal_Create", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }).Data("sendForgery"))
+                                      .Update(update => update.Action("ScreeningExperienceJobtitleForInternal_Update", "ScreeningExperienceJobtitles").Data("sendForgery"))
+                                      .Destroy(destroy => destroy.Action("ScreeningExperienceJobtitleForInternal_Destroy", "ScreeningExperienceJobtitles").Data("sendForgery"))
                           ).ToClientTemplate()
                     )
                 </text>);

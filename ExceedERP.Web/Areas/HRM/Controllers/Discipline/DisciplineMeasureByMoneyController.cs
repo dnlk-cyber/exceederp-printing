@@ -751,11 +751,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             var hrmContributionSetting = db.HRMContributionSettings.FirstOrDefault();
 
 
-            if (hrmContributionSetting == null)
+            if (hrmContributionSetting == null || !db.ContributionTypes.Any(x =>
+                x.ContributionTypeId == hrmContributionSetting.ContributionTypeId
+                && x.ContributionCategory == ExceedERP.Core.Domain.Common.ContributionCategory.FIXED))
             {
                 return Json(new
                 {
-                    Message = "No Fixed Contribution type found. Please configure it first.",
+                    Message = "Select a Payroll fixed contribution type using Configure Payroll fixed contribution on the Discipline Record page.",
                     Status = "Not-Ok"
                 }, JsonRequestBehavior.AllowGet);
             }

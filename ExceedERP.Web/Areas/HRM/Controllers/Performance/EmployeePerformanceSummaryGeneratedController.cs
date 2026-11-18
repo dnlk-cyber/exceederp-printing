@@ -280,7 +280,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
 
             var updatePerformance = db.EmployeePerformances.Find(id);
-            if (updatePerformance != null)
+            if (updatePerformance != null && !updatePerformance.IsHRApproved)
             {
                 updatePerformance.Result = result;
                 db.Entry(updatePerformance).State = EntityState.Modified;
@@ -354,7 +354,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 foreach (var evaluation in evaluations)
                 {
                     var result = totals.TryGetValue(evaluation.EmployeePerformanceId, out var t) ? t.Score : 0m;
-                    if (evaluation.Result != result)
+                    if (!evaluation.IsHRApproved && evaluation.Result != result)
                     {
                         evaluation.Result = result;
                     }

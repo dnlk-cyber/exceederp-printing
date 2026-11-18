@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         {
             IQueryable<Core.Domain.HRM.EmployeeDetail.Termination> terminations = db.Terminations.Where(x=>x.IsSendForApproval).OrderByDescending(x => x.ApplicationDate);
             
-            DataSourceResult result = terminations.ToDataSourceResult(request, termination => new
+            var rows = terminations.Select(termination => new
             {
                 TerminationId = termination.TerminationId,
                 EmployeeId = termination.EmployeeId,
@@ -64,7 +64,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 TerminationDate = termination.TerminationDate,
                 ApplicationDate = termination.ApplicationDate,
                 Remark = termination.Remark,
-                EmployeeCode = termination.EmployeeCode,
+                EmployeeCode = string.IsNullOrEmpty(termination.EmployeeCode) || termination.EmployeeCode.Trim() == ""
+                    ? termination.Employee.EmployeeCode
+                    : termination.EmployeeCode,
                 IsEarlyRetirement = termination.IsEarlyRetirement,
 
                 TerminationDateAm = termination.TerminationDateAm,
@@ -81,7 +83,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 IsForciblyTerminated = termination.IsForciblyTerminated
             });
 
-            return Json(result);
+            return Json(rows.ToDataSourceResult(request));
         }
 
         public void SetEmployeeId(string fullName)

@@ -4052,6 +4052,9 @@
     <Content Include="Areas\HRM\Views\ScreeningSettings\EditorTemplates\VacancyLists.cshtml" />
     <Content Include="Areas\HRM\Views\ScreeningSettings\EditorTemplates\WorkUnit.cshtml" />
     <Content Include="Areas\HRM\Views\ScreeningSettings\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\HRMContributionSettings\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\InternalRecruitmentCriteriaTypeSettings\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\InternalVacancyEligibilitySettings\Index.cshtml" />
     <Content Include="Areas\HRM\Views\Templates\Create.cshtml" />
     <Content Include="Areas\HRM\Views\Templates\Delete.cshtml" />
     <Content Include="Areas\HRM\Views\Templates\Details.cshtml" />
@@ -8096,6 +8099,10 @@
     <Content Include="Areas\HRM\Views\NeedAssessmentHR\FiscalYearTrainingPlanActionPlan.cshtml" />
     <Content Include="Areas\HRM\Views\NeedAssessmentHR\Index.cshtml" />
     <Content Include="Areas\HRM\Views\NeedAssessmentHR\TrainingNeedRequestReport.cshtml" />
+    <Content Include="Areas\HRM\Views\HRMContributionSettings\EditorTemplates\ApSetupItem.cshtml" />
+    <Content Include="Areas\HRM\Views\HRMContributionSettings\EditorTemplates\BenefitType.cshtml" />
+    <Content Include="Areas\HRM\Views\HRMContributionSettings\EditorTemplates\contrubtiontype.cshtml" />
+    <Content Include="Areas\HRM\Views\HRMContributionSettings\EditorTemplates\TaxRate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

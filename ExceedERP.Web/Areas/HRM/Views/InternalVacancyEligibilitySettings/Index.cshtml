@@ -1,0 +1,26 @@
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Internal Vacancy Eligibility Rule</legend>
+@(Html.Kendo().Grid<InternalVacancyEligibilitySetting>()
+    .Name("internalVacancyEligibilitySettings")
+    .Columns(columns =>
+    {
+        columns.Bound(x => x.EnforceMinimumServicePeriod);
+        columns.Bound(x => x.MinimumYearsOfService);
+        columns.Bound(x => x.AllowContractEmployees);
+        columns.Bound(x => x.AllowStandbyTechnicians);
+        columns.Bound(x => x.AllowHROverride);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+    })
+    .ToolBar(toolbar => toolbar.Create())
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .DataSource(dataSource => dataSource.Ajax()
+        .Events(events => events.Error("error_handler('internalVacancyEligibilitySettings')"))
+        .Model(model => model.Id(x => x.InternalVacancyEligibilitySettingId))
+        .Read(read => read.Action("InternalVacancyEligibilitySettings_Read", "InternalVacancyEligibilitySettings"))
+        .Create(create => create.Action("InternalVacancyEligibilitySettings_Create", "InternalVacancyEligibilitySettings"))
+        .Update(update => update.Action("InternalVacancyEligibilitySettings_Update", "InternalVacancyEligibilitySettings"))
+        .Destroy(destroy => destroy.Action("InternalVacancyEligibilitySettings_Destroy", "InternalVacancyEligibilitySettings"))))

@@ -292,7 +292,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             var formulaSetting = db.SeveranceCalculationSettings
                        .FirstOrDefault(x => x.IsActive);
 
-            if (formulaSetting?.FormulaType == SeveranceFormulaType.NewFormula)
+            if (formulaSetting == null || formulaSetting.FormulaType == SeveranceFormulaType.NewFormula)
             {
                 // New calculation
                 foreach (var employee in employees)
@@ -325,6 +325,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                     decimal balance = 0;
                     decimal monthsFromGrossCompansations = 0;
                     decimal monthlySalary = placement.Salary;
+                    if (monthlySalary <= 0)
+                        continue;
+
                     if (HasRequiredExperience(now, employee, placement))
                     {
                         totaYearOfExperience = CalculateTotalYearsOfExperience(now, employee.HiredDate);
@@ -334,7 +337,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                         days = TotalDays(now, employee.HiredDate);
                         //grossCompensatioPayment = CalculateBalance(totaYearOfExperience, placement);
                         var (year, month, day) = TotalYearsOfExperience(now, employee.HiredDate);
-                        tax = (decimal)XAPI.IncomeTax.GetIncomeTax((float)monthlySalary);
+                        tax = RoundSeveranceAmount((decimal)XAPI.IncomeTax.GetIncomeTax((float)monthlySalary));
 
                         //totalServiceInmonth = TotalServiceInMonths(now, employee.HiredDate);
                         totalServiceInmonth = (year * 12) + month + ((decimal)day / 30); ;
@@ -348,7 +351,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                         decimal otherYearPayment = monthlySalary * rate;
                         grossCompensatioPayment = CalculateGrossCompensationPaymentNew(year,month,day, placement);
 
-                        monthsFromGrossCompansations = Math.Round(grossCompensatioPayment / monthlySalary, 4);
+                        monthsFromGrossCompansations = RoundSeveranceAmount(grossCompensatioPayment / monthlySalary);
 
                         // Whole months
                         int wholeMonths = (int)Math.Floor(monthsFromGrossCompansations);
@@ -360,24 +363,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                         // Tax for complete months
                         decimal wholeMonthsTax = wholeMonths * tax;
 
-                        // Gross for complete months
-                        decimal wholeMonthsGross = wholeMonths * monthlySalary;
-
-
-
-                        decimal differenceWholeMonthsGrossandGrossComponsation = grossCompensatioPayment - wholeMonthsGross;
-
-                        decimal TaxOnDifferenceWholeMonthsGrossandGrossComponsation =
-                            (decimal)XAPI.IncomeTax.GetIncomeTax((float)differenceWholeMonthsGrossandGrossComponsation);
+                        var partialMonthsGross = RoundSeveranceAmount(fractionMonths * monthlySalary);
+                        var partialMonthsTax = RoundSeveranceAmount(
+                            (decimal)XAPI.IncomeTax.GetIncomeTax((float)partialMonthsGross));
 
                         decimal TotalTax =
-                            TaxOnDifferenceWholeMonthsGrossandGrossComponsation + wholeMonthsTax;
+                            partialMonthsTax + wholeMonthsTax;
 
                         compensatioPaymentT = grossCompensatioPayment / totalServiceInmonth;
                         grossCompensation = compensatioPaymentT + placement.Salary;
                         Experience = TotalYearsOfExperienceWord(now, employee.HiredDate);
                         taxOnMonthlySalaryCompensation = (decimal)XAPI.IncomeTax.GetIncomeTax((float)otherYearPayment);
-                        taxdiffernce = TaxOnDifferenceWholeMonthsGrossandGrossComponsation;
+                        taxdiffernce = partialMonthsTax;
                         accTaxdiffernce = TotalTax;
                         //netPay = CalculateNetPay(balance, placement.Salary, tax);
                         netPay = grossCompensatioPayment - accTaxdiffernce;
@@ -425,7 +422,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                             db.SaveChanges();
 
                         }
-                        else
+                        else if (!payableDetail.IsSendForPayment)
                         {
                             payableDetail.BasicSalary = placement.Salary;
                             payableDetail.BranchId = placement.BranchId;
@@ -561,7 +558,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                             db.SaveChanges();
 
                         }
-                        else
+                        else if (!payableDetail.IsSendForPayment)
                         {
                             payableDetail.BasicSalary = placement.Salary;
                             payableDetail.BranchId = placement.BranchId;
@@ -856,6 +853,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
         //           (remainingYears * otherYearPayment) +
         //           ((otherYearPayment / 365m) * totalDays);
         //}
+        private static decimal RoundSeveranceAmount(decimal amount)
+        {
+            return Math.Round(amount, 2, MidpointRounding.AwayFromZero);
+        }
+
         private decimal CalculateGrossCompensationPaymentNew(int year, int month,int day, Placement placement)
         {
             decimal monthlySalary = placement.Salary;
@@ -877,23 +879,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                     ? severancePayableSetting.YearsPaidWithFullSalary.Value
                     : 1m;
 
-            // Full salary payment for initial years
-            decimal initialYearsPayment = monthlySalary * initialYears;
+            // Finance uses 30-day months / a 360-day year for partial service.
+            var totalYears = year + ((month * 30m) + day) / 360m;
+            var fullSalaryYears = Math.Min(totalYears, initialYears);
+            var ratedYears = totalYears - fullSalaryYears;
+            var completedRatedYears = Math.Floor(ratedYears);
+            var ratedAnnualPayment = monthlySalary * rate;
 
-            // Remaining years paid by rate
-            decimal remainingYears = Math.Max(year - initialYears, 0);
-
-            decimal ratedYearlyPayment = monthlySalary * rate;
-
-            // Remaining month/day proportional payment
-            int totalDays = (month * 30) + day;
-
-            decimal proportionalPayment =
-                (ratedYearlyPayment / 365m) * totalDays;
-
-            return initialYearsPayment +
-                   (remainingYears * ratedYearlyPayment) +
-                   proportionalPayment;
+            return RoundSeveranceAmount(monthlySalary * fullSalaryYears)
+                + RoundSeveranceAmount(completedRatedYears * ratedAnnualPayment)
+                + RoundSeveranceAmount((ratedYears - completedRatedYears) * ratedAnnualPayment);
         }
         private decimal CalculateGrossCompensationPayment(decimal totalMonths, Placement placement)
         {

@@ -37,7 +37,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ViewData["OrganizationType"] = db.ExperienceOrganizationTypeSettings.ToList();
             ViewData["ExperienceJobtitle"] = db.ExperienceJobTitles.ToList();
             ViewData["Lookups"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-            ViewData["LookupsExternalExperienceJobTitleForInternalApplicants"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.JOB_TITLE||x.LookupType ==LookUpTypes.OLD_JOB_TITLE);
+            ViewData["LookupsExternalExperienceJobTitleForInternalApplicants"] = db.Lookups
+                .Where(x => x.LookupType == LookUpTypes.JOB_TITLE || x.LookupType == LookUpTypes.OLD_JOB_TITLE).ToList();
         }
 
         // GET: HRM/EducationLevelSettings/Details/5

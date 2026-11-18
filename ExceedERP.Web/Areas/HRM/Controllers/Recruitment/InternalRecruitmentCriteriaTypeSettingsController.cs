@@ -57,6 +57,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 var entity = GetMappedObject(setting);
                 db.InternalRecruitmentCriteriaTypeSettings.Add(entity);
                 db.SaveChanges();
+                setting.InternalRecruitmentCriteriaTypeSettingId = entity.InternalRecruitmentCriteriaTypeSettingId;
                 
             }
             return Json(new[] { setting }.ToDataSourceResult(request, ModelState));

@@ -130,7 +130,19 @@
         }
 
         ul#notification.dropdown-menu-right.dropdown-navbar.navbar-pink.dropdown-menu.dropdown-caret.dropdown-close {
-            width: 500px !important;
+            width: 360px;
+            max-width: calc(100vw - 24px);
+        }
+
+        #notificationStatus, #notification .notification-preview-item > span {
+            padding: 8px 12px;
+        }
+
+        #notification .notification-preview-item > a,
+        #notification .notification-preview-item > span {
+            display: block;
+            white-space: normal;
+            overflow-wrap: break-word;
         }
 
         .dialog_css {
@@ -410,127 +422,39 @@
 
 		</li>
 
-		<li class="purple">
-			<a data-toggle="dropdown" class="dropdown-toggle" href="#">
-				<i class="ace-icon fa fa-bell icon-animated-bell"></i>
-				<span id="myNotification" class="badge badge-important"></span>
-			</a>
+        @if (Request.IsAuthenticated)
+        {
+            <li class="purple" id="notificationDropdown" data-preview-url="@Url.Action("Preview", "Notification", new { area = "" })">
+                <a data-toggle="dropdown" class="dropdown-toggle" href="@Url.Action("Notification", "Notification", new { area = "" })"
+                   aria-label="Notifications" aria-expanded="false" aria-controls="notification">
+                    <i class="ace-icon fa fa-bell" aria-hidden="true"></i>
+                    <span id="myNotification" class="badge badge-important" aria-live="polite"></span>
+                </a>
+                <ul id="notification" class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+                    <li class="dropdown-header" id="notificationHeading" role="status">Notifications</li>
+                    <li id="notificationStatus" role="status">Loading notifications...</li>
+                    <li class="dropdown-footer" id="notificationMarkRead" hidden>
+                        @using (Html.BeginForm("MarkReadAll", "Notification", new { area = "" }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-link">Mark all as read</button>
+                        }
+                    </li>
+                    <li class="dropdown-footer">
+                        <a href="@Url.Action("Notification", "Notification", new { area = "" })">See all notifications <i class="ace-icon fa fa-arrow-right"></i></a>
+                    </li>
+                </ul>
+            </li>
+        }
 
-			<ul id="notification" class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
-			   
-
-			</ul>
-		</li>
-
-		<li class="green">
-			<a data-toggle="dropdown" class="dropdown-toggle" href="#">
-				<i class="ace-icon fa fa-envelope icon-animated-vertical"></i>
-				<span class="badge badge-success">5</span>
-			</a>
-
-			@*<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
-								<li class="dropdown-header">
-									<i class="ace-icon fa fa-envelope-o"></i>
-									5 Messages
-								</li>
-
-								<li class="dropdown-content">
-									<ul class="dropdown-menu dropdown-navbar">
-										<li>
-											<a href="#" class="clearfix">
-												<img src="~/Content/ace/avatars/avatar.png" class="msg-photo" alt="Alex's Avatar" />
-												<span class="msg-body">
-													<span class="msg-title">
-														<span class="blue">Alex:</span>
-														Ciao sociis natoque penatibus et auctor ...
-													</span>
-
-													<span class="msg-time">
-														<i class="ace-icon fa fa-clock-o"></i>
-														<span>a moment ago</span>
-													</span>
-												</span>
-											</a>
-										</li>
-
-										<li>
-											<a href="#" class="clearfix">
-												<img src="~/Content/ace/avatars/avatar3.png" class="msg-photo" alt="Susan's Avatar" />
-												<span class="msg-body">
-													<span class="msg-title">
-														<span class="blue">Susan:</span>
-														Vestibulum id ligula porta felis euismod ...
-													</span>
-
-													<span class="msg-time">
-														<i class="ace-icon fa fa-clock-o"></i>
-														<span>20 minutes ago</span>
-													</span>
-												</span>
-											</a>
-										</li>
-
-										<li>
-											<a href="#" class="clearfix">
-												<img src="~/Content/ace/avatars/avatar4.png" class="msg-photo" alt="Bob's Avatar" />
-												<span class="msg-body">
-													<span class="msg-title">
-														<span class="blue">Bob:</span>
-														Nullam quis risus eget urna mollis ornare ...
-													</span>
-
-													<span class="msg-time">
-														<i class="ace-icon fa fa-clock-o"></i>
-														<span>3:15 pm</span>
-													</span>
-												</span>
-											</a>
-										</li>
-
-										<li>
-											<a href="#" class="clearfix">
-												<img src="~/Content/ace/avatars/avatar2.png" class="msg-photo" alt="Kate's Avatar" />
-												<span class="msg-body">
-													<span class="msg-title">
-														<span class="blue">Kate:</span>
-														Ciao sociis natoque eget urna mollis ornare ...
-													</span>
-
-													<span class="msg-time">
-														<i class="ace-icon fa fa-clock-o"></i>
-														<span>1:33 pm</span>
-													</span>
-												</span>
-											</a>
-										</li>
-
-										<li>
-											<a href="#" class="clearfix">
-												<img src="~/Content/ace/avatars/avatar5.png" class="msg-photo" alt="Fred's Avatar" />
-												<span class="msg-body">
-													<span class="msg-title">
-														<span class="blue">Fred:</span>
-														Vestibulum id penatibus et auctor  ...
-													</span>
-
-													<span class="msg-time">
-														<i class="ace-icon fa fa-clock-o"></i>
-														<span>10:09 am</span>
-													</span>
-												</span>
-											</a>
-										</li>
-									</ul>
-								</li>
-
-								<li class="dropdown-footer">
-									<a href="inbox.html">
-										See all messages
-										<i class="ace-icon fa fa-arrow-right"></i>
-									</a>
-								</li>
-							</ul>*@
-		</li>
+        @if (Request.IsAuthenticated)
+        {
+            <li class="green">
+                <a href="@Url.Action("Index", "Chat", new { area = "InfoDesk" })" aria-label="Messages" title="Messages">
+                    <i class="ace-icon fa fa-envelope" aria-hidden="true"></i>
+                </a>
+            </li>
+        }
 		<li class="light-blue">
 			@Html.Partial("_LoginPartial")
 		</li>
@@ -1032,53 +956,54 @@
                }
            });
 
-		//function setTotalNotification(totalNotif) {
-		//    //console.log(totalNotif);
+        var notificationDropdown = $("#notificationDropdown");
+        if (notificationDropdown.length) {
+            var notificationMenu = $("#notification");
+            var notificationStatus = $("#notificationStatus");
+            var notificationHeading = $("#notificationHeading");
+            var markRead = $("#notificationMarkRead");
+            var previewPending = false;
 
-		//    document.getElementById("myNotification").textContent = totalNotif.Count;
-			
-		 
-		//    $("#messages").html("<p> Total Notif:" + totalNotif + "</p>");
+            function loadNotifications() {
+                if (previewPending) {
+                    return;
+                }
 
-		//    //dropdown UI
-		//    $("#notification").empty();
-		//    //count
-		//    var count = ' <li class="dropdown-header"><p><i class="ace-icon fa fa-exclamation-triangle"></i>' + totalNotif.Count +' &nbsp;&nbsp; Notifications &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../Notification/MarkReadAll" align="right">Mark All as Read </a></p></li>'; 
-		//    $('#notification').append(count);
-		//    //list notifications
-		//    for(var i = 0; i < totalNotif.List.length; i++) { 
-		//        var list = '<li><a href="' + totalNotif.List[i].Url+'"><i class="fa fa-bell"></i>' + truncate(totalNotif.List[i].Message,100) + '</a></li>';
-		//        $('#notification').append(list);
-				
-		//        if (i === 9)
-		//            break;
-		//    }
-		//    //see all notif
-		//    var seeall = '  <li class="dropdown-footer"><a href="../Notification/Notification">See all notifications<i class="ace-icon fa fa-arrow-right"></i></a></li>';
-		//    $('#notification').append(seeall);
-		//}
+                previewPending = true;
+                $.ajax({
+                    url: notificationDropdown.attr("data-preview-url"),
+                    dataType: "json",
+                    cache: false,
+                    global: false
+                }).done(function (result) {
+                    $("#myNotification").text(result.Count || "");
+                    notificationHeading.text("Notifications (" + result.Count + " unread)");
+                    notificationMenu.children(".notification-preview-item").remove();
+                    notificationStatus.text(result.Items.length ? "" : "No unread notifications.")
+                        .prop("hidden", result.Items.length > 0);
+                    markRead.prop("hidden", result.Count === 0);
 
-		//var hub = $.connection.notificationHub;
+                    $.each(result.Items, function (_, item) {
+                        var message = item.Title || item.Details || "Notification";
+                        if (item.Title && item.Details && item.Title !== item.Details) {
+                            message += " - " + item.Details;
+                        }
 
-		////Client Call
-		//hub.client.broadcaastNotif = function (totalNotif) {
-		//   setTotalNotification(totalNotif);
-		//};
+                        var content = item.Url ? $("<a>").attr("href", item.Url) : $("<span>");
+                        content.text(message);
+                        $("<li>").addClass("notification-preview-item").append(content).insertBefore(markRead);
+                    });
+                }).fail(function () {
+                    notificationStatus.text("Could not load notifications. Reopen the bell to try again.")
+                        .prop("hidden", false);
+                }).always(function () {
+                    previewPending = false;
+                });
+            }
 
-			
-	   // $.connection.hub.start().done(function () { });
-
-		//$.connection.hub.start()
-		//    .done(function () {
-		//        console.log("Hub Connected!" + Date.now());
-
-		//        //Server Call
-		//        hub.server.getNotification();
-
-		//    })
-		//    .fail(function () {
-		//        console.log("Could not Connect!");
-		//      });
+            notificationDropdown.on("show.bs.dropdown", loadNotifications);
+            loadNotifications();
+        }
 
 		  //end of doc ready
 	});

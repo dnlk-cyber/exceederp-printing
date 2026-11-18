@@ -70,6 +70,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
                 db.InternalVacancyEligibilitySettings.Add(entity);
                 db.SaveChanges();
+                setting.InternalVacancyEligibilitySettingId = entity.InternalVacancyEligibilitySettingId;
 
                 UserHelper.OperationLog(
                     Request.UserHostAddress,
