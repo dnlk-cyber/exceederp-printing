@@ -79,7 +79,7 @@
                           columns.Command(command =>
                           {
                               command.Edit();
-                              command.Custom("").Click("EnableOrDisableActive").Text("Enable or Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable ", @id = "enableDisable" });
+                              command.Custom("enableDisableBtn").Click("EnableOrDisableActive").Text("Enable or Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable " });
 
                               command.Destroy();
                           }).Width(300);
@@ -253,7 +253,22 @@
         var masterDataItem = masterGrid.dataItem(masterRow);
 
         masterId = masterDataItem.ObjectiveId;
+
+        if (e.detailRow) {
+            e.detailRow.find(".k-grid-toolbar .k-grid-add").attr("href", "javascript:void(0);");
+        }
     }
+
+    $(document).on("click", ".k-grid-toolbar .k-grid-add", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var grid = $(this).closest(".k-grid").data("kendoGrid");
+        if (grid) {
+            grid.addRow();
+        }
+        return false;
+    });
+
     function EnableOrDisableActive(e)
     {
 

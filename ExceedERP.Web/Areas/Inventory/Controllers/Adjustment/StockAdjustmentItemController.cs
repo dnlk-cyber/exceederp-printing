@@ -49,9 +49,17 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         public ActionResult StockAdjustmentItemss_Create([DataSourceRequest]DataSourceRequest request, StockAdjustmentItems stockAdjustmentItems , int id )
             {
             var stockAdjustment = db.StockAdjustments.Find(id);
+            if (stockAdjustment == null)
+            {
+                ModelState.AddModelError("record", "Stock adjustment record was not found.");
+            }
+            else
+            {
+                stockAdjustmentItems.StockAdjustmentID = id;
+            }
 
             var exist = db.StockAdjustmentItemss
-              .Where(x => x.StockAdjustmentID == stockAdjustmentItems.StockAdjustmentID)
+              .Where(x => x.StockAdjustmentID == id)
              .Where(x => x.ItemCode == stockAdjustmentItems.ItemCode)
              .AsQueryable();
             if (exist.Any())
@@ -59,34 +67,48 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                 ModelState.AddModelError("exist", "Item " + stockAdjustmentItems.ItemCode + " already exists");
             }
 
-            var item = db.StoreItemAssignments.Where(it => it.ItemCode  == stockAdjustmentItems.ItemCode).FirstOrDefault(x => x.StoreCode  == stockAdjustment.StoreCode);
+            var inventoryItem = db.InventoryItems.Find(stockAdjustmentItems.ItemCode);
+            if (inventoryItem == null)
+            {
+                ModelState.AddModelError("item", "Select a valid item.");
+            }
+            else if (string.IsNullOrWhiteSpace(stockAdjustmentItems.ItemCategoryCode))
+            {
+                stockAdjustmentItems.ItemCategoryCode = inventoryItem.ItemCategoryCode;
+            }
+
+            var storeItem = stockAdjustment == null
+                ? null
+                : db.StoreItemAssignments.FirstOrDefault(it => it.ItemCode == stockAdjustmentItems.ItemCode && it.StoreCode == stockAdjustment.StoreCode);
+            if (stockAdjustment != null && storeItem == null)
+            {
+                ModelState.AddModelError("store", "Item " + stockAdjustmentItems.ItemCode + " is not available in store " + stockAdjustment.StoreCode + ".");
+            }
         
             if (ModelState.IsValid)
             {
-                if (item != null)
+                var entity = new StockAdjustmentItems
                 {
-                    var entity = new StockAdjustmentItems
-                    {
-                        StockAdjustmentID = id,
-                        ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
-                        ItemCode = stockAdjustmentItems.ItemCode,
-                        BinCardBalance = item.Balance,
-                        StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,
-                        AdjustedQuantity = stockAdjustmentItems.AdjustedQuantity,
-                        AdjustedPrice = stockAdjustmentItems.AdjustedPrice,
-                        PriceAdjustmentType = stockAdjustmentItems.PriceAdjustmentType,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Now
+                    StockAdjustmentID = id,
+                    ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
+                    ItemCode = stockAdjustmentItems.ItemCode,
+                    BinCardBalance = storeItem.Balance,
+                    StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,
+                    AdjustedQuantity = stockAdjustmentItems.AdjustedQuantity,
+                    AdjustedPrice = stockAdjustmentItems.AdjustedPrice,
+                    PriceAdjustmentType = stockAdjustmentItems.PriceAdjustmentType,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now
                      
-                    };
+                };
 
-                    db.StockAdjustmentItemss.Add(entity);
-                    db.SaveChanges();
-                    stockAdjustmentItems.StockAdjustmentItemsID = entity.StockAdjustmentItemsID;
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "stock adjustment item", "Success", User.Identity.Name, $"created stock adjustment item {entity.ItemCode} under record {entity.StockAdjustmentID} ", Modules.Inventory);
-                    #endregion
-                }
+                db.StockAdjustmentItemss.Add(entity);
+                db.SaveChanges();
+                stockAdjustmentItems.StockAdjustmentItemsID = entity.StockAdjustmentItemsID;
+                stockAdjustmentItems.BinCardBalance = entity.BinCardBalance;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "stock adjustment item", "Success", User.Identity.Name, $"created stock adjustment item {entity.ItemCode} under record {entity.StockAdjustmentID} ", Modules.Inventory);
+                #endregion
             }
 
             return Json(new[] { stockAdjustmentItems }.ToDataSourceResult(request, ModelState));
@@ -97,7 +119,16 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         public ActionResult StockAdjustmentItemss_Update([DataSourceRequest]DataSourceRequest request, StockAdjustmentItems stockAdjustmentItems, int id)
         {
             var stockAdjustment = db.StockAdjustments.Find(id);
-            var exist = db.StockAdjustmentItemss.Where(x => x.StockAdjustmentID == stockAdjustmentItems.StockAdjustmentID)
+            if (stockAdjustment == null)
+            {
+                ModelState.AddModelError("record", "Stock adjustment record was not found.");
+            }
+            else
+            {
+                stockAdjustmentItems.StockAdjustmentID = id;
+            }
+
+            var exist = db.StockAdjustmentItemss.Where(x => x.StockAdjustmentID == id)
              .Where(x => x.StockAdjustmentItemsID != stockAdjustmentItems.StockAdjustmentItemsID)
              .Where(x => x.ItemCode == stockAdjustmentItems.ItemCode)
              .AsQueryable();
@@ -105,35 +136,54 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             {
                 ModelState.AddModelError("exist", "Item " + stockAdjustmentItems.ItemCode + " already exists");
             }
-            var item = db.StoreItemAssignments.FirstOrDefault(it => it.ItemCode == stockAdjustmentItems.ItemCode && it.StoreCode == stockAdjustment.StoreCode);
+
+            var inventoryItem = db.InventoryItems.Find(stockAdjustmentItems.ItemCode);
+            if (inventoryItem == null)
+            {
+                ModelState.AddModelError("item", "Select a valid item.");
+            }
+            else if (string.IsNullOrWhiteSpace(stockAdjustmentItems.ItemCategoryCode))
+            {
+                stockAdjustmentItems.ItemCategoryCode = inventoryItem.ItemCategoryCode;
+            }
+
+            var existing = db.StockAdjustmentItemss.Find(stockAdjustmentItems.StockAdjustmentItemsID);
+            var storeItem = stockAdjustment == null
+                ? null
+                : db.StoreItemAssignments.FirstOrDefault(it => it.ItemCode == stockAdjustmentItems.ItemCode && it.StoreCode == stockAdjustment.StoreCode);
+            if (stockAdjustment != null && storeItem == null)
+            {
+                ModelState.AddModelError("store", "Item " + stockAdjustmentItems.ItemCode + " is not available in store " + stockAdjustment.StoreCode + ".");
+            }
            
             if (ModelState.IsValid)
             {
-                if (item != null)
+                var entity = new StockAdjustmentItems
                 {
-                    var entity = new StockAdjustmentItems
-                    {
-                        StockAdjustmentItemsID = stockAdjustmentItems.StockAdjustmentItemsID,
-                        StockAdjustmentID = stockAdjustmentItems.StockAdjustmentID,
-                        ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
-                        ItemCode = stockAdjustmentItems.ItemCode,
-                        BinCardBalance = item.Balance,
-                        StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,
-                        AdjustedQuantity = stockAdjustmentItems.AdjustedQuantity ,
-                        AdjustedPrice = stockAdjustmentItems.AdjustedPrice ,
-                        PriceAdjustmentType = stockAdjustmentItems.PriceAdjustmentType,
-                        ModifiedBy = User.Identity.Name,
-                        LastModified = DateTime.Now
-                    };
+                    StockAdjustmentItemsID = stockAdjustmentItems.StockAdjustmentItemsID,
+                    StockAdjustmentID = id,
+                    ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
+                    ItemCode = stockAdjustmentItems.ItemCode,
+                    BinCardBalance = storeItem.Balance,
+                    StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,
+                    AdjustedQuantity = stockAdjustmentItems.AdjustedQuantity ,
+                    AdjustedPrice = stockAdjustmentItems.AdjustedPrice ,
+                    PriceAdjustmentType = stockAdjustmentItems.PriceAdjustmentType,
+                    CreatedBy = existing != null ? existing.CreatedBy : stockAdjustmentItems.CreatedBy,
+                    DateCreated = existing != null ? existing.DateCreated : stockAdjustmentItems.DateCreated,
+                    UOM = existing != null ? existing.UOM : stockAdjustmentItems.UOM,
+                    OrgBranchName = existing != null ? existing.OrgBranchName : stockAdjustmentItems.OrgBranchName,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Now
+                };
 
-                    db.StockAdjustmentItemss.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "stock adjustment item", "Success", User.Identity.Name, $"updated stock adjustment item {entity.ItemCode} under record {entity.StockAdjustmentID} ", Modules.Inventory);
-                    #endregion
-                }
-
+                db.StockAdjustmentItemss.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+                stockAdjustmentItems.BinCardBalance = entity.BinCardBalance;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "stock adjustment item", "Success", User.Identity.Name, $"updated stock adjustment item {entity.ItemCode} under record {entity.StockAdjustmentID} ", Modules.Inventory);
+                #endregion
             }
 
             return Json(new[] { stockAdjustmentItems }.ToDataSourceResult(request, ModelState));

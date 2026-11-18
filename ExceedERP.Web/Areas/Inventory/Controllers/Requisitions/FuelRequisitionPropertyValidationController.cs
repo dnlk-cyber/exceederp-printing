@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             {
                 ModelState.AddModelError(String.Empty, "First approval by Department Head is required before Second (Property) Approval.");
             }
-            if (storeRequisition != null && storeRequisition.IsSecondOnlineApproved)
+            if (storeRequisition != null && (storeRequisition.IsSecondOnlineApproved || !string.IsNullOrWhiteSpace(storeRequisition.SecondOnlineApprovedBy)))
             {
                 ModelState.AddModelError(String.Empty, "You Can Not Manipulate this Record: It is Already Approved");
             }
@@ -63,8 +63,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                 {
                     if (storeRequisitionPropertyValidation.Status == ApprovalStatuses.Approve)
                     {
-                        storeRequisition.Status = "Second Approved";
-                        storeRequisition.IsSecondOnlineApproved = true;
+                        storeRequisition.Status = Enum.GetName(typeof(OperationStatuses), 5);
                         storeRequisition.SecondOnlineApprovedBy = User.Identity.Name;
                         storeRequisition.SecondOnlineApprovedTime = DateTime.Now;
                     }

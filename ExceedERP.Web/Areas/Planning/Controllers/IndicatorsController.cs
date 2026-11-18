@@ -27,7 +27,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
             var objectiveId = oId ?? old;
             if (!objectiveId.HasValue)
             {
-                return Json(Enumerable.Empty<Indicator>().ToDataSourceResult(request));
+                return Json(Enumerable.Empty<Indicator>().ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
             }
 
             IQueryable<Indicator> indicators = db.Indicators.Where(x=>x.ObjectiveId == objectiveId.Value && x.ParentId==0);
@@ -50,7 +50,7 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
                 ObjectiveId = indicator.ObjectiveId
             });
 
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
