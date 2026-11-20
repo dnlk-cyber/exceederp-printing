@@ -1,0 +1,58 @@
+<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-tasks"></i>
+        Planning
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+    <ul class="submenu">
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Plan Management
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="plan-selfcare-01" class="actionlinlk">
+                    @Html.ActionLink("Plan", "Index", "PlanSelfCares", new { area = "Planning" }, null)<b class="arrow"></b>
+                </li>
+                <li id="plan-selfcare-02" class="actionlinlk">
+                    @Html.ActionLink("Actual", "Index", "ActualSelfCares", new { area = "Planning" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Reporting
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="plan-selfcare-report-01" class="actionlinlk">
+                    @Html.ActionLink("Planning Reports", "PlanSelfCare", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                </li>
+                <li id="plan-selfcare-report-02" class="actionlinlk">
+                    @Html.ActionLink("Actual Reports", "ActualSelfCare", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-cog"></i>
+                Settings
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="plan-selfcare-setup-01" class="actionlinlk">
+                    @Html.ActionLink("Department Indicators", "Index", "GlobalIndicatorSelfCares", new { area = "Planning" }, null)<b class="arrow"></b>
+                </li>
+                <li id="plan-selfcare-setup-02" class="actionlinlk">
+                    @Html.ActionLink("Objective", "Index", "ObjectiveSelfCares", new { area = "Planning" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</li>

@@ -246,6 +246,31 @@
         host.kendoGrid(gridOptions);
     }
 
+    function objectiveDepartmentIndicators() {
+        var orgStructureId = 0;
+        var gridElement = $("tr.k-grid-edit-row:visible").last().closest(".k-grid");
+        var objectiveId = null;
+
+        while (gridElement.length) {
+            var match = /^Indicator_grid_(\d+)$/.exec(gridElement.attr("id") || "");
+            if (match) {
+                objectiveId = parseInt(match[1], 10);
+                break;
+            }
+            gridElement = gridElement.closest("tr.k-detail-row").prev().closest(".k-grid");
+        }
+
+        var masterGrid = $("#grid").data("kendoGrid");
+        if (masterGrid && objectiveId) {
+            var objective = masterGrid.dataSource.get(objectiveId);
+            if (objective) {
+                orgStructureId = objective.OrgStructureId;
+            }
+        }
+
+        return { orgStructureId: orgStructureId };
+    }
+
     function onDetailExpand(e) {
         var masterRow = e.masterRow;
 

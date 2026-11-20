@@ -109,7 +109,6 @@
     )
 </script>
 <script type="text/kendo-template" id="indicator_details">
-  #if(HasSubIndicator){#
     @(Html.Kendo().TabStrip()
         .Name("tab_SubIndicator_str_#=IndicatorId#")
         .SelectedIndex(0)
@@ -171,7 +170,6 @@
 
         }).ToClientTemplate()
     )
-    #}#
 </script>
 
 <script>
