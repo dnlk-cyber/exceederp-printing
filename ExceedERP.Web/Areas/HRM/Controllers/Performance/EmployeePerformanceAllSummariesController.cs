@@ -363,7 +363,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             // Materialize the result to avoid executing GetWeight/GetEvaluationResult on the database side
             var projectedList = query.ToList();
 
-            // Call methods only once per record — consider batch fetching if hitting DB
+            // Call methods only once per record ï¿½ consider batch fetching if hitting DB
             var result = projectedList
                 .Select(e => new
                 {
@@ -546,8 +546,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(result);
 
         }
+        internal static bool CanUpdateScore(ExceedDbContext context, EmployeePerformanceScore submittedScore, bool lockSubmitted = false)
+        {
+            return (from score in context.EmployeePerformanceScores
+                    join measurement in context.EmployeeMeasurement on score.EmployeeMeasurementId equals measurement.EmpMeasurementId
+                    join performance in context.EmployeePerformances on measurement.EmployeePerformanceId equals performance.EmployeePerformanceId
+                    where score.EmployeePerformanceScoreId == submittedScore.EmployeePerformanceScoreId
+                        && score.EmployeeMeasurementId == submittedScore.EmployeeMeasurementId
+                        && score.PerformanceActionId == submittedScore.PerformanceActionId
+                        && !performance.IsHRApproved
+                        && (!lockSubmitted || !performance.IsApproved)
+                    select score.EmployeePerformanceScoreId).Any();
+        }
+
         public ActionResult PerformanceActions_Update([DataSourceRequest] DataSourceRequest request, EmployeePerformanceScore employeePerformanceScore)
         {
+            if (!EmployeePerformanceAllSummariesController.CanUpdateScore(db, employeePerformanceScore))
+            {
+                ModelState.AddModelError("", "The evaluation has already been approved or the score no longer exists.");
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+            }
+
             if (employeePerformanceScore.Score > employeePerformanceScore.Weight)
             {
                 ModelState.AddModelError("", "Score can't exceed the weight");
@@ -673,7 +692,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 }, JsonRequestBehavior.AllowGet);
             }
             // Approve all evaluations in memory and save them in a single batch
-            foreach (var employeePerformance in employeePerformances)
+            foreach (var employeePerformance in employeePerformances.Where(x => !x.IsHRApproved))
             {
                 employeePerformance.IsHRApproved = true;
                 employeePerformance.FinalApprovalDate = DateTime.Now;
@@ -749,7 +768,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
 
             var updatePerformance = db.EmployeePerformances.Find(id);
-            if (updatePerformance != null)
+            if (updatePerformance != null && !updatePerformance.IsHRApproved)
             {
                 updatePerformance.Result = result;
                 db.Entry(updatePerformance).State = EntityState.Modified;

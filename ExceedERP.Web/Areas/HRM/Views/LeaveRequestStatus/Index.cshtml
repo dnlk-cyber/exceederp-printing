@@ -7,6 +7,7 @@
 }
 
 <legend>@Resources.NavigatorLeave_LeaveRequests</legend>
+@Html.AntiForgeryToken()
 
 <!-- Status Legend -->
 <div class="well well-sm" style="background: #fff; border-radius: 4px; margin-bottom: 12px; padding: 8px 15px;">
@@ -62,10 +63,10 @@
                   columns.Bound(c => c.LeaveBalance).Width(120);
                   columns.Bound(c => c.LeaveDays).Width(130);
                   columns.Bound(c => c.Reason).Width(150);
-                  columns.Command(command =>
+                  if (User.IsInRole(ExceedERP.Core.Domain.HrmConstants.HRAdmin))
                   {
-
-                  }).Width(180);
+                      columns.Command(command => command.Custom("VoidLeave").Text("Void").Click("voidNonAnnualLeave")).Width(100);
+                  }
 
               })
               .ToolBar(toolbar =>
@@ -550,6 +551,9 @@
             if (!model) return;
 
             var $row = $(this);
+            if (model.IsVoid || Number(model.Type) === @((int)ExceedERP.Core.Domain.Common.LeaveType.ANNUAL)) {
+                $row.find(".k-grid-VoidLeave").remove();
+            }
             $row.removeClass("row-approved row-dept-approved row-waiting row-pending row-rejected");
 
             if (model.IsOnlineApproved) {
@@ -568,6 +572,21 @@
                 $row.addClass("row-waiting");
             }
         });
+    }
+
+    function voidNonAnnualLeave(e) {
+        e.preventDefault();
+        var grid = this;
+        var leave = grid.dataItem($(e.currentTarget).closest("tr"));
+        if (!leave || !window.confirm("Void this leave request?")) return;
+
+        $.post('@Url.Action("VoidNonAnnualLeave", "LeaveRequestStatus", new { area = "HRM" })',
+            $.extend({ id: leave.LeaveRequestId }, sendForgery()))
+            .done(function (result) {
+                if (result.success) grid.dataSource.read();
+                else window.alert(result.message);
+            })
+            .fail(function () { window.alert("The leave request could not be voided."); });
     }
 
     function RefreshBranchAndBussinessUnit(e) {

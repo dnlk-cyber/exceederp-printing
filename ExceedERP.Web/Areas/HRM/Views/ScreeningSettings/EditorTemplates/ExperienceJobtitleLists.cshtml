@@ -6,10 +6,12 @@
                             .DataTextField("Description")
                                         .DataValueField("LookupId")
                                          .OptionLabel(Resources.Select)
+                                               .Filter("contains")
+
       .ValuePrimitive(true)
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetLookupJobtitle", "HRMDataProvider", new { area = "HRM" }))
+          dataSource.Read(read => read.Action("GetLookupJobtitle", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
               .ServerFiltering(false);
       })
                        

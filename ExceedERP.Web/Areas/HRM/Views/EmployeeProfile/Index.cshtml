@@ -2313,6 +2313,12 @@
 
 
 
+                            <label for="activeEmployeeNameSearch">Employee name</label>
+                            <input id="activeEmployeeNameSearch" type="search" class="k-textbox" placeholder="Amharic or English"
+                                   onkeydown="if (event.key === 'Enter') { event.preventDefault(); searchActiveEmployees(); }" />
+                            <button type="button" class="k-button" onclick="searchActiveEmployees()">Search</button>
+                            <button type="button" class="k-button" onclick="$('#activeEmployeeNameSearch').val(''); searchActiveEmployees();">Clear search</button>
+
                             @if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
                             {
                                 @(Html.Kendo()
@@ -2383,7 +2389,7 @@
                             events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
                         })
                         .Model(model => model.Id(p => p.EmployeeId))
-                        .Read(read => read.Action("Person_Employee_Read", "EmployeeProfile").Data("sendForgery"))
+                        .Read(read => read.Action("Person_Employee_Read", "EmployeeProfile").Data("activeEmployeeSearchData"))
                         .Create(create => create.Action("Person_Employee_Create", "EmployeeProfile").Data("sendForgery"))
                         .Update(update => update.Action("Person_Employee_Update", "EmployeeProfile").Data("sendForgery"))
                         .Destroy(destroy => destroy.Action("Person_Employee_Destroy", "EmployeeProfile").Data("sendForgery"))
@@ -2393,6 +2399,17 @@
         )
 
     }
+    <script>
+        function activeEmployeeSearchData() {
+            return $.extend({ employeeName: $("#activeEmployeeNameSearch").val() }, sendForgery());
+        }
+
+        function searchActiveEmployees() {
+            var source = $("#Person_Employeegrid").data("kendoGrid").dataSource;
+            if (source.page() === 1) source.read();
+            else source.page(1);
+        }
+    </script>
     <script id="ActiveEmployeeProfiletemplate" type="text/kendo-tmpl">
         @(Html.Kendo().TabStrip()
               .Name("tabstrip1_#=EmployeeId#")

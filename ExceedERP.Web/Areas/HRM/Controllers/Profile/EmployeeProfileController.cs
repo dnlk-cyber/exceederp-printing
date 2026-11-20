@@ -2606,7 +2606,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var result = query.ToDataSourceResult(request);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult Person_Employee_Read([DataSourceRequest] DataSourceRequest request)
+        public ActionResult Person_Employee_Read([DataSourceRequest] DataSourceRequest request, string employeeName)
         {
             var today = DateTime.Today;
             var myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
@@ -2674,6 +2674,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                                     ? (int?)DbFunctions.DiffDays(today, contract.To)
                                     : null
                             };
+
+            if (!string.IsNullOrWhiteSpace(employeeName))
+            {
+                // Keep Unicode name matches in the database query so they apply across all pages.
+                var searchName = employeeName.Trim().Normalize(NormalizationForm.FormC);
+                baseQuery = baseQuery.Where(x =>
+                    ((x.FirstName ?? "") + " " + (x.MiddleName ?? "") + " " + (x.LastName ?? "")).Contains(searchName)
+                    || ((x.FirstNameEnglish ?? "") + " " + (x.MiddleNameEnglish ?? "") + " " + (x.LastNameEnglish ?? "")).Contains(searchName));
+            }
+
+            NormalizeEmployeeNameFilters(request.Filters);
 
             // 2. Execute Paging / Sorting / Filtering at SQL level FIRST
             var pagedDataResult = baseQuery.ToDataSourceResult(request);
@@ -2872,6 +2883,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(pagedDataResult, JsonRequestBehavior.AllowGet);
         }
+        private static void NormalizeEmployeeNameFilters(IEnumerable<IFilterDescriptor> filters)
+        {
+            foreach (var filter in filters)
+            {
+                if (filter is CompositeFilterDescriptor group)
+                    NormalizeEmployeeNameFilters(group.FilterDescriptors);
+                else if (filter is FilterDescriptor name && name.Value is string text
+                    && (name.Member == "FirstName" || name.Member == "MiddleName" || name.Member == "LastName"))
+                    name.Value = text.Trim().Normalize(NormalizationForm.FormC);
+            }
+        }
+
         private string GetEmployeeExpreince(DateTime HiredDate)
         {
             if (HiredDate == null)

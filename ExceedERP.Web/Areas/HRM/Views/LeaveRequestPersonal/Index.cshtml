@@ -534,7 +534,7 @@
                 $row.addClass("row-dept-approved");
                 $row.find(".k-grid-edit, .k-grid-delete").remove();
             }
-            else if (model.IsSendForApproval === true || model.Status === "WAITING_FOR_APPROVAL") {
+            else if (model.IsDepartmentSendForApproval === true || model.IsSendForApproval === true || model.Status === "WAITING_FOR_APPROVAL") {
                 $row.addClass("row-waiting");
                 $row.find(".k-grid-edit, .k-grid-delete").remove();
             }

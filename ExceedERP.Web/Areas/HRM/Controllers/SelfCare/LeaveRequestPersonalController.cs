@@ -96,6 +96,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 return Json(new { Message = "Leave request not found.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
             }
+            if (leaveRequest.IsVoid)
+            {
+                return Json(new { Message = "A voided leave request cannot be submitted.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
             bool isAlreadyWaitingForApproval = db.RequestesStatus.Any(x => x.RequestId == id && x.Status == RequestStatus.WAITING_FOR_APPROVAL);
 
            
@@ -181,9 +185,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var leaveRequests = db.LeaveRequest.ToList();
             foreach (var leave in leaveRequests)
             {
-                if (leave.Type != LeaveType.ANNUAL|| leave.Type != LeaveType.DayOff)
+                if (!leave.IsVoid && leave.Type != LeaveType.ANNUAL && leave.Type != LeaveType.DayOff)
                 {
-                    var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == leave.LeaveRequestId && x.Status == RequestStatus.APPROVE);
+                    var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == leave.LeaveRequestId
+                        && x.ReferenceType == "Leave" && x.Status == RequestStatus.APPROVE);
                     if (requestStatus != null)
                     {
                         var leaveTaken = db.Leaves.FirstOrDefault(x => x.RequestId == leave.LeaveRequestId);
@@ -933,6 +938,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
            
 
             var leavrequest = db.LeaveRequest.Find(leaveRequest.LeaveRequestId);
+            if (leavrequest == null || leavrequest.IsSendForApproval || leavrequest.IsDepartmentSendForApproval
+                || leavrequest.IsDepartmentOnlineApproved || leavrequest.IsOnlineApproved || leavrequest.IsVoid)
+            {
+                ModelState.AddModelError("", "This leave request is unavailable or has already been submitted and cannot be edited.");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            }
+
             leaveRequest.EmployeeId = leaveRequest.IsForOther ? leaveRequest.EmployeeId : UserInformationHelper.GetEmployeeId(User.Identity.Name);
             if (leaveRequest.EmployeeId == 0)
             {

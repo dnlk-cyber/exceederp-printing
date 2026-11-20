@@ -90,6 +90,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public ActionResult PerformanceActions_Update([DataSourceRequest] DataSourceRequest request, EmployeePerformanceScore employeePerformanceScore)
         {
+            if (!EmployeePerformanceAllSummariesController.CanUpdateScore(db, employeePerformanceScore, lockSubmitted: true))
+            {
+                ModelState.AddModelError("", "The evaluation has already been approved or the score no longer exists.");
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+            }
+
            
             if (employeePerformanceScore.Score > employeePerformanceScore.Weight)
             {

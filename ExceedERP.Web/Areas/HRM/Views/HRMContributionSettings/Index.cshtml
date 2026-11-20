@@ -1,0 +1,84 @@
+﻿@using ExceedERP.Core.Domain.HRM.Discipline
+@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Contribution Settings</legend>
+@(Html.Kendo().Grid<HRMContributionSetting>()
+      .Name("HRMContributionSettinggrid")
+      .Columns(columns =>
+      {
+
+          columns.ForeignKey(c => c.ContributionTypeId, (IEnumerable)ViewData["Contributiontype"], "ContributionTypeId", "Name").EditorTemplateName("contrubtiontype").Width(200);
+          columns.Bound(c => c.Description).Width(120);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
+
+      })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+                .Scrollable(h => h.Height(500))
+
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                .Filterable()
+                    .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"HRMContributionSettinggrid\")");
+                 events.RequestStart("onRequestStart(\"HRMContributionSettinggrid\")");
+                 events.RequestEnd("onRequestEnd(\"HRMContributionSettinggrid\")");
+
+             })
+
+
+              .Model(model => model.Id(p => p.HRMContributionSettingId))
+              .Read(read => read.Action("HRMContributionSettings_Read", "HRMContributionSettings").Data("sendForgery"))
+              .Create(create => create.Action("HRMContributionSettings_Create", "HRMContributionSettings").Data("sendForgery"))
+              .Update(update => update.Action("HRMContributionSettings_Update", "HRMContributionSettings").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("HRMContributionSettings_Destroy", "HRMContributionSettings").Data("sendForgery"))
+          )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

@@ -33,6 +33,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AuthorizeRoles(HrmConstants.HRAdmin)]
+        public ActionResult VoidNonAnnualLeave(int id)
+        {
+            var branches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var leave = db.LeaveRequest.SingleOrDefault(x => x.LeaveRequestId == id && branches.Contains(x.BranchId));
+            if (leave == null || leave.Type == LeaveType.ANNUAL || leave.IsVoid || !leave.IsDepartmentOnlineApproved)
+                return Json(new { success = false, message = "This leave request cannot be voided." });
+
+            if (leave.Type == LeaveType.SICK_LEAVE && db.Terminations.Any(x =>
+                x.EmployeeId == leave.EmployeeId && x.ApplicationDate == leave.From
+                && x.IsOnlineApproved && x.Reason.StartsWith("Leave days exceed ")))
+            {
+                return Json(new { success = false, message = "This sick leave triggered a termination. Resolve the termination before voiding the leave." });
+            }
+
+            var taken = db.Leaves.Where(x => x.RequestId == id
+                && x.EmployeeId == leave.EmployeeId && x.LeaveType == leave.Type).ToList();
+            db.Leaves.RemoveRange(taken);
+            leave.IsVoid = true;
+            leave.VoidBy = User.Identity.Name;
+            leave.VoidTime = DateTime.Now;
+            leave.Status = "Voided";
+            db.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
         private void PopulateViewData()
         {
 

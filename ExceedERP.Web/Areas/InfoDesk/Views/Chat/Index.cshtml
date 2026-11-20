@@ -1,107 +1,129 @@
-﻿@{
-    ViewBag.Title = "Chat";
+@{
+    ViewBag.Title = "Messages";
 }
 
-<h2>Chat Application</h2>
+<h2>Messages</h2>
 
-<!-- Select Receiver -->
-<label>Select Receiver:</label>
-<select id="receiverDropdown" class="k-dropdown">
-    <option value="">-- Select User --</option>
+<label for="receiverDropdown">Conversation</label>
+<select id="receiverDropdown" class="form-control" style="max-width: 360px;" disabled>
+    <option value="">Select a user</option>
 </select>
+<p id="chatStatus" role="status">Loading users...</p>
 
-<!-- Chat Box -->
-<div id="chatBox" style="width: 60%; height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+<div id="chatBox" style="max-width: 720px; height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
     <ul id="chatMessages"></ul>
 </div>
 
-<!-- Message Input -->
-<input type="text" id="messageInput" class="k-textbox" style="width: 70%;" placeholder="Type a message..." />
-<button id="sendButton" class="k-button k-primary">Send</button>
-
-<!-- jQuery -->
-<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<form id="sendMessageForm">
+    <label for="messageInput">Message</label>
+    <input type="text" id="messageInput" class="k-textbox" placeholder="Type a message..." disabled />
+    <button id="sendButton" type="submit" class="k-button k-primary" disabled>Send</button>
+</form>
 
 <script>
-    var userId ;  // Logged-in user ID (replace with actual user)
-    var selectedReceiverId = null;
+    $(function () {
+        var receiver = $("#receiverDropdown");
+        var messages = $("#chatMessages");
+        var status = $("#chatStatus");
+        var input = $("#messageInput");
+        var sendButton = $("#sendButton");
+        var currentUserId;
+        var historyRequest;
+        var sending = false;
 
-    // Get logged-in user ID
-    function getUserIdAndLoadChat() {
-        $.getJSON('/Chat/GetMyUserId', function (users) {
-            $.each(users, function (index, user) {
-                userId = user.UserId
+        $.when(
+            $.getJSON('@Url.Action("GetMyUserId", "Chat", new { area = "InfoDesk" })'),
+            $.getJSON('@Url.Action("GetUsers", "Chat", new { area = "InfoDesk" })')
+        ).done(function (currentUserResponse, usersResponse) {
+            var currentUser = currentUserResponse[0][0];
+            if (!currentUser) {
+                status.text("Your user account could not be loaded.");
+                return;
+            }
+
+            currentUserId = currentUser.UserId;
+            $.each(usersResponse[0], function (_, user) {
+                if (user.UserId !== currentUserId) {
+                    $("<option>").val(user.UserId).text(user.Name).appendTo(receiver);
+                }
             });
+            receiver.prop("disabled", false);
+            status.text("Select a user to open your conversation.");
+        }).fail(function () {
+            status.text("Could not load users. Reload the page to retry.");
         });
-      
-           
-    }
-    // Call this function when the page loads
-    $.getJSON('/Chat/GetUsers', function (users) {
-        let userOptions = users.map(user => `<option value="${user.UserId}">${user.Name}</option>`).join('');
-        $("#receiverDropdown").html('<option value="">-- Select User --</option>' + userOptions);
 
-        // Initialize Select2 with search
-        $("#receiverDropdown").select2({
-            placeholder: "Select a user",
-            allowClear: true
-        });
-    });
-    // Load chat history when a receiver is selected
-    $("#receiverDropdown").change(function () {
-        selectedReceiverId = $(this).val();
-        getUserIdAndLoadChat()
+        function loadHistory() {
+            if (historyRequest) {
+                historyRequest.abort();
+            }
 
-        loadChatHistory();
-    });
+            var receiverId = receiver.val();
+            messages.empty();
+            input.prop("disabled", !receiverId);
+            sendButton.prop("disabled", !receiverId || sending);
+            if (!receiverId) {
+                status.text("Select a user to open your conversation.");
+                return;
+            }
 
-    function loadChatHistory() {
-        $.getJSON('/Chat/GetChatHistory', { user1Id: userId, user2Id: selectedReceiverId }, function (messages) {
-            $("#chatMessages").empty();
-            $.each(messages, function (index, msg) {
-
-                let messageType = (msg.SenderId == userId) ? "sent-message" : "received-message";
-                let senderName = (msg.SenderId == userId) ? "Me" : msg.Sender;
-
-                $("#chatMessages").append(
-                    `<li class="${messageType}">
-                    <strong>${senderName}:</strong> ${msg.Content} <small>(${msg.Timestamp})</small>
-                </li>`
-                );
+            status.text("Loading messages...");
+            historyRequest = $.ajax({
+                url: '@Url.Action("GetChatHistory", "Chat", new { area = "InfoDesk" })',
+                data: { user2Id: receiverId },
+                dataType: "json",
+                cache: false
+            }).done(function (history) {
+                status.text(history.length ? "" : "No messages in this conversation yet.");
+                $.each(history, function (_, message) {
+                    var ownMessage = message.SenderId === currentUserId;
+                    $("<li>").addClass(ownMessage ? "sent-message" : "received-message")
+                        .append($("<strong>").text(ownMessage ? "Me:" : message.Sender))
+                        .append($("<span>").text(" " + message.Content + " "))
+                        .append($("<small>").text("(" + message.Timestamp + ")"))
+                        .appendTo(messages);
+                });
+                var chatBox = $("#chatBox")[0];
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }).fail(function (_, reason) {
+                if (reason !== "abort") {
+                    status.text("Could not load this conversation. Select it again to retry.");
+                }
             });
-        });
-    }
-
-
-    //// Send Message
-    // Show confirmation dialog
-  
-    $("#sendButton").click(function () {
-        var message = $("#messageInput").val();
-        if (message.trim() === "" || !selectedReceiverId) return;
-        if (selectedReceiverId == userId) {
-            alert("you can't sent message to yourself.");
-            return;
         }
-        if (confirm("Are you sure you want to send this message?")) {
-            $.post('/Chat/InsertMessage', { senderId: userId, receiverId: selectedReceiverId, content: message }, function (response) {
-                if (response.success) {
-                    $("#messageInput").val('');
-                    loadChatHistory();  // Refresh chat
+
+        receiver.on("change", loadHistory);
+        $("#sendMessageForm").on("submit", function (event) {
+            event.preventDefault();
+            var receiverId = receiver.val();
+            var content = input.val().trim();
+            if (!receiverId || !content || sending || !window.confirm("Send this message?")) {
+                return;
+            }
+
+            sending = true;
+            receiver.prop("disabled", true);
+            sendButton.prop("disabled", true);
+            $.post('@Url.Action("InsertMessage", "Chat", new { area = "InfoDesk" })', {
+                senderId: currentUserId,
+                receiverId: receiverId,
+                content: content
+            }).done(function (result) {
+                if (!result.success) {
+                    status.text(result.message || "Could not send the message.");
+                    return;
                 }
-                else {
-                    alert("Failed to send message. Please try again.");
+                if (input.val().trim() === content) {
+                    input.val("");
                 }
+                loadHistory();
             }).fail(function () {
-                alert("Error: Could not connect to the server.");
+                status.text("Could not confirm that the message was sent.");
+            }).always(function () {
+                sending = false;
+                receiver.prop("disabled", false);
+                sendButton.prop("disabled", !receiver.val());
             });
-        }
-        //$.post('/Chat/InsertMessage', { senderId: userId, receiverId: selectedReceiverId, content: message }, function (response) {
-        //    if (response.success) {
-        //        $("#messageInput").val('');
-        //        loadChatHistory();  // Refresh chat
-        //    }
-        //});
+        });
     });
-
 </script>

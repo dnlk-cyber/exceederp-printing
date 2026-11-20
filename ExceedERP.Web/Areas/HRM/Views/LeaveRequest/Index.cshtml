@@ -582,9 +582,9 @@
             else if (model.Status === "Rejected" || model.IsRejected === true) {
                 $row.addClass("row-rejected");
             }
-            else if (model.Status === "WAITING_FOR_APPROVAL") {
+            else if (model.IsDepartmentSendForApproval || model.IsSendForApproval || model.Status === "WAITING_FOR_APPROVAL") {
                 $row.addClass("row-waiting");
-                $row.find(".k-grid-delete").remove();
+                $row.find(".k-grid-edit, .k-grid-delete").remove();
             }
         });
     }

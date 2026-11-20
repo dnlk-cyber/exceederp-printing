@@ -2,14 +2,15 @@
 @using ExceedERP.Core.Domain.Common
 @using ExceedERP.Core.Localization
 @(Html.Kendo().DropDownListFor(m => m)
+                            .OptionLabel(Resources.Select)
+                                  .Filter("contains")
 
                     .DataTextField("Description")
                        .DataValueField("LookupId")
-                        .OptionLabel(Resources.Select)
       .ValuePrimitive(true)
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetEducationFieldLists", "HRMDataProvider", new { area = "HRM" }))
+          dataSource.Read(read => read.Action("GetEducationFieldLists", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
               .ServerFiltering(false);
       })
                        

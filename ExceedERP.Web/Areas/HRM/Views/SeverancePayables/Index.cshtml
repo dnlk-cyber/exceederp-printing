@@ -194,6 +194,7 @@
                 .Refresh(true)
                 .PageSizes(true)
                 .ButtonCount(5))
+                .Scrollable(h => h.Height(550))
                 .Filterable()
                 .DataSource(dataSource => dataSource
                     .Ajax()

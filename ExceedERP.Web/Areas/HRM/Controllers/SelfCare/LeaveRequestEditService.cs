@@ -28,8 +28,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (entity == null)
                 return Fail(modelState, "Leave request not found.");
 
-            if (entity.IsOnlineApproved || entity.IsDepartmentOnlineApproved)
-                return Fail(modelState, "This leave request is already approved and can no longer be edited.");
+            if (entity.IsSendForApproval || entity.IsDepartmentSendForApproval
+                || entity.IsOnlineApproved || entity.IsDepartmentOnlineApproved || entity.IsVoid)
+                return Fail(modelState, "This leave request has already been submitted and can no longer be edited.");
 
             // The editor is the approver, so the employee comes from the request itself.
             leaveRequest.EmployeeId = leaveRequest.EmployeeId != 0 ? leaveRequest.EmployeeId : entity.EmployeeId;
