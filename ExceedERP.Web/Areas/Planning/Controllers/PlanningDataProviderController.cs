@@ -15,9 +15,9 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
         {
             return View();
         }
-        public JsonResult GetGlobalIndicator()
+        public JsonResult GetGlobalIndicator(int? orgStructureId)
         {
-            var departmentId = PlanningSelfCareHelper.GetCurrentDepartmentId(User.Identity.Name);
+            var departmentId = orgStructureId ?? PlanningSelfCareHelper.GetCurrentDepartmentId(User.Identity.Name);
             var globalIndicators = PlanningSelfCareHelper.GetDepartmentGlobalIndicators(db, departmentId)
                 .Where(x => x.IsActive)
                 .Select(A => new

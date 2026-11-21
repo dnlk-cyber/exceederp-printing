@@ -73,6 +73,13 @@ namespace ExceedERP.Web.Areas.Planning.Controllers
 
             return View();
         }
+        public ActionResult ActualSelfCare()
+        {
+            PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Actual_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
         public ActionResult Actual()
         {
             PlanningIsoDocumentHelper.GetIsoDocumentInfo(Modules.Planning, PlanningModuleReportType.Actual_Report, out string title, out string number);
