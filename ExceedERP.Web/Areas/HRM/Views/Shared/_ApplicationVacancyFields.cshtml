@@ -1,0 +1,40 @@
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.SelfCare.ApplicantionForm
+
+<div class="row application-vacancy-fields">
+    <div class="col-sm-4 form-group">
+        @Html.LabelFor(model => model.VacancyId)
+        @(Html.Kendo().DropDownListFor(model => model.VacancyId)
+            .ValuePrimitive(true)
+            .OptionLabel(Resources.Select)
+            .DataTextField("VaccancyCode")
+            .DataValueField("VacancyId")
+            .Filter("contains")
+            .HtmlAttributes(new { style = "width: 100%" })
+            .Events(events => events.Change("showApplicationVacancy").DataBound("showApplicationVacancy"))
+            .DataSource(source => source.Read(read => read.Action("GetVacancyCodeForInternalApplicant", "HRMDataProvider", new { area = "HRM" }))))
+        @Html.ValidationMessageFor(model => model.VacancyId)
+    </div>
+    <div class="col-sm-4 form-group">
+        @Html.LabelFor(model => model.OrgStructureId)
+        @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
+            .ValuePrimitive(true)
+            .OptionLabel(Resources.Select)
+            .DataTextField("Name")
+            .DataValueField("OrgStructureId")
+            .CascadeFrom("VacancyId")
+            .AutoBind(false)
+            .HtmlAttributes(new { style = "width: 100%" })
+            .DataSource(source => source
+                .Read(read => read.Action("GetDepartmentsByVacancy", "HRMDataProvider", new { area = "HRM" }).Data("applicationWorkUnitParameters"))
+                .ServerFiltering(true)))
+        @Html.ValidationMessageFor(model => model.OrgStructureId)
+    </div>
+    <div class="col-sm-4 form-group">
+        <label for="applicationJobTitle">@Html.DisplayNameFor(model => model.LookupId)</label>
+        <input id="applicationJobTitle" type="text" class="k-textbox" style="width: 100%" readonly />
+    </div>
+    <p class="col-sm-12 text-danger application-vacancy-error" role="status" hidden>
+        Set the job title on this vacancy before saving the application.
+    </p>
+</div>

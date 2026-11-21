@@ -710,36 +710,37 @@
 									 @:checked="checked"
 									}
 								}
-								@using (Html.BeginForm("SetCulture", "Home", new { area = "" }))
+								@using (Html.BeginForm("SetCulture", "Home", new { area = "" }, FormMethod.Post, new { onchange = "this.submit();" }))
 								{
+									<input type="hidden" name="returnUrl" value="@Request.RawUrl" />
 									<fieldset>
 										<h5>Language</h5>
 										<div class="control-group">
 											<div class="controls">
-												<label for="am">
-													<input name="culture" id="am" value="am" class="language" type="radio" @selected("am", culture) /> አማርኛ
+												<label for="language-am">
+													<input name="culture" id="language-am" value="am" type="radio" @selected("am", culture) /> አማርኛ
 												</label>
 											</div>
 										</div>
 										<div class="control-group">
 											<div class="controls">
-												<label for="or">
-													<input name="culture" id="ti" value="ti" class="language" type="radio" @selected("ti", culture) /> ትግርኛ
+												<label for="language-ti">
+													<input name="culture" id="language-ti" value="ti" type="radio" @selected("ti", culture) /> ትግርኛ
 												</label>
 											</div>
 										</div>
 
 										<div class="control-group">
 											<div class="controls">
-												<label for="or">
-													<input name="culture" id="or" value="or" class="language" type="radio" @selected("or", culture) /> Afaan Oromo
+												<label for="language-om">
+													<input name="culture" id="language-om" value="om" type="radio" @selected("om", culture) /> Afaan Oromo
 												</label>
 											</div>
 										</div>
 										<div class="control-group">
 											<div class="controls">
-												<label for="en-us">
-													<input name="culture" id="en-us" value="en-us" class="language" type="radio" @selected("en-us", culture) /> English
+												<label for="language-en-us">
+													<input name="culture" id="language-en-us" value="en-US" type="radio" @selected("en-us", culture) /> English
 												</label>
 											</div>
 										</div>
@@ -930,15 +931,6 @@
 		}
 		//toastr.warning('This is an information notification provided by toastr.');
 	   
-	});
-
-
-	$(function () {
-		//localization
-		$("input.language:radio").click(function () {
-			$(this).parents("form").submit(); 
-		});
-		   
 	});
 
 

@@ -21,6 +21,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             this.db = db;
         }
 
+        internal static bool IsLocked(LeaveRequest leave)
+        {
+            var status = leave.Status?.Trim().ToUpperInvariant();
+            return leave.IsSendForApproval || leave.IsDepartmentSendForApproval
+                || leave.IsOnlineApproved || leave.IsDepartmentOnlineApproved || leave.IsVoid
+                || status == "WAITING_FOR_APPROVAL" || status == "DEPARTMENT_APPROVAL"
+                || status == "APPROVE" || status == "APPROVED" || status == "VOIDED";
+        }
+
         // Returns the saved entity, or null when a rule failed (errors are added to modelState).
         public LeaveRequest Update(LeaveRequest leaveRequest, string userName, ModelStateDictionary modelState)
         {
@@ -28,8 +37,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (entity == null)
                 return Fail(modelState, "Leave request not found.");
 
-            if (entity.IsSendForApproval || entity.IsDepartmentSendForApproval
-                || entity.IsOnlineApproved || entity.IsDepartmentOnlineApproved || entity.IsVoid)
+            if (IsLocked(entity))
                 return Fail(modelState, "This leave request has already been submitted and can no longer be edited.");
 
             // The editor is the approver, so the employee comes from the request itself.

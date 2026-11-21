@@ -27,10 +27,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
     public class ApplicationFormController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static int NoOfPromotion { get; set; }
         HRMInputs inputs = new HRMInputs();
-        public static bool IsForOther { get; set; }
-        public static int EmployeeId { get; set; }
         public ActionResult Index()
         {
             PopulateViewData();
@@ -40,11 +37,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         {
             var workunits = db.MainCompanyStructures.ToList();
             ViewData["workunits"] = workunits;
-            var recruitment = db.RecruitmentVacancy.ToList();
-            ViewData["recruitmentVacancy"] = recruitment;
+            ViewData["ApplicationVacancyCodes"] = db.VaccancyPlans.Select(x => new { x.VacancyId, x.VaccancyCode }).ToList();
             var listt = inputs.GetEmployees(User.Identity.Name);
             ViewData["EmployeeList"] = listt.Where(x => x.IsActive);
-            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var employeName = db.Person_Employee.ToList();
             ViewData["EmployeeName"] = employeName;
             var appTypes = Enum.GetValues(typeof(ApplicationType))
@@ -60,26 +55,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.INTERNAL).ToList();
             ViewData["Vacancy"] = vacancies;
-            var settings =
-                db.Configurations.Where(x => x.Category == "Promotion" && x.Reference == "PROMOTION_PER_YEAR").FirstOrDefault();
-            if (settings != null)
-            {
-                NoOfPromotion = Convert.ToInt32(settings.CurrentValue);
-            }
-            EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            var vacancyJobTitles = db.VaccancyPlans.Select(x => x.JobTitle);
+            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE || x.LookupType == LookUpTypes.OLD_JOB_TITLE
+                || vacancyJobTitles.Contains(x.LookupId)).ToList();
             ViewData["JobTitle"] = jobtitles;
         }
         public int SetEmployee(string x)
         {
-            IsForOther = false;
 
             if (x == "true")
             {
                 var list = UserInformationHelper.GetEmployeesByReportsTo(User.Identity.Name);
 
-                IsForOther = true;
                 return list.Count();
 
             }
@@ -91,66 +78,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var structres = db.MainCompanyStructures.AsQueryable();
             ViewData["organization"] = structres;
             return Json(structres.Select(s => new { OrgStructureId = s.OrgStructureId, Name = s.Name }), JsonRequestBehavior.AllowGet);
-        }
-        public static decimal EduLevel { get; set; }
-        public static decimal EduField { get; set; }
-        public static decimal RelevantExp { get; set; }
-        public static decimal RelatedExp { get; set; }
-        public static decimal Gender { get; set; }
-        public static decimal Disabliy { get; set; }
-        public static decimal Profile { get; set; }
-        public static decimal Training { get; set; }
-        public static decimal Dicipline { get; set; }
-        private void SetSettingValues()
-        {
-            var settings =
-                db.Configurations.Where(x => x.Category == "Recruitment" && x.Reference == "Recruitment").ToList();
-            if (settings.Any())
-            {
-                foreach (var s in settings)
-                {
-                    switch (s.Attribute)
-                    {
-                        case "EDUCATION_LEVEL":
-                            EduLevel = Convert.ToDecimal(s.CurrentValue);
-                            break;
-
-                        case "EDUCATIONAL_FIELD":
-
-                            EduField = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "RELATED_EXPERIENCE":
-
-                            RelatedExp = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "RELEVANT_EXPERIENCE":
-
-                            RelevantExp = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "GENDER":
-
-                            Gender = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "DISABILITY":
-
-                            Disabliy = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "PROFILE":
-
-                            Profile = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "TRAINING":
-
-                            Training = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "DISCIPLINE ":
-
-                            Dicipline = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                    }
-                }
-
-            }
         }
         public JsonResult GetEducationFiled()
         {
@@ -166,257 +93,89 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult ApplicantionFormes_Read([DataSourceRequest]DataSourceRequest request, string id)
         {
-            SetSettingValues();
-            decimal screenSum = 0;
-            var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            //List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
-            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByHead(employeeid);
-            IQueryable<ApplicantionForm> applicarionForm = db.ApplicantionFormes.Where(x => employeeids.Contains(x.EmployeeId));
-
-            //IQueryable<ApplicantionForm> applicantionformes = db.ApplicantionFormes.Where(x => x.EmployeeId == EmployeeId);
-            List<ApplicantionForm> applicantRegi = new List<ApplicantionForm>();
-            var SettingSum = EduField + EduLevel + RelatedExp + RelevantExp + Disabliy + Gender + Profile + Training + Dicipline;
-
-            //if (id == "Screen")
-            //{
-            //    foreach (var a in applicarionForm)
-            //    {
-            //        db = new ExceedDbContext();
-            //        var screen =
-            //            db.ApplicantScreeningResult.Where(
-            //                x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-            //                .ToList();
-            //        if (screen != null)
-            //        {
-
-            //            screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-            //            a.TotalResult = screenSum;
-            //            var exam =
-            //                db.ApplicantExamResult.Where(
-            //                    x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-            //                    .ToList();
-            //            if (exam != null)
-            //            {
-            //                decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
-            //            }
-            //            if (screenSum >= SettingSum)
-            //            {
-            //                applicantRegi.Add(a);
-
-
-            //            }
-            //        }
-
-            //    }
-            //    applicarionForm = applicantRegi.AsQueryable();
-            //}
-            //else
-            //{
-            //    foreach (var a in applicarionForm)
-            //    {
-            //        db = new ExceedDbContext();
-            //        var screen =
-            //            db.ApplicantScreeningResult.Where(x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-            //                .ToList();
-            //        if (screen != null)
-            //        {
-
-            //            screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-            //            a.TotalResult = screenSum;
-
-            //            applicantRegi.Add(a);
-            //        }
-            //    }
-            //}
-
-
-
-            DataSourceResult result = applicarionForm.ToDataSourceResult(request, applicantionForm => new
+            var currentEmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var employeeIds = ApplicationEmployeeIds(currentEmployeeId);
+            var rows = db.ApplicantionFormes.Where(x => employeeIds.Contains(x.EmployeeId));
+            var result = rows.ToDataSourceResult(request, form => new
             {
-                ApplicantionFormId = applicantionForm.ApplicantionFormId,
-                EmployeeId = applicantionForm.EmployeeId,
-                ApplicationType = applicantionForm.ApplicationType,
-                VacancyId = applicantionForm.VacancyId,
-                TotalResult = applicantionForm.TotalResult,
-                Remark = applicantionForm.Remark,
-                EmployeeCode = applicantionForm.EmployeeCode,
-                LookupId = applicantionForm.LookupId,
-                OrgBranchName = applicantionForm.OrgBranchName,
-                CreatedBy = applicantionForm.CreatedBy,
-                DateCreated = applicantionForm.DateCreated,
-                ModifiedBy = applicantionForm.ModifiedBy,
-                LastModified = applicantionForm.LastModified,
-                VacancyType = applicantionForm.VacancyType,
-                IsForOther = applicantionForm.IsForOther,
-                OrgStructureId = applicantionForm.OrgStructureId
+                form.ApplicantionFormId,
+                form.EmployeeId,
+                form.ApplicationType,
+                form.VacancyId,
+                form.TotalResult,
+                form.Remark,
+                form.EmployeeCode,
+                form.LookupId,
+                form.OrgBranchName,
+                form.CreatedBy,
+                form.DateCreated,
+                form.ModifiedBy,
+                form.LastModified,
+                form.VacancyType,
+                IsForOther = form.EmployeeId != currentEmployeeId,
+                form.OrgStructureId
             });
-
             return Json(result);
         }
-        private VacancyType GetType(string code)
-        {
-            var vacancy = db.VaccancyPlans.Where(x => x.VaccancyCode == code).FirstOrDefault();
-            if (vacancy != null)
-            {
-                return vacancy.VacancyType;
-            }
-            else
-            {
-                return VacancyType.PERMANENT;
-            }
-        }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantionFormes_Create([DataSourceRequest]DataSourceRequest request, ApplicantionForm applicantionForm)
         {
-            ModelState.Clear();
+            var currentEmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var employee = ResolveApplicationEmployee(applicantionForm, currentEmployeeId);
+            ApplicationVacancy.Apply(db, applicantionForm, ModelState);
+            CheckDuplicate(applicantionForm);
 
-            //int vacancyId = Convert.ToInt32(applicantionForm.IDAndTitle.Split('-')[1]);
-            //int lookUpId = Convert.ToInt32(applicantionForm.IDAndTitle.Split('-')[0]);
-
-            if (applicantionForm.EmployeeId == 0 && applicantionForm.IsForOther)
+            if (employee != null)
             {
-                ModelState.AddModelError("", "Employee ID and User are not mapped");
+                var cases = db.DisciplinaryCases.Where(x => x.EmployeeId == employee.EmployeeId)
+                    .Select(x => x.DisciplinaryCaseId);
+                var measures = db.EmpDisciplineMeasure.Where(x => cases.Contains(x.DisciplinaryCaseId))
+                    .Select(x => new { x.DecisionDate, x.Month }).ToList();
+                if (measures.Any(x => x.DecisionDate.AddMonths(x.Month) > DateTime.Today))
+                    ModelState.AddModelError("", "The employee has an active disciplinary measure.");
+
+                if ((DateTime.Today - employee.HiredDate).Days < 360)
+                    ModelState.AddModelError("", "The employee needs one year of internal experience to apply.");
             }
 
-            //var placmenets = db.Placements.Where( x =>
-            //            x.AssignmentDate.Year == DateTime.Now.Year &&
-            //            x.EmployeeId == applicantionForm.EmployeeId && x.AssignmentType == AssignmentType.PROMOTION).ToList();
-            //if (placmenets.Count > NoOfPromotion)
-            //{
-            //    RedirectToAction("Index");
-            //    string messages = "You can not apply for this vacancy. \n You already promoted " + placmenets.Count + " times";
-            //    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+            if (!ModelState.IsValid)
+                return Json(new[] { applicantionForm }.ToDataSourceResult(request, ModelState));
 
-            //}
-
-            if (!applicantionForm.IsForOther)
+            var entity = new ApplicantionForm
             {
-                applicantionForm.EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                if (applicantionForm.EmployeeId == 0)
-                {
-                    string messages = "Employee and User are not mapped";
-                    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                }
-
-                var appForm = db.ApplicantionFormes.FirstOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId && x.VacancyId == applicantionForm.VacancyId);
-
-                if (appForm != null)
-                {
-                    string messages = "you were apply for this vacancy";
-                    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                }
-            }
-            else
-            {
-                applicantionForm.EmployeeId = applicantionForm.EmployeeId;
-                var appForm = db.ApplicantionFormes.FirstOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId && x.VacancyId == applicantionForm.VacancyId);
-
-                if (appForm != null)
-                {
-                    string messages = "you were apply for this vacancy";
-                    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                }
-            }
-
-            var desciplines = db.DisciplinaryCases.Where(x => x.EmployeeId == applicantionForm.EmployeeId).ToList();
-            if (desciplines.Any())
-            {
-                foreach (var disc in desciplines)
-                {
-                    var disciplineMeasures = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == disc.DisciplinaryCaseId).ToList();
-                    foreach (var dm in disciplineMeasures)
-                    {
-                        var dif = dm.DecisionDate.AddMonths(dm.Month);
-                        if (dif > DateTime.Today)
-                        {
-                            ModelState.AddModelError("", "you can not apply, you have Discipline case");
-                        }
-                    }
-                }
-            }
-
-            //var placement = db.Placements.Where(x => x.EmployeeId == applicantionForm.EmployeeId && x.AssignmentType == AssignmentType.PROMOTION);
-            //if (placement.Any())
-            //{
-            //    var dates = placement.Select(x => x.AssignmentDate).ToList();
-            //    var maxdate = dates.Max();
-               
-            //    var days = DateTime.Today.Date.Subtract(maxdate).Days;
-            //    var month = days / 30;
-            //    var year = (int)month / 12;
-            //    if (year < 1)
-            //    {
-            //        ModelState.AddModelError("", "you are promoted this year you can't promoted morethan once ayear ");
-            //    }
-            //}
-
-            var profile = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId);
-            if (profile != null)
-            {
-                var days = DateTime.Today.Date.Subtract(profile.HiredDate).Days;
-                var month = days / 30;
-                var year = (int)month / 12;
-                if (year < 1)
-                {
-                    ModelState.AddModelError("", "you are new employee you can't be promoted before 1 year internal experience");
-                }
-            }
-
-            if (ModelState.IsValid)
-            {
-                var entity = new ApplicantionForm
-                {
-                    EmployeeId = applicantionForm.EmployeeId,
-                    ApplicationType = applicantionForm.ApplicationType,
-                    VacancyId = applicantionForm.VacancyId,
-                    OrgStructureId = applicantionForm.OrgStructureId,
-                    Remark = applicantionForm.Remark,
-                    LookupId = applicantionForm.LookupId,
-                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                    EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == EmployeeId)?.EmployeeCode,
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now,
-                    ModifiedBy = applicantionForm.ModifiedBy,
-                    LastModified = applicantionForm.LastModified,
-                    VacancyType = GetType(applicantionForm.VacancyId.ToString()),
-                    From = DateTime.Today,
-                    To = DateTime.Today
-                };
-
-                db.ApplicantionFormes.Add(entity);
-                db.SaveChanges();
-                applicantionForm.ApplicantionFormId = entity.ApplicantionFormId;
-
-                #region operation log
-                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                if (person != null)
-                {
-                    UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name, User.Identity.Name + " add new Application for " + person.EmployeeCode, Modules.HRM);
-                }
-                #endregion
-
-            }
-
-            #region notification
-
-
-
-            var empid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var superviorId = EmployeeHelper.GetSupervisor(empid);
-
-            NotifModels notif = new NotifModels
-            {
-
-                UserId = UserInformationHelper.GetEmployeeUserId(superviorId),
-                Title = "Promotion Request",
-                Message = $" {UserInformationHelper.GetEmployeeFullName(User.Identity.Name)}  has request Promotion",
-                URL = "~/HRM/ApplicationForm"
+                EmployeeId = employee.EmployeeId,
+                EmployeeCode = employee.EmployeeCode,
+                IsForOther = applicantionForm.IsForOther,
+                ApplicationType = applicantionForm.ApplicationType,
+                VacancyId = applicantionForm.VacancyId,
+                OrgStructureId = applicantionForm.OrgStructureId,
+                LookupId = applicantionForm.LookupId,
+                VacancyType = applicantionForm.VacancyType,
+                Remark = applicantionForm.Remark,
+                OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Now,
+                From = DateTime.Today,
+                To = DateTime.Today
             };
+            db.ApplicantionFormes.Add(entity);
+            db.SaveChanges();
+            applicantionForm.ApplicantionFormId = entity.ApplicantionFormId;
 
-            Notify.NotifyUser(notif);
-
-            #endregion
-
+            UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name,
+                User.Identity.Name + " added an application for " + employee.EmployeeCode, Modules.HRM);
+            var supervisor = UserInformationHelper.GetEmployeeUserId(EmployeeHelper.GetSupervisor(currentEmployeeId));
+            if (!string.IsNullOrWhiteSpace(supervisor))
+            {
+                Notify.NotifyUser(new NotifModels
+                {
+                    UserId = supervisor,
+                    Title = "Promotion Request",
+                    Message = $"{UserInformationHelper.GetEmployeeFullName(User.Identity.Name)} submitted an application.",
+                    URL = "~/HRM/ApplicationForm"
+                });
+            }
 
             return Json(new[] { applicantionForm }.ToDataSourceResult(request, ModelState));
         }
@@ -424,39 +183,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantionFormes_Update([DataSourceRequest]DataSourceRequest request, ApplicantionForm applicantionForm)
         {
-            ModelState.Clear();
+            var currentEmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var employeeIds = ApplicationEmployeeIds(currentEmployeeId);
+            var entity = db.ApplicantionFormes.SingleOrDefault(x => x.ApplicantionFormId == applicantionForm.ApplicantionFormId
+                && employeeIds.Contains(x.EmployeeId));
+            if (entity == null)
+            {
+                ModelState.AddModelError("", "This application is unavailable.");
+                return Json(new[] { applicantionForm }.ToDataSourceResult(request, ModelState));
+            }
+
+            var employee = ResolveApplicationEmployee(applicantionForm, currentEmployeeId);
+            ApplicationVacancy.Apply(db, applicantionForm, ModelState, entity.VacancyId);
+            CheckDuplicate(applicantionForm, entity.ApplicantionFormId);
+
             if (ModelState.IsValid)
             {
-                var entity = new ApplicantionForm
-                {
-                    ApplicantionFormId = applicantionForm.ApplicantionFormId,
-                    EmployeeId = applicantionForm.EmployeeId,
-                    ApplicationType = applicantionForm.ApplicationType,
-                    VacancyId = applicantionForm.VacancyId,
-                    OrgStructureId = applicantionForm.OrgStructureId,
-                    Remark = applicantionForm.Remark,
-                    EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == EmployeeId)?.EmployeeCode,
-                    LookupId = applicantionForm.LookupId,
-                    OrgBranchName = applicantionForm.OrgBranchName,
-                    CreatedBy = applicantionForm.CreatedBy,
-                    DateCreated = applicantionForm.DateCreated,
-                    ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now,
-                    VacancyType = GetType(applicantionForm.VacancyId.ToString()),
-                };
-
-                db.ApplicantionFormes.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                entity.EmployeeId = employee.EmployeeId;
+                entity.EmployeeCode = employee.EmployeeCode;
+                entity.IsForOther = applicantionForm.IsForOther;
+                entity.VacancyId = applicantionForm.VacancyId;
+                entity.OrgStructureId = applicantionForm.OrgStructureId;
+                entity.LookupId = applicantionForm.LookupId;
+                entity.VacancyType = applicantionForm.VacancyType;
+                entity.Remark = applicantionForm.Remark;
+                entity.ModifiedBy = User.Identity.Name;
+                entity.LastModified = DateTime.Now;
                 db.SaveChanges();
-
-                #region operation log
-                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                if (person != null)
-                {
-                    UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name, User.Identity.Name + " update Application form info of " + person.EmployeeCode, Modules.HRM);
-
-                }
-                #endregion
+                UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name,
+                    User.Identity.Name + " updated an application for " + employee.EmployeeCode, Modules.HRM);
             }
 
             return Json(new[] { applicantionForm }.ToDataSourceResult(request, ModelState));
@@ -465,35 +220,62 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantionFormes_Destroy([DataSourceRequest]DataSourceRequest request, ApplicantionForm applicantionForm)
         {
-            ModelState.Clear();
-            if (ModelState.IsValid)
+            var employeeIds = ApplicationEmployeeIds(UserInformationHelper.GetEmployeeId(User.Identity.Name));
+            var entity = db.ApplicantionFormes.SingleOrDefault(x => x.ApplicantionFormId == applicantionForm.ApplicantionFormId
+                && employeeIds.Contains(x.EmployeeId));
+            if (entity == null)
             {
-                var entity = new ApplicantionForm
-                {
-                    ApplicantionFormId = applicantionForm.ApplicantionFormId,
-                    EmployeeId = applicantionForm.EmployeeId,
-                    ApplicationType = applicantionForm.ApplicationType,
-                    VacancyId = applicantionForm.VacancyId,
-                    OrgStructureId = applicantionForm.OrgStructureId,
-                    Remark = applicantionForm.Remark,
-                    EmployeeCode = applicantionForm.EmployeeCode,
-                    LookupId = applicantionForm.LookupId,
-                    OrgBranchName = applicantionForm.OrgBranchName,
-                    CreatedBy = applicantionForm.CreatedBy,
-                    DateCreated = applicantionForm.DateCreated,
-                    ModifiedBy = applicantionForm.ModifiedBy,
-                    LastModified = applicantionForm.LastModified,
-                };
-                #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted application form of employee code  " + applicantionForm.EmployeeCode);
-                #endregion
-                db.ApplicantionFormes.Attach(entity);
+                ModelState.AddModelError("", "This application is unavailable.");
+            }
+            else
+            {
                 db.ApplicantionFormes.Remove(entity);
                 db.SaveChanges();
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name,
+                    "Deleted application for " + entity.EmployeeCode);
             }
 
             return Json(new[] { applicantionForm }.ToDataSourceResult(request, ModelState));
         }
+
+        private static List<int> ApplicationEmployeeIds(int currentEmployeeId)
+        {
+            if (currentEmployeeId <= 0)
+                return new List<int>();
+
+            var employeeIds = EmployeeHelper.GetSubordinates_FilteredByHead(currentEmployeeId);
+            if (!employeeIds.Contains(currentEmployeeId))
+                employeeIds.Add(currentEmployeeId);
+            return employeeIds;
+        }
+
+        private Person_Employee ResolveApplicationEmployee(ApplicantionForm form, int currentEmployeeId)
+        {
+            if (!form.IsForOther)
+            {
+                form.EmployeeId = currentEmployeeId;
+                ModelState.Remove(nameof(form.EmployeeId));
+            }
+
+            var employeeIds = ApplicationEmployeeIds(currentEmployeeId);
+            var employee = db.Person_Employee.SingleOrDefault(x => x.EmployeeId == form.EmployeeId
+                && employeeIds.Contains(x.EmployeeId) && x.IsActive);
+            if (employee == null)
+                ModelState.AddModelError(nameof(form.EmployeeId), "Select an employee you can apply for, or check your employee account.");
+            else
+                form.EmployeeCode = employee.EmployeeCode;
+            return employee;
+        }
+
+        private void CheckDuplicate(ApplicantionForm form, int currentApplicationId = 0)
+        {
+            if (db.ApplicantionFormes.Any(x => x.EmployeeId == form.EmployeeId && x.VacancyId == form.VacancyId
+                && x.ApplicantionFormId != currentApplicationId))
+            {
+                ModelState.AddModelError("", "This employee already has an application for the vacancy.");
+            }
+        }
+
         public JsonResult GetJobTitle(string VacancyId)
         {
             db = new ExceedDbContext();

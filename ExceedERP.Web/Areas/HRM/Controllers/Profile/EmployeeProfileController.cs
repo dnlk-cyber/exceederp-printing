@@ -2610,12 +2610,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             var today = DateTime.Today;
             var myBranches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var activeEmployees = db.Person_Employee.Where(employee =>
+                myBranches.Contains(employee.BranchId) && employee.IsActive && employee.IsPlaced);
+            var nameFilters = new EmployeeProfileNameFilters(activeEmployees);
+            nameFilters.ApplyColumnFilters(request.Filters);
 
-            // 1. Base Query (IQueryable - Stays on SQL Server)
-            var baseQuery = from emp in db.Person_Employee
-                            where myBranches.Contains(emp.BranchId)
-                                  && emp.IsActive
-                                  && emp.IsPlaced
+            var baseQuery = from emp in nameFilters.Search(employeeName)
                             join con in db.Contract
                                 on emp.EmployeeId equals con.EmployeeId into empContracts
                             from contract in empContracts
@@ -2674,17 +2674,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                                     ? (int?)DbFunctions.DiffDays(today, contract.To)
                                     : null
                             };
-
-            if (!string.IsNullOrWhiteSpace(employeeName))
-            {
-                // Keep Unicode name matches in the database query so they apply across all pages.
-                var searchName = employeeName.Trim().Normalize(NormalizationForm.FormC);
-                baseQuery = baseQuery.Where(x =>
-                    ((x.FirstName ?? "") + " " + (x.MiddleName ?? "") + " " + (x.LastName ?? "")).Contains(searchName)
-                    || ((x.FirstNameEnglish ?? "") + " " + (x.MiddleNameEnglish ?? "") + " " + (x.LastNameEnglish ?? "")).Contains(searchName));
-            }
-
-            NormalizeEmployeeNameFilters(request.Filters);
 
             // 2. Execute Paging / Sorting / Filtering at SQL level FIRST
             var pagedDataResult = baseQuery.ToDataSourceResult(request);
@@ -2883,18 +2872,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(pagedDataResult, JsonRequestBehavior.AllowGet);
         }
-        private static void NormalizeEmployeeNameFilters(IEnumerable<IFilterDescriptor> filters)
-        {
-            foreach (var filter in filters)
-            {
-                if (filter is CompositeFilterDescriptor group)
-                    NormalizeEmployeeNameFilters(group.FilterDescriptors);
-                else if (filter is FilterDescriptor name && name.Value is string text
-                    && (name.Member == "FirstName" || name.Member == "MiddleName" || name.Member == "LastName"))
-                    name.Value = text.Trim().Normalize(NormalizationForm.FormC);
-            }
-        }
-
         private string GetEmployeeExpreince(DateTime HiredDate)
         {
             if (HiredDate == null)

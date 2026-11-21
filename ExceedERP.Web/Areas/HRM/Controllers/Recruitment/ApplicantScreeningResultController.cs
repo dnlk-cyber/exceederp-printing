@@ -44,21 +44,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         public decimal GetTotalResult(int id)
         {
-            var applicantExam = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == id).ToList();
-
-            if (applicantExam.Any())
-            {
-                return applicantExam.Sum(x => x.CurrentResult);
-            }
-            return 0;
+            return GetTotalResult(db, id);
         }
+
+        internal static decimal GetTotalResult(ExceedDbContext context, int applicantScreeningId)
+        {
+            return context.ApplicantExamResult
+                .Where(x => x.ApplicantScreeningId == applicantScreeningId)
+                .Sum(x => (decimal?)x.CurrentResult) ?? 0;
+        }
+
         public string PassOrFail(int applicantScreeningId, int vacancyId)
         {
-            var sum = db.ApplicantExamResult
-                .Where(x => x.ApplicantScreeningId == applicantScreeningId)
-                .Sum(x => (double?)x.CurrentResult) ?? 0;
+            var screening = db.ApplicantScreenings.Find(applicantScreeningId);
+            return screening == null ? "Fail" : PassOrFail(db, screening, vacancyId, GetTotalResult(applicantScreeningId));
+        }
 
-            var passScore = db.RecruitmentApplicantPassSettings
+        internal static string PassOrFail(ExceedDbContext context, ApplicantScreening screening, int vacancyId, decimal total)
+        {
+            if (screening.Status == "Fail")
+                return "Fail";
+
+            var passScore = context.RecruitmentApplicantPassSettings
                 .Where(x => x.VacancyId == vacancyId)
                 .Select(x => (double?)x.PassScore)
                 .FirstOrDefault();
@@ -66,7 +73,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             if (!passScore.HasValue)
                 return "Check Pass Setting";
 
-            return sum >= passScore.Value ? "Pass" : "Fail";
+            return (double)total >= passScore.Value ? "Pass" : "Fail";
         }
 
         public int GetVacancyId(int applicantScreenResultId)
@@ -84,19 +91,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
 
             var applicantDetail = db.ApplicantScreenings.Where(x => x.ApplicantScreenResultId == id).ToList();
+            var vacancyId = GetVacancyId(id);
 
-            DataSourceResult result = applicantDetail.ToDataSourceResult(request, screening => new
+            DataSourceResult result = applicantDetail.ToDataSourceResult(request, screening =>
             {
-                ApplicantName = screening.ApplicantName,
-                Age = screening.Age,
-                ApplicantScreenResultId = screening.ApplicantScreenResultId,
-                ApplicantScreeningId = screening.ApplicantScreeningId,
-                ApplicantDetailId = screening.ApplicantDetailId,
-                Sex = screening.Sex,
-                Address = screening.Address,
-                IsProfileGenerated = screening.IsProfileGenerated,
-                TotalResult = GetTotalResult(screening.ApplicantScreeningId),
-                PassOrFail = PassOrFail(screening.ApplicantScreeningId, GetVacancyId(screening.ApplicantScreenResultId))
+                var total = GetTotalResult(screening.ApplicantScreeningId);
+                return new
+                {
+                    screening.ApplicantName,
+                    screening.Age,
+                    screening.ApplicantScreenResultId,
+                    screening.ApplicantScreeningId,
+                    screening.ApplicantDetailId,
+                    screening.Sex,
+                    screening.Address,
+                    screening.IsProfileGenerated,
+                    TotalResult = total,
+                    PassOrFail = PassOrFail(db, screening, vacancyId, total)
+                };
             });
 
             return Json(result);
@@ -384,6 +396,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             //return Json(applicantScreening);
             return null;
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult ScreenAndGenerateApplicants(int vacancyId)
         {
             try
@@ -393,8 +407,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     return Json(new { status = "Fail", message = "Can't find screening setting" }, JsonRequestBehavior.AllowGet);
 
                 var vacancy = db.VaccancyPlans.Find(screening.VacancyId);
-                if (vacancy == null)
-                    return Json(new { status = "Fail", message = "No such vacancy" }, JsonRequestBehavior.AllowGet);
+                if (vacancy == null || vacancy.RecruSource != RecruitmentSource.EXTERNAL)
+                    return Json(new { status = "Fail", message = "Select an external vacancy." });
 
                 var eduLevelIds = db.ScreeningEducationLevels
                     .Where(x => x.ScreeingSettingId == screening.ScreeningSettingId)
@@ -428,141 +442,118 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     .Select(x => x.LanguageName.Trim().ToLower())
                     .ToList();
 
-                var screenResult = db.ApplicantScreenResults.FirstOrDefault(x => x.VacancyId == screening.VacancyId);
-                if (screenResult == null)
+                var examSettings = ApplicantExamResultController.GetExternalExamSettings(db);
+                if (examSettings.Count == 0)
+                    return Json(new { status = "Fail", message = "Configure at least one external exam type before generating results." });
+
+                using (var transaction = db.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
                 {
-                    screenResult = new ApplicantScreenResult { VacancyId = screening.VacancyId };
-                    db.ApplicantScreenResults.Add(screenResult);
-                    db.SaveChanges();
-                }
-
-                var examSettings = db.InternalRecruitmentCriteriaTypeSettings
-                    .Where(x => x.ExamSource == RecruitmentSource.EXTERNAL)
-                    .ToList();
-
-                if (!examSettings.Any())
-                    return Json(new { status = "Fail", message = "No exam/criteria settings found. You have to set the Exam Type Criteria settings first before screening and generating applicants." }, JsonRequestBehavior.AllowGet);
-
-                // 2. Evaluate all applicants
-                foreach (var app in applicants)
-                {
-                    bool isPassed = true;
-                    var failReasons = new List<string>();
-
-                    // Criterion A: Gender Check
-                    if (vacancy.Gender == GenderForVacancyGender.MALE || vacancy.Gender == GenderForVacancyGender.FEMALE)
+                    var screenResult = db.ApplicantScreenResults.FirstOrDefault(x => x.VacancyId == screening.VacancyId);
+                    if (screenResult == null)
                     {
-                        if (app.Sex.ToString() != vacancy.Gender.ToString())
-                        {
-                            isPassed = false;
-                            failReasons.Add($"Gender mismatch (Required: {vacancy.Gender})");
-                        }
-                    }
-
-                    // Criterion B: Language Check
-                    if (vacancyLanguages.Any())
-                    {
-                        string appLang = app.Language != Languages.Not_Required ? app.Language.ToString().Trim().ToLower() : "";
-                        if (!vacancyLanguages.Contains(appLang))
-                        {
-                            isPassed = false;
-                            failReasons.Add("Does not meet language requirements");
-                        }
-                    }
-
-                    // Criterion C: Education Check
-                    var appEducation = db.ApplicantEducation.FirstOrDefault(x =>
-                        x.ApplicantDetailId == app.ApplicantDetailId &&
-                        eduLevelIds.Contains(x.EducationLevelSettingId) &&
-                        eduFieldIds.Contains(x.EducationFieldSettingId));
-
-                    if (appEducation == null)
-                    {
-                        isPassed = false;
-                        failReasons.Add("Education level or field criteria not met");
-                    }
-
-                    // Criterion D: Experience Check
-                    var applicantExps = db.ApplicantExperience
-                        .Where(x => x.ApplicantDetailId == app.ApplicantDetailId && expJobTitleIds.Contains(x.JobTitleId))
-                        .ToList();
-
-                    double totalDays = applicantExps
-                        .Where(e => e.From.HasValue && e.To.HasValue)
-                        .Sum(e => (e.To.Value - e.From.Value).TotalDays);
-
-                    double expYears = Math.Round(totalDays / 365.0, 2);
-
-                    if (expYears < vacancy.TotalYearOfExperience)
-                    {
-                        isPassed = false;
-                        failReasons.Add($"Experience insufficient ({expYears} yrs vs {vacancy.TotalYearOfExperience} yrs required)");
-                    }
-
-                    // Criterion E: Organization Type Check
-                    if (screening.OrganizationType != OrganizationType.All)
-                    {
-                        bool hasMatchingOrgType = db.ApplicantExperience
-                            .Any(x => x.ApplicantDetailId == app.ApplicantDetailId && x.OrganizationType == screening.OrganizationType);
-
-                        if (!hasMatchingOrgType)
-                        {
-                            isPassed = false;
-                            failReasons.Add($"Experience with Organization Type {screening.OrganizationType} missing");
-                        }
-                    }
-
-                    // 3. Save or Update ApplicantScreening record for EVERY applicant
-                    var screeningRecord = db.ApplicantScreenings.FirstOrDefault(x => x.ApplicantDetailId == app.ApplicantDetailId && x.ApplicantScreenResultId == screenResult.ApplicantScreenResultId)
-                        ?? new ApplicantScreening
-                        {
-                            ApplicantScreenResultId = screenResult.ApplicantScreenResultId,
-                            ApplicantDetailId = app.ApplicantDetailId,
-                            ApplicantName = app.ApplicantName,
-                            Address = app.Address,
-                            Sex = app.Sex,
-                            Age = app?.Age ?? 0
-                        };
-
-                    // Set screening outcome values
-                    screeningRecord.IsPassed = isPassed;
-                    screeningRecord.Status = isPassed ? "Pass" : "Fail";
-                    screeningRecord.Remark = isPassed ? $"Passed (Exp: {expYears} yrs)" : string.Join("; ", failReasons);
-                    screeningRecord.Experience = Convert.ToDecimal(expYears); // If field exists on your model
-
-                    if (screeningRecord.ApplicantScreeningId == 0)
-                        db.ApplicantScreenings.Add(screeningRecord);
-                    else
-                        db.Entry(screeningRecord).State = EntityState.Modified;
-
-                    db.SaveChanges();
-
-                    // 4. Generate/Update Exam records (only for Passed applicants, or remove 'if (isPassed)' if all can be tested)
-                    if (isPassed)
-                    {
-                        foreach (var exam in examSettings)
-                        {
-                            var existingExam = db.ApplicantExamResult.FirstOrDefault(x =>
-                                x.ApplicantScreeningId == screeningRecord.ApplicantScreeningId &&
-                                x.ExamType == exam.ExamType);
-
-                            if (existingExam == null)
-                            {
-                                db.ApplicantExamResult.Add(new ApplicantExamResult
-                                {
-                                    ApplicantScreeningId = screeningRecord.ApplicantScreeningId,
-                                    ExamType = exam.ExamType,
-                                    SettingValue = exam.SettingVlaue
-                                });
-                            }
-                            else
-                            {
-                                existingExam.SettingValue = exam.SettingVlaue;
-                                db.Entry(existingExam).State = EntityState.Modified;
-                            }
-                        }
+                        screenResult = new ApplicantScreenResult { VacancyId = screening.VacancyId };
+                        db.ApplicantScreenResults.Add(screenResult);
                         db.SaveChanges();
                     }
+
+                    // 2. Evaluate all applicants
+                    foreach (var app in applicants)
+                    {
+                        bool isPassed = true;
+                        var failReasons = new List<string>();
+
+                        // Criterion A: Gender Check
+                        if (vacancy.Gender == GenderForVacancyGender.MALE || vacancy.Gender == GenderForVacancyGender.FEMALE)
+                        {
+                            if (app.Sex.ToString() != vacancy.Gender.ToString())
+                            {
+                                isPassed = false;
+                                failReasons.Add($"Gender mismatch (Required: {vacancy.Gender})");
+                            }
+                        }
+
+                        // Criterion B: Language Check
+                        if (vacancyLanguages.Any())
+                        {
+                            string appLang = app.Language != Languages.Not_Required ? app.Language.ToString().Trim().ToLower() : "";
+                            if (!vacancyLanguages.Contains(appLang))
+                            {
+                                isPassed = false;
+                                failReasons.Add("Does not meet language requirements");
+                            }
+                        }
+
+                        // Criterion C: Education Check
+                        var appEducation = db.ApplicantEducation.FirstOrDefault(x =>
+                            x.ApplicantDetailId == app.ApplicantDetailId &&
+                            eduLevelIds.Contains(x.EducationLevelSettingId) &&
+                            eduFieldIds.Contains(x.EducationFieldSettingId));
+
+                        if (appEducation == null)
+                        {
+                            isPassed = false;
+                            failReasons.Add("Education level or field criteria not met");
+                        }
+
+                        // Criterion D: Experience Check
+                        var applicantExps = db.ApplicantExperience
+                            .Where(x => x.ApplicantDetailId == app.ApplicantDetailId && expJobTitleIds.Contains(x.JobTitleId))
+                            .ToList();
+
+                        double totalDays = applicantExps
+                            .Where(e => e.From.HasValue && e.To.HasValue)
+                            .Sum(e => (e.To.Value - e.From.Value).TotalDays);
+
+                        double expYears = Math.Round(totalDays / 365.0, 2);
+
+                        if (expYears < vacancy.TotalYearOfExperience)
+                        {
+                            isPassed = false;
+                            failReasons.Add($"Experience insufficient ({expYears} yrs vs {vacancy.TotalYearOfExperience} yrs required)");
+                        }
+
+                        // Criterion E: Organization Type Check
+                        if (screening.OrganizationType != OrganizationType.All)
+                        {
+                            bool hasMatchingOrgType = db.ApplicantExperience
+                                .Any(x => x.ApplicantDetailId == app.ApplicantDetailId && x.OrganizationType == screening.OrganizationType);
+
+                            if (!hasMatchingOrgType)
+                            {
+                                isPassed = false;
+                                failReasons.Add($"Experience with Organization Type {screening.OrganizationType} missing");
+                            }
+                        }
+
+                        // 3. Save or Update ApplicantScreening record for EVERY applicant
+                        var screeningRecord = db.ApplicantScreenings.FirstOrDefault(x => x.ApplicantDetailId == app.ApplicantDetailId && x.ApplicantScreenResultId == screenResult.ApplicantScreenResultId)
+                            ?? new ApplicantScreening
+                            {
+                                ApplicantScreenResultId = screenResult.ApplicantScreenResultId,
+                                ApplicantDetailId = app.ApplicantDetailId,
+                                ApplicantName = app.ApplicantName,
+                                Address = app.Address,
+                                Sex = app.Sex,
+                                Age = app?.Age ?? 0
+                            };
+
+                        // Set screening outcome values
+                        screeningRecord.IsPassed = isPassed;
+                        screeningRecord.Status = isPassed ? "Pass" : "Fail";
+                        screeningRecord.Remark = isPassed ? $"Passed (Exp: {expYears} yrs)" : string.Join("; ", failReasons);
+                        screeningRecord.Experience = Convert.ToDecimal(expYears); // If field exists on your model
+
+                        if (screeningRecord.ApplicantScreeningId == 0)
+                            db.ApplicantScreenings.Add(screeningRecord);
+                        else
+                            db.Entry(screeningRecord).State = EntityState.Modified;
+
+                        db.SaveChanges();
+
+                        ApplicantExamResultController.AddMissingExamRows(db, screeningRecord.ApplicantScreeningId, examSettings);
+                        db.SaveChanges();
+                    }
+                    transaction.Commit();
                 }
 
                 return Json(new
@@ -573,10 +564,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Trace.TraceError("Could not generate external screening results for vacancy {0}: {1}", vacancyId, ex);
                 return Json(new
                 {
                     status = "Fail",
-                    message = ex.ToString()
+                    message = "Could not generate screening results. Try again."
                 }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -601,6 +593,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     Status = "FAIL",
                     Message = "Profile already generated."
                 });
+            }
+
+            var vacancyId = GetVacancyId(applicantScreening.ApplicantScreenResultId);
+            if (PassOrFail(db, applicantScreening, vacancyId, GetTotalResult(applicantScreeningId)) != "Pass")
+            {
+                return Json(new { Status = "FAIL", Message = "Only applicants who pass screening and the configured score threshold can generate a profile." });
             }
 
             var names = applicantScreening.ApplicantName?

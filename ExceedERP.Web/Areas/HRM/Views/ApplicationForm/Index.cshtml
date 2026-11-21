@@ -1,4 +1,4 @@
-﻿@using System.Collections
+@using System.Collections
 @using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Localization
 @{
@@ -6,6 +6,7 @@
 }
 
 <legend>@Resources.NavigatorSelfCare_ApplicationForm</legend>
+<script src="@Url.Content("~/Areas/HRM/Scripts/application-vacancy.js")"></script>
 
                     @(Html.Kendo().Grid<ApplicantionForm>()
                       .Name("ApplicantionForm")
@@ -13,7 +14,7 @@
       {
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "EmployeeCode").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("ListOfEmployee").Width(200);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable) ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("ListOfEmployee").Width(200);
-          columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["recruitmentVacancy"], "VacancyId", "MediaVacancyCode").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("Vacancy").Width(150);
+          columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["ApplicationVacancyCodes"], "VacancyId", "VaccancyCode").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["JobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.Bound(c => c.Remark).Width (80);
@@ -32,6 +33,7 @@
                                   window.Title(Resources.NavigatorSelfCare_ApplicationForm);
                                   window.Scrollable(false);
                               }))
+             .Events(events => events.Edit("editSelfCareApplication"))
              .Scrollable(h => h.Height(500))
                          .Groupable()
                                   .Sortable(sortable =>
@@ -63,146 +65,27 @@
                   .Destroy(destroy => destroy.Action("ApplicantionFormes_Destroy", "ApplicationForm"))
       )
                     )
-             
-<script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function (key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function () {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-    //}
-
-    function sync_handler(e) {
-        this.read();
-
-    }
-
-</script>
 
 <script>
+    function editSelfCareApplication(e) {
+        var employee = e.container.find("[name='EmployeeId']").data("kendoDropDownList");
+        employee.enable(e.model.IsForOther);
+        showApplicationVacancy(e);
+    }
 
-    function SetEmployee(e) {
-        var x = e.checked;
-        var dropDown = $("#EmployeeId").data("kendoDropDownList");
-        if (x == true) {
-          
-            dropDown.enable(true);
-
-
+    function setApplicationEmployee(checkbox) {
+        var employee = $(checkbox).closest(".k-edit-form-container").find("[name='EmployeeId']").data("kendoDropDownList");
+        employee.enable(checkbox.checked);
+        if (!checkbox.checked) {
+            employee.value("");
+            employee.trigger("change");
         }
-        else {
-            dropDown.value(0);
-            dropDown.enable(false);
-        }
-        $.ajax({
-            contentType: "application/json; charset=utf-8",
-            url: '@Url.Action("SetEmployee", "ExpirianceRequest")',
-            data: { x: x },
-            type: 'GET',
-            cache: false,
-            success: function (result) {
-                r = result;
-                if (x == true && r == "0") {
-                    e.checked = false;
-                    dropDown.value(0);
-                    dropDown.enable(false);
-                    alert("You can not request for other employee!!.\nThere is no employee under your postion.");
-                }
-               
-            }
-
-        });
-
-
     }
 </script>
+
 <style>
-    .Employee-photo {
-        display: inline-block;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-size: 32px 35px;
-        background-position: center center;
-        vertical-align: middle;
-        line-height: 32px;
-        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
-        margin-left: 5px;
-    }
-
-    .Employee-name {
-        display: inline-block;
-        vertical-align: middle;
-        line-height: 32px;
-        padding-left: 3px;
-    }
-</style>
-<script>
-    function filterCategories() {
-        return {
-            OrgStructureId: $("#OrgStructureId").val(),
-            MediaVacancyCode: $("#MediaVacancyCode").val()
-        };
-    }
-
-    function filterJobtitle() {
-        return {
-            VacancyId: $("#VacancyId").val()
-        };
-    }
-
-    function filterworkunit() {
-        return {
-            VacancyId: $("#VacancyId").val()
-        };
-    }
-</script>
-
-<style type="text/css">
-    div.k-edit-form-container {
+    .k-edit-form-container {
         width: 700px;
+        max-width: calc(100vw - 36px);
     }
 </style>
-<script>
-
-    function IsforOthers() {
-        return {
-            IsForOther: $("#IsForOther").val()
-        };
-    }
-
-    function valueMapper(options) {
-        $.ajax({
-            url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
-            data: {
-                value: options.value || 0,
-                status: 1,
-                excludeId: -1
-            },
-            success: function (data) {
-                options.success(data);
-            }
-        });
-    }
-
-    function convertValues(value) {
-        var data = {};
-
-        value = $.isArray(value) ? value : [value];
-
-        for (var idx = 0; idx < value.length; idx++) {
-            data["values[" + idx + "]"] = value[idx];
-        }
-
-        return data;
-    }
-
-</script>

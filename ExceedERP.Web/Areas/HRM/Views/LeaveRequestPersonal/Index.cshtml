@@ -133,11 +133,7 @@
 
 <!-- Status Legend -->
 <div class="well well-sm" style="background: #fff; border-radius: 4px; margin-bottom: 12px; padding: 8px 15px;">
-    <span class="fa fa-circle" style="color: #6b7280;"></span> Final Approved &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color: #10b981;"></span> Department Approved &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color: #0284c7;"></span> Waiting for Approval &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color: #f59e0b;"></span> Pending &nbsp;&nbsp;
-    <span class="fa fa-circle" style="color: #ef4444;"></span> Rejected
+    @Html.Partial("~/Areas/HRM/Views/Shared/_LeaveRequestStatusLegend.cshtml")
 </div>
 
 @(Html.Kendo().Grid<LeaveRequest>()
@@ -169,7 +165,7 @@
 
             columns.Bound(c => c.LeaveBalance).Title("Balance").Width(90);
             columns.Bound(c => c.LeaveDays).Title("Days").Width(80);
-            columns.Bound(c => c.Status).Width(110);
+            columns.Bound(c => c.Status).ClientTemplate("#= leaveRequestStatusBadge(data) #").Width(175);
             columns.Bound(c => c.Reason).Width(140);
             columns.Bound(c => c.LeaveActionTypes).Width(100).Visible(false);
             columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
@@ -519,31 +515,11 @@
 
     function onDataBound(e) {
         var grid = this;
-        grid.tbody.find("tr[role='row']").each(function () {
+        grid.tbody.children("tr[data-uid]").each(function () {
             var model = grid.dataItem(this);
-            var $row = $(this);
-
-            // Remove any previously attached status classes
-            $row.removeClass("row-approved row-dept-approved row-waiting row-pending row-rejected");
-
-            if (model.IsApproved === true) {
-                $row.addClass("row-approved");
-                $row.find(".k-grid-edit, .k-grid-delete").remove();
-            }
-            else if (model.Status === "DEPARTMENT_APPROVAL" && !model.IsApproved) {
-                $row.addClass("row-dept-approved");
-                $row.find(".k-grid-edit, .k-grid-delete").remove();
-            }
-            else if (model.IsDepartmentSendForApproval === true || model.IsSendForApproval === true || model.Status === "WAITING_FOR_APPROVAL") {
-                $row.addClass("row-waiting");
-                $row.find(".k-grid-edit, .k-grid-delete").remove();
-            }
-            else if (model.IsRejected === true) {
-                $row.addClass("row-rejected");
-            }
-            else if (model.IsPending === true || (!model.IsApproved && !model.IsSendForApproval)) {
-                $row.addClass("row-pending");
-            }
+            if (!model) return;
+            var row = $(this);
+            styleLeaveRequestRow(row, model);
         });
     }
 

@@ -232,7 +232,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         && x.EmployeeId == empId
                         && x.EvaluationCriteriaTypeId == evaluationCriteriaId
                         && x.CriteriaCategoryId == criteriaCategoryId
-                        && x.GlPeriodId == periodId).FirstOrDefault();
+                        && x.GlPeriodId == periodId)
+                .OrderByDescending(x => x.IsHRApproved).ThenByDescending(x => x.IsApproved).FirstOrDefault();
+
+            if (Performance != null && (Performance.IsApproved || Performance.IsHRApproved))
+                return Performance.EmployeePerformanceId;
+
 
             var placement = db.Placements.Where(x => x.isCurrent)
                                          .Where(x => x.EmployeeId == empId)
@@ -442,7 +447,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 .Where(x => x.GlFiscalYearId == fiscalYearId
                         && x.EmployeeId == empId
                         && x.EvaluationCriteriaTypeId == evaluationCriteriaId
-                        && x.GlPeriodId == periodId).FirstOrDefault();
+                        && x.GlPeriodId == periodId)
+                .OrderByDescending(x => x.IsHRApproved).ThenByDescending(x => x.IsApproved).FirstOrDefault();
+
+            if (Performance != null && (Performance.IsApproved || Performance.IsHRApproved))
+                return Performance.EmployeePerformanceId;
+
             var category = db.MeasurementDefinitions.Find(evaluationCriteriaId);
 
             var placement = db.Placements.Where(x => x.isCurrent)

@@ -343,7 +343,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         && x.EmployeeId == empId
                         && x.EvaluatorEmployeeId == id
                         && x.EvaluationCriteriaTypeId == evaluationCriteriaId
-                        && x.GlPeriodId == periodId).FirstOrDefault();
+                        && x.GlPeriodId == periodId)
+                .OrderByDescending(x => x.IsHRApproved).ThenByDescending(x => x.IsApproved).FirstOrDefault();
+
+            if (Performance != null && (Performance.IsApproved || Performance.IsHRApproved))
+                return Performance.EmployeePerformanceId;
+
             var category = db.MeasurementDefinitions.Find(evaluationCriteriaId);
             
 
@@ -555,7 +560,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         && x.EvaluatorEmployeeId == id
                         && x.EvaluationCriteriaTypeId == evaluationCriteriaId
                         && x.EvalutionType == "PeerToPeer"
-                        && x.GlPeriodId == periodId).FirstOrDefault();
+                        && x.GlPeriodId == periodId)
+                .OrderByDescending(x => x.IsHRApproved).ThenByDescending(x => x.IsApproved).FirstOrDefault();
+
+            if (Performance != null && (Performance.IsApproved || Performance.IsHRApproved))
+                return Performance.EmployeePerformanceId;
+
 
             var placement = db.Placements.Where(x => x.isCurrent)
                                          .Where(x => x.EmployeeId == empId)

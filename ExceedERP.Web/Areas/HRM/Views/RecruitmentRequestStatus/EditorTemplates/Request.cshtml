@@ -145,6 +145,13 @@
                     @Html.ValidationMessageFor(model => model.GlFiscalYearId, "", new { @class = "text-danger" })
                 </div>
             </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DatePickerFor(model => model.Date).Format("yyyy-MM-dd"))
+                    @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                </div>
+            </div>
         </div>
     </div>
     </div>

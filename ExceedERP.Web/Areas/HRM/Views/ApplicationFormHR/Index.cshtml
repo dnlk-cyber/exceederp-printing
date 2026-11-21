@@ -6,6 +6,7 @@
 }
 
 <legend>@Resources.NavigatorSelfCare_ApplicationForm Hr</legend>
+<script src="@Url.Content("~/Areas/HRM/Scripts/application-vacancy.js")"></script>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.SelfCare.ApplicantionForm>()
           .Name("grid")
@@ -13,7 +14,7 @@
           {
               columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
               columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-              columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["recruitmentVacancy"], "VacancyId", "MediaVacancyCode").EditorTemplateName("Vacancy").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["ApplicationVacancyCodes"], "VacancyId", "VaccancyCode").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
               columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
               columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["JobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
               columns.Bound(c => c.Remark).Width(80);
@@ -48,9 +49,11 @@
               window.Title(Resources.NavigatorSelfCare_ApplicationForm);
               window.Scrollable(false);
           }))
+          .Events(events => events.Edit("showApplicationVacancy"))
 
           .DataSource(dataSource => dataSource
               .Ajax()
+              .Events(events => events.Error("error_handler('grid')"))
                 .Sort(sort => sort.Add("ApplicantionFormId").Descending())
               .Model(model =>
               {
@@ -63,25 +66,3 @@
               .Destroy(destroy => destroy.Action("ApplicantionFormes_Destroy", "ApplicationFormHR"))
           )
 )
-
-
-<script>
-    function filterCategories() {
-        return {
-            OrgStructureId: $("#OrgStructureId").val(),
-            MediaVacancyCode: $("#MediaVacancyCode").val()
-        };
-    }
-
-    function filterJobtitle() {
-        return {
-            VacancyId: $("#VacancyId").val()
-        };
-    }
-
-    function filterworkunit() {
-        return {
-            VacancyId: $("#VacancyId").val()
-        };
-    }
-</script>

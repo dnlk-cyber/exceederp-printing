@@ -15,6 +15,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Web.Areas.HRM.Controllers.Company;
+using ExceedERP.Web.Areas.HRM.Controllers.SelfCare;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using System.Net;
 using ExceedERP.Core.Domain.HRM;
@@ -3575,33 +3576,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         public JsonResult GetVacancyCodeForInternalApplicant()
         {
-            var vacancies = db.VaccancyPlans
-                  .Where(x => x.RecruSource == RecruitmentSource.INTERNAL
-                  ||x.RecruSource == RecruitmentSource.INTERNALPROMOTION
-                  ||x.RecruSource == RecruitmentSource.INTERNALTRANSFER
-                  && x.IsActive).ToList();
-            return Json(vacancies.Select(p => new
-            {
-                VacancyId = p.VacancyId,
-                VaccancyCode = p.VaccancyCode,
-            }), JsonRequestBehavior.AllowGet);
+            var vacancies = ApplicationVacancy.Query(db)
+                .OrderByDescending(x => x.IsActive).ThenBy(x => x.VacancyCode)
+                .Select(x => new
+                {
+                    x.VacancyId,
+                    VaccancyCode = x.IsActive ? x.VacancyCode : x.VacancyCode + " (closed)",
+                    x.JobTitle
+                }).ToList();
+            return Json(vacancies, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetDepartmentsByVacancy(int VacancyId)
+        public JsonResult GetDepartmentsByVacancy(int? VacancyId)
         {
-            List<MainCompanyStructure> mainCompanys = new List<MainCompanyStructure>();
+            var vacancy = VacancyId.HasValue ? ApplicationVacancy.Query(db).SingleOrDefault(x => x.VacancyId == VacancyId.Value) : null;
+            if (vacancy == null)
+                return Json(new object[0], JsonRequestBehavior.AllowGet);
 
-            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == VacancyId);
-            if (vacancy != null)
-            {
-                var mainCompanyStructure = db.MainCompanyStructures.Where(x => x.IsActive).Where(x => x.OrgStructureId == vacancy.Department).ToList();
-
-                mainCompanys.AddRange(mainCompanyStructure);
-            }
-            return Json(mainCompanys.Select(p => new
-            {
-                OrgStructureId = p.OrgStructureId,
-                Name = p.Name,
-            }), JsonRequestBehavior.AllowGet);
+            var workUnits = ApplicationVacancy.WorkUnits(db, vacancy).OrderBy(x => x.Name)
+                .Select(x => new { x.OrgStructureId, x.Name }).ToList();
+            return Json(workUnits, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetDepartmentsByBranchFromManPowerPlanning(int branchId, int businessUnitId, string searchText)
         {

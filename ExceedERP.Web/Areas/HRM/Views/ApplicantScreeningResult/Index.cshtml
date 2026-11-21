@@ -7,6 +7,7 @@
 
 @*<legend>@Resources.Navigator_Recruitment_ApplicantScreeningResult</legend>*@
 <legend>@Resources.External_Applicant_Screening</legend>
+@Html.AntiForgeryToken()
 @(Html.Kendo().Grid<ApplicantScreenResult>()
                  .Name("ApplicantScreeninggrid")
          .Columns(columns =>
@@ -76,7 +77,6 @@
                                 .Events(ev =>
                                        {
                                //ev.DataBound("onMasterDataBound");
-                               ev.DetailExpand("onDetailExpandUser");
                                        })
 
                               .Editable(editable => editable.Mode(GridEditMode.InLine))//TemplateName("ApplicantRegistration").Window(window =>
@@ -205,7 +205,7 @@
 
 <script id="ExamResult" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                   .Name("tabstrip_#ApplicantScreeningId#")
+                                                   .Name("examTabs_#=ApplicantScreeningId#")
                       .SelectedIndex(0)
                       .Items(items =>
                       {
@@ -232,6 +232,7 @@
 
 
                                           .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .NoRecords(records => records.Template("Configure an external exam type to enter results."))
                                           .Scrollable(h => h.Height(300))
                                           .DataSource(dataSource => dataSource
                                               .Ajax()
@@ -239,8 +240,7 @@
                                                        .Events(events =>
                                                        {
                                                                    events.Error("error_handler(\"ApplicantExamResult#=ApplicantScreeningId#\")");
-                                                                   events.RequestStart("onRequestStart(\"ApplicantExamResult#=ApplicantScreeningId#\")");
-                                                                   events.RequestEnd("onRequestEnd(\"ApplicantExamResult#=ApplicantScreeningId#\")");
+                                                                   events.RequestEnd("refreshApplicantScore");
                                                                })
 
                                                      .Model(model =>
@@ -250,7 +250,7 @@
                                                                  model.Field(p => p.ExamType).Editable(false);
                                                              }
                                                          )
-                                                                           .Read(read => read.Action("ApplicantExamResult_Read", "ApplicantExamResult", new { id = "#=ApplicantScreeningId#" }))
+                                                                           .Read(read => read.Action("PrepareExternalExamResults", "ApplicantExamResult", new { id = "#=ApplicantScreeningId#" }).Type(HttpVerbs.Post).Data("sendForgery"))
                                                                            .Create(create => create.Action("ApplicantExamResult_Create", "ApplicantExamResult", new { id = "#=ApplicantScreeningId#" }))
                                                                            .Update(update => update.Action("ApplicantExamResult_Update", "ApplicantExamResult"))
                                                                            .Destroy(destroy => destroy.Action("ApplicantExamResult_Destroy", "ApplicantExamResult"))
@@ -383,16 +383,17 @@
         $.ajax({
             url: '@Url.Action("ScreenAndGenerateApplicants", "ApplicantScreeningResult")',
             //contentType: "application/json; charset=utf-8",
-            data: { vacancyId: vacancyId },
+            data: $.extend({ vacancyId: vacancyId }, sendForgery()),
             type: 'POST',
             cache: false,
             success: function (result) {
-                r = result;
-                alert(r.message);
-                var grid = $("#ApplicantScreeninggrid").data("kendoGrid");
-
-                //grid.dataSource.transport.read();
-                grid.dataSource.read();
+                alert(result.message);
+                if (result.status === "OK") {
+                    $("#ApplicantScreeninggrid").data("kendoGrid").dataSource.read();
+                }
+            },
+            error: function () {
+                alert("Could not generate screening results. Try again.");
             }
 
         });
@@ -504,107 +505,50 @@
 </style>
 
 <script>
+    function Pass(e) {
+        e.preventDefault();
+        var applicant = this.dataItem($(e.currentTarget).closest("tr"));
+        if (!applicant || !confirm("Generate a profile for this applicant?")) return;
 
-      var ApplicantScreenResultId_Global = 0;
-
-     function onDetailExpandUser(e) {
-        var masterRow = e.masterRow;
-
-         var masterGrid = $("#ApplicantScreeninggrid").data("kendoGrid");
-
-        var masterDataItem = masterGrid.dataItem(masterRow);
-
-         ApplicantScreenResultId_Global = masterDataItem.ApplicantScreenResultId;
-
-         masterId = masterDataItem.ApplicantScreenResultId;
-
-
-     }
-
-
-     function Pass(e) {
-
-         var masterId = ApplicantScreenResultId_Global;
-
-        var row = $(e.target).closest("tr");
-         var grid = $("#ApplicantScreening" + masterId).data("kendoGrid");
-        var dataItem = grid.dataItem(row);
-       // var masterId = dataItem.CustomerTicket_HelpDeskId;
-         var applicantScreeningId = dataItem.ApplicantScreeningId;
-
-        if (confirm('Are you sure you want generate profile for this applicant')) {
-            $.ajax({
-                url: '@Url.Action("GenerateProfile", "ApplicantScreeningResult")',
-
-                data: { applicantScreeningId: applicantScreeningId },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                    if (r === "true") {
-                        alert("Successfully Generated");
-                    }
-                    else if (r === "false") {
-                        alert("Already Generated Before");
-                    }
-                    
-
-                    //var grid = $("#EmployeePerformancegrid").data("kendoGrid");
-                    var masterGrid = $("#ApplicantScreeninggrid").data("kendoGrid");
-                    masterGrid.dataSource.read();
-                }
-
-            });
-        }
+        var grid = this;
+        $.post('@Url.Action("GenerateProfile", "ApplicantScreeningResult")', {
+            applicantScreeningId: applicant.ApplicantScreeningId
+        }).done(function (result) {
+            alert(result.Message);
+            if (result.Status === "SUCCESS") {
+                grid.dataSource.read();
+            }
+        }).fail(function () {
+            alert("Could not generate a profile. Try again.");
+        });
     }
 
-</script>
+    function updateApplicantScreeningRow(row, applicant) {
+        var passed = applicant.PassOrFail === "Pass";
+        row.find(".k-grid-pass").toggle(passed && !applicant.IsProfileGenerated);
+        row.css("background-color", passed ? "lightGreen" : applicant.PassOrFail === "Fail" ? "gray" : "");
+    }
 
-<script>
-
-
-    function DetailDataBound(e) {
+    function DetailDataBound() {
         var grid = this;
+        grid.tbody.children("tr.k-master-row").each(function () {
+            var applicant = grid.dataItem(this);
+            if (applicant) updateApplicantScreeningRow($(this), applicant);
+        });
+    }
 
-        var gridRows = grid.tbody.find("tr");
-        for (var i = 0; i < gridRows.length; i++) {
-            var row = $(gridRows[i]);
+    function refreshApplicantScore(e) {
+        var result = e.response;
+        if (e.type !== "update" || !result || result.Errors || result.ApplicantTotal == null) return;
 
-            var dataItem = grid.dataItem(row);
+        var row = $("#ApplicantExamResult" + result.ApplicantScreeningId)
+            .closest("tr.k-detail-row").prev("tr.k-master-row");
+        var grid = row.closest(".k-grid").data("kendoGrid");
+        var applicant = grid && grid.dataItem(row);
+        if (!applicant) return;
 
-
-            if (dataItem.PassOrFail === "Pass" && !dataItem.IsProfileGenerated) {
-
-               // row.find(".k-grid-edit").hide();
-                row.find(".k-grid-pass").show();
-                row.css("background-color", "lightGreen");
-
-                //$(".k-grid-top", gridName).hide();
-
-            }
-            if (dataItem.PassOrFail === "Pass" && dataItem.IsProfileGenerated) {
-
-                // row.find(".k-grid-edit").hide();
-                row.find(".k-grid-pass").hide();
-                row.css("background-color", "lightGreen");
-
-                //$(".k-grid-top", gridName).hide();
-
-            }
-            else if (dataItem.PassOrFail === "Fail") {
-
-              //  row.find(".k-grid-edit").hide();
-                row.find(".k-grid-pass").hide();
-                 row.css("background-color", "gray");
-
-                //$(".k-grid-top", gridName).hide();
-
-            }
-          
-            else {
-                //  row.find(".k-grid-edit").show();
-                // row.css("background-color", "red");
-            }
-        }
+        applicant.set("TotalResult", result.ApplicantTotal);
+        applicant.set("PassOrFail", result.PassOrFail);
+        updateApplicantScreeningRow(grid.tbody.children("[data-uid='" + applicant.uid + "']"), applicant);
     }
 </script>

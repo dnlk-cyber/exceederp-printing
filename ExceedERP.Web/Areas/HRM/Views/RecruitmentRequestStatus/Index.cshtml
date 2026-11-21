@@ -18,6 +18,7 @@
               columns.Bound(c => c.NoOfCurrentStaff).Width(120);
 
               columns.Bound(c => c.NoOfVaccantPostion);
+              columns.Bound(c => c.Date).Format("{0:yyyy-MM-dd}").Width(115);
               columns.Command(command =>
               {
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -57,7 +58,11 @@
                       events.RequestEnd("onRequestEnd(\"RecruitmentRequestgrid\")");
                   })
 
-              .Model(model => model.Id(p => p.RecruitmentRequestId))
+              .Model(model =>
+              {
+                  model.Id(p => p.RecruitmentRequestId);
+                  model.Field(p => p.Date).DefaultValue(DateTime.Today);
+              })
                   .Read(read => read.Action("RecruitmentRequest_Read", "RecruitmentRequestStatus"))
                   .Create(create => create.Action("RecruitmentRequest_Create", "RecruitmentRequestStatus"))
                   .Update(update => update.Action("RecruitmentRequest_Update", "RecruitmentRequestStatus"))

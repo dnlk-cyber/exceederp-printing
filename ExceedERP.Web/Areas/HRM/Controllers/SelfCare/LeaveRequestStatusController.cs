@@ -257,8 +257,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     FromAmharic = lr.FromAmharic,
                     ToAmharic = lr.ToAmharic,
 
-                    // ✅ compute all 3 statuses in SQL
-                    IsApproved = latestStatus == RequestStatus.DEPARTMENT_APPROVAL,
+                    IsApproved = latestStatus == RequestStatus.APPROVE,
+                    IsChangeInDepartment = latestStatus == RequestStatus.DEPARTMENT_APPROVAL,
                     IsPending = latestStatus == RequestStatus.PEND,
                     IsRejected = latestStatus == RequestStatus.REJECT,
 

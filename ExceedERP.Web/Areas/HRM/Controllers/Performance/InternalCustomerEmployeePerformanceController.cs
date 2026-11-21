@@ -279,7 +279,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         && x.EvaluatorEmployeeId == id
                         && x.EvaluationCriteriaTypeId == evaluationCriteriaId
                         && x.EvalutionType == "InternalCustomer"
-                        && x.GlPeriodId == periodId).FirstOrDefault();
+                        && x.GlPeriodId == periodId)
+                .OrderByDescending(x => x.IsHRApproved).ThenByDescending(x => x.IsApproved).FirstOrDefault();
+
+            if (Performance != null && (Performance.IsApproved || Performance.IsHRApproved))
+                return Performance.EmployeePerformanceId;
+
             var performanceSetting = db.PerformanceSettings.FirstOrDefault();
             decimal deadLine = performanceSetting?.Value ?? 10;
             bool ispeerAndInternalCusHidden = performanceSetting?.IsPeerAndInternalCustomerHide ?? false;
@@ -500,7 +505,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         && x.EvaluatorEmployeeId == id
                         && x.EvalutionType == "InternalCustomer"
                         && x.EvaluationCriteriaTypeId == evaluationCriteriaId
-                        && x.GlPeriodId == periodId).FirstOrDefault();
+                        && x.GlPeriodId == periodId)
+                .OrderByDescending(x => x.IsHRApproved).ThenByDescending(x => x.IsApproved).FirstOrDefault();
+
+            if (Performance != null && (Performance.IsApproved || Performance.IsHRApproved))
+                return Performance.EmployeePerformanceId;
+
             var category = db.MeasurementDefinitions.Find(evaluationCriteriaId);
             var placement = db.Placements.Where(x => x.isCurrent)
                                          .Where(x => x.EmployeeId == empId)

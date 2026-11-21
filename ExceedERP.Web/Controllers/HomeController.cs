@@ -45,27 +45,28 @@ namespace ExceedERP.Web.Controllers
         private readonly AccountHelper _accountHelper = new AccountHelper();
         private  readonly FinanceHelper _financeHelper = new FinanceHelper();
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
-        public ActionResult SetCulture(string culture)
+        [HttpPost]
+        public ActionResult SetCulture(string culture, string returnUrl = null)
         {
-            // Validate input
             culture = CultureHelper.GetImplementedCulture(culture);
-
-            // Save culture in a cookie
-            HttpCookie cookie = Request.Cookies["_culture"];
-            if (cookie != null)
-                cookie.Value = culture;   // update cookie value
-            else
+            Response.Cookies.Set(new HttpCookie("_culture", culture)
             {
+                Expires = DateTime.Now.AddYears(1),
+                Path = "/",
+                HttpOnly = true,
+                Secure = Request.IsSecureConnection
+            });
 
-                cookie = new HttpCookie("_culture")
-                {
-                    Value = culture,
-                    Expires = DateTime.Now.AddYears(1)
-                };
-            }
-            Response.Cookies.Add(cookie);
+            if (Url.IsLocalUrl(returnUrl) && !returnUrl.Contains("\\") && !returnUrl.Any(char.IsControl))
+                return Redirect(returnUrl);
 
-            return Redirect(Request.UrlReferrer.ToString());
+            var referrer = Request.UrlReferrer;
+            if (referrer != null && Request.Url != null
+                && string.Equals(referrer.Authority, Request.Url.Authority, StringComparison.OrdinalIgnoreCase)
+                && Url.IsLocalUrl(referrer.PathAndQuery))
+                return Redirect(referrer.PathAndQuery);
+
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
 
         public ActionResult IssueBr()

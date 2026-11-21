@@ -1,0 +1,67 @@
+<style>
+    .leave-request-status {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        color: #fff;
+        font-weight: 700;
+        line-height: 1.3;
+        white-space: normal;
+    }
+
+    .leave-status-editing { background-color: #475569; }
+    .leave-status-waiting { background-color: #0369a1; }
+    .leave-status-dept-approved { background-color: #047857; }
+    .leave-status-approved { background-color: #374151; }
+    .leave-status-pending { background-color: #92400e; }
+    .leave-status-rejected { background-color: #b91c1c; }
+    .leave-status-voided { background-color: #6d28d9; }
+</style>
+
+<span class="leave-request-status leave-status-editing">Editing</span>
+<span class="leave-request-status leave-status-waiting">Waiting for Approval</span>
+<span class="leave-request-status leave-status-dept-approved">Department Approved</span>
+<span class="leave-request-status leave-status-approved">Final Approved</span>
+<span class="leave-request-status leave-status-pending">Pending</span>
+<span class="leave-request-status leave-status-rejected">Rejected</span>
+<span class="leave-request-status leave-status-voided">Voided</span>
+
+<script>
+    function leaveRequestStatus(request) {
+        var status = (request.Status || "").trim().toUpperCase();
+        if (request.IsVoid || status === "VOIDED") return { key: "voided", label: "Voided" };
+        if (request.IsOnlineApproved || status === "APPROVE" || status === "APPROVED") {
+            return { key: "approved", label: "Final Approved" };
+        }
+        if (request.IsRejected || status === "REJECT" || status === "REJECTED") {
+            return { key: "rejected", label: "Rejected" };
+        }
+        if (request.IsPending || status === "PEND" || status === "PENDING") {
+            return { key: "pending", label: "Pending" };
+        }
+        if (request.IsDepartmentOnlineApproved || request.IsChangeInDepartment || status === "DEPARTMENT_APPROVAL") {
+            return { key: "dept-approved", label: "Department Approved" };
+        }
+        if (request.IsApproved) return { key: "approved", label: "Final Approved" };
+        if (request.IsWaiting || request.IsSendForApproval || request.IsDepartmentSendForApproval || status === "WAITING_FOR_APPROVAL") {
+            return { key: "waiting", label: "Waiting for Approval" };
+        }
+        return { key: "editing", label: "Editing" };
+    }
+
+    function leaveRequestStatusBadge(request) {
+        var status = leaveRequestStatus(request);
+        return '<span class="leave-request-status leave-status-' + status.key + '">' + status.label + '</span>';
+    }
+
+    function styleLeaveRequestRow(row, request) {
+        var status = leaveRequestStatus(request);
+        row.removeClass("row-approved row-dept-approved row-waiting row-pending row-rejected row-editing row-voided")
+            .addClass("row-" + status.key);
+        if (request.IsSendForApproval || request.IsDepartmentSendForApproval || request.IsDepartmentOnlineApproved
+            || request.IsOnlineApproved || request.IsVoid || status.key === "waiting" || status.key === "dept-approved"
+            || status.key === "approved" || status.key === "voided") {
+            row.find(".k-grid-edit, .k-grid-delete").remove();
+        }
+    }
+</script>

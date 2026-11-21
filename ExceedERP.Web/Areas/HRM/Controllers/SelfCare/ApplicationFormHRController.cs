@@ -28,9 +28,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         private void PopulateViewData()
         {
             ViewData["EmployeeName"] = db.Person_Employee.ToList();
-            ViewData["recruitmentVacancy"] = db.RecruitmentVacancy.ToList();
+            ViewData["ApplicationVacancyCodes"] = db.VaccancyPlans.Select(x => new { x.VacancyId, x.VaccancyCode }).ToList();
             ViewData["workunits"] = db.MainCompanyStructures.ToList();
-            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            var vacancyJobTitles = db.VaccancyPlans.Select(x => x.JobTitle);
+            var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE || x.LookupType == LookUpTypes.OLD_JOB_TITLE
+                || vacancyJobTitles.Contains(x.LookupId)).ToList();
             ViewData["JobTitle"] = jobtitles;
             
         }
@@ -66,12 +68,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantionFormes_Create([DataSourceRequest]DataSourceRequest request, ApplicantionForm applicantionForm)
         {
+            ApplicationVacancy.Apply(db, applicantionForm, ModelState);
+            var employee = db.Person_Employee.SingleOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId && x.IsActive);
+            if (employee == null)
+                ModelState.AddModelError(nameof(applicantionForm.EmployeeId), "Select an active employee.");
+            else
+                applicantionForm.EmployeeCode = employee.EmployeeCode;
+
             var appForm = db.ApplicantionFormes.FirstOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId && x.VacancyId == applicantionForm.VacancyId);
 
             if (appForm != null)
             {
-                string messages = "you were apply for this vacancy";
-                return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                ModelState.AddModelError("", "This employee already has an application for the vacancy.");
             }
             var desciplines = db.DisciplinaryCases.Where(x => x.EmployeeId == applicantionForm.EmployeeId).ToList();
             if (desciplines.Any())
@@ -106,11 +114,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     OrgStructureId = applicantionForm.OrgStructureId,
                     From = DateTime.Today,
                     To = DateTime.Today,
-                    OrgBranchName = applicantionForm.OrgBranchName,
-                    DateCreated = applicantionForm.DateCreated,
-                    LastModified = applicantionForm.LastModified,
-                    CreatedBy = applicantionForm.CreatedBy,
-                    ModifiedBy = applicantionForm.ModifiedBy
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    DateCreated = DateTime.Now,
+                    CreatedBy = User.Identity.Name
                 };
 
                 db.ApplicantionFormes.Add(entity);
@@ -124,33 +130,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantionFormes_Update([DataSourceRequest]DataSourceRequest request, ApplicantionForm applicantionForm)
         {
+            var entity = db.ApplicantionFormes.Find(applicantionForm.ApplicantionFormId);
+            if (entity == null)
+            {
+                ModelState.AddModelError("", "This application could not be found.");
+                return Json(new[] { applicantionForm }.ToDataSourceResult(request, ModelState));
+            }
+
+            ApplicationVacancy.Apply(db, applicantionForm, ModelState, entity.VacancyId);
+            var employee = db.Person_Employee.SingleOrDefault(x =>
+                x.EmployeeId == applicantionForm.EmployeeId && (x.IsActive || x.EmployeeId == entity.EmployeeId));
+            if (employee == null)
+                ModelState.AddModelError(nameof(applicantionForm.EmployeeId), "Select an employee.");
+
+            if (db.ApplicantionFormes.Any(x => x.EmployeeId == applicantionForm.EmployeeId && x.VacancyId == applicantionForm.VacancyId
+                && x.ApplicantionFormId != entity.ApplicantionFormId))
+            {
+                ModelState.AddModelError("", "This employee already has an application for the vacancy.");
+            }
+
             if (ModelState.IsValid)
             {
-                var entity = new ApplicantionForm
-                {
-                    ApplicantionFormId = applicantionForm.ApplicantionFormId,
-                    EmployeeCode = applicantionForm.EmployeeCode,
-                    VacancyId = applicantionForm.VacancyId,
-                    EmployeeId = applicantionForm.EmployeeId,
-                    ApplicationType = applicantionForm.ApplicationType,
-                    Remark = applicantionForm.Remark,
-                    TotalResult = applicantionForm.TotalResult,
-                    LookupId = applicantionForm.LookupId,
-                    VacancyType = applicantionForm.VacancyType,
-                    MediaVacancyCode = applicantionForm.MediaVacancyCode,
-                    IsForOther = applicantionForm.IsForOther,
-                    OrgStructureId = applicantionForm.OrgStructureId,
-                    From = applicantionForm.From,
-                    To = applicantionForm.To,
-                    OrgBranchName = applicantionForm.OrgBranchName,
-                    DateCreated = applicantionForm.DateCreated,
-                    LastModified = applicantionForm.LastModified,
-                    CreatedBy = applicantionForm.CreatedBy,
-                    ModifiedBy = applicantionForm.ModifiedBy
-                };
-
-                db.ApplicantionFormes.Attach(entity);
-                db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+                applicantionForm.EmployeeCode = employee.EmployeeCode;
+                entity.EmployeeCode = applicantionForm.EmployeeCode;
+                entity.EmployeeId = applicantionForm.EmployeeId;
+                entity.VacancyId = applicantionForm.VacancyId;
+                entity.OrgStructureId = applicantionForm.OrgStructureId;
+                entity.LookupId = applicantionForm.LookupId;
+                entity.VacancyType = applicantionForm.VacancyType;
+                entity.Remark = applicantionForm.Remark;
+                entity.ModifiedBy = User.Identity.Name;
+                entity.LastModified = DateTime.Now;
                 db.SaveChanges();
             }
 

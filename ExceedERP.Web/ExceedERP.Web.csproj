@@ -1647,6 +1647,7 @@
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeeCodeSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeePlacmentWithJController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeeProfileController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Profile\EmployeeProfileNameFilters.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeesUnderBossController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\ExternalSalariesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\FreelancerController.cs" />
@@ -1735,6 +1736,7 @@
     <Compile Include="Areas\HRM\Controllers\Recruitment\VacancyTrackingController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\AllInternalApplicantsController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ApplicationFormHRController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\ApplicationVacancy.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceProviderDepartmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceRequestApproversController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceRequestDepartmentController.cs" />
@@ -3958,6 +3960,9 @@
     <Content Include="Areas\HRM\Views\ApplicationFormHR\EditorTemplates\RequestStatus.cshtml" />
     <Content Include="Areas\HRM\Views\ApplicationFormHR\EditorTemplates\Vacancy.cshtml" />
     <Content Include="Areas\HRM\Views\ApplicationFormHR\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\Shared\_ApplicationVacancyFields.cshtml" />
+    <Content Include="Areas\HRM\Views\Shared\_LeaveRequestStatusLegend.cshtml" />
+    <Content Include="Areas\HRM\Scripts\application-vacancy.js" />
     <Content Include="Areas\HRM\Views\AttendanceNewHR\Index.cshtml" />
     <Content Include="Areas\HRM\Views\AttendancesNew\Index.cshtml" />
     <Content Include="Areas\HRM\Views\ClearanceProvider\EditorTemplates\DepartmentAutoComplate.cshtml" />

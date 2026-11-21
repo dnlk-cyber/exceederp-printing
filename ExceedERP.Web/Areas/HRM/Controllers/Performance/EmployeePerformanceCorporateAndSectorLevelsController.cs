@@ -295,6 +295,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         {
             ModelState.Clear();
             var employeePerformanceNew = db.EmployeePerformances.Find(employeePerformance.EmployeePerformanceId);
+            if (employeePerformanceNew?.IsHRApproved == true)
+            {
+                ModelState.AddModelError("", "An HR-approved evaluation cannot be deleted.");
+                return Json(new[] { employeePerformance }.ToDataSourceResult(request, ModelState));
+            }
+
             if (employeePerformanceNew != null)
             {
                 if (ModelState.IsValid)
@@ -434,6 +440,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public ActionResult PerformanceActions_Destroy([DataSourceRequest] DataSourceRequest request, EmployeePerformanceScore employeePerformanceScore)
         {
+            if (!EmployeePerformanceAllSummariesController.CanUpdateScore(db, employeePerformanceScore))
+            {
+                ModelState.AddModelError("", "The evaluation has already been approved or the score no longer exists.");
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+            }
+
             if (employeePerformanceScore.Score > employeePerformanceScore.Weight)
             {
                 ModelState.AddModelError("", "Score can't exceed the weight");
@@ -522,7 +534,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public string ApproveEvaluation(int year, int period, int employee)
         {
-            var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == year && x.GlPeriodId == period && x.EmployeeId == employee&&x.IsApproved&&x.IsAcceptedByEmployee&&x.IsSecondLevelApproved).ToList();
+            var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == year && x.GlPeriodId == period
+                && x.EmployeeId == employee && x.IsApproved && x.IsAcceptedByEmployee && x.IsSecondLevelApproved
+                && !x.IsHRApproved).ToList();
             var status = "false";
             foreach ( var employeePerformance in employeePerformances)
             {
@@ -640,7 +654,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             x.GlFiscalYearId == fiscalYearId &&
                             x.GlPeriodId == periodId &&
                             x.EvaluationCriteriaTypeId == evaluationCriteriaId &&
-                            x.IsSecondLevelApproved)
+                            (x.IsSecondLevelApproved || x.IsHRApproved))
+                .OrderByDescending(x => x.IsHRApproved)
                 .ToList();
 
             var now = DateTime.Now;
@@ -656,6 +671,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 if (placement == null) continue;
 
                 var existing = existingPerformances.FirstOrDefault(x => x.EmployeeId == empPerformance.EmployeeId);
+                if (existing?.IsHRApproved == true)
+                    continue;
 
                 if (existing == null)
                 {
@@ -874,12 +891,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 var placement = db.Placements.Where(x => x.isCurrent).Where(x => x.EmployeeId == empPerformance.EmployeeId&&x.ResponsibilityLevel==measureDefinition.Role).FirstOrDefault();
 
-                var Performance = db.EmployeePerformances
+                var Performance = db.EmployeePerformances.OrderByDescending(x => x.IsHRApproved)
                     .FirstOrDefault(x =>x.EmployeeId==empPerformance.EmployeeId 
                                         && x.GlFiscalYearId == fiscalYearId 
                                         && x.GlPeriodId == periodId 
                                         && x.EvaluationCriteriaTypeId == evaluationCriteriaId
-                                        && x.IsSecondLevelApproved);
+                                        && (x.IsSecondLevelApproved || x.IsHRApproved));
+                if (Performance?.IsHRApproved == true)
+                    continue;
+
                 if (Performance == null && placement != null)
                 {
                     var categorId = db.MeasurementDefinitions.Find(evaluationCriteriaId);
@@ -1137,7 +1157,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 var placement = db.Placements.Where(x => x.isCurrent).Where(x => x.EmployeeId == empPerformance.EmployeeId).FirstOrDefault();
 
-                var Performance = db.EmployeePerformances.FirstOrDefault(x =>x.EmployeeId==empPerformance.EmployeeId && x.GlFiscalYearId == fiscalYearId && x.GlPeriodId == periodId && x.EvaluationCriteriaTypeId == evaluationCriteriaId && x.IsSecondLevelApproved);
+                var Performance = db.EmployeePerformances.OrderByDescending(x => x.IsHRApproved)
+                    .FirstOrDefault(x => x.EmployeeId == empPerformance.EmployeeId && x.GlFiscalYearId == fiscalYearId
+                        && x.GlPeriodId == periodId && x.EvaluationCriteriaTypeId == evaluationCriteriaId
+                        && (x.IsSecondLevelApproved || x.IsHRApproved));
+                if (Performance?.IsHRApproved == true)
+                    continue;
+
                 if (Performance == null && placement != null)
                 {
                     var categorId = db.MeasurementDefinitions.Find(evaluationCriteriaId);
@@ -1456,7 +1482,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             x.GlFiscalYearId == fiscalYearId &&
                             x.GlPeriodId == periodId &&
                             x.EvaluationCriteriaTypeId == evaluationCriteriaId &&
-                            x.IsSecondLevelApproved)
+                            (x.IsSecondLevelApproved || x.IsHRApproved))
+                .OrderByDescending(x => x.IsHRApproved)
                 .ToList();
 
             var now = DateTime.Now;
@@ -1473,6 +1500,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 if (placement == null) continue;
 
                 var existing = existingPerformances.FirstOrDefault(x => x.EmployeeId == empPerformance.EmployeeId);
+                if (existing?.IsHRApproved == true)
+                    continue;
 
                 if (existing == null)
                 {
@@ -1660,7 +1689,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 var evaluatedEmployees = db.EmployeePerformances
                     .Where(x => x.GlFiscalYearId == fiscalYearId
                                 && x.GlPeriodId == periodId
-                                && x.IsSecondLevelApproved
+                                && (x.IsSecondLevelApproved || x.IsHRApproved)
                                 && x.EvaluationCriteriaTypeId == evaluationCriteriaId)
                     .Select(x => new { x.EmployeeId,
                                        x.BranchId,

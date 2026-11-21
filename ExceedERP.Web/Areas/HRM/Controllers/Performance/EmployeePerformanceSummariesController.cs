@@ -648,14 +648,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             var criteriaIds = employeePerformances.Select(x => x.EvaluationCriteriaTypeId).Distinct().ToList();
             var employeeId = employeePerformances.First().EmployeeId;
+            var fiscalYearId = employeePerformances.First().GlFiscalYearId;
+            var periodId = employeePerformances.First().GlPeriodId;
 
             // Step 1: Delete previous averaged records
             var averagedPerformances = db.EmployeePerformances
                 .Where(x => x.EmployeeId == employeeId &&
+                            x.GlFiscalYearId == fiscalYearId &&
+                            x.GlPeriodId == periodId &&
                             criteriaIds.Contains(x.EvaluationCriteriaTypeId) &&
                            (x.Remark == "Averaged Evaluation" ||
                             x.Comment == "Averaged Evaluation" ||
                             x.EmployeeRemark == "Averaged Evaluation")).ToList();
+
+            if (averagedPerformances.Any(x => x.IsHRApproved))
+                return;
 
             if (averagedPerformances.Any())
             {
@@ -1192,6 +1199,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                                      && x.GlPeriodId == period
                                      && x.EmployeeId == employee
                                      && x.IsApproved
+                                     && !x.IsHRApproved
                                      && !x.IsAveraged
                                      && !x.IsImmediateSuppurvisorApproved
                                      && (x.EvalutionType == "PeerToPeer" || x.EvalutionType == "InternalCustomer" || x.EmployeeRemark == "Averaged Evaluation"))
@@ -1213,6 +1221,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                                  && x.GlPeriodId == period
                                  && x.EmployeeId == employee
                                  && x.IsApproved
+                                 && !x.IsHRApproved
                                  && !x.IsAveraged
                                  && !x.IsImmediateSuppurvisorApproved)
                         .ToList();

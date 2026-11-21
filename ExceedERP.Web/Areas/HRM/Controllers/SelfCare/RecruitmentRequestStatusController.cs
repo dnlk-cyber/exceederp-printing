@@ -140,6 +140,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 NoOfCurrentStaff = recruitmentRequest.NoOfCurrentStaff,
                 NoOfShouldBeStaff = recruitmentRequest.NoOfShouldBeStaff,
                 PlanType = recruitmentRequest.PlanType,
+                Date = recruitmentRequest.Date,
+                GlFiscalYearId = recruitmentRequest.GlFiscalYearId,
                 CreatedBy = recruitmentRequest.CreatedBy,
                 DateCreated = recruitmentRequest.DateCreated,
                 ModifiedBy = recruitmentRequest.ModifiedBy,
@@ -183,7 +185,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     NoOfCurrentStaff = recruitmentRequest.NoOfCurrentStaff,
                     PlanType = recruitmentRequest.PlanType,
                     NoOfShouldBeStaff = recruitmentRequest.NoOfShouldBeStaff,
-                    Date = DateTime.Now,
+                    Date = recruitmentRequest.Date.Date,
+                    GlFiscalYearId = recruitmentRequest.GlFiscalYearId,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
                     ModifiedBy = recruitmentRequest.ModifiedBy,
@@ -233,22 +236,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult RecruitmentRequest_Update([DataSourceRequest]DataSourceRequest request, RecruitmentRequest recruitmentRequest)
         {
+            var branches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            var entity = db.RecruitmentRequest.SingleOrDefault(x =>
+                x.RecruitmentRequestId == recruitmentRequest.RecruitmentRequestId && branches.Contains(x.OrgBranchName));
+            if (entity == null)
+            {
+                ModelState.AddModelError("", "The recruitment request was not found in your branches.");
+                return Json(new[] { recruitmentRequest }.ToDataSourceResult(request, ModelState));
+            }
+
             if (ModelState.IsValid)
             {
-                var entity = new RecruitmentRequest
-                {
-                    RecruitmentRequestId = recruitmentRequest.RecruitmentRequestId,
-                    OrgStructureId = recruitmentRequest.OrgStructureId,
-                    EmploymentType = recruitmentRequest.EmploymentType,
-                    LookupId = recruitmentRequest.LookupId,
-                    NoOfVaccantPostion = recruitmentRequest.NoOfVaccantPostion,
-                    NoOfCurrentStaff = recruitmentRequest.NoOfCurrentStaff,
-                    PlanType = recruitmentRequest.PlanType,
-                    NoOfShouldBeStaff = recruitmentRequest.NoOfShouldBeStaff
-                };
-
-                db.RecruitmentRequest.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                entity.BranchId = recruitmentRequest.BranchId;
+                entity.OrgStructureId = recruitmentRequest.OrgStructureId;
+                entity.EmploymentType = recruitmentRequest.EmploymentType;
+                entity.LookupId = recruitmentRequest.LookupId;
+                entity.NoOfVaccantPostion = recruitmentRequest.NoOfVaccantPostion;
+                entity.NoOfCurrentStaff = recruitmentRequest.NoOfCurrentStaff;
+                entity.PlanType = recruitmentRequest.PlanType;
+                entity.NoOfShouldBeStaff = recruitmentRequest.NoOfShouldBeStaff;
+                entity.Date = recruitmentRequest.Date.Date;
+                entity.GlFiscalYearId = recruitmentRequest.GlFiscalYearId;
+                entity.ModifiedBy = User.Identity.Name;
+                entity.LastModified = DateTime.Now;
                 db.SaveChanges();
             }
 

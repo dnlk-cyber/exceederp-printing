@@ -205,47 +205,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeaveRequest_Destroy([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
+        public ActionResult LeaveRequest_Destroy([DataSourceRequest] DataSourceRequest request, LeaveRequest leaveRequest)
         {
             ModelState.Clear();
-            if (leaveRequest.IsOnlineApproved)
+            var entity = db.LeaveRequest.Find(leaveRequest.LeaveRequestId);
+            if (entity == null || LeaveRequestEditService.IsLocked(entity))
             {
-                ModelState.AddModelError("", "you can't delete approved requestes");
+                ModelState.AddModelError("", "This leave request is unavailable or has already been submitted and cannot be canceled.");
             }
             else
             {
-                if (ModelState.IsValid)
-                {
-                    var entity = new LeaveRequest
-                    {
-                        LeaveRequestId = leaveRequest.LeaveRequestId,
-                        EmployeeId = leaveRequest.EmployeeId,
-                        BranchId = leaveRequest.BranchId,
-                        BusinessUnitId = leaveRequest.BusinessUnitId,
-                        LookupId = leaveRequest.LookupId,
-                        From = leaveRequest.From,
-                        To = leaveRequest.To,
-                        LeaveDays = leaveRequest.LeaveDays,
-                        Type = leaveRequest.Type,
-                        Reason = leaveRequest.Reason,
-                        GlFiscalYearId = leaveRequest.GlFiscalYearId,
-                        Remark = leaveRequest.Remark,
-                        LeaveBalance = leaveRequest.LeaveBalance,
-                        FromAmharic = leaveRequest.FromAmharic,
-                        ToAmharic = leaveRequest.ToAmharic,
-                        EmployeeCode = leaveRequest.EmployeeCode,
-                        IsForOther = leaveRequest.IsForOther,
-                        Day = leaveRequest.Day,
-                        MorningOrAfternoon = leaveRequest.MorningOrAfternoon,
-                        Hours = leaveRequest.Hours
-                    };
-                    #region delete log
-                    UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted leave request of employee code  " + leaveRequest.EmployeeCode);
-                    #endregion
-                    db.LeaveRequest.Attach(entity);
-                    db.LeaveRequest.Remove(entity);
-                    db.SaveChanges();
-                }
+                db.LeaveRequest.Remove(entity);
+                db.SaveChanges();
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name,
+                    "Canceled leave request for employee " + entity.EmployeeCode);
             }
 
             return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));

@@ -83,6 +83,64 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
             return Json(result);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PrepareExternalExamResults([DataSourceRequest] DataSourceRequest request, int id)
+        {
+            var externalScreening = from applicant in db.ApplicantScreenings
+                                    join screening in db.ApplicantScreenResults on applicant.ApplicantScreenResultId equals screening.ApplicantScreenResultId
+                                    join vacancy in db.VaccancyPlans on screening.VacancyId equals vacancy.VacancyId
+                                    where applicant.ApplicantScreeningId == id && vacancy.RecruSource == RecruitmentSource.EXTERNAL
+                                    select applicant.ApplicantScreeningId;
+            if (!externalScreening.Any())
+                return ApplicantExamResult_Read(request, id);
+
+            var examSettings = GetExternalExamSettings(db);
+            var existingTypes = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == id).Select(x => x.ExamType).ToList();
+            if (examSettings.Keys.Except(existingTypes).Any())
+            {
+                using (var transaction = db.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
+                {
+                    AddMissingExamRows(db, id, examSettings);
+                    db.SaveChanges();
+                    transaction.Commit();
+                }
+            }
+
+            return ApplicantExamResult_Read(request, id);
+        }
+
+        internal static IReadOnlyDictionary<ExamType, decimal> GetExternalExamSettings(ExceedDbContext context)
+        {
+            var settings = context.InternalRecruitmentCriteriaTypeSettings
+                .Where(x => x.ExamSource == RecruitmentSource.EXTERNAL)
+                .OrderBy(x => x.InternalRecruitmentCriteriaTypeSettingId)
+                .Select(x => new { x.ExamType, x.SettingVlaue }).ToList();
+            if (settings.Count == 0)
+            {
+                settings = context.ExamTypeSettings.Where(x => x.ExamSource == RecruitmentSource.EXTERNAL)
+                    .OrderBy(x => x.ExamTypeSettingId)
+                    .Select(x => new { x.ExamType, x.SettingVlaue }).ToList();
+            }
+
+            return settings.GroupBy(x => x.ExamType).ToDictionary(x => x.Key, x => x.First().SettingVlaue);
+        }
+
+        internal static void AddMissingExamRows(ExceedDbContext context, int applicantScreeningId, IReadOnlyDictionary<ExamType, decimal> examSettings)
+        {
+            var existingTypes = context.ApplicantExamResult.Where(x => x.ApplicantScreeningId == applicantScreeningId)
+                .Select(x => x.ExamType).ToList();
+            foreach (var examType in examSettings.Keys.Except(existingTypes))
+            {
+                context.ApplicantExamResult.Add(new ApplicantExamResult
+                {
+                    ApplicantScreeningId = applicantScreeningId,
+                    ExamType = examType,
+                    SettingValue = examSettings[examType]
+                });
+            }
+        }
        
         [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
@@ -114,35 +172,45 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
         }
      
-        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantExamResult_Update([DataSourceRequest]DataSourceRequest request, ApplicantExamResult applicantExamResult)
         {
-            if (ModelState.IsValid)
+            var result = db.ApplicantExamResult.Find(applicantExamResult.ApplicantResultId);
+            if (result == null)
             {
-                var settingValue = db.InternalRecruitmentCriteriaTypeSettings.FirstOrDefault(x => x.ExamType == applicantExamResult.ExamType && x.ExamSource == RecruitmentSource.EXTERNAL);
-                if (settingValue != null)
-                {
-                    applicantExamResult.SettingValue = settingValue.SettingVlaue;
-                }
-
-                var entity = new ApplicantExamResult
-                {
-                    ApplicantResultId = applicantExamResult.ApplicantResultId,
-                    ApplicantScreeningId = applicantExamResult.ApplicantScreeningId,
-                    SettingValue = applicantExamResult.SettingValue,
-                    CurrentResult = applicantExamResult.CurrentResult,
-                    ActualValue = applicantExamResult.ActualValue,
-                    ExamType = applicantExamResult.ExamType,
-                    Remark = applicantExamResult.Remark,
-                };
-
-                db.ApplicantExamResult.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                ModelState.AddModelError("", "The exam result could not be found. Refresh the grid and try again.");
+                return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
             }
 
-            return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
+            if (applicantExamResult.CurrentResult < 0)
+                ModelState.AddModelError(nameof(applicantExamResult.CurrentResult), "Enter a score of zero or higher.");
+            if (result.SettingValue > 0 && applicantExamResult.CurrentResult > result.SettingValue)
+                ModelState.AddModelError(nameof(applicantExamResult.CurrentResult), "The score cannot exceed the setting value.");
+
+            if (!ModelState.IsValid)
+                return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
+
+            result.CurrentResult = applicantExamResult.CurrentResult;
+            result.ActualValue = applicantExamResult.ActualValue;
+            result.Remark = applicantExamResult.Remark;
+            db.SaveChanges();
+
+            var dataResult = new[] { result }.ToDataSourceResult(request, ModelState);
+            var screening = db.ApplicantScreenings.Find(result.ApplicantScreeningId);
+            if (screening == null)
+                return Json(dataResult);
+
+            var screeningResult = db.ApplicantScreenResults.Find(screening.ApplicantScreenResultId);
+            var total = ApplicantScreeningResultController.GetTotalResult(db, result.ApplicantScreeningId);
+            return Json(new
+            {
+                dataResult.Data,
+                dataResult.Total,
+                dataResult.Errors,
+                result.ApplicantScreeningId,
+                ApplicantTotal = total,
+                PassOrFail = ApplicantScreeningResultController.PassOrFail(db, screening, screeningResult?.VacancyId ?? 0, total)
+            });
         }
      
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
